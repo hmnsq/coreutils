@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+ബാഹ്യ പൂർണ്ണസംഖ്യ force_linkat (പൂർണ്ണസംഖ്യ, അക്ഷരം സ്ഥിരം *, പൂർണ്ണസംഖ്യ, അക്ഷരം സ്ഥിരം *, പൂർണ്ണസംഖ്യ, bool, പൂർണ്ണസംഖ്യ)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+ബാഹ്യ പൂർണ്ണസംഖ്യ force_symlinkat (അക്ഷരം സ്ഥിരം *, പൂർണ്ണസംഖ്യ, അക്ഷരം സ്ഥിരം *, bool, പൂർണ്ണസംഖ്യ)
   _GL_ATTRIBUTE_NONNULL ();

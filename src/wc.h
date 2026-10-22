@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#അന്തര്ഭാവ <stdint.h>
+ഘടന wc_വരികൾ { പൂർണ്ണസംഖ്യ err; intmax_t വരികൾ; intmax_t bytes; };
+ഘടന wc_വരികൾ wc_വരികൾ_avx2 (പൂർണ്ണസംഖ്യ);
+ഘടന wc_വരികൾ wc_വരികൾ_avx512 (പൂർണ്ണസംഖ്യ);
+ഘടന wc_വരികൾ wc_വരികൾ_neon (പൂർണ്ണസംഖ്യ fd);

@@ -16,59 +16,59 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "nproc.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nproc"
 
 #define AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+എണ്ണൽ
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_argument, ശൂന്യ, ALL_OPTION},
+  {"ignore", required_argument, ശൂന്യ, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
+Print the സംഖ്യ of processing units available to the current process,\n\
+which may be less than the സംഖ്യ of online processors.\n\
 If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+then they will determine the minimum and maximum returned മൂല്യം respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the സംഖ്യ of installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
+         എങ്കിൽ possible, exclude N processing units.\n\
          The result is guaranteed to be at least 1.\n\
 "));
 
@@ -79,8 +79,8 @@ then they will determine the minimum and maximum returned value respectively.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   unsigned long ignore = 0;
   initialize_main (&argc, &argv);
@@ -91,47 +91,47 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  എണ്ണൽ nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      പൂർണ്ണസംഖ്യ c = getopt_long (argc, argv, "", longopts, ശൂന്യ);
+      എങ്കിൽ (c == -1)
+        നിർത്തുക;
+      തിരഞ്ഞെടുപ്പ് (c)
         {
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        case ALL_OPTION:
+        അവസ്ഥ ALL_OPTION:
           mode = NPROC_ALL;
-          break;
+          നിർത്തുക;
 
-        case IGNORE_OPTION:
+        അവസ്ഥ IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          നിർത്തുക;
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  എങ്കിൽ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  unsigned long nproc = അക്കം_processors (mode);
 
-  if (ignore < nproc)
+  എങ്കിൽ (ignore < nproc)
     nproc -= ignore;
-  else
+  അല്ലെങ്കിൽ
     nproc = 1;
 
   printf ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

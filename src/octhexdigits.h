@@ -1,16 +1,16 @@
-static inline bool _GL_ATTRIBUTE_CONST
-isoct (char c)
+സ്ഥിതം വരിയിൽ bool _GL_ATTRIBUTE_CONST
+isoct (അക്ഷരം c)
 {
-  return '0' <= c && c <= '7';
+  തിരികെ '0' <= c && c <= '7';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromoct (char c)
+സ്ഥിതം വരിയിൽ പൂർണ്ണസംഖ്യ _GL_ATTRIBUTE_CONST
+fromoct (അക്ഷരം c)
 {
-  return c - '0';
+  തിരികെ c - '0';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromhex (char c)
+സ്ഥിതം വരിയിൽ പൂർണ്ണസംഖ്യ _GL_ATTRIBUTE_CONST
+fromhex (അക്ഷരം c)
 {
-  return ('a' <= c && c <= 'f' ? c - 'a' + 10
+  തിരികെ ('a' <= c && c <= 'f' ? c - 'a' + 10
           : 'A' <= c && c <= 'F' ? c - 'A' + 10 : c - '0');
 }

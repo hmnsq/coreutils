@@ -307,22 +307,22 @@
 
 */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "mbswidth.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "strftime.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
-#include "xdectoint.h"
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "hard-locale.h"
+#അന്തര്ഭാവ "mbswidth.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "stat-time.h"
+#അന്തര്ഭാവ "stdio--.h"
+#അന്തര്ഭാവ "strftime.h"
+#അന്തര്ഭാവ "xstrtol.h"
+#അന്തര്ഭാവ "xstrtol-error.h"
+#അന്തര്ഭാവ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pr"
@@ -380,12 +380,12 @@
    options.  Many of the "int" values below should be "size_t" or
    something else like that.  */
 
-struct COLUMN;
-struct COLUMN
+ഘടന COLUMN;
+ഘടന COLUMN
   {
     FILE *fp;			/* Input stream for this column. */
-    char const *name;		/* File name. */
-    enum
+    അക്ഷരം സ്ഥിരം *name;		/* File name. */
+    എണ്ണൽ
       {
         OPEN,
         FF_FOUND,		/* used with -b option, set with \f, changed
@@ -396,15 +396,15 @@ struct COLUMN
     status;			/* Status of the file pointer. */
 
     /* Func to print lines in this col. */
-    bool (*print_func) (struct COLUMN *);
+    bool (*print_func) (ഘടന COLUMN *);
 
     /* Func to print/store chars in this col. */
-    void (*char_func) (char);
+    ശൂന്യം (*char_func) (അക്ഷരം);
 
-    int current_line;		/* Index of current place in line_vector. */
-    int lines_stored;		/* Number of lines stored in buff. */
-    int lines_to_print;		/* No. lines stored or space left on page. */
-    int start_position;		/* Horizontal position of first char. */
+    പൂർണ്ണസംഖ്യ current_വരി;		/* Index of current place in line_vector. */
+    പൂർണ്ണസംഖ്യ വരികൾ_stored;		/* Number of lines stored in buff. */
+    പൂർണ്ണസംഖ്യ വരികൾ_to_print;		/* No. lines stored or space left on page. */
+    പൂർണ്ണസംഖ്യ start_position;		/* Horizontal position of first char. */
     bool numbered;
     bool full_page_printed;	/* True means printed without a FF found. */
 
@@ -414,186 +414,186 @@ struct COLUMN
        the next line. */
   };
 
-typedef struct COLUMN COLUMN;
+തരനിർവചനം ഘടന COLUMN COLUMN;
 
-static int char_to_clump (char c);
-static bool read_line (COLUMN *p);
-static bool print_page (void);
-static bool print_stored (COLUMN *p);
-static bool open_file (char *name, COLUMN *p);
-static bool skip_to_page (uintmax_t page);
-static void print_header (void);
-static void pad_across_to (int position);
-static void add_line_number (COLUMN *p);
-static int getoptnum (char const *n_str, int min, char const *errfmt);
-static void getoptarg (char *arg, char switch_char, char *character,
-                       int *number);
-static void print_files (int number_of_files, char **av);
-static void init_parameters (int number_of_files);
-static void init_header (char const *filename, int desc);
-static bool init_fps (int number_of_files, char **av);
-static void init_funcs (void);
-static void init_store_cols (void);
-static void store_columns (void);
-static void balance (int total_stored);
-static void store_char (char c);
-static void pad_down (unsigned int lines);
-static void read_rest_of_line (COLUMN *p);
-static void skip_read (COLUMN *p, int column_number);
-static void print_char (char c);
-static void cleanup (void);
-static void print_sep_string (void);
-static void separator_string (char const *optarg_S);
+സ്ഥിതം പൂർണ്ണസംഖ്യ char_to_clump (അക്ഷരം c);
+സ്ഥിതം bool read_വരി (COLUMN *p);
+സ്ഥിതം bool print_page (ശൂന്യം);
+സ്ഥിതം bool print_stored (COLUMN *p);
+സ്ഥിതം bool open_file (അക്ഷരം *name, COLUMN *p);
+സ്ഥിതം bool skip_to_page (uintmax_t page);
+സ്ഥിതം ശൂന്യം print_header (ശൂന്യം);
+സ്ഥിതം ശൂന്യം pad_across_to (പൂർണ്ണസംഖ്യ position);
+സ്ഥിതം ശൂന്യം add_വരി_സംഖ്യ (COLUMN *p);
+സ്ഥിതം പൂർണ്ണസംഖ്യ getoptnum (അക്ഷരം സ്ഥിരം *n_str, പൂർണ്ണസംഖ്യ min, അക്ഷരം സ്ഥിരം *errfmt);
+സ്ഥിതം ശൂന്യം getoptarg (അക്ഷരം *arg, അക്ഷരം switch_char, അക്ഷരം *character,
+                       പൂർണ്ണസംഖ്യ *സംഖ്യ);
+സ്ഥിതം ശൂന്യം print_files (പൂർണ്ണസംഖ്യ സംഖ്യ_of_files, അക്ഷരം **av);
+സ്ഥിതം ശൂന്യം init_parameters (പൂർണ്ണസംഖ്യ സംഖ്യ_of_files);
+സ്ഥിതം ശൂന്യം init_header (അക്ഷരം സ്ഥിരം *filename, പൂർണ്ണസംഖ്യ desc);
+സ്ഥിതം bool init_fps (പൂർണ്ണസംഖ്യ സംഖ്യ_of_files, അക്ഷരം **av);
+സ്ഥിതം ശൂന്യം init_funcs (ശൂന്യം);
+സ്ഥിതം ശൂന്യം init_store_cols (ശൂന്യം);
+സ്ഥിതം ശൂന്യം store_columns (ശൂന്യം);
+സ്ഥിതം ശൂന്യം balance (പൂർണ്ണസംഖ്യ total_stored);
+സ്ഥിതം ശൂന്യം store_char (അക്ഷരം c);
+സ്ഥിതം ശൂന്യം pad_down (unsigned പൂർണ്ണസംഖ്യ വരികൾ);
+സ്ഥിതം ശൂന്യം read_rest_of_വരി (COLUMN *p);
+സ്ഥിതം ശൂന്യം skip_read (COLUMN *p, പൂർണ്ണസംഖ്യ column_സംഖ്യ);
+സ്ഥിതം ശൂന്യം print_char (അക്ഷരം c);
+സ്ഥിതം ശൂന്യം cleanup (ശൂന്യം);
+സ്ഥിതം ശൂന്യം print_sep_string (ശൂന്യം);
+സ്ഥിതം ശൂന്യം separator_string (അക്ഷരം സ്ഥിരം *optarg_S);
 
 /* All of the columns to print.  */
-static COLUMN *column_vector;
+സ്ഥിതം COLUMN *column_vector;
 
 /* When printing a single file in multiple downward columns,
    we store the leftmost columns contiguously in buff.
    To print a line from buff, get the index of the first character
    from line_vector[i], and print up to line_vector[i + 1]. */
-static char *buff;
+സ്ഥിതം അക്ഷരം *buff;
 
 /* Index of the position in buff where the next character
    will be stored. */
-static unsigned int buff_current;
+സ്ഥിതം unsigned പൂർണ്ണസംഖ്യ buff_current;
 
 /* The number of characters in buff.
    Used for allocation of buff and to detect overflow of buff. */
-static idx_t buff_allocated;
+സ്ഥിതം idx_t buff_allocated;
 
 /* Array of indices into buff.
    Each entry is an index of the first character of a line.
    This is used when storing lines to facilitate shuffling when
    we do column balancing on the last page. */
-static int *line_vector;
+സ്ഥിതം പൂർണ്ണസംഖ്യ *വരി_vector;
 
 /* Array of horizontal positions.
    For each line in line_vector, end_vector[line] is the horizontal
    position we are in after printing that line.  We keep track of this
    so that we know how much we need to pad to prepare for the next
    column. */
-static int *end_vector;
+സ്ഥിതം പൂർണ്ണസംഖ്യ *end_vector;
 
 /* (-m) True means we're printing multiple files in parallel. */
-static bool parallel_files = false;
+സ്ഥിതം bool parallel_files = false;
 
 /* (-m) True means a line starts with some empty columns (some files
    already CLOSED or ON_HOLD) which we have to align. */
-static bool align_empty_cols;
+സ്ഥിതം bool align_empty_cols;
 
 /* (-m) True means we have not yet found any printable column in a line.
    align_empty_cols = true  has to be maintained. */
-static bool empty_line;
+സ്ഥിതം bool empty_വരി;
 
 /* (-m) False means printable column output precedes a form feed found.
    Column alignment is done only once. No additional action with that form
    feed.
    True means we found only a form feed in a column. Maybe we have to do
    some column alignment with that form feed. */
-static bool FF_only;
+സ്ഥിതം bool FF_only;
 
 /* (-[0-9]+) True means we're given an option explicitly specifying
    number of columns.  Used to detect when this option is used with -m
    and when translating old options to new/long options. */
-static bool explicit_columns = false;
+സ്ഥിതം bool explicit_columns = false;
 
 /* (-t|-T) False means we aren't printing headers and footers. */
-static bool extremities = true;
+സ്ഥിതം bool extremities = true;
 
 /* (-t) True means we retain all FF set by hand in input files.
    False is set with -T option. */
-static bool keep_FF = false;
-static bool print_a_FF = false;
+സ്ഥിതം bool keep_FF = false;
+സ്ഥിതം bool print_a_FF = false;
 
 /* True means we need to print a header as soon as we know we've got input
    to print after it. */
-static bool print_a_header;
+സ്ഥിതം bool print_a_header;
 
 /* (-f) True means use formfeeds instead of newlines to separate pages. */
-static bool use_form_feed = false;
+സ്ഥിതം bool use_form_feed = false;
 
 /* True means we have read the standard input. */
-static bool have_read_stdin = false;
+സ്ഥിതം bool have_read_stdin = false;
 
 /* True means the -a flag has been given. */
-static bool print_across_flag = false;
+സ്ഥിതം bool print_across_flag = false;
 
 /* True means we're printing one file in multiple (>1) downward columns. */
-static bool storing_columns = true;
+സ്ഥിതം bool storing_columns = true;
 
 /* (-b) True means balance columns on the last page as Sys V does. */
 /* That's no longer an independent option. With storing_columns = true
    balance_columns = true is used too (s. function init_parameters).
    We get a consistent formulation with "FF set by hand" in input files. */
-static bool balance_columns = false;
+സ്ഥിതം bool balance_columns = false;
 
 /* (-l) Number of lines on a page, including header and footer lines. */
-static int lines_per_page = 66;
+സ്ഥിതം പൂർണ്ണസംഖ്യ വരികൾ_per_page = 66;
 
 /* Number of lines in the header and footer can be reset to 0 using
    the -t flag. */
-enum { lines_per_header = 5 };
-static int lines_per_body;
-enum { lines_per_footer = 5 };
+എണ്ണൽ { വരികൾ_per_header = 5 };
+സ്ഥിതം പൂർണ്ണസംഖ്യ വരികൾ_per_body;
+എണ്ണൽ { വരികൾ_per_footer = 5 };
 
 /* (-w|-W) Width in characters of the page.  Does not include the width of
    the margin. */
-static int chars_per_line = 72;
+സ്ഥിതം പൂർണ്ണസംഖ്യ chars_per_വരി = 72;
 
 /* (-w|W) True means we truncate lines longer than chars_per_column. */
-static bool truncate_lines = false;
+സ്ഥിതം bool truncate_വരികൾ = false;
 
 /* (-J) True means we join lines without any line truncation. -J
    dominates -w option. */
-static bool join_lines = false;
+സ്ഥിതം bool join_വരികൾ = false;
 
 /* Number of characters in a column.  Based on col_sep_length and
    page width. */
-static int chars_per_column;
+സ്ഥിതം പൂർണ്ണസംഖ്യ chars_per_column;
 
 /* (-e) True means convert tabs to spaces on input. */
-static bool untabify_input = false;
+സ്ഥിതം bool untabify_നിവേശം = false;
 
 /* (-e) The input tab character. */
-static char input_tab_char = '\t';
+സ്ഥിതം അക്ഷരം നിവേശം_tab_char = '\t';
 
 /* (-e) Tabstops are at chars_per_tab, 2*chars_per_tab, 3*chars_per_tab, ...
    where the leftmost column is 1. */
-static int chars_per_input_tab = 8;
+സ്ഥിതം പൂർണ്ണസംഖ്യ chars_per_നിവേശം_tab = 8;
 
 /* (-i) True means convert spaces to tabs on output. */
-static bool tabify_output = false;
+സ്ഥിതം bool tabify_output = false;
 
 /* (-i) The output tab character. */
-static char output_tab_char = '\t';
+സ്ഥിതം അക്ഷരം output_tab_char = '\t';
 
 /* (-i) The width of the output tab. */
-static int chars_per_output_tab = 8;
+സ്ഥിതം പൂർണ്ണസംഖ്യ chars_per_output_tab = 8;
 
 /* Keeps track of pending white space.  When we hit a nonspace
    character after some whitespace, we print whitespace, tabbing
    if necessary to get to output_position + spaces_not_printed. */
-static int spaces_not_printed;
+സ്ഥിതം പൂർണ്ണസംഖ്യ spaces_not_printed;
 
 /* (-o) Number of spaces in the left margin (tabs used when possible). */
-static int chars_per_margin = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ chars_per_margin = 0;
 
 /* Position where the next character will fall.
    Leftmost position is 0 + chars_per_margin.
    Rightmost position is chars_per_margin + chars_per_line - 1.
    This is important for converting spaces to tabs on output. */
-static int output_position;
+സ്ഥിതം പൂർണ്ണസംഖ്യ output_position;
 
 /* Horizontal position relative to the current file.
    (output_position depends on where we are on the page;
    input_position depends on where we are in the file.)
    Important for converting tabs to spaces on input. */
-static int input_position;
+സ്ഥിതം പൂർണ്ണസംഖ്യ നിവേശം_position;
 
 /* True if there were any failed opens so we can exit with nonzero
    status.  */
-static bool failed_opens = false;
+സ്ഥിതം bool failed_opens = false;
 
 /* The number of spaces taken up if we print a tab character with width
    c_ from position h_. */
@@ -604,18 +604,18 @@ static bool failed_opens = false;
 #define POS_AFTER_TAB(c_, h_) ((h_) + TAB_WIDTH (c_, h_))
 
 /* (-NNN) Number of columns of text to print. */
-static int columns = 1;
+സ്ഥിതം പൂർണ്ണസംഖ്യ columns = 1;
 
 /* (+NNN:MMM) Page numbers on which to begin and stop printing.
    first_page_number = 0  will be used to check input only. */
-static uintmax_t first_page_number = 0;
-static uintmax_t last_page_number = UINTMAX_MAX;
+സ്ഥിതം uintmax_t first_page_സംഖ്യ = 0;
+സ്ഥിതം uintmax_t last_page_സംഖ്യ = UINTMAX_MAX;
 
 /* Number of files open (not closed, not on hold). */
-static int files_ready_to_read = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ files_ready_to_read = 0;
 
 /* Current page number.  Displayed in header. */
-static uintmax_t page_number;
+സ്ഥിതം uintmax_t page_സംഖ്യ;
 
 /* Current line number.  Displayed when -n flag is specified.
 
@@ -630,148 +630,148 @@ static uintmax_t page_number;
    Otherwise, line numbering is as follows:
    1    foo     3       goo     5       too
    2    moo     4       hoo     6       zoo */
-static int line_number;
+സ്ഥിതം പൂർണ്ണസംഖ്യ വരി_സംഖ്യ;
 
 /* (-n) True means lines should be preceded by numbers. */
-static bool numbered_lines = false;
+സ്ഥിതം bool numbered_വരികൾ = false;
 
 /* (-n) Character which follows each line number. */
-static char number_separator = '\t';
+സ്ഥിതം അക്ഷരം സംഖ്യ_separator = '\t';
 
 /* (-n) line counting starts with 1st line of input file (not with 1st
    line of 1st page printed). */
-static int line_count = 1;
+സ്ഥിതം പൂർണ്ണസംഖ്യ വരി_എണ്ണം = 1;
 
 /* (-n) True means counting of skipped lines starts with 1st line of
    input file. False means -N option is used in addition, counting of
    skipped lines not required. */
-static bool skip_count = true;
+സ്ഥിതം bool skip_എണ്ണം = true;
 
 /* (-N) Counting starts with start_line_number = NUMBER at 1st line of
    first page printed, usually not 1st page of input file. */
-static int start_line_num = 1;
+സ്ഥിതം പൂർണ്ണസംഖ്യ start_വരി_അക്കം = 1;
 
 /* (-n) Width in characters of a line number. */
-static int chars_per_number = 5;
+സ്ഥിതം പൂർണ്ണസംഖ്യ chars_per_സംഖ്യ = 5;
 
 /* Used when widening the first column to accommodate numbers -- only
    needed when printing files in parallel.  Includes width of both the
    number and the number_separator. */
-static int number_width;
+സ്ഥിതം പൂർണ്ണസംഖ്യ സംഖ്യ_width;
 
 /* Buffer sprintf uses to format a line number. */
-static char *number_buff;
+സ്ഥിതം അക്ഷരം *സംഖ്യ_buff;
 
 /* (-v) True means nonprintable characters are printed as escape sequences.
    control-g becomes \007. */
-static bool use_esc_sequence = false;
+സ്ഥിതം bool use_esc_sequence = false;
 
 /* (-c) True means nonprintable characters are printed as control prefixes.
    control-g becomes ^G. */
-static bool use_cntrl_prefix = false;
+സ്ഥിതം bool use_cntrl_prefix = false;
 
 /* (-d) True means output is double spaced. */
-static bool double_space = false;
+സ്ഥിതം bool double_space = false;
 
 /* Number of files opened initially in init_files.  Should be 1
    unless we're printing multiple files in parallel. */
-static int total_files = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ total_files = 0;
 
 /* (-r) True means don't complain if we can't open a file. */
-static bool ignore_failed_opens = false;
+സ്ഥിതം bool ignore_failed_opens = false;
 
 /* (-S) True means we separate columns with a specified string.
    -S option does not affect line truncation nor column alignment. */
-static bool use_col_separator = false;
+സ്ഥിതം bool use_col_separator = false;
 
 /* String used to separate columns if the -S option has been specified.
    Default without -S but together with one of the column options
    -a|COLUMN|-m is a 'space' and with the -J option a 'tab'. */
-static char const *col_sep_string = "";
-static int col_sep_length = 0;
-static char *column_separator = (char *) " ";
-static char *line_separator = (char *) "\t";
+സ്ഥിതം അക്ഷരം സ്ഥിരം *col_sep_string = "";
+സ്ഥിതം പൂർണ്ണസംഖ്യ col_sep_length = 0;
+സ്ഥിതം അക്ഷരം *column_separator = (അക്ഷരം *) " ";
+സ്ഥിതം അക്ഷരം *വരി_separator = (അക്ഷരം *) "\t";
 
 /* Number of separator characters waiting to be printed as soon as we
    know that we have any input remaining to be printed. */
-static int separators_not_printed;
+സ്ഥിതം പൂർണ്ണസംഖ്യ separators_not_printed;
 
 /* Position we need to pad to, as soon as we know that we have input
    remaining to be printed. */
-static int padding_not_printed;
+സ്ഥിതം പൂർണ്ണസംഖ്യ padding_not_printed;
 
 /* True means we should pad the end of the page.  Remains false until we
    know we have a page to print. */
-static bool pad_vertically;
+സ്ഥിതം bool pad_vertically;
 
 /* (-h) String of characters used in place of the filename in the header. */
-static char *custom_header;
+സ്ഥിതം അക്ഷരം *custom_header;
 
 /* (-D) Date format for the header.  */
-static char const *date_format;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *date_format;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+സ്ഥിതം timezone_t localtz;
 
 /* Date and file name for the header.  */
-static char *date_text;
-static char const *file_text;
+സ്ഥിതം അക്ഷരം *date_text;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *file_text;
 
 /* Output columns available, not counting the date and file name.  */
-static int header_width_available;
+സ്ഥിതം പൂർണ്ണസംഖ്യ header_width_available;
 
-static char *clump_buff;
+സ്ഥിതം അക്ഷരം *clump_buff;
 
 /* True means we read the line no. lines_per_body in skip_read
    called by skip_to_page. That variable controls the coincidence of a
    "FF set by hand" and "full_page_printed", see above the definition of
    structure COLUMN. */
-static bool last_line = false;
+സ്ഥിതം bool last_വരി = false;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   COLUMNS_OPTION = CHAR_MAX + 1,
   PAGES_OPTION
 };
 
-static char const short_options[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം short_options[] =
   "-0123456789D:FJN:S::TW:abcde::fh:i::l:mn::o:rs::tvw:";
 
-static struct option const long_options[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
 {
-  {"pages", required_argument, NULL, PAGES_OPTION},
-  {"columns", required_argument, NULL, COLUMNS_OPTION},
-  {"across", no_argument, NULL, 'a'},
-  {"show-control-chars", no_argument, NULL, 'c'},
-  {"double-space", no_argument, NULL, 'd'},
-  {"date-format", required_argument, NULL, 'D'},
-  {"expand-tabs", optional_argument, NULL, 'e'},
-  {"form-feed", no_argument, NULL, 'f'},
-  {"header", required_argument, NULL, 'h'},
-  {"output-tabs", optional_argument, NULL, 'i'},
-  {"join-lines", no_argument, NULL, 'J'},
-  {"length", required_argument, NULL, 'l'},
-  {"merge", no_argument, NULL, 'm'},
-  {"number-lines", optional_argument, NULL, 'n'},
-  {"first-line-number", required_argument, NULL, 'N'},
-  {"indent", required_argument, NULL, 'o'},
-  {"no-file-warnings", no_argument, NULL, 'r'},
-  {"separator", optional_argument, NULL, 's'},
-  {"sep-string", optional_argument, NULL, 'S'},
-  {"omit-header", no_argument, NULL, 't'},
-  {"omit-pagination", no_argument, NULL, 'T'},
-  {"show-nonprinting", no_argument, NULL, 'v'},
-  {"width", required_argument, NULL, 'w'},
-  {"page-width", required_argument, NULL, 'W'},
+  {"pages", required_argument, ശൂന്യ, PAGES_OPTION},
+  {"columns", required_argument, ശൂന്യ, COLUMNS_OPTION},
+  {"across", no_argument, ശൂന്യ, 'a'},
+  {"show-control-chars", no_argument, ശൂന്യ, 'c'},
+  {"double-space", no_argument, ശൂന്യ, 'd'},
+  {"date-format", required_argument, ശൂന്യ, 'D'},
+  {"expand-tabs", optional_argument, ശൂന്യ, 'e'},
+  {"form-feed", no_argument, ശൂന്യ, 'f'},
+  {"header", required_argument, ശൂന്യ, 'h'},
+  {"output-tabs", optional_argument, ശൂന്യ, 'i'},
+  {"join-lines", no_argument, ശൂന്യ, 'J'},
+  {"length", required_argument, ശൂന്യ, 'l'},
+  {"merge", no_argument, ശൂന്യ, 'm'},
+  {"number-lines", optional_argument, ശൂന്യ, 'n'},
+  {"first-line-number", required_argument, ശൂന്യ, 'N'},
+  {"indent", required_argument, ശൂന്യ, 'o'},
+  {"no-file-warnings", no_argument, ശൂന്യ, 'r'},
+  {"separator", optional_argument, ശൂന്യ, 's'},
+  {"sep-string", optional_argument, ശൂന്യ, 'S'},
+  {"omit-header", no_argument, ശൂന്യ, 't'},
+  {"omit-pagination", no_argument, ശൂന്യ, 'T'},
+  {"show-nonprinting", no_argument, ശൂന്യ, 'v'},
+  {"width", required_argument, ശൂന്യ, 'w'},
+  {"page-width", required_argument, ശൂന്യ, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-static _Noreturn void
-integer_overflow (void)
+സ്ഥിതം _Noreturn ശൂന്യം
+integer_overflow (ശൂന്യം)
 {
   error (EXIT_FAILURE, 0, _("integer overflow"));
 }
@@ -780,62 +780,62 @@ integer_overflow (void)
    stored lines. */
 
 ATTRIBUTE_PURE
-static unsigned int
-cols_ready_to_print (void)
+സ്ഥിതം unsigned പൂർണ്ണസംഖ്യ
+cols_ready_to_print (ശൂന്യം)
 {
   COLUMN *q;
-  unsigned int i;
-  unsigned int n;
+  unsigned പൂർണ്ണസംഖ്യ i;
+  unsigned പൂർണ്ണസംഖ്യ n;
 
   n = 0;
-  for (q = column_vector, i = 0; i < columns; ++q, ++i)
-    if (q->status == OPEN
+  വേണ്ടി (q = column_vector, i = 0; i < columns; ++q, ++i)
+    എങ്കിൽ (q->status == OPEN
         || q->status == FF_FOUND	/* With -b: To print a header only */
-        || (storing_columns && q->lines_stored > 0 && q->lines_to_print > 0))
+        || (storing_columns && q->വരികൾ_stored > 0 && q->വരികൾ_to_print > 0))
       ++n;
-  return n;
+  തിരികെ n;
 }
 
 /* Estimate first_ / last_page_number
    using option +FIRST_PAGE:LAST_PAGE */
 
-static bool
-first_last_page (int oi, char c, char const *pages)
+സ്ഥിതം bool
+first_last_page (പൂർണ്ണസംഖ്യ oi, അക്ഷരം c, അക്ഷരം സ്ഥിരം *pages)
 {
-  char *p;
+  അക്ഷരം *p;
   uintmax_t first;
   uintmax_t last = UINTMAX_MAX;
   strtol_error err = xstrtoumax (pages, &p, 10, &first, "");
-  if (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
+  എങ്കിൽ (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
     xstrtol_fatal (err, oi, c, long_options, pages);
 
-  if (p == pages || !first)
-    return false;
+  എങ്കിൽ (p == pages || !first)
+    തിരികെ false;
 
-  if (*p == ':')
+  എങ്കിൽ (*p == ':')
     {
-      char const *p1 = p + 1;
+      അക്ഷരം സ്ഥിരം *p1 = p + 1;
       err = xstrtoumax (p1, &p, 10, &last, "");
-      if (err != LONGINT_OK)
+      എങ്കിൽ (err != LONGINT_OK)
         xstrtol_fatal (err, oi, c, long_options, pages);
-      if (p1 == p || last < first)
-        return false;
+      എങ്കിൽ (p1 == p || last < first)
+        തിരികെ false;
     }
 
-  if (*p)
-    return false;
+  എങ്കിൽ (*p)
+    തിരികെ false;
 
-  first_page_number = first;
-  last_page_number = last;
-  return true;
+  first_page_സംഖ്യ = first;
+  last_page_സംഖ്യ = last;
+  തിരികെ true;
 }
 
 /* Parse column count string S, and if it's valid (1 or larger and
    within range of the type of 'columns') set the global variables
    columns and explicit_columns.  Otherwise, exit with a diagnostic.  */
 
-static void
-parse_column_count (char const *s)
+സ്ഥിതം ശൂന്യം
+parse_column_എണ്ണം (അക്ഷരം സ്ഥിരം *s)
 {
   columns = getoptnum (s, 1, _("invalid number of columns"));
   explicit_columns = true;
@@ -843,27 +843,27 @@ parse_column_count (char const *s)
 
 /* Estimate length of col_sep_string with option -S.  */
 
-static void
-separator_string (char const *optarg_S)
+സ്ഥിതം ശൂന്യം
+separator_string (അക്ഷരം സ്ഥിരം *optarg_S)
 {
   size_t len = strlen (optarg_S);
-  if (INT_MAX < len)
+  എങ്കിൽ (INT_MAX < len)
     integer_overflow ();
   col_sep_length = len;
   col_sep_string = optarg_S;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  unsigned int n_files;
+  unsigned പൂർണ്ണസംഖ്യ n_files;
   bool old_options = false;
   bool old_w = false;
   bool old_s = false;
-  char **file_names;
+  അക്ഷരം **file_names;
 
   /* Accumulate the digits of old-style options like -99.  */
-  char *column_count_string = NULL;
+  അക്ഷരം *column_എണ്ണം_string = ശൂന്യ;
   idx_t n_digits = 0;
   idx_t n_alloc = 0;
 
@@ -877,189 +877,189 @@ main (int argc, char **argv)
 
   n_files = 0;
   file_names = (argc > 1
-                ? xnmalloc (argc - 1, sizeof (char *))
-                : NULL);
+                ? xnmalloc (argc - 1, വലുപ്പം (അക്ഷരം *))
+                : ശൂന്യ);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      പൂർണ്ണസംഖ്യ oi = -1;
+      പൂർണ്ണസംഖ്യ c = getopt_long (argc, argv, short_options, long_options, &oi);
+      എങ്കിൽ (c == -1)
+        നിർത്തുക;
 
-      if (c_isdigit (c))
+      എങ്കിൽ (c_isdigit (c))
         {
           /* Accumulate column-count digits specified via old-style options. */
-          if (n_digits + 1 >= n_alloc)
-            column_count_string = xpalloc (column_count_string, &n_alloc, 2, -1,
-                                           sizeof *column_count_string);
-          column_count_string[n_digits++] = c;
-          column_count_string[n_digits] = '\0';
-          continue;
+          എങ്കിൽ (n_digits + 1 >= n_alloc)
+            column_എണ്ണം_string = xpalloc (column_എണ്ണം_string, &n_alloc, 2, -1,
+                                           വലുപ്പം *column_എണ്ണം_string);
+          column_എണ്ണം_string[n_digits++] = c;
+          column_എണ്ണം_string[n_digits] = '\0';
+          തുടരുക;
         }
 
       n_digits = 0;
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 1:			/* Non-option argument. */
+        അവസ്ഥ 1:			/* Non-option argument. */
           /* long option --page dominates old '+FIRST_PAGE ...'.  */
-          if (! (first_page_number == 0
+          എങ്കിൽ (! (first_page_സംഖ്യ == 0
                  && *optarg == '+' && first_last_page (-2, '+', optarg + 1)))
             file_names[n_files++] = optarg;
-          break;
+          നിർത്തുക;
 
-        case PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
+        അവസ്ഥ PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
           {			/* dominates old opt +... */
-            if (! optarg)
+            എങ്കിൽ (! optarg)
               error (EXIT_FAILURE, 0,
                      _("'--pages=FIRST_PAGE[:LAST_PAGE]' missing argument"));
-            else if (! first_last_page (oi, 0, optarg))
+            അല്ലെങ്കിൽ എങ്കിൽ (! first_last_page (oi, 0, optarg))
               error (EXIT_FAILURE, 0, _("invalid page range %s"),
                      quote (optarg));
-            break;
+            നിർത്തുക;
           }
 
-        case COLUMNS_OPTION:	/* --columns=COLS */
+        അവസ്ഥ COLUMNS_OPTION:	/* --columns=COLS */
           {
-            parse_column_count (optarg);
+            parse_column_എണ്ണം (optarg);
 
             /* If there was a prior column count specified via the
                short-named option syntax, e.g., -9, ensure that this
                long-name-specified value overrides it.  */
-            free (column_count_string);
-            column_count_string = NULL;
+            സ്വതന്ത്രം (column_എണ്ണം_string);
+            column_എണ്ണം_string = ശൂന്യ;
             n_alloc = 0;
-            break;
+            നിർത്തുക;
           }
 
-        case 'a':
+        അവസ്ഥ 'a':
           print_across_flag = true;
           storing_columns = false;
-          break;
-        case 'b':
+          നിർത്തുക;
+        അവസ്ഥ 'b':
           balance_columns = true;
-          break;
-        case 'c':
+          നിർത്തുക;
+        അവസ്ഥ 'c':
           use_cntrl_prefix = true;
-          break;
-        case 'd':
+          നിർത്തുക;
+        അവസ്ഥ 'd':
           double_space = true;
-          break;
-        case 'D':
+          നിർത്തുക;
+        അവസ്ഥ 'D':
           date_format = optarg;
-          break;
-        case 'e':
-          if (optarg)
-            getoptarg (optarg, 'e', &input_tab_char,
-                       &chars_per_input_tab);
+          നിർത്തുക;
+        അവസ്ഥ 'e':
+          എങ്കിൽ (optarg)
+            getoptarg (optarg, 'e', &നിവേശം_tab_char,
+                       &chars_per_നിവേശം_tab);
           /* Could check tab width > 0. */
-          untabify_input = true;
-          break;
-        case 'f':
-        case 'F':
+          untabify_നിവേശം = true;
+          നിർത്തുക;
+        അവസ്ഥ 'f':
+        അവസ്ഥ 'F':
           use_form_feed = true;
-          break;
-        case 'h':
+          നിർത്തുക;
+        അവസ്ഥ 'h':
           custom_header = optarg;
-          break;
-        case 'i':
-          if (optarg)
+          നിർത്തുക;
+        അവസ്ഥ 'i':
+          എങ്കിൽ (optarg)
             getoptarg (optarg, 'i', &output_tab_char,
                        &chars_per_output_tab);
           /* Could check tab width > 0. */
           tabify_output = true;
-          break;
-        case 'J':
-          join_lines = true;
-          break;
-        case 'l':
-          lines_per_page
+          നിർത്തുക;
+        അവസ്ഥ 'J':
+          join_വരികൾ = true;
+          നിർത്തുക;
+        അവസ്ഥ 'l':
+          വരികൾ_per_page
             = getoptnum (optarg, 1,
                          _("'-l PAGE_LENGTH' invalid number of lines"));
-          break;
-        case 'm':
+          നിർത്തുക;
+        അവസ്ഥ 'm':
           parallel_files = true;
           storing_columns = false;
-          break;
-        case 'n':
-          numbered_lines = true;
-          if (optarg)
-            getoptarg (optarg, 'n', &number_separator,
-                       &chars_per_number);
-          break;
-        case 'N':
-          skip_count = false;
-          start_line_num
+          നിർത്തുക;
+        അവസ്ഥ 'n':
+          numbered_വരികൾ = true;
+          എങ്കിൽ (optarg)
+            getoptarg (optarg, 'n', &സംഖ്യ_separator,
+                       &chars_per_സംഖ്യ);
+          നിർത്തുക;
+        അവസ്ഥ 'N':
+          skip_എണ്ണം = false;
+          start_വരി_അക്കം
             = getoptnum (optarg, INT_MIN,
                          _("'-N NUMBER' invalid starting line number"));
-          break;
-        case 'o':
+          നിർത്തുക;
+        അവസ്ഥ 'o':
           chars_per_margin = getoptnum (optarg, 0,
                                         _("'-o MARGIN' invalid line offset"));
-          break;
-        case 'r':
+          നിർത്തുക;
+        അവസ്ഥ 'r':
           ignore_failed_opens = true;
-          break;
-        case 's':
+          നിർത്തുക;
+        അവസ്ഥ 's':
           old_options = true;
           old_s = true;
-          if (!use_col_separator && optarg)
+          എങ്കിൽ (!use_col_separator && optarg)
             separator_string (optarg);
-          break;
-        case 'S':
+          നിർത്തുക;
+        അവസ്ഥ 'S':
           old_s = false;
           /* Reset an additional input of -s, -S dominates -s */
           col_sep_string = "";
           col_sep_length = 0;
           use_col_separator = true;
-          if (optarg)
+          എങ്കിൽ (optarg)
             separator_string (optarg);
-          break;
-        case 't':
+          നിർത്തുക;
+        അവസ്ഥ 't':
           extremities = false;
           keep_FF = true;
-          break;
-        case 'T':
+          നിർത്തുക;
+        അവസ്ഥ 'T':
           extremities = false;
           keep_FF = false;
-          break;
-        case 'v':
+          നിർത്തുക;
+        അവസ്ഥ 'v':
           use_esc_sequence = true;
-          break;
-        case 'w':
+          നിർത്തുക;
+        അവസ്ഥ 'w':
           old_options = true;
           old_w = true;
           {
-            int tmp_cpl
+            പൂർണ്ണസംഖ്യ tmp_cpl
               = getoptnum (optarg, 1,
                            _("'-w PAGE_WIDTH' invalid number of characters"));
-            if (! truncate_lines)
-              chars_per_line = tmp_cpl;
+            എങ്കിൽ (! truncate_വരികൾ)
+              chars_per_വരി = tmp_cpl;
           }
-          break;
-        case 'W':
+          നിർത്തുക;
+        അവസ്ഥ 'W':
           old_w = false;			/* dominates -w */
-          truncate_lines = true;
-          chars_per_line
+          truncate_വരികൾ = true;
+          chars_per_വരി
             = getoptnum (optarg, 1,
                          _("'-W PAGE_WIDTH' invalid number of characters"));
-          break;
+          നിർത്തുക;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
-          break;
+          നിർത്തുക;
         }
     }
 
-  if (column_count_string)
+  എങ്കിൽ (column_എണ്ണം_string)
     {
-      parse_column_count (column_count_string);
-      free (column_count_string);
+      parse_column_എണ്ണം (column_എണ്ണം_string);
+      സ്വതന്ത്രം (column_എണ്ണം_string);
     }
 
-  if (! date_format)
+  എങ്കിൽ (! date_format)
     date_format = (getenv ("POSIXLY_CORRECT") && !hard_locale (LC_TIME)
                    ? "%b %e %H:%M %Y"
                    : "%Y-%m-%d %H:%M");
@@ -1067,14 +1067,14 @@ main (int argc, char **argv)
   localtz = tzalloc (getenv ("TZ"));
 
   /* Now we can set a reasonable initial value: */
-  if (first_page_number == 0)
-    first_page_number = 1;
+  എങ്കിൽ (first_page_സംഖ്യ == 0)
+    first_page_സംഖ്യ = 1;
 
-  if (parallel_files && explicit_columns)
+  എങ്കിൽ (parallel_files && explicit_columns)
     error (EXIT_FAILURE, 0,
            _("cannot specify number of columns when printing in parallel"));
 
-  if (parallel_files && print_across_flag)
+  എങ്കിൽ (parallel_files && print_across_flag)
     error (EXIT_FAILURE, 0,
            _("cannot specify both printing across and printing in parallel"));
 
@@ -1082,39 +1082,39 @@ main (int argc, char **argv)
    To meet downward compatibility with other UNIX pr utilities
    and some POSIX specifications. */
 
-  if (old_options)
+  എങ്കിൽ (old_options)
     {
-      if (old_w)
+      എങ്കിൽ (old_w)
         {
-          if (parallel_files || explicit_columns)
+          എങ്കിൽ (parallel_files || explicit_columns)
             {
               /* activate -W */
-              truncate_lines = true;
-              if (old_s)
+              truncate_വരികൾ = true;
+              എങ്കിൽ (old_s)
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
                 use_col_separator = true;
             }
-          else
+          അല്ലെങ്കിൽ
             /* old -w sets width with columns only
                activate -J */
-            join_lines = true;
+            join_വരികൾ = true;
         }
-      else if (!use_col_separator)
+      അല്ലെങ്കിൽ എങ്കിൽ (!use_col_separator)
         {
           /* No -S option read */
-          if (old_s && (parallel_files || explicit_columns))
+          എങ്കിൽ (old_s && (parallel_files || explicit_columns))
             {
-              if (!truncate_lines)
+              എങ്കിൽ (!truncate_വരികൾ)
                 {
                   /* old -s (without -w and -W) annuls column alignment,
                   uses fields, activate -J */
-                  join_lines = true;
-                  if (col_sep_length > 0)
+                  join_വരികൾ = true;
+                  എങ്കിൽ (col_sep_length > 0)
                     /* activate -S */
                     use_col_separator = true;
                 }
-              else
+              അല്ലെങ്കിൽ
                 /* with -W */
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
@@ -1123,40 +1123,40 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; optind++)
+  വേണ്ടി (; optind < argc; optind++)
     {
       file_names[n_files++] = argv[optind];
     }
 
-  if (n_files == 0)
+  എങ്കിൽ (n_files == 0)
     {
       /* No file arguments specified;  read from standard input.  */
-      print_files (0, NULL);
+      print_files (0, ശൂന്യ);
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (parallel_files)
+      എങ്കിൽ (parallel_files)
         print_files (n_files, file_names);
-      else
+      അല്ലെങ്കിൽ
         {
-          for (unsigned int i = 0; i < n_files; i++)
+          വേണ്ടി (unsigned പൂർണ്ണസംഖ്യ i = 0; i < n_files; i++)
             print_files (1, &file_names[i]);
         }
     }
 
   cleanup ();
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  എങ്കിൽ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
   main_exit (failed_opens ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
 /* Parse numeric arguments, ensuring MIN <= number <= INT_MAX.  */
 
-static int
-getoptnum (char const *n_str, int min, char const *err)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+getoptnum (അക്ഷരം സ്ഥിരം *n_str, പൂർണ്ണസംഖ്യ min, അക്ഷരം സ്ഥിരം *err)
 {
-  return xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
+  തിരികെ xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
                      min <= 0 ? 0 : XTOINT_MIN_RANGE);
 }
 
@@ -1166,82 +1166,82 @@ getoptnum (char const *n_str, int min, char const *err)
    separator, and k is the optional width of the field used when printing
    a number. */
 
-static void
-getoptarg (char *arg, char switch_char, char *character, int *number)
+സ്ഥിതം ശൂന്യം
+getoptarg (അക്ഷരം *arg, അക്ഷരം switch_char, അക്ഷരം *character, പൂർണ്ണസംഖ്യ *സംഖ്യ)
 {
-  char const *num = arg;
+  അക്ഷരം സ്ഥിരം *അക്കം = arg;
 
-  if (!*num)
+  എങ്കിൽ (!*അക്കം)
     {
-      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (num));
+      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (അക്കം));
       usage (EXIT_FAILURE);
     }
 
-  if (!c_isdigit (*num))
-    *character = *num++;
-  if (*num)
+  എങ്കിൽ (!c_isdigit (*അക്കം))
+    *character = *അക്കം++;
+  എങ്കിൽ (*അക്കം)
     {
-      long int tmp_long;
-      strtol_error e = xstrtol (num, NULL, 10, &tmp_long, "");
-      if (e == LONGINT_OK)
+      long പൂർണ്ണസംഖ്യ tmp_long;
+      strtol_error e = xstrtol (അക്കം, ശൂന്യ, 10, &tmp_long, "");
+      എങ്കിൽ (e == LONGINT_OK)
         {
-          if (tmp_long <= 0)
+          എങ്കിൽ (tmp_long <= 0)
             e = LONGINT_INVALID;
-          else if (INT_MAX < tmp_long)
+          അല്ലെങ്കിൽ എങ്കിൽ (INT_MAX < tmp_long)
             e = LONGINT_OVERFLOW;
         }
-      if (e != LONGINT_OK)
+      എങ്കിൽ (e != LONGINT_OK)
         {
           error (0, e & LONGINT_OVERFLOW ? EOVERFLOW : 0,
              _("'-%c' extra characters or invalid number in the argument: %s"),
                  switch_char, quote (arg));
           usage (EXIT_FAILURE);
         }
-      *number = tmp_long;
+      *സംഖ്യ = tmp_long;
     }
 }
 
 /* Set parameters related to formatting. */
 
-static void
-init_parameters (int number_of_files)
+സ്ഥിതം ശൂന്യം
+init_parameters (പൂർണ്ണസംഖ്യ സംഖ്യ_of_files)
 {
-  int chars_used_by_number = 0;
+  പൂർണ്ണസംഖ്യ chars_used_by_സംഖ്യ = 0;
 
-  lines_per_body = lines_per_page - lines_per_header - lines_per_footer;
-  if (lines_per_body <= 0)
+  വരികൾ_per_body = വരികൾ_per_page - വരികൾ_per_header - വരികൾ_per_footer;
+  എങ്കിൽ (വരികൾ_per_body <= 0)
     {
       extremities = false;
       keep_FF = true;
     }
-  if (! extremities)
-    lines_per_body = lines_per_page;
+  എങ്കിൽ (! extremities)
+    വരികൾ_per_body = വരികൾ_per_page;
 
-  if (double_space)
-    lines_per_body = MAX (1, lines_per_body / 2);
+  എങ്കിൽ (double_space)
+    വരികൾ_per_body = MAX (1, വരികൾ_per_body / 2);
 
   /* If input is stdin, cannot print parallel files.  BSD dumps core
      on this. */
-  if (number_of_files == 0)
+  എങ്കിൽ (സംഖ്യ_of_files == 0)
     parallel_files = false;
 
-  if (parallel_files)
-    columns = number_of_files;
+  എങ്കിൽ (parallel_files)
+    columns = സംഖ്യ_of_files;
 
   /* One file, multi columns down: -b option is set to get a consistent
      formulation with "FF set by hand" in input files. */
-  if (storing_columns)
+  എങ്കിൽ (storing_columns)
     balance_columns = true;
 
   /* Tabification is assumed for multiple columns. */
-  if (columns > 1)
+  എങ്കിൽ (columns > 1)
     {
-      if (!use_col_separator)
+      എങ്കിൽ (!use_col_separator)
         {
           /* Use default separator */
-          if (join_lines)
-            col_sep_string = line_separator;
-          else
+          എങ്കിൽ (join_വരികൾ)
+            col_sep_string = വരി_separator;
+          അല്ലെങ്കിൽ
             col_sep_string = column_separator;
 
           col_sep_length = 1;
@@ -1249,26 +1249,26 @@ init_parameters (int number_of_files)
         }
       /* It's rather pointless to define a TAB separator with column
          alignment */
-      else if (!join_lines && col_sep_length == 1 && *col_sep_string == '\t')
+      അല്ലെങ്കിൽ എങ്കിൽ (!join_വരികൾ && col_sep_length == 1 && *col_sep_string == '\t')
         col_sep_string = column_separator;
 
-      truncate_lines = true;
-      if (! (col_sep_length == 1 && *col_sep_string == '\t'))
-        untabify_input = true;
+      truncate_വരികൾ = true;
+      എങ്കിൽ (! (col_sep_length == 1 && *col_sep_string == '\t'))
+        untabify_നിവേശം = true;
       tabify_output = true;
     }
-  else
+  അല്ലെങ്കിൽ
     storing_columns = false;
 
   /* -J dominates -w in any case */
-  if (join_lines)
-    truncate_lines = false;
+  എങ്കിൽ (join_വരികൾ)
+    truncate_വരികൾ = false;
 
-  if (numbered_lines)
+  എങ്കിൽ (numbered_വരികൾ)
     {
-      int chars_per_default_tab = 8;
+      പൂർണ്ണസംഖ്യ chars_per_default_tab = 8;
 
-      line_count = start_line_num;
+      വരി_എണ്ണം = start_വരി_അക്കം;
 
       /* To allow input tab-expansion (-e sensitive) use:
          if (number_separator == input_tab_char)
@@ -1276,34 +1276,34 @@ init_parameters (int number_of_files)
              + TAB_WIDTH (chars_per_input_tab, chars_per_number);   */
 
       /* Estimate chars_per_text without any margin and keep it constant. */
-      if (number_separator == '\t')
-        number_width = (chars_per_number
-                        + TAB_WIDTH (chars_per_default_tab, chars_per_number));
-      else
-        number_width = chars_per_number + 1;
+      എങ്കിൽ (സംഖ്യ_separator == '\t')
+        സംഖ്യ_width = (chars_per_സംഖ്യ
+                        + TAB_WIDTH (chars_per_default_tab, chars_per_സംഖ്യ));
+      അല്ലെങ്കിൽ
+        സംഖ്യ_width = chars_per_സംഖ്യ + 1;
 
       /* The number is part of the column width unless we are
          printing files in parallel. */
-      if (parallel_files)
-        chars_used_by_number = number_width;
+      എങ്കിൽ (parallel_files)
+        chars_used_by_സംഖ്യ = സംഖ്യ_width;
     }
 
-  int sep_chars, useful_chars;
-  if (ckd_mul (&sep_chars, columns - 1, col_sep_length))
+  പൂർണ്ണസംഖ്യ sep_chars, useful_chars;
+  എങ്കിൽ (ckd_mul (&sep_chars, columns - 1, col_sep_length))
     sep_chars = INT_MAX;
-  if (ckd_sub (&useful_chars, chars_per_line - chars_used_by_number,
+  എങ്കിൽ (ckd_sub (&useful_chars, chars_per_വരി - chars_used_by_സംഖ്യ,
                sep_chars))
     useful_chars = 0;
   chars_per_column = useful_chars / columns;
 
-  if (chars_per_column < 1)
+  എങ്കിൽ (chars_per_column < 1)
     error (EXIT_FAILURE, 0, _("page width too narrow"));
 
-  if (numbered_lines)
+  എങ്കിൽ (numbered_വരികൾ)
     {
-      free (number_buff);
-      number_buff = xmalloc (MAX (chars_per_number,
-                                  INT_STRLEN_BOUND (line_number)) + 1);
+      സ്വതന്ത്രം (സംഖ്യ_buff);
+      സംഖ്യ_buff = xmalloc (MAX (chars_per_സംഖ്യ,
+                                  INT_STRLEN_BOUND (വരി_സംഖ്യ)) + 1);
     }
 
   /* Pick the maximum between the tab width and the width of an
@@ -1311,8 +1311,8 @@ init_parameters (int number_of_files)
      The width of an escape sequence (4) isn't the lower limit any longer.
      We've to use 8 as the lower limit, if we use chars_per_default_tab = 8
      to expand a tab which is not an input_tab-char. */
-  free (clump_buff);
-  clump_buff = xmalloc (MAX (8, chars_per_input_tab));
+  സ്വതന്ത്രം (clump_buff);
+  clump_buff = xmalloc (MAX (8, chars_per_നിവേശം_tab));
 }
 
 /* Open the necessary files,
@@ -1326,42 +1326,42 @@ init_parameters (int number_of_files)
    With each column/file p, p->full_page_printed is initialized,
    see also open_file.  */
 
-static bool
-init_fps (int number_of_files, char **av)
+സ്ഥിതം bool
+init_fps (പൂർണ്ണസംഖ്യ സംഖ്യ_of_files, അക്ഷരം **av)
 {
   COLUMN *p;
 
   total_files = 0;
 
-  free (column_vector);
-  column_vector = xnmalloc (columns, sizeof (COLUMN));
+  സ്വതന്ത്രം (column_vector);
+  column_vector = xnmalloc (columns, വലുപ്പം (COLUMN));
 
-  if (parallel_files)
+  എങ്കിൽ (parallel_files)
     {
-      int files_left = number_of_files;
-      for (p = column_vector; files_left--; ++p, ++av)
+      പൂർണ്ണസംഖ്യ files_ഇടത് = സംഖ്യ_of_files;
+      വേണ്ടി (p = column_vector; files_ഇടത്--; ++p, ++av)
         {
-          if (! open_file (*av, p))
+          എങ്കിൽ (! open_file (*av, p))
             {
               --p;
               --columns;
             }
         }
-      if (columns == 0)
-        return false;
+      എങ്കിൽ (columns == 0)
+        തിരികെ false;
       init_header ("", -1);
     }
-  else
+  അല്ലെങ്കിൽ
     {
       p = column_vector;
-      if (number_of_files > 0)
+      എങ്കിൽ (സംഖ്യ_of_files > 0)
         {
-          if (! open_file (*av, p))
-            return false;
+          എങ്കിൽ (! open_file (*av, p))
+            തിരികെ false;
           init_header (*av, fileno (p->fp));
-          p->lines_stored = 0;
+          p->വരികൾ_stored = 0;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           p->name = _("standard input");
           p->fp = stdin;
@@ -1370,23 +1370,23 @@ init_fps (int number_of_files, char **av)
           p->full_page_printed = false;
           ++total_files;
           init_header ("", -1);
-          p->lines_stored = 0;
+          p->വരികൾ_stored = 0;
         }
 
-      char const *firstname = p->name;
+      അക്ഷരം സ്ഥിരം *firstname = p->name;
       FILE *firstfp = p->fp;
-      int i;
-      for (i = columns - 1, ++p; i; --i, ++p)
+      പൂർണ്ണസംഖ്യ i;
+      വേണ്ടി (i = columns - 1, ++p; i; --i, ++p)
         {
           p->name = firstname;
           p->fp = firstfp;
           p->status = OPEN;
           p->full_page_printed = false;
-          p->lines_stored = 0;
+          p->വരികൾ_stored = 0;
         }
     }
   files_ready_to_read = total_files;
-  return true;
+  തിരികെ true;
 }
 
 /* Determine print_func and char_func, the functions
@@ -1395,24 +1395,24 @@ init_fps (int number_of_files, char **av)
    Determine the horizontal position desired when we begin
    printing a column (p->start_position). */
 
-static void
-init_funcs (void)
+സ്ഥിതം ശൂന്യം
+init_funcs (ശൂന്യം)
 {
-  int i, h, h_next;
+  പൂർണ്ണസംഖ്യ i, h, h_next;
   COLUMN *p;
 
   h = chars_per_margin;
 
-  if (!truncate_lines)
+  എങ്കിൽ (!truncate_വരികൾ)
     h_next = ANYWHERE;
-  else
+  അല്ലെങ്കിൽ
     {
       /* When numbering lines of parallel files, we enlarge the
          first column to accommodate the number.  Looks better than
          the Sys V approach. */
-      if (parallel_files && numbered_lines)
-        h_next = h + chars_per_column + number_width;
-      else
+      എങ്കിൽ (parallel_files && numbered_വരികൾ)
+        h_next = h + chars_per_column + സംഖ്യ_width;
+      അല്ലെങ്കിൽ
         h_next = h + chars_per_column;
     }
 
@@ -1422,35 +1422,35 @@ init_funcs (void)
 
   /* This loop takes care of all but the rightmost column. */
 
-  for (p = column_vector, i = 1; i < columns; ++p, ++i)
+  വേണ്ടി (p = column_vector, i = 1; i < columns; ++p, ++i)
     {
-      if (storing_columns)	/* One file, multi columns down. */
+      എങ്കിൽ (storing_columns)	/* One file, multi columns down. */
         {
           p->char_func = store_char;
           p->print_func = print_stored;
         }
-      else
+      അല്ലെങ്കിൽ
         /* One file, multi columns across; or parallel files.  */
         {
           p->char_func = print_char;
-          p->print_func = read_line;
+          p->print_func = read_വരി;
         }
 
       /* Number only the first column when printing files in
          parallel. */
-      p->numbered = numbered_lines && (!parallel_files || i == 1);
+      p->numbered = numbered_വരികൾ && (!parallel_files || i == 1);
       p->start_position = h;
 
       /* If we don't truncate lines, all start_positions are
          ANYWHERE, except the first column's start_position when
          using a margin. */
 
-      if (!truncate_lines)
+      എങ്കിൽ (!truncate_വരികൾ)
         {
           h = ANYWHERE;
           h_next = ANYWHERE;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           h = h_next + col_sep_length;
           h_next = h + chars_per_column;
@@ -1461,18 +1461,18 @@ init_funcs (void)
 
      Doesn't need to be stored unless we intend to balance
      columns on the last page. */
-  if (storing_columns && balance_columns)
+  എങ്കിൽ (storing_columns && balance_columns)
     {
       p->char_func = store_char;
       p->print_func = print_stored;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       p->char_func = print_char;
-      p->print_func = read_line;
+      p->print_func = read_വരി;
     }
 
-  p->numbered = numbered_lines && (!parallel_files || i == 1);
+  p->numbered = numbered_വരികൾ && (!parallel_files || i == 1);
   p->start_position = h;
 }
 
@@ -1481,32 +1481,32 @@ init_funcs (void)
    With each file p, p->full_page_printed is initialized,
    see also init_fps. */
 
-static bool
-open_file (char *name, COLUMN *p)
+സ്ഥിതം bool
+open_file (അക്ഷരം *name, COLUMN *p)
 {
-  if (streq (name, "-"))
+  എങ്കിൽ (streq (name, "-"))
     {
       p->name = _("standard input");
       p->fp = stdin;
       have_read_stdin = true;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       p->name = name;
       p->fp = fopen (name, "r");
     }
-  if (p->fp == NULL)
+  എങ്കിൽ (p->fp == ശൂന്യ)
     {
       failed_opens = true;
-      if (!ignore_failed_opens)
+      എങ്കിൽ (!ignore_failed_opens)
         error (0, errno, "%s", quotef (name));
-      return false;
+      തിരികെ false;
     }
   fadvise (p->fp, FADVISE_SEQUENTIAL);
   p->status = OPEN;
   p->full_page_printed = false;
   ++total_files;
-  return true;
+  തിരികെ true;
 }
 
 /* Close the file in P.
@@ -1514,40 +1514,40 @@ open_file (char *name, COLUMN *p)
    If we aren't dealing with multiple files in parallel, we change
    the status of all columns in the column list to reflect the close. */
 
-static void
+സ്ഥിതം ശൂന്യം
 close_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  പൂർണ്ണസംഖ്യ i;
 
-  if (p->status == CLOSED)
-    return;
+  എങ്കിൽ (p->status == CLOSED)
+    തിരികെ;
 
-  int err = errno;
-  if (!ferror (p->fp))
+  പൂർണ്ണസംഖ്യ err = errno;
+  എങ്കിൽ (!ferror (p->fp))
     err = 0;
-  if (fileno (p->fp) == STDIN_FILENO)
+  എങ്കിൽ (fileno (p->fp) == STDIN_FILENO)
     clearerr (p->fp);
-  else if (fclose (p->fp) != 0 && !err)
+  അല്ലെങ്കിൽ എങ്കിൽ (fclose (p->fp) != 0 && !err)
     err = errno;
-  if (err)
+  എങ്കിൽ (err)
     error (EXIT_FAILURE, err, "%s", quotef (p->name));
 
-  if (!parallel_files)
+  എങ്കിൽ (!parallel_files)
     {
-      for (q = column_vector, i = columns; i; ++q, --i)
+      വേണ്ടി (q = column_vector, i = columns; i; ++q, --i)
         {
           q->status = CLOSED;
-          if (q->lines_stored == 0)
+          എങ്കിൽ (q->വരികൾ_stored == 0)
             {
-              q->lines_to_print = 0;
+              q->വരികൾ_to_print = 0;
             }
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
       p->status = CLOSED;
-      p->lines_to_print = 0;
+      p->വരികൾ_to_print = 0;
     }
 
   --files_ready_to_read;
@@ -1559,49 +1559,49 @@ close_file (COLUMN *p)
    If we aren't dealing with parallel files, we must change the
    status of all columns in the column list. */
 
-static void
+സ്ഥിതം ശൂന്യം
 hold_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  പൂർണ്ണസംഖ്യ i;
 
-  if (!parallel_files)
-    for (q = column_vector, i = columns; i; ++q, --i)
+  എങ്കിൽ (!parallel_files)
+    വേണ്ടി (q = column_vector, i = columns; i; ++q, --i)
       {
-        if (storing_columns)
+        എങ്കിൽ (storing_columns)
           q->status = FF_FOUND;
-        else
+        അല്ലെങ്കിൽ
           q->status = ON_HOLD;
       }
-  else
+  അല്ലെങ്കിൽ
     p->status = ON_HOLD;
 
-  p->lines_to_print = 0;
+  p->വരികൾ_to_print = 0;
   --files_ready_to_read;
 }
 
 /* Undo hold_file -- go through the column list and change any
    ON_HOLD columns to OPEN.  Used at the end of each page. */
 
-static void
-reset_status (void)
+സ്ഥിതം ശൂന്യം
+reset_status (ശൂന്യം)
 {
-  int i = columns;
+  പൂർണ്ണസംഖ്യ i = columns;
   COLUMN *p;
 
-  for (p = column_vector; i; --i, ++p)
-    if (p->status == ON_HOLD)
+  വേണ്ടി (p = column_vector; i; --i, ++p)
+    എങ്കിൽ (p->status == ON_HOLD)
       {
         p->status = OPEN;
         files_ready_to_read++;
       }
 
-  if (storing_columns)
+  എങ്കിൽ (storing_columns)
     {
-      if (column_vector->status == CLOSED)
+      എങ്കിൽ (column_vector->status == CLOSED)
         /* We use the info to output an error message in  skip_to_page. */
         files_ready_to_read = 0;
-      else
+      അല്ലെങ്കിൽ
         files_ready_to_read = 1;
     }
 }
@@ -1615,29 +1615,29 @@ reset_status (void)
    in each column.
    Print the file(s). */
 
-static void
-print_files (int number_of_files, char **av)
+സ്ഥിതം ശൂന്യം
+print_files (പൂർണ്ണസംഖ്യ സംഖ്യ_of_files, അക്ഷരം **av)
 {
-  init_parameters (number_of_files);
-  if (! init_fps (number_of_files, av))
-    return;
-  if (storing_columns)
+  init_parameters (സംഖ്യ_of_files);
+  എങ്കിൽ (! init_fps (സംഖ്യ_of_files, av))
+    തിരികെ;
+  എങ്കിൽ (storing_columns)
     init_store_cols ();
 
-  if (first_page_number > 1)
+  എങ്കിൽ (first_page_സംഖ്യ > 1)
     {
-      if (!skip_to_page (first_page_number))
-        return;
-      else
-        page_number = first_page_number;
+      എങ്കിൽ (!skip_to_page (first_page_സംഖ്യ))
+        തിരികെ;
+      അല്ലെങ്കിൽ
+        page_സംഖ്യ = first_page_സംഖ്യ;
     }
-  else
-    page_number = 1;
+  അല്ലെങ്കിൽ
+    page_സംഖ്യ = 1;
 
   init_funcs ();
 
-  line_number = line_count;
-  while (print_page ())
+  വരി_സംഖ്യ = വരി_എണ്ണം;
+  ആകുമ്പോൾ (print_page ())
     ;
 }
 
@@ -1645,50 +1645,50 @@ print_files (int number_of_files, char **av)
    If DESC is non-negative, it is a file descriptor open to
    FILENAME for reading.  */
 
-static void
-init_header (char const *filename, int desc)
+സ്ഥിതം ശൂന്യം
+init_header (അക്ഷരം സ്ഥിരം *filename, പൂർണ്ണസംഖ്യ desc)
 {
-  char *buf = NULL;
-  struct stat st;
-  struct timespec t;
-  int ns;
-  struct tm tm;
+  അക്ഷരം *buf = ശൂന്യ;
+  ഘടന stat st;
+  ഘടന timespec t;
+  പൂർണ്ണസംഖ്യ ns;
+  ഘടന tm tm;
 
   /* If parallel files or standard input, use current date. */
-  if (streq (filename, "-"))
+  എങ്കിൽ (streq (filename, "-"))
     desc = -1;
-  if (0 <= desc && fstat (desc, &st) == 0)
+  എങ്കിൽ (0 <= desc && fstat (desc, &st) == 0)
     t = get_stat_mtime (&st);
-  else
+  അല്ലെങ്കിൽ
     {
-      static struct timespec timespec;
-      if (! timespec.tv_sec)
+      സ്ഥിതം ഘടന timespec timespec;
+      എങ്കിൽ (! timespec.tv_sec)
         gettime (&timespec);
       t = timespec;
     }
 
   ns = t.tv_nsec;
-  if (localtime_rz (localtz, &t.tv_sec, &tm))
+  എങ്കിൽ (localtime_rz (localtz, &t.tv_sec, &tm))
     {
-      ptrdiff_t len = nstrftime (NULL, MIN (PTRDIFF_MAX, SIZE_MAX),
+      ptrdiff_t len = nstrftime (ശൂന്യ, MIN (PTRDIFF_MAX, SIZE_MAX),
                                  date_format, &tm, localtz, ns);
-      if (0 <= len)
+      എങ്കിൽ (0 <= len)
         {
           buf = ximalloc (len + 1);
           nstrftime (buf, len + 1, date_format, &tm, localtz, ns);
         }
     }
-  if (!buf)
+  എങ്കിൽ (!buf)
     {
-      char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
-      buf = xmalloc (sizeof secbuf + MAX (10, INT_BUFSIZE_BOUND (int)));
+      അക്ഷരം secbuf[INT_BUFSIZE_BOUND (intmax_t)];
+      buf = xmalloc (വലുപ്പം secbuf + MAX (10, INT_BUFSIZE_BOUND (പൂർണ്ണസംഖ്യ)));
       sprintf (buf, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
 
-  free (date_text);
+  സ്വതന്ത്രം (date_text);
   date_text = buf;
   file_text = custom_header ? custom_header : desc < 0 ? "" : filename;
-  header_width_available = (chars_per_line
+  header_width_available = (chars_per_വരി
                             - mbswidth (date_text, 0)
                             - mbswidth (file_text, 0));
 }
@@ -1703,66 +1703,66 @@ init_header (char const *filename, int desc)
    if we're reading straight from the file)
    Keep track of this total so we know when to stop printing */
 
-static void
-init_page (void)
+സ്ഥിതം ശൂന്യം
+init_page (ശൂന്യം)
 {
-  int j;
+  പൂർണ്ണസംഖ്യ j;
   COLUMN *p;
 
-  if (storing_columns)
+  എങ്കിൽ (storing_columns)
     {
       store_columns ();
-      for (j = columns - 1, p = column_vector; j; --j, ++p)
+      വേണ്ടി (j = columns - 1, p = column_vector; j; --j, ++p)
         {
-          p->lines_to_print = p->lines_stored;
+          p->വരികൾ_to_print = p->വരികൾ_stored;
         }
 
       /* Last column. */
-      if (balance_columns)
+      എങ്കിൽ (balance_columns)
         {
-          p->lines_to_print = p->lines_stored;
+          p->വരികൾ_to_print = p->വരികൾ_stored;
         }
       /* Since we're not balancing columns, we don't need to store
          the rightmost column.   Read it straight from the file. */
-      else
+      അല്ലെങ്കിൽ
         {
-          if (p->status == OPEN)
+          എങ്കിൽ (p->status == OPEN)
             {
-              p->lines_to_print = lines_per_body;
+              p->വരികൾ_to_print = വരികൾ_per_body;
             }
-          else
-            p->lines_to_print = 0;
+          അല്ലെങ്കിൽ
+            p->വരികൾ_to_print = 0;
         }
     }
-  else
-    for (j = columns, p = column_vector; j; --j, ++p)
-      if (p->status == OPEN)
+  അല്ലെങ്കിൽ
+    വേണ്ടി (j = columns, p = column_vector; j; --j, ++p)
+      എങ്കിൽ (p->status == OPEN)
         {
-          p->lines_to_print = lines_per_body;
+          p->വരികൾ_to_print = വരികൾ_per_body;
         }
-      else
-        p->lines_to_print = 0;
+      അല്ലെങ്കിൽ
+        p->വരികൾ_to_print = 0;
 }
 
 /* Align empty columns and print separators.
    Empty columns will be formed by files with status ON_HOLD or CLOSED
    when printing multiple files in parallel. */
 
-static void
+സ്ഥിതം ശൂന്യം
 align_column (COLUMN *p)
 {
   padding_not_printed = p->start_position;
-  if (col_sep_length < padding_not_printed)
+  എങ്കിൽ (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  എങ്കിൽ (use_col_separator)
     print_sep_string ();
 
-  if (p->numbered)
-    add_line_number (p);
+  എങ്കിൽ (p->numbered)
+    add_വരി_സംഖ്യ (p);
 }
 
 /* Print one page.
@@ -1776,11 +1776,11 @@ align_column (COLUMN *p)
    reset the status of all files -- any files which where on hold because
    of formfeeds are now put back into the lineup. */
 
-static bool
-print_page (void)
+സ്ഥിതം bool
+print_page (ശൂന്യം)
 {
-  int j;
-  int lines_left_on_page;
+  പൂർണ്ണസംഖ്യ j;
+  പൂർണ്ണസംഖ്യ വരികൾ_ഇടത്_on_page;
   COLUMN *p;
 
   /* Used as an accumulator (with | operator) of successive values of
@@ -1794,111 +1794,111 @@ print_page (void)
 
   init_page ();
 
-  if (cols_ready_to_print () == 0)
-    return false;
+  എങ്കിൽ (cols_ready_to_print () == 0)
+    തിരികെ false;
 
-  if (extremities)
+  എങ്കിൽ (extremities)
     print_a_header = true;
 
   /* Don't pad unless we know a page was printed. */
   pad_vertically = false;
   pv = false;
 
-  lines_left_on_page = lines_per_body;
-  if (double_space)
-    lines_left_on_page *= 2;
+  വരികൾ_ഇടത്_on_page = വരികൾ_per_body;
+  എങ്കിൽ (double_space)
+    വരികൾ_ഇടത്_on_page *= 2;
 
-  while (lines_left_on_page > 0 && cols_ready_to_print () > 0)
+  ആകുമ്പോൾ (വരികൾ_ഇടത്_on_page > 0 && cols_ready_to_print () > 0)
     {
       output_position = 0;
       spaces_not_printed = 0;
       separators_not_printed = 0;
       pad_vertically = false;
       align_empty_cols = false;
-      empty_line = true;
+      empty_വരി = true;
 
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      വേണ്ടി (j = 1, p = column_vector; j <= columns; ++j, ++p)
         {
-          input_position = 0;
-          if (p->lines_to_print > 0 || p->status == FF_FOUND)
+          നിവേശം_position = 0;
+          എങ്കിൽ (p->വരികൾ_to_print > 0 || p->status == FF_FOUND)
             {
               FF_only = false;
               padding_not_printed = p->start_position;
-              if (!(p->print_func) (p))
-                read_rest_of_line (p);
+              എങ്കിൽ (!(p->print_func) (p))
+                read_rest_of_വരി (p);
               pv |= pad_vertically;
 
-              --p->lines_to_print;
-              if (p->lines_to_print <= 0)
+              --p->വരികൾ_to_print;
+              എങ്കിൽ (p->വരികൾ_to_print <= 0)
                 {
-                  if (cols_ready_to_print () == 0)
-                    break;
+                  എങ്കിൽ (cols_ready_to_print () == 0)
+                    നിർത്തുക;
                 }
 
               /* File p changed its status to ON_HOLD or CLOSED */
-              if (parallel_files && p->status != OPEN)
+              എങ്കിൽ (parallel_files && p->status != OPEN)
                 {
-                  if (empty_line)
+                  എങ്കിൽ (empty_വരി)
                     align_empty_cols = true;
-                  else if (p->status == CLOSED
+                  അല്ലെങ്കിൽ എങ്കിൽ (p->status == CLOSED
                            || (p->status == ON_HOLD && FF_only))
                     align_column (p);
                 }
             }
-          else if (parallel_files)
+          അല്ലെങ്കിൽ എങ്കിൽ (parallel_files)
             {
               /* File status ON_HOLD or CLOSED */
-              if (empty_line)
+              എങ്കിൽ (empty_വരി)
                 align_empty_cols = true;
-              else
+              അല്ലെങ്കിൽ
                 align_column (p);
             }
 
           /* We need it also with an empty column */
-          if (use_col_separator)
+          എങ്കിൽ (use_col_separator)
             ++separators_not_printed;
         }
 
-      if (pad_vertically)
+      എങ്കിൽ (pad_vertically)
         {
           putchar ('\n');
-          --lines_left_on_page;
+          --വരികൾ_ഇടത്_on_page;
         }
 
-      if (cols_ready_to_print () == 0 && !extremities)
-        break;
+      എങ്കിൽ (cols_ready_to_print () == 0 && !extremities)
+        നിർത്തുക;
 
-      if (double_space && pv)
+      എങ്കിൽ (double_space && pv)
         {
           putchar ('\n');
-          --lines_left_on_page;
+          --വരികൾ_ഇടത്_on_page;
         }
     }
 
-  if (lines_left_on_page == 0)
-    for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-      if (p->status == OPEN)
+  എങ്കിൽ (വരികൾ_ഇടത്_on_page == 0)
+    വേണ്ടി (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      എങ്കിൽ (p->status == OPEN)
         p->full_page_printed = true;
 
   pad_vertically = pv;
 
-  if (pad_vertically && extremities)
-    pad_down (lines_left_on_page + lines_per_footer);
-  else if (keep_FF && print_a_FF)
+  എങ്കിൽ (pad_vertically && extremities)
+    pad_down (വരികൾ_ഇടത്_on_page + വരികൾ_per_footer);
+  അല്ലെങ്കിൽ എങ്കിൽ (keep_FF && print_a_FF)
     {
       putchar ('\f');
       print_a_FF = false;
     }
 
-  if (ferror (stdout))
+  എങ്കിൽ (ferror (stdout))
     write_error ();
 
-  if (last_page_number < ++page_number)
-    return false;		/* Stop printing with LAST_PAGE */
+  എങ്കിൽ (last_page_സംഖ്യ < ++page_സംഖ്യ)
+    തിരികെ false;		/* Stop printing with LAST_PAGE */
 
   reset_status ();		/* Change ON_HOLD to OPEN. */
 
-  return true;			/* More pages to go. */
+  തിരികെ true;			/* More pages to go. */
 }
 
 /* Allocate space for storing columns.
@@ -1915,26 +1915,26 @@ print_page (void)
    because the last entry tells us the index of the last character,
    which we need to know in order to print the last line in buff. */
 
-static void
-init_store_cols (void)
+സ്ഥിതം ശൂന്യം
+init_store_cols (ശൂന്യം)
 {
   /* Tune this.  */
-  int total_lines, total_lines_1, chars_per_column_1, chars_if_truncate;
-  if (ckd_mul (&total_lines, lines_per_body, columns)
-      || ckd_add (&total_lines_1, total_lines, 1)
+  പൂർണ്ണസംഖ്യ total_വരികൾ, total_വരികൾ_1, chars_per_column_1, chars_if_truncate;
+  എങ്കിൽ (ckd_mul (&total_വരികൾ, വരികൾ_per_body, columns)
+      || ckd_add (&total_വരികൾ_1, total_വരികൾ, 1)
       || ckd_add (&chars_per_column_1, chars_per_column, 1)
-      || ckd_mul (&chars_if_truncate, total_lines, chars_per_column_1)
+      || ckd_mul (&chars_if_truncate, total_വരികൾ, chars_per_column_1)
       || ckd_mul (&buff_allocated, chars_if_truncate, use_col_separator + 1))
     integer_overflow ();
 
-  free (line_vector);
+  സ്വതന്ത്രം (വരി_vector);
   /* FIXME: here's where it was allocated.  */
-  line_vector = xnmalloc (total_lines_1, sizeof *line_vector);
+  വരി_vector = xnmalloc (total_വരികൾ_1, വലുപ്പം *വരി_vector);
 
-  free (end_vector);
-  end_vector = xnmalloc (total_lines, sizeof *end_vector);
+  സ്വതന്ത്രം (end_vector);
+  end_vector = xnmalloc (total_വരികൾ, വലുപ്പം *end_vector);
 
-  free (buff);
+  സ്വതന്ത്രം (buff);
   buff = ximalloc (buff_allocated);
 }
 
@@ -1950,147 +1950,147 @@ init_store_cols (void)
    buff_start is the index in buff of the first character in the
    current line. */
 
-static void
-store_columns (void)
+സ്ഥിതം ശൂന്യം
+store_columns (ശൂന്യം)
 {
-  int i, j;
-  unsigned int line = 0;
-  unsigned int buff_start;
-  int last_col;		/* The rightmost column which will be saved in buff */
+  പൂർണ്ണസംഖ്യ i, j;
+  unsigned പൂർണ്ണസംഖ്യ വരി = 0;
+  unsigned പൂർണ്ണസംഖ്യ buff_start;
+  പൂർണ്ണസംഖ്യ last_col;		/* The rightmost column which will be saved in buff */
   COLUMN *p;
 
   buff_current = 0;
   buff_start = 0;
 
-  if (balance_columns)
+  എങ്കിൽ (balance_columns)
     last_col = columns;
-  else
+  അല്ലെങ്കിൽ
     last_col = columns - 1;
 
-  for (i = 1, p = column_vector; i <= last_col; ++i, ++p)
-    p->lines_stored = 0;
+  വേണ്ടി (i = 1, p = column_vector; i <= last_col; ++i, ++p)
+    p->വരികൾ_stored = 0;
 
-  for (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
+  വേണ്ടി (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
        ++i, ++p)
     {
-      p->current_line = line;
-      for (j = lines_per_body; j && files_ready_to_read; --j)
+      p->current_വരി = വരി;
+      വേണ്ടി (j = വരികൾ_per_body; j && files_ready_to_read; --j)
 
-        if (p->status == OPEN)	/* Redundant.  Clean up. */
+        എങ്കിൽ (p->status == OPEN)	/* Redundant.  Clean up. */
           {
-            input_position = 0;
+            നിവേശം_position = 0;
 
-            if (!read_line (p))
-              read_rest_of_line (p);
+            എങ്കിൽ (!read_വരി (p))
+              read_rest_of_വരി (p);
 
-            if (p->status == OPEN
+            എങ്കിൽ (p->status == OPEN
                 || buff_start != buff_current)
               {
-                ++p->lines_stored;
-                line_vector[line] = buff_start;
-                end_vector[line++] = input_position;
+                ++p->വരികൾ_stored;
+                വരി_vector[വരി] = buff_start;
+                end_vector[വരി++] = നിവേശം_position;
                 buff_start = buff_current;
               }
           }
     }
 
   /* Keep track of the location of the last char in buff. */
-  line_vector[line] = buff_start;
+  വരി_vector[വരി] = buff_start;
 
-  if (balance_columns)
-    balance (line);
+  എങ്കിൽ (balance_columns)
+    balance (വരി);
 }
 
-static void
-balance (int total_stored)
+സ്ഥിതം ശൂന്യം
+balance (പൂർണ്ണസംഖ്യ total_stored)
 {
   COLUMN *p;
-  int i, lines;
-  int first_line = 0;
+  പൂർണ്ണസംഖ്യ i, വരികൾ;
+  പൂർണ്ണസംഖ്യ first_വരി = 0;
 
-  for (i = 1, p = column_vector; i <= columns; ++i, ++p)
+  വേണ്ടി (i = 1, p = column_vector; i <= columns; ++i, ++p)
     {
-      lines = total_stored / columns;
-      if (i <= total_stored % columns)
-        ++lines;
+      വരികൾ = total_stored / columns;
+      എങ്കിൽ (i <= total_stored % columns)
+        ++വരികൾ;
 
-      p->lines_stored = lines;
-      p->current_line = first_line;
+      p->വരികൾ_stored = വരികൾ;
+      p->current_വരി = first_വരി;
 
-      first_line += lines;
+      first_വരി += വരികൾ;
     }
 }
 
 /* Store a character in the buffer. */
 
-static void
-store_char (char c)
+സ്ഥിതം ശൂന്യം
+store_char (അക്ഷരം c)
 {
-  if (buff_current >= buff_allocated)
+  എങ്കിൽ (buff_current >= buff_allocated)
     {
       /* May be too generous. */
-      buff = xpalloc (buff, &buff_allocated, 1, -1, sizeof *buff);
+      buff = xpalloc (buff, &buff_allocated, 1, -1, വലുപ്പം *buff);
     }
   buff[buff_current++] = c;
 }
 
-static void
-add_line_number (COLUMN *p)
+സ്ഥിതം ശൂന്യം
+add_വരി_സംഖ്യ (COLUMN *p)
 {
-  int i;
-  char *s;
-  int num_width;
+  പൂർണ്ണസംഖ്യ i;
+  അക്ഷരം *s;
+  പൂർണ്ണസംഖ്യ അക്കം_width;
 
   /* Cutting off the higher-order digits is more informative than
      lower-order cut off. */
-  num_width = sprintf (number_buff, "%*d", chars_per_number, line_number);
-  line_number++;
-  s = number_buff + (num_width - chars_per_number);
-  for (i = chars_per_number; i > 0; i--)
+  അക്കം_width = sprintf (സംഖ്യ_buff, "%*d", chars_per_സംഖ്യ, വരി_സംഖ്യ);
+  വരി_സംഖ്യ++;
+  s = സംഖ്യ_buff + (അക്കം_width - chars_per_സംഖ്യ);
+  വേണ്ടി (i = chars_per_സംഖ്യ; i > 0; i--)
     (p->char_func) (*s++);
 
-  if (columns > 1)
+  എങ്കിൽ (columns > 1)
     {
       /* Tabification is assumed for multiple columns, also for n-separators,
          but 'default n-separator = TAB' hasn't been given priority over
          equal column_width also specified by POSIX. */
-      if (number_separator == '\t')
+      എങ്കിൽ (സംഖ്യ_separator == '\t')
         {
-          i = number_width - chars_per_number;
-          while (i-- > 0)
+          i = സംഖ്യ_width - chars_per_സംഖ്യ;
+          ആകുമ്പോൾ (i-- > 0)
             (p->char_func) (' ');
         }
-      else
-        (p->char_func) (number_separator);
+      അല്ലെങ്കിൽ
+        (p->char_func) (സംഖ്യ_separator);
     }
-  else
+  അല്ലെങ്കിൽ
     /* To comply with POSIX, we avoid any expansion of default TAB
        separator with a single column output. No column_width requirement
        has to be considered. */
     {
-      (p->char_func) (number_separator);
-      if (number_separator == '\t')
+      (p->char_func) (സംഖ്യ_separator);
+      എങ്കിൽ (സംഖ്യ_separator == '\t')
         output_position = POS_AFTER_TAB (chars_per_output_tab,
                           output_position);
     }
 
-  if (truncate_lines && !parallel_files)
-    input_position += number_width;
+  എങ്കിൽ (truncate_വരികൾ && !parallel_files)
+    നിവേശം_position += സംഖ്യ_width;
 }
 
 /* Print (or store) padding until the current horizontal position
    is position. */
 
-static void
-pad_across_to (int position)
+സ്ഥിതം ശൂന്യം
+pad_across_to (പൂർണ്ണസംഖ്യ position)
 {
-  int h = output_position;
+  പൂർണ്ണസംഖ്യ h = output_position;
 
-  if (tabify_output)
+  എങ്കിൽ (tabify_output)
     spaces_not_printed = position - output_position;
-  else
+  അല്ലെങ്കിൽ
     {
-      while (++h <= position)
+      ആകുമ്പോൾ (++h <= position)
         putchar (' ');
       output_position = position;
     }
@@ -2101,13 +2101,13 @@ pad_across_to (int position)
    If the user has requested a formfeed, use one.
    Otherwise, use newlines. */
 
-static void
-pad_down (unsigned int lines)
+സ്ഥിതം ശൂന്യം
+pad_down (unsigned പൂർണ്ണസംഖ്യ വരികൾ)
 {
-  if (use_form_feed)
+  എങ്കിൽ (use_form_feed)
     putchar ('\f');
-  else
-    for (unsigned int i = lines; i; --i)
+  അല്ലെങ്കിൽ
+    വേണ്ടി (unsigned പൂർണ്ണസംഖ്യ i = വരികൾ; i; --i)
       putchar ('\n');
 }
 
@@ -2117,27 +2117,27 @@ pad_down (unsigned int lines)
    hit.  Used when we've truncated a line and we no longer need
    to print or store its characters. */
 
-static void
-read_rest_of_line (COLUMN *p)
+സ്ഥിതം ശൂന്യം
+read_rest_of_വരി (COLUMN *p)
 {
-  int c;
+  പൂർണ്ണസംഖ്യ c;
   FILE *f = p->fp;
 
-  while ((c = getc (f)) != '\n')
+  ആകുമ്പോൾ ((c = getc (f)) != '\n')
     {
-      if (c == '\f')
+      എങ്കിൽ (c == '\f')
         {
-          if ((c = getc (f)) != '\n')
+          എങ്കിൽ ((c = getc (f)) != '\n')
             ungetc (c, f);
-          if (keep_FF)
+          എങ്കിൽ (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          break;
+          നിർത്തുക;
         }
-      else if (c == EOF)
+      അല്ലെങ്കിൽ എങ്കിൽ (c == EOF)
         {
           close_file (p);
-          break;
+          നിർത്തുക;
         }
     }
 }
@@ -2151,65 +2151,65 @@ read_rest_of_line (COLUMN *p)
    Count lines of skipped pages to find the line number of 1st page
    printed relative to 1st line of input file (start_line_num). */
 
-static void
-skip_read (COLUMN *p, int column_number)
+സ്ഥിതം ശൂന്യം
+skip_read (COLUMN *p, പൂർണ്ണസംഖ്യ column_സംഖ്യ)
 {
-  int c;
+  പൂർണ്ണസംഖ്യ c;
   FILE *f = p->fp;
-  int i;
+  പൂർണ്ണസംഖ്യ i;
   bool single_ff = false;
   COLUMN *q;
 
   /* Read 1st character in a line or any character succeeding a FF */
-  if ((c = getc (f)) == '\f' && p->full_page_printed)
+  എങ്കിൽ ((c = getc (f)) == '\f' && p->full_page_printed)
     /* A FF-coincidence with a previous full_page_printed.
        To avoid an additional empty page, eliminate the FF */
-    if ((c = getc (f)) == '\n')
+    എങ്കിൽ ((c = getc (f)) == '\n')
       c = getc (f);
 
   p->full_page_printed = false;
 
   /* 1st character a FF means a single FF without any printable
      characters. Don't count it as a line with -n option. */
-  if (c == '\f')
+  എങ്കിൽ (c == '\f')
     single_ff = true;
 
   /* Preparing for a FF-coincidence: Maybe we finish that page
      without a FF found */
-  if (last_line)
+  എങ്കിൽ (last_വരി)
     p->full_page_printed = true;
 
-  while (c != '\n')
+  ആകുമ്പോൾ (c != '\n')
     {
-      if (c == '\f')
+      എങ്കിൽ (c == '\f')
         {
           /* No FF-coincidence possible,
              no catching up of a FF-coincidence with next page */
-          if (last_line)
+          എങ്കിൽ (last_വരി)
             {
-              if (!parallel_files)
-                for (q = column_vector, i = columns; i; ++q, --i)
+              എങ്കിൽ (!parallel_files)
+                വേണ്ടി (q = column_vector, i = columns; i; ++q, --i)
                   q->full_page_printed = false;
-              else
+              അല്ലെങ്കിൽ
                 p->full_page_printed = false;
             }
 
-          if ((c = getc (f)) != '\n')
+          എങ്കിൽ ((c = getc (f)) != '\n')
             ungetc (c, f);
           hold_file (p);
-          break;
+          നിർത്തുക;
         }
-      else if (c == EOF)
+      അല്ലെങ്കിൽ എങ്കിൽ (c == EOF)
         {
           close_file (p);
-          break;
+          നിർത്തുക;
         }
       c = getc (f);
     }
 
-  if (skip_count)
-    if ((!parallel_files || column_number == 1) && !single_ff)
-      ++line_count;
+  എങ്കിൽ (skip_എണ്ണം)
+    എങ്കിൽ ((!parallel_files || column_സംഖ്യ == 1) && !single_ff)
+      ++വരി_എണ്ണം;
 }
 
 /* If we're tabifying output,
@@ -2218,20 +2218,20 @@ skip_read (COLUMN *p, int column_number)
    of our desired horizontal position and delays printing
    until this function is called. */
 
-static void
-print_white_space (void)
+സ്ഥിതം ശൂന്യം
+print_white_space (ശൂന്യം)
 {
-  int h_new;
-  int h_old = output_position;
-  int goal = h_old + spaces_not_printed;
+  പൂർണ്ണസംഖ്യ h_new;
+  പൂർണ്ണസംഖ്യ h_old = output_position;
+  പൂർണ്ണസംഖ്യ goal = h_old + spaces_not_printed;
 
-  while (goal - h_old > 1
+  ആകുമ്പോൾ (goal - h_old > 1
          && (h_new = POS_AFTER_TAB (chars_per_output_tab, h_old)) <= goal)
     {
       putchar (output_tab_char);
       h_old = h_new;
     }
-  while (++h_old <= goal)
+  ആകുമ്പോൾ (++h_old <= goal)
     putchar (' ');
 
   output_position = goal;
@@ -2243,43 +2243,43 @@ print_white_space (void)
    We keep a count until we know that we'll be printing a line,
    then print_sep_string() is called. */
 
-static void
-print_sep_string (void)
+സ്ഥിതം ശൂന്യം
+print_sep_string (ശൂന്യം)
 {
-  char const *s = col_sep_string;
-  int l = col_sep_length;
+  അക്ഷരം സ്ഥിരം *s = col_sep_string;
+  പൂർണ്ണസംഖ്യ l = col_sep_length;
 
-  if (separators_not_printed <= 0)
+  എങ്കിൽ (separators_not_printed <= 0)
     {
       /* We'll be starting a line with chars_per_margin, anything else? */
-      if (spaces_not_printed > 0)
+      എങ്കിൽ (spaces_not_printed > 0)
         print_white_space ();
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      for (; separators_not_printed > 0; --separators_not_printed)
+      വേണ്ടി (; separators_not_printed > 0; --separators_not_printed)
         {
-          while (l-- > 0)
+          ആകുമ്പോൾ (l-- > 0)
             {
               /* 3 types of sep_strings: spaces only, spaces and chars,
               chars only */
-              if (*s == ' ')
+              എങ്കിൽ (*s == ' ')
                 {
                   /* We're tabifying output; consecutive spaces in
                   sep_string may have to be converted to tabs */
                   s++;
                   ++spaces_not_printed;
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
-                  if (spaces_not_printed > 0)
+                  എങ്കിൽ (spaces_not_printed > 0)
                     print_white_space ();
                   putchar (*s++);
                   ++output_position;
                 }
             }
           /* sep_string ends with some spaces */
-          if (spaces_not_printed > 0)
+          എങ്കിൽ (spaces_not_printed > 0)
             print_white_space ();
         }
     }
@@ -2288,13 +2288,13 @@ print_sep_string (void)
 /* Print (or store, depending on p->char_func) a clump of N
    characters. */
 
-static void
-print_clump (COLUMN *p, int n, char *clump)
+സ്ഥിതം ശൂന്യം
+print_clump (COLUMN *p, പൂർണ്ണസംഖ്യ n, അക്ഷരം *clump)
 {
-  while (n--)
+  ആകുമ്പോൾ (n--)
     (p->char_func) (*clump++);
 
-  if (ferror (stdout))
+  എങ്കിൽ (ferror (stdout))
     write_error ();
 }
 
@@ -2307,26 +2307,26 @@ print_clump (COLUMN *p, int n, char *clump)
    a nonspace is encountered, call print_white_space() to print the
    required number of tabs and spaces. */
 
-static void
-print_char (char c)
+സ്ഥിതം ശൂന്യം
+print_char (അക്ഷരം c)
 {
-  if (tabify_output)
+  എങ്കിൽ (tabify_output)
     {
-      if (c == ' ')
+      എങ്കിൽ (c == ' ')
         {
           ++spaces_not_printed;
-          return;
+          തിരികെ;
         }
-      else if (spaces_not_printed > 0)
+      അല്ലെങ്കിൽ എങ്കിൽ (spaces_not_printed > 0)
         print_white_space ();
 
       /* Nonprintables are assumed to have width 0, except '\b'. */
-      if (! isprint (to_uchar (c)))
+      എങ്കിൽ (! isprint (to_uchar (c)))
         {
-          if (c == '\b')
+          എങ്കിൽ (c == '\b')
             --output_position;
         }
-      else
+      അല്ലെങ്കിൽ
         ++output_position;
     }
   putchar (c);
@@ -2335,44 +2335,44 @@ print_char (char c)
 /* Skip to page PAGE before printing.
    PAGE may be larger than total number of pages. */
 
-static bool
+സ്ഥിതം bool
 skip_to_page (uintmax_t page)
 {
-  for (uintmax_t n = 1; n < page; ++n)
+  വേണ്ടി (uintmax_t n = 1; n < page; ++n)
     {
       COLUMN *p;
-      int j;
+      പൂർണ്ണസംഖ്യ j;
 
-      for (int i = 1; i < lines_per_body; ++i)
+      വേണ്ടി (പൂർണ്ണസംഖ്യ i = 1; i < വരികൾ_per_body; ++i)
         {
-          for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-            if (p->status == OPEN)
+          വേണ്ടി (j = 1, p = column_vector; j <= columns; ++j, ++p)
+            എങ്കിൽ (p->status == OPEN)
               skip_read (p, j);
         }
-      last_line = true;
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-        if (p->status == OPEN)
+      last_വരി = true;
+      വേണ്ടി (j = 1, p = column_vector; j <= columns; ++j, ++p)
+        എങ്കിൽ (p->status == OPEN)
           skip_read (p, j);
 
-      if (storing_columns)	/* change FF_FOUND to ON_HOLD */
-        for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-          if (p->status != CLOSED)
+      എങ്കിൽ (storing_columns)	/* change FF_FOUND to ON_HOLD */
+        വേണ്ടി (j = 1, p = column_vector; j <= columns; ++j, ++p)
+          എങ്കിൽ (p->status != CLOSED)
             p->status = ON_HOLD;
 
       reset_status ();
-      last_line = false;
+      last_വരി = false;
 
-      if (files_ready_to_read < 1)
+      എങ്കിൽ (files_ready_to_read < 1)
         {
           /* It's very helpful, normally the total number of pages is
              not known in advance.  */
           error (0, 0,
                  _("starting page number %ju exceeds page count %ju"),
                  page, n);
-          break;
+          നിർത്തുക;
         }
     }
-  return files_ready_to_read > 0;
+  തിരികെ files_ready_to_read > 0;
 }
 
 /* Print a header.
@@ -2380,25 +2380,25 @@ skip_to_page (uintmax_t page)
    Formfeeds are assumed to use up two lines at the beginning of
    the page. */
 
-static void
-print_header (void)
+സ്ഥിതം ശൂന്യം
+print_header (ശൂന്യം)
 {
-  char page_text[256 + INT_STRLEN_BOUND (page_number)];
-  int available_width;
-  int lhs_spaces;
-  int rhs_spaces;
+  അക്ഷരം page_text[256 + INT_STRLEN_BOUND (page_സംഖ്യ)];
+  പൂർണ്ണസംഖ്യ available_width;
+  പൂർണ്ണസംഖ്യ lhs_spaces;
+  പൂർണ്ണസംഖ്യ rhs_spaces;
 
   output_position = 0;
   pad_across_to (chars_per_margin);
   print_white_space ();
 
-  if (page_number == 0)
+  എങ്കിൽ (page_സംഖ്യ == 0)
     error (EXIT_FAILURE, 0, _("page number overflow"));
 
   /* The translator must ensure that formatting the translation of
      "Page %ju" does not generate more than (sizeof page_text - 1)
      bytes.  */
-  sprintf (page_text, _("Page %ju"), page_number);
+  sprintf (page_text, _("Page %ju"), page_സംഖ്യ);
   available_width = header_width_available - mbswidth (page_text, 0);
   available_width = MAX (0, available_width);
   lhs_spaces = available_width >> 1;
@@ -2434,125 +2434,125 @@ print_header (void)
    Return false if we exceed chars_per_column before reading
    an end of line character, true otherwise. */
 
-static bool
-read_line (COLUMN *p)
+സ്ഥിതം bool
+read_വരി (COLUMN *p)
 {
-  int c;
-  int chars IF_LINT (= 0);
-  int last_input_position;
-  int j, k;
+  പൂർണ്ണസംഖ്യ c;
+  പൂർണ്ണസംഖ്യ chars IF_LINT (= 0);
+  പൂർണ്ണസംഖ്യ last_നിവേശം_position;
+  പൂർണ്ണസംഖ്യ j, k;
   COLUMN *q;
 
   /* read 1st character in each line or any character succeeding a FF: */
   c = getc (p->fp);
 
-  last_input_position = input_position;
+  last_നിവേശം_position = നിവേശം_position;
 
-  if (c == '\f' && p->full_page_printed)
-    if ((c = getc (p->fp)) == '\n')
+  എങ്കിൽ (c == '\f' && p->full_page_printed)
+    എങ്കിൽ ((c = getc (p->fp)) == '\n')
       c = getc (p->fp);
   p->full_page_printed = false;
 
-  switch (c)
+  തിരഞ്ഞെടുപ്പ് (c)
     {
-    case '\f':
-      if ((c = getc (p->fp)) != '\n')
+    അവസ്ഥ '\f':
+      എങ്കിൽ ((c = getc (p->fp)) != '\n')
         ungetc (c, p->fp);
       FF_only = true;
-      if (print_a_header && !storing_columns)
+      എങ്കിൽ (print_a_header && !storing_columns)
         {
           pad_vertically = true;
           print_header ();
         }
-      else if (keep_FF)
+      അല്ലെങ്കിൽ എങ്കിൽ (keep_FF)
         print_a_FF = true;
       hold_file (p);
-      return true;
-    case EOF:
+      തിരികെ true;
+    അവസ്ഥ EOF:
       close_file (p);
-      return true;
-    case '\n':
-      break;
-    default:
+      തിരികെ true;
+    അവസ്ഥ '\n':
+      നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:
       chars = char_to_clump (c);
     }
 
-  if (truncate_lines && input_position > chars_per_column)
+  എങ്കിൽ (truncate_വരികൾ && നിവേശം_position > chars_per_column)
     {
-      input_position = last_input_position;
-      return false;
+      നിവേശം_position = last_നിവേശം_position;
+      തിരികെ false;
     }
 
-  if (p->char_func != store_char)
+  എങ്കിൽ (p->char_func != store_char)
     {
       pad_vertically = true;
 
-      if (print_a_header && !storing_columns)
+      എങ്കിൽ (print_a_header && !storing_columns)
         print_header ();
 
-      if (parallel_files && align_empty_cols)
+      എങ്കിൽ (parallel_files && align_empty_cols)
         {
           /* We have to align empty columns at the beginning of a line. */
           k = separators_not_printed;
           separators_not_printed = 0;
-          for (j = 1, q = column_vector; j <= k; ++j, ++q)
+          വേണ്ടി (j = 1, q = column_vector; j <= k; ++j, ++q)
             {
               align_column (q);
               separators_not_printed += 1;
             }
           padding_not_printed = p->start_position;
-          if (truncate_lines)
+          എങ്കിൽ (truncate_വരികൾ)
             spaces_not_printed = chars_per_column;
-          else
+          അല്ലെങ്കിൽ
             spaces_not_printed = 0;
           align_empty_cols = false;
         }
 
-      if (col_sep_length < padding_not_printed)
+      എങ്കിൽ (col_sep_length < padding_not_printed)
         {
           pad_across_to (padding_not_printed - col_sep_length);
           padding_not_printed = ANYWHERE;
         }
 
-      if (use_col_separator)
+      എങ്കിൽ (use_col_separator)
         print_sep_string ();
     }
 
-  if (p->numbered)
-    add_line_number (p);
+  എങ്കിൽ (p->numbered)
+    add_വരി_സംഖ്യ (p);
 
-  empty_line = false;
-  if (c == '\n')
-    return true;
+  empty_വരി = false;
+  എങ്കിൽ (c == '\n')
+    തിരികെ true;
 
   print_clump (p, chars, clump_buff);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       c = getc (p->fp);
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case '\n':
-          return true;
-        case '\f':
-          if ((c = getc (p->fp)) != '\n')
+        അവസ്ഥ '\n':
+          തിരികെ true;
+        അവസ്ഥ '\f':
+          എങ്കിൽ ((c = getc (p->fp)) != '\n')
             ungetc (c, p->fp);
-          if (keep_FF)
+          എങ്കിൽ (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          return true;
-        case EOF:
+          തിരികെ true;
+        അവസ്ഥ EOF:
           close_file (p);
-          return true;
+          തിരികെ true;
         }
 
-      last_input_position = input_position;
+      last_നിവേശം_position = നിവേശം_position;
       chars = char_to_clump (c);
-      if (truncate_lines && input_position > chars_per_column)
+      എങ്കിൽ (truncate_വരികൾ && നിവേശം_position > chars_per_column)
         {
-          input_position = last_input_position;
-          return false;
+          നിവേശം_position = last_നിവേശം_position;
+          തിരികെ false;
         }
 
       print_clump (p, chars, clump_buff);
@@ -2573,13 +2573,13 @@ read_line (COLUMN *p)
 
    Return true, meaning there is no need to call read_rest_of_line. */
 
-static bool
+സ്ഥിതം bool
 print_stored (COLUMN *p)
 {
   COLUMN *q;
 
-  int line = p->current_line++;
-  char *first = &buff[line_vector[line]];
+  പൂർണ്ണസംഖ്യ വരി = p->current_വരി++;
+  അക്ഷരം *first = &buff[വരി_vector[വരി]];
   /* FIXME
      UMR: Uninitialized memory read:
      * This is occurring while in:
@@ -2591,46 +2591,46 @@ print_stored (COLUMN *p)
      xmalloc        [xmalloc.c:94]
      init_store_cols [pr.c:1648]
      */
-  char *last = &buff[line_vector[line + 1]];
+  അക്ഷരം *last = &buff[വരി_vector[വരി + 1]];
 
   pad_vertically = true;
 
-  if (print_a_header)
+  എങ്കിൽ (print_a_header)
     print_header ();
 
-  if (p->status == FF_FOUND)
+  എങ്കിൽ (p->status == FF_FOUND)
     {
-      int i;
-      for (i = 1, q = column_vector; i <= columns; ++i, ++q)
+      പൂർണ്ണസംഖ്യ i;
+      വേണ്ടി (i = 1, q = column_vector; i <= columns; ++i, ++q)
         q->status = ON_HOLD;
-      if (column_vector->lines_to_print <= 0)
+      എങ്കിൽ (column_vector->വരികൾ_to_print <= 0)
         {
-          if (!extremities)
+          എങ്കിൽ (!extremities)
             pad_vertically = false;
-          return true;		/* print a header only */
+          തിരികെ true;		/* print a header only */
         }
     }
 
-  if (col_sep_length < padding_not_printed)
+  എങ്കിൽ (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  എങ്കിൽ (use_col_separator)
     print_sep_string ();
 
-  while (first != last)
+  ആകുമ്പോൾ (first != last)
     print_char (*first++);
 
-  if (spaces_not_printed == 0)
+  എങ്കിൽ (spaces_not_printed == 0)
     {
-      output_position = p->start_position + end_vector[line];
-      if (p->start_position - col_sep_length == chars_per_margin)
+      output_position = p->start_position + end_vector[വരി];
+      എങ്കിൽ (p->start_position - col_sep_length == chars_per_margin)
         output_position -= col_sep_length;
     }
 
-  return true;
+  തിരികെ true;
 }
 
 /* Convert a character to the proper format and return the number of
@@ -2645,80 +2645,80 @@ print_stored (COLUMN *p)
    characters in clump_buff.  (e.g., the width of '\b' is -1, while the
    number of characters is 1.) */
 
-static int
-char_to_clump (char c)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+char_to_clump (അക്ഷരം c)
 {
-  unsigned char uc = c;
-  char *s = clump_buff;
-  char esc_buff[4];
-  int width;
-  int chars;
-  int chars_per_c = 8;
+  unsigned അക്ഷരം uc = c;
+  അക്ഷരം *s = clump_buff;
+  അക്ഷരം esc_buff[4];
+  പൂർണ്ണസംഖ്യ width;
+  പൂർണ്ണസംഖ്യ chars;
+  പൂർണ്ണസംഖ്യ chars_per_c = 8;
 
-  if (c == input_tab_char)
-    chars_per_c = chars_per_input_tab;
+  എങ്കിൽ (c == നിവേശം_tab_char)
+    chars_per_c = chars_per_നിവേശം_tab;
 
-  if (c == input_tab_char || c == '\t')
+  എങ്കിൽ (c == നിവേശം_tab_char || c == '\t')
     {
-      width = TAB_WIDTH (chars_per_c, input_position);
+      width = TAB_WIDTH (chars_per_c, നിവേശം_position);
 
-      if (untabify_input)
+      എങ്കിൽ (untabify_നിവേശം)
         {
-          for (int i = width; i; --i)
+          വേണ്ടി (പൂർണ്ണസംഖ്യ i = width; i; --i)
             *s++ = ' ';
           chars = width;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           *s = c;
           chars = 1;
         }
 
     }
-  else if (! isprint (uc))
+  അല്ലെങ്കിൽ എങ്കിൽ (! isprint (uc))
     {
-      if (use_esc_sequence)
+      എങ്കിൽ (use_esc_sequence)
         {
           width = 4;
           chars = 4;
           *s++ = '\\';
           sprintf (esc_buff, "%03o", uc);
-          for (int i = 0; i <= 2; ++i)
+          വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i <= 2; ++i)
             *s++ = esc_buff[i];
         }
-      else if (use_cntrl_prefix)
+      അല്ലെങ്കിൽ എങ്കിൽ (use_cntrl_prefix)
         {
-          if (uc < 0200)
+          എങ്കിൽ (uc < 0200)
             {
               width = 2;
               chars = 2;
               *s++ = '^';
               *s = c ^ 0100;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               width = 4;
               chars = 4;
               *s++ = '\\';
               sprintf (esc_buff, "%03o", uc);
-              for (int i = 0; i <= 2; ++i)
+              വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i <= 2; ++i)
                 *s++ = esc_buff[i];
             }
         }
-      else if (c == '\b')
+      അല്ലെങ്കിൽ എങ്കിൽ (c == '\b')
         {
           width = -1;
           chars = 1;
           *s = c;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           width = 0;
           chars = 1;
           *s = c;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
       width = 1;
       chars = 1;
@@ -2726,20 +2726,20 @@ char_to_clump (char c)
     }
 
   /* Too many backspaces must put us in position 0 -- never negative.  */
-  if (width < 0 && input_position == 0)
+  എങ്കിൽ (width < 0 && നിവേശം_position == 0)
     {
       chars = 0;
-      input_position = 0;
+      നിവേശം_position = 0;
     }
-  else if (width < 0 && input_position <= -width)
-    input_position = 0;
-  else
+  അല്ലെങ്കിൽ എങ്കിൽ (width < 0 && നിവേശം_position <= -width)
+    നിവേശം_position = 0;
+  അല്ലെങ്കിൽ
     {
-      if (ckd_add (&input_position, input_position, width))
+      എങ്കിൽ (ckd_add (&നിവേശം_position, നിവേശം_position, width))
         integer_overflow ();
     }
 
-  return chars;
+  തിരികെ chars;
 }
 
 /* We've just printed some files and need to clean up things before
@@ -2747,25 +2747,25 @@ char_to_clump (char c)
 
    Free everything we've xmalloc'ed, except 'header'. */
 
-static void
-cleanup (void)
+സ്ഥിതം ശൂന്യം
+cleanup (ശൂന്യം)
 {
-  free (number_buff);
-  free (clump_buff);
-  free (column_vector);
-  free (line_vector);
-  free (end_vector);
-  free (buff);
+  സ്വതന്ത്രം (സംഖ്യ_buff);
+  സ്വതന്ത്രം (clump_buff);
+  സ്വതന്ത്രം (column_vector);
+  സ്വതന്ത്രം (വരി_vector);
+  സ്വതന്ത്രം (end_vector);
+  സ്വതന്ത്രം (buff);
 }
 
 /* Complain, print a usage message, and die. */
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -2773,7 +2773,7 @@ Usage: %s [OPTION]... [FILE]...\n\
               program_name);
 
       fputs (_("\
-Paginate or columnate FILE(s) for printing.\n\
+Paginate or columnate FILE(s) വേണ്ടി printing.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -2786,7 +2786,7 @@ Paginate or columnate FILE(s) for printing.\n\
       oputs (_("\
   -COLS, --columns=COLS\n\
          output COLS columns and print columns down, unless -a is used.\n\
-         Balance number of lines in the columns on each page\n\
+         Balance സംഖ്യ of വരികൾ in the columns on each page\n\
 "));
       oputs (_("\
   -a, --across\n\
@@ -2797,61 +2797,61 @@ Paginate or columnate FILE(s) for printing.\n\
          use hat notation (^G) and octal backslash notation\n\
 "));
       oputs (_("\
-  -d, --double-space\n\
-         double space the output\n\
+  -d, --ഇരട്ട-space\n\
+         ഇരട്ട space the output\n\
 "));
       oputs (_("\
   -D, --date-format=FORMAT\n\
-         use FORMAT for the header date\n\
+         use FORMAT വേണ്ടി the header date\n\
 "));
       oputs (_("\
   -e[CHAR[WIDTH]], --expand-tabs[=CHAR[WIDTH]]\n\
-         expand input CHARs (TABs) to tab WIDTH (8)\n\
+         expand നിവേശം CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
   -F, -f, --form-feed\n\
          use form feeds instead of newlines to separate pages\n\
-         (by a 3-line page header with -F or a 5-line header\n\
+         (by a 3-വരി page header with -F or a 5-വരി header\n\
          and trailer without -F)\n\
 "));
       oputs (_("\
   -h, --header=HEADER\n\
          use a centered HEADER instead of filename in page header,\n\
-         -h \"\" prints a blank line, don't use -h\"\"\n\
+         -h \"\" prints a blank വരി, don't use -h\"\"\n\
 "));
       oputs (_("\
   -i[CHAR[WIDTH]], --output-tabs[=CHAR[WIDTH]]\n\
          replace spaces with CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
-  -J, --join-lines\n\
-         merge full lines, turns off -W line truncation,\n\
+  -J, --join-വരികൾ\n\
+         merge full വരികൾ, turns off -W വരി truncation,\n\
          no column alignment, --sep-string[=STRING] sets separators\n\
 "));
       oputs (_("\
   -l, --length=PAGE_LENGTH\n\
-         set the page length to PAGE_LENGTH (66) lines\n\
-         (default number of lines of text 56, and with -F 63).\n\
-         implies -t if PAGE_LENGTH <= 10\n\
+         set the page length to PAGE_LENGTH (66) വരികൾ\n\
+         (സ്ഥിരസ്ഥിതി സംഖ്യ of വരികൾ of text 56, and with -F 63).\n\
+         implies -t എങ്കിൽ PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -m, --merge\n\
          print all files in parallel, one in each column,\n\
-         truncate lines, but join lines of full length with -J\n\
+         truncate വരികൾ, but join വരികൾ of full length with -J\n\
 "));
       oputs (_("\
-  -n[SEP[DIGITS]], --number-lines[=SEP[DIGITS]]\n\
-         number lines, use DIGITS (5) digits, then SEP (TAB),\n\
-         default counting starts with 1st line of input file\n\
+  -n[SEP[DIGITS]], --സംഖ്യ-വരികൾ[=SEP[DIGITS]]\n\
+         സംഖ്യ വരികൾ, use DIGITS (5) digits, then SEP (TAB),\n\
+         സ്ഥിരസ്ഥിതി counting starts with 1st വരി of നിവേശം file\n\
 "));
       oputs (_("\
-  -N, --first-line-number=NUMBER\n\
-         start counting with NUMBER at 1st line of first\n\
+  -N, --first-വരി-സംഖ്യ=സംഖ്യ_2\n\
+         start counting with സംഖ്യ_2 at 1st വരി of first\n\
          page printed (see +FIRST_PAGE)\n\
 "));
       oputs (_("\
   -o, --indent=MARGIN\n\
-         offset each line with MARGIN (zero) spaces, do not\n\
+         offset each വരി with MARGIN (zero) spaces, ചെയ്യുക not\n\
          affect -w or -W, MARGIN will be added to PAGE_WIDTH\n\
 "));
       oputs (_("\
@@ -2860,9 +2860,9 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -s[CHAR], --separator[=CHAR]\n\
-         separate columns by a single character, default for CHAR\n\
-         is the <TAB> character without -w and \'no char\' with -w.\n\
-         -s[CHAR] turns off line truncation of all 3 column\n\
+         separate columns by a single character, സ്ഥിരസ്ഥിതി വേണ്ടി CHAR\n\
+         is the <TAB> character without -w and \'no അക്ഷരം\' with -w.\n\
+         -s[CHAR] turns off വരി truncation of all 3 column\n\
          options (-COLS|-a -COLS|-m) except -w is set\n\
 "));
       oputs (_("\
@@ -2873,12 +2873,12 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -t, --omit-header\n\
-         omit page headers and trailers; implied if PAGE_LENGTH <= 10\n\
+         omit page headers and trailers; implied എങ്കിൽ PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -T, --omit-pagination\n\
          omit page headers and trailers,\n\
-         eliminate any pagination by form feeds set in input files\n\
+         eliminate any pagination by form feeds set in നിവേശം files\n\
 "));
       oputs (_("\
   -v, --show-nonprinting\n\
@@ -2886,13 +2886,13 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -w, --width=PAGE_WIDTH\n\
-         set page width to PAGE_WIDTH (72) characters for\n\
-         multiple text-column output only, -s[char] turns off (72)\n\
+         set page width to PAGE_WIDTH (72) characters വേണ്ടി\n\
+         multiple text-column output only, -s[അക്ഷരം] turns off (72)\n\
 "));
       oputs (_("\
   -W, --page-width=PAGE_WIDTH\n\
          set page width to PAGE_WIDTH (72) characters always,\n\
-         truncate lines, except -J option is set,\n\
+         truncate വരികൾ, except -J option is set,\n\
          no interference with -S or -s\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);

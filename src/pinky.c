@@ -16,21 +16,21 @@
 
 /* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu */
 
-#include <config.h>
-#include <getopt.h>
-#include <pwd.h>
-#include <stdio.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <pwd.h>
+#അന്തര്ഭാവ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
 
-#include "canon-host.h"
-#include "fadvise.h"
-#include "filenamecat.h"
-#include "full-write.h"
-#include "hard-locale.h"
-#include "ioblksize.h"
-#include "readutmp.h"
+#അന്തര്ഭാവ "canon-host.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "filenamecat.h"
+#അന്തര്ഭാവ "full-write.h"
+#അന്തര്ഭാവ "hard-locale.h"
+#അന്തര്ഭാവ "ioblksize.h"
+#അന്തര്ഭാവ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pinky"
@@ -43,64 +43,64 @@
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or blank if within the last minute, or days followed
    by a 'd' if not within the last day. */
-static bool include_idle = true;
+സ്ഥിതം bool include_idle = true;
 
 /* If true, display a line at the top describing each field. */
-static bool include_heading = true;
+സ്ഥിതം bool include_heading = true;
 
 /* if true, display the user's full name from pw_gecos. */
-static bool include_fullname = true;
+സ്ഥിതം bool include_fullname = true;
 
 /* if true, display the user's ~/.project file when doing long format. */
-static bool include_project = true;
+സ്ഥിതം bool include_project = true;
 
 /* if true, display the user's ~/.plan file when doing long format. */
-static bool include_plan = true;
+സ്ഥിതം bool include_plan = true;
 
 /* if true, display the user's home directory and shell
    when doing long format. */
-static bool include_home_and_shell = true;
+സ്ഥിതം bool include_home_and_shell = true;
 
 /* if true, use the "short" output format. */
-static bool do_short_format = true;
+സ്ഥിതം bool do_short_format = true;
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+സ്ഥിതം bool do_lookup;
 
 /* if true, display the ut_host field. */
-#if HAVE_STRUCT_XTMP_UT_HOST
-static bool include_where = true;
+#എങ്കിൽ HAVE_STRUCT_XTMP_UT_HOST
+സ്ഥിതം bool include_where = true;
 #endif
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *time_format;
+സ്ഥിതം പൂർണ്ണസംഖ്യ time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+എണ്ണൽ
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
+  {"lookup", no_argument, ശൂന്യ, LOOKUP_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* Count and return the number of ampersands in STR.  */
 
 ATTRIBUTE_PURE
-static idx_t
-count_ampersands (char const *str)
+സ്ഥിതം idx_t
+എണ്ണം_ampersands (അക്ഷരം സ്ഥിരം *str)
 {
-  idx_t count = 0;
-  for (; *str; str++)
-    count += *str == '&';
-  return count;
+  idx_t എണ്ണം = 0;
+  വേണ്ടി (; *str; str++)
+    എണ്ണം += *str == '&';
+  തിരികെ എണ്ണം;
 }
 
 /* Create a string (via xmalloc) which contains a full name by substituting
@@ -109,35 +109,35 @@ count_ampersands (char const *str)
    no ','s.  The caller also is responsible for free'ing the return value of
    this function.  */
 
-static char *
-create_fullname (char const *gecos_name, char const *user_name)
+സ്ഥിതം അക്ഷരം *
+create_fullname (അക്ഷരം സ്ഥിരം *gecos_name, അക്ഷരം സ്ഥിരം *user_name)
 {
   idx_t rsize = strlen (gecos_name) + 1;
-  idx_t ampersands = count_ampersands (gecos_name);
+  idx_t ampersands = എണ്ണം_ampersands (gecos_name);
 
-  if (ampersands != 0)
+  എങ്കിൽ (ampersands != 0)
     {
       idx_t ulen = strlen (user_name);
       ptrdiff_t product;
-      if (ckd_mul (&product, ulen - 1, ampersands)
+      എങ്കിൽ (ckd_mul (&product, ulen - 1, ampersands)
           || ckd_add (&rsize, rsize, product))
         xalloc_die ();
     }
 
-  char *result = xmalloc (rsize);
-  char *r = result;
+  അക്ഷരം *result = xmalloc (rsize);
+  അക്ഷരം *r = result;
 
-  while (*gecos_name)
+  ആകുമ്പോൾ (*gecos_name)
     {
-      if (*gecos_name == '&')
+      എങ്കിൽ (*gecos_name == '&')
         {
-          char const *uname = user_name;
-          if (islower (to_uchar (*uname)))
+          അക്ഷരം സ്ഥിരം *uname = user_name;
+          എങ്കിൽ (islower (to_uchar (*uname)))
             *r++ = toupper (to_uchar (*uname++));
-          while (*uname)
+          ആകുമ്പോൾ (*uname)
             *r++ = *uname++;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           *r++ = *gecos_name;
         }
@@ -146,130 +146,130 @@ create_fullname (char const *gecos_name, char const *user_name)
     }
   *r = 0;
 
-  return result;
+  തിരികെ result;
 }
 
 /* Return a string representing the time between WHEN and the time
    that this function is first run. */
 
-static char const *
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
 idle_string (time_t when)
 {
-  static time_t now = 0;
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "d"];
+  സ്ഥിതം time_t now = 0;
+  സ്ഥിതം അക്ഷരം buf[INT_STRLEN_BOUND (intmax_t) + വലുപ്പം "d"];
 
-  if (now == 0)
+  എങ്കിൽ (now == 0)
     time (&now);
 
   time_t seconds_idle = now - when;
-  if (seconds_idle < 60)	/* One minute. */
-    return "     ";
-  if (seconds_idle < (24 * 60 * 60))	/* One day. */
+  എങ്കിൽ (seconds_idle < 60)	/* One minute. */
+    തിരികെ "     ";
+  എങ്കിൽ (seconds_idle < (24 * 60 * 60))	/* One day. */
     {
-      int hours = seconds_idle / (60 * 60);
-      int minutes = (seconds_idle % (60 * 60)) / 60;
+      പൂർണ്ണസംഖ്യ hours = seconds_idle / (60 * 60);
+      പൂർണ്ണസംഖ്യ minutes = (seconds_idle % (60 * 60)) / 60;
       sprintf (buf, "%02d:%02d", hours, minutes);
     }
-  else
+  അല്ലെങ്കിൽ
     {
       intmax_t days = seconds_idle / (24 * 60 * 60);
       sprintf (buf, "%jdd", days);
     }
-  return buf;
+  തിരികെ buf;
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
+time_string (STRUCT_UTMP സ്ഥിരം *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  സ്ഥിതം അക്ഷരം buf[INT_STRLEN_BOUND (intmax_t) + വലുപ്പം "-%m-%d %H:%M"];
+  ഘടന tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  എങ്കിൽ (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, വലുപ്പം buf, time_format, tmp);
+      തിരികെ buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  അല്ലെങ്കിൽ
+    തിരികെ timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Display a line of information about UTMP_ENT. */
 
-static void
-print_entry (STRUCT_UTMP const *utmp_ent)
+സ്ഥിതം ശൂന്യം
+print_entry (STRUCT_UTMP സ്ഥിരം *utmp_ent)
 {
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  അക്ഷരം *വരി = utmp_ent->ut_വരി;
+  അക്ഷരം *space = strchr (വരി, ' ');
+  വരി = space ? space + 1 : വരി;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  പൂർണ്ണസംഖ്യ dirfd;
+  എങ്കിൽ (IS_ABSOLUTE_FILE_NAME (വരി))
     dirfd = AT_FDCWD;
-  else
+  അല്ലെങ്കിൽ
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      സ്ഥിതം പൂർണ്ണസംഖ്യ dev_dirfd;
+      എങ്കിൽ (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          എങ്കിൽ (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  struct stat stats;
+  ഘടന stat stats;
   time_t last_change;
-  char mesg;
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  അക്ഷരം mesg;
+  എങ്കിൽ (AT_FDCWD <= dirfd && fstatat (dirfd, വരി, &stats, 0) == 0)
     {
       mesg = (stats.st_mode & S_IWGRP) ? ' ' : '*';
       last_change = stats.st_atime;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       mesg = '?';
       last_change = 0;
     }
 
-  char *ut_user = utmp_ent->ut_user;
-  if (strnlen (ut_user, 8) < 8)
+  അക്ഷരം *ut_user = utmp_ent->ut_user;
+  എങ്കിൽ (strnlen (ut_user, 8) < 8)
     printf ("%-8s", ut_user);
-  else
+  അല്ലെങ്കിൽ
     fputs (ut_user, stdout);
 
-  if (include_fullname)
+  എങ്കിൽ (include_fullname)
     {
-      struct passwd *pw = getpwnam (ut_user);
-      if (pw == NULL)
+      ഘടന passwd *pw = getpwnam (ut_user);
+      എങ്കിൽ (pw == ശൂന്യ)
         /* TRANSLATORS: Real name is unknown; at most 19 characters. */
         printf (" %19s", _("        ???"));
-      else
+      അല്ലെങ്കിൽ
         {
-          char *const comma = strchr (pw->pw_gecos, ',');
+          അക്ഷരം *സ്ഥിരം comma = strchr (pw->pw_gecos, ',');
 
-          if (comma)
+          എങ്കിൽ (comma)
             *comma = '\0';
 
-          char *result = create_fullname (pw->pw_gecos, pw->pw_name);
+          അക്ഷരം *result = create_fullname (pw->pw_gecos, pw->pw_name);
           printf (" %-19.19s", result);
-          free (result);
+          സ്വതന്ത്രം (result);
         }
     }
 
   fputc (' ', stdout);
   fputc (mesg, stdout);
-  if (strnlen (utmp_ent->ut_line, 8) < 8)
-    printf ("%-8s", utmp_ent->ut_line);
-  else
-    fputs (utmp_ent->ut_line, stdout);
+  എങ്കിൽ (strnlen (utmp_ent->ut_വരി, 8) < 8)
+    printf ("%-8s", utmp_ent->ut_വരി);
+  അല്ലെങ്കിൽ
+    fputs (utmp_ent->ut_വരി, stdout);
 
-  if (include_idle)
+  എങ്കിൽ (include_idle)
     {
-      if (last_change)
+      എങ്കിൽ (last_change)
         printf (" %-6s", idle_string (last_change));
-      else
+      അല്ലെങ്കിൽ
         /* TRANSLATORS: Idle time is unknown; at most 5 characters. */
         printf (" %-6s", _("?????"));
     }
@@ -277,99 +277,99 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   printf (" %s", time_string (utmp_ent));
 
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where && utmp_ent->ut_host[0])
+  എങ്കിൽ (include_where && utmp_ent->ut_host[0])
     {
-      char *ut_host = utmp_ent->ut_host;
+      അക്ഷരം *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
-      char *display = strchr (ut_host, ':');
-      if (display)
+      അക്ഷരം *display = strchr (ut_host, ':');
+      എങ്കിൽ (display)
         *display++ = '\0';
 
-      char *host = NULL;
-      if (*ut_host && do_lookup)
+      അക്ഷരം *host = ശൂന്യ;
+      എങ്കിൽ (*ut_host && do_lookup)
         /* See if we can canonicalize it.  */
         host = canon_host (ut_host);
-      if ( ! host)
+      എങ്കിൽ ( ! host)
         host = ut_host;
 
       fputc (' ', stdout);
       fputs (host, stdout);
-      if (display)
+      എങ്കിൽ (display)
         {
           fputc (':', stdout);
           fputs (display, stdout);
         }
 
-      if (host != ut_host)
-        free (host);
+      എങ്കിൽ (host != ut_host)
+        സ്വതന്ത്രം (host);
     }
 #endif
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  എങ്കിൽ (ferror (stdout))
     write_error ();
 }
 
 /* If FILE exists in HOME, print it to standard output, preceded by HEADER. */
 
-static void
-cat_file (char const *header, char const *home, char const *file)
+സ്ഥിതം ശൂന്യം
+cat_file (അക്ഷരം സ്ഥിരം *header, അക്ഷരം സ്ഥിരം *home, അക്ഷരം സ്ഥിരം *file)
 {
-  char *full_name = file_name_concat (home, file, NULL);
+  അക്ഷരം *full_name = file_name_concat (home, file, ശൂന്യ);
   FILE *fp = fopen (full_name, "r");
 
-  if (fp)
+  എങ്കിൽ (fp)
     {
       fputs (header, stdout);
 
       fadvise (fp, FADVISE_SEQUENTIAL);
 
-      char buf[BUFSIZ];
-      for (size_t bytes_read;
-           0 < (bytes_read = fread (buf, 1, sizeof buf, fp));)
-        if (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
+      അക്ഷരം buf[BUFSIZ];
+      വേണ്ടി (size_t bytes_read;
+           0 < (bytes_read = fread (buf, 1, വലുപ്പം buf, fp));)
+        എങ്കിൽ (fwrite (buf, 1, bytes_read, stdout) != bytes_read)
           write_error ();
 
       fclose (fp);
     }
 
-  free (full_name);
+  സ്വതന്ത്രം (full_name);
 }
 
 /* Display a verbose line of information about UTMP_ENT. */
 
-static void
-print_long_entry (const char name[])
+സ്ഥിതം ശൂന്യം
+print_long_entry (സ്ഥിരം അക്ഷരം name[])
 {
-  struct passwd *pw = getpwnam (name);
+  ഘടന passwd *pw = getpwnam (name);
 
   printf (_("Login name: "));
   printf ("%-28s", name);
 
   printf (_("In real life: "));
-  if (pw == NULL)
+  എങ്കിൽ (pw == ശൂന്യ)
     {
       /* TRANSLATORS: Real name is unknown; no hard limit. */
       printf (" %s", _("???\n"));
-      return;
+      തിരികെ;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      char *const comma = strchr (pw->pw_gecos, ',');
+      അക്ഷരം *സ്ഥിരം comma = strchr (pw->pw_gecos, ',');
 
-      if (comma)
+      എങ്കിൽ (comma)
         *comma = '\0';
 
-      char *result = create_fullname (pw->pw_gecos, pw->pw_name);
+      അക്ഷരം *result = create_fullname (pw->pw_gecos, pw->pw_name);
       printf (" %s", result);
-      free (result);
+      സ്വതന്ത്രം (result);
     }
 
   putchar ('\n');
 
-  if (include_home_and_shell)
+  എങ്കിൽ (include_home_and_shell)
     {
       printf (_("Directory: "));
       printf ("%-29s", pw->pw_dir);
@@ -378,33 +378,33 @@ print_long_entry (const char name[])
       putchar ('\n');
     }
 
-  if (include_project)
+  എങ്കിൽ (include_project)
     cat_file (_("Project: "), pw->pw_dir, ".project");
 
-  if (include_plan)
+  എങ്കിൽ (include_plan)
     cat_file (_("Plan:\n"), pw->pw_dir, ".plan");
 
   putchar ('\n');
 
-  if (ferror (stdout))
+  എങ്കിൽ (ferror (stdout))
     write_error ();
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
 
-static void
-print_heading (void)
+സ്ഥിതം ശൂന്യം
+print_heading (ശൂന്യം)
 {
   printf ("%-8s", _("Login"));
-  if (include_fullname)
+  എങ്കിൽ (include_fullname)
     printf (" %-19s", _("Name"));
   printf (" %-9s", _(" TTY"));
-  if (include_idle)
+  എങ്കിൽ (include_idle)
     printf (" %-6s", _("Idle"));
   printf (" %-*s", time_format_width, _("When"));
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
-  if (include_where)
+  എങ്കിൽ (include_where)
     printf (" %s", _("Where"));
 #endif
   putchar ('\n');
@@ -412,38 +412,38 @@ print_heading (void)
 
 /* Display UTMP_BUF, which should have N entries. */
 
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
-              const int argc_names, char *const argv_names[])
+സ്ഥിതം ശൂന്യം
+scan_entries (idx_t n, STRUCT_UTMP സ്ഥിരം *utmp_buf,
+              സ്ഥിരം പൂർണ്ണസംഖ്യ argc_names, അക്ഷരം *സ്ഥിരം argv_names[])
 {
-  if (hard_locale (LC_TIME))
+  എങ്കിൽ (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  if (include_heading)
+  എങ്കിൽ (include_heading)
     print_heading ();
 
-  while (n--)
+  ആകുമ്പോൾ (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      എങ്കിൽ (IS_USER_PROCESS (utmp_buf))
         {
-          if (argc_names)
+          എങ്കിൽ (argc_names)
             {
-              for (int i = 0; i < argc_names; i++)
-                if (streq (utmp_buf->ut_user, argv_names[i]))
+              വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i < argc_names; i++)
+                എങ്കിൽ (streq (utmp_buf->ut_user, argv_names[i]))
                   {
                     print_entry (utmp_buf);
-                    break;
+                    നിർത്തുക;
                   }
             }
-          else
+          അല്ലെങ്കിൽ
             print_entry (utmp_buf);
         }
       utmp_buf++;
@@ -452,39 +452,39 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
 
 /* Display a list of who is on the system, according to utmp file FILENAME. */
 
-static void
-short_pinky (char const *filename,
-             const int argc_names, char *const argv_names[])
+സ്ഥിതം ശൂന്യം
+short_pinky (അക്ഷരം സ്ഥിരം *filename,
+             സ്ഥിരം പൂർണ്ണസംഖ്യ argc_names, അക്ഷരം *സ്ഥിരം argv_names[])
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
+  എങ്കിൽ (read_utmp (filename, &n_users, &utmp_buf, READ_UTMP_USER_PROCESS) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   scan_entries (n_users, utmp_buf, argc_names, argv_names);
   exit (EXIT_SUCCESS);
 }
 
-static void
-long_pinky (const int argc_names, char *const argv_names[])
+സ്ഥിതം ശൂന്യം
+long_pinky (സ്ഥിരം പൂർണ്ണസംഖ്യ argc_names, അക്ഷരം *സ്ഥിരം argv_names[])
 {
-  for (int i = 0; i < argc_names; i++)
+  വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i < argc_names; i++)
     print_long_entry (argv_names[i]);
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
 \n\
 "), stdout);
       oputs (_("\
-  -l     produce long format output for the specified USERs\n\
+  -l     produce long format output വേണ്ടി the specified USERs\n\
 "));
       oputs (_("\
   -b     omit the user's home directory and shell in long format\n\
@@ -496,10 +496,10 @@ usage (int status)
   -p     omit the user's plan file in long format\n\
 "));
       oputs (_("\
-  -s     do short format output, this is the default\n\
+  -s     ചെയ്യുക short format output, this is the സ്ഥിരസ്ഥിതി\n\
 "));
       oputs (_("\
-  -f     omit the line of column headings in short format\n\
+  -f     omit the വരി of column headings in short format\n\
 "));
       oputs (_("\
   -w     omit the user's full name in short format\n\
@@ -526,8 +526,8 @@ The utmp file will be %s.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -537,81 +537,81 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, NULL))
+  പൂർണ്ണസംഖ്യ optc;
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "sfwiqbhlp", longopts, ശൂന്യ))
          != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case 's':
+        അവസ്ഥ 's':
           do_short_format = true;
-          break;
+          നിർത്തുക;
 
-        case 'l':
+        അവസ്ഥ 'l':
           do_short_format = false;
-          break;
+          നിർത്തുക;
 
-        case 'f':
+        അവസ്ഥ 'f':
           include_heading = false;
-          break;
+          നിർത്തുക;
 
-        case 'w':
+        അവസ്ഥ 'w':
           include_fullname = false;
-          break;
+          നിർത്തുക;
 
-        case 'i':
+        അവസ്ഥ 'i':
           include_fullname = false;
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
 #endif
-          break;
+          നിർത്തുക;
 
-        case 'q':
+        അവസ്ഥ 'q':
           include_fullname = false;
 #ifdef HAVE_STRUCT_XTMP_UT_HOST
           include_where = false;
 #endif
           include_idle = false;
-          break;
+          നിർത്തുക;
 
-        case 'h':
+        അവസ്ഥ 'h':
           include_project = false;
-          break;
+          നിർത്തുക;
 
-        case 'p':
+        അവസ്ഥ 'p':
           include_plan = false;
-          break;
+          നിർത്തുക;
 
-        case 'b':
+        അവസ്ഥ 'b':
           include_home_and_shell = false;
-          break;
+          നിർത്തുക;
 
-        case LOOKUP_OPTION:
+        അവസ്ഥ LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_users = argc - optind;
+  പൂർണ്ണസംഖ്യ n_users = argc - optind;
 
-  if (!do_short_format && n_users == 0)
+  എങ്കിൽ (!do_short_format && n_users == 0)
     {
       error (0, 0, _("no username specified; at least one must be\
  specified when using -l"));
       usage (EXIT_FAILURE);
     }
 
-  if (do_short_format)
+  എങ്കിൽ (do_short_format)
     short_pinky (UTMP_FILE, n_users, argv + optind);
-  else
+  അല്ലെങ്കിൽ
     long_pinky (n_users, argv + optind);
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

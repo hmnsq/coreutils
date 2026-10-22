@@ -20,45 +20,45 @@
 
    Ørn E. Hansen added NLS support in 1997.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <getopt.h>
-#include <pthread.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <spawn.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "filevercmp.h"
-#include "findprog.h"
-#include "flexmember.h"
-#include "hard-locale.h"
-#include "hash.h"
-#include "heap.h"
-#include "ignore-value.h"
-#include "mbswidth.h"
-#include "nproc.h"
-#include "physmem.h"
-#include "posixver.h"
-#include "quote.h"
-#include "randread.h"
-#include "readtokens0.h"
-#include "stdlib--.h"
-#include "strnumcmp.h"
-#include "term-sig.h"
-#include "unistd--.h"
-#include "xmemcoll.h"
-#include "xnanosleep.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <pthread.h>
+#അന്തര്ഭാവ <sys/resource.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <sys/wait.h>
+#അന്തര്ഭാവ <signal.h>
+#അന്തര്ഭാവ <spawn.h>
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "argmatch.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "filevercmp.h"
+#അന്തര്ഭാവ "findprog.h"
+#അന്തര്ഭാവ "flexmember.h"
+#അന്തര്ഭാവ "hard-locale.h"
+#അന്തര്ഭാവ "hash.h"
+#അന്തര്ഭാവ "heap.h"
+#അന്തര്ഭാവ "ignore-value.h"
+#അന്തര്ഭാവ "mbswidth.h"
+#അന്തര്ഭാവ "nproc.h"
+#അന്തര്ഭാവ "physmem.h"
+#അന്തര്ഭാവ "posixver.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "randread.h"
+#അന്തര്ഭാവ "readtokens0.h"
+#അന്തര്ഭാവ "stdlib--.h"
+#അന്തര്ഭാവ "strnumcmp.h"
+#അന്തര്ഭാവ "term-sig.h"
+#അന്തര്ഭാവ "unistd--.h"
+#അന്തര്ഭാവ "xmemcoll.h"
+#അന്തര്ഭാവ "xnanosleep.h"
+#അന്തര്ഭാവ "xstrtol.h"
+#അന്തര്ഭാവ "xstrtol-error.h"
 
 #ifndef RLIMIT_DATA
-struct rlimit { size_t rlim_cur; };
+ഘടന rlimit { size_t rlim_cur; };
 # define getrlimit(Resource, Rlp) (-1)
 #endif
 
@@ -69,14 +69,14 @@ struct rlimit { size_t rlim_cur; };
   proper_name ("Mike Haertel"), \
   proper_name ("Paul Eggert")
 
-#if HAVE_LANGINFO_CODESET
+#എങ്കിൽ HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
-#if !defined OPEN_MAX && defined NR_OPEN
+#എങ്കിൽ !defined OPEN_MAX && defined NR_OPEN
 # define OPEN_MAX NR_OPEN
 #endif
-#if !defined OPEN_MAX
+#എങ്കിൽ !defined OPEN_MAX
 # define OPEN_MAX 20
 #endif
 
@@ -99,15 +99,15 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+എണ്ണൽ { SUBTHREAD_വരികൾ_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_വരികൾ_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
-enum { DEFAULT_MAX_THREADS = 8 };
+എണ്ണൽ { DEFAULT_MAX_THREADS = 8 };
 
 /* Exit statuses.  */
-enum
+എണ്ണൽ
   {
     /* POSIX says to exit with status 1 if invoked with -c and the
        input is not properly sorted.  */
@@ -118,7 +118,7 @@ enum
     SORT_FAILURE = 2
   };
 
-enum
+എണ്ണൽ
   {
     /* The number of times we should try to spawn a compression process
        (we retry if the posix_spawnp call fails with EAGAIN).  We don't _need_
@@ -132,50 +132,50 @@ enum
     MAX_TRIES_DECOMPRESS = 9
   };
 
-enum
+എണ്ണൽ
   {
     /* Level of the end-of-merge node, one level above the root. */
     MERGE_END = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    MERGE_വേര് = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
-static char decimal_point;
+സ്ഥിതം അക്ഷരം decimal_point;
 
 /* Thousands separator; if outside char range, there is no separator.  */
-static int thousands_sep;
+സ്ഥിതം പൂർണ്ണസംഖ്യ thousands_sep;
 /* We currently ignore multi-byte grouping chars.  */
-static bool thousands_sep_ignored;
+സ്ഥിതം bool thousands_sep_ignored;
 
 /* Nonzero if the corresponding locales are hard.  */
-static bool hard_LC_COLLATE;
-#if HAVE_NL_LANGINFO
-static bool hard_LC_TIME;
+സ്ഥിതം bool hard_LC_COLLATE;
+#എങ്കിൽ HAVE_NL_LANGINFO
+സ്ഥിതം bool hard_LC_TIME;
 #endif
 
 #define NONZERO(x) ((x) != 0)
 
 /* The kind of blanks for '-b' to skip in various options. */
-enum blanktype { bl_start, bl_end, bl_both };
+എണ്ണൽ blanktype { bl_start, bl_end, bl_both };
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+സ്ഥിതം അക്ഷരം eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+ഘടന വരി
 {
-  char *text;			/* Text of the line. */
+  അക്ഷരം *text;			/* Text of the line. */
   size_t length;		/* Length including final newline. */
-  char *keybeg;			/* Start of first key. */
-  char *keylim;			/* Limit of first key. */
+  അക്ഷരം *keybeg;			/* Start of first key. */
+  അക്ഷരം *keylim;			/* Limit of first key. */
 };
 
 /* Input buffers. */
-struct buffer
+ഘടന buffer
 {
-  char *buf;			/* Dynamically allocated buffer,
+  അക്ഷരം *buf;			/* Dynamically allocated buffer,
                                    partitioned into 3 regions:
                                    - input data;
                                    - unused area;
@@ -183,15 +183,15 @@ struct buffer
   size_t used;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t ഇടത്;			/* Number of bytes left from previous reads. */
+  size_t വരി_bytes;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
 /* Policy for sizing the main sort buffer.  INITIAL is the allocation
    to try first.  LIMIT is the largest allocation to try while reading
    normal input; a single input line can still force a larger buffer.  */
-struct sort_buffer_policy
+ഘടന sort_buffer_policy
 {
   size_t initial;
   size_t limit;
@@ -199,14 +199,14 @@ struct sort_buffer_policy
 };
 
 /* Sort key.  */
-struct keyfield
+ഘടന keyfield
 {
   size_t sword;			/* Zero-origin 'word' to start at. */
   size_t schar;			/* Additional characters to skip. */
   size_t eword;			/* Zero-origin last 'word' of key. */
   size_t echar;			/* Additional characters in field. */
-  bool const *ignore;		/* Boolean array of characters to ignore. */
-  char const *translate;	/* Translation applied to characters. */
+  bool സ്ഥിരം *ignore;		/* Boolean array of characters to ignore. */
+  അക്ഷരം സ്ഥിരം *translate;	/* Translation applied to characters. */
   bool skipsblanks;		/* Skip leading blanks when finding start.  */
   bool skipeblanks;		/* Skip leading blanks when finding end.  */
   bool numeric;			/* Flag for numeric comparison.  Handle
@@ -221,44 +221,44 @@ struct keyfield
   bool reverse;			/* Reverse the sense of comparison. */
   bool version;			/* sort by version number */
   bool traditional_used;	/* Traditional key option format is used. */
-  struct keyfield *next;	/* Next keyfield to try. */
+  ഘടന keyfield *next;	/* Next keyfield to try. */
 };
 
-struct month
+ഘടന month
 {
-  char const *name;
-  int val;
+  അക്ഷരം സ്ഥിരം *name;
+  പൂർണ്ണസംഖ്യ val;
 };
 
 /* Binary merge tree node. */
-struct merge_node
+ഘടന merge_കണ്ണി
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  ഘടന വരി *lo;              /* Lines to merge from LO child node. */
+  ഘടന വരി *hi;              /* Lines to merge from HI child node. */
+  ഘടന വരി *end_lo;          /* End of available lines from LO. */
+  ഘടന വരി *end_hi;          /* End of available lines from HI. */
+  ഘടന വരി **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
-  unsigned int level;           /* Level in merge tree. */
+  ഘടന merge_കണ്ണി *parent;    /* Parent node. */
+  ഘടന merge_കണ്ണി *lo_child;  /* LO child node. */
+  ഘടന merge_കണ്ണി *hi_child;  /* HI child node. */
+  unsigned പൂർണ്ണസംഖ്യ level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
   pthread_mutex_t lock;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+ഘടന merge_കണ്ണി_queue
 {
-  struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
+  ഘടന heap *priority_queue;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
   pthread_cond_t cond;          /* Conditional wait for empty queue to populate
                                    when popping. */
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+സ്ഥിതം ഘടന വരി saved_വരി;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -267,22 +267,22 @@ static struct line saved_line;
    tricky.  */
 
 /* Table of blanks.  */
-static bool blanks[UCHAR_LIM];
+സ്ഥിതം bool blanks[UCHAR_LIM];
 
 /* Table of non-printing characters. */
-static bool nonprinting[UCHAR_LIM];
+സ്ഥിതം bool nonprinting[UCHAR_LIM];
 
 /* Table of non-dictionary characters (not letters, digits, or blanks). */
-static bool nondictionary[UCHAR_LIM];
+സ്ഥിതം bool nondictionary[UCHAR_LIM];
 
 /* Translation table folding lower case to upper.  */
-static char fold_toupper[UCHAR_LIM];
+സ്ഥിതം അക്ഷരം fold_toupper[UCHAR_LIM];
 
 #define MONTHS_PER_YEAR 12
 
 /* Table mapping month names to integers.
    Alphabetic order allows binary search. */
-static struct month monthtab[] =
+സ്ഥിതം ഘടന month monthtab[] =
 {
   {"APR", 4},
   {"AUG", 8},
@@ -302,7 +302,7 @@ static struct month monthtab[] =
 #define NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#define MIN_MERGE_BUFFER_SIZE (2 + വലുപ്പം (ഘടന വരി))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
 #define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
@@ -310,20 +310,20 @@ static struct month monthtab[] =
 /* The number of bytes needed for a merge or check buffer, which can
    function relatively efficiently even if it holds only one line.  If
    a longer line is seen, this value is increased.  */
-static size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
+സ്ഥിതം size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
 
 /* The approximate maximum number of bytes of main memory to use, as
    specified by the user.  Zero if the user has not specified a size.  */
-static size_t sort_size;
+സ്ഥിതം size_t sort_size;
 
 /* The initial allocation factor for non-regular files.
    This is used, e.g., when reading from a pipe.
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#define നിവേശം_FILE_SIZE_GUESS (128 * 1024)
 
-static struct
+സ്ഥിതം ഘടന
 {
   /* Number of temporary directory names used.  */
   idx_t n_dirs;
@@ -333,106 +333,106 @@ static struct
 
   /* Array of directory names in which any temporary files are
      to be created. */
-  char const **dirs COUNTED_BY (n_dirs);
+  അക്ഷരം സ്ഥിരം **dirs COUNTED_BY (n_dirs);
 } temp_dirs;
 
 
 
 /* Flag to reverse the order of all comparisons. */
-static bool reverse;
+സ്ഥിതം bool reverse;
 
 /* Flag for stable sort.  This turns off the last ditch bytewise
    comparison of lines, and instead leaves lines in the same order
    they were read if all keys compare equal.  */
-static bool stable;
+സ്ഥിതം bool stable;
 
 /* An int value outside char range.  */
-enum { NON_CHAR = CHAR_MAX + 1 };
+എണ്ണൽ { NON_CHAR = CHAR_MAX + 1 };
 
 /* If TAB has this value, blanks separate fields.  */
-enum { TAB_DEFAULT = CHAR_MAX + 1 };
+എണ്ണൽ { TAB_DEFAULT = CHAR_MAX + 1 };
 
 /* Tab character separating fields.  If TAB_DEFAULT, then fields are
    separated by the empty string between a non-blank character and a blank
    character. */
-static int tab = TAB_DEFAULT;
+സ്ഥിതം പൂർണ്ണസംഖ്യ tab = TAB_DEFAULT;
 
 /* Flag to remove consecutive duplicate lines from the output.
    Only the last of a sequence of equal lines will be output. */
-static bool unique;
+സ്ഥിതം bool unique;
 
 /* Nonzero if any of the input files are the standard input. */
-static bool have_read_stdin;
+സ്ഥിതം bool have_read_stdin;
 
 /* List of key field comparisons to be tried.  */
-static struct keyfield *keylist;
+സ്ഥിതം ഘടന keyfield *keylist;
 
 /* Program used to (de)compress temp files.  Must accept -d.  */
-static char const *compress_program;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *compress_program;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+സ്ഥിതം bool debug;
 
 /* Maximum number of files to merge in one go.  If more than this
    number are present, temp files will be used. */
-static unsigned int nmerge = NMERGE_DEFAULT;
+സ്ഥിതം unsigned പൂർണ്ണസംഖ്യ nmerge = NMERGE_DEFAULT;
 
 /* Whether SIGPIPE had the default disposition at startup.  */
-static bool default_SIGPIPE;
+സ്ഥിതം bool default_SIGPIPE;
 
 /* The list of temporary files. */
-struct tempnode
+ഘടന tempnode
 {
-  struct tempnode *volatile next;
+  ഘടന tempnode *അസ്ഥിര next;
   pid_t pid;     /* The subprocess PID; undefined if state == UNCOMPRESSED.  */
-  char state;
-  char name[FLEXIBLE_ARRAY_MEMBER];
+  അക്ഷരം state;
+  അക്ഷരം name[FLEXIBLE_ARRAY_MEMBER];
 };
-static struct tempnode *volatile temphead;
-static struct tempnode *volatile *temptail = &temphead;
+സ്ഥിതം ഘടന tempnode *അസ്ഥിര temphead;
+സ്ഥിതം ഘടന tempnode *അസ്ഥിര *temptail = &temphead;
 
 /* Clean up any remaining temporary files.  */
 
-static void
-cleanup (void)
+സ്ഥിതം ശൂന്യം
+cleanup (ശൂന്യം)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
-  temphead = NULL;
+  വേണ്ടി (ഘടന tempnode സ്ഥിരം *കണ്ണി = temphead; കണ്ണി; കണ്ണി = കണ്ണി->next)
+    unlink (കണ്ണി->name);
+  temphead = ശൂന്യ;
 }
 
 /* Handle interrupts and hangups. */
 
-static void
-sighandler (int sig)
+സ്ഥിതം ശൂന്യം
+sighandler (പൂർണ്ണസംഖ്യ sig)
 {
   cleanup ();
 
-  signal (sig, SIG_DFL);
-  raise (sig);
+  സൂചന (sig, SIG_DFL);
+  ഉയർത്തുക (sig);
 }
 
 /* Report MESSAGE for FILE, then clean up and exit.
    If FILE is null, it represents standard output.  */
 
-static void
-sort_die (char const *message, char const *file)
+സ്ഥിതം ശൂന്യം
+sort_die (അക്ഷരം സ്ഥിരം *message, അക്ഷരം സ്ഥിരം *file)
 {
   /* If we got EPIPE writing to stdout (from a previous fwrite() or fclose()
      and SIGPIPE was originally SIG_DFL, mimic standard SIGPIPE behavior.  */
-  if (errno == EPIPE && !file && default_SIGPIPE)
+  എങ്കിൽ (errno == EPIPE && !file && default_SIGPIPE)
     sighandler (SIGPIPE);
 
   error (SORT_FAILURE, errno, "%s: %s", message,
          quotef (file ? file : _("standard output")));
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -452,19 +452,19 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding sort താക്കോലുകൾ in each വരി\n\
 "));
       oputs (_("\
   -d, --dictionary-order\n\
          consider only blanks and alphanumeric characters\n\
 "));
       oputs (_("\
-  -f, --ignore-case\n\
-         fold lower case to upper case characters\n\
+  -f, --ignore-അവസ്ഥ\n\
+         fold lower അവസ്ഥ to upper അവസ്ഥ characters\n\
 "));
       oputs (_("\
   -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+         compare according to general numerical മൂല്യം\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
@@ -480,12 +480,12 @@ Ordering options:\n\
 "));
       oputs (_("\
   -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
-         see full documentation for supported strings\n\
+         compare according to string numerical മൂല്യം;\n\
+         see full documentation വേണ്ടി supported strings\n\
 "));
       oputs (_("\
   -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+         shuffle, but group identical താക്കോലുകൾ.  See also shuf(1)\n\
 "));
       oputs (_("\
       --random-source=FILE\n\
@@ -512,15 +512,15 @@ Other options:\n\
 "), stdout);
       oputs (_("\
       --batch-size=NMERGE\n\
-         merge at most NMERGE inputs at once; for more use temp files\n\
+         merge at most NMERGE inputs at once; വേണ്ടി more use temp files\n\
 "));
       oputs (_("\
   -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+         check വേണ്ടി sorted നിവേശം; ചെയ്യുക not sort\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but ചെയ്യുക not report first bad വരി\n\
 "));
       oputs (_("\
       --compress-program=PROG\n\
@@ -528,26 +528,26 @@ Other options:\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
+         annotate the part of the വരി used to sort,\n\
          and warn about questionable usage to standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         പഠ നിവേശം from the files specified by NUL-terminated names in file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, പഠ names from standard നിവേശം\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --താക്കോൽ=KEYDEF\n\
+         sort via a താക്കോൽ; KEYDEF gives location and type\n\
 "));
       oputs (_("\
   -m, --merge\n\
-         merge already sorted files; do not sort\n\
+         merge already sorted files; ചെയ്യുക not sort\n\
 "));
       oputs (_("\
   -o, --output=FILE\n\
-         write result to FILE instead of standard output\n\
+         ലിഖ result to FILE instead of standard output\n\
 "));
       oputs (_("\
   -s, --stable\n\
@@ -555,7 +555,7 @@ Other options:\n\
 "));
       oputs (_("\
   -S, --buffer-size=SIZE\n\
-         use SIZE for main memory buffer\n\
+         use SIZE വേണ്ടി പ്രധാന memory buffer\n\
 "));
       oputs (_("\
   -t, --field-separator=SEP\n\
@@ -563,44 +563,44 @@ Other options:\n\
 "));
       oprintf (_("\
   -T, --temporary-directory=DIR\n\
-         use DIR for temporaries, not $TMPDIR or %s;\n\
+         use DIR വേണ്ടി temporaries, not $TMPDIR or %s;\n\
          multiple options specify multiple directories\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the സംഖ്യ of sorts run concurrently to N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
-         with -c, check for strict ordering\n\
+         output only the first of വരികൾ with equal താക്കോലുകൾ;\n\
+         with -c, check വേണ്ടി strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         വരി delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
+KEYDEF is F[.C][OPTS][,F[.C][OPTS]] വേണ്ടി start and stop position, where F is a\n\
+field സംഖ്യ and C a character position in the field; both are origin 1, and\n\
+the stop position defaults to the വരി's end.  If neither -t nor -b is in\n\
 effect, characters in a field are counted from the beginning of the preceding\n\
 whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options വേണ്ടി that താക്കോൽ.  If no താക്കോൽ is given, use\n\
+the entire വരി as the താക്കോൽ.  Use --debug to diagnose incorrect താക്കോൽ usage.\n\
 \n\
 SIZE may be followed by the following multiplicative suffixes:\n\
 "), stdout);
       fputs (_("\
-% 1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E, Z, Y, R, Q.\
+% 1% of memory, b 1, K 1024 (സ്ഥിരസ്ഥിതി), and so on വേണ്ടി M, G, T, P, E, Z, Y, R, Q.\
 \n\n\
 *** WARNING ***\n\
 The locale specified by the environment affects sort order.\n\
 Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+native byte മൂല്യങ്ങൾ.\n\
 "), stdout );
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -610,7 +610,7 @@ native byte values.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   CHECK_OPTION = CHAR_MAX + 1,
   COMPRESS_PROGRAM_OPTION,
@@ -622,41 +622,41 @@ enum
   PARALLEL_OPTION
 };
 
-static char const short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
+സ്ഥിതം അക്ഷരം സ്ഥിരം short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
 
-static struct option const long_options[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
 {
-  {"ignore-leading-blanks", no_argument, NULL, 'b'},
-  {"check", optional_argument, NULL, CHECK_OPTION},
-  {"compress-program", required_argument, NULL, COMPRESS_PROGRAM_OPTION},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"dictionary-order", no_argument, NULL, 'd'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"general-numeric-sort", no_argument, NULL, 'g'},
-  {"ignore-nonprinting", no_argument, NULL, 'i'},
-  {"key", required_argument, NULL, 'k'},
-  {"merge", no_argument, NULL, 'm'},
-  {"month-sort", no_argument, NULL, 'M'},
-  {"numeric-sort", no_argument, NULL, 'n'},
-  {"human-numeric-sort", no_argument, NULL, 'h'},
-  {"version-sort", no_argument, NULL, 'V'},
-  {"random-sort", no_argument, NULL, 'R'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"sort", required_argument, NULL, SORT_OPTION},
-  {"output", required_argument, NULL, 'o'},
-  {"reverse", no_argument, NULL, 'r'},
-  {"stable", no_argument, NULL, 's'},
-  {"batch-size", required_argument, NULL, NMERGE_OPTION},
-  {"buffer-size", required_argument, NULL, 'S'},
-  {"field-separator", required_argument, NULL, 't'},
-  {"temporary-directory", required_argument, NULL, 'T'},
-  {"unique", no_argument, NULL, 'u'},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"parallel", required_argument, NULL, PARALLEL_OPTION},
+  {"ignore-leading-blanks", no_argument, ശൂന്യ, 'b'},
+  {"check", optional_argument, ശൂന്യ, CHECK_OPTION},
+  {"compress-program", required_argument, ശൂന്യ, COMPRESS_PROGRAM_OPTION},
+  {"debug", no_argument, ശൂന്യ, DEBUG_PROGRAM_OPTION},
+  {"dictionary-order", no_argument, ശൂന്യ, 'd'},
+  {"ignore-case", no_argument, ശൂന്യ, 'f'},
+  {"files0-from", required_argument, ശൂന്യ, FILES0_FROM_OPTION},
+  {"general-numeric-sort", no_argument, ശൂന്യ, 'g'},
+  {"ignore-nonprinting", no_argument, ശൂന്യ, 'i'},
+  {"key", required_argument, ശൂന്യ, 'k'},
+  {"merge", no_argument, ശൂന്യ, 'm'},
+  {"month-sort", no_argument, ശൂന്യ, 'M'},
+  {"numeric-sort", no_argument, ശൂന്യ, 'n'},
+  {"human-numeric-sort", no_argument, ശൂന്യ, 'h'},
+  {"version-sort", no_argument, ശൂന്യ, 'V'},
+  {"random-sort", no_argument, ശൂന്യ, 'R'},
+  {"random-source", required_argument, ശൂന്യ, RANDOM_SOURCE_OPTION},
+  {"sort", required_argument, ശൂന്യ, SORT_OPTION},
+  {"output", required_argument, ശൂന്യ, 'o'},
+  {"reverse", no_argument, ശൂന്യ, 'r'},
+  {"stable", no_argument, ശൂന്യ, 's'},
+  {"batch-size", required_argument, ശൂന്യ, NMERGE_OPTION},
+  {"buffer-size", required_argument, ശൂന്യ, 'S'},
+  {"field-separator", required_argument, ശൂന്യ, 't'},
+  {"temporary-directory", required_argument, ശൂന്യ, 'T'},
+  {"unique", no_argument, ശൂന്യ, 'u'},
+  {"zero-terminated", no_argument, ശൂന്യ, 'z'},
+  {"parallel", required_argument, ശൂന്യ, PARALLEL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {ശൂന്യ, 0, ശൂന്യ, 0},
 };
 
 #define CHECK_TABLE \
@@ -664,13 +664,13 @@ static struct option const long_options[] =
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം check_args[] =
 {
 #define _ct_(_s, _c) _s,
-  CHECK_TABLE NULL
+  CHECK_TABLE ശൂന്യ
 #undef  _ct_
 };
-static char const check_types[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം check_types[] =
 {
 #define _ct_(_s, _c) _c,
   CHECK_TABLE
@@ -685,13 +685,13 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം sort_args[] =
 {
 #define _st_(_s, _c) _s,
-  SORT_TABLE NULL
+  SORT_TABLE ശൂന്യ
 #undef  _st_
 };
-static char const sort_types[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം sort_types[] =
 {
 #define _st_(_s, _c) _c,
   SORT_TABLE
@@ -699,73 +699,73 @@ static char const sort_types[] =
 };
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+സ്ഥിതം sigset_t caught_signals;
 
 /* Critical section status.  */
-struct cs_status
+ഘടന cs_status
 {
   bool valid;
   sigset_t sigs;
 };
 
 /* Enter a critical section.  */
-static void
-cs_enter (struct cs_status *status)
+സ്ഥിതം ശൂന്യം
+cs_enter (ഘടന cs_status *status)
 {
-  int ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
+  പൂർണ്ണസംഖ്യ ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
   status->valid = ret == 0;
 }
 
 /* Leave a critical section.  */
-static void
-cs_leave (struct cs_status const *status)
+സ്ഥിതം ശൂന്യം
+cs_leave (ഘടന cs_status സ്ഥിരം *status)
 {
-  if (status->valid)
+  എങ്കിൽ (status->valid)
     {
       /* Ignore failure when restoring the signal mask. */
-      pthread_sigmask (SIG_SETMASK, &status->sigs, NULL);
+      pthread_sigmask (SIG_SETMASK, &status->sigs, ശൂന്യ);
     }
 }
 
 /* Possible states for a temp file.  If compressed, the file's status
    is unreaped or reaped, depending on whether 'sort' has waited for
    the subprocess to finish.  */
-enum { UNCOMPRESSED, UNREAPED, REAPED };
+എണ്ണൽ { UNCOMPRESSED, UNREAPED, REAPED };
 
 /* A file to be sorted.  */
-struct sortfile
+ഘടന sortfile
 {
   /* The file's name.  */
-  char const *name;
+  അക്ഷരം സ്ഥിരം *name;
 
   /* Non-null if this is a temporary file, in which case NAME == TEMP->name.  */
-  struct tempnode *temp;
+  ഘടന tempnode *temp;
 };
 
 /* Map PIDs of unreaped subprocesses to their struct tempnode objects.  */
-static Hash_table *proctab;
+സ്ഥിതം Hash_table *proctab;
 
-enum { INIT_PROCTAB_SIZE = 47 };
+എണ്ണൽ { INIT_PROCTAB_SIZE = 47 };
 
-static size_t
-proctab_hasher (void const *entry, size_t tabsize)
+സ്ഥിതം size_t
+proctab_hasher (ശൂന്യം സ്ഥിരം *entry, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  ഘടന tempnode സ്ഥിരം *കണ്ണി = entry;
+  തിരികെ കണ്ണി->pid % tabsize;
 }
 
-static bool
-proctab_comparator (void const *e1, void const *e2)
+സ്ഥിതം bool
+proctab_comparator (ശൂന്യം സ്ഥിരം *e1, ശൂന്യം സ്ഥിരം *e2)
 {
-  struct tempnode const *n1 = e1;
-  struct tempnode const *n2 = e2;
-  return n1->pid == n2->pid;
+  ഘടന tempnode സ്ഥിരം *n1 = e1;
+  ഘടന tempnode സ്ഥിരം *n2 = e2;
+  തിരികെ n1->pid == n2->pid;
 }
 
 /* The number of unreaped child processes.  */
-static pid_t nprocs;
+സ്ഥിതം pid_t nprocs;
 
-static bool delete_proc (pid_t);
+സ്ഥിതം bool delete_proc (pid_t);
 
 /* If PID is positive, wait for the child process with that PID to
    exit, and assume that PID has already been removed from the process
@@ -774,88 +774,88 @@ static bool delete_proc (pid_t);
    child's process ID.  However, if PID is 0 and no children have
    exited, return 0 without waiting.  */
 
-static pid_t
+സ്ഥിതം pid_t
 reap (pid_t pid)
 {
-  int status;
+  പൂർണ്ണസംഖ്യ status;
   pid_t cpid = waitpid ((pid ? pid : -1), &status, (pid ? 0 : WNOHANG));
 
-  if (cpid < 0)
+  എങ്കിൽ (cpid < 0)
     error (SORT_FAILURE, errno, _("waiting for %s [-d]"),
            quoteaf (compress_program));
-  else if (0 < cpid && (0 < pid || delete_proc (cpid)))
+  അല്ലെങ്കിൽ എങ്കിൽ (0 < cpid && (0 < pid || delete_proc (cpid)))
     {
-      if (! WIFEXITED (status) || WEXITSTATUS (status))
+      എങ്കിൽ (! WIFEXITED (status) || WEXITSTATUS (status))
         error (SORT_FAILURE, 0, _("%s [-d] terminated abnormally"),
                quoteaf (compress_program));
       --nprocs;
     }
 
-  return cpid;
+  തിരികെ cpid;
 }
 
 /* TEMP represents a new process; add it to the process table.  Create
    the process table the first time it's called.  */
 
-static void
-register_proc (struct tempnode *temp)
+സ്ഥിതം ശൂന്യം
+register_proc (ഘടന tempnode *temp)
 {
-  if (! proctab)
+  എങ്കിൽ (! proctab)
     {
-      proctab = hash_initialize (INIT_PROCTAB_SIZE, NULL,
+      proctab = hash_initialize (INIT_PROCTAB_SIZE, ശൂന്യ,
                                  proctab_hasher,
                                  proctab_comparator,
-                                 NULL);
-      if (! proctab)
+                                 ശൂന്യ);
+      എങ്കിൽ (! proctab)
         xalloc_die ();
     }
 
   temp->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  എങ്കിൽ (! hash_തിരുകുക (proctab, temp))
     xalloc_die ();
 }
 
 /* If PID is in the process table, remove it and return true.
    Otherwise, return false.  */
 
-static bool
+സ്ഥിതം bool
 delete_proc (pid_t pid)
 {
-  struct tempnode test;
+  ഘടന tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
-    return false;
-  node->state = REAPED;
-  return true;
+  ഘടന tempnode *കണ്ണി = hash_remove (proctab, &test);
+  എങ്കിൽ (! കണ്ണി)
+    തിരികെ false;
+  കണ്ണി->state = REAPED;
+  തിരികെ true;
 }
 
 /* Remove PID from the process table, and wait for it to exit if it
    hasn't already.  */
 
-static void
+സ്ഥിതം ശൂന്യം
 wait_proc (pid_t pid)
 {
-  if (delete_proc (pid))
+  എങ്കിൽ (delete_proc (pid))
     reap (pid);
 }
 
 /* Reap any exited children.  Do not block; reap only those that have
    already exited.  */
 
-static void
-reap_exited (void)
+സ്ഥിതം ശൂന്യം
+reap_exited (ശൂന്യം)
 {
-  while (0 < nprocs && reap (0))
-    continue;
+  ആകുമ്പോൾ (0 < nprocs && reap (0))
+    തുടരുക;
 }
 
 /* Reap at least one exited child, waiting if necessary.  */
 
-static void
-reap_some (void)
+സ്ഥിതം ശൂന്യം
+reap_some (ശൂന്യം)
 {
   reap (-1);
   reap_exited ();
@@ -863,23 +863,23 @@ reap_some (void)
 
 /* Reap all children, waiting if necessary.  */
 
-static void
-reap_all (void)
+സ്ഥിതം ശൂന്യം
+reap_all (ശൂന്യം)
 {
-  while (0 < nprocs)
+  ആകുമ്പോൾ (0 < nprocs)
     reap (-1);
 }
 
 /* Cleanup actions to take when exiting.  */
 
-static void
-exit_cleanup (void)
+സ്ഥിതം ശൂന്യം
+exit_cleanup (ശൂന്യം)
 {
-  if (temphead)
+  എങ്കിൽ (temphead)
     {
       /* Clean up any remaining temporary files in a critical section so
          that a signal handler does not try to clean them too.  */
-      struct cs_status cs;
+      ഘടന cs_status cs;
       cs_enter (&cs);
       cleanup ();
       cs_leave (&cs);
@@ -894,61 +894,61 @@ exit_cleanup (void)
    failure is due to file descriptor exhaustion and
    SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-create_temp_file (int *pfd, bool survive_fd_exhaustion)
+സ്ഥിതം ഘടന tempnode *
+create_temp_file (പൂർണ്ണസംഖ്യ *pfd, bool survive_fd_exhaustion)
 {
-  static char const slashbase[] = "/sortXXXXXX";
-  static idx_t temp_dir_index;
-  int fd;
-  int saved_errno;
-  char const *temp_dir = temp_dirs.dirs[temp_dir_index];
+  സ്ഥിതം അക്ഷരം സ്ഥിരം slashbase[] = "/sortXXXXXX";
+  സ്ഥിതം idx_t temp_dir_index;
+  പൂർണ്ണസംഖ്യ fd;
+  പൂർണ്ണസംഖ്യ saved_errno;
+  അക്ഷരം സ്ഥിരം *temp_dir = temp_dirs.dirs[temp_dir_index];
   size_t len = strlen (temp_dir);
-  struct tempnode *node =
-    xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
-  struct cs_status cs;
+  ഘടന tempnode *കണ്ണി =
+    xmalloc (FLEXSIZEOF (ഘടന tempnode, name, len + വലുപ്പം slashbase));
+  അക്ഷരം *file = കണ്ണി->name;
+  ഘടന cs_status cs;
 
   memcpy (file, temp_dir, len);
-  memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
-  if (++temp_dir_index == temp_dirs.n_dirs)
+  memcpy (file + len, slashbase, വലുപ്പം slashbase);
+  കണ്ണി->next = ശൂന്യ;
+  എങ്കിൽ (++temp_dir_index == temp_dirs.n_dirs)
     temp_dir_index = 0;
 
   /* Create the temporary file in a critical section, to avoid races.  */
   cs_enter (&cs);
   fd = mkostemp (file, O_CLOEXEC);
-  if (0 <= fd)
+  എങ്കിൽ (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = കണ്ണി;
+      temptail = &കണ്ണി->next;
     }
   saved_errno = errno;
   cs_leave (&cs);
   errno = saved_errno;
 
-  if (fd < 0)
+  എങ്കിൽ (fd < 0)
     {
-      if (! (survive_fd_exhaustion && errno == EMFILE))
+      എങ്കിൽ (! (survive_fd_exhaustion && errno == EMFILE))
         error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
                quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+      സ്വതന്ത്രം (കണ്ണി);
+      കണ്ണി = ശൂന്യ;
     }
 
   *pfd = fd;
-  return node;
+  തിരികെ കണ്ണി;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
 
-static struct stat *
-get_outstatus (void)
+സ്ഥിതം ഘടന stat *
+get_outstatus (ശൂന്യം)
 {
-  static int outstat_errno;
-  static struct stat outstat;
-  if (outstat_errno == 0)
+  സ്ഥിതം പൂർണ്ണസംഖ്യ outstat_errno;
+  സ്ഥിതം ഘടന stat outstat;
+  എങ്കിൽ (outstat_errno == 0)
     outstat_errno = fstat (STDOUT_FILENO, &outstat) == 0 ? -1 : errno;
-  return outstat_errno < 0 ? &outstat : NULL;
+  തിരികെ outstat_errno < 0 ? &outstat : ശൂന്യ;
 }
 
 /* Return a stream for FILE, opened with mode HOW.  If HOW is "w",
@@ -999,127 +999,127 @@ get_outstatus (void)
    cache immediately after processing.  This is done implicitly
    however when the files are unlinked.  */
 
-static FILE *
-stream_open (char const *file, char const *how)
+സ്ഥിതം FILE *
+stream_open (അക്ഷരം സ്ഥിരം *file, അക്ഷരം സ്ഥിരം *how)
 {
   FILE *fp;
 
-  if (*how == 'r')
+  എങ്കിൽ (*how == 'r')
     {
-      if (streq (file, "-"))
+      എങ്കിൽ (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      അല്ലെങ്കിൽ
         {
-          int fd = open (file, O_RDONLY | O_CLOEXEC);
-          fp = fd < 0 ? NULL : fdopen (fd, how);
+          പൂർണ്ണസംഖ്യ fd = open (file, O_RDONLY | O_CLOEXEC);
+          fp = fd < 0 ? ശൂന്യ : fdopen (fd, how);
         }
       fadvise (fp, FADVISE_SEQUENTIAL);
     }
-  else if (*how == 'w')
+  അല്ലെങ്കിൽ എങ്കിൽ (*how == 'w')
     {
-      if (file && ftruncate (STDOUT_FILENO, 0) != 0)
+      എങ്കിൽ (file && ftruncate (STDOUT_FILENO, 0) != 0)
         {
-          int ftruncate_errno = errno;
-          struct stat *outst = get_outstatus ();
-          if (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
+          പൂർണ്ണസംഖ്യ ftruncate_errno = errno;
+          ഘടന stat *outst = get_outstatus ();
+          എങ്കിൽ (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
             error (SORT_FAILURE, ftruncate_errno, _("%s: error truncating"),
                    quotef (file));
         }
       fp = stdout;
     }
-  else
+  അല്ലെങ്കിൽ
     affirm (!"unexpected mode passed to stream_open");
 
-  return fp;
+  തിരികെ fp;
 }
 
 /* Same as stream_open, except always return a non-null value; die on
    failure.  */
 
-static FILE *
-xfopen (char const *file, char const *how)
+സ്ഥിതം FILE *
+xfopen (അക്ഷരം സ്ഥിരം *file, അക്ഷരം സ്ഥിരം *how)
 {
   FILE *fp = stream_open (file, how);
-  if (!fp)
+  എങ്കിൽ (!fp)
     sort_die (_("open failed"), file);
-  return fp;
+  തിരികെ fp;
 }
 
 /* Close FP, whose name is FILE, and report any errors.  */
 
-static void
-xfclose (FILE *fp, char const *file)
+സ്ഥിതം ശൂന്യം
+xfclose (FILE *fp, അക്ഷരം സ്ഥിരം *file)
 {
-  switch (fileno (fp))
+  തിരഞ്ഞെടുപ്പ് (fileno (fp))
     {
-    case STDIN_FILENO:
+    അവസ്ഥ STDIN_FILENO:
       /* Allow reading stdin from tty more than once.  */
       clearerr (fp);
-      break;
+      നിർത്തുക;
 
-    case STDOUT_FILENO:
+    അവസ്ഥ STDOUT_FILENO:
       /* Don't close stdout just yet.  close_stdout does that.  */
-      if (fflush (fp) != 0)
+      എങ്കിൽ (fflush (fp) != 0)
         sort_die (_("fflush failed"), file);
-      break;
+      നിർത്തുക;
 
-    default:
-      if (fclose (fp) != 0)
+    സ്ഥിരസ്ഥിതി:
+      എങ്കിൽ (fclose (fp) != 0)
         sort_die (_("close failed"), file);
-      break;
+      നിർത്തുക;
     }
 }
 
 /* Move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not close-on-exec.  */
 
-static void
-move_fd (int oldfd, int newfd)
+സ്ഥിതം ശൂന്യം
+move_fd (പൂർണ്ണസംഖ്യ oldfd, പൂർണ്ണസംഖ്യ newfd)
 {
-  if (oldfd != newfd)
+  എങ്കിൽ (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_മൂല്യം (dup2 (oldfd, newfd));
+      ignore_മൂല്യം (close (oldfd));
     }
 }
 
 /* Setup ACTION to move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not
    close-on-exec.  Returns 0 if successful, or an error number otherwise.  */
 
-static int
+സ്ഥിതം പൂർണ്ണസംഖ്യ
 posix_spawn_file_actions_move_fd (posix_spawn_file_actions_t *actions,
-                                  int oldfd, int newfd)
+                                  പൂർണ്ണസംഖ്യ oldfd, പൂർണ്ണസംഖ്യ newfd)
 {
-  int result = 0;
-  if (oldfd != newfd)
+  പൂർണ്ണസംഖ്യ result = 0;
+  എങ്കിൽ (oldfd != newfd)
     {
       result = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
-      if (result == 0)
+      എങ്കിൽ (result == 0)
         result = posix_spawn_file_actions_addclose (actions, oldfd);
     }
-  return result;
+  തിരികെ result;
 }
 
 /* Look up COMPRESS_PROGRAM in $PATH, and return the resolved program name.
    Upon error, return NULL with errno set.  */
 
-static char const *
-get_resolved_compress_program (void)
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
+get_resolved_compress_program (ശൂന്യം)
 {
   /* Use a cache, to perform the search only once.  */
-  static char const *resolved_compress_program_cache /* = NULL */;
+  സ്ഥിതം അക്ഷരം സ്ഥിരം *resolved_compress_program_cache /* = NULL */;
 
-  if (resolved_compress_program_cache == NULL)
+  എങ്കിൽ (resolved_compress_program_cache == ശൂന്യ)
     {
       resolved_compress_program_cache =
-        find_in_given_path (compress_program, getenv ("PATH"), NULL, false);
+        find_in_given_path (compress_program, getenv ("PATH"), ശൂന്യ, false);
       /* If resolved_compress_program_cache == NULL, errno is set here.  */
     }
 
-  return resolved_compress_program_cache;
+  തിരികെ resolved_compress_program_cache;
 }
 
 /* Execute COMPRESS_PROGRAM in a child process.  The child processes pid is
@@ -1127,15 +1127,15 @@ get_resolved_compress_program (void)
    a child process before giving up.  Return 0 on success, or an error number
    otherwise.  */
 
-static int
-pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+pipe_child (pid_t *pid, പൂർണ്ണസംഖ്യ pipefds[2], പൂർണ്ണസംഖ്യ tempfd, bool decompress,
             size_t tries)
 {
-  char const *resolved_compress_program;
-  struct tempnode *saved_temphead;
-  double wait_retry = 0.25;
-  struct cs_status cs;
-  int result;
+  അക്ഷരം സ്ഥിരം *resolved_compress_program;
+  ഘടന tempnode *saved_temphead;
+  ഇരട്ട wait_retry = 0.25;
+  ഘടന cs_status cs;
+  പൂർണ്ണസംഖ്യ result;
   posix_spawnattr_t attr;
   posix_spawn_file_actions_t actions;
 
@@ -1144,27 +1144,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      implementations/emulations of posix_spawn we get only a
      generic (fatal) error from the child in that case.  */
   resolved_compress_program = get_resolved_compress_program ();
-  if (resolved_compress_program == NULL)
-    return errno;
+  എങ്കിൽ (resolved_compress_program == ശൂന്യ)
+    തിരികെ errno;
 
-  if ((result = posix_spawnattr_init (&attr)))
-    return result;
-  if ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
+  എങ്കിൽ ((result = posix_spawnattr_init (&attr)))
+    തിരികെ result;
+  എങ്കിൽ ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
       || (result = posix_spawn_file_actions_init (&actions)))
     {
       posix_spawnattr_destroy (&attr);
-      return result;
+      തിരികെ result;
     }
 
-  if (pipe2 (pipefds, O_CLOEXEC) < 0)
+  എങ്കിൽ (pipe2 (pipefds, O_CLOEXEC) < 0)
     {
-      int saved_errno = errno;
+      പൂർണ്ണസംഖ്യ saved_errno = errno;
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return saved_errno;
+      തിരികെ saved_errno;
     }
 
-  if ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
+  എങ്കിൽ ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
       || (result = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
       || (decompress
           ? ((result = posix_spawn_file_actions_addclose (&actions,
@@ -1186,14 +1186,14 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
       close (pipefds[1]);
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return result;
+      തിരികെ result;
     }
 
-  char const *const argv[] =
+  അക്ഷരം സ്ഥിരം *സ്ഥിരം argv[] =
     {
       resolved_compress_program,
-      decompress ? "-d" : NULL,
-      NULL
+      decompress ? "-d" : ശൂന്യ,
+      ശൂന്യ
     };
 
   /* At least NMERGE + 1 subprocesses are needed.  More could be created, but
@@ -1203,27 +1203,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      previous merge finish (1 subprocess) in parallel with the current
      merge (NMERGE + 1 subprocesses).  */
 
-  if (nmerge + 1 < nprocs)
+  എങ്കിൽ (nmerge + 1 < nprocs)
     reap_some ();
 
-  while (tries--)
+  ആകുമ്പോൾ (tries--)
     {
       /* This is so the child process won't delete our temp files
          if it receives a signal before exec-ing.  */
       cs_enter (&cs);
       saved_temphead = temphead;
-      temphead = NULL;
+      temphead = ശൂന്യ;
 
       result = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
-                             (char * const *) argv, environ);
+                             (അക്ഷരം * സ്ഥിരം *) argv, environ);
 
       temphead = saved_temphead;
 
       cs_leave (&cs);
 
-      if (result != EAGAIN)
-        break;
-      else
+      എങ്കിൽ (result != EAGAIN)
+        നിർത്തുക;
+      അല്ലെങ്കിൽ
         {
           /* [v]fork/clone are indicating resource constraints,
              so back-off for a while and retry.  */
@@ -1236,15 +1236,15 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
   posix_spawnattr_destroy (&attr);
   posix_spawn_file_actions_destroy (&actions);
 
-  if (result)
+  എങ്കിൽ (result)
     {
       close (pipefds[0]);
       close (pipefds[1]);
     }
-  else
+  അല്ലെങ്കിൽ
     ++nprocs;
 
-  return result;
+  തിരികെ result;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1253,57 +1253,57 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
    fails, return NULL if the failure is due to file descriptor
    exhaustion and SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
+സ്ഥിതം ഘടന tempnode *
 maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
 {
-  int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
-    return NULL;
+  പൂർണ്ണസംഖ്യ tempfd;
+  ഘടന tempnode *കണ്ണി = create_temp_file (&tempfd, survive_fd_exhaustion);
+  എങ്കിൽ (! കണ്ണി)
+    തിരികെ ശൂന്യ;
 
-  node->state = UNCOMPRESSED;
+  കണ്ണി->state = UNCOMPRESSED;
 
-  if (compress_program)
+  എങ്കിൽ (compress_program)
     {
-      int pipefds[2];
-      static int last_result = 0;
+      പൂർണ്ണസംഖ്യ pipefds[2];
+      സ്ഥിതം പൂർണ്ണസംഖ്യ last_result = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      പൂർണ്ണസംഖ്യ result = pipe_child (&കണ്ണി->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
-      if (result)
+      എങ്കിൽ (result)
         {
-          if (result != last_result)
+          എങ്കിൽ (result != last_result)
             error (0, result, _("could not run compress program %s"),
                    quoteaf (compress_program));
         }
-      else
+      അല്ലെങ്കിൽ
         {
           close (tempfd);
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          register_proc (കണ്ണി);
         }
 
       last_result = result;
     }
 
   *pfp = fdopen (tempfd, "w");
-  if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+  എങ്കിൽ (! *pfp)
+    sort_die (_("couldn't create temporary file"), കണ്ണി->name);
 
-  return node;
+  തിരികെ കണ്ണി;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
    to that file.  Set *PFP to the file handle and return the address
    of the new temp node.  Die on failure.  */
 
-static struct tempnode *
+സ്ഥിതം ഘടന tempnode *
 create_temp (FILE **pfp)
 {
-  return maybe_create_temp (pfp, false);
+  തിരികെ maybe_create_temp (pfp, false);
 }
 
 /* Open a compressed temp file and start a decompression process through
@@ -1311,32 +1311,32 @@ create_temp (FILE **pfp)
    EMFILE) if we ran out of file descriptors, and die on any other
    kind of failure.  */
 
-static FILE *
-open_temp (struct tempnode *temp)
+സ്ഥിതം FILE *
+open_temp (ഘടന tempnode *temp)
 {
-  int tempfd, pipefds[2];
-  FILE *fp = NULL;
+  പൂർണ്ണസംഖ്യ tempfd, pipefds[2];
+  FILE *fp = ശൂന്യ;
 
-  if (temp->state == UNREAPED)
+  എങ്കിൽ (temp->state == UNREAPED)
     wait_proc (temp->pid);
 
   tempfd = open (temp->name, O_RDONLY);
-  if (tempfd < 0)
-    return NULL;
+  എങ്കിൽ (tempfd < 0)
+    തിരികെ ശൂന്യ;
 
   pid_t child;
-  int result = pipe_child (&child, pipefds, tempfd, true,
+  പൂർണ്ണസംഖ്യ result = pipe_child (&child, pipefds, tempfd, true,
                            MAX_TRIES_DECOMPRESS);
 
-  if (result)
+  എങ്കിൽ (result)
     {
-      if (result != EMFILE)
+      എങ്കിൽ (result != EMFILE)
         error (SORT_FAILURE, result, _("could not run compress program %s -d"),
                quoteaf (compress_program));
       close (tempfd);
       errno = EMFILE;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       temp->pid = child;
       register_proc (temp);
@@ -1344,80 +1344,80 @@ open_temp (struct tempnode *temp)
       close (pipefds[1]);
 
       fp = fdopen (pipefds[0], "r");
-      if (! fp)
+      എങ്കിൽ (! fp)
         {
-          int saved_errno = errno;
+          പൂർണ്ണസംഖ്യ saved_errno = errno;
           close (pipefds[0]);
           errno = saved_errno;
         }
     }
 
-  return fp;
+  തിരികെ fp;
 }
 
 /* Append DIR to the array of temporary directory names.  */
-static void
-add_temp_dir (char const *dir)
+സ്ഥിതം ശൂന്യം
+add_temp_dir (അക്ഷരം സ്ഥിരം *dir)
 {
-  if (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
+  എങ്കിൽ (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
     temp_dirs.dirs = xpalloc (temp_dirs.dirs, &temp_dirs.n_dirs_alloc, 1, -1,
-                              sizeof *temp_dirs.dirs);
+                              വലുപ്പം *temp_dirs.dirs);
 
-  idx_t const dir_idx = temp_dirs.n_dirs++;
+  idx_t സ്ഥിരം dir_idx = temp_dirs.n_dirs++;
   temp_dirs.dirs[dir_idx] = dir;
 }
 
 /* Remove NAME from the list of temporary files.  */
 
-static void
-zaptemp (char const *name)
+സ്ഥിതം ശൂന്യം
+zaptemp (അക്ഷരം സ്ഥിരം *name)
 {
-  struct tempnode *volatile *pnode;
-  struct tempnode *node;
-  struct tempnode *next;
-  int unlink_status;
-  int unlink_errno = 0;
-  struct cs_status cs;
+  ഘടന tempnode *അസ്ഥിര *pnode;
+  ഘടന tempnode *കണ്ണി;
+  ഘടന tempnode *next;
+  പൂർണ്ണസംഖ്യ unlink_status;
+  പൂർണ്ണസംഖ്യ unlink_errno = 0;
+  ഘടന cs_status cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
-    continue;
+  വേണ്ടി (pnode = &temphead; (കണ്ണി = *pnode)->name != name; pnode = &കണ്ണി->next)
+    തുടരുക;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  എങ്കിൽ (കണ്ണി->state == UNREAPED)
+    wait_proc (കണ്ണി->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  next = കണ്ണി->next;
   cs_enter (&cs);
   unlink_status = unlink (name);
   unlink_errno = errno;
   *pnode = next;
   cs_leave (&cs);
 
-  if (unlink_status != 0)
+  എങ്കിൽ (unlink_status != 0)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
-  if (! next)
+  എങ്കിൽ (! next)
     temptail = pnode;
-  free (node);
+  സ്വതന്ത്രം (കണ്ണി);
 }
 
-#if HAVE_NL_LANGINFO
+#എങ്കിൽ HAVE_NL_LANGINFO
 
-static int
-struct_month_cmp (void const *m1, void const *m2)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+struct_month_cmp (ശൂന്യം സ്ഥിരം *m1, ശൂന്യം സ്ഥിരം *m2)
 {
-  struct month const *month1 = m1;
-  struct month const *month2 = m2;
-  return strcmp (month1->name, month2->name);
+  ഘടന month സ്ഥിരം *month1 = m1;
+  ഘടന month സ്ഥിരം *month2 = m2;
+  തിരികെ strcmp (month1->name, month2->name);
 }
 
 #endif
 
 /* Initialize the character class tables. */
 
-static void
-inittables (void)
+സ്ഥിതം ശൂന്യം
+inittables (ശൂന്യം)
 {
-  for (size_t i = 0; i < UCHAR_LIM; ++i)
+  വേണ്ടി (size_t i = 0; i < UCHAR_LIM; ++i)
     {
       blanks[i] = i == '\n' || isblank (i);
       nondictionary[i] = ! blanks[i] && ! isalnum (i);
@@ -1425,28 +1425,28 @@ inittables (void)
       fold_toupper[i] = toupper (i);
     }
 
-#if HAVE_NL_LANGINFO
+#എങ്കിൽ HAVE_NL_LANGINFO
   /* If we're not in the "C" locale, read different names for months.  */
-  if (hard_LC_TIME)
+  എങ്കിൽ (hard_LC_TIME)
     {
-      for (size_t i = 0; i < MONTHS_PER_YEAR; i++)
+      വേണ്ടി (size_t i = 0; i < MONTHS_PER_YEAR; i++)
         {
-          char const *s;
+          അക്ഷരം സ്ഥിരം *s;
           size_t s_len;
           size_t j, k;
-          char *name;
+          അക്ഷരം *name;
 
           s = nl_langinfo (ABMON_1 + i);
           s_len = strlen (s);
           monthtab[i].name = name = xmalloc (s_len + 1);
           monthtab[i].val = i + 1;
 
-          for (j = k = 0; j < s_len; j++)
-            if (! isblank (to_uchar (s[j])))
+          വേണ്ടി (j = k = 0; j < s_len; j++)
+            എങ്കിൽ (! isblank (to_uchar (s[j])))
               name[k++] = fold_toupper[to_uchar (s[j])];
           name[k] = '\0';
         }
-      qsort (monthtab, MONTHS_PER_YEAR, sizeof *monthtab, struct_month_cmp);
+      qsort (monthtab, MONTHS_PER_YEAR, വലുപ്പം *monthtab, struct_month_cmp);
     }
 #endif
 }
@@ -1454,29 +1454,29 @@ inittables (void)
 /* Specify how many inputs may be merged at once.
    This may be set on the command-line with the
    --batch-size option. */
-static void
-specify_nmerge (int oi, char c, char const *s)
+സ്ഥിതം ശൂന്യം
+specify_nmerge (പൂർണ്ണസംഖ്യ oi, അക്ഷരം c, അക്ഷരം സ്ഥിരം *s)
 {
   uintmax_t n;
-  struct rlimit rlimit;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &n, "");
+  ഘടന rlimit rlimit;
+  എണ്ണൽ strtol_error e = xstrtoumax (s, ശൂന്യ, 10, &n, "");
 
   /* Try to find out how many file descriptors we'll be able
      to open.  We need at least nmerge + 3 (STDIN_FILENO,
      STDOUT_FILENO and STDERR_FILENO). */
-  unsigned int max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
+  unsigned പൂർണ്ണസംഖ്യ max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
                               ? rlimit.rlim_cur
                               : OPEN_MAX)
                              - 3);
 
-  if (e == LONGINT_OK)
+  എങ്കിൽ (e == LONGINT_OK)
     {
       nmerge = n;
-      if (nmerge != n)
+      എങ്കിൽ (nmerge != n)
         e = LONGINT_OVERFLOW;
-      else
+      അല്ലെങ്കിൽ
         {
-          if (nmerge < 2)
+          എങ്കിൽ (nmerge < 2)
             {
               error (0, 0, _("invalid --%s argument %s"),
                      long_options[oi].name, quote (s));
@@ -1484,16 +1484,16 @@ specify_nmerge (int oi, char c, char const *s)
                      _("minimum --%s argument is %s"),
                      long_options[oi].name, quote ("2"));
             }
-          else if (max_nmerge < nmerge)
+          അല്ലെങ്കിൽ എങ്കിൽ (max_nmerge < nmerge)
             {
               e = LONGINT_OVERFLOW;
             }
-          else
-            return;
+          അല്ലെങ്കിൽ
+            തിരികെ;
         }
     }
 
-  if (e == LONGINT_OVERFLOW)
+  എങ്കിൽ (e == LONGINT_OVERFLOW)
     {
       error (0, 0, _("--%s argument %s too large"),
              long_options[oi].name, quote (s));
@@ -1501,58 +1501,58 @@ specify_nmerge (int oi, char c, char const *s)
              _("maximum --%s argument with current rlimit is %u"),
              long_options[oi].name, max_nmerge);
     }
-  else
+  അല്ലെങ്കിൽ
     xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the amount of main memory to use when sorting.  */
-static void
-specify_sort_size (int oi, char c, char const *s)
+സ്ഥിതം ശൂന്യം
+specify_sort_size (പൂർണ്ണസംഖ്യ oi, അക്ഷരം c, അക്ഷരം സ്ഥിരം *s)
 {
   uintmax_t n;
-  char *suffix;
-  enum strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
+  അക്ഷരം *suffix;
+  എണ്ണൽ strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
 
   /* The default unit is KiB.  */
-  if (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
+  എങ്കിൽ (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
     e = LONGINT_OVERFLOW;
 
   /* A 'b' suffix means bytes; a '%' suffix means percent of memory.  */
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
-    switch (suffix[0])
+  എങ്കിൽ (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
+    തിരഞ്ഞെടുപ്പ് (suffix[0])
       {
-      case 'b':
+      അവസ്ഥ 'b':
         e = LONGINT_OK;
-        break;
+        നിർത്തുക;
 
-      case '%':
+      അവസ്ഥ '%':
         {
-          double mem = physmem_total () * n / 100;
+          ഇരട്ട mem = physmem_total () * n / 100;
 
           /* Use "<", not "<=", to avoid problems with rounding.  */
-          if (mem < UINTMAX_MAX)
+          എങ്കിൽ (mem < UINTMAX_MAX)
             {
               n = mem;
               e = LONGINT_OK;
             }
-          else
+          അല്ലെങ്കിൽ
             e = LONGINT_OVERFLOW;
         }
-        break;
+        നിർത്തുക;
       }
 
-  if (e == LONGINT_OK)
+  എങ്കിൽ (e == LONGINT_OK)
     {
       /* If multiple sort sizes are specified, take the maximum, so
          that option order does not matter.  */
-      if (n < sort_size)
-        return;
+      എങ്കിൽ (n < sort_size)
+        തിരികെ;
 
       sort_size = n;
-      if (sort_size == n)
+      എങ്കിൽ (sort_size == n)
         {
           sort_size = MAX (sort_size, MIN_SORT_SIZE);
-          return;
+          തിരികെ;
         }
 
       e = LONGINT_OVERFLOW;
@@ -1562,37 +1562,37 @@ specify_sort_size (int oi, char c, char const *s)
 }
 
 /* Specify the number of threads to spawn during internal sort.  */
-static size_t
-specify_nthreads (int oi, char c, char const *s)
+സ്ഥിതം size_t
+specify_nthreads (പൂർണ്ണസംഖ്യ oi, അക്ഷരം c, അക്ഷരം സ്ഥിരം *s)
 {
   uintmax_t nthreads;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &nthreads, "");
-  if (e == LONGINT_OVERFLOW)
-    return SIZE_MAX;
-  if (e != LONGINT_OK)
+  എണ്ണൽ strtol_error e = xstrtoumax (s, ശൂന്യ, 10, &nthreads, "");
+  എങ്കിൽ (e == LONGINT_OVERFLOW)
+    തിരികെ SIZE_MAX;
+  എങ്കിൽ (e != LONGINT_OK)
     xstrtol_fatal (e, oi, c, long_options, s);
-  if (SIZE_MAX < nthreads)
+  എങ്കിൽ (SIZE_MAX < nthreads)
     nthreads = SIZE_MAX;
-  if (nthreads == 0)
+  എങ്കിൽ (nthreads == 0)
     error (SORT_FAILURE, 0, _("number in parallel must be nonzero"));
-  return nthreads;
+  തിരികെ nthreads;
 }
 
 /* Return the default sort size.  This is a growth limit, not necessarily
    the initial allocation size.  */
-static size_t
-default_sort_size (void)
+സ്ഥിതം size_t
+default_sort_size (ശൂന്യം)
 {
   /* Let SIZE be MEM, but no more than the maximum object size,
      total memory, or system resource limits.  Don't bother to check
      for values like RLIM_INFINITY since in practice they are not much
      less than SIZE_MAX.  */
   size_t size = SIZE_MAX;
-  struct rlimit rlimit;
-  if (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
+  ഘടന rlimit rlimit;
+  എങ്കിൽ (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
     size = rlimit.rlim_cur;
 #ifdef RLIMIT_AS
-  if (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
+  എങ്കിൽ (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
     size = rlimit.rlim_cur;
 #endif
 
@@ -1603,80 +1603,80 @@ default_sort_size (void)
 #ifdef RLIMIT_RSS
   /* Leave a 1/16 margin for RSS to leave room for code, stack, etc.
      Exceeding RSS is not fatal, but can be quite slow.  */
-  if (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
+  എങ്കിൽ (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
     size = rlimit.rlim_cur / 16 * 15;
 #endif
 
   /* Let MEM be available memory or 1/8 of total memory, whichever
      is greater.  */
-  double avail = physmem_available ();
-  double total = physmem_total ();
-  double mem = MAX (avail, total / 8);
+  ഇരട്ട avail = physmem_available ();
+  ഇരട്ട total = physmem_total ();
+  ഇരട്ട mem = MAX (avail, total / 8);
 
   /* Leave a 1/4 margin for physical memory.  */
-  if (total * 0.75 < size)
+  എങ്കിൽ (total * 0.75 < size)
     size = total * 0.75;
 
   /* Return the minimum of MEM and SIZE, but no less than
      MIN_SORT_SIZE.  Avoid the MIN macro here, as it is not quite
      right when only one argument is floating point.  */
-  if (mem < size)
+  എങ്കിൽ (mem < size)
     size = mem;
-  return MAX (size, MIN_SORT_SIZE);
+  തിരികെ MAX (size, MIN_SORT_SIZE);
 }
 
 /* Return true if *ALLOC has been adjusted to a size suitable for a sort
    buffer.  */
 
-static bool
-line_aligned_size (size_t *alloc)
+സ്ഥിതം bool
+വരി_aligned_size (size_t *alloc)
 {
   size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
+  size_t alignment = വലുപ്പം (ഘടന വരി);
   size_t padding = alignment - size % alignment;
   size_t aligned;
 
-  if (ckd_add (&aligned, size, padding))
-    return false;
+  എങ്കിൽ (ckd_add (&aligned, size, padding))
+    തിരികെ false;
 
   *alloc = aligned;
-  return true;
+  തിരികെ true;
 }
 
 /* Return the default initial allocation for a growable sort buffer.  */
 
-static size_t
-default_initial_sort_size (size_t line_bytes)
+സ്ഥിതം size_t
+default_initial_sort_size (size_t വരി_bytes)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t size = വരി_bytes + 2;
+  size_t നിവേശം_size;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
-    return SIZE_MAX;
+  എങ്കിൽ (ckd_mul (&നിവേശം_size, നിവേശം_FILE_SIZE_GUESS, വരി_bytes + 1)
+      || ckd_add (&size, size, നിവേശം_size))
+    തിരികെ SIZE_MAX;
 
-  return MAX (size, MIN_SORT_SIZE);
+  തിരികെ MAX (size, MIN_SORT_SIZE);
 }
 
 /* Store into *WORST_CASE the allocation needed for FILE_SIZE input bytes
    in the worst case, where each input byte is a line delimiter except
    for a final non-delimiter byte.  Return false on overflow.  */
 
-static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+സ്ഥിതം bool
+നിവേശം_size_buffer_bytes (uintmax_t file_size, size_t വരി_bytes,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_നിവേശം_byte = വരി_bytes + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
-    return false;
+  എങ്കിൽ (SIZE_MAX / worst_case_per_നിവേശം_byte < file_size)
+    തിരികെ false;
 
-  size_t size = file_size * worst_case_per_input_byte;
-  if (SIZE_MAX - size < 1)
-    return false;
+  size_t size = file_size * worst_case_per_നിവേശം_byte;
+  എങ്കിൽ (SIZE_MAX - size < 1)
+    തിരികെ false;
 
   *worst_case = size + 1;
-  return true;
+  തിരികെ true;
 }
 
 /* Set *POLICY to the sort buffer policy to use with the input files identified
@@ -1686,76 +1686,76 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
    information.  Do not exceed the size bound specified by the user
    (or a default size bound, if the user does not specify one).  */
 
-static void
-sort_buffer_policy (FILE *const *fps, size_t nfps,
-                    char *const *files, size_t nfiles,
-                    size_t line_bytes,
-                    struct sort_buffer_policy *policy)
+സ്ഥിതം ശൂന്യം
+sort_buffer_policy (FILE *സ്ഥിരം *fps, size_t nfps,
+                    അക്ഷരം *സ്ഥിരം *files, size_t nfiles,
+                    size_t വരി_bytes,
+                    ഘടന sort_buffer_policy *policy)
 {
   size_t size_bound = sort_size ? sort_size : default_sort_size ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    sort_size ? size_bound : default_initial_sort_size (വരി_bytes);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_നിവേശം_byte = വരി_bytes + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t size = worst_case_per_നിവേശം_byte + 1;
 
   initial_bound = MIN (initial_bound, size_bound);
   policy->limit = size_bound;
   policy->growth_failed = false;
 
-  for (size_t i = 0; i < nfiles; i++)
+  വേണ്ടി (size_t i = 0; i < nfiles; i++)
     {
-      struct stat st;
+      ഘടന stat st;
       off_t file_size;
       size_t worst_case;
       bool known_size;
 
-      if (size_bound <= size)
+      എങ്കിൽ (size_bound <= size)
         {
           policy->initial = size_bound;
-          return;
+          തിരികെ;
         }
 
-      if ((i < nfps ? fstat (fileno (fps[i]), &st)
+      എങ്കിൽ ((i < nfps ? fstat (fileno (fps[i]), &st)
            : streq (files[i], "-") ? fstat (STDIN_FILENO, &st)
            : stat (files[i], &st))
           != 0)
         sort_die (_("stat failed"), files[i]);
 
       known_size = usable_st_size (&st) && 0 < st.st_size;
-      if (known_size)
+      എങ്കിൽ (known_size)
         file_size = st.st_size;
-      else
+      അല്ലെങ്കിൽ
         {
           /* The file has unknown size.  If the user specified a sort
              buffer size, use that; otherwise, guess the size.  */
-          if (sort_size)
+          എങ്കിൽ (sort_size)
             {
               policy->initial = size_bound;
-              return;
+              തിരികെ;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_size = നിവേശം_FILE_SIZE_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
+      എങ്കിൽ (! നിവേശം_size_buffer_bytes (file_size, വരി_bytes, &worst_case)
           || size_bound - size <= worst_case)
         {
           policy->initial = size_bound;
-          return;
+          തിരികെ;
         }
 
-      if (! known_size && ! sort_size
+      എങ്കിൽ (! known_size && ! sort_size
           && (initial_bound <= size || initial_bound - size <= worst_case))
         {
           policy->initial = MAX (size, initial_bound);
-          return;
+          തിരികെ;
         }
 
       size += worst_case;
@@ -1768,159 +1768,159 @@ sort_buffer_policy (FILE *const *fps, size_t nfps,
    must be at least sizeof (struct line).  Allocate ALLOC bytes
    initially.  */
 
-static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+സ്ഥിതം ശൂന്യം
+initbuf (ഘടന buffer *buf, size_t വരി_bytes, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
      succeeds.  The smaller allocation may hurt overall performance,
      but that's better than failing.  */
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      if (! line_aligned_size (&alloc))
-        buf->buf = NULL;
-      else
+      എങ്കിൽ (! വരി_aligned_size (&alloc))
+        buf->buf = ശൂന്യ;
+      അല്ലെങ്കിൽ
         buf->buf = malloc (alloc);
-      if (buf->buf)
-        break;
+      എങ്കിൽ (buf->buf)
+        നിർത്തുക;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      എങ്കിൽ (alloc <= വരി_bytes + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->വരി_bytes = വരി_bytes;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->used = buf->ഇടത് = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
-buffer_linelim (struct buffer const *buf)
+സ്ഥിതം വരിയിൽ ഘടന വരി *
+buffer_linelim (ഘടന buffer സ്ഥിരം *buf)
 {
-  void *linelim = buf->buf + buf->alloc;
-  return linelim;
+  ശൂന്യം *linelim = buf->buf + buf->alloc;
+  തിരികെ linelim;
 }
 
 /* Try to resize BUF to ALLOC bytes.  Return true if successful.  This
    preserves the input data and the line array, adjusting line pointers
    when the buffer base changes.  */
 
-static bool
-try_growbuf (struct buffer *buf, size_t alloc)
+സ്ഥിതം bool
+try_growbuf (ഘടന buffer *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
-    return false;
+  എങ്കിൽ (! വരി_aligned_size (&alloc) || alloc <= buf->alloc)
+    തിരികെ false;
 
-  char *newbuf = malloc (alloc);
-  if (! newbuf)
-    return false;
+  അക്ഷരം *newbuf = malloc (alloc);
+  എങ്കിൽ (! newbuf)
+    തിരികെ false;
 
-  char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  അക്ഷരം *oldbuf = buf->buf;
+  ഘടന വരി *old_linelim = buffer_linelim (buf);
+  ഘടന വരി *old_വരി = old_linelim - buf->nlines;
 
   memcpy (newbuf, oldbuf, buf->used);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  ഘടന വരി *new_linelim = (ശൂന്യം *) (newbuf + alloc);
+  ഘടന വരി *new_വരി = new_linelim - buf->nlines;
+  memcpy (new_വരി, old_വരി, buf->nlines * വലുപ്പം *new_വരി);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  വേണ്ടി (ഘടന വരി *വരി = new_വരി; വരി < new_linelim; വരി++)
     {
-      line->text = newbuf + (line->text - oldbuf);
-      if (keylist)
+      വരി->text = newbuf + (വരി->text - oldbuf);
+      എങ്കിൽ (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          വരി->keybeg = newbuf + (വരി->keybeg - oldbuf);
+          വരി->keylim = newbuf + (വരി->keylim - oldbuf);
         }
     }
 
-  free (oldbuf);
+  സ്വതന്ത്രം (oldbuf);
   buf->buf = newbuf;
   buf->alloc = alloc;
-  return true;
+  തിരികെ true;
 }
 
 /* Try to grow BUF according to POLICY.  Return true if the buffer grew.  */
 
-static bool
-maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
+സ്ഥിതം bool
+maybe_growbuf (ഘടന buffer *buf, ഘടന sort_buffer_policy *policy)
 {
-  if (! policy || policy->growth_failed || policy->limit <= buf->alloc)
-    return false;
+  എങ്കിൽ (! policy || policy->growth_failed || policy->limit <= buf->alloc)
+    തിരികെ false;
 
   size_t alloc;
-  if (buf->alloc <= policy->limit / 3)
+  എങ്കിൽ (buf->alloc <= policy->limit / 3)
     alloc = buf->alloc * 3;
-  else
+  അല്ലെങ്കിൽ
     alloc = policy->limit;
 
-  if (try_growbuf (buf, alloc))
-    return true;
+  എങ്കിൽ (try_growbuf (buf, alloc))
+    തിരികെ true;
 
   policy->growth_failed = true;
-  return false;
+  തിരികെ false;
 }
 
 /* Return a pointer to the first character of the field specified
    by KEY in LINE. */
 
-static char *
-begfield (struct line const *line, struct keyfield const *key)
+സ്ഥിതം അക്ഷരം *
+begfield (ഘടന വരി സ്ഥിരം *വരി, ഘടന keyfield സ്ഥിരം *താക്കോൽ)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  അക്ഷരം *ptr = വരി->text, *lim = ptr + വരി->length - 1;
+  size_t sword = താക്കോൽ->sword;
+  size_t schar = താക്കോൽ->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
 
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && sword--)
+  എങ്കിൽ (tab != TAB_DEFAULT)
+    ആകുമ്പോൾ (ptr < lim && sword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        അക്ഷരം *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim)
+        എങ്കിൽ (ptr < lim)
           ++ptr;
       }
-  else
-    while (ptr < lim && sword--)
+  അല്ലെങ്കിൽ
+    ആകുമ്പോൾ (ptr < lim && sword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        ആകുമ്പോൾ (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        ആകുമ്പോൾ (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
-    while (ptr < lim && blanks[to_uchar (*ptr)])
+  എങ്കിൽ (താക്കോൽ->skipsblanks)
+    ആകുമ്പോൾ (ptr < lim && blanks[to_uchar (*ptr)])
       ++ptr;
 
   /* Advance PTR by SCHAR (if possible), but no further than LIM.  */
   size_t remaining_bytes = lim - ptr;
-  if (schar < remaining_bytes)
+  എങ്കിൽ (schar < remaining_bytes)
     ptr += schar;
-  else
+  അല്ലെങ്കിൽ
     ptr = lim;
 
-  return ptr;
+  തിരികെ ptr;
 }
 
 /* Return the limit of (a pointer to the first character after) the field
    in LINE specified by KEY. */
 
 ATTRIBUTE_PURE
-static char *
-limfield (struct line const *line, struct keyfield const *key)
+സ്ഥിതം അക്ഷരം *
+limfield (ഘടന വരി സ്ഥിരം *വരി, ഘടന keyfield സ്ഥിരം *താക്കോൽ)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  അക്ഷരം *ptr = വരി->text, *lim = ptr + വരി->length - 1;
+  size_t eword = താക്കോൽ->eword, echar = താക്കോൽ->echar;
 
-  if (echar == 0)
+  എങ്കിൽ (echar == 0)
     eword++; /* Skip all of end field.  */
 
   /* Move PTR past EWORD fields or to one past the last byte on LINE,
@@ -1930,20 +1930,20 @@ limfield (struct line const *line, struct keyfield const *key)
      'beginning' is the first character following the delimiting TAB.
      Otherwise, leave PTR pointing at the first 'blank' character after
      the preceding field.  */
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && eword--)
+  എങ്കിൽ (tab != TAB_DEFAULT)
+    ആകുമ്പോൾ (ptr < lim && eword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        അക്ഷരം *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim && (eword || echar))
+        എങ്കിൽ (ptr < lim && (eword || echar))
           ++ptr;
       }
-  else
-    while (ptr < lim && eword--)
+  അല്ലെങ്കിൽ
+    ആകുമ്പോൾ (ptr < lim && eword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        ആകുമ്പോൾ (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        ആകുമ്പോൾ (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
@@ -1979,42 +1979,42 @@ limfield (struct line const *line, struct keyfield const *key)
      */
 
   /* Make LIM point to the end of (one byte past) the current field.  */
-  if (tab != TAB_DEFAULT)
+  എങ്കിൽ (tab != TAB_DEFAULT)
     {
-      char *newlim;
+      അക്ഷരം *newlim;
       newlim = memchr (ptr, tab, lim - ptr);
-      if (newlim)
+      എങ്കിൽ (newlim)
         lim = newlim;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      char *newlim;
+      അക്ഷരം *newlim;
       newlim = ptr;
-      while (newlim < lim && blanks[to_uchar (*newlim)])
+      ആകുമ്പോൾ (newlim < lim && blanks[to_uchar (*newlim)])
         ++newlim;
-      while (newlim < lim && !blanks[to_uchar (*newlim)])
+      ആകുമ്പോൾ (newlim < lim && !blanks[to_uchar (*newlim)])
         ++newlim;
       lim = newlim;
     }
 #endif
 
-  if (echar != 0) /* We need to skip over a portion of the end field.  */
+  എങ്കിൽ (echar != 0) /* We need to skip over a portion of the end field.  */
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+      എങ്കിൽ (താക്കോൽ->skipeblanks)
+        ആകുമ്പോൾ (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
 
       /* Advance PTR by ECHAR (if possible), but no further than LIM.  */
       size_t remaining_bytes = lim - ptr;
-      if (echar < remaining_bytes)
+      എങ്കിൽ (echar < remaining_bytes)
         ptr += echar;
-      else
+      അല്ലെങ്കിൽ
         ptr = lim;
     }
 
-  return ptr;
+  തിരികെ ptr;
 }
 
 /* Fill BUF reading from FP, moving buf->left bytes from the end
@@ -2023,127 +2023,127 @@ limfield (struct line const *line, struct keyfield const *key)
    table too.  FILE is the name of the file corresponding to FP.
    Return true if some input was read.  */
 
-static bool
-fillbuf (struct buffer *buf, FILE *fp, char const *file,
-         struct sort_buffer_policy *policy)
+സ്ഥിതം bool
+fillbuf (ഘടന buffer *buf, FILE *fp, അക്ഷരം സ്ഥിരം *file,
+         ഘടന sort_buffer_policy *policy)
 {
-  struct keyfield const *key = keylist;
-  char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
+  ഘടന keyfield സ്ഥിരം *താക്കോൽ = keylist;
+  അക്ഷരം eol = eolchar;
+  size_t വരി_bytes = buf->വരി_bytes;
   size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
 
-  if (buf->eof)
-    return false;
+  എങ്കിൽ (buf->eof)
+    തിരികെ false;
 
-  if (buf->used != buf->left)
+  എങ്കിൽ (buf->used != buf->ഇടത്)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->used - buf->ഇടത്, buf->ഇടത്);
+      buf->used = buf->ഇടത്;
       buf->nlines = 0;
     }
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      അക്ഷരം *ptr = buf->buf + buf->used;
+      ഘടന വരി *linelim = buffer_linelim (buf);
+      ഘടന വരി *വരി = linelim - buf->nlines;
+      size_t avail = (അക്ഷരം *) linelim - buf->nlines * വരി_bytes - ptr;
+      അക്ഷരം *വരി_start = buf->nlines ? വരി->text + വരി->length : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      ആകുമ്പോൾ (വരി_bytes + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
+          size_t readsize = (avail - 1) / (വരി_bytes + 1);
           size_t bytes_read = fread (ptr, 1, readsize, fp);
-          char *ptrlim = ptr + bytes_read;
-          char *p;
+          അക്ഷരം *ptrlim = ptr + bytes_read;
+          അക്ഷരം *p;
           avail -= bytes_read;
 
-          if (bytes_read != readsize)
+          എങ്കിൽ (bytes_read != readsize)
             {
-              if (ferror (fp))
+              എങ്കിൽ (ferror (fp))
                 sort_die (_("read failed"), file);
-              if (feof (fp))
+              എങ്കിൽ (feof (fp))
                 {
                   buf->eof = true;
-                  if (buf->buf == ptrlim)
-                    return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  എങ്കിൽ (buf->buf == ptrlim)
+                    തിരികെ false;
+                  എങ്കിൽ (വരി_start != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
 
           /* Find and record each line in the just-read input.  */
-          while ((p = memchr (ptr, eol, ptrlim - ptr)))
+          ആകുമ്പോൾ ((p = memchr (ptr, eol, ptrlim - ptr)))
             {
               /* Delimit the line with NUL. This eliminates the need to
                  temporarily replace the last byte with NUL when calling
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              വരി--;
+              വരി->text = വരി_start;
+              വരി->length = ptr - വരി_start;
+              mergesize = MAX (mergesize, വരി->length);
+              avail -= വരി_bytes;
 
-              if (key)
+              എങ്കിൽ (താക്കോൽ)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  വരി->keylim = (താക്കോൽ->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (വരി, താക്കോൽ));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
-                  else
+                  എങ്കിൽ (താക്കോൽ->sword != SIZE_MAX)
+                    വരി->keybeg = begfield (വരി, താക്കോൽ);
+                  അല്ലെങ്കിൽ
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      എങ്കിൽ (താക്കോൽ->skipsblanks)
+                        ആകുമ്പോൾ (blanks[to_uchar (*വരി_start)])
+                          വരി_start++;
+                      വരി->keybeg = വരി_start;
                     }
                 }
 
-              line_start = ptr;
+              വരി_start = ptr;
             }
 
           ptr = ptrlim;
-          if (buf->eof)
-            break;
+          എങ്കിൽ (buf->eof)
+            നിർത്തുക;
         }
 
       buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
-      if (buf->nlines != 0)
+      buf->nlines = buffer_linelim (buf) - വരി;
+      എങ്കിൽ (buf->nlines != 0)
         {
-          if (! buf->eof && maybe_growbuf (buf, policy))
-            continue;
-          buf->left = ptr - line_start;
+          എങ്കിൽ (! buf->eof && maybe_growbuf (buf, policy))
+            തുടരുക;
+          buf->ഇടത് = ptr - വരി_start;
           merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
-          return true;
+          തിരികെ true;
         }
 
       {
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t വരി_alloc = buf->alloc / വലുപ്പം (ഘടന വരി);
+        buf->buf = xpalloc (buf->buf, &വരി_alloc, 1, -1, വലുപ്പം (ഘടന വരി));
+        buf->alloc = വരി_alloc * വലുപ്പം (ഘടന വരി);
       }
     }
 }
 
 /* Table that maps characters to order-of-magnitude values.  */
-static char const unit_order[UCHAR_LIM] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം unit_order[UCHAR_LIM] =
   {
-#if ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
+#എങ്കിൽ ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
        && 'E' == 69 && 'Z' == 90 && 'Y' == 89 && 'R' == 82 && 'Q' == 81 \
        && 'k' == 107)
     /* This initializer syntax works on all C99 hosts.  For now, use
@@ -2152,7 +2152,7 @@ static char const unit_order[UCHAR_LIM] =
     ['K']=1, ['M']=2, ['G']=3, ['T']=4, ['P']=5, ['E']=6, ['Z']=7, ['Y']=8,
     ['R']=9, ['Q']=10,
     ['k']=1,
-#else
+#അല്ലെങ്കിൽ
     /* Generate the following table with this command:
        perl -e 'my %a=(k=>1,K=>1,M=>2,G=>3,T=>4,P=>5,E=>6,Z=>7,Y=>8,R=>9,Q=>10);
        foreach my $i (0..255) {my $c=chr($i); $a{$c} ||= 0;print "$a{$c}, "}'\
@@ -2175,12 +2175,12 @@ static char const unit_order[UCHAR_LIM] =
    decimal_point chars only.  Returns the highest digit found in the number,
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
-static char
-traverse_raw_number (char const **number)
+സ്ഥിതം അക്ഷരം
+traverse_raw_സംഖ്യ (അക്ഷരം സ്ഥിരം **സംഖ്യ)
 {
-  char const *p = *number;
-  char ch;
-  char max_digit = '\0';
+  അക്ഷരം സ്ഥിരം *p = *സംഖ്യ;
+  അക്ഷരം ch;
+  അക്ഷരം max_digit = '\0';
   bool ends_with_thousands_sep = false;
 
   /* Scan to end of number.
@@ -2189,33 +2189,33 @@ traverse_raw_number (char const **number)
      to be lacking in units.
      FIXME: add support for multibyte thousands_sep and decimal_point.  */
 
-  while (c_isdigit (ch = *p++))
+  ആകുമ്പോൾ (c_isdigit (ch = *p++))
     {
-      if (max_digit < ch)
+      എങ്കിൽ (max_digit < ch)
         max_digit = ch;
 
       /* Allow to skip only one occurrence of thousands_sep to avoid finding
          the unit in the next column in case thousands_sep matches as blank
          and is used as column delimiter.  */
       ends_with_thousands_sep = (*p == thousands_sep);
-      if (ends_with_thousands_sep)
+      എങ്കിൽ (ends_with_thousands_sep)
         ++p;
     }
 
-  if (ends_with_thousands_sep)
+  എങ്കിൽ (ends_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
-      return max_digit;
+      *സംഖ്യ = p - 2;
+      തിരികെ max_digit;
     }
 
-  if (ch == decimal_point)
-    while (c_isdigit (ch = *p++))
-      if (max_digit < ch)
+  എങ്കിൽ (ch == decimal_point)
+    ആകുമ്പോൾ (c_isdigit (ch = *p++))
+      എങ്കിൽ (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
-  return max_digit;
+  *സംഖ്യ = p - 1;
+  തിരികെ max_digit;
 }
 
 /* Return an integer that represents the order of magnitude of the
@@ -2224,36 +2224,36 @@ traverse_raw_number (char const **number)
    Negative numbers get negative orders; zero numbers have a zero order.  */
 
 ATTRIBUTE_PURE
-static int
-find_unit_order (char const *number)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+find_unit_order (അക്ഷരം സ്ഥിരം *സംഖ്യ)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
-  if ('0' < max_digit)
+  bool minus_sign = (*സംഖ്യ == '-');
+  അക്ഷരം സ്ഥിരം *p = സംഖ്യ + minus_sign;
+  അക്ഷരം max_digit = traverse_raw_സംഖ്യ (&p);
+  എങ്കിൽ ('0' < max_digit)
     {
-      unsigned char ch = *p;
-      int order = unit_order[ch];
-      return (minus_sign ? -order : order);
+      unsigned അക്ഷരം ch = *p;
+      പൂർണ്ണസംഖ്യ order = unit_order[ch];
+      തിരികെ (minus_sign ? -order : order);
     }
-  else
-    return 0;
+  അല്ലെങ്കിൽ
+    തിരികെ 0;
 }
 
 /* Compare numbers A and B ending in units with SI or IEC prefixes
        <none/unknown> < K/k < M < G < T < P < E < Z < Y < R < Q */
 
 ATTRIBUTE_PURE
-static int
-human_numcompare (char const *a, char const *b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+human_numcompare (അക്ഷരം സ്ഥിരം *a, അക്ഷരം സ്ഥിരം *b)
 {
-  while (blanks[to_uchar (*a)])
+  ആകുമ്പോൾ (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  ആകുമ്പോൾ (blanks[to_uchar (*b)])
     b++;
 
-  int diff = find_unit_order (a) - find_unit_order (b);
-  return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
+  പൂർണ്ണസംഖ്യ diff = find_unit_order (a) - find_unit_order (b);
+  തിരികെ (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
 }
 
 /* Compare strings A and B as numbers without explicitly converting them to
@@ -2261,47 +2261,47 @@ human_numcompare (char const *a, char const *b)
    hideously fast. */
 
 ATTRIBUTE_PURE
-static int
-numcompare (char const *a, char const *b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+numcompare (അക്ഷരം സ്ഥിരം *a, അക്ഷരം സ്ഥിരം *b)
 {
-  while (blanks[to_uchar (*a)])
+  ആകുമ്പോൾ (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  ആകുമ്പോൾ (blanks[to_uchar (*b)])
     b++;
 
-  return strnumcmp (a, b, decimal_point, thousands_sep);
+  തിരികെ strnumcmp (a, b, decimal_point, thousands_sep);
 }
 
-static int
-nan_compare (long double a, long double b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+nan_compare (long ഇരട്ട a, long ഇരട്ട b)
 {
-  char buf[2][sizeof "-nan""()" + CHAR_BIT * sizeof a];
-  snprintf (buf[0], sizeof buf[0], "%Lf", a);
-  snprintf (buf[1], sizeof buf[1], "%Lf", b);
-  return strcmp (buf[0], buf[1]);
+  അക്ഷരം buf[2][വലുപ്പം "-nan""()" + CHAR_BIT * വലുപ്പം a];
+  snprintf (buf[0], വലുപ്പം buf[0], "%Lf", a);
+  snprintf (buf[1], വലുപ്പം buf[1], "%Lf", b);
+  തിരികെ strcmp (buf[0], buf[1]);
 }
 
-static int
-general_numcompare (char const *sa, char const *sb)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+general_numcompare (അക്ഷരം സ്ഥിരം *sa, അക്ഷരം സ്ഥിരം *sb)
 {
   /* FIXME: maybe add option to try expensive FP conversion
      only if A and B can't be compared more cheaply/accurately.  */
 
-  char *ea;
-  char *eb;
-  long double a = strtold (sa, &ea);
-  long double b = strtold (sb, &eb);
+  അക്ഷരം *ea;
+  അക്ഷരം *eb;
+  long ഇരട്ട a = strtold (sa, &ea);
+  long ഇരട്ട b = strtold (sb, &eb);
 
   /* Put conversion errors at the start of the collating sequence.  */
-  if (sa == ea)
-    return sb == eb ? 0 : -1;
-  if (sb == eb)
-    return 1;
+  എങ്കിൽ (sa == ea)
+    തിരികെ sb == eb ? 0 : -1;
+  എങ്കിൽ (sb == eb)
+    തിരികെ 1;
 
   /* Sort numbers in the usual way, where -0 == +0.  Put NaNs after
      conversion errors but before numbers; sort them by internal
      bit-pattern, for lack of a more portable alternative.  */
-  return (a < b ? -1
+  തിരികെ (a < b ? -1
           : a > b ? 1
           : a == b ? 0
           : b == b ? -1
@@ -2312,57 +2312,57 @@ general_numcompare (char const *sa, char const *sb)
 /* Return an integer in 1..12 of the month name MONTH.
    Return 0 if the name in S is not recognized.  */
 
-static int
-getmonth (char const *month, char **ea)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+getmonth (അക്ഷരം സ്ഥിരം *month, അക്ഷരം **ea)
 {
   size_t lo = 0;
   size_t hi = MONTHS_PER_YEAR;
 
-  while (blanks[to_uchar (*month)])
+  ആകുമ്പോൾ (blanks[to_uchar (*month)])
     month++;
 
-  do
+  ചെയ്യുക
     {
       size_t ix = (lo + hi) / 2;
-      char const *m = month;
-      char const *n = monthtab[ix].name;
+      അക്ഷരം സ്ഥിരം *m = month;
+      അക്ഷരം സ്ഥിരം *n = monthtab[ix].name;
 
-      for (;; m++, n++)
+      വേണ്ടി (;; m++, n++)
         {
-          if (!*n)
+          എങ്കിൽ (!*n)
             {
-              if (ea)
-                *ea = (char *) m;
-              return monthtab[ix].val;
+              എങ്കിൽ (ea)
+                *ea = (അക്ഷരം *) m;
+              തിരികെ monthtab[ix].val;
             }
-          if (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
+          എങ്കിൽ (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
             {
               hi = ix;
-              break;
+              നിർത്തുക;
             }
-          else if (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
+          അല്ലെങ്കിൽ എങ്കിൽ (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
             {
               lo = ix + 1;
-              break;
+              നിർത്തുക;
             }
         }
     }
-  while (lo < hi);
+  ആകുമ്പോൾ (lo < hi);
 
-  return 0;
+  തിരികെ 0;
 }
 
 /* When using the OpenSSL implementation, dynamically link only if -R.
    This saves startup time in the usual (sans -R) case.  */
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+#എങ്കിൽ DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 /* In the typical case where md5.h does not #undef HAVE_OPENSSL_MD5,
    trick md5.h into declaring and using pointers to functions not functions.
    This causes the compiler's -lcrypto option to have no effect,
    as sort.o no longer uses any crypto symbols statically.  */
 
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+# എങ്കിൽ 14 <= __GNUC__
+#  pragma GCC diagnostic തള്ളുക
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
@@ -2370,11 +2370,11 @@ getmonth (char const *month, char **ea)
 # define MD5_Final (*ptr_MD5_Final)
 #endif
 
-#include "md5.h"
+#അന്തര്ഭാവ "md5.h"
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#എങ്കിൽ DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+# എങ്കിൽ 14 <= __GNUC__
+#  pragma GCC diagnostic എടുക്കുക
 # endif
 # include <dlfcn.h>
 
@@ -2387,66 +2387,66 @@ SD_ELF_NOTE_DLOPEN ("random-sort",
                     LIBCRYPTO_SONAME);
 
 /* Diagnose a dynamic linking failure.  */
-static void
-link_failure (void)
+സ്ഥിതം ശൂന്യം
+link_failure (ശൂന്യം)
 {
   error (SORT_FAILURE, 0, "%s", dlerror ());
 }
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
-static void *
-symbol_address (void *handle, char const *symbol)
+സ്ഥിതം ശൂന്യം *
+ചിഹ്നം_address (ശൂന്യം *handle, അക്ഷരം സ്ഥിരം *ചിഹ്നം)
 {
-  void *address = dlsym (handle, symbol);
-  if (!address)
+  ശൂന്യം *address = dlsym (handle, ചിഹ്നം);
+  എങ്കിൽ (!address)
     link_failure ();
-  return address;
+  തിരികെ address;
 }
 #endif
 
 /* Dynamically link the crypto library, if it needs linking.  */
-static void
-link_libcrypto (void)
+സ്ഥിതം ശൂന്യം
+link_libcrypto (ശൂന്യം)
 {
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-  void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
-  if (!handle)
+#എങ്കിൽ DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+  ശൂന്യം *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
+  എങ്കിൽ (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
+  ptr_MD5_Init = ചിഹ്നം_address (handle, "MD5_Init");
+  ptr_MD5_Update = ചിഹ്നം_address (handle, "MD5_Update");
+  ptr_MD5_Final = ചിഹ്നം_address (handle, "MD5_Final");
 #endif
 }
 
 /* A randomly chosen MD5 state, used for random comparison.  */
-static struct md5_ctx random_md5_state;
+സ്ഥിതം ഘടന md5_ctx random_md5_state;
 
 /* Initialize the randomly chosen MD5 state.  */
 
-static void
-random_md5_state_init (char const *random_source)
+സ്ഥിതം ശൂന്യം
+random_md5_state_init (അക്ഷരം സ്ഥിരം *random_source)
 {
-  unsigned char buf[MD5_DIGEST_SIZE];
-  struct randread_source *r = randread_new (random_source, sizeof buf);
-  if (! r)
+  unsigned അക്ഷരം buf[MD5_DIGEST_SIZE];
+  ഘടന randread_source *r = randread_new (random_source, വലുപ്പം buf);
+  എങ്കിൽ (! r)
     sort_die (_("open failed"), random_source ? random_source : "getrandom");
-  randread (r, buf, sizeof buf);
-  if (randread_free (r) != 0)
+  randread (r, buf, വലുപ്പം buf);
+  എങ്കിൽ (randread_free (r) != 0)
     sort_die (_("close failed"), random_source);
   link_libcrypto ();
   md5_init_ctx (&random_md5_state);
-  md5_process_bytes (buf, sizeof buf, &random_md5_state);
+  md5_process_bytes (buf, വലുപ്പം buf, &random_md5_state);
 }
 
 /* This is like strxfrm, except it reports any error and exits.  */
 
-static size_t
-xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
+സ്ഥിതം size_t
+xstrxfrm (അക്ഷരം *restrict dest, അക്ഷരം സ്ഥിരം *restrict src, size_t destsize)
 {
   errno = 0;
   size_t translated_size = strxfrm (dest, src, destsize);
 
-  if (errno)
+  എങ്കിൽ (errno)
     {
       error (0, errno, _("string transformation failed"));
       error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -2455,37 +2455,37 @@ xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
              quotearg_n_style (0, locale_quoting_style, src));
     }
 
-  return translated_size;
+  തിരികെ translated_size;
 }
 
 /* Compare the keys TEXTA (of length LENA) and TEXTB (of length LENB)
    using one or more random hash functions.  TEXTA[LENA] and
    TEXTB[LENB] must be zero.  */
 
-static int
-compare_random (char *restrict texta, size_t lena,
-                char *restrict textb, size_t lenb)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+compare_random (അക്ഷരം *restrict texta, size_t lena,
+                അക്ഷരം *restrict textb, size_t lenb)
 {
   /* XFRM_DIFF records the equivalent of memcmp on the transformed
      data.  This is used to break ties if there is a checksum
      collision, and this is good enough given the astronomically low
      probability of a collision.  */
-  int xfrm_diff = 0;
+  പൂർണ്ണസംഖ്യ xfrm_diff = 0;
 
-  char stackbuf[4000];
-  char *buf = stackbuf;
-  size_t bufsize = sizeof stackbuf;
-  void *allocated = NULL;
-  uint32_t dig[2][MD5_DIGEST_SIZE / sizeof (uint32_t)];
-  struct md5_ctx s[2];
+  അക്ഷരം stackbuf[4000];
+  അക്ഷരം *buf = stackbuf;
+  size_t bufsize = വലുപ്പം stackbuf;
+  ശൂന്യം *allocated = ശൂന്യ;
+  uint32_t dig[2][MD5_DIGEST_SIZE / വലുപ്പം (uint32_t)];
+  ഘടന md5_ctx s[2];
   s[0] = s[1] = random_md5_state;
 
-  if (hard_LC_COLLATE)
+  എങ്കിൽ (hard_LC_COLLATE)
     {
-      char const *lima = texta + lena;
-      char const *limb = textb + lenb;
+      അക്ഷരം സ്ഥിരം *lima = texta + lena;
+      അക്ഷരം സ്ഥിരം *limb = textb + lenb;
 
-      while (true)
+      ആകുമ്പോൾ (true)
         {
           /* Transform the text into the basis of comparison, so that byte
              strings that would otherwise considered to be equal are
@@ -2503,15 +2503,15 @@ compare_random (char *restrict texta, size_t lena,
              twice on typical implementations.  Don't worry about
              size_t overflow, as the guess need not be correct.  */
           size_t guess_bufsize = 3 * (lena + lenb) + 2;
-          if (bufsize < guess_bufsize)
+          എങ്കിൽ (bufsize < guess_bufsize)
             {
               bufsize = MAX (guess_bufsize, bufsize * 3 / 2);
-              free (allocated);
+              സ്വതന്ത്രം (allocated);
               buf = allocated = malloc (bufsize);
-              if (! buf)
+              എങ്കിൽ (! buf)
                 {
                   buf = stackbuf;
-                  bufsize = sizeof stackbuf;
+                  bufsize = വലുപ്പം stackbuf;
                 }
             }
 
@@ -2520,21 +2520,21 @@ compare_random (char *restrict texta, size_t lena,
           bool a_fits = sizea <= bufsize;
           size_t sizeb =
             (textb < limb
-             ? (xstrxfrm ((a_fits ? buf + sizea : NULL), textb,
+             ? (xstrxfrm ((a_fits ? buf + sizea : ശൂന്യ), textb,
                           (a_fits ? bufsize - sizea : 0))
                 + 1)
              : 0);
 
-          if (! (a_fits && sizea + sizeb <= bufsize))
+          എങ്കിൽ (! (a_fits && sizea + sizeb <= bufsize))
             {
               bufsize = sizea + sizeb;
-              if (bufsize < SIZE_MAX / 3)
+              എങ്കിൽ (bufsize < SIZE_MAX / 3)
                 bufsize = bufsize * 3 / 2;
-              free (allocated);
+              സ്വതന്ത്രം (allocated);
               buf = allocated = xmalloc (bufsize);
-              if (texta < lima)
+              എങ്കിൽ (texta < lima)
                 strxfrm (buf, texta, sizea);
-              if (textb < limb)
+              എങ്കിൽ (textb < limb)
                 strxfrm (buf + sizea, textb, sizeb);
             }
 
@@ -2542,15 +2542,15 @@ compare_random (char *restrict texta, size_t lena,
              exiting the loop if both strings are exhausted.  When
              exiting the loop, prepare to finish off the tiebreaker
              comparison properly.  */
-          if (texta < lima)
+          എങ്കിൽ (texta < lima)
             texta += strlen (texta) + 1;
-          if (textb < limb)
+          എങ്കിൽ (textb < limb)
             textb += strlen (textb) + 1;
-          if (! (texta < lima || textb < limb))
+          എങ്കിൽ (! (texta < lima || textb < limb))
             {
               lena = sizea; texta = buf;
               lenb = sizeb; textb = buf + sizea;
-              break;
+              നിർത്തുക;
             }
 
           /* Accumulate the transformed data in the corresponding
@@ -2559,10 +2559,10 @@ compare_random (char *restrict texta, size_t lena,
           md5_process_bytes (buf + sizea, sizeb, &s[1]);
 
           /* Update the tiebreaker comparison of the transformed data.  */
-          if (! xfrm_diff)
+          എങ്കിൽ (! xfrm_diff)
             {
               xfrm_diff = memcmp (buf, buf + sizea, MIN (sizea, sizeb));
-              if (! xfrm_diff)
+              എങ്കിൽ (! xfrm_diff)
                 xfrm_diff = _GL_CMP (sizea, sizeb);
             }
         }
@@ -2571,55 +2571,55 @@ compare_random (char *restrict texta, size_t lena,
   /* Compute and compare the checksums.  */
   md5_process_bytes (texta, lena, &s[0]); md5_finish_ctx (&s[0], dig[0]);
   md5_process_bytes (textb, lenb, &s[1]); md5_finish_ctx (&s[1], dig[1]);
-  int diff = memcmp (dig[0], dig[1], sizeof dig[0]);
+  പൂർണ്ണസംഖ്യ diff = memcmp (dig[0], dig[1], വലുപ്പം dig[0]);
 
   /* Fall back on the tiebreaker if the checksums collide.  */
-  if (! diff)
+  എങ്കിൽ (! diff)
     {
-      if (! xfrm_diff)
+      എങ്കിൽ (! xfrm_diff)
         {
           xfrm_diff = memcmp (texta, textb, MIN (lena, lenb));
-          if (! xfrm_diff)
+          എങ്കിൽ (! xfrm_diff)
             xfrm_diff = _GL_CMP (lena, lenb);
         }
 
       diff = xfrm_diff;
     }
 
-  free (allocated);
+  സ്വതന്ത്രം (allocated);
 
-  return diff;
+  തിരികെ diff;
 }
 
 /* Return the printable width of the block of memory starting at
    TEXT and ending just before LIM, counting each tab as one byte.
    FIXME: Should we generally be counting non printable chars?  */
 
-static size_t
-debug_width (char const *text, char const *lim)
+സ്ഥിതം size_t
+debug_width (അക്ഷരം സ്ഥിരം *text, അക്ഷരം സ്ഥിരം *lim)
 {
   size_t width = mbsnwidth (text, lim - text, 0);
-  while (text < lim)
+  ആകുമ്പോൾ (text < lim)
     width += (*text++ == '\t');
-  return width;
+  തിരികെ width;
 }
 
 /* For debug mode, "underline" a key at the
    specified offset and screen width.  */
 
-static void
-mark_key (size_t offset, size_t width)
+സ്ഥിതം ശൂന്യം
+mark_താക്കോൽ (size_t offset, size_t width)
 {
-  while (offset--)
+  ആകുമ്പോൾ (offset--)
     putchar (' ');
 
-  if (!width)
+  എങ്കിൽ (!width)
     printf (_("^ no match for key\n"));
-  else
+  അല്ലെങ്കിൽ
     {
-      do
+      ചെയ്യുക
         putchar ('_');
-      while (--width);
+      ആകുമ്പോൾ (--width);
 
       putchar ('\n');
     }
@@ -2627,62 +2627,62 @@ mark_key (size_t offset, size_t width)
 
 /* Return true if KEY is a numeric key.  */
 
-static inline bool
-key_numeric (struct keyfield const *key)
+സ്ഥിതം വരിയിൽ bool
+താക്കോൽ_numeric (ഘടന keyfield സ്ഥിരം *താക്കോൽ)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  തിരികെ താക്കോൽ->numeric || താക്കോൽ->general_numeric || താക്കോൽ->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
-static void
-debug_key (struct line const *line, struct keyfield const *key)
+സ്ഥിതം ശൂന്യം
+debug_താക്കോൽ (ഘടന വരി സ്ഥിരം *വരി, ഘടന keyfield സ്ഥിരം *താക്കോൽ)
 {
-  char *text = line->text;
-  char *beg = text;
-  char *lim = text + line->length - 1;
+  അക്ഷരം *text = വരി->text;
+  അക്ഷരം *beg = text;
+  അക്ഷരം *lim = text + വരി->length - 1;
 
-  if (key)
+  എങ്കിൽ (താക്കോൽ)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      എങ്കിൽ (താക്കോൽ->sword != SIZE_MAX)
+        beg = begfield (വരി, താക്കോൽ);
+      എങ്കിൽ (താക്കോൽ->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (വരി, താക്കോൽ);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      എങ്കിൽ ((താക്കോൽ->skipsblanks && താക്കോൽ->sword == SIZE_MAX)
+          || താക്കോൽ->month || താക്കോൽ_numeric (താക്കോൽ))
         {
-          char saved = *lim;
+          അക്ഷരം saved = *lim;
           *lim = '\0';
 
-          while (blanks[to_uchar (*beg)])
+          ആകുമ്പോൾ (blanks[to_uchar (*beg)])
             beg++;
 
-          char *tighter_lim = beg;
+          അക്ഷരം *tighter_lim = beg;
 
-          if (lim < beg)
+          എങ്കിൽ (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->general_numeric)
+            ignore_മൂല്യം (strtold (beg, &tighter_lim));
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->numeric || താക്കോൽ->human_numeric)
             {
-              char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
-              if ('0' <= max_digit)
+              അക്ഷരം സ്ഥിരം *p = beg + (beg < lim && *beg == '-');
+              അക്ഷരം max_digit = traverse_raw_സംഖ്യ (&p);
+              എങ്കിൽ ('0' <= max_digit)
                 {
-                  unsigned char ch = *p;
-                  tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                  unsigned അക്ഷരം ch = *p;
+                  tighter_lim = (അക്ഷരം *) p
+                    + (താക്കോൽ->human_numeric && unit_order[ch]);
                 }
             }
-          else
+          അല്ലെങ്കിൽ
             tighter_lim = lim;
 
           *lim = saved;
@@ -2692,226 +2692,226 @@ debug_key (struct line const *line, struct keyfield const *key)
 
   size_t offset = debug_width (text, beg);
   size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  mark_താക്കോൽ (offset, width);
 }
 
 /* Debug LINE by underlining its keys.  */
 
-static void
-debug_line (struct line const *line)
+സ്ഥിതം ശൂന്യം
+debug_വരി (ഘടന വരി സ്ഥിരം *വരി)
 {
-  struct keyfield const *key = keylist;
+  ഘടന keyfield സ്ഥിരം *താക്കോൽ = keylist;
 
-  do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+  ചെയ്യുക
+    debug_താക്കോൽ (വരി, താക്കോൽ);
+  ആകുമ്പോൾ (താക്കോൽ && ((താക്കോൽ = താക്കോൽ->next) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
-static bool
-default_key_compare (struct keyfield const *key)
+സ്ഥിതം bool
+default_താക്കോൽ_compare (ഘടന keyfield സ്ഥിരം *താക്കോൽ)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  തിരികെ ! (താക്കോൽ->ignore
+            || താക്കോൽ->translate
+            || താക്കോൽ->skipsblanks
+            || താക്കോൽ->skipeblanks
+            || താക്കോൽ_numeric (താക്കോൽ)
+            || താക്കോൽ->month
+            || താക്കോൽ->version
+            || താക്കോൽ->random
             /* || key->reverse */
            );
 }
 
 /* Convert a key to the short options used to specify it.  */
 
-static void
-key_to_opts (struct keyfield const *key, char *opts)
+സ്ഥിതം ശൂന്യം
+താക്കോൽ_to_opts (ഘടന keyfield സ്ഥിരം *താക്കോൽ, അക്ഷരം *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  എങ്കിൽ (താക്കോൽ->skipsblanks || താക്കോൽ->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  എങ്കിൽ (താക്കോൽ->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  എങ്കിൽ (താക്കോൽ->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  എങ്കിൽ (താക്കോൽ->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  എങ്കിൽ (താക്കോൽ->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  എങ്കിൽ (താക്കോൽ->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  എങ്കിൽ (താക്കോൽ->month)
     *opts++ = 'M';
-  if (key->numeric)
+  എങ്കിൽ (താക്കോൽ->numeric)
     *opts++ = 'n';
-  if (key->random)
+  എങ്കിൽ (താക്കോൽ->random)
     *opts++ = 'R';
-  if (key->reverse)
+  എങ്കിൽ (താക്കോൽ->reverse)
     *opts++ = 'r';
-  if (key->version)
+  എങ്കിൽ (താക്കോൽ->version)
     *opts++ = 'V';
   *opts = '\0';
 }
 
 /* Output data independent key warnings to stderr.  */
 
-static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+സ്ഥിതം ശൂന്യം
+താക്കോൽ_warnings (ഘടന keyfield സ്ഥിരം *gkey, bool gkey_only)
 {
-  struct keyfield ugkey = *gkey;
+  ഘടന keyfield ugkey = *gkey;
   unsigned long keynum = 1;
   bool basic_numeric_field = false;
   bool general_numeric_field = false;
   bool basic_numeric_field_span = false;
   bool general_numeric_field_span = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  വേണ്ടി (ഘടന keyfield *താക്കോൽ = keylist; താക്കോൽ; താക്കോൽ = താക്കോൽ->next, keynum++)
     {
-      if (key_numeric (key))
+      എങ്കിൽ (താക്കോൽ_numeric (താക്കോൽ))
         {
-          if (key->general_numeric)
+          എങ്കിൽ (താക്കോൽ->general_numeric)
             general_numeric_field = true;
-          else
+          അല്ലെങ്കിൽ
             basic_numeric_field = true;
         }
 
-      if (key->traditional_used)
+      എങ്കിൽ (താക്കോൽ->traditional_used)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
-          char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
+          size_t sword = താക്കോൽ->sword;
+          size_t eword = താക്കോൽ->eword;
+          അക്ഷരം tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
                -k A+1.x+1,B+1.y (when y > 0)  */
-          char obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
-          char nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
-          char *po = obuf;
-          char *pn = nbuf;
+          അക്ഷരം obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
+          അക്ഷരം nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
+          അക്ഷരം *po = obuf;
+          അക്ഷരം *pn = nbuf;
 
-          if (sword == SIZE_MAX)
+          എങ്കിൽ (sword == SIZE_MAX)
             sword++;
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          എങ്കിൽ (താക്കോൽ->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (താക്കോൽ->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
-      if (zero_width)
+      bool zero_width = താക്കോൽ->sword != SIZE_MAX && താക്കോൽ->eword < താക്കോൽ->sword;
+      എങ്കിൽ (zero_width)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = താക്കോൽ_numeric (താക്കോൽ) || താക്കോൽ->month;
+      bool വരി_offset = താക്കോൽ->eword == 0 && താക്കോൽ->echar != 0; /* -k1.x,1.y  */
+      എങ്കിൽ (!zero_width && !gkey_only && tab == TAB_DEFAULT && !വരി_offset
+          && ((!താക്കോൽ->skipsblanks && !implicit_skip)
+              || (!താക്കോൽ->skipsblanks && താക്കോൽ->schar)
+              || (!താക്കോൽ->skipeblanks && താക്കോൽ->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      എങ്കിൽ (!gkey_only && താക്കോൽ_numeric (താക്കോൽ))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
-          if (!sword)
+          size_t sword = താക്കോൽ->sword + 1;
+          size_t eword = താക്കോൽ->eword + 1;
+          എങ്കിൽ (!sword)
             sword++;
-          if (!eword || sword < eword)
+          എങ്കിൽ (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
+              എങ്കിൽ (താക്കോൽ->general_numeric)
                 general_numeric_field_span = true;
-              else
+              അല്ലെങ്കിൽ
                 basic_numeric_field_span = true;
             }
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
-        ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
-        ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      എങ്കിൽ (ugkey.ignore && (ugkey.ignore == താക്കോൽ->ignore))
+        ugkey.ignore = ശൂന്യ;
+      എങ്കിൽ (ugkey.translate && (ugkey.translate == താക്കോൽ->translate))
+        ugkey.translate = ശൂന്യ;
+      ugkey.skipsblanks &= !താക്കോൽ->skipsblanks;
+      ugkey.skipeblanks &= !താക്കോൽ->skipeblanks;
+      ugkey.month &= !താക്കോൽ->month;
+      ugkey.numeric &= !താക്കോൽ->numeric;
+      ugkey.general_numeric &= !താക്കോൽ->general_numeric;
+      ugkey.human_numeric &= !താക്കോൽ->human_numeric;
+      ugkey.random &= !താക്കോൽ->random;
+      ugkey.version &= !താക്കോൽ->version;
+      ugkey.reverse &= !താക്കോൽ->reverse;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
-  if (basic_numeric_field_span)
+  bool സംഖ്യ_locale_warned = false;
+  എങ്കിൽ (basic_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      എങ്കിൽ (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (thousands_sep)))
           : tab == thousands_sep)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
-                 quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+                 quote (((അക്ഷരം []) {thousands_sep, 0})));
+          സംഖ്യ_locale_warned = true;
         }
     }
-  if (basic_numeric_field_span || general_numeric_field_span)
+  എങ്കിൽ (basic_numeric_field_span || general_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      എങ്കിൽ (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (decimal_point)))
           : tab == decimal_point)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
-                 quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+                 quote (((അക്ഷരം []) {decimal_point, 0})));
+          സംഖ്യ_locale_warned = true;
         }
-      else if (tab == '-')
+      അല്ലെങ്കിൽ എങ്കിൽ (tab == '-')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "minus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((അക്ഷരം []) {tab, 0})));
         }
-      else if (general_numeric_field_span && tab == '+')
+      അല്ലെങ്കിൽ എങ്കിൽ (general_numeric_field_span && tab == '+')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "plus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((അക്ഷരം []) {tab, 0})));
         }
     }
 
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  എങ്കിൽ ((basic_numeric_field || general_numeric_field) && ! സംഖ്യ_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
-             quote (((char []) {decimal_point, 0})));
+             quote (((അക്ഷരം []) {decimal_point, 0})));
 
     }
 
-  if (basic_numeric_field && thousands_sep_ignored)
+  എങ്കിൽ (basic_numeric_field && thousands_sep_ignored)
     {
       error (0, 0,
              _("the multi-byte number group separator "
@@ -2920,55 +2920,55 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
+  എങ്കിൽ (!default_താക്കോൽ_compare (&ugkey)
       || (ugkey.reverse && (stable || unique) && keylist))
     {
       bool ugkey_reverse = ugkey.reverse;
-      if (!(stable || unique))
+      എങ്കിൽ (!(stable || unique))
         ugkey.reverse = false;
       /* The following is too big, but guaranteed to be "big enough".  */
-      char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      അക്ഷരം opts[വലുപ്പം short_options];
+      താക്കോൽ_to_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
                        select_plural (strlen (opts))), opts);
       ugkey.reverse = ugkey_reverse;
     }
-  if (ugkey.reverse && !(stable || unique) && keylist)
+  എങ്കിൽ (ugkey.reverse && !(stable || unique) && keylist)
     error (0, 0, _("option '-r' only applies to last-resort comparison"));
 }
 
 /* Return either the sense of DIFF or its reverse, depending on REVERSED.
    If REVERSED, do not simply negate DIFF as that can mishandle INT_MIN.  */
 
-static int
-diff_reversed (int diff, bool reversed)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+diff_reversed (പൂർണ്ണസംഖ്യ diff, bool reversed)
 {
-  return reversed ? _GL_CMP (0, diff) : diff;
+  തിരികെ reversed ? _GL_CMP (0, diff) : diff;
 }
 
 /* Compare two lines A and B trying every key in sequence until there
    are no more keys or a difference is found. */
 
-static int
-keycompare (struct line const *a, struct line const *b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+keycompare (ഘടന വരി സ്ഥിരം *a, ഘടന വരി സ്ഥിരം *b)
 {
-  struct keyfield *key = keylist;
+  ഘടന keyfield *താക്കോൽ = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
-  char *texta = a->keybeg;
-  char *textb = b->keybeg;
-  char *lima = a->keylim;
-  char *limb = b->keylim;
+  അക്ഷരം *texta = a->keybeg;
+  അക്ഷരം *textb = b->keybeg;
+  അക്ഷരം *lima = a->keylim;
+  അക്ഷരം *limb = b->keylim;
 
-  int diff;
+  പൂർണ്ണസംഖ്യ diff;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      അക്ഷരം സ്ഥിരം *translate = താക്കോൽ->translate;
+      bool സ്ഥിരം *ignore = താക്കോൽ->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,21 +2978,21 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      എങ്കിൽ (hard_LC_COLLATE || താക്കോൽ_numeric (താക്കോൽ)
+          || താക്കോൽ->month || താക്കോൽ->random || താക്കോൽ->version)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
-          char *ta = texta;
-          char *tb = textb;
+          അക്ഷരം *ta = texta;
+          അക്ഷരം *tb = textb;
           size_t tlena = lena;
           size_t tlenb = lenb;
-          char enda = ta[tlena];
-          char endb = tb[tlenb];
+          അക്ഷരം enda = ta[tlena];
+          അക്ഷരം endb = tb[tlenb];
 
-          void *allocated = NULL;
-          char stackbuf[4000];
+          ശൂന്യം *allocated = ശൂന്യ;
+          അക്ഷരം stackbuf[4000];
 
-          if (ignore || translate)
+          എങ്കിൽ (ignore || translate)
             {
               /* Compute with copies of the keys, which are the result of
                  translating or ignoring characters, and which need their
@@ -3002,22 +3002,22 @@ keycompare (struct line const *a, struct line const *b)
 
               /* Allocate space for copies.  */
               size_t size = lena + 1 + lenb + 1;
-              if (size <= sizeof stackbuf)
+              എങ്കിൽ (size <= വലുപ്പം stackbuf)
                 ta = stackbuf;
-              else
+              അല്ലെങ്കിൽ
                 ta = allocated = xmalloc (size);
               tb = ta + lena + 1;
 
               /* Put into each copy a version of the key in which the
                  requested characters are ignored or translated.  */
-              for (tlena = i = 0; i < lena; i++)
-                if (! (ignore && ignore[to_uchar (texta[i])]))
+              വേണ്ടി (tlena = i = 0; i < lena; i++)
+                എങ്കിൽ (! (ignore && ignore[to_uchar (texta[i])]))
                   ta[tlena++] = (translate
                                  ? translate[to_uchar (texta[i])]
                                  : texta[i]);
 
-              for (tlenb = i = 0; i < lenb; i++)
-                if (! (ignore && ignore[to_uchar (textb[i])]))
+              വേണ്ടി (tlenb = i = 0; i < lenb; i++)
+                എങ്കിൽ (! (ignore && ignore[to_uchar (textb[i])]))
                   tb[tlenb++] = (translate
                                  ? translate[to_uchar (textb[i])]
                                  : textb[i]);
@@ -3026,151 +3026,151 @@ keycompare (struct line const *a, struct line const *b)
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          എങ്കിൽ (താക്കോൽ->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
-            diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->month)
+            diff = getmonth (ta, ശൂന്യ) - getmonth (tb, ശൂന്യ);
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          അല്ലെങ്കിൽ എങ്കിൽ (താക്കോൽ->version)
             diff = filenvercmp (ta, tlena, tb, tlenb);
-          else
+          അല്ലെങ്കിൽ
             {
               /* Locale-dependent string sorting.  This is slower than
                  C-locale sorting, which is implemented below.  */
-              if (tlena == 0)
+              എങ്കിൽ (tlena == 0)
                 diff = - NONZERO (tlenb);
-              else if (tlenb == 0)
+              അല്ലെങ്കിൽ എങ്കിൽ (tlenb == 0)
                 diff = 1;
-              else
+              അല്ലെങ്കിൽ
                 diff = xmemcoll0 (ta, tlena + 1, tb, tlenb + 1);
             }
 
           ta[tlena] = enda;
           tb[tlenb] = endb;
 
-          free (allocated);
+          സ്വതന്ത്രം (allocated);
         }
-      else if (ignore)
+      അല്ലെങ്കിൽ എങ്കിൽ (ignore)
         {
 #define CMP_WITH_IGNORE(A, B)						\
-  do									\
+  ചെയ്യുക									\
     {									\
-          while (true)							\
+          ആകുമ്പോൾ (true)							\
             {								\
-              while (texta < lima && ignore[to_uchar (*texta)])		\
+              ആകുമ്പോൾ (texta < lima && ignore[to_uchar (*texta)])		\
                 ++texta;						\
-              while (textb < limb && ignore[to_uchar (*textb)])		\
+              ആകുമ്പോൾ (textb < limb && ignore[to_uchar (*textb)])		\
                 ++textb;						\
-              if (! (texta < lima && textb < limb))			\
+              എങ്കിൽ (! (texta < lima && textb < limb))			\
                 {							\
                   diff = (texta < lima) - (textb < limb);		\
-                  break;						\
+                  നിർത്തുക;						\
                 }							\
               diff = to_uchar (A) - to_uchar (B);			\
-              if (diff)							\
-                break;							\
+              എങ്കിൽ (diff)							\
+                നിർത്തുക;							\
               ++texta;							\
               ++textb;							\
             }								\
                                                                         \
     }									\
-  while (0)
+  ആകുമ്പോൾ (0)
 
-          if (translate)
+          എങ്കിൽ (translate)
             CMP_WITH_IGNORE (translate[to_uchar (*texta)],
                              translate[to_uchar (*textb)]);
-          else
+          അല്ലെങ്കിൽ
             CMP_WITH_IGNORE (*texta, *textb);
         }
-      else
+      അല്ലെങ്കിൽ
         {
           size_t lenmin = MIN (lena, lenb);
-          if (lenmin == 0)
+          എങ്കിൽ (lenmin == 0)
             diff = 0;
-          else if (translate)
+          അല്ലെങ്കിൽ എങ്കിൽ (translate)
             {
               size_t i = 0;
-              do
+              ചെയ്യുക
                 {
                   diff = (to_uchar (translate[to_uchar (texta[i])])
                           - to_uchar (translate[to_uchar (textb[i])]));
-                  if (diff)
-                    break;
+                  എങ്കിൽ (diff)
+                    നിർത്തുക;
                   i++;
                 }
-              while (i < lenmin);
+              ആകുമ്പോൾ (i < lenmin);
             }
-          else
+          അല്ലെങ്കിൽ
             diff = memcmp (texta, textb, lenmin);
 
-          if (! diff)
+          എങ്കിൽ (! diff)
             diff = _GL_CMP (lena, lenb);
         }
 
-      if (diff)
-        break;
+      എങ്കിൽ (diff)
+        നിർത്തുക;
 
-      key = key->next;
-      if (! key)
-        return 0;
+      താക്കോൽ = താക്കോൽ->next;
+      എങ്കിൽ (! താക്കോൽ)
+        തിരികെ 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
-      else
+      എങ്കിൽ (താക്കോൽ->eword != SIZE_MAX)
+        lima = limfield (a, താക്കോൽ), limb = limfield (b, താക്കോൽ);
+      അല്ലെങ്കിൽ
         lima = a->text + a->length - 1, limb = b->text + b->length - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
-      else
+      എങ്കിൽ (താക്കോൽ->sword != SIZE_MAX)
+        texta = begfield (a, താക്കോൽ), textb = begfield (b, താക്കോൽ);
+      അല്ലെങ്കിൽ
         {
           texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          എങ്കിൽ (താക്കോൽ->skipsblanks)
             {
-              while (texta < lima && blanks[to_uchar (*texta)])
+              ആകുമ്പോൾ (texta < lima && blanks[to_uchar (*texta)])
                 ++texta;
-              while (textb < limb && blanks[to_uchar (*textb)])
+              ആകുമ്പോൾ (textb < limb && blanks[to_uchar (*textb)])
                 ++textb;
             }
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  തിരികെ diff_reversed (diff, താക്കോൽ->reverse);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
-static int
-compare (struct line const *a, struct line const *b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+compare (ഘടന വരി സ്ഥിരം *a, ഘടന വരി സ്ഥിരം *b)
 {
-  int diff;
+  പൂർണ്ണസംഖ്യ diff;
   size_t alen, blen;
 
   /* First try to compare on the specified keys (if any).
      The only two cases with no key at all are unadorned sort,
      and unadorned sort -r. */
-  if (keylist)
+  എങ്കിൽ (keylist)
     {
       diff = keycompare (a, b);
-      if (diff || unique || stable)
-        return diff;
+      എങ്കിൽ (diff || unique || stable)
+        തിരികെ diff;
     }
 
   /* If the keys all compare equal (or no keys were specified)
      fall through to the default comparison.  */
   alen = a->length - 1, blen = b->length - 1;
 
-  if (alen == 0)
+  എങ്കിൽ (alen == 0)
     diff = - NONZERO (blen);
-  else if (blen == 0)
+  അല്ലെങ്കിൽ എങ്കിൽ (blen == 0)
     diff = 1;
-  else if (hard_LC_COLLATE)
+  അല്ലെങ്കിൽ എങ്കിൽ (hard_LC_COLLATE)
     {
       /* xmemcoll0 is a performance enhancement as
          it will not unconditionally write '\0' after the
@@ -3178,14 +3178,14 @@ compare (struct line const *a, struct line const *b)
          a 3% increase in performance for short lines.  */
       diff = xmemcoll0 (a->text, alen + 1, b->text, blen + 1);
     }
-  else
+  അല്ലെങ്കിൽ
     {
       diff = memcmp (a->text, b->text, MIN (alen, blen));
-      if (!diff)
+      എങ്കിൽ (!diff)
         diff = _GL_CMP (alen, blen);
     }
 
-  return diff_reversed (diff, reverse);
+  തിരികെ diff_reversed (diff, reverse);
 }
 
 /* Write LINE to output stream FP; the output file's name is
@@ -3193,35 +3193,35 @@ compare (struct line const *a, struct line const *b)
    otherwise.  If debugging is enabled and FP is standard output,
    append some debugging information.  */
 
-static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+സ്ഥിതം ശൂന്യം
+write_വരി (ഘടന വരി സ്ഥിരം *വരി, FILE *fp, അക്ഷരം സ്ഥിരം *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
-  char *ebuf = buf + n_bytes;
+  അക്ഷരം *buf = വരി->text;
+  size_t n_bytes = വരി->length;
+  അക്ഷരം *ebuf = buf + n_bytes;
 
-  if (!output_file && debug)
+  എങ്കിൽ (!output_file && debug)
     {
       /* Convert TAB to '>' and EOL to \n, and then output debugging info.  */
-      char const *c = buf;
+      അക്ഷരം സ്ഥിരം *c = buf;
 
-      while (c < ebuf)
+      ആകുമ്പോൾ (c < ebuf)
         {
-          char wc = *c++;
-          if (wc == '\t')
+          അക്ഷരം wc = *c++;
+          എങ്കിൽ (wc == '\t')
             wc = '>';
-          else if (c == ebuf)
+          അല്ലെങ്കിൽ എങ്കിൽ (c == ebuf)
             wc = '\n';
-          if (fputc (wc, fp) == EOF)
+          എങ്കിൽ (fputc (wc, fp) == EOF)
             sort_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_വരി (വരി);
     }
-  else
+  അല്ലെങ്കിൽ
     {
       ebuf[-1] = eolchar;
-      if (fwrite (buf, 1, n_bytes, fp) != n_bytes)
+      എങ്കിൽ (fwrite (buf, 1, n_bytes, fp) != n_bytes)
         sort_die (_("write failed"), output_file);
       ebuf[-1] = '\0';
     }
@@ -3232,85 +3232,85 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
    diagnostic (FILE_NAME, line number, contents of line) to stderr if
    they are not in order.  */
 
-static bool
-check (char const *file_name, char checkonly)
+സ്ഥിതം bool
+check (അക്ഷരം സ്ഥിരം *file_name, അക്ഷരം checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
-  struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  ഘടന buffer buf;		/* Input buffer. */
+  ഘടന വരി temp;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t വരി_സംഖ്യ = 0;
+  ഘടന keyfield സ്ഥിരം *താക്കോൽ = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
+  initbuf (&buf, വലുപ്പം (ഘടന വരി),
            MAX (merge_buffer_size, sort_size));
-  temp.text = NULL;
+  temp.text = ശൂന്യ;
 
-  while (fillbuf (&buf, fp, file_name, NULL))
+  ആകുമ്പോൾ (fillbuf (&buf, fp, file_name, ശൂന്യ))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      ഘടന വരി സ്ഥിരം *വരി = buffer_linelim (&buf);
+      ഘടന വരി സ്ഥിരം *linebase = വരി - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      എങ്കിൽ (alloc && nonunique <= compare (&temp, വരി - 1))
         {
         found_disorder:
           {
-            if (checkonly == 'c')
+            എങ്കിൽ (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                ഘടന വരി സ്ഥിരം *disorder_വരി = വരി - 1;
+                uintmax_t disorder_വരി_സംഖ്യ =
+                  buffer_linelim (&buf) - disorder_വരി + വരി_സംഖ്യ;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         program_name, file_name, disorder_വരി_സംഖ്യ);
+                write_വരി (disorder_വരി, stderr, _("standard error"));
               }
 
             ordered = false;
-            break;
+            നിർത്തുക;
           }
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
-          goto found_disorder;
+      ആകുമ്പോൾ (linebase < --വരി)
+        എങ്കിൽ (nonunique <= compare (വരി, വരി - 1))
+          പോകുക found_disorder;
 
-      line_number += buf.nlines;
+      വരി_സംഖ്യ += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      എങ്കിൽ (alloc < വരി->length)
         {
-          do
+          ചെയ്യുക
             {
               alloc *= 2;
-              if (! alloc)
+              എങ്കിൽ (! alloc)
                 {
-                  alloc = line->length;
-                  break;
+                  alloc = വരി->length;
+                  നിർത്തുക;
                 }
             }
-          while (alloc < line->length);
+          ആകുമ്പോൾ (alloc < വരി->length);
 
-          free (temp.text);
+          സ്വതന്ത്രം (temp.text);
           temp.text = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      memcpy (temp.text, വരി->text, വരി->length);
+      temp.length = വരി->length;
+      എങ്കിൽ (താക്കോൽ)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          temp.keybeg = temp.text + (വരി->keybeg - വരി->text);
+          temp.keylim = temp.text + (വരി->keylim - വരി->text);
         }
     }
 
   xfclose (fp, file_name);
-  free (buf.buf);
-  free (temp.text);
-  return ordered;
+  സ്വതന്ത്രം (buf.buf);
+  സ്വതന്ത്രം (temp.text);
+  തിരികെ ordered;
 }
 
 /* Open FILES (there are NFILES of them) and store the resulting array
@@ -3318,23 +3318,23 @@ check (char const *file_name, char checkonly)
    number of successfully opened files, setting errno if this value is
    less than NFILES.  */
 
-static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+സ്ഥിതം size_t
+open_നിവേശം_files (ഘടന sortfile *files, size_t nfiles, FILE ***pfps)
 {
-  FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
-  int i;
+  FILE **fps = *pfps = xnmalloc (nfiles, വലുപ്പം *fps);
+  പൂർണ്ണസംഖ്യ i;
 
   /* Open as many input files as we can.  */
-  for (i = 0; i < nfiles; i++)
+  വേണ്ടി (i = 0; i < nfiles; i++)
     {
       fps[i] = (files[i].temp && files[i].temp->state != UNCOMPRESSED
                 ? open_temp (files[i].temp)
                 : stream_open (files[i].name, "r"));
-      if (!fps[i])
-        break;
+      എങ്കിൽ (!fps[i])
+        നിർത്തുക;
     }
 
-  return i;
+  തിരികെ i;
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3345,52 +3345,52 @@ open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
    OUTPUT_FILE gives the name of the output file.  If it is null,
    the output file is standard output.  */
 
-static void
-mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
-          FILE *ofp, char const *output_file, FILE **fps)
+സ്ഥിതം ശൂന്യം
+mergefps (ഘടന sortfile *files, size_t ntemps, size_t nfiles,
+          FILE *ofp, അക്ഷരം സ്ഥിരം *output_file, FILE **fps)
 {
-  struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
+  ഘടന buffer *buffer = xnmalloc (nfiles, വലുപ്പം *buffer);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  ഘടന വരി saved;		/* Saved line storage for unique check. */
+  ഘടന വരി സ്ഥിരം *savedline = ശൂന്യ;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  ഘടന വരി സ്ഥിരം **cur = xnmalloc (nfiles, വലുപ്പം *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  ഘടന വരി സ്ഥിരം **base = xnmalloc (nfiles, വലുപ്പം *base);
                                 /* Base of each line table.  */
-  size_t *ord = xnmalloc (nfiles, sizeof *ord);
+  size_t *ord = xnmalloc (nfiles, വലുപ്പം *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
-  saved.text = NULL;
+  ഘടന keyfield സ്ഥിരം *താക്കോൽ = keylist;
+  saved.text = ശൂന്യ;
 
   /* Read initial lines from each input file. */
-  for (size_t i = 0; i < nfiles; )
+  വേണ്ടി (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
+      initbuf (&buffer[i], വലുപ്പം (ഘടന വരി),
                MAX (merge_buffer_size, sort_size / nfiles));
-      if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
+      എങ്കിൽ (fillbuf (&buffer[i], fps[i], files[i].name, ശൂന്യ))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          ഘടന വരി സ്ഥിരം *linelim = buffer_linelim (&buffer[i]);
           cur[i] = linelim - 1;
           base[i] = linelim - buffer[i].nlines;
           i++;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           /* fps[i] is empty; eliminate it from future consideration.  */
           xfclose (fps[i], files[i].name);
-          if (i < ntemps)
+          എങ്കിൽ (i < ntemps)
             {
               ntemps--;
               zaptemp (files[i].name);
             }
-          free (buffer[i].buf);
+          സ്വതന്ത്രം (buffer[i].buf);
           --nfiles;
-          for (size_t j = i; j < nfiles; ++j)
+          വേണ്ടി (size_t j = i; j < nfiles; ++j)
             {
               files[j] = files[j + 1];
               fps[j] = fps[j + 1];
@@ -3401,45 +3401,45 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Set up the ord table according to comparisons among input lines.
      Since this only reorders two items if one is strictly greater than
      the other, it is stable. */
-  for (size_t i = 0; i < nfiles; ++i)
+  വേണ്ടി (size_t i = 0; i < nfiles; ++i)
     ord[i] = i;
-  for (size_t i = 1; i < nfiles; ++i)
-    if (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
+  വേണ്ടി (size_t i = 1; i < nfiles; ++i)
+    എങ്കിൽ (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
       t = ord[i - 1], ord[i - 1] = ord[i], ord[i] = t, i = 0;
 
   /* Repeatedly output the smallest line until no input remains. */
-  while (nfiles)
+  ആകുമ്പോൾ (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      ഘടന വരി സ്ഥിരം *smallest = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
-      if (unique)
+      എങ്കിൽ (unique)
         {
-          if (savedline && compare (savedline, smallest))
+          എങ്കിൽ (savedline && compare (savedline, smallest))
             {
-              savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              savedline = ശൂന്യ;
+              write_വരി (&saved, ofp, output_file);
             }
-          if (!savedline)
+          എങ്കിൽ (!savedline)
             {
               savedline = &saved;
-              if (savealloc < smallest->length)
+              എങ്കിൽ (savealloc < smallest->length)
                 {
-                  do
-                    if (! savealloc)
+                  ചെയ്യുക
+                    എങ്കിൽ (! savealloc)
                       {
                         savealloc = smallest->length;
-                        break;
+                        നിർത്തുക;
                       }
-                  while ((savealloc *= 2) < smallest->length);
+                  ആകുമ്പോൾ ((savealloc *= 2) < smallest->length);
 
-                  free (saved.text);
+                  സ്വതന്ത്രം (saved.text);
                   saved.text = xmalloc (savealloc);
                 }
               saved.length = smallest->length;
               memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              എങ്കിൽ (താക്കോൽ)
                 {
                   saved.keybeg =
                     saved.text + (smallest->keybeg - smallest->text);
@@ -3448,36 +3448,36 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                 }
             }
         }
-      else
-        write_line (smallest, ofp, output_file);
+      അല്ലെങ്കിൽ
+        write_വരി (smallest, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
-      if (base[ord[0]] < smallest)
+      എങ്കിൽ (base[ord[0]] < smallest)
         cur[ord[0]] = smallest - 1;
-      else
+      അല്ലെങ്കിൽ
         {
-          if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
-                       NULL))
+          എങ്കിൽ (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
+                       ശൂന്യ))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              ഘടന വരി സ്ഥിരം *linelim = buffer_linelim (&buffer[ord[0]]);
               cur[ord[0]] = linelim - 1;
               base[ord[0]] = linelim - buffer[ord[0]].nlines;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               /* We reached EOF on fps[ord[0]].  */
-              for (size_t i = 1; i < nfiles; ++i)
-                if (ord[i] > ord[0])
+              വേണ്ടി (size_t i = 1; i < nfiles; ++i)
+                എങ്കിൽ (ord[i] > ord[0])
                   --ord[i];
               --nfiles;
               xfclose (fps[ord[0]], files[ord[0]].name);
-              if (ord[0] < ntemps)
+              എങ്കിൽ (ord[0] < ntemps)
                 {
                   ntemps--;
                   zaptemp (files[ord[0]].name);
                 }
-              free (buffer[ord[0]].buf);
-              for (size_t i = ord[0]; i < nfiles; ++i)
+              സ്വതന്ത്രം (buffer[ord[0]].buf);
+              വേണ്ടി (size_t i = ord[0]; i < nfiles; ++i)
                 {
                   fps[i] = fps[i + 1];
                   files[i] = files[i + 1];
@@ -3485,9 +3485,9 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                   cur[i] = cur[i + 1];
                   base[i] = base[i + 1];
                 }
-              for (size_t i = 0; i < nfiles; ++i)
+              വേണ്ടി (size_t i = 0; i < nfiles; ++i)
                 ord[i] = ord[i + 1];
-              continue;
+              തുടരുക;
             }
         }
 
@@ -3500,37 +3500,37 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t എണ്ണം_of_smaller_വരികൾ;
 
-        while (lo < hi)
+        ആകുമ്പോൾ (lo < hi)
           {
-            int cmp = compare (cur[ord0], cur[ord[probe]]);
-            if (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
+            പൂർണ്ണസംഖ്യ cmp = compare (cur[ord0], cur[ord[probe]]);
+            എങ്കിൽ (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
               hi = probe;
-            else
+            അല്ലെങ്കിൽ
               lo = probe + 1;
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        എണ്ണം_of_smaller_വരികൾ = lo - 1;
+        വേണ്ടി (size_t j = 0; j < എണ്ണം_of_smaller_വരികൾ; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[എണ്ണം_of_smaller_വരികൾ] = ord0;
       }
     }
 
-  if (unique && savedline)
+  എങ്കിൽ (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
-      free (saved.text);
+      write_വരി (&saved, ofp, output_file);
+      സ്വതന്ത്രം (saved.text);
     }
 
   xfclose (ofp, output_file);
-  free (fps);
-  free (buffer);
-  free (ord);
-  free (base);
-  free (cur);
+  സ്വതന്ത്രം (fps);
+  സ്വതന്ത്രം (buffer);
+  സ്വതന്ത്രം (ord);
+  സ്വതന്ത്രം (base);
+  സ്വതന്ത്രം (cur);
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3543,16 +3543,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
    less than NFILES if we ran low on file descriptors, but in this
    case it is never less than 2.  */
 
-static size_t
-mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
-            FILE *ofp, char const *output_file)
+സ്ഥിതം size_t
+mergefiles (ഘടന sortfile *files, size_t ntemps, size_t nfiles,
+            FILE *ofp, അക്ഷരം സ്ഥിരം *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
-  if (nopened < nfiles && nopened < 2)
+  size_t nopened = open_നിവേശം_files (files, nfiles, &fps);
+  എങ്കിൽ (nopened < nfiles && nopened < 2)
     sort_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
-  return nopened;
+  തിരികെ nopened;
 }
 
 /* Merge into T (of size NLINES) the two sorted arrays of lines
@@ -3561,35 +3561,35 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    T and LO point just past their respective arrays, and the arrays
    are in reverse order.  NLINES must be at least 2.  */
 
-static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+സ്ഥിതം ശൂന്യം
+mergelines (ഘടന വരി *restrict t, size_t nlines,
+            ഘടന വരി സ്ഥിരം *restrict lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  ഘടന വരി *hi = t - nlo;
 
-  while (true)
-    if (compare (lo - 1, hi - 1) <= 0)
+  ആകുമ്പോൾ (true)
+    എങ്കിൽ (compare (lo - 1, hi - 1) <= 0)
       {
         *--t = *--lo;
-        if (! --nlo)
+        എങ്കിൽ (! --nlo)
           {
             /* HI must equal T now, and there is no need to copy from
                HI to T. */
-            return;
+            തിരികെ;
           }
       }
-    else
+    അല്ലെങ്കിൽ
       {
         *--t = *--hi;
-        if (! --nhi)
+        എങ്കിൽ (! --nhi)
           {
-            do
+            ചെയ്യുക
               *--t = *--lo;
-            while (--nlo);
+            ആകുമ്പോൾ (--nlo);
 
-            return;
+            തിരികെ;
           }
       }
 }
@@ -3608,96 +3608,96 @@ mergelines (struct line *restrict t, size_t nlines,
    writes that this memory optimization was originally published by
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
-static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+സ്ഥിതം ശൂന്യം
+sequential_sort (ഘടന വരി *restrict വരികൾ, size_t nlines,
+                 ഘടന വരി *restrict temp, bool to_temp)
 {
-  if (nlines == 2)
+  എങ്കിൽ (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
-      if (to_temp)
+      പൂർണ്ണസംഖ്യ swap = (0 < compare (&വരികൾ[-1], &വരികൾ[-2]));
+      എങ്കിൽ (to_temp)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          temp[-1] = വരികൾ[-1 - swap];
+          temp[-2] = വരികൾ[-2 + swap];
         }
-      else if (swap)
+      അല്ലെങ്കിൽ എങ്കിൽ (swap)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          temp[-1] = വരികൾ[-1];
+          വരികൾ[-1] = വരികൾ[-2];
+          വരികൾ[-2] = temp[-1];
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      ഘടന വരി *lo = വരികൾ;
+      ഘടന വരി *hi = വരികൾ - nlo;
 
       sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
-      if (1 < nlo)
+      എങ്കിൽ (1 < nlo)
         sequential_sort (lo, nlo, temp, !to_temp);
-      else if (!to_temp)
+      അല്ലെങ്കിൽ എങ്കിൽ (!to_temp)
         temp[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
-      if (to_temp)
+      ഘടന വരി *dest;
+      ഘടന വരി സ്ഥിരം *sorted_lo;
+      എങ്കിൽ (to_temp)
         {
           dest = temp;
-          sorted_lo = lines;
+          sorted_lo = വരികൾ;
         }
-      else
+      അല്ലെങ്കിൽ
         {
-          dest = lines;
+          dest = വരികൾ;
           sorted_lo = temp;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+സ്ഥിതം ഘടന merge_കണ്ണി *init_കണ്ണി (ഘടന merge_കണ്ണി *restrict,
+                                     ഘടന merge_കണ്ണി *restrict,
+                                     ഘടന വരി *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+സ്ഥിതം ഘടന merge_കണ്ണി *
+merge_വൃക്ഷം_init (size_t nthreads, size_t nlines, ഘടന വരി *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  ഘടന merge_കണ്ണി *merge_വൃക്ഷം = xmalloc (2 * വലുപ്പം *merge_വൃക്ഷം * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  ഘടന merge_കണ്ണി *വേര് = merge_വൃക്ഷം;
+  വേര്->lo = വേര്->hi = വേര്->end_lo = വേര്->end_hi = ശൂന്യ;
+  വേര്->dest = ശൂന്യ;
+  വേര്->nlo = വേര്->nhi = nlines;
+  വേര്->parent = ശൂന്യ;
+  വേര്->level = MERGE_END;
+  വേര്->queued = false;
+  pthread_mutex_init (&വേര്->lock, ശൂന്യ);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_കണ്ണി (വേര്, വേര് + 1, dest, nthreads, nlines, false);
+  തിരികെ merge_വൃക്ഷം;
 }
 
 /* Destroy the merge tree. */
-static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+സ്ഥിതം ശൂന്യം
+merge_വൃക്ഷം_destroy (size_t nthreads, ഘടന merge_കണ്ണി *merge_വൃക്ഷം)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  ഘടന merge_കണ്ണി *കണ്ണി = merge_വൃക്ഷം;
 
-  while (n_nodes--)
+  ആകുമ്പോൾ (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&കണ്ണി->lock);
+      കണ്ണി++;
     }
 
-  free (merge_tree);
+  സ്വതന്ത്രം (merge_വൃക്ഷം);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,82 +3707,82 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+സ്ഥിതം ഘടന merge_കണ്ണി *
+init_കണ്ണി (ഘടന merge_കണ്ണി *restrict parent,
+           ഘടന merge_കണ്ണി *restrict കണ്ണി_pool,
+           ഘടന വരി *dest, size_t nthreads,
+           size_t total_വരികൾ, bool is_lo_child)
 {
   size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  ഘടന വരി *lo = dest - total_വരികൾ;
+  ഘടന വരി *hi = lo - nlo;
+  ഘടന വരി **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  ഘടന merge_കണ്ണി *കണ്ണി = കണ്ണി_pool++;
+  കണ്ണി->lo = കണ്ണി->end_lo = lo;
+  കണ്ണി->hi = കണ്ണി->end_hi = hi;
+  കണ്ണി->dest = parent_end;
+  കണ്ണി->nlo = nlo;
+  കണ്ണി->nhi = nhi;
+  കണ്ണി->parent = parent;
+  കണ്ണി->level = parent->level + 1;
+  കണ്ണി->queued = false;
+  pthread_mutex_init (&കണ്ണി->lock, ശൂന്യ);
 
-  if (nthreads > 1)
+  എങ്കിൽ (nthreads > 1)
     {
       size_t lo_threads = nthreads / 2;
       size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      കണ്ണി->lo_child = കണ്ണി_pool;
+      കണ്ണി_pool = init_കണ്ണി (കണ്ണി, കണ്ണി_pool, lo, lo_threads,
+                             total_വരികൾ, true);
+      കണ്ണി->hi_child = കണ്ണി_pool;
+      കണ്ണി_pool = init_കണ്ണി (കണ്ണി, കണ്ണി_pool, hi, hi_threads,
+                             total_വരികൾ, false);
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      കണ്ണി->lo_child = ശൂന്യ;
+      കണ്ണി->hi_child = ശൂന്യ;
     }
-  return node_pool;
+  തിരികെ കണ്ണി_pool;
 }
 
 
 /* Compare two merge nodes A and B for priority.  */
 
-static int
-compare_nodes (void const *a, void const *b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+compare_nodes (ശൂന്യം സ്ഥിരം *a, ശൂന്യം സ്ഥിരം *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
-  if (nodea->level == nodeb->level)
-      return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
-  return nodea->level < nodeb->level;
+  ഘടന merge_കണ്ണി സ്ഥിരം *nodea = a;
+  ഘടന merge_കണ്ണി സ്ഥിരം *nodeb = b;
+  എങ്കിൽ (nodea->level == nodeb->level)
+      തിരികെ (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
+  തിരികെ nodea->level < nodeb->level;
 }
 
 /* Lock a merge tree NODE.  */
 
-static inline void
-lock_node (struct merge_node *node)
+സ്ഥിതം വരിയിൽ ശൂന്യം
+lock_കണ്ണി (ഘടന merge_കണ്ണി *കണ്ണി)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_lock (&കണ്ണി->lock);
 }
 
 /* Unlock a merge tree NODE. */
 
-static inline void
-unlock_node (struct merge_node *node)
+സ്ഥിതം വരിയിൽ ശൂന്യം
+unlock_കണ്ണി (ഘടന merge_കണ്ണി *കണ്ണി)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&കണ്ണി->lock);
 }
 
 /* Destroy merge QUEUE. */
 
-static void
-queue_destroy (struct merge_node_queue *queue)
+സ്ഥിതം ശൂന്യം
+queue_destroy (ഘടന merge_കണ്ണി_queue *queue)
 {
   heap_free (queue->priority_queue);
   pthread_cond_destroy (&queue->cond);
@@ -3792,43 +3792,43 @@ queue_destroy (struct merge_node_queue *queue)
 /* Initialize merge QUEUE, allocating space suitable for a maximum of
    NTHREADS threads.  */
 
-static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+സ്ഥിതം ശൂന്യം
+queue_init (ഘടന merge_കണ്ണി_queue *queue, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
      dummy head for the heap, reserve 2 * NTHREADS nodes.  */
   queue->priority_queue = heap_alloc (compare_nodes, 2 * nthreads);
-  pthread_mutex_init (&queue->mutex, NULL);
-  pthread_cond_init (&queue->cond, NULL);
+  pthread_mutex_init (&queue->mutex, ശൂന്യ);
+  pthread_cond_init (&queue->cond, ശൂന്യ);
 }
 
 /* Insert NODE into QUEUE.  The caller either holds a lock on NODE, or
    does not need to lock NODE.  */
 
-static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+സ്ഥിതം ശൂന്യം
+queue_തിരുകുക (ഘടന merge_കണ്ണി_queue *queue, ഘടന merge_കണ്ണി *കണ്ണി)
 {
   pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
+  heap_തിരുകുക (queue->priority_queue, കണ്ണി);
+  കണ്ണി->queued = true;
   pthread_cond_signal (&queue->cond);
   pthread_mutex_unlock (&queue->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+സ്ഥിതം ഘടന merge_കണ്ണി *
+queue_എടുക്കുക (ഘടന merge_കണ്ണി_queue *queue)
 {
-  struct merge_node *node;
+  ഘടന merge_കണ്ണി *കണ്ണി;
   pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
+  ആകുമ്പോൾ (! (കണ്ണി = heap_remove_മുകൾ (queue->priority_queue)))
     pthread_cond_wait (&queue->cond, &queue->mutex);
   pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  lock_കണ്ണി (കണ്ണി);
+  കണ്ണി->queued = false;
+  തിരികെ കണ്ണി;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3838,17 +3838,17 @@ queue_pop (struct merge_node_queue *queue)
    This function does not save the line for comparison later, so it is
    appropriate only for internal sort.  */
 
-static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+സ്ഥിതം ശൂന്യം
+write_unique (ഘടന വരി സ്ഥിരം *വരി, FILE *tfp, അക്ഷരം സ്ഥിരം *temp_output)
 {
-  if (unique)
+  എങ്കിൽ (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
-        return;
-      saved_line = *line;
+      എങ്കിൽ (saved_വരി.text && ! compare (വരി, &saved_വരി))
+        തിരികെ;
+      saved_വരി = *വരി;
     }
 
-  write_line (line, tfp, temp_output);
+  write_വരി (വരി, tfp, temp_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3858,103 +3858,103 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    If merging at the top level, send output to TFP.  TEMP_OUTPUT is
    the name of TFP, or is null if TFP is standard output.  */
 
-static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
-                 FILE *tfp, char const *temp_output)
+സ്ഥിതം ശൂന്യം
+mergelines_കണ്ണി (ഘടന merge_കണ്ണി *restrict കണ്ണി, size_t total_വരികൾ,
+                 FILE *tfp, അക്ഷരം സ്ഥിരം *temp_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  ഘടന വരി *lo_orig = കണ്ണി->lo;
+  ഘടന വരി *hi_orig = കണ്ണി->hi;
+  size_t to_merge = MAX_MERGE (total_വരികൾ, കണ്ണി->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  എങ്കിൽ (കണ്ണി->level > MERGE_വേര്)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
-        else
-          *--dest = *--node->hi;
+      ഘടന വരി *dest = *കണ്ണി->dest;
+      ആകുമ്പോൾ (കണ്ണി->lo != കണ്ണി->end_lo && കണ്ണി->hi != കണ്ണി->end_hi && to_merge--)
+        എങ്കിൽ (compare (കണ്ണി->lo - 1, കണ്ണി->hi - 1) <= 0)
+          *--dest = *--കണ്ണി->lo;
+        അല്ലെങ്കിൽ
+          *--dest = *--കണ്ണി->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - കണ്ണി->lo;
+      merged_hi = hi_orig - കണ്ണി->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      എങ്കിൽ (കണ്ണി->nhi == merged_hi)
+        ആകുമ്പോൾ (കണ്ണി->lo != കണ്ണി->end_lo && to_merge--)
+          *--dest = *--കണ്ണി->lo;
+      അല്ലെങ്കിൽ എങ്കിൽ (കണ്ണി->nlo == merged_lo)
+        ആകുമ്പോൾ (കണ്ണി->hi != കണ്ണി->end_hi && to_merge--)
+          *--dest = *--കണ്ണി->hi;
+      *കണ്ണി->dest = dest;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      ആകുമ്പോൾ (കണ്ണി->lo != കണ്ണി->end_lo && കണ്ണി->hi != കണ്ണി->end_hi && to_merge--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
-          else
-            write_unique (--node->hi, tfp, temp_output);
+          എങ്കിൽ (compare (കണ്ണി->lo - 1, കണ്ണി->hi - 1) <= 0)
+            write_unique (--കണ്ണി->lo, tfp, temp_output);
+          അല്ലെങ്കിൽ
+            write_unique (--കണ്ണി->hi, tfp, temp_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - കണ്ണി->lo;
+      merged_hi = hi_orig - കണ്ണി->hi;
 
-      if (node->nhi == merged_hi)
+      എങ്കിൽ (കണ്ണി->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          ആകുമ്പോൾ (കണ്ണി->lo != കണ്ണി->end_lo && to_merge--)
+            write_unique (--കണ്ണി->lo, tfp, temp_output);
         }
-      else if (node->nlo == merged_lo)
+      അല്ലെങ്കിൽ എങ്കിൽ (കണ്ണി->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          ആകുമ്പോൾ (കണ്ണി->hi != കണ്ണി->end_hi && to_merge--)
+            write_unique (--കണ്ണി->hi, tfp, temp_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - കണ്ണി->lo;
+  merged_hi = hi_orig - കണ്ണി->hi;
+  കണ്ണി->nlo -= merged_lo;
+  കണ്ണി->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
    NODE's children has available lines and the other either has
    available lines or has exhausted its lines.  */
 
-static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+സ്ഥിതം ശൂന്യം
+queue_check_തിരുകുക (ഘടന merge_കണ്ണി_queue *queue, ഘടന merge_കണ്ണി *കണ്ണി)
 {
-  if (! node->queued)
+  എങ്കിൽ (! കണ്ണി->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (കണ്ണി->lo - കണ്ണി->end_lo) != 0;
+      bool hi_avail = (കണ്ണി->hi - കണ്ണി->end_hi) != 0;
+      എങ്കിൽ (lo_avail ? hi_avail || ! കണ്ണി->nhi : hi_avail && ! കണ്ണി->nlo)
+        queue_തിരുകുക (queue, കണ്ണി);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
-static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+സ്ഥിതം ശൂന്യം
+queue_check_തിരുകുക_parent (ഘടന merge_കണ്ണി_queue *queue,
+                           ഘടന merge_കണ്ണി *കണ്ണി)
 {
-  if (node->level > MERGE_ROOT)
+  എങ്കിൽ (കണ്ണി->level > MERGE_വേര്)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      lock_കണ്ണി (കണ്ണി->parent);
+      queue_check_തിരുകുക (queue, കണ്ണി->parent);
+      unlock_കണ്ണി (കണ്ണി->parent);
     }
-  else if (node->nlo + node->nhi == 0)
+  അല്ലെങ്കിൽ എങ്കിൽ (കണ്ണി->nlo + കണ്ണി->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      queue_തിരുകുക (queue, കണ്ണി->parent);
     }
 }
 
@@ -3964,72 +3964,72 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    level, send output to TFP.  TEMP_OUTPUT is the name of TFP, or is
    null if TFP is standard output.  */
 
-static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+സ്ഥിതം ശൂന്യം
+merge_loop (ഘടന merge_കണ്ണി_queue *queue,
+            size_t total_വരികൾ, FILE *tfp, അക്ഷരം സ്ഥിരം *temp_output)
 {
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      ഘടന merge_കണ്ണി *കണ്ണി = queue_എടുക്കുക (queue);
 
-      if (node->level == MERGE_END)
+      എങ്കിൽ (കണ്ണി->level == MERGE_END)
         {
-          unlock_node (node);
+          unlock_കണ്ണി (കണ്ണി);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
-          break;
+          queue_തിരുകുക (queue, കണ്ണി);
+          നിർത്തുക;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_കണ്ണി (കണ്ണി, total_വരികൾ, tfp, temp_output);
+      queue_check_തിരുകുക (queue, കണ്ണി);
+      queue_check_തിരുകുക_parent (queue, കണ്ണി);
 
-      unlock_node (node);
+      unlock_കണ്ണി (കണ്ണി);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
-                       FILE *, char const *);
+സ്ഥിതം ശൂന്യം sortlines (ഘടന വരി *restrict, size_t, size_t,
+                       ഘടന merge_കണ്ണി *, ഘടന merge_കണ്ണി_queue *,
+                       FILE *, അക്ഷരം സ്ഥിരം *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+ഘടന thread_args
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  ഘടന വരി *വരികൾ;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t സ്ഥിരം total_വരികൾ;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  ഘടന merge_കണ്ണി *സ്ഥിരം കണ്ണി;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  ഘടന merge_കണ്ണി_queue *സ്ഥിരം queue;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
   FILE *tfp;
-  char const *output_temp;
+  അക്ഷരം സ്ഥിരം *output_temp;
 };
 
 /* Like sortlines, except with a signature acceptable to pthread_create.  */
 
-static void *
-sortlines_thread (void *data)
+സ്ഥിതം ശൂന്യം *
+sortlines_thread (ശൂന്യം *data)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
+  ഘടന thread_args സ്ഥിരം *args = data;
+  sortlines (args->വരികൾ, args->nthreads, args->total_വരികൾ,
+             args->കണ്ണി, args->queue, args->tfp,
              args->output_temp);
-  return NULL;
+  തിരികെ ശൂന്യ;
 }
 
 /* Sort lines, possibly in parallel.  The arguments are as in struct
@@ -4056,47 +4056,47 @@ sortlines_thread (void *data)
    merge. This continues until all lines at all nodes of the merge tree
    have been merged. */
 
-static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+സ്ഥിതം ശൂന്യം
+sortlines (ഘടന വരി *restrict വരികൾ, size_t nthreads,
+           size_t total_വരികൾ, ഘടന merge_കണ്ണി *കണ്ണി,
+           ഘടന merge_കണ്ണി_queue *queue, FILE *tfp, അക്ഷരം സ്ഥിരം *temp_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = കണ്ണി->nlo + കണ്ണി->nhi;
 
   /* Calculate thread arguments. */
   size_t lo_threads = nthreads / 2;
   size_t hi_threads = nthreads - lo_threads;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  ഘടന thread_args args = {വരികൾ, lo_threads, total_വരികൾ,
+                             കണ്ണി->lo_child, queue, tfp, temp_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  എങ്കിൽ (nthreads > 1 && SUBTHREAD_വരികൾ_HEURISTIC <= nlines
+      && pthread_create (&thread, ശൂന്യ, sortlines_thread, &args) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
-      pthread_join (thread, NULL);
+      sortlines (വരികൾ - കണ്ണി->nlo, hi_threads, total_വരികൾ,
+                 കണ്ണി->hi_child, queue, tfp, temp_output);
+      pthread_join (thread, ശൂന്യ);
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
-      if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
-      if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+      size_t nlo = കണ്ണി->nlo;
+      size_t nhi = കണ്ണി->nhi;
+      ഘടന വരി *temp = വരികൾ - total_വരികൾ;
+      എങ്കിൽ (1 < nhi)
+        sequential_sort (വരികൾ - nlo, nhi, temp - nlo / 2, false);
+      എങ്കിൽ (1 < nlo)
+        sequential_sort (വരികൾ, nlo, temp, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      കണ്ണി->lo = വരികൾ;
+      കണ്ണി->hi = വരികൾ - nlo;
+      കണ്ണി->end_lo = വരികൾ - nlo;
+      കണ്ണി->end_hi = വരികൾ - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      queue_തിരുകുക (queue, കണ്ണി);
+      merge_loop (queue, total_വരികൾ, tfp, temp_output);
     }
 }
 
@@ -4117,25 +4117,25 @@ sortlines (struct line *restrict lines, size_t nthreads,
    Catching these obscure cases would slow down performance in
    common cases.  */
 
-static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
-                      size_t nfiles, char const *outfile)
+സ്ഥിതം ശൂന്യം
+avoid_trashing_നിവേശം (ഘടന sortfile *files, size_t ntemps,
+                      size_t nfiles, അക്ഷരം സ്ഥിരം *outfile)
 {
-  struct tempnode *tempcopy = NULL;
+  ഘടന tempnode *tempcopy = ശൂന്യ;
 
-  for (size_t i = ntemps; i < nfiles; i++)
+  വേണ്ടി (size_t i = ntemps; i < nfiles; i++)
     {
       bool is_stdin = streq (files[i].name, "-");
       bool same;
-      struct stat instat;
+      ഘടന stat instat;
 
-      if (outfile && streq (outfile, files[i].name) && !is_stdin)
+      എങ്കിൽ (outfile && streq (outfile, files[i].name) && !is_stdin)
         same = true;
-      else
+      അല്ലെങ്കിൽ
         {
-          struct stat *outst = get_outstatus ();
-          if (!outst)
-            break;
+          ഘടന stat *outst = get_outstatus ();
+          എങ്കിൽ (!outst)
+            നിർത്തുക;
 
           same = (((is_stdin
                     ? fstat (STDIN_FILENO, &instat)
@@ -4144,9 +4144,9 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
                   && psame_inode (&instat, outst));
         }
 
-      if (same)
+      എങ്കിൽ (same)
         {
-          if (! tempcopy)
+          എങ്കിൽ (! tempcopy)
             {
               FILE *tftp;
               tempcopy = create_temp (&tftp);
@@ -4168,15 +4168,15 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
    Catching these obscure cases could slow down performance in
    common cases.  */
 
-static void
-check_inputs (char *const *files, size_t nfiles)
+സ്ഥിതം ശൂന്യം
+check_inputs (അക്ഷരം *സ്ഥിരം *files, size_t nfiles)
 {
-  for (size_t i = 0; i < nfiles; i++)
+  വേണ്ടി (size_t i = 0; i < nfiles; i++)
     {
-      if (streq (files[i], "-"))
-        continue;
+      എങ്കിൽ (streq (files[i], "-"))
+        തുടരുക;
 
-      if (euidaccess (files[i], R_OK) != 0)
+      എങ്കിൽ (euidaccess (files[i], R_OK) != 0)
         sort_die (_("cannot read"), files[i]);
     }
 }
@@ -4185,14 +4185,14 @@ check_inputs (char *const *files, size_t nfiles)
    and point stdout to it.  Do not truncate the file.
    Exit with a diagnostic on failure.  */
 
-static void
-check_output (char const *outfile)
+സ്ഥിതം ശൂന്യം
+check_output (അക്ഷരം സ്ഥിരം *outfile)
 {
-  if (outfile)
+  എങ്കിൽ (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
-      int outfd = open (outfile, oflags, MODE_RW_UGO);
-      if (outfd < 0)
+      പൂർണ്ണസംഖ്യ oflags = O_WRONLY | O_ദ്വിമാന | O_CLOEXEC | O_CREAT;
+      പൂർണ്ണസംഖ്യ outfd = open (outfile, oflags, MODE_RW_UGO);
+      എങ്കിൽ (outfd < 0)
         sort_die (_("open failed"), outfile);
       move_fd (outfd, STDOUT_FILENO);
     }
@@ -4203,11 +4203,11 @@ check_output (char const *outfile)
    NFILES is the total number of files.  Put the output in
    OUTPUT_FILE; a null OUTPUT_FILE stands for standard output.  */
 
-static void
-merge (struct sortfile *files, size_t ntemps, size_t nfiles,
-       char const *output_file)
+സ്ഥിതം ശൂന്യം
+merge (ഘടന sortfile *files, size_t ntemps, size_t nfiles,
+       അക്ഷരം സ്ഥിരം *output_file)
 {
-  while (nmerge < nfiles)
+  ആകുമ്പോൾ (nmerge < nfiles)
     {
       /* Number of input files processed so far.  */
       size_t in;
@@ -4225,68 +4225,68 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       /* Do as many NMERGE-size merges as possible. In the case that
          nmerge is bogus, increment by the maximum number of file
          descriptors allowed.  */
-      for (out = in = 0; nmerge <= nfiles - in; out++)
+      വേണ്ടി (out = in = 0; nmerge <= nfiles - in; out++)
         {
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
+          ഘടന tempnode *temp = create_temp (&tfp);
+          size_t അക്കം_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
                                           nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, അക്കം_merged);
           files[out].name = temp->name;
           files[out].temp = temp;
-          in += num_merged;
+          in += അക്കം_merged;
         }
 
       remainder = nfiles - in;
       cheap_slots = nmerge - out % nmerge;
 
-      if (cheap_slots < remainder)
+      എങ്കിൽ (cheap_slots < remainder)
         {
           /* So many files remain that they can't all be put into the last
              NMERGE-sized output window.  Do one more merge.  Merge as few
              files as possible, to avoid needless I/O.  */
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
+          ഘടന tempnode *temp = create_temp (&tfp);
+          size_t അക്കം_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
                                           nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, അക്കം_merged);
           files[out].name = temp->name;
           files[out++].temp = temp;
-          in += num_merged;
+          in += അക്കം_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
          window, so they will be merged in the next pass.  */
-      memmove (&files[out], &files[in], (nfiles - in) * sizeof *files);
+      memmove (&files[out], &files[in], (nfiles - in) * വലുപ്പം *files);
       ntemps += out;
       nfiles -= in - out;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_നിവേശം (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
      temp file if we can't. Repeat.  */
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_നിവേശം_files (files, nfiles, &fps);
 
-      if (nopened == nfiles)
+      എങ്കിൽ (nopened == nfiles)
         {
           FILE *ofp = stream_open (output_file, "w");
-          if (ofp)
+          എങ്കിൽ (ofp)
             {
               mergefps (files, ntemps, nfiles, ofp, output_file, fps);
-              break;
+              നിർത്തുക;
             }
-          if (errno != EMFILE || nopened <= 2)
+          എങ്കിൽ (errno != EMFILE || nopened <= 2)
             sort_die (_("open failed"), output_file);
         }
-      else if (nopened <= 2)
+      അല്ലെങ്കിൽ എങ്കിൽ (nopened <= 2)
         sort_die (_("open failed"), files[nopened].name);
 
       /* We ran out of file descriptors.  Close one of the input
@@ -4295,14 +4295,14 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
          (e.g., some other process could open a file between the time
          we closed and tried to create).  */
       FILE *tfp;
-      struct tempnode *temp;
-      do
+      ഘടന tempnode *temp;
+      ചെയ്യുക
         {
           nopened--;
           xfclose (fps[nopened], files[nopened].name);
           temp = maybe_create_temp (&tfp, ! (nopened <= 2));
         }
-      while (!temp);
+      ആകുമ്പോൾ (!temp);
 
       /* Merge into the newly allocated temporary.  */
       mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, temp->name,
@@ -4311,7 +4311,7 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       files[0].name = temp->name;
       files[0].temp = temp;
 
-      memmove (&files[1], &files[nopened], (nfiles - nopened) * sizeof *files);
+      memmove (&files[1], &files[nopened], (nfiles - nopened) * വലുപ്പം *files);
       ntemps++;
       nfiles -= nopened - 1;
     }
@@ -4319,12 +4319,12 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
 
 /* Sort NFILES FILES onto OUTPUT_FILE.  Use at most NTHREADS threads.  */
 
-static void
-sort (char *const *files, size_t nfiles, char const *output_file,
+സ്ഥിതം ശൂന്യം
+sort (അക്ഷരം *സ്ഥിരം *files, size_t nfiles, അക്ഷരം സ്ഥിരം *output_file,
       size_t nthreads)
 {
-  struct buffer buf;
-  struct sort_buffer_policy policy;
+  ഘടന buffer buf;
+  ഘടന sort_buffer_policy policy;
   size_t ntemps = 0;
   bool output_file_created = false;
 
@@ -4332,117 +4332,117 @@ sort (char *const *files, size_t nfiles, char const *output_file,
   policy.initial = policy.limit = 0;
   policy.growth_failed = false;
 
-  while (nfiles)
+  ആകുമ്പോൾ (nfiles)
     {
-      char const *temp_output;
-      char const *file = *files;
+      അക്ഷരം സ്ഥിരം *temp_output;
+      അക്ഷരം സ്ഥിരം *file = *files;
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
-      if (nthreads > 1)
+      size_t bytes_per_വരി;
+      എങ്കിൽ (nthreads > 1)
         {
           /* Get log P. */
           size_t tmp = 1;
           size_t mult = 1;
-          while (tmp < nthreads)
+          ആകുമ്പോൾ (tmp < nthreads)
             {
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          bytes_per_വരി = (mult * വലുപ്പം (ഘടന വരി));
         }
-      else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+      അല്ലെങ്കിൽ
+        bytes_per_വരി = വലുപ്പം (ഘടന വരി) * 3 / 2;
 
-      if (! buf.alloc)
+      എങ്കിൽ (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_വരി,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, bytes_per_വരി, policy.initial);
         }
       buf.eof = false;
       files++;
       nfiles--;
 
-      while (fillbuf (&buf, fp, file, &policy))
+      ആകുമ്പോൾ (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          ഘടന വരി *വരി;
 
-          if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+          എങ്കിൽ (buf.eof && nfiles
+              && (bytes_per_വരി + 1
+                  < (buf.alloc - buf.used - bytes_per_വരി * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
-              break;
+              buf.ഇടത് = buf.used;
+              നിർത്തുക;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_വരി.text = ശൂന്യ;
+          വരി = buffer_linelim (&buf);
+          എങ്കിൽ (buf.eof && !nfiles && !ntemps && !buf.ഇടത്)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
               temp_output = output_file;
               output_file_created = true;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               ++ntemps;
               temp_output = create_temp (&tfp)->name;
             }
-          if (1 < buf.nlines)
+          എങ്കിൽ (1 < buf.nlines)
             {
-              if (nthreads > 1)
+              എങ്കിൽ (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
+                  ഘടന merge_കണ്ണി_queue queue;
                   queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  ഘടന merge_കണ്ണി *merge_വൃക്ഷം =
+                    merge_വൃക്ഷം_init (nthreads, buf.nlines, വരി);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
+                  sortlines (വരി, nthreads, buf.nlines, merge_വൃക്ഷം + 1,
                              &queue, tfp, temp_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
+                  merge_വൃക്ഷം_destroy (nthreads, merge_വൃക്ഷം);
                   queue_destroy (&queue);
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
-                  for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                  sequential_sort (വരി, buf.nlines,
+                                   വരി - buf.nlines, false);
+                  വേണ്ടി (size_t i = 0; i < buf.nlines; i++)
+                    write_unique (വരി - i - 1, tfp, temp_output);
                 }
             }
-          else
-            write_unique (line - 1, tfp, temp_output);
+          അല്ലെങ്കിൽ
+            write_unique (വരി - 1, tfp, temp_output);
 
           xfclose (tfp, temp_output);
 
-          if (output_file_created)
-            goto finish;
+          എങ്കിൽ (output_file_created)
+            പോകുക finish;
         }
       xfclose (fp, file);
     }
 
  finish:
-  free (buf.buf);
+  സ്വതന്ത്രം (buf.buf);
 
-  if (! output_file_created)
+  എങ്കിൽ (! output_file_created)
     {
-      struct tempnode *node = temphead;
-      struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      ഘടന tempnode *കണ്ണി = temphead;
+      ഘടന sortfile *tempfiles = xnmalloc (ntemps, വലുപ്പം *tempfiles);
+      വേണ്ടി (size_t i = 0; കണ്ണി; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = കണ്ണി->name;
+          tempfiles[i].temp = കണ്ണി;
+          കണ്ണി = കണ്ണി->next;
         }
       merge (tempfiles, ntemps, ntemps, output_file);
-      free (tempfiles);
+      സ്വതന്ത്രം (tempfiles);
     }
 
   reap_all ();
@@ -4450,22 +4450,22 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
-static void
-insertkey (struct keyfield *key_arg)
+സ്ഥിതം ശൂന്യം
+insertkey (ഘടന keyfield *താക്കോൽ_arg)
 {
-  struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  ഘടന keyfield **p;
+  ഘടന keyfield *താക്കോൽ = xmemdup (താക്കോൽ_arg, വലുപ്പം *താക്കോൽ);
 
-  for (p = &keylist; *p; p = &(*p)->next)
-    continue;
-  *p = key;
-  key->next = NULL;
+  വേണ്ടി (p = &keylist; *p; p = &(*p)->next)
+    തുടരുക;
+  *p = താക്കോൽ;
+  താക്കോൽ->next = ശൂന്യ;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
 
-static void
-badfieldspec (char const *spec, char const *msgid)
+സ്ഥിതം ശൂന്യം
+badfieldspec (അക്ഷരം സ്ഥിരം *spec, അക്ഷരം സ്ഥിരം *msgid)
 {
   error (SORT_FAILURE, 0, _("%s: invalid field specification %s"),
          _(msgid), quote (spec));
@@ -4473,26 +4473,26 @@ badfieldspec (char const *spec, char const *msgid)
 
 /* Report incompatible options.  */
 
-static void
-incompatible_options (char const *opts)
+സ്ഥിതം ശൂന്യം
+incompatible_options (അക്ഷരം സ്ഥിരം *opts)
 {
   error (SORT_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
 }
 
 /* Check compatibility of ordering options.  */
 
-static void
-check_ordering_compatibility (void)
+സ്ഥിതം ശൂന്യം
+check_ordering_compatibility (ശൂന്യം)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  വേണ്ടി (ഘടന keyfield *താക്കോൽ = keylist; താക്കോൽ; താക്കോൽ = താക്കോൽ->next)
+    എങ്കിൽ (1 < (താക്കോൽ->numeric + താക്കോൽ->general_numeric + താക്കോൽ->human_numeric
+             + താക്കോൽ->month + (താക്കോൽ->version | താക്കോൽ->random | !!താക്കോൽ->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
-        char opts[sizeof short_options];
+        അക്ഷരം opts[വലുപ്പം short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        താക്കോൽ->skipsblanks = താക്കോൽ->skipeblanks = താക്കോൽ->reverse = false;
+        താക്കോൽ_to_opts (താക്കോൽ, opts);
         incompatible_options (opts);
       }
 }
@@ -4503,33 +4503,33 @@ check_ordering_compatibility (void)
    substitute SIZE_MAX.  If MSGID is null, return NULL after
    failure; otherwise, report MSGID and exit on failure.  */
 
-static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
+parse_field_എണ്ണം (അക്ഷരം സ്ഥിരം *string, size_t *val, അക്ഷരം സ്ഥിരം *msgid)
 {
-  char *suffix;
+  അക്ഷരം *suffix;
   uintmax_t n;
 
-  switch (xstrtoumax (string, &suffix, 10, &n, ""))
+  തിരഞ്ഞെടുപ്പ് (xstrtoumax (string, &suffix, 10, &n, ""))
     {
-    case LONGINT_OK:
-    case LONGINT_INVALID_SUFFIX_CHAR:
+    അവസ്ഥ LONGINT_OK:
+    അവസ്ഥ LONGINT_INVALID_SUFFIX_CHAR:
       *val = n;
-      if (*val == n)
-        break;
+      എങ്കിൽ (*val == n)
+        നിർത്തുക;
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
-    case LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
+    അവസ്ഥ LONGINT_OVERFLOW:
+    അവസ്ഥ LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
       *val = SIZE_MAX;
-      break;
+      നിർത്തുക;
 
-    case LONGINT_INVALID:
-      if (msgid)
+    അവസ്ഥ LONGINT_INVALID:
+      എങ്കിൽ (msgid)
         error (SORT_FAILURE, 0, _("%s: invalid count at start of %s"),
                _(msgid), quote (string));
-      return NULL;
+      തിരികെ ശൂന്യ;
     }
 
-  return suffix;
+  തിരികെ suffix;
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -4537,92 +4537,92 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    is not a valid ordering option.
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
-static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+സ്ഥിതം അക്ഷരം *
+set_ordering (അക്ഷരം സ്ഥിരം *s, ഘടന keyfield *താക്കോൽ, എണ്ണൽ blanktype blanktype)
 {
-  while (*s)
+  ആകുമ്പോൾ (*s)
     {
-      switch (*s)
+      തിരഞ്ഞെടുപ്പ് (*s)
         {
-        case 'b':
-          if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
-          if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
-          break;
-        case 'd':
-          key->ignore = nondictionary;
-          break;
-        case 'f':
-          key->translate = fold_toupper;
-          break;
-        case 'g':
-          key->general_numeric = true;
-          break;
-        case 'h':
-          key->human_numeric = true;
-          break;
-        case 'i':
+        അവസ്ഥ 'b':
+          എങ്കിൽ (blanktype == bl_start || blanktype == bl_both)
+            താക്കോൽ->skipsblanks = true;
+          എങ്കിൽ (blanktype == bl_end || blanktype == bl_both)
+            താക്കോൽ->skipeblanks = true;
+          നിർത്തുക;
+        അവസ്ഥ 'd':
+          താക്കോൽ->ignore = nondictionary;
+          നിർത്തുക;
+        അവസ്ഥ 'f':
+          താക്കോൽ->translate = fold_toupper;
+          നിർത്തുക;
+        അവസ്ഥ 'g':
+          താക്കോൽ->general_numeric = true;
+          നിർത്തുക;
+        അവസ്ഥ 'h':
+          താക്കോൽ->human_numeric = true;
+          നിർത്തുക;
+        അവസ്ഥ 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
-          break;
-        case 'M':
-          key->month = true;
-          break;
-        case 'n':
-          key->numeric = true;
-          break;
-        case 'R':
-          key->random = true;
-          break;
-        case 'r':
-          key->reverse = true;
-          break;
-        case 'V':
-          key->version = true;
-          break;
-        default:
-          return (char *) s;
+          എങ്കിൽ (! താക്കോൽ->ignore)
+            താക്കോൽ->ignore = nonprinting;
+          നിർത്തുക;
+        അവസ്ഥ 'M':
+          താക്കോൽ->month = true;
+          നിർത്തുക;
+        അവസ്ഥ 'n':
+          താക്കോൽ->numeric = true;
+          നിർത്തുക;
+        അവസ്ഥ 'R':
+          താക്കോൽ->random = true;
+          നിർത്തുക;
+        അവസ്ഥ 'r':
+          താക്കോൽ->reverse = true;
+          നിർത്തുക;
+        അവസ്ഥ 'V':
+          താക്കോൽ->version = true;
+          നിർത്തുക;
+        സ്ഥിരസ്ഥിതി:
+          തിരികെ (അക്ഷരം *) s;
         }
       ++s;
     }
-  return (char *) s;
+  തിരികെ (അക്ഷരം *) s;
 }
 
 /* Initialize KEY.  */
 
-static struct keyfield *
-key_init (struct keyfield *key)
+സ്ഥിതം ഘടന keyfield *
+താക്കോൽ_init (ഘടന keyfield *താക്കോൽ)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (താക്കോൽ, 0, വലുപ്പം *താക്കോൽ);
+  താക്കോൽ->eword = SIZE_MAX;
+  തിരികെ താക്കോൽ;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
-  struct keyfield gkey;
+  ഘടന keyfield *താക്കോൽ;
+  ഘടന keyfield താക്കോൽ_buf;
+  ഘടന keyfield gkey;
   bool gkey_only = false;
-  char const *s;
-  int c = 0;
-  char checkonly = 0;
+  അക്ഷരം സ്ഥിരം *s;
+  പൂർണ്ണസംഖ്യ c = 0;
+  അക്ഷരം checkonly = 0;
   bool mergeonly = false;
-  char *random_source = NULL;
+  അക്ഷരം *random_source = ശൂന്യ;
   bool need_random = false;
   size_t nthreads = 0;
   size_t nfiles = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  int posix_ver = posix2_version ();
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != ശൂന്യ);
+  പൂർണ്ണസംഖ്യ posix_ver = posix2_version ();
   bool traditional_usage = ! (200112 <= posix_ver && posix_ver < 200809);
-  char **files;
-  char *files_from = NULL;
-  struct Tokens tok;
-  char const *outfile = NULL;
+  അക്ഷരം **files;
+  അക്ഷരം *files_from = ശൂന്യ;
+  ഘടന Tokens tok;
+  അക്ഷരം സ്ഥിരം *outfile = ശൂന്യ;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
@@ -4634,43 +4634,43 @@ main (int argc, char **argv)
   initialize_exit_failure (SORT_FAILURE);
 
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
-#if HAVE_NL_LANGINFO
+#എങ്കിൽ HAVE_NL_LANGINFO
   hard_LC_TIME = hard_locale (LC_TIME);
 #endif
 
   /* Get locale's representation of the decimal point.  */
   {
-    struct lconv const *locale = localeconv ();
+    ഘടന lconv സ്ഥിരം *locale = localeconv ();
 
     /* If the locale doesn't define a decimal point, or if the decimal
        point is multibyte, use the C locale's decimal point.  FIXME:
        add support for multibyte decimal points.  */
     decimal_point = locale->decimal_point[0];
-    if (! decimal_point || locale->decimal_point[1])
+    എങ്കിൽ (! decimal_point || locale->decimal_point[1])
       decimal_point = '.';
 
     /* FIXME: add support for multibyte thousands separators.  */
     thousands_sep = locale->thousands_sep[0];
-    if (thousands_sep && locale->thousands_sep[1])
+    എങ്കിൽ (thousands_sep && locale->thousands_sep[1])
       thousands_sep_ignored = true;
-    if (! thousands_sep || locale->thousands_sep[1])
+    എങ്കിൽ (! thousands_sep || locale->thousands_sep[1])
       thousands_sep = NON_CHAR;
   }
 
   inittables ();
 
   {
-    enum { nsigs = countof (term_sig) };
+    എണ്ണൽ { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    ഘടന sigaction act;
 
     sigemptyset (&caught_signals);
-    for (size_t i = 0; i < nsigs; i++)
+    വേണ്ടി (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        എങ്കിൽ (term_sig[i] == SIGPIPE)
+          തുടരുക;  /* Handled below.  */
+        sigaction (term_sig[i], ശൂന്യ, &act);
+        എങ്കിൽ (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -4678,33 +4678,33 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (size_t i = 0; i < nsigs; i++)
+    വേണ്ടി (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        if (sigismember (&caught_signals, term_sig[i]))
-          sigaction (term_sig[i], &act, NULL);
+        എങ്കിൽ (term_sig[i] == SIGPIPE)
+          തുടരുക;  /* Handled below.  */
+        എങ്കിൽ (sigismember (&caught_signals, term_sig[i]))
+          sigaction (term_sig[i], &act, ശൂന്യ);
       }
   }
-  signal (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
+  സൂചന (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
 
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  താക്കോൽ_init (&gkey);
   gkey.sword = SIZE_MAX;
 
-  files = xnmalloc (argc, sizeof *files);
+  files = xnmalloc (argc, വലുപ്പം *files);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       /* Parse an operand as a file after "--" was seen; or if
          pedantic and a file was seen, unless the POSIX version
          is not 1003.1-2001 and -c was not seen and the operand is
          "-o FILE" or "-oFILE".  */
-      int oi = -1;
+      പൂർണ്ണസംഖ്യ oi = -1;
 
-      if (c == -1
+      എങ്കിൽ (c == -1
           || (posixly_correct && nfiles != 0
               && ! (traditional_usage
                     && ! checkonly
@@ -4715,42 +4715,42 @@ main (int argc, char **argv)
                                 long_options, &oi))
               == -1))
         {
-          if (argc <= optind)
-            break;
+          എങ്കിൽ (argc <= optind)
+            നിർത്തുക;
           files[nfiles++] = argv[optind++];
         }
-      else switch (c)
+      അല്ലെങ്കിൽ തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 1:
-          key = NULL;
-          if (optarg[0] == '+')
+        അവസ്ഥ 1:
+          താക്കോൽ = ശൂന്യ;
+          എങ്കിൽ (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
                                       && c_isdigit (argv[optind][1]));
               traditional_usage |= minus_pos_usage && !posixly_correct;
-              if (traditional_usage)
+              എങ്കിൽ (traditional_usage)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
-                  if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
-                  else
+                  താക്കോൽ = താക്കോൽ_init (&താക്കോൽ_buf);
+                  s = parse_field_എണ്ണം (optarg + 1, &താക്കോൽ->sword, ശൂന്യ);
+                  എങ്കിൽ (s && *s == '.')
+                    s = parse_field_എണ്ണം (s + 1, &താക്കോൽ->schar, ശൂന്യ);
+                  എങ്കിൽ (! (താക്കോൽ->sword || താക്കോൽ->schar))
+                    താക്കോൽ->sword = SIZE_MAX;
+                  എങ്കിൽ (! s || *set_ordering (s, താക്കോൽ, bl_start))
+                    താക്കോൽ = ശൂന്യ;
+                  അല്ലെങ്കിൽ
                     {
-                      if (minus_pos_usage)
+                      എങ്കിൽ (minus_pos_usage)
                         {
-                          char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          അക്ഷരം സ്ഥിരം *optarg1 = argv[optind++];
+                          s = parse_field_എണ്ണം (optarg1 + 1, &താക്കോൽ->eword,
                                              N_("invalid number after '-'"));
-                          if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                          എങ്കിൽ (*s == '.')
+                            s = parse_field_എണ്ണം (s + 1, &താക്കോൽ->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          എങ്കിൽ (!താക്കോൽ->echar && താക്കോൽ->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,158 +4758,158 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              താക്കോൽ->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          എങ്കിൽ (*set_ordering (s, താക്കോൽ, bl_end))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      താക്കോൽ->traditional_used = true;
+                      insertkey (താക്കോൽ);
                     }
                 }
             }
-          if (! key)
+          എങ്കിൽ (! താക്കോൽ)
             files[nfiles++] = optarg;
-          break;
+          നിർത്തുക;
 
-        case SORT_OPTION:
+        അവസ്ഥ SORT_OPTION:
           c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
           FALLTHROUGH;
-        case 'b':
-        case 'd':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'M':
-        case 'n':
-        case 'r':
-        case 'R':
-        case 'V':
+        അവസ്ഥ 'b':
+        അവസ്ഥ 'd':
+        അവസ്ഥ 'f':
+        അവസ്ഥ 'g':
+        അവസ്ഥ 'h':
+        അവസ്ഥ 'i':
+        അവസ്ഥ 'M':
+        അവസ്ഥ 'n':
+        അവസ്ഥ 'r':
+        അവസ്ഥ 'R':
+        അവസ്ഥ 'V':
           {
-            char str[2];
+            അക്ഷരം str[2];
             str[0] = c;
             str[1] = '\0';
             set_ordering (str, &gkey, bl_both);
           }
-          break;
+          നിർത്തുക;
 
-        case CHECK_OPTION:
+        അവസ്ഥ CHECK_OPTION:
           c = (optarg
                ? XARGMATCH ("--check", optarg, check_args, check_types)
                : 'c');
           FALLTHROUGH;
-        case 'c':
-        case 'C':
-          if (checkonly && checkonly != c)
+        അവസ്ഥ 'c':
+        അവസ്ഥ 'C':
+          എങ്കിൽ (checkonly && checkonly != c)
             incompatible_options ("cC");
           checkonly = c;
-          break;
+          നിർത്തുക;
 
-        case COMPRESS_PROGRAM_OPTION:
-          if (compress_program && !streq (compress_program, optarg))
+        അവസ്ഥ COMPRESS_PROGRAM_OPTION:
+          എങ്കിൽ (compress_program && !streq (compress_program, optarg))
             error (SORT_FAILURE, 0, _("multiple compress programs specified"));
           compress_program = optarg;
-          break;
+          നിർത്തുക;
 
-        case DEBUG_PROGRAM_OPTION:
+        അവസ്ഥ DEBUG_PROGRAM_OPTION:
           debug = true;
-          break;
+          നിർത്തുക;
 
-        case FILES0_FROM_OPTION:
+        അവസ്ഥ FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          നിർത്തുക;
 
-        case 'k':
-          key = key_init (&key_buf);
+        അവസ്ഥ 'k':
+          താക്കോൽ = താക്കോൽ_init (&താക്കോൽ_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_field_എണ്ണം (optarg, &താക്കോൽ->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          എങ്കിൽ (! താക്കോൽ->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
-          if (*s == '.')
+          എങ്കിൽ (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_field_എണ്ണം (s + 1, &താക്കോൽ->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              എങ്കിൽ (! താക്കോൽ->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
-          if (*s != ',')
+          എങ്കിൽ (! (താക്കോൽ->sword || താക്കോൽ->schar))
+            താക്കോൽ->sword = SIZE_MAX;
+          s = set_ordering (s, താക്കോൽ, bl_start);
+          എങ്കിൽ (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              താക്കോൽ->eword = SIZE_MAX;
+              താക്കോൽ->echar = 0;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_field_എണ്ണം (s + 1, &താക്കോൽ->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              എങ്കിൽ (! താക്കോൽ->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
-              if (*s == '.')
+              എങ്കിൽ (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_field_എണ്ണം (s + 1, &താക്കോൽ->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = set_ordering (s, താക്കോൽ, bl_end);
             }
-          if (*s)
+          എങ്കിൽ (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
-          break;
+          insertkey (താക്കോൽ);
+          നിർത്തുക;
 
-        case 'm':
+        അവസ്ഥ 'm':
           mergeonly = true;
-          break;
+          നിർത്തുക;
 
-        case NMERGE_OPTION:
+        അവസ്ഥ NMERGE_OPTION:
           specify_nmerge (oi, c, optarg);
-          break;
+          നിർത്തുക;
 
-        case 'o':
-          if (outfile && !streq (outfile, optarg))
+        അവസ്ഥ 'o':
+          എങ്കിൽ (outfile && !streq (outfile, optarg))
             error (SORT_FAILURE, 0, _("multiple output files specified"));
           outfile = optarg;
-          break;
+          നിർത്തുക;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
+        അവസ്ഥ RANDOM_SOURCE_OPTION:
+          എങ്കിൽ (random_source && !streq (random_source, optarg))
             error (SORT_FAILURE, 0, _("multiple random sources specified"));
           random_source = optarg;
-          break;
+          നിർത്തുക;
 
-        case 's':
+        അവസ്ഥ 's':
           stable = true;
-          break;
+          നിർത്തുക;
 
-        case 'S':
+        അവസ്ഥ 'S':
           specify_sort_size (oi, c, optarg);
-          break;
+          നിർത്തുക;
 
-        case 't':
+        അവസ്ഥ 't':
           {
-            char newtab = optarg[0];
-            if (! newtab)
+            അക്ഷരം newtab = optarg[0];
+            എങ്കിൽ (! newtab)
               error (SORT_FAILURE, 0, _("empty tab"));
-            if (optarg[1])
+            എങ്കിൽ (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                എങ്കിൽ (streq (optarg, "\\0"))
                   newtab = '\0';
-                else
+                അല്ലെങ്കിൽ
                   {
                     /* Provoke with 'sort -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -4919,25 +4919,25 @@ main (int argc, char **argv)
                            quote (optarg));
                   }
               }
-            if (tab != TAB_DEFAULT && tab != newtab)
+            എങ്കിൽ (tab != TAB_DEFAULT && tab != newtab)
               error (SORT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
           }
-          break;
+          നിർത്തുക;
 
-        case 'T':
+        അവസ്ഥ 'T':
           add_temp_dir (optarg);
-          break;
+          നിർത്തുക;
 
-        case PARALLEL_OPTION:
+        അവസ്ഥ PARALLEL_OPTION:
           nthreads = specify_nthreads (oi, c, optarg);
-          break;
+          നിർത്തുക;
 
-        case 'u':
+        അവസ്ഥ 'u':
           unique = true;
-          break;
+          നിർത്തുക;
 
-        case 'y':
+        അവസ്ഥ 'y':
           /* Accept and ignore e.g. -y0 for compatibility with Solaris 2.x
              through Solaris 7.  It is also accepted by many non-Solaris
              "sort" implementations, e.g., AIX 5.2, HP-UX 11i v2, IRIX 6.5.
@@ -4948,24 +4948,24 @@ main (int argc, char **argv)
              emulate Solaris 8 and 9 "sort -y 100" which ignores the "100",
              and which in general ignores the argument after "-y" if it
              consists entirely of digits (it can even be empty).  */
-          if (optarg == argv[optind - 1])
+          എങ്കിൽ (optarg == argv[optind - 1])
             {
-              char const *p;
-              for (p = optarg; c_isdigit (*p); p++)
-                continue;
+              അക്ഷരം സ്ഥിരം *p;
+              വേണ്ടി (p = optarg; c_isdigit (*p); p++)
+                തുടരുക;
               optind -= (*p != '\0');
             }
-          break;
+          നിർത്തുക;
 
-        case 'z':
+        അവസ്ഥ 'z':
           eolchar = 0;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (SORT_FAILURE);
         }
     }
@@ -4973,13 +4973,13 @@ main (int argc, char **argv)
   /* Ignore SIGPIPE so write failures are reported via EPIPE errno.
      For stdout, sort_die() will reraise SIGPIPE if it was originally SIG_DFL.
      For compression pipes, sort_die() will exit with SORT_FAILURE.  */
-  default_SIGPIPE = (signal (SIGPIPE, SIG_IGN) == SIG_DFL);
+  default_SIGPIPE = (സൂചന (SIGPIPE, SIG_IGN) == SIG_DFL);
 
-  if (files_from)
+  എങ്കിൽ (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (nfiles)
+      എങ്കിൽ (nfiles)
         {
           error (0, 0, _("extra operand %s"), quoteaf (files[0]));
           fprintf (stderr, "%s\n",
@@ -4991,62 +4991,62 @@ main (int argc, char **argv)
 
       readtokens0_init (&tok);
 
-      if (! readtokens0 (stream, &tok))
+      എങ്കിൽ (! readtokens0 (stream, &tok))
         error (SORT_FAILURE, 0, _("cannot read file names from %s"),
                quoteaf (files_from));
       xfclose (stream, files_from);
 
-      if (tok.n_tok)
+      എങ്കിൽ (tok.n_tok)
         {
-          free (files);
+          സ്വതന്ത്രം (files);
           files = tok.tok;
           nfiles = tok.n_tok;
-          for (size_t i = 0; i < nfiles; i++)
+          വേണ്ടി (size_t i = 0; i < nfiles; i++)
             {
-              if (streq (files[i], "-"))
+              എങ്കിൽ (streq (files[i], "-"))
                 error (SORT_FAILURE, 0, _("when reading file names from "
                                           "standard input, "
                                           "no file name of %s allowed"),
                        quoteaf (files[i]));
-              else if (files[i][0] == '\0')
+              അല്ലെങ്കിൽ എങ്കിൽ (files[i][0] == '\0')
                 {
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
+                  unsigned long പൂർണ്ണസംഖ്യ file_സംഖ്യ = i + 1;
                   error (SORT_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_സംഖ്യ);
                 }
             }
         }
-      else
+      അല്ലെങ്കിൽ
         error (SORT_FAILURE, 0, _("no input from %s"),
                quoteaf (files_from));
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  വേണ്ടി (താക്കോൽ = keylist; താക്കോൽ; താക്കോൽ = താക്കോൽ->next)
     {
-      if (default_key_compare (key) && !key->reverse)
+      എങ്കിൽ (default_താക്കോൽ_compare (താക്കോൽ) && !താക്കോൽ->reverse)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          താക്കോൽ->ignore = gkey.ignore;
+          താക്കോൽ->translate = gkey.translate;
+          താക്കോൽ->skipsblanks = gkey.skipsblanks;
+          താക്കോൽ->skipeblanks = gkey.skipeblanks;
+          താക്കോൽ->month = gkey.month;
+          താക്കോൽ->numeric = gkey.numeric;
+          താക്കോൽ->general_numeric = gkey.general_numeric;
+          താക്കോൽ->human_numeric = gkey.human_numeric;
+          താക്കോൽ->version = gkey.version;
+          താക്കോൽ->random = gkey.random;
+          താക്കോൽ->reverse = gkey.reverse;
         }
 
-      need_random |= key->random;
+      need_random |= താക്കോൽ->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  എങ്കിൽ (!keylist && !default_താക്കോൽ_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5055,11 +5055,11 @@ main (int argc, char **argv)
 
   check_ordering_compatibility ();
 
-  if (debug)
+  എങ്കിൽ (debug)
     {
-      if (checkonly || outfile)
+      എങ്കിൽ (checkonly || outfile)
         {
-          static char opts[] = "X --debug";
+          സ്ഥിതം അക്ഷരം opts[] = "X --debug";
           opts[0] = (checkonly ? checkonly : 'o');
           incompatible_options (opts);
         }
@@ -5069,53 +5069,53 @@ main (int argc, char **argv)
 
       /* OpenBSD can only set some categories with LC_ALL above,
          so set LC_COLLATE explicitly to flag errors.  */
-      if (locale_ok)
+      എങ്കിൽ (locale_ok)
         locale_ok = !! setlocale (LC_COLLATE, "");
-      if (! locale_ok)
+      എങ്കിൽ (! locale_ok)
           error (0, 0, "%s", _("failed to set locale"));
-      if (hard_LC_COLLATE)
+      എങ്കിൽ (hard_LC_COLLATE)
         error (0, 0, _("text ordering performed using %s sorting rules"),
-               quote (setlocale (LC_COLLATE, NULL)));
-      else
+               quote (setlocale (LC_COLLATE, ശൂന്യ)));
+      അല്ലെങ്കിൽ
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      താക്കോൽ_warnings (&gkey, gkey_only);
     }
 
   reverse = gkey.reverse;
 
-  if (need_random)
+  എങ്കിൽ (need_random)
     random_md5_state_init (random_source);
 
-  if (temp_dirs.n_dirs == 0)
+  എങ്കിൽ (temp_dirs.n_dirs == 0)
     {
-      char const *tmp_dir = getenv ("TMPDIR");
+      അക്ഷരം സ്ഥിരം *tmp_dir = getenv ("TMPDIR");
       add_temp_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
     }
 
-  if (nfiles == 0)
+  എങ്കിൽ (nfiles == 0)
     {
       nfiles = 1;
-      free (files);
-      files = xmalloc (sizeof *files);
-      *files = (char *) "-";
+      സ്വതന്ത്രം (files);
+      files = xmalloc (വലുപ്പം *files);
+      *files = (അക്ഷരം *) "-";
     }
 
   /* Need to re-check that we meet the minimum requirement for memory
      usage with the final value for NMERGE. */
-  if (0 < sort_size)
+  എങ്കിൽ (0 < sort_size)
     sort_size = MAX (sort_size, MIN_SORT_SIZE);
 
-  if (checkonly)
+  എങ്കിൽ (checkonly)
     {
-      if (nfiles > 1)
+      എങ്കിൽ (nfiles > 1)
         error (SORT_FAILURE, 0, _("extra operand %s not allowed with -%c"),
                quoteaf (files[1]), checkonly);
 
-      if (outfile)
+      എങ്കിൽ (outfile)
         {
-          static char opts[] = {0, 'o', 0};
+          സ്ഥിതം അക്ഷരം opts[] = {0, 'o', 0};
           opts[0] = checkonly;
           incompatible_options (opts);
         }
@@ -5131,31 +5131,31 @@ main (int argc, char **argv)
   /* Check output is writable, or exit immediately.  */
   check_output (outfile);
 
-  if (mergeonly)
+  എങ്കിൽ (mergeonly)
     {
-      struct sortfile *sortfiles = xcalloc (nfiles, sizeof *sortfiles);
+      ഘടന sortfile *sortfiles = xcalloc (nfiles, വലുപ്പം *sortfiles);
 
-      for (size_t i = 0; i < nfiles; ++i)
+      വേണ്ടി (size_t i = 0; i < nfiles; ++i)
         sortfiles[i].name = files[i];
 
       merge (sortfiles, 0, nfiles, outfile);
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (!nthreads)
+      എങ്കിൽ (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
+          unsigned long പൂർണ്ണസംഖ്യ np = അക്കം_processors (NPROC_CURRENT_OVERRIDABLE);
           nthreads = MIN (np, DEFAULT_MAX_THREADS);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * വലുപ്പം (ഘടന merge_കണ്ണി));
       nthreads = MIN (nthreads, nthreads_max);
 
       sort (files, nfiles, outfile, nthreads);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  എങ്കിൽ (have_read_stdin && fclose (stdin) == EOF)
     sort_die (_("close failed"), "-");
 
   main_exit (EXIT_SUCCESS);

@@ -16,35 +16,35 @@
 
 /* Written by Jim Meyering  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <signal.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <signal.h>
 
-#include "system.h"
+#അന്തര്ഭാവ "system.h"
 
-#include "filenamecat.h"
-#include "fd-reopen.h"
-#include "long-options.h"
-#include "unistd--.h"
+#അന്തര്ഭാവ "filenamecat.h"
+#അന്തര്ഭാവ "fd-reopen.h"
+#അന്തര്ഭാവ "long-options.h"
+#അന്തര്ഭാവ "unistd--.h"
 
 #define PROGRAM_NAME "nohup"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
 /* Exit statuses.  */
-enum
+എണ്ണൽ
   {
     /* 'nohup' itself failed.  */
     POSIX_NOHUP_FAILURE = 127
   };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s COMMAND [ARG]...\n\
@@ -59,8 +59,8 @@ Run COMMAND, ignoring hangup signals.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       printf (_("\n\
-If standard input is a terminal, redirect it from an unreadable file.\n\
-If standard output is a terminal, append output to 'nohup.out' if possible,\n\
+If standard നിവേശം is a terminal, redirect it from an unreadable file.\n\
+If standard output is a terminal, append output to 'nohup.out' എങ്കിൽ possible,\n\
 '$HOME/nohup.out' otherwise.\n\
 If standard error is a terminal, redirect it to standard output.\n\
 To save output to FILE, use '%s COMMAND > FILE'.\n"),
@@ -74,12 +74,12 @@ To save output to FILE, use '%s COMMAND > FILE'.\n"),
 
 /* GCC 13 gets confused by the dup2 calls
    <https://gcc.gnu.org/PR109839>.  */
-#if 13 <= __GNUC__
+#എങ്കിൽ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
 #endif
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -91,22 +91,22 @@ main (int argc, char **argv)
      for env, exec, nice, time, and xargs where it requires internal
      failure give something in the range 1-125.  For consistency with
      other tools, fail with EXIT_CANCELED unless POSIXLY_CORRECT.  */
-  int exit_internal_failure = (getenv ("POSIXLY_CORRECT")
+  പൂർണ്ണസംഖ്യ exit_internal_failure = (getenv ("POSIXLY_CORRECT")
                                ? POSIX_NOHUP_FAILURE : EXIT_CANCELED);
   initialize_exit_failure (exit_internal_failure);
   atexit (close_stdout);
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, false, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (അക്ഷരം സ്ഥിരം *) ശൂന്യ);
 
-  if (argc <= optind)
+  എങ്കിൽ (argc <= optind)
     {
       error (0, 0, _("missing operand"));
       usage (exit_internal_failure);
     }
 
-  bool ignoring_input = isatty (STDIN_FILENO);
+  bool ignoring_നിവേശം = isatty (STDIN_FILENO);
   bool redirecting_stdout = isatty (STDOUT_FILENO);
   bool stdout_is_closed = (!redirecting_stdout && errno == EBADF);
   bool redirecting_stderr = isatty (STDERR_FILENO);
@@ -114,12 +114,12 @@ main (int argc, char **argv)
   /* If standard input is a tty, replace it with /dev/null if possible.
      Note that it is deliberately opened for *writing*,
      to ensure any read evokes an error.  */
-  if (ignoring_input)
+  എങ്കിൽ (ignoring_നിവേശം)
     {
-      if (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
+      എങ്കിൽ (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
         error (exit_internal_failure, errno,
                _("failed to render standard input unusable"));
-      if (!redirecting_stdout && !redirecting_stderr)
+      എങ്കിൽ (!redirecting_stdout && !redirecting_stderr)
         error (0, 0, _("ignoring input"));
     }
 
@@ -127,53 +127,53 @@ main (int argc, char **argv)
      First try nohup.out, then $HOME/nohup.out.  If standard error is
      a tty and standard output is closed, open nohup.out or
      $HOME/nohup.out without redirecting anything.  */
-  int out_fd = STDOUT_FILENO;
-  if (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
+  പൂർണ്ണസംഖ്യ out_fd = STDOUT_FILENO;
+  എങ്കിൽ (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
     {
-      char *in_home = NULL;
-      char const *file = "nohup.out";
-      int flags = O_CREAT | O_WRONLY | O_APPEND;
+      അക്ഷരം *in_home = ശൂന്യ;
+      അക്ഷരം സ്ഥിരം *file = "nohup.out";
+      പൂർണ്ണസംഖ്യ flags = O_CREAT | O_WRONLY | O_APPEND;
       mode_t mode = S_IRUSR | S_IWUSR;
-      mode_t umask_value = umask (0);
+      mode_t umask_മൂല്യം = umask (0);
       out_fd = (redirecting_stdout
                 ? fd_reopen (STDOUT_FILENO, file, flags, mode)
                 : open (file, flags, mode));
 
-      if (out_fd < 0)
+      എങ്കിൽ (out_fd < 0)
         {
-          int saved_errno = errno;
-          char const *home = getenv ("HOME");
-          if (home)
+          പൂർണ്ണസംഖ്യ saved_errno = errno;
+          അക്ഷരം സ്ഥിരം *home = getenv ("HOME");
+          എങ്കിൽ (home)
             {
-              in_home = file_name_concat (home, file, NULL);
+              in_home = file_name_concat (home, file, ശൂന്യ);
               out_fd = (redirecting_stdout
                         ? fd_reopen (STDOUT_FILENO, in_home, flags, mode)
                         : open (in_home, flags, mode));
             }
-          if (out_fd < 0)
+          എങ്കിൽ (out_fd < 0)
             {
-              int saved_errno2 = errno;
+              പൂർണ്ണസംഖ്യ saved_errno2 = errno;
               error (0, saved_errno, _("failed to open %s"), quoteaf (file));
-              if (in_home)
+              എങ്കിൽ (in_home)
                 error (0, saved_errno2, _("failed to open %s"),
                        quoteaf (in_home));
-              return exit_internal_failure;
+              തിരികെ exit_internal_failure;
             }
           file = in_home;
         }
 
-      umask (umask_value);
+      umask (umask_മൂല്യം);
       error (0, 0,
-             _(ignoring_input
+             _(ignoring_നിവേശം
                ? N_("ignoring input and appending output to %s")
                : N_("appending output to %s")),
              quoteaf (file));
-      free (in_home);
+      സ്വതന്ത്രം (in_home);
     }
 
   /* If standard error is a tty, redirect it.  */
-  int saved_stderr_fd = STDERR_FILENO;
-  if (redirecting_stderr)
+  പൂർണ്ണസംഖ്യ saved_stderr_fd = STDERR_FILENO;
+  എങ്കിൽ (redirecting_stderr)
     {
       /* Save a copy of stderr before redirecting, so we can use the original
          if execve fails.  It's no big deal if this dup fails.  It might
@@ -182,18 +182,18 @@ main (int argc, char **argv)
       saved_stderr_fd = fcntl (STDERR_FILENO, F_DUPFD_CLOEXEC,
                                STDERR_FILENO + 1);
 
-      if (!redirecting_stdout)
+      എങ്കിൽ (!redirecting_stdout)
         error (0, 0,
-               _(ignoring_input
+               _(ignoring_നിവേശം
                  ? N_("ignoring input and redirecting standard error "
                       "to standard output")
                  : N_("redirecting standard error to standard output")));
 
-      if (dup2 (out_fd, STDERR_FILENO) < 0)
+      എങ്കിൽ (dup2 (out_fd, STDERR_FILENO) < 0)
         error (exit_internal_failure, errno,
                _("failed to redirect standard error"));
 
-      if (stdout_is_closed)
+      എങ്കിൽ (stdout_is_closed)
         close (out_fd);
     }
 
@@ -203,18 +203,18 @@ main (int argc, char **argv)
      encountered a write failure, there is no need to try calling
      error() again, particularly since we may have just changed the
      underlying fd out from under stderr.  */
-  if (ferror (stderr))
-    return exit_internal_failure;
+  എങ്കിൽ (ferror (stderr))
+    തിരികെ exit_internal_failure;
 
   /* Windows does not support SIGHUP.  */
 #ifdef SIGHUP
-  signal (SIGHUP, SIG_IGN);
+  സൂചന (SIGHUP, SIG_IGN);
 #endif
 
-  char **cmd = argv + optind;
+  അക്ഷരം **cmd = argv + optind;
   execvp (*cmd, cmd);
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  int saved_errno = errno;
+  പൂർണ്ണസംഖ്യ exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  പൂർണ്ണസംഖ്യ saved_errno = errno;
 
   /* The execve failed.  Output a diagnostic to stderr only if:
      - stderr was initially redirected to a non-tty, or
@@ -222,8 +222,8 @@ main (int argc, char **argv)
      can dup2 it to point back to that same tty.
      In other words, output the diagnostic if possible, but only if
      it will go to the original stderr.  */
-  if (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
+  എങ്കിൽ (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
     error (0, saved_errno, _("failed to run command %s"), quoteaf (*cmd));
 
-  return exit_status;
+  തിരികെ exit_status;
 }

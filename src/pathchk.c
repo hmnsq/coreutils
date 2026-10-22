@@ -14,14 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <wchar.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <wchar.h>
 
-#include "system.h"
-#include "quote.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pathchk"
@@ -40,16 +40,16 @@
 
 #ifdef _XOPEN_NAME_MAX
 # define NAME_MAX_MINIMUM _XOPEN_NAME_MAX
-#else
+#അല്ലെങ്കിൽ
 # define NAME_MAX_MINIMUM _POSIX_NAME_MAX
 #endif
 #ifdef _XOPEN_PATH_MAX
 # define PATH_MAX_MINIMUM _XOPEN_PATH_MAX
-#else
+#അല്ലെങ്കിൽ
 # define PATH_MAX_MINIMUM _POSIX_PATH_MAX
 #endif
 
-#if ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
+#എങ്കിൽ ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
 # ifndef _PC_NAME_MAX
 #  define _PC_NAME_MAX 0
 #  define _PC_PATH_MAX 1
@@ -60,29 +60,29 @@
 # endif
 #endif
 
-static bool validate_file_name (char *, bool, bool);
+സ്ഥിതം bool validate_file_name (അക്ഷരം *, bool, bool);
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   PORTABILITY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"portability", no_argument, NULL, PORTABILITY_OPTION},
+  {"portability", no_argument, ശൂന്യ, PORTABILITY_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -90,14 +90,14 @@ Diagnose invalid or non-portable file names.\n\
 \n\
 "), stdout);
       oputs (_("\
-  -p     check for most POSIX systems\n\
+  -p     check വേണ്ടി most POSIX systems\n\
 "));
       oputs (_("\
-  -P     check for empty names and leading \"-\"\n\
+  -P     check വേണ്ടി empty names and leading \"-\"\n\
 "));
       oputs (_("\
       --portability\n\
-         check for all POSIX systems (equivalent to -p -P)\n\
+         check വേണ്ടി all POSIX systems (equivalent to -p -P)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -106,13 +106,13 @@ Diagnose invalid or non-portable file names.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   bool ok = true;
   bool check_basic_portability = false;
   bool check_extra_portability = false;
-  int optc;
+  പൂർണ്ണസംഖ്യ optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -122,76 +122,76 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "+pP", longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "+pP", longopts, ശൂന്യ)) != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case PORTABILITY_OPTION:
+        അവസ്ഥ PORTABILITY_OPTION:
           check_basic_portability = true;
           check_extra_portability = true;
-          break;
+          നിർത്തുക;
 
-        case 'p':
+        അവസ്ഥ 'p':
           check_basic_portability = true;
-          break;
+          നിർത്തുക;
 
-        case 'P':
+        അവസ്ഥ 'P':
           check_extra_portability = true;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  എങ്കിൽ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (; optind < argc; ++optind)
+  വേണ്ടി (; optind < argc; ++optind)
     ok &= validate_file_name (argv[optind],
                               check_basic_portability, check_extra_portability);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* If FILE contains a component with a leading "-", report an error
    and return false; otherwise, return true.  */
 
-static bool
-no_leading_hyphen (char const *file)
+സ്ഥിതം bool
+no_leading_hyphen (അക്ഷരം സ്ഥിരം *file)
 {
-  for (char const *p = file;  (p = strchr (p, '-'));  p++)
-    if (p == file || p[-1] == '/')
+  വേണ്ടി (അക്ഷരം സ്ഥിരം *p = file;  (p = strchr (p, '-'));  p++)
+    എങ്കിൽ (p == file || p[-1] == '/')
       {
         error (0, 0, _("leading '-' in a component of file name %s"),
                quoteaf (file));
-        return false;
+        തിരികെ false;
       }
 
-  return true;
+  തിരികെ true;
 }
 
 /* If FILE (of length FILELEN) contains only portable characters,
    return true, else report an error and return false.  */
 
-static bool
-portable_chars_only (char const *file, size_t filelen)
+സ്ഥിതം bool
+portable_chars_only (അക്ഷരം സ്ഥിരം *file, size_t filelen)
 {
   size_t validlen = strspn (file,
                             ("/"
                              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                              "abcdefghijklmnopqrstuvwxyz"
                              "0123456789._-"));
-  char const *invalid = file + validlen;
+  അക്ഷരം സ്ഥിരം *invalid = file + validlen;
 
-  if (*invalid)
+  എങ്കിൽ (*invalid)
     {
       mbstate_t mbstate; mbszero (&mbstate);
       size_t charlen = mbrlen (invalid, filelen - validlen, &mbstate);
@@ -200,33 +200,33 @@ portable_chars_only (char const *file, size_t filelen)
              quotearg_n_style_mem (1, locale_quoting_style, invalid,
                                    (charlen <= MB_LEN_MAX ? charlen : 1)),
              quoteaf_n (0, file));
-      return false;
+      തിരികെ false;
     }
 
-  return true;
+  തിരികെ true;
 }
 
 /* Return the address of the start of the next file name component in F.  */
 
 ATTRIBUTE_PURE
-static char *
-component_start (char *f)
+സ്ഥിതം അക്ഷരം *
+component_start (അക്ഷരം *f)
 {
-  while (*f == '/')
+  ആകുമ്പോൾ (*f == '/')
     f++;
-  return f;
+  തിരികെ f;
 }
 
 /* Return the size of the file name component F.  F must be nonempty.  */
 
 ATTRIBUTE_PURE
-static size_t
-component_len (char const *f)
+സ്ഥിതം size_t
+component_len (അക്ഷരം സ്ഥിരം *f)
 {
   size_t len;
-  for (len = 1; f[len] != '/' && f[len]; len++)
-    continue;
-  return len;
+  വേണ്ടി (len = 1; f[len] != '/' && f[len]; len++)
+    തുടരുക;
+  തിരികെ len;
 }
 
 /* Make sure that
@@ -249,8 +249,8 @@ component_len (char const *f)
 
    Return true if all of these tests are successful, false if any fail.  */
 
-static bool
-validate_file_name (char *file, bool check_basic_portability,
+സ്ഥിതം bool
+validate_file_name (അക്ഷരം *file, bool check_basic_portability,
                     bool check_extra_portability)
 {
   idx_t filelen = strlen (file);
@@ -261,10 +261,10 @@ validate_file_name (char *file, bool check_basic_portability,
   /* True if the file is known to exist.  */
   bool file_exists = false;
 
-  if (check_extra_portability && ! no_leading_hyphen (file))
-    return false;
+  എങ്കിൽ (check_extra_portability && ! no_leading_hyphen (file))
+    തിരികെ false;
 
-  if ((check_basic_portability || check_extra_portability)
+  എങ്കിൽ ((check_basic_portability || check_extra_portability)
       && filelen == 0)
     {
       /* Fail, since empty names are not portable.  As of
@@ -272,59 +272,59 @@ validate_file_name (char *file, bool check_basic_portability,
          should (or is allowed to) fail, so this is not a
          conformance violation.  */
       error (0, 0, _("empty file name"));
-      return false;
+      തിരികെ false;
     }
 
-  if (check_basic_portability)
+  എങ്കിൽ (check_basic_portability)
     {
-      if (! portable_chars_only (file, filelen))
-        return false;
+      എങ്കിൽ (! portable_chars_only (file, filelen))
+        തിരികെ false;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* Check whether a file name component is in a directory that
          is not searchable, or has some other serious problem.
          POSIX does not allow "" as a file name, but some non-POSIX
          hosts do (as an alias for "."), so allow "" if lstat does.  */
 
-      struct stat st;
-      if (lstat (file, &st) == 0)
+      ഘടന stat st;
+      എങ്കിൽ (lstat (file, &st) == 0)
         file_exists = true;
-      else if (errno != ENOENT || filelen == 0)
+      അല്ലെങ്കിൽ എങ്കിൽ (errno != ENOENT || filelen == 0)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          തിരികെ false;
         }
     }
 
-  if (check_basic_portability
+  എങ്കിൽ (check_basic_portability
       || (! file_exists && PATH_MAX_MINIMUM <= filelen))
     {
       idx_t maxsize;
 
-      if (check_basic_portability)
+      എങ്കിൽ (check_basic_portability)
         maxsize = _POSIX_PATH_MAX;
-      else
+      അല്ലെങ്കിൽ
         {
-          long int size;
-          char const *dir = (*file == '/' ? "/" : ".");
+          long പൂർണ്ണസംഖ്യ size;
+          അക്ഷരം സ്ഥിരം *dir = (*file == '/' ? "/" : ".");
           errno = 0;
           size = pathconf (dir, _PC_PATH_MAX);
-          if (size < 0 && errno != 0)
+          എങ്കിൽ (size < 0 && errno != 0)
             {
               error (0, errno,
                      _("%s: unable to determine maximum file name length"),
                      dir);
-              return false;
+              തിരികെ false;
             }
           maxsize = MIN (size, MIN (SSIZE_MAX, IDX_MAX));
         }
 
-      if (maxsize <= filelen)
+      എങ്കിൽ (maxsize <= filelen)
         {
           error (0, 0, _("limit %td exceeded by length %td of file name %s"),
                  maxsize - 1, filelen, quoteaf (file));
-          return false;
+          തിരികെ false;
         }
     }
 
@@ -334,23 +334,23 @@ validate_file_name (char *file, bool check_basic_portability,
      it's more convenient to check component lengths below.  */
 
   check_component_lengths = check_basic_portability;
-  if (! check_component_lengths && ! file_exists)
+  എങ്കിൽ (! check_component_lengths && ! file_exists)
     {
-      for (char *start = file; *(start = component_start (start)); )
+      വേണ്ടി (അക്ഷരം *start = file; *(start = component_start (start)); )
         {
           size_t length = component_len (start);
 
-          if (NAME_MAX_MINIMUM < length)
+          എങ്കിൽ (NAME_MAX_MINIMUM < length)
             {
               check_component_lengths = true;
-              break;
+              നിർത്തുക;
             }
 
           start += length;
         }
     }
 
-  if (check_component_lengths)
+  എങ്കിൽ (check_component_lengths)
     {
       /* The limit on file name components for the current component.
          This defaults to NAME_MAX_MINIMUM, for the sake of non-POSIX
@@ -361,61 +361,61 @@ validate_file_name (char *file, bool check_basic_portability,
       /* If nonzero, the known limit on file name components.  */
       idx_t known_name_max = check_basic_portability ? _POSIX_NAME_MAX : 0;
 
-      for (char *start = file; *(start = component_start (start)); )
+      വേണ്ടി (അക്ഷരം *start = file; *(start = component_start (start)); )
         {
           idx_t length;
 
-          if (known_name_max)
+          എങ്കിൽ (known_name_max)
             name_max = known_name_max;
-          else
+          അല്ലെങ്കിൽ
             {
-              long int len;
-              char const *dir = (start == file ? "." : file);
-              char c = *start;
+              long പൂർണ്ണസംഖ്യ len;
+              അക്ഷരം സ്ഥിരം *dir = (start == file ? "." : file);
+              അക്ഷരം c = *start;
               errno = 0;
               *start = '\0';
               len = pathconf (dir, _PC_NAME_MAX);
               *start = c;
-              if (0 <= len)
+              എങ്കിൽ (0 <= len)
                 name_max = MIN (len, MIN (SSIZE_MAX, IDX_MAX));
-              else
-                switch (errno)
+              അല്ലെങ്കിൽ
+                തിരഞ്ഞെടുപ്പ് (errno)
                   {
-                  case 0:
+                  അവസ്ഥ 0:
                     /* There is no limit.  */
                     name_max = IDX_MAX;
-                    break;
+                    നിർത്തുക;
 
-                  case ENOENT:
+                  അവസ്ഥ ENOENT:
                     /* DIR does not exist; use its parent's maximum.  */
                     known_name_max = name_max;
-                    break;
+                    നിർത്തുക;
 
-                  default:
+                  സ്ഥിരസ്ഥിതി:
                     *start = '\0';
                     error (0, errno, "%s", quotef (dir));
                     *start = c;
-                    return false;
+                    തിരികെ false;
                   }
             }
 
           length = component_len (start);
 
-          if (name_max < length)
+          എങ്കിൽ (name_max < length)
             {
-              char c = start[length];
+              അക്ഷരം c = start[length];
               start[length] = '\0';
               error (0, 0,
                      _("limit %td exceeded by length %td "
                        "of file name component %s"),
                      name_max, length, quote (start));
               start[length] = c;
-              return false;
+              തിരികെ false;
             }
 
           start += length;
         }
     }
 
-  return true;
+  തിരികെ true;
 }

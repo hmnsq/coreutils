@@ -16,15 +16,15 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#അന്തര്ഭാവ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "canonicalize.h"
+#അന്തര്ഭാവ "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "readlink"
@@ -32,35 +32,35 @@
 #define AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+സ്ഥിതം bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+സ്ഥിതം bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+സ്ഥിതം bool quote_output;
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_argument, ശൂന്യ, 'f'},
+  {"canonicalize-existing", no_argument, ശൂന്യ, 'e'},
+  {"canonicalize-missing", no_argument, ശൂന്യ, 'm'},
+  {"no-newline", no_argument, ശൂന്യ, 'n'},
+  {"quiet", no_argument, ശൂന്യ, 'q'},
+  {"silent", no_argument, ശൂന്യ, 's'},
+  {"verbose", no_argument, ശൂന്യ, 'v'},
+  {"zero", no_argument, ശൂന്യ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
@@ -85,7 +85,7 @@ usage (int status)
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         ചെയ്യുക not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,16 +93,16 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by സ്ഥിരസ്ഥിതി എങ്കിൽ POSIXLY_CORRECT is not set)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by സ്ഥിരസ്ഥിതി എങ്കിൽ POSIXLY_CORRECT is set)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output വരി with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -111,13 +111,13 @@ usage (int status)
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  പൂർണ്ണസംഖ്യ can_mode = -1;
+  പൂർണ്ണസംഖ്യ status = EXIT_SUCCESS;
+  പൂർണ്ണസംഖ്യ optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
@@ -128,91 +128,91 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, ശൂന്യ)) != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case 'e':
+        അവസ്ഥ 'e':
           can_mode = CAN_EXISTING;
-          break;
-        case 'f':
+          നിർത്തുക;
+        അവസ്ഥ 'f':
           can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
+          നിർത്തുക;
+        അവസ്ഥ 'm':
           can_mode = CAN_MISSING;
-          break;
-        case 'n':
+          നിർത്തുക;
+        അവസ്ഥ 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          നിർത്തുക;
+        അവസ്ഥ 'q':
+        അവസ്ഥ 's':
           verbose = false;
-          break;
-        case 'v':
+          നിർത്തുക;
+        അവസ്ഥ 'v':
           verbose = true;
-          break;
-        case 'z':
+          നിർത്തുക;
+        അവസ്ഥ 'z':
           use_nuls = true;
-          break;
+          നിർത്തുക;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  എങ്കിൽ (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  എങ്കിൽ (argc - optind > 1)
     {
-      if (no_newline)
+      എങ്കിൽ (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  എങ്കിൽ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      പൂർണ്ണസംഖ്യ qs = getenv_quoting_style ();
+      എങ്കിൽ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      എങ്കിൽ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (ശൂന്യ, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  എങ്കിൽ (getenv ("POSIXLY_CORRECT") != ശൂന്യ)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  വേണ്ടി (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
+      അക്ഷരം സ്ഥിരം *fname = argv[optind];
+      അക്ഷരം *മൂല്യം = (can_mode != -1
                      ? canonicalize_filename_mode (fname, can_mode)
                      : areadlink_with_size (fname, 63));
-      if (value)
+      എങ്കിൽ (മൂല്യം)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
+          fputs (quote_output ? quoteN (മൂല്യം) : മൂല്യം, stdout);
+          എങ്കിൽ (! no_newline)
             putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          സ്വതന്ത്രം (മൂല്യം);
+          എങ്കിൽ (ferror (stdout))
             write_error ();
         }
-      else
+      അല്ലെങ്കിൽ
         {
           status = EXIT_FAILURE;
-          if (verbose)
+          എങ്കിൽ (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  തിരികെ status;
 }

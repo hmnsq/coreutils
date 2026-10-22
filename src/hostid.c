@@ -17,29 +17,29 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "long-options.h"
+#അന്തര്ഭാവ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "hostid"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+Print the numeric identifier (in hexadecimal) വേണ്ടി the current host.\n\
 \n\
 "), program_name);
       oputs (HELP_OPTION_DESCRIPTION);
@@ -49,8 +49,8 @@ Print the numeric identifier (in hexadecimal) for the current host.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -62,9 +62,9 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (അക്ഷരം സ്ഥിരം *) ശൂന്യ);
 
-  if (optind < argc)
+  എങ്കിൽ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -73,9 +73,9 @@ main (int argc, char **argv)
   /* POSIX says gethostid returns a "32-bit identifier" but is silent
      whether it's sign-extended.  Turn off any sign-extension.  This
      is a no-op unless unsigned int is wider than 32 bits.  */
-  unsigned int id = gethostid () & 0xffffffff;
+  unsigned പൂർണ്ണസംഖ്യ id = gethostid () & 0xffffffff;
 
   printf ("%08x\n", id);
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

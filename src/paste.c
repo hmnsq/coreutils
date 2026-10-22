@@ -35,14 +35,14 @@
    A FILE of '-' means standard input.
    If no FILEs are given, standard input is used. */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "fadvise.h"
-#include "mcel.h"
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "mcel.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "paste"
@@ -52,33 +52,33 @@
   proper_name ("David MacKenzie")
 
 /* If nonzero, we have read standard input at some point. */
-static bool have_read_stdin;
+സ്ഥിതം bool have_read_stdin;
 
 /* If nonzero, merge subsequent lines of each file rather than
    corresponding lines from each file in parallel. */
-static bool serial_merge;
+സ്ഥിതം bool serial_merge;
 
 /* The delimiters between lines of input files (used cyclically).
    This stores the raw bytes of all delimiters concatenated.  */
-static char *delims;
+സ്ഥിതം അക്ഷരം *delims;
 
 /* Length of each delimiter in bytes (supports multi-byte characters).
    A length of 0 indicates no delimiter at this position (from \0 escape).  */
-static size_t *delim_lens;
+സ്ഥിതം size_t *delim_lens;
 
 /* Number of delimiters.  */
-static idx_t num_delims;
+സ്ഥിതം idx_t അക്കം_delims;
 
-static unsigned char line_delim = '\n';
+സ്ഥിതം unsigned അക്ഷരം വരി_delim = '\n';
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"serial", no_argument, NULL, 's'},
-  {"delimiters", required_argument, NULL, 'd'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"serial", no_argument, ശൂന്യ, 's'},
+  {"delimiters", required_argument, ശൂന്യ, 'd'},
+  {"zero-terminated", no_argument, ശൂന്യ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* Set globals delims, delim_lens, and num_delims.
@@ -89,53 +89,53 @@ static struct option const longopts[] =
    If the string ends in an odd number of backslashes, ignore the
    final backslash and return nonzero.  */
 
-static int
-collapse_escapes (char const *strptr)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+collapse_escapes (അക്ഷരം സ്ഥിരം *strptr)
 {
-  char *strout = xstrdup (strptr);
+  അക്ഷരം *strout = xstrdup (strptr);
   bool backslash_at_end = false;
 
   delims = strout;
-  delim_lens = xnmalloc (MAX (1, strlen (strptr)), sizeof *delim_lens);
+  delim_lens = xnmalloc (MAX (1, strlen (strptr)), വലുപ്പം *delim_lens);
 
-  char const *s = strptr;
+  അക്ഷരം സ്ഥിരം *s = strptr;
   idx_t idx = 0;
 
-  while (*s)
+  ആകുമ്പോൾ (*s)
     {
-      if (*s == '\\')
+      എങ്കിൽ (*s == '\\')
         {
           s++;
-          if (*s == '\0')
+          എങ്കിൽ (*s == '\0')
             {
               backslash_at_end = true;
-              break;
+              നിർത്തുക;
             }
-          else if (*s == '0')
+          അല്ലെങ്കിൽ എങ്കിൽ (*s == '0')
             {
               /* Empty delimiter at this position.  */
               s++;
               delim_lens[idx++] = 0;
             }
-          else
+          അല്ലെങ്കിൽ
             {
-              switch (*s)
+              തിരഞ്ഞെടുപ്പ് (*s)
                 {
-                case 'b': *strout++ = '\b'; break;
-                case 'f': *strout++ = '\f'; break;
-                case 'n': *strout++ = '\n'; break;
-                case 'r': *strout++ = '\r'; break;
-                case 't': *strout++ = '\t'; break;
-                case 'v': *strout++ = '\v'; break;
-                case '\\': *strout++ = '\\'; break;
-                default: goto copy_character;
+                അവസ്ഥ 'b': *strout++ = '\b'; നിർത്തുക;
+                അവസ്ഥ 'f': *strout++ = '\f'; നിർത്തുക;
+                അവസ്ഥ 'n': *strout++ = '\n'; നിർത്തുക;
+                അവസ്ഥ 'r': *strout++ = '\r'; നിർത്തുക;
+                അവസ്ഥ 't': *strout++ = '\t'; നിർത്തുക;
+                അവസ്ഥ 'v': *strout++ = '\v'; നിർത്തുക;
+                അവസ്ഥ '\\': *strout++ = '\\'; നിർത്തുക;
+                സ്ഥിരസ്ഥിതി: പോകുക copy_character;
                 }
 
               s++;
               delim_lens[idx++] = 1;
             }
 
-          continue;
+          തുടരുക;
         }
 
       copy_character:;
@@ -147,33 +147,33 @@ collapse_escapes (char const *strptr)
 
   *strout = '\0';
 
-  if (idx == 0)
+  എങ്കിൽ (idx == 0)
     {
       delim_lens[0] = 0;
       idx = 1;
     }
 
-  num_delims = idx;
+  അക്കം_delims = idx;
 
-  return backslash_at_end ? 1 : 0;
+  തിരികെ backslash_at_end ? 1 : 0;
 }
 
 /* Output a single byte, reporting any write errors.  */
 
-static inline void
-xputchar (char c)
+സ്ഥിതം വരിയിൽ ശൂന്യം
+xputchar (അക്ഷരം c)
 {
-  if (putchar (c) < 0)
+  എങ്കിൽ (putchar (c) < 0)
     write_error ();
 }
 
 /* Output the delimiter at DELIMPTR with length LEN.
    If LEN is 0, nothing is output (empty delimiter from \0 escape).  */
 
-static inline void
-output_delim (char const *delimptr, size_t len)
+സ്ഥിതം വരിയിൽ ശൂന്യം
+output_delim (അക്ഷരം സ്ഥിരം *delimptr, size_t len)
 {
-  if (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
+  എങ്കിൽ (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
     write_error ();
 }
 
@@ -181,19 +181,19 @@ output_delim (char const *delimptr, size_t len)
    Return true if successful, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_parallel (size_t nfiles, char **fnamptr)
+സ്ഥിതം bool
+paste_parallel (size_t nfiles, അക്ഷരം **fnamptr)
 {
   bool ok = true;
   /* If all files are just ready to be closed, or will be on this
      round, the string of delimiters must be preserved.
      delbuf stores the delimiter bytes for closed files.
      Size it to hold up to (nfiles - 1) delimiters.  */
-  char *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
+  അക്ഷരം *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
 
   /* Streams open to the files to process; null if the corresponding
      stream is closed.  */
-  FILE **fileptr = xnmalloc (nfiles + 1, sizeof *fileptr);
+  FILE **fileptr = xnmalloc (nfiles + 1, വലുപ്പം *fileptr);
 
   /* Number of files still open to process.  */
   size_t files_open;
@@ -205,32 +205,32 @@ paste_parallel (size_t nfiles, char **fnamptr)
      number of files, but at the (considerable) expense of remembering
      each file and its current offset, then opening/reading/closing.  */
 
-  for (files_open = 0; files_open < nfiles; ++files_open)
+  വേണ്ടി (files_open = 0; files_open < nfiles; ++files_open)
     {
-      if (streq (fnamptr[files_open], "-"))
+      എങ്കിൽ (streq (fnamptr[files_open], "-"))
         {
           have_read_stdin = true;
           fileptr[files_open] = stdin;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           fileptr[files_open] = fopen (fnamptr[files_open], "r");
-          if (fileptr[files_open] == NULL)
+          എങ്കിൽ (fileptr[files_open] == ശൂന്യ)
             error (EXIT_FAILURE, errno, "%s", quotef (fnamptr[files_open]));
-          else if (fileno (fileptr[files_open]) == STDIN_FILENO)
+          അല്ലെങ്കിൽ എങ്കിൽ (fileno (fileptr[files_open]) == STDIN_FILENO)
             opened_stdin = true;
           fadvise (fileptr[files_open], FADVISE_SEQUENTIAL);
         }
     }
 
-  if (opened_stdin && have_read_stdin)
+  എങ്കിൽ (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
   /* Read a line from each file and output it to stdout separated by a
      delimiter, until we go through the loop without successfully
      reading from any of the files. */
 
-  while (files_open)
+  ആകുമ്പോൾ (files_open)
     {
       /* Set up for the next line. */
       bool somedone = false;
@@ -238,152 +238,152 @@ paste_parallel (size_t nfiles, char **fnamptr)
       idx_t delimoff = 0;              /* Current offset into delims.  */
       idx_t delims_saved = 0;          /* Bytes saved in 'delbuf'. */
 
-      for (size_t i = 0; i < nfiles && files_open; i++)
+      വേണ്ടി (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
+          പൂർണ്ണസംഖ്യ chr;			/* Input character. */
+          പൂർണ്ണസംഖ്യ err;			/* Input errno value.  */
           bool sometodo = false;	/* Input chars to process.  */
 
-          if (fileptr[i])
+          എങ്കിൽ (fileptr[i])
             {
               chr = getc (fileptr[i]);
               err = errno;
-              if (chr != EOF && delims_saved)
+              എങ്കിൽ (chr != EOF && delims_saved)
                 {
-                  if (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
+                  എങ്കിൽ (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
                     write_error ();
                   delims_saved = 0;
                 }
 
-              while (chr != EOF)
+              ആകുമ്പോൾ (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
-                    break;
+                  എങ്കിൽ (chr == വരി_delim)
+                    നിർത്തുക;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
                   err = errno;
                 }
             }
 
-          if (! sometodo)
+          എങ്കിൽ (! sometodo)
             {
               /* EOF, read error, or closed file.
                  If an EOF or error, close the file.  */
-              if (fileptr[i])
+              എങ്കിൽ (fileptr[i])
                 {
-                  if (!ferror (fileptr[i]))
+                  എങ്കിൽ (!ferror (fileptr[i]))
                     err = 0;
-                  if (fileptr[i] == stdin)
+                  എങ്കിൽ (fileptr[i] == stdin)
                     clearerr (fileptr[i]); /* Also clear EOF. */
-                  else if (fclose (fileptr[i]) == EOF && !err)
+                  അല്ലെങ്കിൽ എങ്കിൽ (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
-                  if (err)
+                  എങ്കിൽ (err)
                     {
                       error (0, err, "%s", quotef (fnamptr[i]));
                       ok = false;
                     }
 
-                  fileptr[i] = NULL;
+                  fileptr[i] = ശൂന്യ;
                   files_open--;
                 }
 
-              if (i + 1 == nfiles)
+              എങ്കിൽ (i + 1 == nfiles)
                 {
                   /* End of this output line.
                      Is this the end of the whole thing? */
-                  if (somedone)
+                  എങ്കിൽ (somedone)
                     {
                       /* No.  Some files were not closed for this line. */
-                      if (delims_saved)
+                      എങ്കിൽ (delims_saved)
                         {
-                          if (fwrite (delbuf, 1, delims_saved, stdout)
+                          എങ്കിൽ (fwrite (delbuf, 1, delims_saved, stdout)
                               != delims_saved)
                             write_error ();
                           delims_saved = 0;
                         }
-                      xputchar (line_delim);
+                      xputchar (വരി_delim);
                     }
-                  continue;	/* Next read of files, or exit. */
+                  തുടരുക;	/* Next read of files, or exit. */
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
                   /* Closed file; add delimiter to 'delbuf'. */
                   size_t len = delim_lens[delimidx];
-                  if (len > 0)
+                  എങ്കിൽ (len > 0)
                     {
                       memcpy (delbuf + delims_saved, delims + delimoff, len);
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  എങ്കിൽ (++delimidx == അക്കം_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
             }
-          else
+          അല്ലെങ്കിൽ
             {
               /* Some data read. */
               somedone = true;
 
               /* Except for last file, replace last newline with delim. */
-              if (i + 1 != nfiles)
+              എങ്കിൽ (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  എങ്കിൽ (chr != വരി_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  എങ്കിൽ (++delimidx == അക്കം_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
-                  char c = (chr == EOF ? line_delim : chr);
+                  അക്ഷരം c = (chr == EOF ? വരി_delim : chr);
                   xputchar (c);
                 }
             }
         }
     }
-  free (fileptr);
-  free (delbuf);
-  return ok;
+  സ്വതന്ത്രം (fileptr);
+  സ്വതന്ത്രം (delbuf);
+  തിരികെ ok;
 }
 
 /* Perform serial paste on the NFILES files named in FNAMPTR.
    Return true if no errors, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_serial (size_t nfiles, char **fnamptr)
+സ്ഥിതം bool
+paste_serial (size_t nfiles, അക്ഷരം **fnamptr)
 {
   bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
+  പൂർണ്ണസംഖ്യ charnew, charold; /* Current and previous char read. */
   FILE *fileptr;	/* Open for reading current file. */
 
-  for (; nfiles; nfiles--, fnamptr++)
+  വേണ്ടി (; nfiles; nfiles--, fnamptr++)
     {
-      int saved_errno;
+      പൂർണ്ണസംഖ്യ saved_errno;
       bool is_stdin = streq (*fnamptr, "-");
-      if (is_stdin)
+      എങ്കിൽ (is_stdin)
         {
           have_read_stdin = true;
           fileptr = stdin;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           fileptr = fopen (*fnamptr, "r");
-          if (fileptr == NULL)
+          എങ്കിൽ (fileptr == ശൂന്യ)
             {
               error (0, errno, "%s", quotef (*fnamptr));
               ok = false;
-              continue;
+              തുടരുക;
             }
           fadvise (fileptr, FADVISE_SEQUENTIAL);
         }
@@ -393,7 +393,7 @@ paste_serial (size_t nfiles, char **fnamptr)
 
       charold = getc (fileptr);
       saved_errno = errno;
-      if (charold != EOF)
+      എങ്കിൽ (charold != EOF)
         {
           /* 'charold' is set up.  Hit it!
              Keep reading characters, stashing them in 'charnew';
@@ -401,20 +401,20 @@ paste_serial (size_t nfiles, char **fnamptr)
              character if needed.  After the EOF, output 'charold'
              if it's a newline; otherwise, output it and then a newline. */
 
-          while ((charnew = getc (fileptr)) != EOF)
+          ആകുമ്പോൾ ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              എങ്കിൽ (charold == വരി_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  എങ്കിൽ (++delimidx == അക്കം_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              അല്ലെങ്കിൽ
                 xputchar (charold);
 
               charold = charnew;
@@ -425,37 +425,37 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
-        xputchar (line_delim);
+      എങ്കിൽ (charold != വരി_delim)
+        xputchar (വരി_delim);
 
-      if (!ferror (fileptr))
+      എങ്കിൽ (!ferror (fileptr))
         saved_errno = 0;
-      if (is_stdin)
+      എങ്കിൽ (is_stdin)
         clearerr (fileptr);	/* Also clear EOF. */
-      else if (fclose (fileptr) != 0 && !saved_errno)
+      അല്ലെങ്കിൽ എങ്കിൽ (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
-      if (saved_errno)
+      എങ്കിൽ (saved_errno)
         {
           error (0, saved_errno, "%s", quotef (*fnamptr));
           ok = false;
         }
     }
-  return ok;
+  തിരികെ ok;
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write lines consisting of corresponding lines from each file joined by TABs\n\
+Write വരികൾ consisting of corresponding വരികൾ from each file joined by TABs\n\
 to standard output.\n\
 "), stdout);
 
@@ -470,12 +470,12 @@ to standard output.\n\
       oputs (_("\
   -s, --serial\n\
          paste one file at a time instead of in parallel; the newline of\n\
-         every line except the last line in each file is replaced with a TAB\
+         every വരി except the last വരി in each file is replaced with a TAB\
 \n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         വരി delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -485,11 +485,11 @@ to standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int optc;
-  char const *delim_arg = "\t";
+  പൂർണ്ണസംഖ്യ optc;
+  അക്ഷരം സ്ഥിരം *delim_arg = "\t";
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -499,40 +499,40 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "d:sz", longopts, ശൂന്യ)) != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case 'd':
+        അവസ്ഥ 'd':
           /* Delimiter character(s). */
           delim_arg = (optarg[0] == '\0' ? "\\0" : optarg);
-          break;
+          നിർത്തുക;
 
-        case 's':
+        അവസ്ഥ 's':
           serial_merge = true;
-          break;
+          നിർത്തുക;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        അവസ്ഥ 'z':
+          വരി_delim = '\0';
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  int nfiles = argc - optind;
-  if (nfiles == 0)
+  പൂർണ്ണസംഖ്യ nfiles = argc - optind;
+  എങ്കിൽ (nfiles == 0)
     {
       argv[optind] = bad_cast ("-");
       nfiles++;
     }
 
-  if (collapse_escapes (delim_arg))
+  എങ്കിൽ (collapse_escapes (delim_arg))
     {
       /* Don't use the quote() quoting style, because that would double the
          number of displayed backslashes, making the diagnostic look bogus.  */
@@ -544,10 +544,10 @@ main (int argc, char **argv)
   bool ok = ((serial_merge ? paste_serial : paste_parallel)
              (nfiles, &argv[optind]));
 
-  free (delims);
-  free (delim_lens);
+  സ്വതന്ത്രം (delims);
+  സ്വതന്ത്രം (delim_lens);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  എങ്കിൽ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

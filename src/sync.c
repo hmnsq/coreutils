@@ -16,13 +16,13 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "sync"
@@ -35,7 +35,7 @@
 # define HAVE_SYNCFS 0
 #endif
 
-enum sync_mode
+എണ്ണൽ sync_mode
 {
   MODE_FILE,
   MODE_DATA,
@@ -43,21 +43,21 @@ enum sync_mode
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_argument, ശൂന്യ, 'd'},
+  {"file-system", no_argument, ശൂന്യ, 'f'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
       fputs (_("\
@@ -84,39 +84,39 @@ or their containing file systems.\n\
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+സ്ഥിതം bool
+sync_arg (എണ്ണൽ sync_mode mode, അക്ഷരം സ്ഥിരം *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  പൂർണ്ണസംഖ്യ open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#എങ്കിൽ defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  എങ്കിൽ (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
 #endif
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  പൂർണ്ണസംഖ്യ fd = open (file, open_flags);
+  എങ്കിൽ (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      പൂർണ്ണസംഖ്യ rd_errno = errno;
+      എങ്കിൽ (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      എങ്കിൽ (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          തിരികെ false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  പൂർണ്ണസംഖ്യ fdflags = fcntl (fd, F_GETFL);
+  എങ്കിൽ (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,47 +124,47 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  എങ്കിൽ (ret)
     {
-      int sync_status = -1;
+      പൂർണ്ണസംഖ്യ sync_status = -1;
 
-      switch (mode)
+      തിരഞ്ഞെടുപ്പ് (mode)
         {
-        case MODE_DATA:
+        അവസ്ഥ MODE_DATA:
           sync_status = fdatasync (fd);
-          break;
+          നിർത്തുക;
 
-        case MODE_FILE:
+        അവസ്ഥ MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          നിർത്തുക;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        അവസ്ഥ MODE_FILE_SYSTEM:
+#എങ്കിൽ HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
+          നിർത്തുക;
 #endif
-        case MODE_SYNC: default:
+        അവസ്ഥ MODE_SYNC: സ്ഥിരസ്ഥിതി:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      എങ്കിൽ (sync_status < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  എങ്കിൽ (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  തിരികെ ret;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   bool arg_data = false, arg_file_system = false;
   bool ok = true;
@@ -177,55 +177,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  പൂർണ്ണസംഖ്യ c;
+  ആകുമ്പോൾ ((c = getopt_long (argc, argv, "df", long_options, ശൂന്യ))
          != -1)
     {
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'd':
+        അവസ്ഥ 'd':
           arg_data = true;
-          break;
+          നിർത്തുക;
 
-        case 'f':
+        അവസ്ഥ 'f':
           arg_file_system = true;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  എങ്കിൽ (arg_data && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  എങ്കിൽ (!args_specified && arg_data)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  എണ്ണൽ sync_mode mode;
+  എങ്കിൽ (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  അല്ലെങ്കിൽ എങ്കിൽ (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  അല്ലെങ്കിൽ എങ്കിൽ (! arg_data)
     mode = MODE_FILE;
-  else
+  അല്ലെങ്കിൽ
     mode = MODE_DATA;
 
-  if (mode == MODE_SYNC)
+  എങ്കിൽ (mode == MODE_SYNC)
     sync ();
-  else
+  അല്ലെങ്കിൽ
     {
-      for (; optind < argc; optind++)
+      വേണ്ടി (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -28,17 +28,17 @@
 
    Define EVAL_TRACE to print an evaluation trace.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
 
-#include <gmp.h>
-#include <regex.h>
-#include "c-ctype.h"
-#include "long-options.h"
-#include "mcel.h"
-#include "strnumcmp.h"
+#അന്തര്ഭാവ <gmp.h>
+#അന്തര്ഭാവ <regex.h>
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "long-options.h"
+#അന്തര്ഭാവ "mcel.h"
+#അന്തര്ഭാവ "strnumcmp.h"
 
 /* Various parts of this code assume size_t fits into unsigned long
    int, the widest unsigned type that GMP supports.  */
@@ -53,45 +53,45 @@ static_assert (SIZE_MAX <= ULONG_MAX);
   proper_name ("Paul Eggert")
 
 /* Exit statuses.  */
-enum
+എണ്ണൽ
   {
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
        POSIX grammar.  */
-    EXPR_INVALID = 2,
+    വ്യഞ്ജകം_INVALID = 2,
 
     /* An internal error occurred, e.g., arithmetic overflow, storage
        exhaustion.  */
-    EXPR_FAILURE
+    വ്യഞ്ജകം_FAILURE
   };
 
 /* The kinds of value we can have.  */
-enum valtype
+എണ്ണൽ valtype
 {
   integer,
   string
 };
-typedef enum valtype TYPE;
+തരനിർവചനം എണ്ണൽ valtype TYPE;
 
 /* A value is.... */
-struct valinfo
+ഘടന valinfo
 {
   TYPE type;			/* Which kind. */
-  union
+  സംഘം
   {				/* The value itself. */
     mpz_t i;
-    char *s;
+    അക്ഷരം *s;
   } u;
 };
-typedef struct valinfo VALUE;
+തരനിർവചനം ഘടന valinfo മൂല്യം_2;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+സ്ഥിതം അക്ഷരം **args;
 
-static VALUE *eval (bool);
-static bool nomoreargs (void);
-static bool null (VALUE *v);
-static void printv (VALUE *v);
+സ്ഥിതം മൂല്യം_2 *eval (bool);
+സ്ഥിതം bool nomoreargs (ശൂന്യം);
+സ്ഥിതം bool null (മൂല്യം_2 *v);
+സ്ഥിതം ശൂന്യം printv (മൂല്യം_2 *v);
 
 
 /*
@@ -111,47 +111,47 @@ static void printv (VALUE *v);
    In UTF-8 \xCE\xB1 is a single character (greek alpha):
      mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
      mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
-static size_t
-mbs_logical_cspn (char const *s, char const *accept)
+സ്ഥിതം size_t
+mbs_logical_cspn (അക്ഷരം സ്ഥിരം *s, അക്ഷരം സ്ഥിരം *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  എങ്കിൽ (accept[0] == '\0')
+    തിരികെ 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  എങ്കിൽ (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      വേണ്ടി (അക്ഷരം സ്ഥിരം *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          എങ്കിൽ (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              എങ്കിൽ (mbschr (accept, *p))
+                തിരികെ idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          അല്ലെങ്കിൽ
+            വേണ്ടി (അക്ഷരം സ്ഥിരം *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                എങ്കിൽ (mcel_eq (g, h))
+                  തിരികെ idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      എങ്കിൽ (s[i])
+        തിരികെ i + 1;
     }
 
   /* not found */
-  return 0;
+  തിരികെ 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -161,8 +161,8 @@ mbs_logical_cspn (char const *s, char const *accept)
 
    Upon exit, sets v->s to the new string.
    The new string might be empty if POS/LEN are invalid. */
-static char *
-mbs_logical_substr (char const *s, size_t pos, size_t len)
+സ്ഥിതം അക്ഷരം *
+mbs_logical_substr (അക്ഷരം സ്ഥിരം *s, size_t pos, size_t len)
 {
   size_t mb_cur_max = MB_CUR_MAX;
   idx_t llen = mb_cur_max <= 1 ? strlen (s) : mbslen (s); /* logical length */
@@ -170,26 +170,26 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
   /* characters to copy */
   size_t vlen = MIN (len, pos <= llen ? llen - pos + 1 : 0);
 
-  char const *substart = s;
+  അക്ഷരം സ്ഥിരം *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  എങ്കിൽ (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  അല്ലെങ്കിൽ എങ്കിൽ (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  അല്ലെങ്കിൽ
+    വേണ്ടി (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        എങ്കിൽ (pos <= idx)
           {
-            if (pos == idx)
+            എങ്കിൽ (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  തിരികെ ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -211,23 +211,23 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
    In the string below, there are only two characters
    up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
       mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
-static size_t
-mbs_offset_to_chars (char const *s, size_t ofs)
+സ്ഥിതം size_t
+mbs_offset_to_chars (അക്ഷരം സ്ഥിരം *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  വേണ്ടി (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  തിരികെ c;
 }
 
 
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -239,12 +239,12 @@ Usage: %s EXPRESSION\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Print the value of EXPRESSION to standard output.  A blank line below\n\
+Print the മൂല്യം of EXPRESSION to standard output.  A blank വരി below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 എങ്കിൽ it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 എങ്കിൽ neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even എങ്കിൽ it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
-  ( EXPRESSION )             value of EXPRESSION\n\
+  ( EXPRESSION )             മൂല്യം of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted വേണ്ടി shells.\n\
+Comparisons are arithmetic എങ്കിൽ both ARGs are numbers, അല്ലെങ്കിൽ lexicographical.\n\
+Pattern matches തിരികെ the string matched between \\( and \\) or null; എങ്കിൽ\n\
+\\( and \\) are not used, they തിരികെ the സംഖ്യ of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 എങ്കിൽ EXPRESSION is neither null nor 0, 1 എങ്കിൽ EXPRESSION is null\n\
+or 0, 2 എങ്കിൽ EXPRESSION is syntactically invalid, and 3 എങ്കിൽ an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -310,31 +310,31 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (EXPR_FAILURE);
+  initialize_exit_failure (വ്യഞ്ജകം_FAILURE);
   atexit (close_stdout);
 
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
-                      usage, AUTHORS, (char const *) NULL);
+                      usage, AUTHORS, (അക്ഷരം സ്ഥിരം *) ശൂന്യ);
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  എങ്കിൽ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  എങ്കിൽ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXPR_INVALID);
+      usage (വ്യഞ്ജകം_INVALID);
     }
 
   args = argv + 1;
 
-  VALUE *v = eval (true);
-  if (!nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
+  മൂല്യം_2 *v = eval (true);
+  എങ്കിൽ (!nomoreargs ())
+    error (വ്യഞ്ജകം_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
   printv (v);
@@ -344,53 +344,53 @@ main (int argc, char **argv)
 
 /* Return a VALUE for I.  */
 
-static VALUE *
-int_value (unsigned long int i)
+സ്ഥിതം മൂല്യം_2 *
+int_മൂല്യം (unsigned long പൂർണ്ണസംഖ്യ i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  മൂല്യം_2 *v = xmalloc (വലുപ്പം *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  തിരികെ v;
 }
 
 /* Return a VALUE for S.  */
 
-static VALUE *
-str_value (char const *s)
+സ്ഥിതം മൂല്യം_2 *
+str_മൂല്യം (അക്ഷരം സ്ഥിരം *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  മൂല്യം_2 *v = xmalloc (വലുപ്പം *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  തിരികെ v;
 }
 
 /* Free VALUE V, including structure components.  */
 
-static void
-freev (VALUE *v)
+സ്ഥിതം ശൂന്യം
+freev (മൂല്യം_2 *v)
 {
-  if (v->type == string)
-    free (v->u.s);
-  else
+  എങ്കിൽ (v->type == string)
+    സ്വതന്ത്രം (v->u.s);
+  അല്ലെങ്കിൽ
     mpz_clear (v->u.i);
-  free (v);
+  സ്വതന്ത്രം (v);
 }
 
 /* Print VALUE V.  */
 
-static void
-printv (VALUE *v)
+സ്ഥിതം ശൂന്യം
+printv (മൂല്യം_2 *v)
 {
-  switch (v->type)
+  തിരഞ്ഞെടുപ്പ് (v->type)
     {
-    case integer:
+    അവസ്ഥ integer:
       mpz_out_str (stdout, 10, v->u.i);
       putchar ('\n');
-      break;
-    case string:
+      നിർത്തുക;
+    അവസ്ഥ string:
       puts (v->u.s);
-      break;
-    default:
+      നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:
       unreachable ();
     }
 }
@@ -398,31 +398,31 @@ printv (VALUE *v)
 /* Return true if V is a null-string or zero-number.  */
 
 ATTRIBUTE_PURE
-static bool
-null (VALUE *v)
+സ്ഥിതം bool
+null (മൂല്യം_2 *v)
 {
-  switch (v->type)
+  തിരഞ്ഞെടുപ്പ് (v->type)
     {
-    case integer:
-      return mpz_sgn (v->u.i) == 0;
-    case string:
+    അവസ്ഥ integer:
+      തിരികെ mpz_sgn (v->u.i) == 0;
+    അവസ്ഥ string:
       {
-        char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        അക്ഷരം സ്ഥിരം *cp = v->u.s;
+        എങ്കിൽ (*cp == '\0')
+          തിരികെ true;
 
         cp += (*cp == '-');
 
-        do
+        ചെയ്യുക
           {
-            if (*cp != '0')
-              return false;
+            എങ്കിൽ (*cp != '0')
+              തിരികെ false;
           }
-        while (*++cp);
+        ആകുമ്പോൾ (*++cp);
 
-        return true;
+        തിരികെ true;
       }
-    default:
+    സ്ഥിരസ്ഥിതി:
       unreachable ();
     }
 }
@@ -430,63 +430,63 @@ null (VALUE *v)
 /* Return true if CP takes the form of an integer.  */
 
 ATTRIBUTE_PURE
-static bool
-looks_like_integer (char const *cp)
+സ്ഥിതം bool
+looks_like_integer (അക്ഷരം സ്ഥിരം *cp)
 {
   cp += (*cp == '-');
 
-  do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+  ചെയ്യുക
+    എങ്കിൽ (! c_isdigit (*cp))
+      തിരികെ false;
+  ആകുമ്പോൾ (*++cp);
 
-  return true;
+  തിരികെ true;
 }
 
 /* Coerce V to a string value (can't fail).  */
 
-static void
-tostring (VALUE *v)
+സ്ഥിതം ശൂന്യം
+tostring (മൂല്യം_2 *v)
 {
-  switch (v->type)
+  തിരഞ്ഞെടുപ്പ് (v->type)
     {
-    case integer:
+    അവസ്ഥ integer:
       {
-        char *s = mpz_get_str (NULL, 10, v->u.i);
+        അക്ഷരം *s = mpz_get_str (ശൂന്യ, 10, v->u.i);
         mpz_clear (v->u.i);
         v->u.s = s;
         v->type = string;
       }
-      break;
-    case string:
-      break;
-    default:
+      നിർത്തുക;
+    അവസ്ഥ string:
+      നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:
       unreachable ();
     }
 }
 
 /* Coerce V to an integer value.  Return true on success, false on failure.  */
 
-static bool
-toarith (VALUE *v)
+സ്ഥിതം bool
+toarith (മൂല്യം_2 *v)
 {
-  switch (v->type)
+  തിരഞ്ഞെടുപ്പ് (v->type)
     {
-    case integer:
-      return true;
-    case string:
+    അവസ്ഥ integer:
+      തിരികെ true;
+    അവസ്ഥ string:
       {
-        char *s = v->u.s;
+        അക്ഷരം *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
-          error (EXPR_FAILURE, ERANGE, "%s", (s));
-        free (s);
+        എങ്കിൽ (! looks_like_integer (s))
+          തിരികെ false;
+        എങ്കിൽ (mpz_init_set_str (v->u.i, s, 10) != 0)
+          error (വ്യഞ്ജകം_FAILURE, ERANGE, "%s", (s));
+        സ്വതന്ത്രം (s);
         v->type = integer;
-        return true;
+        തിരികെ true;
       }
-    default:
+    സ്ഥിരസ്ഥിതി:
       unreachable ();
     }
 }
@@ -494,52 +494,52 @@ toarith (VALUE *v)
 /* Extract a size_t value from an integer value I.
    If the value is negative, return SIZE_MAX.
    If the value is too large, return SIZE_MAX - 1.  */
-static size_t
+സ്ഥിതം size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  എങ്കിൽ (mpz_sgn (i) < 0)
+    തിരികെ SIZE_MAX;
+  എങ്കിൽ (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long പൂർണ്ണസംഖ്യ ul = mpz_get_ui (i);
+      എങ്കിൽ (ul < SIZE_MAX)
+        തിരികെ ul;
     }
-  return SIZE_MAX - 1;
+  തിരികെ SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
    STR must not be null.  */
 
-static bool
-nextarg (char const *str)
+സ്ഥിതം bool
+nextarg (അക്ഷരം സ്ഥിരം *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  എങ്കിൽ (*args == ശൂന്യ)
+    തിരികെ false;
+  അല്ലെങ്കിൽ
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      തിരികെ r;
     }
 }
 
 /* Return true if there no more tokens.  */
 
-static bool
-nomoreargs (void)
+സ്ഥിതം bool
+nomoreargs (ശൂന്യം)
 {
-  return !*args;
+  തിരികെ !*args;
 }
 
 /* Report missing operand.
    There is an implicit assumption that there was a previous argument,
    and (args-1) is valid. */
-static void
-require_more_args (void)
+സ്ഥിതം ശൂന്യം
+require_more_args (ശൂന്യം)
 {
-  if (nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
+  എങ്കിൽ (nomoreargs ())
+    error (വ്യഞ്ജകം_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
 
@@ -547,11 +547,11 @@ require_more_args (void)
 #ifdef EVAL_TRACE
 /* Print evaluation trace and args remaining.  */
 
-static void
-trace (char const *fxn)
+സ്ഥിതം ശൂന്യം
+trace (അക്ഷരം സ്ഥിരം *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  വേണ്ടി (അക്ഷരം **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -561,83 +561,83 @@ trace (char const *fxn)
    SV is the VALUE for the lhs (the string),
    PV is the VALUE for the rhs (the pattern).  */
 
-static VALUE *
-docolon (VALUE *sv, VALUE *pv)
+സ്ഥിതം മൂല്യം_2 *
+docolon (മൂല്യം_2 *sv, മൂല്യം_2 *pv)
 {
   tostring (sv);
   tostring (pv);
 
-  struct re_registers re_regs;
-  re_regs.num_regs = 0;
-  re_regs.start = NULL;
-  re_regs.end = NULL;
+  ഘടന re_registers re_regs;
+  re_regs.അക്കം_regs = 0;
+  re_regs.start = ശൂന്യ;
+  re_regs.end = ശൂന്യ;
 
-  struct re_pattern_buffer re_buffer;
-  char fastmap[UCHAR_MAX + 1];
-  re_buffer.buffer = NULL;
+  ഘടന re_pattern_buffer re_buffer;
+  അക്ഷരം fastmap[UCHAR_MAX + 1];
+  re_buffer.buffer = ശൂന്യ;
   re_buffer.allocated = 0;
   re_buffer.fastmap = fastmap;
-  re_buffer.translate = NULL;
+  re_buffer.translate = ശൂന്യ;
   re_syntax_options = (RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP
                        & ~RE_NO_EMPTY_RANGES);
-  char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
+  അക്ഷരം സ്ഥിരം *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
-    error (EXPR_INVALID, 0, "%s", (errmsg));
+  എങ്കിൽ (errmsg)
+    error (വ്യഞ്ജകം_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
-  VALUE *v;
+  മൂല്യം_2 *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  എങ്കിൽ (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      എങ്കിൽ (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
-            v = str_value ("");
-          else
+          എങ്കിൽ (re_regs.end[1] < 0)
+            v = str_മൂല്യം ("");
+          അല്ലെങ്കിൽ
             {
               sv->u.s[re_regs.end[1]] = '\0';
-              v = str_value (sv->u.s + re_regs.start[1]);
+              v = str_മൂല്യം (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      അല്ലെങ്കിൽ
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
           size_t i = (MB_CUR_MAX == 1
                       ? matchlen
                       : mbs_offset_to_chars (sv->u.s, matchlen));
-          v = int_value (i);
+          v = int_മൂല്യം (i);
         }
     }
-  else if (matchlen == -1)
+  അല്ലെങ്കിൽ എങ്കിൽ (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
-        v = str_value ("");
-      else
-        v = int_value (0);
+      എങ്കിൽ (re_buffer.re_nsub > 0)
+        v = str_മൂല്യം ("");
+      അല്ലെങ്കിൽ
+        v = int_മൂല്യം (0);
     }
-  else
-    error (EXPR_FAILURE,
+  അല്ലെങ്കിൽ
+    error (വ്യഞ്ജകം_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  എങ്കിൽ (0 < re_regs.അക്കം_regs)
     {
-      free (re_regs.start);
-      free (re_regs.end);
+      സ്വതന്ത്രം (re_regs.start);
+      സ്വതന്ത്രം (re_regs.end);
     }
-  re_buffer.fastmap = NULL;
+  re_buffer.fastmap = ശൂന്യ;
   regfree (&re_buffer);
-  return v;
+  തിരികെ v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval7 (bool evaluate)
 {
 #ifdef EVAL_TRACE
@@ -645,156 +645,156 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  എങ്കിൽ (nextarg ("("))
     {
-      VALUE *v = eval (evaluate);
-      if (nomoreargs ())
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
+      മൂല്യം_2 *v = eval (evaluate);
+      എങ്കിൽ (nomoreargs ())
+        error (വ്യഞ്ജകം_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
+      എങ്കിൽ (!nextarg (")"))
+        error (വ്യഞ്ജകം_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      തിരികെ v;
     }
 
-  if (nextarg (")"))
-    error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
+  എങ്കിൽ (nextarg (")"))
+    error (വ്യഞ്ജകം_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  തിരികെ str_മൂല്യം (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval6 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  എങ്കിൽ (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      തിരികെ str_മൂല്യം (*args++);
     }
-  else if (nextarg ("length"))
+  അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("length"))
     {
-      VALUE *r = eval6 (evaluate);
+      മൂല്യം_2 *r = eval6 (evaluate);
       tostring (r);
-      VALUE *v = int_value (mbslen (r->u.s));
+      മൂല്യം_2 *v = int_മൂല്യം (mbslen (r->u.s));
       freev (r);
-      return v;
+      തിരികെ v;
     }
-  else if (nextarg ("match"))
+  അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("match"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
-      VALUE *v;
-      if (evaluate)
+      മൂല്യം_2 *l = eval6 (evaluate);
+      മൂല്യം_2 *r = eval6 (evaluate);
+      മൂല്യം_2 *v;
+      എങ്കിൽ (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      അല്ലെങ്കിൽ
         v = l;
       freev (r);
-      return v;
+      തിരികെ v;
     }
-  else if (nextarg ("index"))
+  അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("index"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
+      മൂല്യം_2 *l = eval6 (evaluate);
+      മൂല്യം_2 *r = eval6 (evaluate);
       tostring (l);
       tostring (r);
       size_t pos = mbs_logical_cspn (l->u.s, r->u.s);
-      VALUE *v = int_value (pos);
+      മൂല്യം_2 *v = int_മൂല്യം (pos);
       freev (l);
       freev (r);
-      return v;
+      തിരികെ v;
     }
-  else if (nextarg ("substr"))
+  അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("substr"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *i1 = eval6 (evaluate);
-      VALUE *i2 = eval6 (evaluate);
+      മൂല്യം_2 *l = eval6 (evaluate);
+      മൂല്യം_2 *i1 = eval6 (evaluate);
+      മൂല്യം_2 *i2 = eval6 (evaluate);
       tostring (l);
 
-      VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
-        v = str_value ("");
-      else
+      മൂല്യം_2 *v;
+      എങ്കിൽ (!toarith (i1) || !toarith (i2))
+        v = str_മൂല്യം ("");
+      അല്ലെങ്കിൽ
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
-          char *s = mbs_logical_substr (l->u.s, pos, len);
-          v = str_value (s);
-          free (s);
+          അക്ഷരം *s = mbs_logical_substr (l->u.s, pos, len);
+          v = str_മൂല്യം (s);
+          സ്വതന്ത്രം (s);
         }
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      തിരികെ v;
     }
-  else
-    return eval7 (evaluate);
+  അല്ലെങ്കിൽ
+    തിരികെ eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
    Calls docolon to do the real work.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval5 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval5");
 #endif
-  VALUE *l = eval6 (evaluate);
-  while (true)
+  മൂല്യം_2 *l = eval6 (evaluate);
+  ആകുമ്പോൾ (true)
     {
-      if (nextarg (":"))
+      എങ്കിൽ (nextarg (":"))
         {
-          VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          മൂല്യം_2 *r = eval6 (evaluate);
+          എങ്കിൽ (evaluate)
             {
-              VALUE *v = docolon (l, r);
+              മൂല്യം_2 *v = docolon (l, r);
               freev (l);
               l = v;
             }
           freev (r);
         }
-      else
-        return l;
+      അല്ലെങ്കിൽ
+        തിരികെ l;
     }
 }
 
 /* Handle *, /, % operators.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval4 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval4");
 #endif
-  VALUE *l = eval5 (evaluate);
-  while (true)
+  മൂല്യം_2 *l = eval5 (evaluate);
+  ആകുമ്പോൾ (true)
     {
-      enum { multiply, divide, mod } fxn;
+      എണ്ണൽ { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      എങ്കിൽ (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
-      VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      അല്ലെങ്കിൽ
+        തിരികെ l;
+      മൂല്യം_2 *r = eval5 (evaluate);
+      എങ്കിൽ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
-            error (EXPR_INVALID, 0, _("division by zero"));
+          എങ്കിൽ (!toarith (l) || !toarith (r))
+            error (വ്യഞ്ജകം_INVALID, 0, _("non-integer argument"));
+          എങ്കിൽ (fxn != multiply && mpz_sgn (r->u.i) == 0)
+            error (വ്യഞ്ജകം_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
             : mpz_tdiv_r)
@@ -806,28 +806,28 @@ eval4 (bool evaluate)
 
 /* Handle +, - operators.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval3 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval3");
 #endif
-  VALUE *l = eval4 (evaluate);
-  while (true)
+  മൂല്യം_2 *l = eval4 (evaluate);
+  ആകുമ്പോൾ (true)
     {
-      enum { plus, minus } fxn;
+      എണ്ണൽ { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      എങ്കിൽ (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
-      VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      അല്ലെങ്കിൽ
+        തിരികെ l;
+      മൂല്യം_2 *r = eval4 (evaluate);
+      എങ്കിൽ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
+          എങ്കിൽ (!toarith (l) || !toarith (r))
+            error (വ്യഞ്ജകം_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
       freev (r);
@@ -836,135 +836,135 @@ eval3 (bool evaluate)
 
 /* Handle comparisons.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval2 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval2");
 #endif
-  VALUE *l = eval3 (evaluate);
-  while (true)
+  മൂല്യം_2 *l = eval3 (evaluate);
+  ആകുമ്പോൾ (true)
     {
-      enum
+      എണ്ണൽ
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      എങ്കിൽ (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      അല്ലെങ്കിൽ എങ്കിൽ (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
-      VALUE *r = eval3 (evaluate);
+      അല്ലെങ്കിൽ
+        തിരികെ l;
+      മൂല്യം_2 *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      എങ്കിൽ (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          പൂർണ്ണസംഖ്യ cmp;
+          എങ്കിൽ (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          അല്ലെങ്കിൽ
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              എങ്കിൽ (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
-                  error (EXPR_INVALID, 0,
+                  error (വ്യഞ്ജകം_INVALID, 0,
                          _("the strings compared were %s and %s"),
                          quotearg_n_style (0, locale_quoting_style, l->u.s),
                          quotearg_n_style (1, locale_quoting_style, r->u.s));
                 }
             }
 
-          switch (fxn)
+          തിരഞ്ഞെടുപ്പ് (fxn)
             {
-            case less_than:     val = (cmp <  0); break;
-            case less_equal:    val = (cmp <= 0); break;
-            case equal:         val = (cmp == 0); break;
-            case not_equal:     val = (cmp != 0); break;
-            case greater_equal: val = (cmp >= 0); break;
-            case greater_than:  val = (cmp >  0); break;
-            default: unreachable ();
+            അവസ്ഥ less_than:     val = (cmp <  0); നിർത്തുക;
+            അവസ്ഥ less_equal:    val = (cmp <= 0); നിർത്തുക;
+            അവസ്ഥ equal:         val = (cmp == 0); നിർത്തുക;
+            അവസ്ഥ not_equal:     val = (cmp != 0); നിർത്തുക;
+            അവസ്ഥ greater_equal: val = (cmp >= 0); നിർത്തുക;
+            അവസ്ഥ greater_than:  val = (cmp >  0); നിർത്തുക;
+            സ്ഥിരസ്ഥിതി: unreachable ();
             }
         }
 
       freev (l);
       freev (r);
-      l = int_value (val);
+      l = int_മൂല്യം (val);
     }
 }
 
 /* Handle &.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval1 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval1");
 #endif
-  VALUE *l = eval2 (evaluate);
-  while (true)
+  മൂല്യം_2 *l = eval2 (evaluate);
+  ആകുമ്പോൾ (true)
     {
-      if (nextarg ("&"))
+      എങ്കിൽ (nextarg ("&"))
         {
-          VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          മൂല്യം_2 *r = eval2 (evaluate && !null (l));
+          എങ്കിൽ (null (l) || null (r))
             {
               freev (l);
               freev (r);
-              l = int_value (0);
+              l = int_മൂല്യം (0);
             }
-          else
+          അല്ലെങ്കിൽ
             freev (r);
         }
-      else
-        return l;
+      അല്ലെങ്കിൽ
+        തിരികെ l;
     }
 }
 
 /* Handle |.  */
 
-static VALUE *
+സ്ഥിതം മൂല്യം_2 *
 eval (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval");
 #endif
-  VALUE *l = eval1 (evaluate);
-  while (true)
+  മൂല്യം_2 *l = eval1 (evaluate);
+  ആകുമ്പോൾ (true)
     {
-      if (nextarg ("|"))
+      എങ്കിൽ (nextarg ("|"))
         {
-          VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          മൂല്യം_2 *r = eval1 (evaluate && null (l));
+          എങ്കിൽ (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              എങ്കിൽ (null (l))
                 {
                   freev (l);
-                  l = int_value (0);
+                  l = int_മൂല്യം (0);
                 }
             }
-          else
+          അല്ലെങ്കിൽ
             freev (r);
         }
-      else
-        return l;
+      അല്ലെങ്കിൽ
+        തിരികെ l;
     }
 }

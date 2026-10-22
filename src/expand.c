@@ -32,40 +32,40 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "ioblksize.h"
+#അന്തര്ഭാവ "mcel.h"
+#അന്തര്ഭാവ "mbbuf.h"
+#അന്തര്ഭാവ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "expand"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+സ്ഥിതം അക്ഷരം സ്ഥിരം shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_argument, ശൂന്യ, 't'},
+  {"initial", no_argument, ശൂന്യ, 'i'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -80,7 +80,7 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         ചെയ്യുക not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
@@ -98,20 +98,20 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+സ്ഥിതം ശൂന്യം
+expand (ശൂന്യം)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = next_file (ശൂന്യ);
 
-  if (!fp)
-    return;
+  എങ്കിൽ (!fp)
+    തിരികെ;
 
-  static char line_in[IO_BUFSIZE];
+  സ്ഥിതം അക്ഷരം വരി_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, വരി_in, വലുപ്പം വരി_in, fp);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -132,63 +132,63 @@ expand (void)
 
       /* Convert a line of text.  */
 
-      do
+      ചെയ്യുക
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          ആകുമ്പോൾ ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, വരി_in, വലുപ്പം വരി_in, fp);
 
-          if (convert)
+          എങ്കിൽ (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_വരി || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              എങ്കിൽ (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
                   bool last_tab;
                   colno next_tab_column
                     = get_next_tab_column (column, &tab_index, &last_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  ആകുമ്പോൾ (++column < next_tab_column)
+                    എങ്കിൽ (putchar (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  എങ്കിൽ (putchar (' ') < 0)
                     write_error ();
 
-                  continue;
+                  തുടരുക;
                 }
-              else if (g.ch == '\b')
+              അല്ലെങ്കിൽ എങ്കിൽ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
                   tab_index -= !!tab_index;
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  പൂർണ്ണസംഖ്യ width = c32width (g.ch);
+                  എങ്കിൽ (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          എങ്കിൽ (g.ch == MBBUF_EOF)
+            തിരികെ;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), വലുപ്പം (അക്ഷരം), g.len, stdout);
+          എങ്കിൽ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ആകുമ്പോൾ (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int c;
+  പൂർണ്ണസംഖ്യ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -197,49 +197,49 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_വരി = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((c = getopt_long (argc, argv, shortopts, longopts, ശൂന്യ)) != -1)
     {
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        അവസ്ഥ 'i':
+          convert_entire_വരി = false;
+          നിർത്തുക;
 
-        case 't':
+        അവസ്ഥ 't':
           parse_tab_stops (optarg);
-          break;
+          നിർത്തുക;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        അവസ്ഥ '0': അവസ്ഥ '1': അവസ്ഥ '2': അവസ്ഥ '3': അവസ്ഥ '4':
+        അവസ്ഥ '5': അവസ്ഥ '6': അവസ്ഥ '7': അവസ്ഥ '8': അവസ്ഥ '9':
+          എങ്കിൽ (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          അല്ലെങ്കിൽ
             {
-              char tab_stop[2];
+              അക്ഷരം tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  set_file_list (optind < argc ? &argv[optind] : ശൂന്യ);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  തിരികെ exit_status;
 }

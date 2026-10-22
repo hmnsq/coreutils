@@ -14,43 +14,43 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xgetcwd.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "root-dev-ino.h"
+#അന്തര്ഭാവ "xgetcwd.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pwd"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-struct file_name
+ഘടന file_name
 {
   idx_t n_alloc;
-  char *buf COUNTED_BY (n_alloc);
-  char *start;
+  അക്ഷരം *buf COUNTED_BY (n_alloc);
+  അക്ഷരം *start;
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"logical", no_argument, ശൂന്യ, 'L'},
+  {"physical", no_argument, ശൂന്യ, 'P'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -59,7 +59,7 @@ Print the full filename of the current working directory.\n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even എങ്കിൽ it contains symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
@@ -76,44 +76,44 @@ If no option is specified, -P is assumed.\n\
   exit (status);
 }
 
-static void
-file_name_free (struct file_name *p)
+സ്ഥിതം ശൂന്യം
+file_name_free (ഘടന file_name *p)
 {
-  free (p->buf);
-  free (p);
+  സ്വതന്ത്രം (p->buf);
+  സ്വതന്ത്രം (p);
 }
 
-static struct file_name *
-file_name_init (void)
+സ്ഥിതം ഘടന file_name *
+file_name_init (ശൂന്യം)
 {
-  struct file_name *p = xmalloc (sizeof *p);
+  ഘടന file_name *p = xmalloc (വലുപ്പം *p);
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  പൂർണ്ണസംഖ്യ init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
   p->start = p->buf + init_alloc - 1;
   p->start[0] = '\0';
-  return p;
+  തിരികെ p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
-static void
-file_name_prepend (struct file_name *p, char const *s, size_t s_len)
+സ്ഥിതം ശൂന്യം
+file_name_prepend (ഘടന file_name *p, അക്ഷരം സ്ഥിരം *s, size_t s_len)
 {
   idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  എങ്കിൽ (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
          to align it with the end of the new buffer.  By passing NULL we
          copy it only once.  */
       idx_t n_used = p->n_alloc - n_free;
-      char *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
+      അക്ഷരം *buf = xpalloc (ശൂന്യ, &p->n_alloc, 1 + s_len - n_free, -1, 1);
       p->start = memcpy (buf + p->n_alloc - n_used, p->start, n_used);
-      free (p->buf);
+      സ്വതന്ത്രം (p->buf);
       p->buf = buf;
     }
 
@@ -123,19 +123,19 @@ file_name_prepend (struct file_name *p, char const *s, size_t s_len)
 }
 
 /* Return a string (malloc'd) consisting of N '/'-separated ".." components.  */
-static char *
+സ്ഥിതം അക്ഷരം *
 nth_parent (size_t n)
 {
-  char *buf = xnmalloc (3, n);
-  char *p = buf;
+  അക്ഷരം *buf = xnmalloc (3, n);
+  അക്ഷരം *p = buf;
 
-  for (size_t i = 0; i < n; i++)
+  വേണ്ടി (size_t i = 0; i < n; i++)
     {
       memcpy (p, "../", 3);
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  തിരികെ buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -149,22 +149,22 @@ nth_parent (size_t n)
    PARENT_HEIGHT is 1.  This is solely for diagnostics.
    Exit nonzero upon error.  */
 
-static void
-find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
+സ്ഥിതം ശൂന്യം
+find_dir_entry (ഘടന stat *dot_sb, ഘടന file_name *file_name,
                 size_t parent_height)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  എങ്കിൽ (dirp == ശൂന്യ)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
            quote (nth_parent (parent_height)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  പൂർണ്ണസംഖ്യ fd = dirfd (dirp);
+  എങ്കിൽ ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
            quote (nth_parent (parent_height)));
 
-  struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  ഘടന stat parent_sb;
+  എങ്കിൽ ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
            quote (nth_parent (parent_height)));
 
@@ -173,53 +173,53 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
   bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
 
   bool found = false;
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      struct dirent const *dp;
+      ഘടന dirent സ്ഥിരം *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      എങ്കിൽ ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == ശൂന്യ)
         {
-          if (errno)
+          എങ്കിൽ (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              പൂർണ്ണസംഖ്യ e = errno;
               closedir (dirp);
               errno = e;
 
               /* Arrange to give a diagnostic after exiting this loop.  */
-              dirp = NULL;
+              dirp = ശൂന്യ;
             }
-          break;
+          നിർത്തുക;
         }
 
       ino_t ino = D_INO (dp);
 
-      struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      ഘടന stat ent_sb;
+      എങ്കിൽ (ino == NOT_AN_INODE_സംഖ്യ || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          എങ്കിൽ (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
-              continue;
+              തുടരുക;
             }
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
-        continue;
+      എങ്കിൽ (ino != dot_sb->st_ino)
+        തുടരുക;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      എങ്കിൽ ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
           found = true;
-          break;
+          നിർത്തുക;
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  എങ്കിൽ (dirp == ശൂന്യ || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
@@ -227,7 +227,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
              quote (nth_parent (parent_height)));
     }
 
-  if ( ! found)
+  എങ്കിൽ ( ! found)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
            quote (nth_parent (parent_height)));
@@ -258,71 +258,71 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
    in case the unreadable directory is close enough to the root that
    getcwd works from there.  */
 
-static void
-robust_getcwd (struct file_name *file_name)
+സ്ഥിതം ശൂന്യം
+robust_getcwd (ഘടന file_name *file_name)
 {
   size_t height = 1;
-  struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  ഘടന dev_ino dev_ino_buf;
+  ഘടന dev_ino *വേര്_dev_ino = get_വേര്_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  എങ്കിൽ (വേര്_dev_ino == ശൂന്യ)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
-  struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  ഘടന stat dot_sb;
+  എങ്കിൽ (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
-        break;
+      എങ്കിൽ (PSAME_INODE (&dot_sb, വേര്_dev_ino))
+        നിർത്തുക;
 
       find_dir_entry (&dot_sb, file_name, height++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  എങ്കിൽ (file_name->start[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
 
 /* Return PWD from the environment if it is acceptable for 'pwd -L'
    output, otherwise NULL.  */
-static char const *
-logical_getcwd (void)
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
+logical_getcwd (ശൂന്യം)
 {
-  char const *wd = getenv ("PWD");
+  അക്ഷരം സ്ഥിരം *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
-  char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  എങ്കിൽ (!wd || wd[0] != '/')
+    തിരികെ ശൂന്യ;
+  അക്ഷരം സ്ഥിരം *p = wd;
+  ആകുമ്പോൾ ((p = strstr (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      എങ്കിൽ (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        തിരികെ ശൂന്യ;
       p++;
     }
 
   /* System call validation.  */
-  struct stat st1;
-  struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  ഘടന stat st1;
+  ഘടന stat st2;
+  എങ്കിൽ (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    തിരികെ wd;
+  തിരികെ ശൂന്യ;
 }
 
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
      pwd implementations default to -P.  */
-  bool logical = (getenv ("POSIXLY_CORRECT") != NULL);
+  bool logical = (getenv ("POSIXLY_CORRECT") != ശൂന്യ);
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -332,55 +332,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      പൂർണ്ണസംഖ്യ c = getopt_long (argc, argv, "LP", longopts, ശൂന്യ);
+      എങ്കിൽ (c == -1)
+        നിർത്തുക;
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'L':
+        അവസ്ഥ 'L':
           logical = true;
-          break;
-        case 'P':
+          നിർത്തുക;
+        അവസ്ഥ 'P':
           logical = false;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind < argc)
+  എങ്കിൽ (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  എങ്കിൽ (logical)
     {
-      char const *wd = logical_getcwd ();
-      if (wd)
+      അക്ഷരം സ്ഥിരം *wd = logical_getcwd ();
+      എങ്കിൽ (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          തിരികെ EXIT_SUCCESS;
         }
     }
 
-  char *wd = xgetcwd ();
-  if (wd != NULL)
+  അക്ഷരം *wd = xgetcwd ();
+  എങ്കിൽ (wd != ശൂന്യ)
     {
       puts (wd);
-      free (wd);
+      സ്വതന്ത്രം (wd);
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      struct file_name *file_name = file_name_init ();
+      ഘടന file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
       puts (file_name->start);
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

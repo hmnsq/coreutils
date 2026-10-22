@@ -14,29 +14,29 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "quote.h"
 
-#include "expand-common.h"
+#അന്തര്ഭാവ "expand-common.h"
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-bool convert_entire_line = false;
+bool convert_entire_വരി = false;
 
 /* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
-static colno tab_size = 0;
+സ്ഥിതം colno tab_size = 0;
 
 /* If nonzero, the size of all tab stops after the last specified.  */
-static colno extend_size = 0;
+സ്ഥിതം colno extend_size = 0;
 
 /* If nonzero, an increment for additional tab stops after the last specified.*/
-static colno increment_size = 0;
+സ്ഥിതം colno increment_size = 0;
 
 /* The maximum distance between tab stops.  */
 idx_t max_column_width;
@@ -44,61 +44,61 @@ idx_t max_column_width;
 /* Array of the explicit column numbers of the tab stops;
    after 'tab_list' is exhausted, each additional tab is replaced
    by a space.  The first column is column 0.  */
-static colno *tab_list = NULL;
+സ്ഥിതം colno *tab_list = ശൂന്യ;
 
 /* The number of allocated entries in 'tab_list'.  */
-static idx_t n_tabs_allocated = 0;
+സ്ഥിതം idx_t n_tabs_allocated = 0;
 
 /* The index of the first invalid element of 'tab_list',
    where the next element can be added.  */
-static idx_t first_free_tab = 0;
+സ്ഥിതം idx_t first_free_tab = 0;
 
 /* Null-terminated array of input filenames.  */
-static char **file_list = NULL;
+സ്ഥിതം അക്ഷരം **file_list = ശൂന്യ;
 
 /* Default for 'file_list' if no files are given on the command line.  */
-static char *stdin_argv[] =
+സ്ഥിതം അക്ഷരം *stdin_argv[] =
 {
-  (char *) "-", NULL
+  (അക്ഷരം *) "-", ശൂന്യ
 };
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+സ്ഥിതം bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+പൂർണ്ണസംഖ്യ exit_status = EXIT_SUCCESS;
 
 
-static void
+സ്ഥിതം ശൂന്യം
 set_max_column_width (colno width)
 {
-  if (max_column_width < width)
+  എങ്കിൽ (max_column_width < width)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      എങ്കിൽ (ckd_add (&max_column_width, width, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
 
 /* Add tab stop TABVAL to the end of 'tab_list'.  */
-extern void
+ബാഹ്യ ശൂന്യം
 add_tab_stop (colno tabval)
 {
   colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
   colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
 
-  if (first_free_tab == n_tabs_allocated)
-    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
+  എങ്കിൽ (first_free_tab == n_tabs_allocated)
+    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, വലുപ്പം *tab_list);
   tab_list[first_free_tab++] = tabval;
 
   set_max_column_width (column_width);
 }
 
-static bool
+സ്ഥിതം bool
 set_extend_size (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  എങ്കിൽ (extend_size)
     {
       error (0, 0,
              _("'/' specifier only allowed"
@@ -109,15 +109,15 @@ set_extend_size (colno tabval)
 
   set_max_column_width (extend_size);
 
-  return ok;
+  തിരികെ ok;
 }
 
-static bool
+സ്ഥിതം bool
 set_increment_size (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  എങ്കിൽ (increment_size)
     {
       error (0,0,
              _("'+' specifier only allowed"
@@ -128,51 +128,51 @@ set_increment_size (colno tabval)
 
   set_max_column_width (increment_size);
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
    to the list of tab stops.  */
-extern void
-parse_tab_stops (char const *stops)
+ബാഹ്യ ശൂന്യം
+parse_tab_stops (അക്ഷരം സ്ഥിരം *stops)
 {
   bool have_tabval = false;
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  അക്ഷരം സ്ഥിരം *അക്കം_start = ശൂന്യ;
   bool ok = true;
 
-  for (; *stops; stops++)
+  വേണ്ടി (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      എങ്കിൽ (*stops == ',' || isblank (to_uchar (*stops)))
         {
-          if (have_tabval)
+          എങ്കിൽ (have_tabval)
             {
-              if (extend_tabval)
+              എങ്കിൽ (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  എങ്കിൽ (! set_extend_size (tabval))
                     {
                       ok = false;
-                      break;
+                      നിർത്തുക;
                     }
                 }
-              else if (increment_tabval)
+              അല്ലെങ്കിൽ എങ്കിൽ (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  എങ്കിൽ (! set_increment_size (tabval))
                     {
                       ok = false;
-                      break;
+                      നിർത്തുക;
                     }
                 }
-              else
+              അല്ലെങ്കിൽ
                 add_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      അല്ലെങ്കിൽ എങ്കിൽ (*stops == '/')
         {
-          if (have_tabval)
+          എങ്കിൽ (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      അല്ലെങ്കിൽ എങ്കിൽ (*stops == '+')
         {
-          if (have_tabval)
+          എങ്കിൽ (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,67 +192,67 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      അല്ലെങ്കിൽ എങ്കിൽ (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          എങ്കിൽ (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
-              num_start = stops;
+              അക്കം_start = stops;
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          എങ്കിൽ (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
-              idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
-              error (0, 0, _("tab stop is too large %s"), quote (bad_num));
-              free (bad_num);
+              idx_t len = strspn (അക്കം_start, "0123456789");
+              അക്ഷരം *bad_അക്കം = ximemdup0 (അക്കം_start, len);
+              error (0, 0, _("tab stop is too large %s"), quote (bad_അക്കം));
+              സ്വതന്ത്രം (bad_അക്കം);
               ok = false;
-              stops = num_start + len - 1;
+              stops = അക്കം_start + len - 1;
             }
         }
-      else
+      അല്ലെങ്കിൽ
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
           ok = false;
-          break;
+          നിർത്തുക;
         }
     }
 
-  if (ok && have_tabval)
+  എങ്കിൽ (ok && have_tabval)
     {
-      if (extend_tabval)
+      എങ്കിൽ (extend_tabval)
         ok &= set_extend_size (tabval);
-      else if (increment_tabval)
+      അല്ലെങ്കിൽ എങ്കിൽ (increment_tabval)
         ok &= set_increment_size (tabval);
-      else
+      അല്ലെങ്കിൽ
         add_tab_stop (tabval);
     }
 
-  if (! ok)
+  എങ്കിൽ (! ok)
     exit (EXIT_FAILURE);
 }
 
 /* Check that the list of tab stops TABS, with ENTRIES entries,
    contains only nonzero, ascending values.  */
 
-static void
-validate_tab_stops (colno const *tabs, idx_t entries)
+സ്ഥിതം ശൂന്യം
+validate_tab_stops (colno സ്ഥിരം *tabs, idx_t entries)
 {
   colno prev_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  വേണ്ടി (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      എങ്കിൽ (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      എങ്കിൽ (tabs[i] <= prev_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
       prev_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  എങ്കിൽ (increment_size && extend_size)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -264,18 +264,18 @@ validate_tab_stops (colno const *tabs, idx_t entries)
    tab-stops = N (if value N specified as the only value).
    tab-stops = distinct values given on command line (if multiple values given).
 */
-extern void
-finalize_tab_stops (void)
+ബാഹ്യ ശൂന്യം
+finalize_tab_stops (ശൂന്യം)
 {
   validate_tab_stops (tab_list, first_free_tab);
 
-  if (first_free_tab == 0)
+  എങ്കിൽ (first_free_tab == 0)
     tab_size = max_column_width = extend_size
                                   ? extend_size : increment_size
                                                   ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
+  അല്ലെങ്കിൽ എങ്കിൽ (first_free_tab == 1 && ! extend_size && ! increment_size)
     tab_size = tab_list[0];
-  else
+  അല്ലെങ്കിൽ
     tab_size = 0;
 }
 
@@ -284,37 +284,37 @@ finalize_tab_stops (void)
    many multiple tab-sizes.  Set *LAST_TAB depending on whether we are
    returning COLUMN + 1 merely because we're past the last tab.
    If the number would overflow, diagnose this and exit.  */
-extern colno
+ബാഹ്യ colno
 get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
 {
   *last_tab = false;
   colno tab_distance;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
+  എങ്കിൽ (tab_size)
     tab_distance = tab_size - column % tab_size;
-  else
+  അല്ലെങ്കിൽ
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      വേണ്ടി ( ; *tab_index < first_free_tab ; (*tab_index)++ )
         {
           colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          എങ്കിൽ (column < tab)
+            തിരികെ tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
+      എങ്കിൽ (extend_size)
         tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      അല്ലെങ്കിൽ എങ്കിൽ (increment_size)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
           colno end_tab = tab_list[first_free_tab - 1];
           tab_distance = increment_size - ((column - end_tab) % increment_size);
         }
-      else
+      അല്ലെങ്കിൽ
         {
           *last_tab = true;
           tab_distance = 1;
@@ -322,21 +322,21 @@ get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  എങ്കിൽ (ckd_add (&tab_stop, column, tab_distance))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  തിരികെ tab_stop;
 }
 
 
 /* Sets new file-list */
-extern void
-set_file_list (char **list)
+ബാഹ്യ ശൂന്യം
+set_file_list (അക്ഷരം **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  എങ്കിൽ (!list)
     file_list = stdin_argv;
-  else
+  അല്ലെങ്കിൽ
     file_list = list;
 }
 
@@ -345,61 +345,61 @@ set_file_list (char **list)
    Open a filename of '-' as the standard input.
    Return NULL if there are no more input files.  */
 
-extern FILE *
+ബാഹ്യ FILE *
 next_file (FILE *fp)
 {
-  static char *prev_file;
-  char *file;
+  സ്ഥിതം അക്ഷരം *prev_file;
+  അക്ഷരം *file;
 
-  if (fp)
+  എങ്കിൽ (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      പൂർണ്ണസംഖ്യ err = errno;
+      എങ്കിൽ (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      എങ്കിൽ (streq (prev_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      അല്ലെങ്കിൽ എങ്കിൽ (fclose (fp) != 0)
         err = errno;
-      if (err)
+      എങ്കിൽ (err)
         {
           error (0, err, "%s", quotef (prev_file));
           exit_status = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  ആകുമ്പോൾ ((file = *file_list++) != ശൂന്യ)
     {
-      if (streq (file, "-"))
+      എങ്കിൽ (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      അല്ലെങ്കിൽ
         fp = fopen (file, "r");
-      if (fp)
+      എങ്കിൽ (fp)
         {
           prev_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          തിരികെ fp;
         }
       error (0, errno, "%s", quotef (file));
       exit_status = EXIT_FAILURE;
     }
-  return NULL;
+  തിരികെ ശൂന്യ;
 }
 
 /* Close standard input if we have read from it.  */
-extern void
-cleanup_file_list_stdin (void)
+ബാഹ്യ ശൂന്യം
+cleanup_file_list_stdin (ശൂന്യം)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    എങ്കിൽ (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 
 /* Emit the --help output for --tabs=LIST option accepted by expand and
    unexpand.  */
-extern void
-emit_tab_list_info (char const *program)
+ബാഹ്യ ശൂന്യം
+emit_tab_list_info (അക്ഷരം സ്ഥിരം *program)
 {
   /* suppress syntax check for emit_mandatory_arg_note() */
   oputs_ (program, _("\

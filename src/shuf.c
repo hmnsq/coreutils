@@ -17,20 +17,20 @@
 
    Written by Paul Eggert.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <sys/types.h>
-#include <getopt.h>
-#include "system.h"
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ "system.h"
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "quote.h"
-#include "randint.h"
-#include "randperm.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "linebuffer.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "randint.h"
+#അന്തര്ഭാവ "randperm.h"
+#അന്തര്ഭാവ "read-file.h"
+#അന്തര്ഭാവ "stdio--.h"
+#അന്തര്ഭാവ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "shuf"
@@ -43,15 +43,15 @@
      $ for p in $(seq 7); do src/seq $((10**$p)) > 10p$p.in; done
      $ for p in $(seq 7); do time shuf-nores -n10 10p$p.in >/dev/null; done
      $ for p in $(seq 7); do time shuf -n10 10p$p.in >/dev/null; done  .*/
-enum { RESERVOIR_MIN_INPUT = 8192 * 1024 };
+എണ്ണൽ { RESERVOIR_MIN_നിവേശം = 8192 * 1024 };
 
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]\n\
@@ -60,32 +60,32 @@ Usage: %s [OPTION]... [FILE]\n\
 "),
               program_name, program_name, program_name);
       fputs (_("\
-Write a random permutation of the input lines to standard output.\n\
+Write a random permutation of the നിവേശം വരികൾ to standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -e, --echo                treat each ARG as an input line\n\
+  -e, --echo                treat each ARG as an നിവേശം വരി\n\
 "));
       oputs (_("\
-  -i, --input-range=LO-HI   treat each number LO through HI as an input line\n\
+  -i, --നിവേശം-range=LO-HI   treat each സംഖ്യ LO through HI as an നിവേശം വരി\n\
 "));
       oputs (_("\
-  -n, --head-count=COUNT    output at most COUNT lines\n\
+  -n, --head-എണ്ണം=എണ്ണം_2    output at most എണ്ണം_2 വരികൾ\n\
 "));
       oputs (_("\
-  -o, --output=FILE         write result to FILE instead of standard output\n\
+  -o, --output=FILE         ലിഖ result to FILE instead of standard output\n\
 "));
       oputs (_("\
       --random-source=FILE  get random bytes from FILE\n\
 "));
       oputs (_("\
-  -r, --repeat              output lines can be repeated\n\
+  -r, --repeat              output വരികൾ can be repeated\n\
 "));
       oputs (_("\
-  -z, --zero-terminated     line delimiter is NUL, not newline\n\
+  -z, --zero-terminated     വരി delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -97,39 +97,39 @@ Write a random permutation of the input lines to standard output.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   RANDOM_SOURCE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_opts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_opts[] =
 {
-  {"echo", no_argument, NULL, 'e'},
-  {"input-range", required_argument, NULL, 'i'},
-  {"head-count", required_argument, NULL, 'n'},
-  {"output", required_argument, NULL, 'o'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"repeat", no_argument, NULL, 'r'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"echo", no_argument, ശൂന്യ, 'e'},
+  {"input-range", required_argument, ശൂന്യ, 'i'},
+  {"head-count", required_argument, ശൂന്യ, 'n'},
+  {"output", required_argument, ശൂന്യ, 'o'},
+  {"random-source", required_argument, ശൂന്യ, RANDOM_SOURCE_OPTION},
+  {"repeat", no_argument, ശൂന്യ, 'r'},
+  {"zero-terminated", no_argument, ശൂന്യ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {ശൂന്യ, 0, ശൂന്യ, 0},
 };
 
-static void
-input_from_argv (char **operand, int n_operands, char eolbyte)
+സ്ഥിതം ശൂന്യം
+നിവേശം_from_argv (അക്ഷരം **operand, പൂർണ്ണസംഖ്യ n_operands, അക്ഷരം eolbyte)
 {
-  char *p;
+  അക്ഷരം *p;
   size_t size = n_operands;
-  int i;
+  പൂർണ്ണസംഖ്യ i;
 
-  for (i = 0; i < n_operands; i++)
+  വേണ്ടി (i = 0; i < n_operands; i++)
     size += strlen (operand[i]);
   p = xmalloc (size);
 
-  for (i = 0; i < n_operands; i++)
+  വേണ്ടി (i = 0; i < n_operands; i++)
     {
-      char *p1 = stpcpy (p, operand[i]);
+      അക്ഷരം *p1 = stpcpy (p, operand[i]);
       operand[i] = p;
       p = p1;
       *p++ = eolbyte;
@@ -141,70 +141,70 @@ input_from_argv (char **operand, int n_operands, char eolbyte)
 /* Return the start of the next line after LINE, which is guaranteed
    to end in EOLBYTE.  */
 
-static char *
-next_line (char *line, char eolbyte)
+സ്ഥിതം അക്ഷരം *
+next_വരി (അക്ഷരം *വരി, അക്ഷരം eolbyte)
 {
-  char *p = rawmemchr (line, eolbyte);
-  return p + 1;
+  അക്ഷരം *p = rawmemchr (വരി, eolbyte);
+  തിരികെ p + 1;
 }
 
 /* Return the size of the input if possible or OFF_T_MAX if not.  */
 
-static off_t
-input_size (void)
+സ്ഥിതം off_t
+നിവേശം_size (ശൂന്യം)
 {
   off_t file_size;
 
-  struct stat stat_buf;
-  if (fstat (STDIN_FILENO, &stat_buf) != 0)
-    return OFF_T_MAX;
-  if (usable_st_size (&stat_buf))
+  ഘടന stat stat_buf;
+  എങ്കിൽ (fstat (STDIN_FILENO, &stat_buf) != 0)
+    തിരികെ OFF_T_MAX;
+  എങ്കിൽ (usable_st_size (&stat_buf))
     file_size = stat_buf.st_size;
-  else
-    return OFF_T_MAX;
+  അല്ലെങ്കിൽ
+    തിരികെ OFF_T_MAX;
 
-  off_t input_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  if (input_offset < 0)
-    return OFF_T_MAX;
+  off_t നിവേശം_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
+  എങ്കിൽ (നിവേശം_offset < 0)
+    തിരികെ OFF_T_MAX;
 
-  file_size -= input_offset;
+  file_size -= നിവേശം_offset;
 
-  return file_size;
+  തിരികെ file_size;
 }
 
 /* Read all lines and store up to K permuted lines in *OUT_RSRV.
    Return the number of lines read, up to a maximum of K.  */
 
-static idx_t
-read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
-                               struct randint_source *s,
-                               struct linebuffer **out_rsrv)
+സ്ഥിതം idx_t
+read_നിവേശം_reservoir_sampling (FILE *in, അക്ഷരം eolbyte, idx_t k,
+                               ഘടന randint_source *s,
+                               ഘടന linebuffer **out_rsrv)
 {
-  randint n_lines = 0;
-  idx_t n_alloc_lines = 0;
-  struct linebuffer *line = NULL;
-  struct linebuffer *rsrv = NULL;
+  randint n_വരികൾ = 0;
+  idx_t n_alloc_വരികൾ = 0;
+  ഘടന linebuffer *വരി = ശൂന്യ;
+  ഘടന linebuffer *rsrv = ശൂന്യ;
 
   /* Fill the first K lines, directly into the reservoir.  */
-  for (n_lines = 0; n_lines < k; n_lines++)
+  വേണ്ടി (n_വരികൾ = 0; n_വരികൾ < k; n_വരികൾ++)
     {
       /* Enlarge reservoir if needed.  */
-      if (n_lines == n_alloc_lines)
+      എങ്കിൽ (n_വരികൾ == n_alloc_വരികൾ)
         {
-          idx_t old = n_alloc_lines;
-          rsrv = xpalloc (rsrv, &n_alloc_lines, 1, k, sizeof *rsrv);
-          memset (&rsrv[n_lines], 0, (n_alloc_lines - old) * sizeof *rsrv);
+          idx_t old = n_alloc_വരികൾ;
+          rsrv = xpalloc (rsrv, &n_alloc_വരികൾ, 1, k, വലുപ്പം *rsrv);
+          memset (&rsrv[n_വരികൾ], 0, (n_alloc_വരികൾ - old) * വലുപ്പം *rsrv);
         }
 
-      line = readlinebuffer_delim (&rsrv[n_lines], in, eolbyte);
-      if (!line)
-        break;
+      വരി = readlinebuffer_delim (&rsrv[n_വരികൾ], in, eolbyte);
+      എങ്കിൽ (!വരി)
+        നിർത്തുക;
     }
 
   /* last line wasn't null - so there may be more lines to read.  */
-  if (line != NULL)
+  എങ്കിൽ (വരി != ശൂന്യ)
     {
-      struct linebuffer dummy;
+      ഘടന linebuffer dummy;
       initbuffer (&dummy);  /* space for lines not put in reservoir.  */
 
       /* Choose the fate of the next line, with decreasing probability (as
@@ -216,39 +216,39 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
          With 'struct linebuffer', storing into existing buffer will reduce
          re-allocations (will only re-allocate if the new line is longer than
          the currently allocated space).  */
-      do
+      ചെയ്യുക
         {
-          randint j = randint_choose (s, n_lines + 1);  /* 0 .. n_lines.  */
-          line = (j < k) ? (&rsrv[j]) : (&dummy);
+          randint j = randint_choose (s, n_വരികൾ + 1);  /* 0 .. n_lines.  */
+          വരി = (j < k) ? (&rsrv[j]) : (&dummy);
         }
-      while (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
+      ആകുമ്പോൾ (readlinebuffer_delim (വരി, in, eolbyte) != ശൂന്യ && n_വരികൾ++);
 
-      if (! n_lines)
+      എങ്കിൽ (! n_വരികൾ)
         error (EXIT_FAILURE, EOVERFLOW, _("too many input lines"));
 
       freebuffer (&dummy);
     }
 
   /* no more input lines, or an input error.  */
-  if (ferror (in))
+  എങ്കിൽ (ferror (in))
     error (EXIT_FAILURE, errno, _("read error"));
 
   *out_rsrv = rsrv;
-  return MIN (k, n_lines);
+  തിരികെ MIN (k, n_വരികൾ);
 }
 
-static int
-write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
-                                 size_t const *permutation)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+write_permuted_output_reservoir (size_t n_വരികൾ, ഘടന linebuffer *വരികൾ,
+                                 size_t സ്ഥിരം *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  വേണ്ടി (size_t i = 0; i < n_വരികൾ; i++)
     {
-      const struct linebuffer *p = &lines[permutation[i]];
-      if (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
-        return -1;
+      സ്ഥിരം ഘടന linebuffer *p = &വരികൾ[permutation[i]];
+      എങ്കിൽ (fwrite (p->buffer, വലുപ്പം (അക്ഷരം), p->length, stdout) != p->length)
+        തിരികെ -1;
     }
 
-  return 0;
+  തിരികെ 0;
 }
 
 /* Read data from file IN.  Input lines are delimited by EOLBYTE;
@@ -257,15 +257,15 @@ write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
    Return the number of lines read.  Report an error and exit on
    failure.  */
 
-static size_t
-read_input (FILE *in, char eolbyte, char ***pline)
+സ്ഥിതം size_t
+read_നിവേശം (FILE *in, അക്ഷരം eolbyte, അക്ഷരം ***pline)
 {
-  char *p;
-  char *buf = NULL;
+  അക്ഷരം *p;
+  അക്ഷരം *buf = ശൂന്യ;
   size_t used;
-  char *lim;
-  char **line;
-  size_t n_lines;
+  അക്ഷരം *lim;
+  അക്ഷരം **വരി;
+  size_t n_വരികൾ;
 
   /* TODO: We should limit the amount of data read here,
      to less than RESERVOIR_MIN_INPUT.  I.e., adjust fread_file() to support
@@ -276,138 +276,138 @@ read_input (FILE *in, char eolbyte, char ***pline)
      or if none left, stdin.  Doing that would give better performance by
      avoiding the reservoir CPU overhead when reading < RESERVOIR_MIN_INPUT
      from a pipe, and allow us to dispense with the input_size() function.  */
-  if (!(buf = fread_file (in, 0, &used)))
+  എങ്കിൽ (!(buf = fread_file (in, 0, &used)))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (used && buf[used - 1] != eolbyte)
+  എങ്കിൽ (used && buf[used - 1] != eolbyte)
     buf[used++] = eolbyte;
 
   lim = buf + used;
 
-  n_lines = 0;
-  for (p = buf; p < lim; p = next_line (p, eolbyte))
-    n_lines++;
+  n_വരികൾ = 0;
+  വേണ്ടി (p = buf; p < lim; p = next_വരി (p, eolbyte))
+    n_വരികൾ++;
 
-  *pline = line = xnmalloc (n_lines + 1, sizeof *line);
+  *pline = വരി = xnmalloc (n_വരികൾ + 1, വലുപ്പം *വരി);
 
-  line[0] = p = buf;
-  for (size_t i = 1; i <= n_lines; i++)
-    line[i] = p = next_line (p, eolbyte);
+  വരി[0] = p = buf;
+  വേണ്ടി (size_t i = 1; i <= n_വരികൾ; i++)
+    വരി[i] = p = next_വരി (p, eolbyte);
 
-  return n_lines;
+  തിരികെ n_വരികൾ;
 }
 
 /* Output N_LINES lines to stdout from LINE array,
    chosen by the indices in PERMUTATION.
    PERMUTATION and LINE must have at least N_LINES elements.
    Strings in LINE must include the line-terminator character.  */
-static int
-write_permuted_lines (size_t n_lines, char *const *line,
-                      size_t const *permutation)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+write_permuted_വരികൾ (size_t n_വരികൾ, അക്ഷരം *സ്ഥിരം *വരി,
+                      size_t സ്ഥിരം *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  വേണ്ടി (size_t i = 0; i < n_വരികൾ; i++)
     {
-      char *const *p = line + permutation[i];
+      അക്ഷരം *സ്ഥിരം *p = വരി + permutation[i];
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      എങ്കിൽ (fwrite (p[0], വലുപ്പം *p[0], len, stdout) != len)
+        തിരികെ -1;
     }
 
-  return 0;
+  തിരികെ 0;
 }
 
 /* Print NUMBER followed by EOLBYTE to standard output.
    Return false on failure, true on success.  */
-static bool
-print_number (unsigned long int number, char eolbyte)
+സ്ഥിതം bool
+print_സംഖ്യ (unsigned long പൂർണ്ണസംഖ്യ സംഖ്യ, അക്ഷരം eolbyte)
 {
-  char buf[INT_BUFSIZE_BOUND (unsigned long int)];
-  char *p = buf + INT_STRLEN_BOUND (unsigned long int);
+  അക്ഷരം buf[INT_BUFSIZE_BOUND (unsigned long പൂർണ്ണസംഖ്യ)];
+  അക്ഷരം *p = buf + INT_STRLEN_BOUND (unsigned long പൂർണ്ണസംഖ്യ);
   *p = eolbyte;
-  do
-    *--p = '0' + number % 10;
-  while ((number /= 10) != 0);
-  idx_t len = buf + sizeof buf - p;
-  return fwrite (p, 1, len, stdout) == len;
+  ചെയ്യുക
+    *--p = '0' + സംഖ്യ % 10;
+  ആകുമ്പോൾ ((സംഖ്യ /= 10) != 0);
+  idx_t len = buf + വലുപ്പം buf - p;
+  തിരികെ fwrite (p, 1, len, stdout) == len;
 }
 
 /* Output N_LINES of numbers to stdout, from PERMUTATION array.
    PERMUTATION must have at least N_LINES elements.  */
-static int
-write_permuted_numbers (size_t n_lines, size_t lo_input,
-                        size_t const *permutation, char eolbyte)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+write_permuted_numbers (size_t n_വരികൾ, size_t lo_നിവേശം,
+                        size_t സ്ഥിരം *permutation, അക്ഷരം eolbyte)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  വേണ്ടി (size_t i = 0; i < n_വരികൾ; i++)
     {
-      unsigned long int n = lo_input + permutation[i];
-      if (! print_number (n, eolbyte))
-        return -1;
+      unsigned long പൂർണ്ണസംഖ്യ n = lo_നിവേശം + permutation[i];
+      എങ്കിൽ (! print_സംഖ്യ (n, eolbyte))
+        തിരികെ -1;
     }
 
-  return 0;
+  തിരികെ 0;
 }
 
 /* Output COUNT numbers to stdout, chosen randomly from range
    LO_INPUT through HI_INPUT.  */
-static int
-write_random_numbers (struct randint_source *s, size_t count,
-                      size_t lo_input, size_t hi_input, char eolbyte)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+write_random_numbers (ഘടന randint_source *s, size_t എണ്ണം,
+                      size_t lo_നിവേശം, size_t hi_നിവേശം, അക്ഷരം eolbyte)
 {
-  const randint range = hi_input - lo_input + 1;
+  സ്ഥിരം randint range = hi_നിവേശം - lo_നിവേശം + 1;
 
-  for (size_t i = 0; i < count; i++)
+  വേണ്ടി (size_t i = 0; i < എണ്ണം; i++)
     {
-      unsigned long int j = lo_input + randint_choose (s, range);
-      if (! print_number (j, eolbyte))
-        return -1;
+      unsigned long പൂർണ്ണസംഖ്യ j = lo_നിവേശം + randint_choose (s, range);
+      എങ്കിൽ (! print_സംഖ്യ (j, eolbyte))
+        തിരികെ -1;
     }
 
-  return 0;
+  തിരികെ 0;
 }
 
 /* Output COUNT lines to stdout from LINES array.
    LINES must have at least N_LINES elements in it.
    Strings in LINES_ must include the line-terminator character.  */
-static int
-write_random_lines (struct randint_source *s, size_t count,
-                    char *const *lines, size_t n_lines)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+write_random_വരികൾ (ഘടന randint_source *s, size_t എണ്ണം,
+                    അക്ഷരം *സ്ഥിരം *വരികൾ, size_t n_വരികൾ)
 {
-  for (size_t i = 0; i < count; i++)
+  വേണ്ടി (size_t i = 0; i < എണ്ണം; i++)
     {
-      const randint j = randint_choose (s, n_lines);
-      char *const *p = lines + j;
+      സ്ഥിരം randint j = randint_choose (s, n_വരികൾ);
+      അക്ഷരം *സ്ഥിരം *p = വരികൾ + j;
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      എങ്കിൽ (fwrite (p[0], വലുപ്പം *p[0], len, stdout) != len)
+        തിരികെ -1;
     }
 
-  return 0;
+  തിരികെ 0;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   bool echo = false;
-  bool input_range = false;
-  size_t lo_input = SIZE_MAX;
-  size_t hi_input = 0;
-  idx_t head_lines = MIN (IDX_MAX, SIZE_MAX);
-  char const *outfile = NULL;
-  char *random_source = NULL;
-  char eolbyte = '\n';
-  char **input_lines = NULL;
+  bool നിവേശം_range = false;
+  size_t lo_നിവേശം = SIZE_MAX;
+  size_t hi_നിവേശം = 0;
+  idx_t head_വരികൾ = MIN (IDX_MAX, SIZE_MAX);
+  അക്ഷരം സ്ഥിരം *outfile = ശൂന്യ;
+  അക്ഷരം *random_source = ശൂന്യ;
+  അക്ഷരം eolbyte = '\n';
+  അക്ഷരം **നിവേശം_വരികൾ = ശൂന്യ;
   bool use_reservoir_sampling = false;
   bool repeat = false;
 
-  int optc;
-  int n_operands;
-  char **operand;
-  size_t n_lines;
-  char **line = NULL;
-  struct linebuffer *reservoir = NULL;
-  struct randint_source *randint_source;
-  size_t *permutation = NULL;
-  int i;
+  പൂർണ്ണസംഖ്യ optc;
+  പൂർണ്ണസംഖ്യ n_operands;
+  അക്ഷരം **operand;
+  size_t n_വരികൾ;
+  അക്ഷരം **വരി = ശൂന്യ;
+  ഘടന linebuffer *reservoir = ശൂന്യ;
+  ഘടന randint_source *randint_source;
+  size_t *permutation = ശൂന്യ;
+  പൂർണ്ണസംഖ്യ i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -417,86 +417,86 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, ശൂന്യ))
          != -1)
-    switch (optc)
+    തിരഞ്ഞെടുപ്പ് (optc)
       {
-      case 'e':
+      അവസ്ഥ 'e':
         echo = true;
-        break;
+        നിർത്തുക;
 
-      case 'i':
+      അവസ്ഥ 'i':
         {
-          if (input_range)
+          എങ്കിൽ (നിവേശം_range)
             error (EXIT_FAILURE, 0, _("multiple -i options specified"));
-          input_range = true;
+          നിവേശം_range = true;
 
           uintmax_t u;
-          char *lo_end;
-          strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, NULL);
-          if (err == LONGINT_OK)
+          അക്ഷരം *lo_end;
+          strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, ശൂന്യ);
+          എങ്കിൽ (err == LONGINT_OK)
             {
-              lo_input = u;
-              if (lo_input != u)
+              lo_നിവേശം = u;
+              എങ്കിൽ (lo_നിവേശം != u)
                 err = LONGINT_OVERFLOW;
-              else if (*lo_end != '-')
+              അല്ലെങ്കിൽ എങ്കിൽ (*lo_end != '-')
                 err = LONGINT_INVALID;
-              else
+              അല്ലെങ്കിൽ
                 {
-                  err = xstrtoumax (lo_end + 1, NULL, 10, &u, "");
-                  if (err == LONGINT_OK)
+                  err = xstrtoumax (lo_end + 1, ശൂന്യ, 10, &u, "");
+                  എങ്കിൽ (err == LONGINT_OK)
                     {
-                      hi_input = u;
-                      if (hi_input != u)
+                      hi_നിവേശം = u;
+                      എങ്കിൽ (hi_നിവേശം != u)
                         err = LONGINT_OVERFLOW;
                     }
                 }
             }
 
-          n_lines = hi_input - lo_input + 1;
+          n_വരികൾ = hi_നിവേശം - lo_നിവേശം + 1;
 
-          if (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
+          എങ്കിൽ (err != LONGINT_OK || (lo_നിവേശം <= hi_നിവേശം) == (n_വരികൾ == 0))
             error (EXIT_FAILURE, err == LONGINT_OVERFLOW ? EOVERFLOW : 0,
                    "%s: %s", _("invalid input range"), quote (optarg));
         }
-        break;
+        നിർത്തുക;
 
-      case 'n':
+      അവസ്ഥ 'n':
         {
           uintmax_t argval;
-          strtol_error e = xstrtoumax (optarg, NULL, 10, &argval, "");
+          strtol_error e = xstrtoumax (optarg, ശൂന്യ, 10, &argval, "");
 
-          if (e == LONGINT_OK)
-            head_lines = MIN (head_lines, argval);
-          else if (e != LONGINT_OVERFLOW)
+          എങ്കിൽ (e == LONGINT_OK)
+            head_വരികൾ = MIN (head_വരികൾ, argval);
+          അല്ലെങ്കിൽ എങ്കിൽ (e != LONGINT_OVERFLOW)
             error (EXIT_FAILURE, 0, _("invalid line count: %s"),
                    quote (optarg));
         }
-        break;
+        നിർത്തുക;
 
-      case 'o':
-        if (outfile && !streq (outfile, optarg))
+      അവസ്ഥ 'o':
+        എങ്കിൽ (outfile && !streq (outfile, optarg))
           error (EXIT_FAILURE, 0, _("multiple output files specified"));
         outfile = optarg;
-        break;
+        നിർത്തുക;
 
-      case RANDOM_SOURCE_OPTION:
-        if (random_source && !streq (random_source, optarg))
+      അവസ്ഥ RANDOM_SOURCE_OPTION:
+        എങ്കിൽ (random_source && !streq (random_source, optarg))
           error (EXIT_FAILURE, 0, _("multiple random sources specified"));
         random_source = optarg;
-        break;
+        നിർത്തുക;
 
-      case 'r':
+      അവസ്ഥ 'r':
         repeat = true;
-        break;
+        നിർത്തുക;
 
-      case 'z':
+      അവസ്ഥ 'z':
         eolbyte = '\0';
-        break;
+        നിർത്തുക;
 
       case_GETOPT_HELP_CHAR;
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      സ്ഥിരസ്ഥിതി:
         usage (EXIT_FAILURE);
       }
 
@@ -504,118 +504,118 @@ main (int argc, char **argv)
   operand = argv + optind;
 
   /* Check invalid usage.  */
-  if (echo && input_range)
+  എങ്കിൽ (echo && നിവേശം_range)
     {
       error (0, 0, _("cannot combine -e and -i options"));
       usage (EXIT_FAILURE);
     }
-  if (input_range ? 0 < n_operands : !echo && 1 < n_operands)
+  എങ്കിൽ (നിവേശം_range ? 0 < n_operands : !echo && 1 < n_operands)
     {
-      error (0, 0, _("extra operand %s"), quote (operand[!input_range]));
+      error (0, 0, _("extra operand %s"), quote (operand[!നിവേശം_range]));
       usage (EXIT_FAILURE);
     }
 
   /* Prepare input.  */
-  if (head_lines == 0)
+  എങ്കിൽ (head_വരികൾ == 0)
     {
-      n_lines = 0;
-      line = NULL;
+      n_വരികൾ = 0;
+      വരി = ശൂന്യ;
     }
-  else if (echo)
+  അല്ലെങ്കിൽ എങ്കിൽ (echo)
     {
-      input_from_argv (operand, n_operands, eolbyte);
-      n_lines = n_operands;
-      line = operand;
+      നിവേശം_from_argv (operand, n_operands, eolbyte);
+      n_വരികൾ = n_operands;
+      വരി = operand;
     }
-  else if (input_range)
+  അല്ലെങ്കിൽ എങ്കിൽ (നിവേശം_range)
     {
-      IF_LINT (n_lines = hi_input - lo_input + 1); /* Avoid GCC 10 warning.  */
-      line = NULL;
+      IF_LINT (n_വരികൾ = hi_നിവേശം - lo_നിവേശം + 1); /* Avoid GCC 10 warning.  */
+      വരി = ശൂന്യ;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* If an input file is specified, re-open it as stdin.  */
-      if (n_operands == 1
+      എങ്കിൽ (n_operands == 1
           && ! (streq (operand[0], "-")
                 || freopen (operand[0], "r", stdin)))
         error (EXIT_FAILURE, errno, "%s", quotef (operand[0]));
 
       fadvise (stdin, FADVISE_SEQUENTIAL);
 
-      if (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
-          || input_size () <= RESERVOIR_MIN_INPUT)
+      എങ്കിൽ (repeat || head_വരികൾ == MIN (IDX_MAX, SIZE_MAX)
+          || നിവേശം_size () <= RESERVOIR_MIN_നിവേശം)
         {
-          n_lines = read_input (stdin, eolbyte, &input_lines);
-          line = input_lines;
+          n_വരികൾ = read_നിവേശം (stdin, eolbyte, &നിവേശം_വരികൾ);
+          വരി = നിവേശം_വരികൾ;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           use_reservoir_sampling = true;
-          n_lines = SIZE_MAX;   /* unknown number of input lines, for now.  */
+          n_വരികൾ = SIZE_MAX;   /* unknown number of input lines, for now.  */
         }
     }
 
   /* The adjusted head line count; can be less than HEAD_LINES if the
      input is small and if not repeating.  */
-  idx_t ahead_lines = repeat || head_lines < n_lines ? head_lines : n_lines;
+  idx_t ahead_വരികൾ = repeat || head_വരികൾ < n_വരികൾ ? head_വരികൾ : n_വരികൾ;
 
   randint_source = randint_all_new (random_source,
                                     (use_reservoir_sampling || repeat
                                      ? SIZE_MAX
-                                     : randperm_bound (ahead_lines, n_lines)));
-  if (! randint_source)
+                                     : randperm_bound (ahead_വരികൾ, n_വരികൾ)));
+  എങ്കിൽ (! randint_source)
     error (EXIT_FAILURE, errno, "%s",
            quotef (random_source ? random_source : "getrandom"));
 
-  if (use_reservoir_sampling)
+  എങ്കിൽ (use_reservoir_sampling)
     {
       /* Instead of reading the entire file into 'line',
          use reservoir-sampling to store just AHEAD_LINES random lines.  */
-      n_lines = read_input_reservoir_sampling (stdin, eolbyte, ahead_lines,
+      n_വരികൾ = read_നിവേശം_reservoir_sampling (stdin, eolbyte, ahead_വരികൾ,
                                                randint_source, &reservoir);
-      ahead_lines = n_lines;
+      ahead_വരികൾ = n_വരികൾ;
     }
 
   /* Close stdin now, rather than earlier, so that randint_all_new
      doesn't have to worry about opening something other than
      stdin.  */
-  if (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
+  എങ്കിൽ (! (head_വരികൾ == 0 || echo || നിവേശം_range || fclose (stdin) == 0))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (!repeat)
-    permutation = randperm_new (randint_source, ahead_lines, n_lines);
+  എങ്കിൽ (!repeat)
+    permutation = randperm_new (randint_source, ahead_വരികൾ, n_വരികൾ);
 
-  if (outfile && ! freopen (outfile, "w", stdout))
+  എങ്കിൽ (outfile && ! freopen (outfile, "w", stdout))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   /* Generate output according to requested method */
-  if (repeat)
+  എങ്കിൽ (repeat)
     {
-      if (head_lines == 0)
+      എങ്കിൽ (head_വരികൾ == 0)
         i = 0;
-      else
+      അല്ലെങ്കിൽ
         {
-          if (n_lines == 0)
+          എങ്കിൽ (n_വരികൾ == 0)
             error (EXIT_FAILURE, 0, _("no lines to repeat"));
-          if (input_range)
-            i = write_random_numbers (randint_source, ahead_lines,
-                                      lo_input, hi_input, eolbyte);
-          else
-            i = write_random_lines (randint_source, ahead_lines, line, n_lines);
+          എങ്കിൽ (നിവേശം_range)
+            i = write_random_numbers (randint_source, ahead_വരികൾ,
+                                      lo_നിവേശം, hi_നിവേശം, eolbyte);
+          അല്ലെങ്കിൽ
+            i = write_random_വരികൾ (randint_source, ahead_വരികൾ, വരി, n_വരികൾ);
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (use_reservoir_sampling)
-        i = write_permuted_output_reservoir (n_lines, reservoir, permutation);
-      else if (input_range)
-        i = write_permuted_numbers (ahead_lines, lo_input,
+      എങ്കിൽ (use_reservoir_sampling)
+        i = write_permuted_output_reservoir (n_വരികൾ, reservoir, permutation);
+      അല്ലെങ്കിൽ എങ്കിൽ (നിവേശം_range)
+        i = write_permuted_numbers (ahead_വരികൾ, lo_നിവേശം,
                                     permutation, eolbyte);
-      else
-        i = write_permuted_lines (ahead_lines, line, permutation);
+      അല്ലെങ്കിൽ
+        i = write_permuted_വരികൾ (ahead_വരികൾ, വരി, permutation);
     }
 
-  if (i != 0)
+  എങ്കിൽ (i != 0)
     write_error ();
 
   IF_LINT (randint_all_free (randint_source));  /* For older valgrind.  */

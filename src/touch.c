@@ -17,21 +17,21 @@
 /* Written by Paul Rubin, Arnold Robbins, Jim Kingdon, David MacKenzie,
    and Randy Smith. */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "fd-reopen.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "posixver.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "utimens.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "argmatch.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "fd-reopen.h"
+#അന്തര്ഭാവ "parse-datetime.h"
+#അന്തര്ഭാവ "posixtm.h"
+#അന്തര്ഭാവ "posixver.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "stat-time.h"
+#അന്തര്ഭാവ "utimens.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "touch"
@@ -48,133 +48,133 @@
 #define CH_MTIME 2
 
 /* Which timestamps to change. */
-static int change_times;
+സ്ഥിതം പൂർണ്ണസംഖ്യ change_times;
 
 /* (-c) If true, don't create if not already there.  */
-static bool no_create;
+സ്ഥിതം bool no_create;
 
 /* (-r) If true, use times from a reference file.  */
-static bool use_ref;
+സ്ഥിതം bool use_ref;
 
 /* (-h) If true, change the times of an existing symlink, if possible.  */
-static bool no_dereference;
+സ്ഥിതം bool no_dereference;
 
 /* If true, the only thing we have to do is change both the
    modification and access time to the current time, so we don't
    have to own the file, just be able to read and write it.
    On some systems, we can do this if we own the file, even though
    we have neither read nor write access to it.  */
-static bool amtime_now;
+സ്ഥിതം bool amtime_now;
 
 /* New access and modification times to use when setting time.  */
-static struct timespec newtime[2];
+സ്ഥിതം ഘടന timespec newtime[2];
 
 /* File to use for -r. */
-static char *ref_file;
+സ്ഥിതം അക്ഷരം *ref_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   TIME_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"time", required_argument, NULL, TIME_OPTION},
-  {"no-create", no_argument, NULL, 'c'},
-  {"date", required_argument, NULL, 'd'},
-  {"reference", required_argument, NULL, 'r'},
-  {"no-dereference", no_argument, NULL, 'h'},
+  {"time", required_argument, ശൂന്യ, TIME_OPTION},
+  {"no-create", no_argument, ശൂന്യ, 'c'},
+  {"date", required_argument, ശൂന്യ, 'd'},
+  {"reference", required_argument, ശൂന്യ, 'r'},
+  {"no-dereference", no_argument, ശൂന്യ, 'h'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* Valid arguments to the '--time' option. */
-static char const *const time_args[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം time_args[] =
 {
-  "atime", "access", "use", "mtime", "modify", NULL
+  "atime", "access", "use", "mtime", "modify", ശൂന്യ
 };
 
 /* The bits in 'change_times' that those arguments set. */
-static int const time_masks[] =
+സ്ഥിതം പൂർണ്ണസംഖ്യ സ്ഥിരം time_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
 
 /* The interpretation of FLEX_DATE as a date, relative to NOW.  */
 
-static struct timespec
-date_relative (char const *flex_date, struct timespec now)
+സ്ഥിതം ഘടന timespec
+date_relative (അക്ഷരം സ്ഥിരം *flex_date, ഘടന timespec now)
 {
-  struct timespec result;
-  if (! parse_datetime (&result, flex_date, &now))
+  ഘടന timespec result;
+  എങ്കിൽ (! parse_datetime (&result, flex_date, &now))
     error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (flex_date));
-  return result;
+  തിരികെ result;
 }
 
 /* Update the time of file FILE according to the options given.
    Return true if successful.  */
 
-static bool
-touch (char const *file)
+സ്ഥിതം bool
+touch (അക്ഷരം സ്ഥിരം *file)
 {
-  int fd = -1;
-  int open_errno = 0;
-  struct timespec const *t = newtime;
+  പൂർണ്ണസംഖ്യ fd = -1;
+  പൂർണ്ണസംഖ്യ open_errno = 0;
+  ഘടന timespec സ്ഥിരം *t = newtime;
 
-  if (streq (file, "-"))
+  എങ്കിൽ (streq (file, "-"))
     fd = STDOUT_FILENO;
-  else if (! (no_create || no_dereference))
+  അല്ലെങ്കിൽ എങ്കിൽ (! (no_create || no_dereference))
     {
       /* Try to open FILE, creating it if necessary.  */
       fd = fd_reopen (STDIN_FILENO, file,
                       O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
-      if (fd < 0)
+      എങ്കിൽ (fd < 0)
         open_errno = errno;
     }
 
-  if (change_times != (CH_ATIME | CH_MTIME))
+  എങ്കിൽ (change_times != (CH_ATIME | CH_MTIME))
     {
       /* We're setting only one of the time values.  */
-      if (change_times == CH_MTIME)
+      എങ്കിൽ (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
-      else
+      അല്ലെങ്കിൽ
         {
           affirm (change_times == CH_ATIME);
           newtime[1].tv_nsec = UTIME_OMIT;
         }
     }
 
-  if (amtime_now)
+  എങ്കിൽ (amtime_now)
     {
       /* Pass NULL to futimens so it will not fail if we have
          write access to the file, but don't own it.  */
-      t = NULL;
+      t = ശൂന്യ;
     }
 
-  char const *file_opt = fd == STDOUT_FILENO ? NULL : file;
-  int atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
-  int utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
+  അക്ഷരം സ്ഥിരം *file_opt = fd == STDOUT_FILENO ? ശൂന്യ : file;
+  പൂർണ്ണസംഖ്യ atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
+  പൂർണ്ണസംഖ്യ utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
                      ? 0 : errno);
 
-  if (fd == STDIN_FILENO)
+  എങ്കിൽ (fd == STDIN_FILENO)
     {
-      if (close (STDIN_FILENO) != 0)
+      എങ്കിൽ (close (STDIN_FILENO) != 0)
         {
           error (0, errno, _("failed to close %s"), quoteaf (file));
-          return false;
+          തിരികെ false;
         }
     }
-  else if (fd == STDOUT_FILENO)
+  അല്ലെങ്കിൽ എങ്കിൽ (fd == STDOUT_FILENO)
     {
       /* Do not diagnose "touch -c - >&-".  */
-      if (utime_errno == EBADF && no_create)
-        return true;
+      എങ്കിൽ (utime_errno == EBADF && no_create)
+        തിരികെ true;
     }
 
-  if (utime_errno != 0)
+  എങ്കിൽ (utime_errno != 0)
     {
       /* Don't diagnose with open_errno if FILE is a directory, as that
          would give a bogus diagnostic for e.g., 'touch /' (assuming we
@@ -182,8 +182,8 @@ touch (char const *file)
          other systems, opening a directory like "." fails with EINVAL.
          (On SunOS 4 it was EPERM but that's obsolete.)  On macOS 26
          opening "/" fails with EEXIST.  */
-      struct stat st;
-      if (open_errno
+      ഘടന stat st;
+      എങ്കിൽ (open_errno
           && ! (open_errno == EISDIR
                 || ((open_errno == EINVAL || open_errno == EEXIST)
                     && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
@@ -194,24 +194,24 @@ touch (char const *file)
              I think it's not worth trying to distinguish them.  */
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
-      else
+      അല്ലെങ്കിൽ
         {
-          if (no_create && utime_errno == ENOENT)
-            return true;
+          എങ്കിൽ (no_create && utime_errno == ENOENT)
+            തിരികെ true;
           error (0, utime_errno, _("setting times of %s"), quoteaf (file));
         }
-      return false;
+      തിരികെ false;
     }
 
-  return true;
+  തിരികെ true;
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -232,7 +232,7 @@ change the times of the file associated with standard output.\n\
 "));
       oputs (_("\
   -c, --no-create\n\
-         do not create any files\n\
+         ചെയ്യുക not create any files\n\
 "));
       oputs (_("\
   -d, --date=STRING\n\
@@ -273,11 +273,11 @@ change the times of the file associated with standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   bool date_set = false;
-  char const *flex_date = NULL;
+  അക്ഷരം സ്ഥിരം *flex_date = ശൂന്യ;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -287,113 +287,113 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+  പൂർണ്ണസംഖ്യ c;
+  ആകുമ്പോൾ ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, ശൂന്യ)) != -1)
     {
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'a':
+        അവസ്ഥ 'a':
           change_times |= CH_ATIME;
-          break;
+          നിർത്തുക;
 
-        case 'c':
+        അവസ്ഥ 'c':
           no_create = true;
-          break;
+          നിർത്തുക;
 
-        case 'd':
+        അവസ്ഥ 'd':
           flex_date = optarg;
-          break;
+          നിർത്തുക;
 
-        case 'f':
-          break;
+        അവസ്ഥ 'f':
+          നിർത്തുക;
 
-        case 'h':
+        അവസ്ഥ 'h':
           no_dereference = true;
-          break;
+          നിർത്തുക;
 
-        case 'm':
+        അവസ്ഥ 'm':
           change_times |= CH_MTIME;
-          break;
+          നിർത്തുക;
 
-        case 'r':
+        അവസ്ഥ 'r':
           use_ref = true;
           ref_file = optarg;
-          break;
+          നിർത്തുക;
 
-        case 't':
-          if (! posixtime (&newtime[0].tv_sec, optarg,
+        അവസ്ഥ 't':
+          എങ്കിൽ (! posixtime (&newtime[0].tv_sec, optarg,
                            PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
             error (EXIT_FAILURE, 0, _("invalid date format %s"),
                    quote (optarg));
           newtime[0].tv_nsec = 0;
           newtime[1] = newtime[0];
           date_set = true;
-          break;
+          നിർത്തുക;
 
-        case TIME_OPTION:	/* --time */
+        അവസ്ഥ TIME_OPTION:	/* --time */
           change_times |= XARGMATCH ("--time", optarg,
                                      time_args, time_masks);
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (change_times == 0)
+  എങ്കിൽ (change_times == 0)
     change_times = CH_ATIME | CH_MTIME;
 
-  if (date_set && (use_ref || flex_date))
+  എങ്കിൽ (date_set && (use_ref || flex_date))
     {
       error (0, 0, _("cannot specify times from more than one source"));
       usage (EXIT_FAILURE);
     }
 
-  if (use_ref)
+  എങ്കിൽ (use_ref)
     {
-      struct stat ref_stats;
+      ഘടന stat ref_stats;
       /* Don't use (no_dereference?lstat:stat) (args), since stat
          might be an object-like macro.  */
-      if (no_dereference ? lstat (ref_file, &ref_stats)
+      എങ്കിൽ (no_dereference ? lstat (ref_file, &ref_stats)
           : stat (ref_file, &ref_stats))
         error (EXIT_FAILURE, errno,
                _("failed to get attributes of %s"), quoteaf (ref_file));
       newtime[0] = get_stat_atime (&ref_stats);
       newtime[1] = get_stat_mtime (&ref_stats);
       date_set = true;
-      if (flex_date)
+      എങ്കിൽ (flex_date)
         {
-          if (change_times & CH_ATIME)
+          എങ്കിൽ (change_times & CH_ATIME)
             newtime[0] = date_relative (flex_date, newtime[0]);
-          if (change_times & CH_MTIME)
+          എങ്കിൽ (change_times & CH_MTIME)
             newtime[1] = date_relative (flex_date, newtime[1]);
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (flex_date)
+      എങ്കിൽ (flex_date)
         {
-          struct timespec now = current_timespec ();
+          ഘടന timespec now = current_timespec ();
           newtime[1] = newtime[0] = date_relative (flex_date, now);
           date_set = true;
 
           /* If neither -a nor -m is specified, treat "-d now" as if
              it were absent; this lets "touch" succeed more often in
              the presence of restrictive permissions.  */
-          if (change_times == (CH_ATIME | CH_MTIME)
+          എങ്കിൽ (change_times == (CH_ATIME | CH_MTIME)
               && timespec_cmp (newtime[0], now) == 0)
             {
               /* Check that it really was "-d now", and not a timestamp
                  that just happens to be the current time.  */
-              struct timespec notnow, notnow1;
+              ഘടന timespec notnow, notnow1;
               notnow.tv_sec = now.tv_sec ^ 1;
               notnow.tv_nsec = now.tv_nsec;
               notnow1 = date_relative (flex_date, notnow);
-              if (timespec_cmp (notnow1, notnow) == 0)
+              എങ്കിൽ (timespec_cmp (notnow1, notnow) == 0)
                 date_set = false;
             }
         }
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
   /* The obsolete 'MMDDhhmm[YY]' form is valid IFF there are
      two or more non-option arguments.  */
-  if (!date_set && 2 <= argc - optind && posix2_version () < 200112
+  എങ്കിൽ (!date_set && 2 <= argc - optind && posix2_version () < 200112
       && posixtime (&newtime[0].tv_sec, argv[optind],
                     PDS_TRAILING_YEAR | PDS_PRE_2000))
     {
@@ -409,15 +409,15 @@ main (int argc, char **argv)
       newtime[1] = newtime[0];
       date_set = true;
 
-      if (! getenv ("POSIXLY_CORRECT"))
+      എങ്കിൽ (! getenv ("POSIXLY_CORRECT"))
         {
-          struct tm const *tm = localtime (&newtime[0].tv_sec);
+          ഘടന tm സ്ഥിരം *tm = localtime (&newtime[0].tv_sec);
 
           /* Technically, it appears that even a deliberate attempt to cause
              the above localtime to return NULL will always fail because our
              posixtime implementation rejects all dates for which localtime
              would fail.  However, skip the warning if it ever fails.  */
-          if (tm)
+          എങ്കിൽ (tm)
             error (0, 0,
                    _("warning: 'touch %s' is obsolete; use "
                      "'touch -t %04ld%02d%02d%02d%02d.%02d'"),
@@ -429,23 +429,23 @@ main (int argc, char **argv)
       optind++;
     }
 
-  if (!date_set)
+  എങ്കിൽ (!date_set)
     {
-      if (change_times == (CH_ATIME | CH_MTIME))
+      എങ്കിൽ (change_times == (CH_ATIME | CH_MTIME))
         amtime_now = true;
-      else
+      അല്ലെങ്കിൽ
         newtime[1].tv_nsec = newtime[0].tv_nsec = UTIME_NOW;
     }
 
-  if (optind == argc)
+  എങ്കിൽ (optind == argc)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  വേണ്ടി (; optind < argc; ++optind)
     ok &= touch (argv[optind]);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

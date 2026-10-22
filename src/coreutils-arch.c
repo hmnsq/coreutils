@@ -16,18 +16,18 @@
 
 /* Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include "system.h"
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ "system.h"
 
-#include "uname.h"
+#അന്തര്ഭാവ "uname.h"
 /* Ensure that the main for uname is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_uname (int argc, char **argv);
-int single_binary_main_arch (int argc, char **argv);
+പൂർണ്ണസംഖ്യ single_ദ്വിമാന_main_uname (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv);
+പൂർണ്ണസംഖ്യ single_ദ്വിമാന_main_arch (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv);
 
-int
-single_binary_main_arch (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+single_ദ്വിമാന_main_arch (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   uname_mode = UNAME_ARCH;
-  return single_binary_main_uname (argc, argv);
+  തിരികെ single_ദ്വിമാന_main_uname (argc, argv);
 }

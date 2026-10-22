@@ -15,50 +15,50 @@
 #ifndef BLAKE2_IMPL_H
 #define BLAKE2_IMPL_H
 
-#include <endian.h>
-#if BYTE_ORDER == LITTLE_ENDIAN
+#അന്തര്ഭാവ <endian.h>
+#എങ്കിൽ BYTE_ORDER == LITTLE_ENDIAN
 # define NATIVE_LITTLE_ENDIAN 1
 #endif
 
-#include <stdint.h>
-#include <string.h>
+#അന്തര്ഭാവ <stdint.h>
+#അന്തര്ഭാവ <string.h>
 
-#if !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
-  #if   defined(_MSC_VER)
+#എങ്കിൽ !defined(__cplusplus) && (!defined(__STDC_VERSION__) || __STDC_VERSION__ < 199901L)
+  #എങ്കിൽ   defined(_MSC_VER)
     #define BLAKE2_INLINE __inline
-  #elif defined(__GNUC__)
+  #അല്ലെങ്കിലെങ്കിൽ defined(__GNUC__)
     #define BLAKE2_INLINE __inline__
-  #else
+  #അല്ലെങ്കിൽ
     #define BLAKE2_INLINE
   #endif
-#else
-  #define BLAKE2_INLINE inline
+#അല്ലെങ്കിൽ
+  #define BLAKE2_INLINE വരിയിൽ
 #endif
 
-static BLAKE2_INLINE uint32_t load32( const void *src )
+സ്ഥിതം BLAKE2_INLINE uint32_t load32( സ്ഥിരം ശൂന്യം *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#എങ്കിൽ defined(NATIVE_LITTLE_ENDIAN)
   uint32_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint32_t )( p[0] ) <<  0) |
+  memcpy(&w, src, വലുപ്പം w);
+  തിരികെ w;
+#അല്ലെങ്കിൽ
+  സ്ഥിരം uint8_t *p = ( സ്ഥിരം uint8_t * )src;
+  തിരികെ (( uint32_t )( p[0] ) <<  0) |
          (( uint32_t )( p[1] ) <<  8) |
          (( uint32_t )( p[2] ) << 16) |
          (( uint32_t )( p[3] ) << 24) ;
 #endif
 }
 
-static BLAKE2_INLINE uint64_t load64( const void *src )
+സ്ഥിതം BLAKE2_INLINE uint64_t load64( സ്ഥിരം ശൂന്യം *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#എങ്കിൽ defined(NATIVE_LITTLE_ENDIAN)
   uint64_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  memcpy(&w, src, വലുപ്പം w);
+  തിരികെ w;
+#അല്ലെങ്കിൽ
+  സ്ഥിരം uint8_t *p = ( സ്ഥിരം uint8_t * )src;
+  തിരികെ (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -69,35 +69,35 @@ static BLAKE2_INLINE uint64_t load64( const void *src )
 #endif
 }
 
-static BLAKE2_INLINE uint16_t load16( const void *src )
+സ്ഥിതം BLAKE2_INLINE uint16_t load16( സ്ഥിരം ശൂന്യം *src )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
+#എങ്കിൽ defined(NATIVE_LITTLE_ENDIAN)
   uint16_t w;
-  memcpy(&w, src, sizeof w);
-  return w;
-#else
-  const uint8_t *p = ( const uint8_t * )src;
-  return ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
+  memcpy(&w, src, വലുപ്പം w);
+  തിരികെ w;
+#അല്ലെങ്കിൽ
+  സ്ഥിരം uint8_t *p = ( സ്ഥിരം uint8_t * )src;
+  തിരികെ ( uint16_t )((( uint32_t )( p[0] ) <<  0) |
                       (( uint32_t )( p[1] ) <<  8));
 #endif
 }
 
-static BLAKE2_INLINE void store16( void *dst, uint16_t w )
+സ്ഥിതം BLAKE2_INLINE ശൂന്യം store16( ശൂന്യം *dst, uint16_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#എങ്കിൽ defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, വലുപ്പം w);
+#അല്ലെങ്കിൽ
   uint8_t *p = ( uint8_t * )dst;
   *p++ = ( uint8_t )w; w >>= 8;
   *p++ = ( uint8_t )w;
 #endif
 }
 
-static BLAKE2_INLINE void store32( void *dst, uint32_t w )
+സ്ഥിതം BLAKE2_INLINE ശൂന്യം store32( ശൂന്യം *dst, uint32_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#എങ്കിൽ defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, വലുപ്പം w);
+#അല്ലെങ്കിൽ
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -106,11 +106,11 @@ static BLAKE2_INLINE void store32( void *dst, uint32_t w )
 #endif
 }
 
-static BLAKE2_INLINE void store64( void *dst, uint64_t w )
+സ്ഥിതം BLAKE2_INLINE ശൂന്യം store64( ശൂന്യം *dst, uint64_t w )
 {
-#if defined(NATIVE_LITTLE_ENDIAN)
-  memcpy(dst, &w, sizeof w);
-#else
+#എങ്കിൽ defined(NATIVE_LITTLE_ENDIAN)
+  memcpy(dst, &w, വലുപ്പം w);
+#അല്ലെങ്കിൽ
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
   p[1] = (uint8_t)(w >>  8);
@@ -123,10 +123,10 @@ static BLAKE2_INLINE void store64( void *dst, uint64_t w )
 #endif
 }
 
-static BLAKE2_INLINE uint64_t load48( const void *src )
+സ്ഥിതം BLAKE2_INLINE uint64_t load48( സ്ഥിരം ശൂന്യം *src )
 {
-  const uint8_t *p = ( const uint8_t * )src;
-  return (( uint64_t )( p[0] ) <<  0) |
+  സ്ഥിരം uint8_t *p = ( സ്ഥിരം uint8_t * )src;
+  തിരികെ (( uint64_t )( p[0] ) <<  0) |
          (( uint64_t )( p[1] ) <<  8) |
          (( uint64_t )( p[2] ) << 16) |
          (( uint64_t )( p[3] ) << 24) |
@@ -134,7 +134,7 @@ static BLAKE2_INLINE uint64_t load48( const void *src )
          (( uint64_t )( p[5] ) << 40) ;
 }
 
-static BLAKE2_INLINE void store48( void *dst, uint64_t w )
+സ്ഥിതം BLAKE2_INLINE ശൂന്യം store48( ശൂന്യം *dst, uint64_t w )
 {
   uint8_t *p = ( uint8_t * )dst;
   p[0] = (uint8_t)(w >>  0);
@@ -145,20 +145,20 @@ static BLAKE2_INLINE void store48( void *dst, uint64_t w )
   p[5] = (uint8_t)(w >> 40);
 }
 
-static BLAKE2_INLINE uint32_t rotr32( const uint32_t w, const unsigned c )
+സ്ഥിതം BLAKE2_INLINE uint32_t rotr32( സ്ഥിരം uint32_t w, സ്ഥിരം unsigned c )
 {
-  return ( w >> c ) | ( w << ( 32 - c ) );
+  തിരികെ ( w >> c ) | ( w << ( 32 - c ) );
 }
 
-static BLAKE2_INLINE uint64_t rotr64( const uint64_t w, const unsigned c )
+സ്ഥിതം BLAKE2_INLINE uint64_t rotr64( സ്ഥിരം uint64_t w, സ്ഥിരം unsigned c )
 {
-  return ( w >> c ) | ( w << ( 64 - c ) );
+  തിരികെ ( w >> c ) | ( w << ( 64 - c ) );
 }
 
 /* prevents compiler optimizing out memset() */
-static BLAKE2_INLINE void secure_zero_memory(void *v, size_t n)
+സ്ഥിതം BLAKE2_INLINE ശൂന്യം secure_zero_memory(ശൂന്യം *v, size_t n)
 {
-  static void *(*const volatile memset_v)(void *, int, size_t) = &memset;
+  സ്ഥിതം ശൂന്യം *(*സ്ഥിരം അസ്ഥിര memset_v)(ശൂന്യം *, പൂർണ്ണസംഖ്യ, size_t) = &memset;
   memset_v(v, 0, n);
 }
 

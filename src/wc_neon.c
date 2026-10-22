@@ -16,34 +16,34 @@
 
 /* Written by Collin Funk <collin.funk1@gmail.com>, 2026.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#അന്തര്ഭാവ "wc.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "ioblksize.h"
 
-#include <arm_neon.h>
+#അന്തര്ഭാവ <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+ബാഹ്യ ഘടന wc_വരികൾ
+wc_വരികൾ_neon (പൂർണ്ണസംഖ്യ fd)
 {
-  intmax_t lines = 0;
+  intmax_t വരികൾ = 0;
   intmax_t bytes = 0;
 
-  const uint8x16_t endlines = vdupq_n_u8 ('\n');
+  സ്ഥിരം uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      unsigned char alignas (16) neon_buf[IO_BUFSIZE];
-      ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      unsigned അക്ഷരം alignas (16) neon_buf[IO_BUFSIZE];
+      ssize_t bytes_read = പഠ (fd, neon_buf, വലുപ്പം neon_buf);
+      എങ്കിൽ (bytes_read <= 0)
+        തിരികെ (ഘടന wc_വരികൾ) { bytes_read == 0 ? 0 : errno, വരികൾ, bytes };
 
       bytes += bytes_read;
-      unsigned char *datap = neon_buf;
+      unsigned അക്ഷരം *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      ആകുമ്പോൾ (8192 <= bytes_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -93,7 +93,7 @@ wc_lines_neon (int fd)
           /* Extract the lane sums.  Since each newline was counted as -1, we
              subtract the sum of them from LINES to get the total number of
              lines.  */
-          lines -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
+          വരികൾ -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
                     + vgetq_lane_s64 (c1, 0) + vgetq_lane_s64 (c1, 1)
                     + vgetq_lane_s64 (c2, 0) + vgetq_lane_s64 (c2, 1)
                     + vgetq_lane_s64 (c3, 0) + vgetq_lane_s64 (c3, 1));
@@ -102,8 +102,8 @@ wc_lines_neon (int fd)
         }
 
       /* Finish up any left over bytes.  */
-      unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
-        lines += *p == '\n';
+      unsigned അക്ഷരം *end = (unsigned അക്ഷരം *) datap + bytes_read;
+      വേണ്ടി (unsigned അക്ഷരം *p = (unsigned അക്ഷരം *) datap; p < end; p++)
+        വരികൾ += *p == '\n';
     }
 }

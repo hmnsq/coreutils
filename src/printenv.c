@@ -27,18 +27,18 @@
 
    David MacKenzie and Richard Mlynarik */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "printenv.h"
-#include "xbinary-io.h"
+#അന്തര്ഭാവ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "printenv.h"
+#അന്തര്ഭാവ "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+എണ്ണൽ { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "printenv"
@@ -49,41 +49,41 @@ enum { PRINTENV_FAILURE = 2 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"null", no_argument, NULL, '0'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
+  {"null", no_argument, ശൂന്യ, '0'},
+  {"quoting-style", required_argument, ശൂന്യ, QUOTING_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+Print the മൂല്യങ്ങൾ of the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, print name and മൂല്യം pairs വേണ്ടി them all.\n\
 \n\
 "),
               program_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output വരി with NUL, not newline\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD വേണ്ടി names and മൂല്യങ്ങൾ:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  പൂർണ്ണസംഖ്യ quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,79 +110,79 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  പൂർണ്ണസംഖ്യ optc;
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "+0", longopts, ശൂന്യ)) != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case '0':
+        അവസ്ഥ '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          നിർത്തുക;
+        അവസ്ഥ QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
                                          quoting_style_args,
                                          quoting_style_vals);
-          break;
+          നിർത്തുക;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (PRINTENV_FAILURE);
         }
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  പൂർണ്ണസംഖ്യ qs = quoting_style_opt;
+  എങ്കിൽ (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      എങ്കിൽ (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  എങ്കിൽ (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      set_quoting_style (ശൂന്യ, qs);
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t സ്ഥിരം n_args = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  അക്ഷരം സ്ഥിരം terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  എങ്കിൽ (opt_nul_terminate_output)
+    xset_ദ്വിമാന_mode (STDOUT_FILENO, O_ദ്വിമാന);
 
-  if (n_args <= 0)
+  എങ്കിൽ (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      വേണ്ടി (അക്ഷരം **env = environ; *env != ശൂന്യ; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      int matches = 0;
+      പൂർണ്ണസംഖ്യ matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      വേണ്ടി (പൂർണ്ണസംഖ്യ i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
-            continue;
+          എങ്കിൽ (strchr (argv[i], '='))
+            തുടരുക;
 
-          for (char **env = environ; *env; ++env)
+          വേണ്ടി (അക്ഷരം **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              അക്ഷരം സ്ഥിരം *ep = *env;
+              അക്ഷരം സ്ഥിരം *ap = argv[i];
+              ആകുമ്പോൾ (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  എങ്കിൽ (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      അക്ഷരം സ്ഥിരം *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
                       putchar (terminator);
                       matched = true;
-                      break;
+                      നിർത്തുക;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

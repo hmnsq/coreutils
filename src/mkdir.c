@@ -16,47 +16,47 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <selinux/label.h>
 
-#include "system.h"
-#include "mkdir-p.h"
-#include "modechange.h"
-#include "prog-fprintf.h"
-#include "quote.h"
-#include "savewd.h"
-#include "selinux.h"
-#include "smack.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "mkdir-p.h"
+#അന്തര്ഭാവ "modechange.h"
+#അന്തര്ഭാവ "prog-fprintf.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "savewd.h"
+#അന്തര്ഭാവ "selinux.h"
+#അന്തര്ഭാവ "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "mkdir"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
-  {"parents", no_argument, NULL, 'p'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"mode", required_argument, ശൂന്യ, 'm'},
+  {"parents", no_argument, ശൂന്യ, 'p'},
+  {"verbose", no_argument, ശൂന്യ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
       fputs (_("\
-Create the DIRECTORY(ies), if they do not already exist.\n\
+Create the DIRECTORY(ies), എങ്കിൽ they ചെയ്യുക not already exist.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -67,21 +67,21 @@ Create the DIRECTORY(ies), if they do not already exist.\n\
 "));
       oputs (_("\
   -p, --parents\n\
-         no error if existing, make parent directories as needed,\n\
+         no error എങ്കിൽ existing, make parent directories as needed,\n\
          with their file modes unaffected by any -m option\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print a message for each created directory\n\
+         print a message വേണ്ടി each created directory\n\
 "));
       oputs (_("\
   -Z\n\
          set SELinux security context of each created directory\n\
-         to the default type\n\
+         to the സ്ഥിരസ്ഥിതി type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or എങ്കിൽ CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -92,11 +92,11 @@ Create the DIRECTORY(ies), if they do not already exist.\n\
 }
 
 /* Options passed to subsidiary functions.  */
-struct mkdir_options
+ഘടന mkdir_options
 {
   /* Function to make an ancestor, or NULL if ancestors should not be
      made.  */
-  int (*make_ancestor_function) (char const *, char const *, void *);
+  പൂർണ്ണസംഖ്യ (*make_ancestor_function) (അക്ഷരം സ്ഥിരം *, അക്ഷരം സ്ഥിരം *, ശൂന്യം *);
 
   /* Umask value for when making an ancestor.  */
   mode_t umask_ancestor;
@@ -111,18 +111,18 @@ struct mkdir_options
   mode_t mode_bits;
 
   /* Set the SELinux File Context.  */
-  struct selabel_handle *set_security_context;
+  ഘടന selabel_handle *set_security_context;
 
   /* If not null, format to use when reporting newly made directories.  */
-  char const *created_directory_format;
+  അക്ഷരം സ്ഥിരം *created_directory_format;
 };
 
 /* Report that directory DIR was made, if OPTIONS requests this.  */
-static void
-announce_mkdir (char const *dir, void *options)
+സ്ഥിതം ശൂന്യം
+announce_mkdir (അക്ഷരം സ്ഥിരം *dir, ശൂന്യം *options)
 {
-  struct mkdir_options const *o = options;
-  if (o->created_directory_format)
+  ഘടന mkdir_options സ്ഥിരം *o = options;
+  എങ്കിൽ (o->created_directory_format)
     prog_fprintf (stdout, o->created_directory_format, quoteaf (dir));
 }
 
@@ -131,51 +131,51 @@ announce_mkdir (char const *dir, void *options)
    parent.  Return 0 if successful and the resulting directory is
    readable, 1 if successful but the resulting directory is not
    readable, -1 (setting errno) otherwise.  */
-static int
-make_ancestor (char const *dir, char const *component, void *options)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+make_ancestor (അക്ഷരം സ്ഥിരം *dir, അക്ഷരം സ്ഥിരം *component, ശൂന്യം *options)
 {
-  struct mkdir_options const *o = options;
+  ഘടന mkdir_options സ്ഥിരം *o = options;
 
-  if (o->set_security_context
+  എങ്കിൽ (o->set_security_context
       && defaultcon (o->set_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  if (o->umask_ancestor != o->umask_self)
+  എങ്കിൽ (o->umask_ancestor != o->umask_self)
     umask (o->umask_ancestor);
-  int r = mkdir (component, S_IRWXUGO);
-  if (o->umask_ancestor != o->umask_self)
+  പൂർണ്ണസംഖ്യ r = mkdir (component, S_IRWXUGO);
+  എങ്കിൽ (o->umask_ancestor != o->umask_self)
     {
-      int mkdir_errno = errno;
+      പൂർണ്ണസംഖ്യ mkdir_errno = errno;
       umask (o->umask_self);
       errno = mkdir_errno;
     }
-  if (r == 0)
+  എങ്കിൽ (r == 0)
     {
       r = (o->umask_ancestor & S_IRUSR) != 0;
       announce_mkdir (dir, options);
     }
-  return r;
+  തിരികെ r;
 }
 
 /* Process a command-line file name.  */
-static int
-process_dir (char *dir, struct savewd *wd, void *options)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+process_dir (അക്ഷരം *dir, ഘടന savewd *wd, ശൂന്യം *options)
 {
-  struct mkdir_options const *o = options;
+  ഘടന mkdir_options സ്ഥിരം *o = options;
 
   /* If possible set context before DIR created.  */
-  if (o->set_security_context)
+  എങ്കിൽ (o->set_security_context)
     {
-      if (! o->make_ancestor_function
+      എങ്കിൽ (! o->make_ancestor_function
           && defaultcon (o->set_security_context, dir, S_IFDIR) < 0
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to set default creation context for %s"),
                quoteaf (dir));
     }
 
-  int ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
+  പൂർണ്ണസംഖ്യ ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
                                o->mode, announce_mkdir,
                                o->mode_bits, (uid_t) -1, (gid_t) -1, true)
              ? EXIT_SUCCESS
@@ -186,31 +186,31 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && o->set_security_context
+  എങ്കിൽ (ret == EXIT_SUCCESS && o->set_security_context
       && o->make_ancestor_function)
     {
-      if (! restorecon (o->set_security_context, last_component (dir), false)
+      എങ്കിൽ (! restorecon (o->set_security_context, last_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  തിരികെ ret;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  char const *specified_mode = NULL;
-  int optc;
-  char const *scontext = NULL;
-  struct mkdir_options options;
+  അക്ഷരം സ്ഥിരം *specified_mode = ശൂന്യ;
+  പൂർണ്ണസംഖ്യ optc;
+  അക്ഷരം സ്ഥിരം *scontext = ശൂന്യ;
+  ഘടന mkdir_options options;
 
-  options.make_ancestor_function = NULL;
+  options.make_ancestor_function = ശൂന്യ;
   options.mode = S_IRWXUGO;
   options.mode_bits = 0;
-  options.created_directory_format = NULL;
-  options.set_security_context = NULL;
+  options.created_directory_format = ശൂന്യ;
+  options.set_security_context = ശൂന്യ;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -220,52 +220,52 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "pm:vZ", longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "pm:vZ", longopts, ശൂന്യ)) != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case 'p':
+        അവസ്ഥ 'p':
           options.make_ancestor_function = make_ancestor;
-          break;
-        case 'm':
+          നിർത്തുക;
+        അവസ്ഥ 'm':
           specified_mode = optarg;
-          break;
-        case 'v': /* --verbose  */
+          നിർത്തുക;
+        അവസ്ഥ 'v': /* --verbose  */
           options.created_directory_format = _("created directory %s");
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+          നിർത്തുക;
+        അവസ്ഥ 'Z':
+          എങ്കിൽ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          അല്ലെങ്കിൽ എങ്കിൽ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              എങ്കിൽ (optarg)
                 scontext = optarg;
-              else
+              അല്ലെങ്കിൽ
                 {
                   options.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                               NULL, 0);
-                  if (! options.set_security_context)
+                                                               ശൂന്യ, 0);
+                  എങ്കിൽ (! options.set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          അല്ലെങ്കിൽ എങ്കിൽ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          നിർത്തുക;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  എങ്കിൽ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -274,46 +274,46 @@ main (int argc, char **argv)
   /* FIXME: This assumes mkdir() is done in the same process.
      If that's not always the case we would need to call this
      like we do when options.set_security_context.  */
-  if (scontext)
+  എങ്കിൽ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      പൂർണ്ണസംഖ്യ ret = 0;
+      എങ്കിൽ (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      അല്ലെങ്കിൽ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      എങ്കിൽ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
 
-  if (options.make_ancestor_function || specified_mode)
+  എങ്കിൽ (options.make_ancestor_function || specified_mode)
     {
-      mode_t umask_value = umask (0);
-      options.umask_ancestor = umask_value & ~(S_IWUSR | S_IXUSR);
+      mode_t umask_മൂല്യം = umask (0);
+      options.umask_ancestor = umask_മൂല്യം & ~(S_IWUSR | S_IXUSR);
 
-      if (specified_mode)
+      എങ്കിൽ (specified_mode)
         {
-          struct mode_change *change = mode_compile (specified_mode);
-          if (!change)
+          ഘടന mode_change *change = mode_compile (specified_mode);
+          എങ്കിൽ (!change)
             error (EXIT_FAILURE, 0, _("invalid mode %s"),
                    quote (specified_mode));
-          options.mode = mode_adjust (S_IRWXUGO, true, umask_value, change,
+          options.mode = mode_adjust (S_IRWXUGO, true, umask_മൂല്യം, change,
                                       &options.mode_bits);
-          options.umask_self = umask_value & ~options.mode;
-          free (change);
+          options.umask_self = umask_മൂല്യം & ~options.mode;
+          സ്വതന്ത്രം (change);
         }
-      else
+      അല്ലെങ്കിൽ
         {
           options.mode = S_IRWXUGO;
-          options.umask_self = umask_value;
+          options.umask_self = umask_മൂല്യം;
         }
 
       umask (options.umask_self);
     }
 
-  return savewd_process_files (argc - optind, argv + optind,
+  തിരികെ savewd_process_files (argc - optind, argv + optind,
                                process_dir, &options);
 }

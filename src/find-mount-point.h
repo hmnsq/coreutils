@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <stdlib.h>
+#അന്തര്ഭാവ <stdlib.h>
 
-extern char *find_mount_point (char const *, struct stat const *)
+ബാഹ്യ അക്ഷരം *find_mount_point (അക്ഷരം സ്ഥിരം *, ഘടന stat സ്ഥിരം *)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE _GL_ATTRIBUTE_NONNULL ();

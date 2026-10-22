@@ -23,64 +23,64 @@
    randomly-named temporary, which is safer for many applications than
    a window where B does not exist.  */
 
-#include <config.h>
-#include "system.h"
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ "system.h"
 
-#include "force-link.h"
+#അന്തര്ഭാവ "force-link.h"
 
-#include <tempname.h>
+#അന്തര്ഭാവ <tempname.h>
 
 /* A basename pattern suitable for a temporary file.  It should work
    even on file systems like FAT that support only short names.
    "Cu" is short for "Coreutils" or for "Changeable unstable",
    take your pick....  */
 
-static char const simple_pattern[] = "CuXXXXXX";
-enum { x_suffix_len = sizeof "XXXXXX" - 1 };
+സ്ഥിതം അക്ഷരം സ്ഥിരം simple_pattern[] = "CuXXXXXX";
+എണ്ണൽ { x_suffix_len = വലുപ്പം "XXXXXX" - 1 };
 
 /* A size for smallish buffers containing file names.  Longer file
    names can use malloc.  */
 
-enum { smallsize = 256 };
+എണ്ണൽ { smallsize = 256 };
 
 /* Return a template for a file in the same directory as DSTNAME.
    Use BUF if the template fits, otherwise use malloc and return NULL
    (setting errno) if unsuccessful.  */
 
-static char *
-samedir_template (char const *dstname, char buf[smallsize])
+സ്ഥിതം അക്ഷരം *
+samedir_template (അക്ഷരം സ്ഥിരം *dstname, അക്ഷരം buf[smallsize])
 {
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
-  size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
-  char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  size_t dsttmpsize = dstdirlen + വലുപ്പം simple_pattern;
+  അക്ഷരം *dsttmp;
+  എങ്കിൽ (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  അല്ലെങ്കിൽ
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      എങ്കിൽ (!dsttmp)
+        തിരികെ dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  തിരികെ dsttmp;
 }
 
 
 /* Auxiliaries for force_linkat.  */
 
-struct link_arg
+ഘടന link_arg
 {
-  int srcdir;
-  char const *srcname;
-  int dstdir;
-  int flags;
+  പൂർണ്ണസംഖ്യ srcdir;
+  അക്ഷരം സ്ഥിരം *srcname;
+  പൂർണ്ണസംഖ്യ dstdir;
+  പൂർണ്ണസംഖ്യ flags;
 };
 
-static int
-try_link (char *dest, void *arg)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+try_link (അക്ഷരം *dest, ശൂന്യം *arg)
 {
-  struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  ഘടന link_arg *a = arg;
+  തിരികെ linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+ബാഹ്യ പൂർണ്ണസംഖ്യ
+force_linkat (പൂർണ്ണസംഖ്യ srcdir, അക്ഷരം സ്ഥിരം *srcname,
+              പൂർണ്ണസംഖ്യ dstdir, അക്ഷരം സ്ഥിരം *dstname, പൂർണ്ണസംഖ്യ flags, bool force,
+              പൂർണ്ണസംഖ്യ linkat_errno)
 {
-  if (linkat_errno < 0)
+  എങ്കിൽ (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  എങ്കിൽ (!force || linkat_errno != EEXIST)
+    തിരികെ linkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
-  struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  അക്ഷരം buf[smallsize];
+  അക്ഷരം *dsttmp = samedir_template (dstname, buf);
+  എങ്കിൽ (! dsttmp)
+    തിരികെ errno;
+  ഘടന link_arg arg = { srcdir, srcname, dstdir, flags };
+  പൂർണ്ണസംഖ്യ err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  എങ്കിൽ (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  അല്ലെങ്കിൽ
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,25 +120,25 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  എങ്കിൽ (dsttmp != buf)
+    സ്വതന്ത്രം (dsttmp);
+  തിരികെ err;
 }
 
 
 /* Auxiliaries for force_symlinkat.  */
 
-struct symlink_arg
+ഘടന symlink_arg
 {
-  char const *srcname;
-  int dstdir;
+  അക്ഷരം സ്ഥിരം *srcname;
+  പൂർണ്ണസംഖ്യ dstdir;
 };
 
-static int
-try_symlink (char *dest, void *arg)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+try_symlink (അക്ഷരം *dest, ശൂന്യം *arg)
 {
-  struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  ഘടന symlink_arg *a = arg;
+  തിരികെ symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+ബാഹ്യ പൂർണ്ണസംഖ്യ
+force_symlinkat (അക്ഷരം സ്ഥിരം *srcname, പൂർണ്ണസംഖ്യ dstdir, അക്ഷരം സ്ഥിരം *dstname,
+                 bool force, പൂർണ്ണസംഖ്യ symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  എങ്കിൽ (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  എങ്കിൽ (!force || symlinkat_errno != EEXIST)
+    തിരികെ symlinkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
-  struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  അക്ഷരം buf[smallsize];
+  അക്ഷരം *dsttmp = samedir_template (dstname, buf);
+  എങ്കിൽ (!dsttmp)
+    തിരികെ errno;
+  ഘടന symlink_arg arg = { srcname, dstdir };
+  പൂർണ്ണസംഖ്യ err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  എങ്കിൽ (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  അല്ലെങ്കിൽ എങ്കിൽ (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  എങ്കിൽ (dsttmp != buf)
+    സ്വതന്ത്രം (dsttmp);
+  തിരികെ err;
 }

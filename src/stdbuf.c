@@ -16,19 +16,19 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "xreadlink.h"
-#include "xstrtol-error.h"
-#include "xstrtol.h"
-#include "c-ctype.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "filenamecat.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "xreadlink.h"
+#അന്തര്ഭാവ "xstrtol-error.h"
+#അന്തര്ഭാവ "xstrtol.h"
+#അന്തര്ഭാവ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "stdbuf"
@@ -36,23 +36,23 @@
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static char *program_path;
+സ്ഥിതം അക്ഷരം *program_path;
 
-static struct
+സ്ഥിതം ഘടന
 {
   size_t size;
-  int optc;
-  char *optarg;
+  പൂർണ്ണസംഖ്യ optc;
+  അക്ഷരം *optarg;
 } stdbuf[3];
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"input", required_argument, NULL, 'i'},
-  {"output", required_argument, NULL, 'o'},
-  {"error", required_argument, NULL, 'e'},
+  {"input", required_argument, ശൂന്യ, 'i'},
+  {"output", required_argument, ശൂന്യ, 'o'},
+  {"error", required_argument, ശൂന്യ, 'e'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* Set size to the value of STR, interpreted as a decimal integer,
@@ -62,33 +62,33 @@ static struct option const longopts[] =
 
    This supports dd BLOCK size suffixes.
    Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
-static enum strtol_error
-parse_size (char const *str, size_t *size)
+സ്ഥിതം എണ്ണൽ strtol_error
+parse_size (അക്ഷരം സ്ഥിരം *str, size_t *size)
 {
   uintmax_t tmp_size;
-  enum strtol_error e = xstrtoumax (str, NULL, 10,
+  എണ്ണൽ strtol_error e = xstrtoumax (str, ശൂന്യ, 10,
                                     &tmp_size, "EGkKMPQRTYZ0");
-  if (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
+  എങ്കിൽ (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
     e = LONGINT_OVERFLOW;
-  return e;
+  തിരികെ e;
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s OPTION... COMMAND\n"), program_name);
       fputs (_("\
-Run COMMAND, with modified buffering operations for its standard streams.\n\
+Run COMMAND, with modified buffering operations വേണ്ടി its standard streams.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -i, --input=MODE   adjust standard input stream buffering\n\
+  -i, --നിവേശം=MODE   adjust standard നിവേശം stream buffering\n\
 "));
       oputs (_("\
   -o, --output=MODE  adjust standard output stream buffering\n\
@@ -99,22 +99,22 @@ Run COMMAND, with modified buffering operations for its standard streams.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-If MODE is 'L' the corresponding stream will be line buffered.\n\
-This option is invalid with standard input.\n"), stdout);
+If MODE is 'L' the corresponding stream will be വരി buffered.\n\
+This option is invalid with standard നിവേശം.\n"), stdout);
       fputs (_("\n\
 If MODE is '0' the corresponding stream will be unbuffered.\n\
 "), stdout);
       fputs (_("\n\
-Otherwise MODE is a number which may be followed by one of the following:\n\
-KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-In this case the corresponding stream will be fully buffered with the buffer\n\
+Otherwise MODE is a സംഖ്യ which may be followed by one of the following:\n\
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on വേണ്ടി G,T,P,E,Z,Y,R,Q.\n\
+ദ്വിമാന_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+In this അവസ്ഥ the corresponding stream will be fully buffered with the buffer\n\
 size set to MODE bytes.\n\
 "), stdout);
       fputs (_("\n\
 NOTE: If COMMAND adjusts the buffering of its standard streams ('tee' does\n\
-for example) then that will override corresponding changes by 'stdbuf'.\n\
-Also some filters (like 'dd' and 'cat' etc.) don't use streams for I/O,\n\
+വേണ്ടി example) then that will override corresponding changes by 'stdbuf'.\n\
+Also some filters (like 'dd' and 'cat' etc.) don't use streams വേണ്ടി I/O,\n\
 and are thus unaffected by 'stdbuf' settings.\n\
 "), stdout);
       emit_exec_status (PROGRAM_NAME);
@@ -129,75 +129,75 @@ and are thus unaffected by 'stdbuf' settings.\n\
    search getenv("PATH"), readlink("/prof/self/exe"), getenv("_"),
    dladdr(), pstat_getpathname(), etc.  */
 
-static void
-set_program_path (char const *arg)
+സ്ഥിതം ശൂന്യം
+set_program_path (അക്ഷരം സ്ഥിരം *arg)
 {
-  if (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
+  എങ്കിൽ (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
     {
       program_path = dir_name (arg);
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      char *path = xreadlink ("/proc/self/exe");
-      if (path)
+      അക്ഷരം *path = xreadlink ("/proc/self/exe");
+      എങ്കിൽ (path)
         program_path = dir_name (path);
-      else if ((path = getenv ("PATH")))
+      അല്ലെങ്കിൽ എങ്കിൽ ((path = getenv ("PATH")))
         {
           path = xstrdup (path);
-          for (char *dir = strtok (path, ":"); dir != NULL;
-               dir = strtok (NULL, ":"))
+          വേണ്ടി (അക്ഷരം *dir = strtok (path, ":"); dir != ശൂന്യ;
+               dir = strtok (ശൂന്യ, ":"))
             {
-              char *candidate = file_name_concat (dir, arg, NULL);
-              if (access (candidate, X_OK) == 0)
+              അക്ഷരം *candidate = file_name_concat (dir, arg, ശൂന്യ);
+              എങ്കിൽ (access (candidate, X_OK) == 0)
                 {
                   program_path = dir_name (candidate);
-                  free (candidate);
-                  break;
+                  സ്വതന്ത്രം (candidate);
+                  നിർത്തുക;
                 }
-              free (candidate);
+              സ്വതന്ത്രം (candidate);
             }
         }
-      free (path);
+      സ്വതന്ത്രം (path);
     }
 }
 
-static int
-optc_to_fileno (int c)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+optc_to_fileno (പൂർണ്ണസംഖ്യ c)
 {
-  int ret = -1;
+  പൂർണ്ണസംഖ്യ ret = -1;
 
-  switch (c)
+  തിരഞ്ഞെടുപ്പ് (c)
     {
-    case 'e':
+    അവസ്ഥ 'e':
       ret = STDERR_FILENO;
-      break;
-    case 'i':
+      നിർത്തുക;
+    അവസ്ഥ 'i':
       ret = STDIN_FILENO;
-      break;
-    case 'o':
+      നിർത്തുക;
+    അവസ്ഥ 'o':
       ret = STDOUT_FILENO;
-      break;
-    default:
+      നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:
       affirm (false);
     }
 
-  return ret;
+  തിരികെ ret;
 }
 
-static void
-set_LD_PRELOAD (void)
+സ്ഥിതം ശൂന്യം
+set_LD_PRELOAD (ശൂന്യം)
 {
-  int ret;
+  പൂർണ്ണസംഖ്യ ret;
 #ifdef __APPLE__
-  char const *preload_env = "DYLD_INSERT_LIBRARIES";
-#elif defined _AIX
-  char const *preload_env = (sizeof (void *) < 8
+  അക്ഷരം സ്ഥിരം *preload_env = "DYLD_INSERT_LIBRARIES";
+#അല്ലെങ്കിലെങ്കിൽ defined _AIX
+  അക്ഷരം സ്ഥിരം *preload_env = (വലുപ്പം (ശൂന്യം *) < 8
                              ? "LDR_PRELOAD" : "LDR_PRELOAD64");
-#else
-  char const *preload_env = "LD_PRELOAD";
+#അല്ലെങ്കിൽ
+  അക്ഷരം സ്ഥിരം *preload_env = "LD_PRELOAD";
 #endif
-  char *old_libs = getenv (preload_env);
-  char *LD_PRELOAD;
+  അക്ഷരം *old_libs = getenv (preload_env);
+  അക്ഷരം *LD_PRELOAD;
 
   /* Note this would auto add the appropriate search path for "libstdbuf.so":
      gcc stdbuf.c -Wl,-rpath,'$ORIGIN' -Wl,-rpath,$PKGLIBEXECDIR
@@ -215,55 +215,55 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
+  അക്ഷരം സ്ഥിരം *സ്ഥിരം തിരയൽ_path[] = {
     program_path,
     PKGLIBEXECDIR,
-    NULL
+    ശൂന്യ
   };
 
-  char const *const *path = search_path;
-  char *libstdbuf;
+  അക്ഷരം സ്ഥിരം *സ്ഥിരം *path = തിരയൽ_path;
+  അക്ഷരം *libstdbuf;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      struct stat sb;
+      ഘടന stat sb;
 
-      if (!**path)              /* system default  */
+      എങ്കിൽ (!**path)              /* system default  */
         {
           libstdbuf = xstrdup (LIB_NAME);
-          break;
+          നിർത്തുക;
         }
       ret = asprintf (&libstdbuf, "%s/%s", *path, LIB_NAME);
-      if (ret < 0)
+      എങ്കിൽ (ret < 0)
         xalloc_die ();
-      if (stat (libstdbuf, &sb) == 0)   /* file_exists  */
-        break;
-      free (libstdbuf);
+      എങ്കിൽ (stat (libstdbuf, &sb) == 0)   /* file_exists  */
+        നിർത്തുക;
+      സ്വതന്ത്രം (libstdbuf);
 
       ++path;
-      if ( ! *path)
+      എങ്കിൽ ( ! *path)
         error (EXIT_CANCELED, 0, _("failed to find %s"), quote (LIB_NAME));
     }
 
   /* FIXME: Do we need to support libstdbuf.dll, c:, '\' separators etc?  */
 
-  if (old_libs)
+  എങ്കിൽ (old_libs)
     ret = asprintf (&LD_PRELOAD, "%s=%s:%s", preload_env, old_libs, libstdbuf);
-  else
+  അല്ലെങ്കിൽ
     ret = asprintf (&LD_PRELOAD, "%s=%s", preload_env, libstdbuf);
 
-  if (ret < 0)
+  എങ്കിൽ (ret < 0)
     xalloc_die ();
 
-  free (libstdbuf);
+  സ്വതന്ത്രം (libstdbuf);
 
   ret = putenv (LD_PRELOAD);
 #ifdef __APPLE__
-  if (ret == 0)
+  എങ്കിൽ (ret == 0)
     ret = setenv ("DYLD_FORCE_FLAT_NAMESPACE", "y", 1);
 #endif
 
-  if (ret != 0)
+  എങ്കിൽ (ret != 0)
     error (EXIT_CANCELED, errno,
            _("failed to update the environment with %s"),
            quote (LD_PRELOAD));
@@ -272,29 +272,29 @@ set_LD_PRELOAD (void)
 /* Populate environ with _STDBUF_I=$MODE _STDBUF_O=$MODE _STDBUF_E=$MODE.
    Return TRUE if any environment variables set.   */
 
-static bool
-set_libstdbuf_options (void)
+സ്ഥിതം bool
+set_libstdbuf_options (ശൂന്യം)
 {
   bool env_set = false;
 
-  for (size_t i = 0; i < countof (stdbuf); i++)
+  വേണ്ടി (size_t i = 0; i < countof (stdbuf); i++)
     {
-      if (stdbuf[i].optarg)
+      എങ്കിൽ (stdbuf[i].optarg)
         {
-          char *var;
-          int ret;
+          അക്ഷരം *var;
+          പൂർണ്ണസംഖ്യ ret;
 
-          if (*stdbuf[i].optarg == 'L')
+          എങ്കിൽ (*stdbuf[i].optarg == 'L')
             ret = asprintf (&var, "%s%c=L", "_STDBUF_",
                             c_toupper (stdbuf[i].optc));
-          else
+          അല്ലെങ്കിൽ
             ret = asprintf (&var, "%s%c=%zu", "_STDBUF_",
                             c_toupper (stdbuf[i].optc),
                             stdbuf[i].size);
-          if (ret < 0)
+          എങ്കിൽ (ret < 0)
             xalloc_die ();
 
-          if (putenv (var) != 0)
+          എങ്കിൽ (putenv (var) != 0)
             error (EXIT_CANCELED, errno,
                    _("failed to update the environment with %s"),
                    quote (var));
@@ -303,13 +303,13 @@ set_libstdbuf_options (void)
         }
     }
 
-  return env_set;
+  തിരികെ env_set;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int c;
+  പൂർണ്ണസംഖ്യ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -320,24 +320,24 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((c = getopt_long (argc, argv, "+i:o:e:", longopts, ശൂന്യ)) != -1)
     {
-      int const oi = -1;
-      int opt_fileno;
+      പൂർണ്ണസംഖ്യ സ്ഥിരം oi = -1;
+      പൂർണ്ണസംഖ്യ opt_fileno;
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
         /* Old McDonald had a farm ei...  */
-        case 'e':
-        case 'i':
-        case 'o':
+        അവസ്ഥ 'e':
+        അവസ്ഥ 'i':
+        അവസ്ഥ 'o':
           opt_fileno = optc_to_fileno (c);
           affirm (0 <= opt_fileno && opt_fileno < countof (stdbuf));
           stdbuf[opt_fileno].optc = c;
-          while (c_isspace (*optarg))
+          ആകുമ്പോൾ (c_isspace (*optarg))
             optarg++;
           stdbuf[opt_fileno].optarg = optarg;
-          if (c == 'i' && *optarg == 'L')
+          എങ്കിൽ (c == 'i' && *optarg == 'L')
             {
               /* -oL will be by far the most common use of this utility,
                  but one could easily think -iL might have the same affect,
@@ -346,21 +346,21 @@ main (int argc, char **argv)
               usage (EXIT_CANCELED);
             }
 
-          if (!streq (optarg, "L"))
+          എങ്കിൽ (!streq (optarg, "L"))
             {
-              enum strtol_error e = parse_size (optarg,
+              എണ്ണൽ strtol_error e = parse_size (optarg,
                                                 &stdbuf[opt_fileno].size);
-              if (e != LONGINT_OK)
+              എങ്കിൽ (e != LONGINT_OK)
                 xstrtol_fatal (e, oi, c, longopts, optarg);
             }
 
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_CANCELED);
         }
     }
@@ -369,13 +369,13 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify at least 1 command.  */
-  if (argc < 1)
+  എങ്കിൽ (argc < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  if (! set_libstdbuf_options ())
+  എങ്കിൽ (! set_libstdbuf_options ())
     {
       error (0, 0, _("you must specify a buffering mode option"));
       usage (EXIT_CANCELED);
@@ -384,14 +384,14 @@ main (int argc, char **argv)
   /* Try to preload libstdbuf first from the same path as
      stdbuf is running from.  */
   set_program_path (program_name);
-  if (!program_path)
+  എങ്കിൽ (!program_path)
     program_path = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
   set_LD_PRELOAD ();
-  free (program_path);
+  സ്വതന്ത്രം (program_path);
 
   execvp (*argv, argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  പൂർണ്ണസംഖ്യ exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  തിരികെ exit_status;
 }

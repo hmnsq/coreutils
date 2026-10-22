@@ -16,19 +16,19 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#include <config.h>
-#include <selinux/label.h>
-#include <selinux/context.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <selinux/label.h>
+#അന്തര്ഭാവ <selinux/context.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "canonicalize.h"
-#include "xfts.h"
-#include "selinux.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "canonicalize.h"
+#അന്തര്ഭാവ "xfts.h"
+#അന്തര്ഭാവ "selinux.h"
 
-#if HAVE_SELINUX_LABEL_H
+#എങ്കിൽ HAVE_SELINUX_LABEL_H
 
-# if ! HAVE_MODE_TO_SECURITY_CLASS
+# എങ്കിൽ ! HAVE_MODE_TO_SECURITY_CLASS
 /*
   This function has been added to libselinux-2.1.12-5, but is here
   for support with older versions of SELinux
@@ -36,27 +36,27 @@
   Translates a mode into an Internal SELinux security_class definition.
   Returns 0 on failure, with errno set to EINVAL.
 */
-static security_class_t
+സ്ഥിതം security_class_t
 mode_to_security_class (mode_t m)
 {
 
-  if (S_ISREG (m))
-    return string_to_security_class ("file");
-  if (S_ISDIR (m))
-    return string_to_security_class ("dir");
-  if (S_ISCHR (m))
-    return string_to_security_class ("chr_file");
-  if (S_ISBLK (m))
-    return string_to_security_class ("blk_file");
-  if (S_ISFIFO (m))
-    return string_to_security_class ("fifo_file");
-  if (S_ISLNK (m))
-    return string_to_security_class ("lnk_file");
-  if (S_ISSOCK (m))
-    return string_to_security_class ("sock_file");
+  എങ്കിൽ (S_ISREG (m))
+    തിരികെ string_to_security_class ("file");
+  എങ്കിൽ (S_ISDIR (m))
+    തിരികെ string_to_security_class ("dir");
+  എങ്കിൽ (S_ISCHR (m))
+    തിരികെ string_to_security_class ("chr_file");
+  എങ്കിൽ (S_ISBLK (m))
+    തിരികെ string_to_security_class ("blk_file");
+  എങ്കിൽ (S_ISFIFO (m))
+    തിരികെ string_to_security_class ("fifo_file");
+  എങ്കിൽ (S_ISLNK (m))
+    തിരികെ string_to_security_class ("lnk_file");
+  എങ്കിൽ (S_ISSOCK (m))
+    തിരികെ string_to_security_class ("sock_file");
 
   errno = EINVAL;
-  return 0;
+  തിരികെ 0;
 }
 # endif
 
@@ -68,33 +68,33 @@ mode_to_security_class (mode_t m)
   Returns -1 on failure.  errno will be set appropriately.
 */
 
-static int
-computecon_raw (char const *path, mode_t mode, char **con)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+computecon_raw (അക്ഷരം സ്ഥിരം *path, mode_t mode, അക്ഷരം **con)
 {
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
+  അക്ഷരം *scon_raw = ശൂന്യ;
+  അക്ഷരം *tcon_raw = ശൂന്യ;
   security_class_t tclass;
-  int rc = -1;
+  പൂർണ്ണസംഖ്യ rc = -1;
 
-  char *dir = dir_name (path);
-  if (!dir)
-    goto quit;
-  if (getcon_raw (&scon_raw) < 0)
-    goto quit;
-  if (getfilecon_raw (dir, &tcon_raw) < 0)
-    goto quit;
+  അക്ഷരം *dir = dir_name (path);
+  എങ്കിൽ (!dir)
+    പോകുക quit;
+  എങ്കിൽ (getcon_raw (&scon_raw) < 0)
+    പോകുക quit;
+  എങ്കിൽ (getfilecon_raw (dir, &tcon_raw) < 0)
+    പോകുക quit;
   tclass = mode_to_security_class (mode);
-  if (!tclass)
-    goto quit;
+  എങ്കിൽ (!tclass)
+    പോകുക quit;
   rc = security_compute_create_raw (scon_raw, tcon_raw, tclass, con);
 
  quit:;
-  int err = errno;
-  free (dir);
+  പൂർണ്ണസംഖ്യ err = errno;
+  സ്വതന്ത്രം (dir);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -106,63 +106,63 @@ computecon_raw (char const *path, mode_t mode, char **con)
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode)
+പൂർണ്ണസംഖ്യ
+defaultcon (ഘടന selabel_handle *selabel_handle,
+            അക്ഷരം സ്ഥിരം *path, mode_t mode)
 {
-  int rc = -1;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  char *newpath = NULL;
+  പൂർണ്ണസംഖ്യ rc = -1;
+  അക്ഷരം *scon_raw = ശൂന്യ;
+  അക്ഷരം *tcon_raw = ശൂന്യ;
+  context_t scontext = ശൂന്യ, tcontext = ശൂന്യ;
+  അക്ഷരം സ്ഥിരം *contype;
+  അക്ഷരം സ്ഥിരം *constr;
+  അക്ഷരം *newpath = ശൂന്യ;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  എങ്കിൽ (! IS_ABSOLUTE_FILE_NAME (path))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.  */
       newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        goto quit;
+      എങ്കിൽ (! newpath)
+        പോകുക quit;
       path = newpath;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
+  എങ്കിൽ (selabel_lookup_raw (selabel_handle, &scon_raw, path, mode) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup().  */
-      if (errno == ENOENT)
+      എങ്കിൽ (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      പോകുക quit;
     }
-  if (computecon_raw (path, mode, &tcon_raw) < 0)
-    goto quit;
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  എങ്കിൽ (computecon_raw (path, mode, &tcon_raw) < 0)
+    പോകുക quit;
+  എങ്കിൽ (!(scontext = context_new (scon_raw)))
+    പോകുക quit;
+  എങ്കിൽ (!(tcontext = context_new (tcon_raw)))
+    പോകുക quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  എങ്കിൽ (!(contype = context_type_get (scontext)))
+    പോകുക quit;
+  എങ്കിൽ (context_type_set (tcontext, contype))
+    പോകുക quit;
+  എങ്കിൽ (!(constr = context_str (tcontext)))
+    പോകുക quit;
 
   rc = setfscreatecon_raw (constr);
 
  quit:;
-  int err = errno;
+  പൂർണ്ണസംഖ്യ err = errno;
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
-  free (newpath);
+  സ്വതന്ത്രം (newpath);
   errno = err;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -174,99 +174,99 @@ defaultcon (struct selabel_handle *selabel_handle,
 
   Returns -1 on failure.  errno will be set appropriately.
 */
-static int
-restorecon_private (struct selabel_handle *selabel_handle, char const *path)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+restorecon_private (ഘടന selabel_handle *selabel_handle, അക്ഷരം സ്ഥിരം *path)
 {
-  int rc = -1;
-  struct stat sb;
-  char *scon_raw = NULL;
-  char *tcon_raw = NULL;
-  context_t scontext = NULL, tcontext = NULL;
-  char const *contype;
-  char const *constr;
-  int fd;
+  പൂർണ്ണസംഖ്യ rc = -1;
+  ഘടന stat sb;
+  അക്ഷരം *scon_raw = ശൂന്യ;
+  അക്ഷരം *tcon_raw = ശൂന്യ;
+  context_t scontext = ശൂന്യ, tcontext = ശൂന്യ;
+  അക്ഷരം സ്ഥിരം *contype;
+  അക്ഷരം സ്ഥിരം *constr;
+  പൂർണ്ണസംഖ്യ fd;
 
-  if (!selabel_handle)
+  എങ്കിൽ (!selabel_handle)
     {
-      if (getfscreatecon_raw (&tcon_raw) < 0)
-        return rc;
-      if (!tcon_raw)
+      എങ്കിൽ (getfscreatecon_raw (&tcon_raw) < 0)
+        തിരികെ rc;
+      എങ്കിൽ (!tcon_raw)
         {
           errno = ENODATA;
-          return rc;
+          തിരികെ rc;
         }
       rc = lsetfilecon_raw (path, tcon_raw);
-      int err = errno;
+      പൂർണ്ണസംഖ്യ err = errno;
       freecon (tcon_raw);
       errno = err;
-      return rc;
+      തിരികെ rc;
     }
 
   fd = open (path, O_RDONLY | O_NOFOLLOW);
-  if (fd == -1 && (errno != ELOOP))
-    goto quit;
+  എങ്കിൽ (fd == -1 && (errno != ELOOP))
+    പോകുക quit;
 
-  if (fd != -1)
+  എങ്കിൽ (fd != -1)
     {
-      if (fstat (fd, &sb) < 0)
-        goto quit;
+      എങ്കിൽ (fstat (fd, &sb) < 0)
+        പോകുക quit;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (lstat (path, &sb) < 0)
-        goto quit;
+      എങ്കിൽ (lstat (path, &sb) < 0)
+        പോകുക quit;
     }
 
-  if (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
+  എങ്കിൽ (selabel_lookup_raw (selabel_handle, &scon_raw, path, sb.st_mode) < 0)
     {
       /* "No such file or directory" is a confusing error,
          when processing files, when in fact it was the
          associated default context that was not found.
          Therefore map the error to something more appropriate
          to the context in which we're using selabel_lookup.  */
-      if (errno == ENOENT)
+      എങ്കിൽ (errno == ENOENT)
         errno = ENODATA;
-      goto quit;
+      പോകുക quit;
     }
-  if (!(scontext = context_new (scon_raw)))
-    goto quit;
+  എങ്കിൽ (!(scontext = context_new (scon_raw)))
+    പോകുക quit;
 
-  if (fd != -1)
+  എങ്കിൽ (fd != -1)
     {
-      if (fgetfilecon_raw (fd, &tcon_raw) < 0)
-        goto quit;
+      എങ്കിൽ (fgetfilecon_raw (fd, &tcon_raw) < 0)
+        പോകുക quit;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (lgetfilecon_raw (path, &tcon_raw) < 0)
-        goto quit;
+      എങ്കിൽ (lgetfilecon_raw (path, &tcon_raw) < 0)
+        പോകുക quit;
     }
 
-  if (!(tcontext = context_new (tcon_raw)))
-    goto quit;
+  എങ്കിൽ (!(tcontext = context_new (tcon_raw)))
+    പോകുക quit;
 
-  if (!(contype = context_type_get (scontext)))
-    goto quit;
-  if (context_type_set (tcontext, contype))
-    goto quit;
-  if (!(constr = context_str (tcontext)))
-    goto quit;
+  എങ്കിൽ (!(contype = context_type_get (scontext)))
+    പോകുക quit;
+  എങ്കിൽ (context_type_set (tcontext, contype))
+    പോകുക quit;
+  എങ്കിൽ (!(constr = context_str (tcontext)))
+    പോകുക quit;
 
-  if (fd != -1)
+  എങ്കിൽ (fd != -1)
     rc = fsetfilecon_raw (fd, constr);
-  else
+  അല്ലെങ്കിൽ
     rc = lsetfilecon_raw (path, constr);
 
  quit:;
-  int err = errno;
-  if (fd != -1)
+  പൂർണ്ണസംഖ്യ err = errno;
+  എങ്കിൽ (fd != -1)
     close (fd);
   context_free (scontext);
   context_free (tcontext);
   freecon (scon_raw);
   freecon (tcon_raw);
   errno = err;
-  return rc;
+  തിരികെ rc;
 }
 
 /*
@@ -282,46 +282,46 @@ restorecon_private (struct selabel_handle *selabel_handle, char const *path)
   Return false on failure.  errno will be set appropriately.
 */
 bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse)
+restorecon (ഘടന selabel_handle *selabel_handle,
+            അക്ഷരം സ്ഥിരം *path, bool recurse)
 {
-  char *newpath = NULL;
+  അക്ഷരം *newpath = ശൂന്യ;
 
-  if (! IS_ABSOLUTE_FILE_NAME (path))
+  എങ്കിൽ (! IS_ABSOLUTE_FILE_NAME (path))
     {
       /* Generate absolute name as required by subsequent selabel_lookup.
          When RECURSE, this also generates absolute names in the
          fts entries, which may be quicker to process in any case.  */
       newpath = canonicalize_filename_mode (path, CAN_MISSING);
-      if (! newpath)
-        return false;
+      എങ്കിൽ (! newpath)
+        തിരികെ false;
       path = newpath;
     }
 
-  if (! recurse)
+  എങ്കിൽ (! recurse)
     {
       bool ok = restorecon_private (selabel_handle, path) != -1;
-      int err = errno;
-      free (newpath);
+      പൂർണ്ണസംഖ്യ err = errno;
+      സ്വതന്ത്രം (newpath);
       errno = err;
-      return ok;
+      തിരികെ ok;
     }
 
-  char const *ftspath[2] = { path, NULL };
-  FTS *fts = xfts_open ((char *const *) ftspath, FTS_PHYSICAL, NULL);
+  അക്ഷരം സ്ഥിരം *ftspath[2] = { path, ശൂന്യ };
+  FTS *fts = xfts_open ((അക്ഷരം *സ്ഥിരം *) ftspath, FTS_PHYSICAL, ശൂന്യ);
 
-  int err = 0;
-  for (FTSENT *ent; (ent = fts_read (fts)); )
-    if (restorecon_private (selabel_handle, fts->fts_path) < 0)
+  പൂർണ്ണസംഖ്യ err = 0;
+  വേണ്ടി (FTSENT *ent; (ent = fts_read (fts)); )
+    എങ്കിൽ (restorecon_private (selabel_handle, fts->fts_path) < 0)
       err = errno;
 
-  if (errno != 0)
+  എങ്കിൽ (errno != 0)
     err = errno;
 
-  if (fts_close (fts) != 0)
+  എങ്കിൽ (fts_close (fts) != 0)
     err = errno;
 
-  free (newpath);
-  return !err;
+  സ്വതന്ത്രം (newpath);
+  തിരികെ !err;
 }
 #endif

@@ -17,20 +17,20 @@
 
    François Pinard <pinard@iro.umontreal.ca> */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include <regex.h>
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ <regex.h>
+#അന്തര്ഭാവ "argmatch.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "octhexdigits.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "read-file.h"
+#അന്തര്ഭാവ "stdio--.h"
+#അന്തര്ഭാവ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "ptx"
@@ -45,7 +45,7 @@
 
 /* Debugging the memory allocator.  */
 
-#if WITH_DMALLOC
+#എങ്കിൽ WITH_DMALLOC
 # define MALLOC_FUNC_CHECK 1
 # include <dmalloc.h>
 #endif
@@ -59,7 +59,7 @@
 
 /* Program options.  */
 
-enum Format
+എണ്ണൽ Format
 {
   UNKNOWN_FORMAT,		/* output format still unknown */
   DUMB_FORMAT,			/* output for a dumb terminal */
@@ -67,56 +67,56 @@ enum Format
   TEX_FORMAT			/* output for 'TeX' or 'LaTeX' */
 };
 
-static bool gnu_extensions = true;	/* trigger all GNU extensions */
-static bool auto_reference = false;	/* refs are 'file_name:line_number:' */
-static bool input_reference = false;	/* refs at beginning of input lines */
-static bool right_reference = false;	/* output refs after right context  */
-static idx_t line_width = -1;		/* output line width in characters */
-static idx_t gap_size = 3;	/* number of spaces between output fields */
-static char const *truncation_string = "/";
+സ്ഥിതം bool gnu_extensions = true;	/* trigger all GNU extensions */
+സ്ഥിതം bool auto_reference = false;	/* refs are 'file_name:line_number:' */
+സ്ഥിതം bool നിവേശം_reference = false;	/* refs at beginning of input lines */
+സ്ഥിതം bool വലത്_reference = false;	/* output refs after right context  */
+സ്ഥിതം idx_t വരി_width = -1;		/* output line width in characters */
+സ്ഥിതം idx_t gap_size = 3;	/* number of spaces between output fields */
+സ്ഥിതം അക്ഷരം സ്ഥിരം *truncation_string = "/";
                                 /* string used to mark line truncations */
-static char const *macro_name = "xx";	/* macro name for roff or TeX output */
-static enum Format output_format = UNKNOWN_FORMAT;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *macro_name = "xx";	/* macro name for roff or TeX output */
+സ്ഥിതം എണ്ണൽ Format output_format = UNKNOWN_FORMAT;
                                 /* output format */
 
-static bool ignore_case = false;	/* fold lower to upper for sorting */
-static char const *break_file = NULL; /* name of the 'Break chars' file */
-static char const *only_file = NULL;	/* name of the 'Only words' file */
-static char const *ignore_file = NULL; /* name of the 'Ignore words' file */
+സ്ഥിതം bool ignore_case = false;	/* fold lower to upper for sorting */
+സ്ഥിതം അക്ഷരം സ്ഥിരം *break_file = ശൂന്യ; /* name of the 'Break chars' file */
+സ്ഥിതം അക്ഷരം സ്ഥിരം *only_file = ശൂന്യ;	/* name of the 'Only words' file */
+സ്ഥിതം അക്ഷരം സ്ഥിരം *ignore_file = ശൂന്യ; /* name of the 'Ignore words' file */
 
 /* Options that use regular expressions.  */
-struct regex_data
+ഘടന regex_data
 {
   /* The original regular expression, as a string.  */
-  char const *string;
+  അക്ഷരം സ്ഥിരം *string;
 
   /* The compiled regular expression, and its fastmap.  */
-  struct re_pattern_buffer pattern;
-  char fastmap[UCHAR_MAX + 1];
+  ഘടന re_pattern_buffer pattern;
+  അക്ഷരം fastmap[UCHAR_MAX + 1];
 };
 
-static struct regex_data context_regex;	/* end of context */
-static struct regex_data word_regex;	/* keyword */
+സ്ഥിതം ഘടന regex_data context_regex;	/* end of context */
+സ്ഥിതം ഘടന regex_data word_regex;	/* keyword */
 
 /* A BLOCK delimit a region in memory of arbitrary size, like the copy of a
    whole file.  A WORD is similar, except it is intended for smaller regions.
    A WORD_TABLE may contain several WORDs.  */
 
-typedef struct
+തരനിർവചനം ഘടന
   {
-    char *start;		/* pointer to beginning of region */
-    char *end;			/* pointer to end + 1 of region */
+    അക്ഷരം *start;		/* pointer to beginning of region */
+    അക്ഷരം *end;			/* pointer to end + 1 of region */
   }
 BLOCK;
 
-typedef struct
+തരനിർവചനം ഘടന
   {
-    char *start;		/* pointer to beginning of region */
+    അക്ഷരം *start;		/* pointer to beginning of region */
     idx_t size;			/* length of the region */
   }
 WORD;
 
-typedef struct
+തരനിർവചനം ഘടന
   {
     idx_t alloc;		/* allocated length */
     idx_t length;		/* number of used entries */
@@ -127,72 +127,72 @@ WORD_TABLE;
 /* Pattern description tables.  */
 
 /* For each character, provide its folded equivalent.  */
-static unsigned char folded_chars[CHAR_SET_SIZE];
+സ്ഥിതം unsigned അക്ഷരം folded_chars[CHAR_SET_SIZE];
 
 /* End of context pattern register indices.  */
-static struct re_registers context_regs;
+സ്ഥിതം ഘടന re_registers context_regs;
 
 /* Keyword pattern register indices.  */
-static struct re_registers word_regs;
+സ്ഥിതം ഘടന re_registers word_regs;
 
 /* A word characters fastmap is used only when no word regexp has been
    provided.  A word is then made up of a sequence of one or more characters
    allowed by the fastmap.  Contains !0 if character allowed in word.  Not
    only this is faster in most cases, but it simplifies the implementation
    of the Break files.  */
-static char word_fastmap[CHAR_SET_SIZE];
+സ്ഥിതം അക്ഷരം word_fastmap[CHAR_SET_SIZE];
 
 /* Maximum length of any word read.  */
-static idx_t maximum_word_length;
+സ്ഥിതം idx_t maximum_word_length;
 
 /* Maximum width of any reference used.  */
-static idx_t reference_max_width;
+സ്ഥിതം idx_t reference_max_width;
 
 /* Ignore and Only word tables.  */
 
-static WORD_TABLE ignore_table;	/* table of words to ignore */
-static WORD_TABLE only_table;		/* table of words to select */
+സ്ഥിതം WORD_TABLE ignore_table;	/* table of words to ignore */
+സ്ഥിതം WORD_TABLE only_table;		/* table of words to select */
 
 /* Source text table, and scanning macros.  */
 
-static int number_input_files;	/* number of text input files */
-static intmax_t total_line_count;	/* total number of lines seen so far */
-static char const **input_file_name;	/* array of text input file names */
-static intmax_t *file_line_count;	/* array of line count values at end */
+സ്ഥിതം പൂർണ്ണസംഖ്യ സംഖ്യ_നിവേശം_files;	/* number of text input files */
+സ്ഥിതം intmax_t total_വരി_എണ്ണം;	/* total number of lines seen so far */
+സ്ഥിതം അക്ഷരം സ്ഥിരം **നിവേശം_file_name;	/* array of text input file names */
+സ്ഥിതം intmax_t *file_വരി_എണ്ണം;	/* array of line count values at end */
 
-static BLOCK *text_buffers;	/* files to study */
+സ്ഥിതം BLOCK *text_buffers;	/* files to study */
 
 /* SKIP_NON_WHITE used only for getting or skipping the reference.  */
 
 #define SKIP_NON_WHITE(cursor, limit) \
-  while (cursor < limit && ! isspace (to_uchar (*cursor)))		\
+  ആകുമ്പോൾ (cursor < limit && ! isspace (to_uchar (*cursor)))		\
     cursor++
 
 #define SKIP_WHITE(cursor, limit) \
-  while (cursor < limit && isspace (to_uchar (*cursor)))		\
+  ആകുമ്പോൾ (cursor < limit && isspace (to_uchar (*cursor)))		\
     cursor++
 
 #define SKIP_WHITE_BACKWARDS(cursor, start) \
-  while (cursor > start && isspace (to_uchar (cursor[-1])))		\
+  ആകുമ്പോൾ (cursor > start && isspace (to_uchar (cursor[-1])))		\
     cursor--
 
 /* Always advance by at least one byte, lest a nullable word regexp
    such as 'a*' match the empty string and loop forever.  */
 
 #define SKIP_SOMETHING(cursor, limit) \
-  if (word_regex.string)						\
+  എങ്കിൽ (word_regex.string)						\
     {									\
-      regoff_t count;							\
-      count = re_match (&word_regex.pattern, cursor, limit - cursor,	\
-                        0, NULL);					\
-      if (count == -2)							\
+      regoff_t എണ്ണം;							\
+      എണ്ണം = re_match (&word_regex.pattern, cursor, limit - cursor,	\
+                        0, ശൂന്യ);					\
+      എങ്കിൽ (എണ്ണം == -2)							\
         matcher_error ();						\
-      cursor += count <= 0 ? 1 : count;					\
+      cursor += എണ്ണം <= 0 ? 1 : എണ്ണം;					\
     }									\
-  else if (word_fastmap[to_uchar (*cursor)])				\
-    while (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
+  അല്ലെങ്കിൽ എങ്കിൽ (word_fastmap[to_uchar (*cursor)])				\
+    ആകുമ്പോൾ (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
       cursor++;								\
-  else									\
+  അല്ലെങ്കിൽ									\
     cursor++
 
 /* Occurrences table.
@@ -222,42 +222,42 @@ static BLOCK *text_buffers;	/* files to study */
    start of the reference field, and it fits in ptrdiff_t and is usually
    negative.  */
 
-typedef struct
+തരനിർവചനം ഘടന
   {
-    WORD key;			/* description of the keyword */
-    ptrdiff_t left;		/* distance to left context start */
-    ptrdiff_t right;		/* distance to right context end */
+    WORD താക്കോൽ;			/* description of the keyword */
+    ptrdiff_t ഇടത്;		/* distance to left context start */
+    ptrdiff_t വലത്;		/* distance to right context end */
     intmax_t reference;		/* reference descriptor */
-    int file_index;		/* corresponding file  */
+    പൂർണ്ണസംഖ്യ file_index;		/* corresponding file  */
   }
 OCCURS;
 
 /* The various OCCURS tables are indexed by the language.  But the time
    being, there is no such multiple language support.  */
 
-static OCCURS *occurs_table[1];	/* all words retained from the read text */
-static idx_t occurs_alloc[1];	/* allocated size of occurs_table */
-static idx_t number_of_occurs[1]; /* number of used slots in occurs_table */
+സ്ഥിതം OCCURS *occurs_table[1];	/* all words retained from the read text */
+സ്ഥിതം idx_t occurs_alloc[1];	/* allocated size of occurs_table */
+സ്ഥിതം idx_t സംഖ്യ_of_occurs[1]; /* number of used slots in occurs_table */
 
 
 /* Communication among output routines.  */
 
 /* Indicate if special output processing is requested for each character.  */
-static char edited_flag[CHAR_SET_SIZE];
+സ്ഥിതം അക്ഷരം edited_flag[CHAR_SET_SIZE];
 
 /* Half of line width, reference excluded.  */
-static idx_t half_line_width;
+സ്ഥിതം idx_t half_വരി_width;
 
 /* Maximum width of before field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t before_max_width;
+സ്ഥിതം ptrdiff_t before_max_width;
 
 /* Maximum width of keyword-and-after field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t keyafter_max_width;
+സ്ഥിതം ptrdiff_t keyafter_max_width;
 
 /* Length of string that flags truncation.  */
-static idx_t truncation_string_length;
+സ്ഥിതം idx_t truncation_string_length;
 
 /* When context is limited by lines, wraparound may happen on final output:
    the 'head' pointer gives access to some supplementary left context which
@@ -265,123 +265,123 @@ static idx_t truncation_string_length;
    access to some supplementary right context which will be seen at the
    beginning of the output line. */
 
-static BLOCK tail;		/* tail field */
-static bool tail_truncation;	/* flag truncation after the tail field */
+സ്ഥിതം BLOCK tail;		/* tail field */
+സ്ഥിതം bool tail_truncation;	/* flag truncation after the tail field */
 
-static BLOCK before;		/* before field */
-static bool before_truncation;	/* flag truncation before the before field */
+സ്ഥിതം BLOCK before;		/* before field */
+സ്ഥിതം bool before_truncation;	/* flag truncation before the before field */
 
-static BLOCK keyafter;		/* keyword-and-after field */
-static bool keyafter_truncation; /* flag truncation after the keyafter field */
+സ്ഥിതം BLOCK keyafter;		/* keyword-and-after field */
+സ്ഥിതം bool keyafter_truncation; /* flag truncation after the keyafter field */
 
-static BLOCK head;		/* head field */
-static bool head_truncation;	/* flag truncation before the head field */
+സ്ഥിതം BLOCK head;		/* head field */
+സ്ഥിതം bool head_truncation;	/* flag truncation before the head field */
 
-static BLOCK reference;		/* reference field for input reference mode */
+സ്ഥിതം BLOCK reference;		/* reference field for input reference mode */
 
 /* Miscellaneous routines.  */
 
 /* Diagnose an error in the regular expression matcher.  Then exit.  */
 
-static _Noreturn void
-matcher_error (void)
+സ്ഥിതം _Noreturn ശൂന്യം
+matcher_error (ശൂന്യം)
 {
   error (EXIT_FAILURE, errno, _("error in regular expression matcher"));
 }
 
 /* Unescape STRING in-place.  */
 
-static void
-unescape_string (char *string)
+സ്ഥിതം ശൂന്യം
+unescape_string (അക്ഷരം *string)
 {
-  char *cursor;			/* cursor in result */
-  int value;			/* value of \nnn escape */
-  int length;			/* length of \nnn escape */
+  അക്ഷരം *cursor;			/* cursor in result */
+  പൂർണ്ണസംഖ്യ മൂല്യം;			/* value of \nnn escape */
+  പൂർണ്ണസംഖ്യ length;			/* length of \nnn escape */
 
   cursor = string;
 
-  while (*string)
+  ആകുമ്പോൾ (*string)
     {
-      if (*string == '\\')
+      എങ്കിൽ (*string == '\\')
         {
           string++;
-          switch (*string)
+          തിരഞ്ഞെടുപ്പ് (*string)
             {
-            case 'x':		/* \xhhh escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
+            അവസ്ഥ 'x':		/* \xhhh escape, 3 chars maximum */
+              മൂല്യം = 0;
+              വേണ്ടി (length = 0, string++;
                    length < 3 && c_isxdigit (*string);
                    length++, string++)
-                value = value * 16 + fromhex (*string);
-              if (length == 0)
+                മൂല്യം = മൂല്യം * 16 + fromhex (*string);
+              എങ്കിൽ (length == 0)
                 {
                   *cursor++ = '\\';
                   *cursor++ = 'x';
                 }
-              else
-                *cursor++ = value;
-              break;
+              അല്ലെങ്കിൽ
+                *cursor++ = മൂല്യം;
+              നിർത്തുക;
 
-            case '0':		/* \0ooo escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
+            അവസ്ഥ '0':		/* \0ooo escape, 3 chars maximum */
+              മൂല്യം = 0;
+              വേണ്ടി (length = 0, string++;
                    length < 3 && isoct (*string);
                    length++, string++)
-                value = value * 8 + fromoct (*string);
-              *cursor++ = value;
-              break;
+                മൂല്യം = മൂല്യം * 8 + fromoct (*string);
+              *cursor++ = മൂല്യം;
+              നിർത്തുക;
 
-            case 'a':		/* alert */
+            അവസ്ഥ 'a':		/* alert */
               *cursor++ = '\a';
               string++;
-              break;
+              നിർത്തുക;
 
-            case 'b':		/* backspace */
+            അവസ്ഥ 'b':		/* backspace */
               *cursor++ = '\b';
               string++;
-              break;
+              നിർത്തുക;
 
-            case 'c':		/* cancel the rest of the output */
-              while (*string)
+            അവസ്ഥ 'c':		/* cancel the rest of the output */
+              ആകുമ്പോൾ (*string)
                 string++;
-              break;
+              നിർത്തുക;
 
-            case 'f':		/* form feed */
+            അവസ്ഥ 'f':		/* form feed */
               *cursor++ = '\f';
               string++;
-              break;
+              നിർത്തുക;
 
-            case 'n':		/* new line */
+            അവസ്ഥ 'n':		/* new line */
               *cursor++ = '\n';
               string++;
-              break;
+              നിർത്തുക;
 
-            case 'r':		/* carriage return */
+            അവസ്ഥ 'r':		/* carriage return */
               *cursor++ = '\r';
               string++;
-              break;
+              നിർത്തുക;
 
-            case 't':		/* horizontal tab */
+            അവസ്ഥ 't':		/* horizontal tab */
               *cursor++ = '\t';
               string++;
-              break;
+              നിർത്തുക;
 
-            case 'v':		/* vertical tab */
+            അവസ്ഥ 'v':		/* vertical tab */
               *cursor++ = '\v';
               string++;
-              break;
+              നിർത്തുക;
 
-            case '\0':		/* lone backslash at end of string */
+            അവസ്ഥ '\0':		/* lone backslash at end of string */
               /* ignore it */
-              break;
+              നിർത്തുക;
 
-            default:
+            സ്ഥിരസ്ഥിതി:
               *cursor++ = '\\';
               *cursor++ = *string++;
-              break;
+              നിർത്തുക;
             }
         }
-      else
+      അല്ലെങ്കിൽ
         *cursor++ = *string++;
     }
 
@@ -392,20 +392,20 @@ unescape_string (char *string)
 | Compile the regex represented by REGEX, diagnose and abort if any error.  |
 `--------------------------------------------------------------------------*/
 
-static void
-compile_regex (struct regex_data *regex)
+സ്ഥിതം ശൂന്യം
+compile_regex (ഘടന regex_data *regex)
 {
-  struct re_pattern_buffer *pattern = &regex->pattern;
-  char const *string = regex->string;
-  char const *message;
+  ഘടന re_pattern_buffer *pattern = &regex->pattern;
+  അക്ഷരം സ്ഥിരം *string = regex->string;
+  അക്ഷരം സ്ഥിരം *message;
 
-  pattern->buffer = NULL;
+  pattern->buffer = ശൂന്യ;
   pattern->allocated = 0;
   pattern->fastmap = regex->fastmap;
-  pattern->translate = ignore_case ? folded_chars : NULL;
+  pattern->translate = ignore_case ? folded_chars : ശൂന്യ;
 
   message = re_compile_pattern (string, strlen (string), pattern);
-  if (message)
+  എങ്കിൽ (message)
     error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), message, quote (string));
 
   /* The fastmap should be compiled before 're_match'.  The following
@@ -420,13 +420,13 @@ compile_regex (struct regex_data *regex)
 | regexps.								  |
 `------------------------------------------------------------------------*/
 
-static void
-initialize_regex (void)
+സ്ഥിതം ശൂന്യം
+initialize_regex (ശൂന്യം)
 {
   /* Initialize the case folding table.  */
 
-  if (ignore_case)
-    for (int character = 0; character < CHAR_SET_SIZE; character++)
+  എങ്കിൽ (ignore_case)
+    വേണ്ടി (പൂർണ്ണസംഖ്യ character = 0; character < CHAR_SET_SIZE; character++)
       folded_chars[character] = toupper (character);
 
   /* Unless the user already provided a description of the end of line or
@@ -436,17 +436,17 @@ initialize_regex (void)
      extensions are enabled, use end of sentence like in GNU emacs.  If
      disabled, use end of lines.  */
 
-  if (context_regex.string)
+  എങ്കിൽ (context_regex.string)
     {
-      if (!*context_regex.string)
-        context_regex.string = NULL;
+      എങ്കിൽ (!*context_regex.string)
+        context_regex.string = ശൂന്യ;
     }
-  else if (gnu_extensions && !input_reference)
+  അല്ലെങ്കിൽ എങ്കിൽ (gnu_extensions && !നിവേശം_reference)
     context_regex.string = "[.?!][]\"')}]*\\($\\|\t\\|  \\)[ \t\n]*";
-  else
+  അല്ലെങ്കിൽ
     context_regex.string = "\n";
 
-  if (context_regex.string)
+  എങ്കിൽ (context_regex.string)
     compile_regex (&context_regex);
 
   /* If the user has already provided a non-empty regexp to describe
@@ -457,19 +457,19 @@ initialize_regex (void)
      include almost everything, even punctuation; stop only on white
      space.  */
 
-  if (word_regex.string)
+  എങ്കിൽ (word_regex.string)
     compile_regex (&word_regex);
-  else if (!break_file)
+  അല്ലെങ്കിൽ എങ്കിൽ (!break_file)
     {
-      if (gnu_extensions)
+      എങ്കിൽ (gnu_extensions)
         {
 
           /* Simulate \w+.  */
 
-          for (int character = 0; character < CHAR_SET_SIZE; character++)
+          വേണ്ടി (പൂർണ്ണസംഖ്യ character = 0; character < CHAR_SET_SIZE; character++)
             word_fastmap[character] = !! isalpha (character);
         }
-      else
+      അല്ലെങ്കിൽ
         {
 
           /* Simulate [^ \t\n]+.  */
@@ -493,8 +493,8 @@ initialize_regex (void)
 | compression is ever reinstated, it should be in output routines.	  |
 `------------------------------------------------------------------------*/
 
-static void
-swallow_file_in_memory (char const *file_name, BLOCK *block)
+സ്ഥിതം ശൂന്യം
+swallow_file_in_memory (അക്ഷരം സ്ഥിരം *file_name, BLOCK *block)
 {
   size_t used_length;		/* used length in memory buffer */
 
@@ -502,15 +502,15 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
      input, which is already opened.  In all other cases, open the file from
      its name.  */
   bool using_stdin = !file_name || !*file_name || streq (file_name, "-");
-  if (using_stdin)
+  എങ്കിൽ (using_stdin)
     block->start = fread_file (stdin, 0, &used_length);
-  else
+  അല്ലെങ്കിൽ
     block->start = read_file (file_name, 0, &used_length);
 
-  if (!block->start)
+  എങ്കിൽ (!block->start)
     error (EXIT_FAILURE, errno, "%s", quotef (using_stdin ? "-" : file_name));
 
-  if (using_stdin)
+  എങ്കിൽ (using_stdin)
     clearerr (stdin);
 
   block->end = block->start + used_length;
@@ -526,35 +526,35 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
 | If a word is indeed a prefix of the other, the shorter should go first.   |
 `--------------------------------------------------------------------------*/
 
-static int
-compare_words (const void *void_first, const void *void_second)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+compare_വാക്കുകൾ (സ്ഥിരം ശൂന്യം *void_first, സ്ഥിരം ശൂന്യം *void_second)
 {
-  WORD const *first = void_first;
-  WORD const *second = void_second;
+  WORD സ്ഥിരം *first = void_first;
+  WORD സ്ഥിരം *second = void_second;
   idx_t length = MIN (first->size, second->size);
 
-  if (ignore_case)
+  എങ്കിൽ (ignore_case)
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      വേണ്ടി (idx_t counter = 0; counter < length; counter++)
         {
-          int value = (folded_chars[to_uchar (first->start[counter])]
+          പൂർണ്ണസംഖ്യ മൂല്യം = (folded_chars[to_uchar (first->start[counter])]
                        - folded_chars[to_uchar (second->start[counter])]);
-          if (value != 0)
-            return value;
+          എങ്കിൽ (മൂല്യം != 0)
+            തിരികെ മൂല്യം;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      വേണ്ടി (idx_t counter = 0; counter < length; counter++)
         {
-          int value = (to_uchar (first->start[counter])
+          പൂർണ്ണസംഖ്യ മൂല്യം = (to_uchar (first->start[counter])
                        - to_uchar (second->start[counter]));
-          if (value != 0)
-            return value;
+          എങ്കിൽ (മൂല്യം != 0)
+            തിരികെ മൂല്യം;
         }
     }
 
-  return _GL_CMP (first->size, second->size);
+  തിരികെ _GL_CMP (first->size, second->size);
 }
 
 /*-----------------------------------------------------------------------.
@@ -563,16 +563,16 @@ compare_words (const void *void_first, const void *void_second)
 | pointer comparison.							 |
 `-----------------------------------------------------------------------*/
 
-static int
-compare_occurs (const void *void_first, const void *void_second)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+compare_occurs (സ്ഥിരം ശൂന്യം *void_first, സ്ഥിരം ശൂന്യം *void_second)
 {
-#define first ((const OCCURS *) void_first)
-#define second ((const OCCURS *) void_second)
-  int value;
+#define first ((സ്ഥിരം OCCURS *) void_first)
+#define second ((സ്ഥിരം OCCURS *) void_second)
+  പൂർണ്ണസംഖ്യ മൂല്യം;
 
-  value = compare_words (&first->key, &second->key);
-  return (value ? value
-          : _GL_CMP (first->key.start, second->key.start));
+  മൂല്യം = compare_വാക്കുകൾ (&first->താക്കോൽ, &second->താക്കോൽ);
+  തിരികെ (മൂല്യം ? മൂല്യം
+          : _GL_CMP (first->താക്കോൽ.start, second->താക്കോൽ.start));
 #undef first
 #undef second
 }
@@ -580,23 +580,23 @@ compare_occurs (const void *void_first, const void *void_second)
 /* True if WORD appears in TABLE.  Uses a binary search.  */
 
 ATTRIBUTE_PURE
-static bool
-search_table (WORD *word, WORD_TABLE *table)
+സ്ഥിതം bool
+തിരയൽ_table (WORD *word, WORD_TABLE *table)
 {
   idx_t lo = 0;
   idx_t hi = table->length;
-  while (lo < hi)
+  ആകുമ്പോൾ (lo < hi)
     {
-      idx_t middle = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
-      int value = compare_words (word, table->start + middle);
-      if (value < 0)
-        hi = middle;
-      else if (value > 0)
-        lo = middle + 1;
-      else
-        return true;
+      idx_t നടുവ് = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
+      പൂർണ്ണസംഖ്യ മൂല്യം = compare_വാക്കുകൾ (word, table->start + നടുവ്);
+      എങ്കിൽ (മൂല്യം < 0)
+        hi = നടുവ്;
+      അല്ലെങ്കിൽ എങ്കിൽ (മൂല്യം > 0)
+        lo = നടുവ് + 1;
+      അല്ലെങ്കിൽ
+        തിരികെ true;
     }
-  return false;
+  തിരികെ false;
 }
 
 /*---------------------------------------------------------------------.
@@ -605,13 +605,13 @@ search_table (WORD *word, WORD_TABLE *table)
 | stabilized throughout the comparison routine.			       |
 `---------------------------------------------------------------------*/
 
-static void
-sort_found_occurs (void)
+സ്ഥിതം ശൂന്യം
+sort_found_occurs (ശൂന്യം)
 {
 
   /* Only one language for the time being.  */
-  if (number_of_occurs[0])
-    qsort (occurs_table[0], number_of_occurs[0], sizeof **occurs_table,
+  എങ്കിൽ (സംഖ്യ_of_occurs[0])
+    qsort (occurs_table[0], സംഖ്യ_of_occurs[0], വലുപ്പം **occurs_table,
            compare_occurs);
 }
 
@@ -623,8 +623,8 @@ sort_found_occurs (void)
 | allowed except those found in the file.  Characters may be repeated.  |
 `----------------------------------------------------------------------*/
 
-static void
-digest_break_file (char const *file_name)
+സ്ഥിതം ശൂന്യം
+digest_break_file (അക്ഷരം സ്ഥിരം *file_name)
 {
   BLOCK file_contents;		/* to receive a copy of the file */
 
@@ -633,11 +633,11 @@ digest_break_file (char const *file_name)
   /* Make the fastmap and record the file contents in it.  */
 
   memset (word_fastmap, 1, CHAR_SET_SIZE);
-  for (char *cursor = file_contents.start; cursor < file_contents.end;
+  വേണ്ടി (അക്ഷരം *cursor = file_contents.start; cursor < file_contents.end;
        cursor++)
     word_fastmap[to_uchar (*cursor)] = 0;
 
-  if (!gnu_extensions)
+  എങ്കിൽ (!gnu_extensions)
     {
 
       /* If GNU extensions are enabled, the only way to avoid newline as
@@ -653,7 +653,7 @@ digest_break_file (char const *file_name)
 
   /* Return the space of the file, which is no more required.  */
 
-  free (file_contents.start);
+  സ്വതന്ത്രം (file_contents.start);
 }
 
 /*-----------------------------------------------------------------------.
@@ -663,52 +663,52 @@ digest_break_file (char const *file_name)
 | needed for newlines, which are useless; however, the reading is fast.	 |
 `-----------------------------------------------------------------------*/
 
-static void
-digest_word_file (char const *file_name, WORD_TABLE *table)
+സ്ഥിതം ശൂന്യം
+digest_word_file (അക്ഷരം സ്ഥിരം *file_name, WORD_TABLE *table)
 {
   BLOCK file_contents;		/* to receive a copy of the file */
-  char *cursor;			/* cursor in file copy */
-  char *word_start;		/* start of the current word */
+  അക്ഷരം *cursor;			/* cursor in file copy */
+  അക്ഷരം *word_start;		/* start of the current word */
 
   swallow_file_in_memory (file_name, &file_contents);
 
-  table->start = NULL;
+  table->start = ശൂന്യ;
   table->alloc = 0;
   table->length = 0;
 
   /* Read the whole file.  */
 
   cursor = file_contents.start;
-  while (cursor < file_contents.end)
+  ആകുമ്പോൾ (cursor < file_contents.end)
     {
 
       /* Read one line, and save the word in contains.  */
 
       word_start = cursor;
-      while (cursor < file_contents.end && *cursor != '\n')
+      ആകുമ്പോൾ (cursor < file_contents.end && *cursor != '\n')
         cursor++;
 
       /* Record the word in table if it is not empty.  */
 
-      if (cursor > word_start)
+      എങ്കിൽ (cursor > word_start)
         {
-          if (table->length == table->alloc)
+          എങ്കിൽ (table->length == table->alloc)
             table->start = xpalloc (table->start, &table->alloc, 1, -1,
-                                    sizeof *table->start);
-          idx_t const table_idx = table->length++;
+                                    വലുപ്പം *table->start);
+          idx_t സ്ഥിരം table_idx = table->length++;
           table->start[table_idx].start = word_start;
           table->start[table_idx].size = cursor - word_start;
         }
 
       /* This test allows for an incomplete line at end of file.  */
 
-      if (cursor < file_contents.end)
+      എങ്കിൽ (cursor < file_contents.end)
         cursor++;
     }
 
   /* Finally, sort all the words read.  */
 
-  qsort (table->start, table->length, sizeof table->start[0], compare_words);
+  qsort (table->start, table->length, വലുപ്പം table->start[0], compare_വാക്കുകൾ);
 }
 
 /* Keyword recognition and selection.  */
@@ -717,23 +717,23 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 | For each keyword in the source text, constructs an OCCURS structure.  |
 `----------------------------------------------------------------------*/
 
-static void
-find_occurs_in_text (int file_index)
+സ്ഥിതം ശൂന്യം
+find_occurs_in_text (പൂർണ്ണസംഖ്യ file_index)
 {
-  char *scan;			/* for scanning the source text */
-  char *line_start;		/* start of the current input line */
-  char *line_scan;		/* newlines scanned until this point */
+  അക്ഷരം *scan;			/* for scanning the source text */
+  അക്ഷരം *വരി_start;		/* start of the current input line */
+  അക്ഷരം *വരി_scan;		/* newlines scanned until this point */
   idx_t reference_length;	/* length of reference in input mode */
-  WORD possible_key;		/* possible key, to ease searches */
+  WORD possible_താക്കോൽ;		/* possible key, to ease searches */
   OCCURS *occurs_cursor;	/* current OCCURS under construction */
 
-  char *context_start;		/* start of left context */
-  char *context_end;		/* end of right context */
-  char *word_start;		/* start of word */
-  char *word_end;		/* end of word */
-  char *next_context_start;	/* next start of left context */
+  അക്ഷരം *context_start;		/* start of left context */
+  അക്ഷരം *context_end;		/* end of right context */
+  അക്ഷരം *word_start;		/* start of word */
+  അക്ഷരം *word_end;		/* end of word */
+  അക്ഷരം *next_context_start;	/* next start of left context */
 
-  const BLOCK *text_buffer = &text_buffers[file_index];
+  സ്ഥിരം BLOCK *text_buffer = &text_buffers[file_index];
 
   /* reference_length is always used within 'if (input_reference)'.
      However, GNU C diagnoses that it may be used uninitialized.  The
@@ -750,18 +750,18 @@ find_occurs_in_text (int file_index)
      found inside it.  Also, unconditionally assigning these variable has
      the happy effect of shutting up lint.  */
 
-  line_start = text_buffer->start;
-  line_scan = line_start;
-  if (input_reference)
+  വരി_start = text_buffer->start;
+  വരി_scan = വരി_start;
+  എങ്കിൽ (നിവേശം_reference)
     {
-      SKIP_NON_WHITE (line_scan, text_buffer->end);
-      reference_length = line_scan - line_start;
-      SKIP_WHITE (line_scan, text_buffer->end);
+      SKIP_NON_WHITE (വരി_scan, text_buffer->end);
+      reference_length = വരി_scan - വരി_start;
+      SKIP_WHITE (വരി_scan, text_buffer->end);
     }
 
   /* Process the whole buffer, one line or one sentence at a time.  */
 
-  for (char *cursor = text_buffer->start;
+  വേണ്ടി (അക്ഷരം *cursor = text_buffer->start;
        cursor < text_buffer->end;
        cursor = next_context_start)
     {
@@ -781,26 +781,26 @@ find_occurs_in_text (int file_index)
          sentence at the end of the buffer.  */
 
       next_context_start = text_buffer->end;
-      if (context_regex.string)
-        switch (re_search (&context_regex.pattern, cursor,
+      എങ്കിൽ (context_regex.string)
+        തിരഞ്ഞെടുപ്പ് (re_തിരയൽ (&context_regex.pattern, cursor,
                            text_buffer->end - cursor,
                            0, text_buffer->end - cursor, &context_regs))
           {
-          case -2:
+          അവസ്ഥ -2:
             matcher_error ();
 
-          case -1:
-            break;
+          അവസ്ഥ -1:
+            നിർത്തുക;
 
-          case 0:
+          അവസ്ഥ 0:
             error (EXIT_FAILURE, 0,
                    _("error: regular expression has a match of length zero:"
                      " %s"),
                    quote (context_regex.string));
 
-          default:
+          സ്ഥിരസ്ഥിതി:
             next_context_start = cursor + context_regs.end[0];
-            break;
+            നിർത്തുക;
           }
 
       /* Include the separator into the right context, but not any suffix
@@ -813,26 +813,26 @@ find_occurs_in_text (int file_index)
       /* Read and process a single input line or sentence, one word at a
          time.  */
 
-      while (true)
+      ആകുമ്പോൾ (true)
         {
-          if (word_regex.string)
+          എങ്കിൽ (word_regex.string)
 
             /* If a word regexp has been compiled, use it to skip at the
                beginning of the next word.  If there is no such word, exit
                the loop.  */
 
             {
-              regoff_t r = re_search (&word_regex.pattern, cursor,
+              regoff_t r = re_തിരയൽ (&word_regex.pattern, cursor,
                                       context_end - cursor,
                                       0, context_end - cursor, &word_regs);
-              if (r == -2)
+              എങ്കിൽ (r == -2)
                 matcher_error ();
-              if (r == -1)
-                break;
+              എങ്കിൽ (r == -1)
+                നിർത്തുക;
               word_start = cursor + word_regs.start[0];
               word_end = cursor + word_regs.end[0];
             }
-          else
+          അല്ലെങ്കിൽ
 
             /* Avoid re_search and use the fastmap to skip to the
                beginning of the next word.  If there is no more word in
@@ -840,16 +840,16 @@ find_occurs_in_text (int file_index)
 
             {
               scan = cursor;
-              while (scan < context_end
+              ആകുമ്പോൾ (scan < context_end
                      && !word_fastmap[to_uchar (*scan)])
                 scan++;
 
-              if (scan == context_end)
-                break;
+              എങ്കിൽ (scan == context_end)
+                നിർത്തുക;
 
               word_start = scan;
 
-              while (scan < context_end
+              ആകുമ്പോൾ (scan < context_end
                      && word_fastmap[to_uchar (*scan)])
                 scan++;
 
@@ -863,10 +863,10 @@ find_occurs_in_text (int file_index)
           /* Skip any zero length word.  Just advance a single position,
              then go fetch the next word.  */
 
-          if (word_end == word_start)
+          എങ്കിൽ (word_end == word_start)
             {
               cursor++;
-              continue;
+              തുടരുക;
             }
 
           /* This is a genuine, non empty word, so save it as a possible
@@ -876,33 +876,33 @@ find_occurs_in_text (int file_index)
              are actually kept or rejected, because backward jumps at output
              generation time may fall in *any* word.  */
 
-          possible_key.start = cursor;
-          possible_key.size = word_end - word_start;
-          cursor += possible_key.size;
+          possible_താക്കോൽ.start = cursor;
+          possible_താക്കോൽ.size = word_end - word_start;
+          cursor += possible_താക്കോൽ.size;
 
-          if (possible_key.size > maximum_word_length)
-            maximum_word_length = possible_key.size;
+          എങ്കിൽ (possible_താക്കോൽ.size > maximum_word_length)
+            maximum_word_length = possible_താക്കോൽ.size;
 
           /* In input reference mode, update 'line_start' from its previous
              value.  Count the lines just in case auto reference mode is
              also selected. If it happens that the word just matched is
              indeed part of a reference; just ignore it.  */
 
-          if (input_reference)
+          എങ്കിൽ (നിവേശം_reference)
             {
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              ആകുമ്പോൾ (വരി_scan < possible_താക്കോൽ.start)
+                എങ്കിൽ (*വരി_scan == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
-                    reference_length = line_scan - line_start;
+                    total_വരി_എണ്ണം++;
+                    വരി_scan++;
+                    വരി_start = വരി_scan;
+                    SKIP_NON_WHITE (വരി_scan, text_buffer->end);
+                    reference_length = വരി_scan - വരി_start;
                   }
-                else
-                  line_scan++;
-              if (line_scan > possible_key.start)
-                continue;
+                അല്ലെങ്കിൽ
+                  വരി_scan++;
+              എങ്കിൽ (വരി_scan > possible_താക്കോൽ.start)
+                തുടരുക;
             }
 
           /* Ignore the word if an 'Ignore words' table exists and if it is
@@ -915,23 +915,23 @@ find_occurs_in_text (int file_index)
              tables, the Ignore table could then reject words that would
              have been previously accepted by the Only table.  */
 
-          if (ignore_file && search_table (&possible_key, &ignore_table))
-            continue;
-          if (only_file && !search_table (&possible_key, &only_table))
-            continue;
+          എങ്കിൽ (ignore_file && തിരയൽ_table (&possible_താക്കോൽ, &ignore_table))
+            തുടരുക;
+          എങ്കിൽ (only_file && !തിരയൽ_table (&possible_താക്കോൽ, &only_table))
+            തുടരുക;
 
           /* A non-empty word has been found.  First of all, insure
              proper allocation of the next OCCURS, and make a pointer to
              where it will be constructed.  */
 
-          if (number_of_occurs[0] == occurs_alloc[0])
+          എങ്കിൽ (സംഖ്യ_of_occurs[0] == occurs_alloc[0])
             occurs_table[0] = xpalloc (occurs_table[0], &occurs_alloc[0],
-                                       1, -1, sizeof *occurs_table[0]);
-          occurs_cursor = occurs_table[0] + number_of_occurs[0];
+                                       1, -1, വലുപ്പം *occurs_table[0]);
+          occurs_cursor = occurs_table[0] + സംഖ്യ_of_occurs[0];
 
           /* Define the reference field, if any.  */
 
-          if (auto_reference)
+          എങ്കിൽ (auto_reference)
             {
 
               /* While auto referencing, update 'line_start' from its
@@ -940,20 +940,20 @@ find_occurs_in_text (int file_index)
                  advanced earlier, and the following loop is never really
                  executed.  */
 
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              ആകുമ്പോൾ (വരി_scan < possible_താക്കോൽ.start)
+                എങ്കിൽ (*വരി_scan == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
+                    total_വരി_എണ്ണം++;
+                    വരി_scan++;
+                    വരി_start = വരി_scan;
+                    SKIP_NON_WHITE (വരി_scan, text_buffer->end);
                   }
-                else
-                  line_scan++;
+                അല്ലെങ്കിൽ
+                  വരി_scan++;
 
-              occurs_cursor->reference = total_line_count;
+              occurs_cursor->reference = total_വരി_എണ്ണം;
             }
-          else if (input_reference)
+          അല്ലെങ്കിൽ എങ്കിൽ (നിവേശം_reference)
             {
 
               /* If only input referencing, 'line_start' has been computed
@@ -961,14 +961,14 @@ find_occurs_in_text (int file_index)
                  of the reference.  The reference position is simply the
                  value of 'line_start'.  */
 
-              occurs_cursor->reference = line_start - possible_key.start;
-              if (reference_length > reference_max_width)
+              occurs_cursor->reference = വരി_start - possible_താക്കോൽ.start;
+              എങ്കിൽ (reference_length > reference_max_width)
                 reference_max_width = reference_length;
             }
 
           /* Exclude the reference from the context in simple cases.  */
 
-          if (input_reference && line_start == context_start)
+          എങ്കിൽ (നിവേശം_reference && വരി_start == context_start)
             {
               SKIP_NON_WHITE (context_start, context_end);
               SKIP_WHITE (context_start, context_end);
@@ -976,12 +976,12 @@ find_occurs_in_text (int file_index)
 
           /* Completes the OCCURS structure.  */
 
-          occurs_cursor->key = possible_key;
-          occurs_cursor->left = context_start - possible_key.start;
-          occurs_cursor->right = context_end - possible_key.start;
+          occurs_cursor->താക്കോൽ = possible_താക്കോൽ;
+          occurs_cursor->ഇടത് = context_start - possible_താക്കോൽ.start;
+          occurs_cursor->വലത് = context_end - possible_താക്കോൽ.start;
           occurs_cursor->file_index = file_index;
 
-          number_of_occurs[0]++;
+          സംഖ്യ_of_occurs[0]++;
         }
     }
 }
@@ -992,10 +992,10 @@ find_occurs_in_text (int file_index)
 | Prints some NUMBER of spaces on stdout.  |
 `-----------------------------------------*/
 
-static void
-print_spaces (ptrdiff_t number)
+സ്ഥിതം ശൂന്യം
+print_spaces (ptrdiff_t സംഖ്യ)
 {
-  for (ptrdiff_t counter = number; counter > 0; counter--)
+  വേണ്ടി (ptrdiff_t counter = സംഖ്യ; counter > 0; counter--)
     putchar (' ');
 }
 
@@ -1003,57 +1003,57 @@ print_spaces (ptrdiff_t number)
 | Prints the field provided by FIELD.  |
 `-------------------------------------*/
 
-static void
+സ്ഥിതം ശൂന്യം
 print_field (BLOCK field)
 {
   /* Whitespace is not really compressed.  Instead, each white space
      character (tab, vt, ht etc.) is printed as one single space.  */
 
-  for (char *cursor = field.start; cursor < field.end; cursor++)
+  വേണ്ടി (അക്ഷരം *cursor = field.start; cursor < field.end; cursor++)
     {
-      unsigned char character = *cursor;
-      if (edited_flag[character])
+      unsigned അക്ഷരം character = *cursor;
+      എങ്കിൽ (edited_flag[character])
         {
           /* Handle cases which are specific to 'roff' or TeX.  All
              white space processing is done as the default case of
              this switch.  */
 
-          switch (character)
+          തിരഞ്ഞെടുപ്പ് (character)
             {
-            case '"':
+            അവസ്ഥ '"':
               /* In roff output format, double any quote.  */
               putchar ('"');
               putchar ('"');
-              break;
+              നിർത്തുക;
 
-            case '$':
-            case '%':
-            case '&':
-            case '#':
-            case '_':
+            അവസ്ഥ '$':
+            അവസ്ഥ '%':
+            അവസ്ഥ '&':
+            അവസ്ഥ '#':
+            അവസ്ഥ '_':
               /* In TeX output format, precede these with a backslash.  */
               putchar ('\\');
               putchar (character);
-              break;
+              നിർത്തുക;
 
-            case '{':
-            case '}':
+            അവസ്ഥ '{':
+            അവസ്ഥ '}':
               /* In TeX output format, precede these with a backslash and
                  force mathematical mode.  */
               printf ("$\\%c$", character);
-              break;
+              നിർത്തുക;
 
-            case '\\':
+            അവസ്ഥ '\\':
               /* In TeX output mode, request production of a backslash.  */
               fputs ("\\backslash{}", stdout);
-              break;
+              നിർത്തുക;
 
-            default:
+            സ്ഥിരസ്ഥിതി:
               /* Any other flagged character produces a single space.  */
               putchar (' ');
             }
         }
-      else
+      അല്ലെങ്കിൽ
         putchar (*cursor);
     }
 }
@@ -1065,26 +1065,26 @@ print_field (BLOCK field)
 | readings, compute and fix some output parameter values.	      |
 `--------------------------------------------------------------------*/
 
-static void
-fix_output_parameters (void)
+സ്ഥിതം ശൂന്യം
+fix_output_parameters (ശൂന്യം)
 {
   /* In auto reference mode, the maximum width of this field is
      precomputed and subtracted from the overall line width.  Add one for
      the column which separate the file name from the line number.  */
 
-  if (auto_reference)
+  എങ്കിൽ (auto_reference)
     {
       reference_max_width = 0;
-      for (int file_index = 0; file_index < number_input_files; file_index++)
+      വേണ്ടി (പൂർണ്ണസംഖ്യ file_index = 0; file_index < സംഖ്യ_നിവേശം_files; file_index++)
         {
-          intmax_t line_ordinal = file_line_count[file_index] + 1;
-          if (file_index > 0)
-            line_ordinal -= file_line_count[file_index - 1];
-          char ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
-          idx_t reference_width = sprintf (ordinal_string, "%jd", line_ordinal);
-          if (input_file_name[file_index])
-            reference_width += strlen (input_file_name[file_index]);
-          if (reference_width > reference_max_width)
+          intmax_t വരി_ordinal = file_വരി_എണ്ണം[file_index] + 1;
+          എങ്കിൽ (file_index > 0)
+            വരി_ordinal -= file_വരി_എണ്ണം[file_index - 1];
+          അക്ഷരം ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
+          idx_t reference_width = sprintf (ordinal_string, "%jd", വരി_ordinal);
+          എങ്കിൽ (നിവേശം_file_name[file_index])
+            reference_width += strlen (നിവേശം_file_name[file_index]);
+          എങ്കിൽ (reference_width > reference_max_width)
             reference_max_width = reference_width;
         }
       reference_max_width++;
@@ -1094,8 +1094,8 @@ fix_output_parameters (void)
   /* If the reference appears to the left of the output line, reserve some
      space for it right away, including one gap size.  */
 
-  if ((auto_reference || input_reference) && !right_reference)
-    line_width = MAX (0, line_width - (reference_max_width + gap_size));
+  എങ്കിൽ ((auto_reference || നിവേശം_reference) && !വലത്_reference)
+    വരി_width = MAX (0, വരി_width - (reference_max_width + gap_size));
 
   /* The output lines, minimally, will contain from left to right a left
      context, a gap, and a keyword followed by the right context with no
@@ -1109,20 +1109,20 @@ fix_output_parameters (void)
      on a case by case basis.  It is worth noting that it cannot happen that
      both the tail and head fields are used at once.  */
 
-  half_line_width = line_width >> 1;
-  before_max_width = half_line_width - gap_size;
-  keyafter_max_width = half_line_width;
+  half_വരി_width = വരി_width >> 1;
+  before_max_width = half_വരി_width - gap_size;
+  keyafter_max_width = half_വരി_width;
 
   /* If truncation_string is the empty string, make it null to speed up
      tests.  In this case, truncation_string_length will never get used, so
      there is no need to set it.  */
 
-  if (truncation_string && *truncation_string)
+  എങ്കിൽ (truncation_string && *truncation_string)
     truncation_string_length = strlen (truncation_string);
-  else
-    truncation_string = NULL;
+  അല്ലെങ്കിൽ
+    truncation_string = ശൂന്യ;
 
-  if (gnu_extensions)
+  എങ്കിൽ (gnu_extensions)
     {
 
       /* When flagging truncation at the left of the keyword, the
@@ -1150,7 +1150,7 @@ fix_output_parameters (void)
       before_max_width -= 2 * truncation_string_length;
       keyafter_max_width -= 2 * truncation_string_length;
     }
-  else
+  അല്ലെങ്കിൽ
     {
 
       /* I never figured out exactly how UNIX' ptx plans the output width
@@ -1162,43 +1162,43 @@ fix_output_parameters (void)
       keyafter_max_width -= 2 * truncation_string_length + 1;
     }
 
-  if (before_max_width < 0)
+  എങ്കിൽ (before_max_width < 0)
     before_max_width = 0;
 
   /* Compute which characters need special output processing.  Initialize
      by flagging any white space character.  Some systems do not consider
      form feed as a space character, but we do.  */
 
-  for (int character = 0; character < CHAR_SET_SIZE; character++)
+  വേണ്ടി (പൂർണ്ണസംഖ്യ character = 0; character < CHAR_SET_SIZE; character++)
     edited_flag[character] = !! isspace (character);
   edited_flag['\f'] = 1;
 
   /* Complete the special character flagging according to selected output
      format.  */
 
-  switch (output_format)
+  തിരഞ്ഞെടുപ്പ് (output_format)
     {
-    case UNKNOWN_FORMAT:
+    അവസ്ഥ UNKNOWN_FORMAT:
       /* Should never happen.  */
 
-    case DUMB_FORMAT:
-      break;
+    അവസ്ഥ DUMB_FORMAT:
+      നിർത്തുക;
 
-    case ROFF_FORMAT:
+    അവസ്ഥ ROFF_FORMAT:
 
       /* 'Quote' characters should be doubled.  */
 
       edited_flag['"'] = 1;
-      break;
+      നിർത്തുക;
 
-    case TEX_FORMAT:
+    അവസ്ഥ TEX_FORMAT:
 
       /* Various characters need special processing.  */
 
-      for (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
+      വേണ്ടി (അക്ഷരം സ്ഥിരം *cursor = "$%&#_{}\\"; *cursor; cursor++)
         edited_flag[to_uchar (*cursor)] = 1;
 
-      break;
+      നിർത്തുക;
     }
 }
 
@@ -1207,19 +1207,19 @@ fix_output_parameters (void)
 | pointer to some OCCURS.					    |
 `------------------------------------------------------------------*/
 
-static void
+സ്ഥിതം ശൂന്യം
 define_all_fields (OCCURS *occurs)
 {
   ptrdiff_t tail_max_width;	/* allowable width of tail field */
   ptrdiff_t head_max_width;	/* allowable width of head field */
-  char *cursor;			/* running cursor in source text */
-  char *left_context_start;	/* start of left context */
-  char *right_context_end;	/* end of right context */
-  char *left_field_start;	/* conservative start for 'head'/'before' */
-  char const *file_name;	/* file name for reference */
-  intmax_t line_ordinal;	/* line ordinal for reference */
-  char const *buffer_start;	/* start of buffered file for this occurs */
-  char const *buffer_end;	/* end of buffered file for this occurs */
+  അക്ഷരം *cursor;			/* running cursor in source text */
+  അക്ഷരം *ഇടത്_context_start;	/* start of left context */
+  അക്ഷരം *വലത്_context_end;	/* end of right context */
+  അക്ഷരം *ഇടത്_field_start;	/* conservative start for 'head'/'before' */
+  അക്ഷരം സ്ഥിരം *file_name;	/* file name for reference */
+  intmax_t വരി_ordinal;	/* line ordinal for reference */
+  അക്ഷരം സ്ഥിരം *buffer_start;	/* start of buffered file for this occurs */
+  അക്ഷരം സ്ഥിരം *buffer_end;	/* end of buffered file for this occurs */
 
   /* Define 'keyafter', start of left context and end of right context.
      'keyafter' starts at the saved position for keyword and extend to the
@@ -1227,25 +1227,25 @@ define_all_fields (OCCURS *occurs)
      not beyond maximum allowed width for 'keyafter' field or limit for the
      right context.  Suffix spaces will be removed afterwards.  */
 
-  keyafter.start = occurs->key.start;
-  keyafter.end = keyafter.start + occurs->key.size;
-  left_context_start = keyafter.start + occurs->left;
-  right_context_end = keyafter.start + occurs->right;
+  keyafter.start = occurs->താക്കോൽ.start;
+  keyafter.end = keyafter.start + occurs->താക്കോൽ.size;
+  ഇടത്_context_start = keyafter.start + occurs->ഇടത്;
+  വലത്_context_end = keyafter.start + occurs->വലത്;
 
   buffer_start = text_buffers[occurs->file_index].start;
   buffer_end = text_buffers[occurs->file_index].end;
 
   cursor = keyafter.end;
-  while (cursor < right_context_end
+  ആകുമ്പോൾ (cursor < വലത്_context_end
          && cursor <= keyafter.start + keyafter_max_width)
     {
       keyafter.end = cursor;
-      SKIP_SOMETHING (cursor, right_context_end);
+      SKIP_SOMETHING (cursor, വലത്_context_end);
     }
-  if (cursor <= keyafter.start + keyafter_max_width)
+  എങ്കിൽ (cursor <= keyafter.start + keyafter_max_width)
     keyafter.end = cursor;
 
-  keyafter_truncation = truncation_string && keyafter.end < right_context_end;
+  keyafter_truncation = truncation_string && keyafter.end < വലത്_context_end;
 
   SKIP_WHITE_BACKWARDS (keyafter.end, keyafter.start);
 
@@ -1261,14 +1261,14 @@ define_all_fields (OCCURS *occurs)
      beginning of 'head' or 'before' fields, we will skip forward words or
      delimiters until we get sufficiently near.  */
 
-  if (-occurs->left > half_line_width + maximum_word_length)
+  എങ്കിൽ (-occurs->ഇടത് > half_വരി_width + maximum_word_length)
     {
-      left_field_start
-        = keyafter.start - (half_line_width + maximum_word_length);
-      SKIP_SOMETHING (left_field_start, keyafter.start);
+      ഇടത്_field_start
+        = keyafter.start - (half_വരി_width + maximum_word_length);
+      SKIP_SOMETHING (ഇടത്_field_start, keyafter.start);
     }
-  else
-    left_field_start = keyafter.start + occurs->left;
+  അല്ലെങ്കിൽ
+    ഇടത്_field_start = keyafter.start + occurs->ഇടത്;
 
   /* 'before' certainly ends at the keyword, but not including separating
      spaces.  It starts after than the saved value for the left context, by
@@ -1276,20 +1276,20 @@ define_all_fields (OCCURS *occurs)
      before field.  There will be no prefix spaces either.  'before' only
      advances by skipping single separators or whole words. */
 
-  before.start = left_field_start;
+  before.start = ഇടത്_field_start;
   before.end = keyafter.start;
   SKIP_WHITE_BACKWARDS (before.end, before.start);
 
-  while (before.start + before_max_width < before.end)
+  ആകുമ്പോൾ (before.start + before_max_width < before.end)
     SKIP_SOMETHING (before.start, before.end);
 
-  if (truncation_string)
+  എങ്കിൽ (truncation_string)
     {
       cursor = before.start;
       SKIP_WHITE_BACKWARDS (cursor, buffer_start);
-      before_truncation = cursor > left_context_start;
+      before_truncation = cursor > ഇടത്_context_start;
     }
-  else
+  അല്ലെങ്കിൽ
     before_truncation = false;
 
   SKIP_WHITE (before.start, buffer_end);
@@ -1304,40 +1304,40 @@ define_all_fields (OCCURS *occurs)
   tail_max_width
     = before_max_width - (before.end - before.start) - gap_size;
 
-  if (tail_max_width > 0)
+  എങ്കിൽ (tail_max_width > 0)
     {
       tail.start = keyafter.end;
       SKIP_WHITE (tail.start, buffer_end);
 
       tail.end = tail.start;
       cursor = tail.end;
-      while (cursor < right_context_end
+      ആകുമ്പോൾ (cursor < വലത്_context_end
              && cursor < tail.start + tail_max_width)
         {
           tail.end = cursor;
-          SKIP_SOMETHING (cursor, right_context_end);
+          SKIP_SOMETHING (cursor, വലത്_context_end);
         }
 
-      if (cursor < tail.start + tail_max_width)
+      എങ്കിൽ (cursor < tail.start + tail_max_width)
         tail.end = cursor;
 
-      if (tail.end > tail.start)
+      എങ്കിൽ (tail.end > tail.start)
         {
           keyafter_truncation = false;
-          tail_truncation = truncation_string && tail.end < right_context_end;
+          tail_truncation = truncation_string && tail.end < വലത്_context_end;
         }
-      else
+      അല്ലെങ്കിൽ
         tail_truncation = false;
 
       SKIP_WHITE_BACKWARDS (tail.end, tail.start);
     }
-  else
+  അല്ലെങ്കിൽ
     {
 
       /* No place left for a tail field.  */
 
-      tail.start = NULL;
-      tail.end = NULL;
+      tail.start = ശൂന്യ;
+      tail.end = ശൂന്യ;
       tail_truncation = false;
     }
 
@@ -1350,55 +1350,55 @@ define_all_fields (OCCURS *occurs)
   head_max_width
     = keyafter_max_width - (keyafter.end - keyafter.start) - gap_size;
 
-  if (head_max_width > 0)
+  എങ്കിൽ (head_max_width > 0)
     {
       head.end = before.start;
       SKIP_WHITE_BACKWARDS (head.end, buffer_start);
 
-      head.start = left_field_start;
-      while (head.start + head_max_width < head.end)
+      head.start = ഇടത്_field_start;
+      ആകുമ്പോൾ (head.start + head_max_width < head.end)
         SKIP_SOMETHING (head.start, head.end);
 
-      if (head.end > head.start)
+      എങ്കിൽ (head.end > head.start)
         {
           before_truncation = false;
           head_truncation = (truncation_string
-                             && head.start > left_context_start);
+                             && head.start > ഇടത്_context_start);
         }
-      else
+      അല്ലെങ്കിൽ
         head_truncation = false;
 
       SKIP_WHITE (head.start, head.end);
     }
-  else
+  അല്ലെങ്കിൽ
     {
 
       /* No place left for a head field.  */
 
-      head.start = NULL;
-      head.end = NULL;
+      head.start = ശൂന്യ;
+      head.end = ശൂന്യ;
       head_truncation = false;
     }
 
-  if (auto_reference)
+  എങ്കിൽ (auto_reference)
     {
 
       /* Construct the reference text in preallocated space from the file
          name and the line number.  Standard input yields an empty file name.
          Ensure line numbers are 1 based, even if they are computed 0 based.  */
 
-      file_name = input_file_name[occurs->file_index];
-      if (!file_name)
+      file_name = നിവേശം_file_name[occurs->file_index];
+      എങ്കിൽ (!file_name)
         file_name = "";
 
-      line_ordinal = occurs->reference + 1;
-      if (occurs->file_index > 0)
-        line_ordinal -= file_line_count[occurs->file_index - 1];
+      വരി_ordinal = occurs->reference + 1;
+      എങ്കിൽ (occurs->file_index > 0)
+        വരി_ordinal -= file_വരി_എണ്ണം[occurs->file_index - 1];
 
-      char *file_end = stpcpy (reference.start, file_name);
-      reference.end = file_end + sprintf (file_end, ":%jd", line_ordinal);
+      അക്ഷരം *file_end = stpcpy (reference.start, file_name);
+      reference.end = file_end + sprintf (file_end, ":%jd", വരി_ordinal);
     }
-  else if (input_reference)
+  അല്ലെങ്കിൽ എങ്കിൽ (നിവേശം_reference)
     {
 
       /* Reference starts at saved position for reference and extends right
@@ -1406,7 +1406,7 @@ define_all_fields (OCCURS *occurs)
 
       reference.start = keyafter.start + occurs->reference;
       reference.end = reference.start;
-      SKIP_NON_WHITE (reference.end, right_context_end);
+      SKIP_NON_WHITE (reference.end, വലത്_context_end);
     }
 }
 
@@ -1416,21 +1416,21 @@ define_all_fields (OCCURS *occurs)
 | Output the current output fields as one line for 'troff' or 'nroff'.  |
 `----------------------------------------------------------------------*/
 
-static void
-output_one_roff_line (void)
+സ്ഥിതം ശൂന്യം
+output_one_roff_വരി (ശൂന്യം)
 {
   /* Output the 'tail' field.  */
 
   printf (".%s \"", macro_name);
   print_field (tail);
-  if (tail_truncation)
+  എങ്കിൽ (tail_truncation)
     fputs (truncation_string, stdout);
   putchar ('"');
 
   /* Output the 'before' field.  */
 
   fputs (" \"", stdout);
-  if (before_truncation)
+  എങ്കിൽ (before_truncation)
     fputs (truncation_string, stdout);
   print_field (before);
   putchar ('"');
@@ -1439,21 +1439,21 @@ output_one_roff_line (void)
 
   fputs (" \"", stdout);
   print_field (keyafter);
-  if (keyafter_truncation)
+  എങ്കിൽ (keyafter_truncation)
     fputs (truncation_string, stdout);
   putchar ('"');
 
   /* Output the 'head' field.  */
 
   fputs (" \"", stdout);
-  if (head_truncation)
+  എങ്കിൽ (head_truncation)
     fputs (truncation_string, stdout);
   print_field (head);
   putchar ('"');
 
   /* Conditionally output the 'reference' field.  */
 
-  if (auto_reference || input_reference)
+  എങ്കിൽ (auto_reference || നിവേശം_reference)
     {
       fputs (" \"", stdout);
       print_field (reference);
@@ -1467,12 +1467,12 @@ output_one_roff_line (void)
 | Output the current output fields as one line for 'TeX'.  |
 `---------------------------------------------------------*/
 
-static void
-output_one_tex_line (void)
+സ്ഥിതം ശൂന്യം
+output_one_tex_വരി (ശൂന്യം)
 {
-  BLOCK key;			/* key field, isolated */
+  BLOCK താക്കോൽ;			/* key field, isolated */
   BLOCK after;			/* after field, isolated */
-  char *cursor;			/* running cursor in source text */
+  അക്ഷരം *cursor;			/* running cursor in source text */
 
   printf ("\\%s ", macro_name);
   putchar ('{');
@@ -1480,19 +1480,19 @@ output_one_tex_line (void)
   fputs ("}{", stdout);
   print_field (before);
   fputs ("}{", stdout);
-  key.start = keyafter.start;
+  താക്കോൽ.start = keyafter.start;
   after.end = keyafter.end;
   cursor = keyafter.start;
   SKIP_SOMETHING (cursor, keyafter.end);
-  key.end = cursor;
+  താക്കോൽ.end = cursor;
   after.start = cursor;
-  print_field (key);
+  print_field (താക്കോൽ);
   fputs ("}{", stdout);
   print_field (after);
   fputs ("}{", stdout);
   print_field (head);
   putchar ('}');
-  if (auto_reference || input_reference)
+  എങ്കിൽ (auto_reference || നിവേശം_reference)
     {
       putchar ('{');
       print_field (reference);
@@ -1505,12 +1505,12 @@ output_one_tex_line (void)
 | Output the current output fields as one line for a dumb terminal.  |
 `-------------------------------------------------------------------*/
 
-static void
-output_one_dumb_line (void)
+സ്ഥിതം ശൂന്യം
+output_one_dumb_വരി (ശൂന്യം)
 {
-  if (!right_reference)
+  എങ്കിൽ (!വലത്_reference)
     {
-      if (auto_reference)
+      എങ്കിൽ (auto_reference)
         {
 
           /* Output the 'reference' field, in such a way that GNU emacs
@@ -1524,7 +1524,7 @@ output_one_dumb_line (void)
                         - (reference.end - reference.start)
                         - 1);
         }
-      else
+      അല്ലെങ്കിൽ
         {
 
           /* Output the 'reference' field and its following gap.  */
@@ -1536,28 +1536,28 @@ output_one_dumb_line (void)
         }
     }
 
-  if (tail.start < tail.end)
+  എങ്കിൽ (tail.start < tail.end)
     {
       /* Output the 'tail' field.  */
 
       print_field (tail);
-      if (tail_truncation)
+      എങ്കിൽ (tail_truncation)
         fputs (truncation_string, stdout);
 
-      print_spaces (half_line_width - gap_size
+      print_spaces (half_വരി_width - gap_size
                     - (before.end - before.start)
                     - (before_truncation ? truncation_string_length : 0)
                     - (tail.end - tail.start)
                     - (tail_truncation ? truncation_string_length : 0));
     }
-  else
-    print_spaces (half_line_width - gap_size
+  അല്ലെങ്കിൽ
+    print_spaces (half_വരി_width - gap_size
                   - (before.end - before.start)
                   - (before_truncation ? truncation_string_length : 0));
 
   /* Output the 'before' field.  */
 
-  if (before_truncation)
+  എങ്കിൽ (before_truncation)
     fputs (truncation_string, stdout);
   print_field (before);
 
@@ -1566,30 +1566,30 @@ output_one_dumb_line (void)
   /* Output the 'keyafter' field.  */
 
   print_field (keyafter);
-  if (keyafter_truncation)
+  എങ്കിൽ (keyafter_truncation)
     fputs (truncation_string, stdout);
 
-  if (head.start < head.end)
+  എങ്കിൽ (head.start < head.end)
     {
       /* Output the 'head' field.  */
 
-      print_spaces (half_line_width
+      print_spaces (half_വരി_width
                     - (keyafter.end - keyafter.start)
                     - (keyafter_truncation ? truncation_string_length : 0)
                     - (head.end - head.start)
                     - (head_truncation ? truncation_string_length : 0));
-      if (head_truncation)
+      എങ്കിൽ (head_truncation)
         fputs (truncation_string, stdout);
       print_field (head);
     }
-  else
+  അല്ലെങ്കിൽ
 
-    if ((auto_reference || input_reference) && right_reference)
-      print_spaces (half_line_width
+    എങ്കിൽ ((auto_reference || നിവേശം_reference) && വലത്_reference)
+      print_spaces (half_വരി_width
                     - (keyafter.end - keyafter.start)
                     - (keyafter_truncation ? truncation_string_length : 0));
 
-  if ((auto_reference || input_reference) && right_reference)
+  എങ്കിൽ ((auto_reference || നിവേശം_reference) && വലത്_reference)
     {
       /* Output the 'reference' field.  */
 
@@ -1605,8 +1605,8 @@ output_one_dumb_line (void)
 | appropriate format.							  |
 `------------------------------------------------------------------------*/
 
-static void
-generate_all_output (void)
+സ്ഥിതം ശൂന്യം
+generate_all_output (ശൂന്യം)
 {
   OCCURS *occurs_cursor;	/* current keyword entry being processed */
 
@@ -1614,19 +1614,19 @@ generate_all_output (void)
      line contexts or references are not used, in which case these variables
      would never be computed.  */
 
-  tail.start = NULL;
-  tail.end = NULL;
+  tail.start = ശൂന്യ;
+  tail.end = ശൂന്യ;
   tail_truncation = false;
 
-  head.start = NULL;
-  head.end = NULL;
+  head.start = ശൂന്യ;
+  head.end = ശൂന്യ;
   head_truncation = false;
 
   /* Loop over all keyword occurrences.  */
 
   occurs_cursor = occurs_table[0];
 
-  for (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
+  വേണ്ടി (idx_t occurs_index = 0; occurs_index < സംഖ്യ_of_occurs[0];
        occurs_index++)
     {
       /* Compute the exact size of every field and whenever truncation flags
@@ -1636,22 +1636,22 @@ generate_all_output (void)
 
       /* Produce one output line according to selected format.  */
 
-      switch (output_format)
+      തിരഞ്ഞെടുപ്പ് (output_format)
         {
-        case UNKNOWN_FORMAT:
+        അവസ്ഥ UNKNOWN_FORMAT:
           /* Should never happen.  */
 
-        case DUMB_FORMAT:
-          output_one_dumb_line ();
-          break;
+        അവസ്ഥ DUMB_FORMAT:
+          output_one_dumb_വരി ();
+          നിർത്തുക;
 
-        case ROFF_FORMAT:
-          output_one_roff_line ();
-          break;
+        അവസ്ഥ ROFF_FORMAT:
+          output_one_roff_വരി ();
+          നിർത്തുക;
 
-        case TEX_FORMAT:
-          output_one_tex_line ();
-          break;
+        അവസ്ഥ TEX_FORMAT:
+          output_one_tex_വരി ();
+          നിർത്തുക;
         }
 
       /* Advance the cursor into the occurs table.  */
@@ -1666,19 +1666,19 @@ generate_all_output (void)
 | Print program identification and options, then exit.  |
 `------------------------------------------------------*/
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
-Usage: %s [OPTION]... [INPUT]...   (without -G)\n\
-  or:  %s -G [OPTION]... [INPUT [OUTPUT]]\n"),
+Usage: %s [OPTION]... [നിവേശം_2]...   (without -G)\n\
+  or:  %s -G [OPTION]... [നിവേശം_2 [OUTPUT]]\n"),
               program_name, program_name);
       fputs (_("\
-Output a permuted index, including context, of the words in the input files.\n\
+Output a permuted index, including context, of the വാക്കുകൾ in the നിവേശം files.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -1691,8 +1691,8 @@ Output a permuted index, including context, of the words in the input files.\n\
   -G, --traditional              behave more like System V 'ptx'\n\
 "));
       oputs (_("\
-  -F, --flag-truncation=STRING   use STRING for flagging line truncations.\n\
-                                 The default is '/'\n\
+  -F, --flag-truncation=STRING   use STRING വേണ്ടി flagging വരി truncations.\n\
+                                 The സ്ഥിരസ്ഥിതി is '/'\n\
 "));
       oputs (_("\
   -M, --macro-name=STRING        macro name to use instead of 'xx'\n\
@@ -1701,10 +1701,10 @@ Output a permuted index, including context, of the words in the input files.\n\
   -O, --format=roff              generate output as roff directives\n\
 "));
       oputs (_("\
-  -R, --right-side-refs          put references at right, not counted in -w\n\
+  -R, --വലത്-side-refs          put references at വലത്, not counted in -w\n\
 "));
       oputs (_("\
-  -S, --sentence-regexp=REGEXP   for end of lines or end of sentences\n\
+  -S, --sentence-regexp=REGEXP   വേണ്ടി end of വരികൾ or end of sentences\n\
 "));
       oputs (_("\
   -T, --format=tex               generate output as TeX directives\n\
@@ -1713,28 +1713,28 @@ Output a permuted index, including context, of the words in the input files.\n\
   -W, --word-regexp=REGEXP       use REGEXP to match each keyword\n\
 "));
       oputs (_("\
-  -b, --break-file=FILE          word break characters in this FILE\n\
+  -b, --നിർത്തുക-file=FILE          word നിർത്തുക characters in this FILE\n\
 "));
       oputs (_("\
-  -f, --ignore-case              fold lower case to upper case for sorting\n\
+  -f, --ignore-അവസ്ഥ              fold lower അവസ്ഥ to upper അവസ്ഥ വേണ്ടി sorting\n\
 "));
       oputs (_("\
-  -g, --gap-size=NUMBER          gap size in columns between output fields\n\
+  -g, --gap-size=സംഖ്യ_2          gap size in columns between output fields\n\
 "));
       oputs (_("\
-  -i, --ignore-file=FILE         read ignore word list from FILE\n\
+  -i, --ignore-file=FILE         പഠ ignore word list from FILE\n\
 "));
       oputs (_("\
-  -o, --only-file=FILE           read only word list from this FILE\n\
+  -o, --only-file=FILE           പഠ only word list from this FILE\n\
 "));
       oputs (_("\
-  -r, --references               first field of each line is a reference\n\
+  -r, --references               first field of each വരി is a reference\n\
 "));
       oputs (_("\
-  -t, --typeset-mode             change the default width from 72 to 100\n\
+  -t, --typeset-mode             change the സ്ഥിരസ്ഥിതി width from 72 to 100\n\
 "));
       oputs (_("\
-  -w, --width=NUMBER             output width in columns, reference excluded\n\
+  -w, --width=സംഖ്യ_2             output width in columns, reference excluded\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -1750,50 +1750,50 @@ Output a permuted index, including context, of the words in the input files.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   FORMAT_OPTION = CHAR_MAX + 1
 };
 
 /* Long options equivalences.  */
-static struct option const long_options[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
 {
-  {"auto-reference", no_argument, NULL, 'A'},
-  {"break-file", required_argument, NULL, 'b'},
-  {"flag-truncation", required_argument, NULL, 'F'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"gap-size", required_argument, NULL, 'g'},
-  {"ignore-file", required_argument, NULL, 'i'},
-  {"macro-name", required_argument, NULL, 'M'},
-  {"only-file", required_argument, NULL, 'o'},
-  {"references", no_argument, NULL, 'r'},
-  {"right-side-refs", no_argument, NULL, 'R'},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"sentence-regexp", required_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, 'G'},
-  {"typeset-mode", no_argument, NULL, 't'},
-  {"width", required_argument, NULL, 'w'},
-  {"word-regexp", required_argument, NULL, 'W'},
+  {"auto-reference", no_argument, ശൂന്യ, 'A'},
+  {"break-file", required_argument, ശൂന്യ, 'b'},
+  {"flag-truncation", required_argument, ശൂന്യ, 'F'},
+  {"ignore-case", no_argument, ശൂന്യ, 'f'},
+  {"gap-size", required_argument, ശൂന്യ, 'g'},
+  {"ignore-file", required_argument, ശൂന്യ, 'i'},
+  {"macro-name", required_argument, ശൂന്യ, 'M'},
+  {"only-file", required_argument, ശൂന്യ, 'o'},
+  {"references", no_argument, ശൂന്യ, 'r'},
+  {"right-side-refs", no_argument, ശൂന്യ, 'R'},
+  {"format", required_argument, ശൂന്യ, FORMAT_OPTION},
+  {"sentence-regexp", required_argument, ശൂന്യ, 'S'},
+  {"traditional", no_argument, ശൂന്യ, 'G'},
+  {"typeset-mode", no_argument, ശൂന്യ, 't'},
+  {"width", required_argument, ശൂന്യ, 'w'},
+  {"word-regexp", required_argument, ശൂന്യ, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {ശൂന്യ, 0, ശൂന്യ, 0},
 };
 
-static char const *const format_args[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം format_args[] =
 {
-  "roff", "tex", NULL
+  "roff", "tex", ശൂന്യ
 };
 
-static enum Format const format_vals[] =
+സ്ഥിതം എണ്ണൽ Format സ്ഥിരം format_vals[] =
 {
   ROFF_FORMAT, TEX_FORMAT
 };
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int optchar;			/* argument character */
-  int file_index;		/* index in text input file arrays */
+  പൂർണ്ണസംഖ്യ optchar;			/* argument character */
+  പൂർണ്ണസംഖ്യ file_index;		/* index in text input file arrays */
 
   /* Decode program options.  */
 
@@ -1805,107 +1805,107 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
-                                long_options, NULL),
+  ആകുമ്പോൾ (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
+                                long_options, ശൂന്യ),
          optchar != EOF)
     {
-      switch (optchar)
+      തിരഞ്ഞെടുപ്പ് (optchar)
         {
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
 
-        case 'G':
+        അവസ്ഥ 'G':
           gnu_extensions = false;
-          break;
+          നിർത്തുക;
 
-        case 'b':
+        അവസ്ഥ 'b':
           break_file = optarg;
-          break;
+          നിർത്തുക;
 
-        case 'f':
+        അവസ്ഥ 'f':
           ignore_case = true;
-          break;
+          നിർത്തുക;
 
-        case 'g':
+        അവസ്ഥ 'g':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            എങ്കിൽ (! (xstrtoimax (optarg, ശൂന്യ, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid gap width: %s"),
                      quote (optarg));
             gap_size = tmp;
-            break;
+            നിർത്തുക;
           }
 
-        case 'i':
+        അവസ്ഥ 'i':
           ignore_file = optarg;
-          break;
+          നിർത്തുക;
 
-        case 'o':
+        അവസ്ഥ 'o':
           only_file = optarg;
-          break;
+          നിർത്തുക;
 
-        case 'r':
-          input_reference = true;
-          break;
+        അവസ്ഥ 'r':
+          നിവേശം_reference = true;
+          നിർത്തുക;
 
-        case 't':
-          if (line_width < 0)
-            line_width = 100;
-          break;
+        അവസ്ഥ 't':
+          എങ്കിൽ (വരി_width < 0)
+            വരി_width = 100;
+          നിർത്തുക;
 
-        case 'w':
+        അവസ്ഥ 'w':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            എങ്കിൽ (! (xstrtoimax (optarg, ശൂന്യ, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid line width: %s"),
                      quote (optarg));
-            line_width = tmp;
-            break;
+            വരി_width = tmp;
+            നിർത്തുക;
           }
 
-        case 'A':
+        അവസ്ഥ 'A':
           auto_reference = true;
-          break;
+          നിർത്തുക;
 
-        case 'F':
+        അവസ്ഥ 'F':
           truncation_string = optarg;
           unescape_string (optarg);
-          break;
+          നിർത്തുക;
 
-        case 'M':
+        അവസ്ഥ 'M':
           macro_name = optarg;
-          break;
+          നിർത്തുക;
 
-        case 'O':
+        അവസ്ഥ 'O':
           output_format = ROFF_FORMAT;
-          break;
+          നിർത്തുക;
 
-        case 'R':
-          right_reference = true;
-          break;
+        അവസ്ഥ 'R':
+          വലത്_reference = true;
+          നിർത്തുക;
 
-        case 'S':
+        അവസ്ഥ 'S':
           context_regex.string = optarg;
           unescape_string (optarg);
-          break;
+          നിർത്തുക;
 
-        case 'T':
+        അവസ്ഥ 'T':
           output_format = TEX_FORMAT;
-          break;
+          നിർത്തുക;
 
-        case 'W':
+        അവസ്ഥ 'W':
           word_regex.string = optarg;
           unescape_string (optarg);
-          if (!*word_regex.string)
-            word_regex.string = NULL;
-          break;
+          എങ്കിൽ (!*word_regex.string)
+            word_regex.string = ശൂന്യ;
+          നിർത്തുക;
 
-        case FORMAT_OPTION:
+        അവസ്ഥ FORMAT_OPTION:
           output_format = XARGMATCH ("--format", optarg,
                                      format_args, format_vals);
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
@@ -1913,67 +1913,67 @@ main (int argc, char **argv)
         }
     }
 
-  if (line_width < 0)
-    line_width = 72;
+  എങ്കിൽ (വരി_width < 0)
+    വരി_width = 72;
 
   /* Process remaining arguments.  If GNU extensions are enabled, process
      all arguments as input parameters.  If disabled, accept at most two
      arguments, the second of which is an output parameter.  */
 
-  if (optind == argc)
+  എങ്കിൽ (optind == argc)
     {
 
       /* No more argument simply means: read standard input.  */
 
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers =    xmalloc (sizeof *text_buffers);
-      number_input_files = 1;
-      input_file_name[0] = NULL;
+      നിവേശം_file_name = xmalloc (വലുപ്പം *നിവേശം_file_name);
+      file_വരി_എണ്ണം = xmalloc (വലുപ്പം *file_വരി_എണ്ണം);
+      text_buffers =    xmalloc (വലുപ്പം *text_buffers);
+      സംഖ്യ_നിവേശം_files = 1;
+      നിവേശം_file_name[0] = ശൂന്യ;
     }
-  else if (gnu_extensions)
+  അല്ലെങ്കിൽ എങ്കിൽ (gnu_extensions)
     {
-      number_input_files = argc - optind;
-      input_file_name = xnmalloc (number_input_files, sizeof *input_file_name);
-      file_line_count = xnmalloc (number_input_files, sizeof *file_line_count);
-      text_buffers    = xnmalloc (number_input_files, sizeof *text_buffers);
+      സംഖ്യ_നിവേശം_files = argc - optind;
+      നിവേശം_file_name = xnmalloc (സംഖ്യ_നിവേശം_files, വലുപ്പം *നിവേശം_file_name);
+      file_വരി_എണ്ണം = xnmalloc (സംഖ്യ_നിവേശം_files, വലുപ്പം *file_വരി_എണ്ണം);
+      text_buffers    = xnmalloc (സംഖ്യ_നിവേശം_files, വലുപ്പം *text_buffers);
 
-      for (file_index = 0; file_index < number_input_files; file_index++)
+      വേണ്ടി (file_index = 0; file_index < സംഖ്യ_നിവേശം_files; file_index++)
         {
-          if (!*argv[optind] || streq (argv[optind], "-"))
-            input_file_name[file_index] = NULL;
-          else
-            input_file_name[file_index] = argv[optind];
+          എങ്കിൽ (!*argv[optind] || streq (argv[optind], "-"))
+            നിവേശം_file_name[file_index] = ശൂന്യ;
+          അല്ലെങ്കിൽ
+            നിവേശം_file_name[file_index] = argv[optind];
           optind++;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
 
       /* There is one necessary input file.  */
 
-      number_input_files = 1;
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers    = xmalloc (sizeof *text_buffers);
-      if (!*argv[optind] || streq (argv[optind], "-"))
-        input_file_name[0] = NULL;
-      else
-        input_file_name[0] = argv[optind];
+      സംഖ്യ_നിവേശം_files = 1;
+      നിവേശം_file_name = xmalloc (വലുപ്പം *നിവേശം_file_name);
+      file_വരി_എണ്ണം = xmalloc (വലുപ്പം *file_വരി_എണ്ണം);
+      text_buffers    = xmalloc (വലുപ്പം *text_buffers);
+      എങ്കിൽ (!*argv[optind] || streq (argv[optind], "-"))
+        നിവേശം_file_name[0] = ശൂന്യ;
+      അല്ലെങ്കിൽ
+        നിവേശം_file_name[0] = argv[optind];
       optind++;
 
       /* Redirect standard output, only if requested.  */
 
-      if (optind < argc)
+      എങ്കിൽ (optind < argc)
         {
-          if (! freopen (argv[optind], "w", stdout))
+          എങ്കിൽ (! freopen (argv[optind], "w", stdout))
             error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
           optind++;
         }
 
       /* Diagnose any other argument as an error.  */
 
-      if (optind < argc)
+      എങ്കിൽ (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           usage (EXIT_FAILURE);
@@ -1983,7 +1983,7 @@ main (int argc, char **argv)
   /* If the output format has not been explicitly selected, choose dumb
      terminal format if GNU extensions are enabled, else 'roff' format.  */
 
-  if (output_format == UNKNOWN_FORMAT)
+  എങ്കിൽ (output_format == UNKNOWN_FORMAT)
     output_format = gnu_extensions ? DUMB_FORMAT : ROFF_FORMAT;
 
   /* Initialize the main tables.  */
@@ -1992,49 +1992,49 @@ main (int argc, char **argv)
 
   /* Read 'Break character' file, if any.  */
 
-  if (break_file)
+  എങ്കിൽ (break_file)
     digest_break_file (break_file);
 
   /* Read 'Ignore words' file and 'Only words' files, if any.  If any of
      these files is empty, reset the name of the file to null, to avoid
      unnecessary calls to search_table. */
 
-  if (ignore_file)
+  എങ്കിൽ (ignore_file)
     {
       digest_word_file (ignore_file, &ignore_table);
-      if (ignore_table.length == 0)
-        ignore_file = NULL;
+      എങ്കിൽ (ignore_table.length == 0)
+        ignore_file = ശൂന്യ;
     }
 
-  if (only_file)
+  എങ്കിൽ (only_file)
     {
       digest_word_file (only_file, &only_table);
-      if (only_table.length == 0)
-        only_file = NULL;
+      എങ്കിൽ (only_table.length == 0)
+        only_file = ശൂന്യ;
     }
 
   /* Prepare to study all the input files.  */
 
-  number_of_occurs[0] = 0;
-  total_line_count = 0;
+  സംഖ്യ_of_occurs[0] = 0;
+  total_വരി_എണ്ണം = 0;
   maximum_word_length = 0;
   reference_max_width = 0;
 
-  for (file_index = 0; file_index < number_input_files; file_index++)
+  വേണ്ടി (file_index = 0; file_index < സംഖ്യ_നിവേശം_files; file_index++)
     {
       BLOCK *text_buffer = text_buffers + file_index;
 
       /* Read the file contents into memory, then study it.  */
 
-      swallow_file_in_memory (input_file_name[file_index], text_buffer);
+      swallow_file_in_memory (നിവേശം_file_name[file_index], text_buffer);
       find_occurs_in_text (file_index);
 
       /* Maintain for each file how many lines has been read so far when its
          end is reached.  Incrementing the count first is a simple kludge to
          handle a possible incomplete line at end of file.  */
 
-      total_line_count++;
-      file_line_count[file_index] = total_line_count;
+      total_വരി_എണ്ണം++;
+      file_വരി_എണ്ണം[file_index] = total_വരി_എണ്ണം;
     }
 
   /* Do the output process phase.  */
@@ -2045,5 +2045,5 @@ main (int argc, char **argv)
 
   /* All done.  */
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#അന്തര്ഭാവ "wc.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "ioblksize.h"
 
-#include <x86intrin.h>
+#അന്തര്ഭാവ <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx512 (int fd)
+ബാഹ്യ ഘടന wc_വരികൾ
+wc_വരികൾ_avx512 (പൂർണ്ണസംഖ്യ fd)
 {
-  intmax_t lines = 0;
+  intmax_t വരികൾ = 0;
   intmax_t bytes = 0;
 
   __m512i endlines = _mm512_set1_epi8 ('\n');
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-       __m512i avx_buf[IO_BUFSIZE / sizeof (__m512i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m512i avx_buf[IO_BUFSIZE / വലുപ്പം (__m512i)];
+      ssize_t bytes_read = പഠ (fd, avx_buf, വലുപ്പം avx_buf);
+      എങ്കിൽ (bytes_read <= 0)
+        തിരികെ (ഘടന wc_വരികൾ) { bytes_read == 0 ? 0 : errno, വരികൾ, bytes };
 
       bytes += bytes_read;
       __m512i *datap = avx_buf;
 
-      while (bytes_read >= 64)
+      ആകുമ്പോൾ (bytes_read >= 64)
         {
            __m512i to_match = _mm512_load_si512 (datap);
            long long matches = _mm512_cmpeq_epi8_mask (to_match, endlines);
-           lines += __builtin_popcountll (matches);
+           വരികൾ += __builtin_popcountll (matches);
            datap += 1;
            bytes_read -= 64;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      അക്ഷരം *end = (അക്ഷരം *) datap + bytes_read;
+      വേണ്ടി (അക്ഷരം *p = (അക്ഷരം *) datap; p < end; p++)
+        വരികൾ += *p == '\n';
     }
 }

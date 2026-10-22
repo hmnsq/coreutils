@@ -16,29 +16,29 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#if HAVE_LANGINFO_CODESET
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#എങ്കിൽ HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
-#include "system.h"
-#include "argmatch.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-time.h"
-#include "xsetenv.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "argmatch.h"
+#അന്തര്ഭാവ "parse-datetime.h"
+#അന്തര്ഭാവ "posixtm.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "show-date.h"
+#അന്തര്ഭാവ "stat-time.h"
+#അന്തര്ഭാവ "xsetenv.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "date"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-enum Time_spec
+എണ്ണൽ Time_spec
 {
   /* Display only the date.  */
   TIME_SPEC_DATE,
@@ -55,14 +55,14 @@ enum Time_spec
   TIME_SPEC_MINUTES
 };
 
-static char const *const time_spec_string[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം time_spec_string[] =
 {
   /* Put "hours" and "minutes" first, since they aren't valid for
      --rfc-3339.  */
   "hours", "minutes",
-  "date", "seconds", "ns", NULL
+  "date", "seconds", "ns", ശൂന്യ
 };
-static enum Time_spec const time_spec[] =
+സ്ഥിതം എണ്ണൽ Time_spec സ്ഥിരം time_spec[] =
 {
   TIME_SPEC_HOURS, TIME_SPEC_MINUTES,
   TIME_SPEC_DATE, TIME_SPEC_SECONDS, TIME_SPEC_NS
@@ -70,55 +70,55 @@ static enum Time_spec const time_spec[] =
 ARGMATCH_VERIFY (time_spec_string, time_spec);
 
 /* A format suitable for Internet RFCs 5322, 2822, and 822.  */
-static char const rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
+സ്ഥിതം അക്ഷരം സ്ഥിരം rfc_email_format[] = "%a, %d %b %Y %H:%M:%S %z";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   DEBUG_DATE_PARSING_OPTION = CHAR_MAX + 1,
   RESOLUTION_OPTION,
   RFC_3339_OPTION
 };
 
-static char const short_options[] = "d:f:I::r:Rs:u";
+സ്ഥിതം അക്ഷരം സ്ഥിരം short_options[] = "d:f:I::r:Rs:u";
 
-static struct option const long_options[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
 {
-  {"date", required_argument, NULL, 'd'},
-  {"debug", no_argument, NULL, DEBUG_DATE_PARSING_OPTION},
-  {"file", required_argument, NULL, 'f'},
-  {"iso-8601", optional_argument, NULL, 'I'},
-  {"reference", required_argument, NULL, 'r'},
-  {"resolution", no_argument, NULL, RESOLUTION_OPTION},
-  {"rfc-email", no_argument, NULL, 'R'},
-  {"rfc-822", no_argument, NULL, 'R'},  /* Deprecated.  */
-  {"rfc-2822", no_argument, NULL, 'R'},  /* Deprecated.  */
-  {"rfc-3339", required_argument, NULL, RFC_3339_OPTION},
-  {"set", required_argument, NULL, 's'},
-  {"uct", no_argument, NULL, 'u'},  /* Deprecated.  */
-  {"utc", no_argument, NULL, 'u'},
-  {"universal", no_argument, NULL, 'u'},
+  {"date", required_argument, ശൂന്യ, 'd'},
+  {"debug", no_argument, ശൂന്യ, DEBUG_DATE_PARSING_OPTION},
+  {"file", required_argument, ശൂന്യ, 'f'},
+  {"iso-8601", optional_argument, ശൂന്യ, 'I'},
+  {"reference", required_argument, ശൂന്യ, 'r'},
+  {"resolution", no_argument, ശൂന്യ, RESOLUTION_OPTION},
+  {"rfc-email", no_argument, ശൂന്യ, 'R'},
+  {"rfc-822", no_argument, ശൂന്യ, 'R'},  /* Deprecated.  */
+  {"rfc-2822", no_argument, ശൂന്യ, 'R'},  /* Deprecated.  */
+  {"rfc-3339", required_argument, ശൂന്യ, RFC_3339_OPTION},
+  {"set", required_argument, ശൂന്യ, 's'},
+  {"uct", no_argument, ശൂന്യ, 'u'},  /* Deprecated.  */
+  {"utc", no_argument, ശൂന്യ, 'u'},
+  {"universal", no_argument, ശൂന്യ, 'u'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* flags for parse_datetime2 */
-static unsigned int parse_datetime_flags;
+സ്ഥിതം unsigned പൂർണ്ണസംഖ്യ parse_datetime_flags;
 
 #ifdef _DATE_FMT
 # define DATE_FMT_LANGINFO() nl_langinfo (_DATE_FMT)
-#else
+#അല്ലെങ്കിൽ
 # define DATE_FMT_LANGINFO() ""
 #endif
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [+FORMAT]\n\
@@ -143,14 +143,14 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (_("\
   -f, --file=DATEFILE\n\
-         like --date; once for each line of DATEFILE;\n\
-         if DATEFILE is -, read names from standard input\n\
+         like --date; once വേണ്ടി each വരി of DATEFILE;\n\
+         എങ്കിൽ DATEFILE is -, പഠ names from standard നിവേശം\n\
 "));
       oputs (_("\
   -I[FMT], --iso-8601[=FMT]\n\
          output date/time in ISO 8601 format.\n\
-         FMT='date' (default), 'hours', 'minutes', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         FMT='date' (സ്ഥിരസ്ഥിതി), 'hours', 'minutes', 'seconds', or 'ns'\n\
+         വേണ്ടി date and time to the indicated precision.\n\
          Example: 2006-08-14T02:34:56-06:00\n\
 "));
       oputs (_("\
@@ -167,7 +167,7 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
       --rfc-3339=FMT\n\
          output date/time in RFC 3339 format.\n\
          FMT='date', 'seconds', or 'ns'\n\
-         for date and time to the indicated precision.\n\
+         വേണ്ടി date and time to the indicated precision.\n\
          Example: 2006-08-14 02:34:56-06:00\n\
 "));
       oputs (_("\
@@ -220,10 +220,10 @@ FORMAT  Example    Description\n\
   %Y    1999        year\n\
 "), stdout);
       fputs (_("\
-  %g    99          year of ISO week number (last 2 digits; 00-99); see %G\n\
+  %g    99          year of ISO week സംഖ്യ (last 2 digits; 00-99); see %G\n\
 "), stdout);
       fputs (_("\
-  %G    1999        year of ISO week number; normally useful only with %V\n\
+  %G    1999        year of ISO week സംഖ്യ; normally useful only with %V\n\
 "), stdout);
 
       fputs ("\n", stdout);
@@ -292,10 +292,10 @@ FORMAT  Example    Description\n\
   %s    1970010100  seconds since the Epoch (1970-01-01 00:00 UTC)\n\
 "), stdout);
       fputs (_("\
-  %p    PM          locale's equivalent of AM or PM; blank if not known\n\
+  %p    PM          locale's equivalent of AM or PM; blank എങ്കിൽ not known\n\
 "), stdout);
       fputs (_("\
-  %P    am          like %p, but lower case\n\
+  %P    am          like %p, but lower അവസ്ഥ\n\
 "), stdout);
       fputs (_("\
   %r    1:11:04 PM  locale's 12-hour clock time\n\
@@ -328,7 +328,7 @@ FORMAT  Example    Description\n\
   %U    52          week of year; Sunday as first day of week (00..53)\n\
 "), stdout);
       fputs (_("\
-  %V    52          ISO week number; Monday as first day of week (01..53)\n\
+  %V    52          ISO week സംഖ്യ; Monday as first day of week (01..53)\n\
 "), stdout);
       fputs (_("\
   %W    52          week of year; Monday as first day of week (00..53)\n\
@@ -353,24 +353,24 @@ FORMAT  Example    Description\n\
 "), stdout);
       fputs (_("\
 \n\
-By default, date pads numeric fields with zeroes.\n\
+By സ്ഥിരസ്ഥിതി, date pads numeric fields with zeroes.\n\
 "), stdout);
       fputs (_("\
 The following optional flags may follow '%':\n\
 \n\
-  -  (hyphen) do not pad the field\n\
+  -  (hyphen) ചെയ്യുക not pad the field\n\
   _  (underscore) pad with spaces\n\
   0  (zero) pad with zeros\n\
   +  pad with zeros, and put '+' before future years with >4 digits\n\
-  ^  use upper case if possible\n\
-  #  use opposite case if possible\n\
+  ^  use upper അവസ്ഥ എങ്കിൽ possible\n\
+  #  use opposite അവസ്ഥ എങ്കിൽ possible\n\
 "), stdout);
       fputs (_("\
 \n\
-After any flags comes an optional field width, as a decimal number;\n\
+After any flags comes an optional field width, as a decimal സംഖ്യ;\n\
 then an optional modifier, which is either\n\
-E to use the locale's alternate representations if available, or\n\
-O to use the locale's alternate numeric symbols if available.\n\
+E to use the locale's alternate representations എങ്കിൽ available, or\n\
+O to use the locale's alternate numeric symbols എങ്കിൽ available.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -381,7 +381,7 @@ Convert seconds since the Epoch (1970-01-01 UTC) to a date\n\
 Show the time on the west coast of the US (use tzselect(1) to find TZ)\n\
   $ TZ='America/Los_Angeles' date\n\
 \n\
-Show the local time for 9AM next Friday on the west coast of the US\n\
+Show the local time വേണ്ടി 9AM next Friday on the west coast of the US\n\
   $ date --date='TZ=\"America/Los_Angeles\" 09:00 next Fri'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -393,47 +393,47 @@ Show the local time for 9AM next Friday on the west coast of the US\n\
    nanosecond resolution RES, without losing information.  */
 
 ATTRIBUTE_CONST
-static int
-res_width (long int res)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+res_width (long പൂർണ്ണസംഖ്യ res)
 {
-  int i = 9;
-  for (long long int r = 1; (r *= 10) <= res; )
+  പൂർണ്ണസംഖ്യ i = 9;
+  വേണ്ടി (long long പൂർണ്ണസംഖ്യ r = 1; (r *= 10) <= res; )
     i--;
-  return i;
+  തിരികെ i;
 }
 
 /* Return a newly allocated copy of FORMAT with each "%-N" adjusted to
    be "%9N", "%6N", or whatever other resolution is appropriate for
    the current platform.  If no "%-N" appears, return NULL.  */
 
-static char *
-adjust_resolution (char const *format)
+സ്ഥിതം അക്ഷരം *
+adjust_resolution (അക്ഷരം സ്ഥിരം *format)
 {
-  char *copy = NULL;
+  അക്ഷരം *copy = ശൂന്യ;
 
-  for (char const *f = format; *f; f++)
-    if (f[0] == '%')
+  വേണ്ടി (അക്ഷരം സ്ഥിരം *f = format; *f; f++)
+    എങ്കിൽ (f[0] == '%')
       {
-        if (f[1] == '-' && f[2] == 'N')
+        എങ്കിൽ (f[1] == '-' && f[2] == 'N')
           {
-            if (!copy)
+            എങ്കിൽ (!copy)
               copy = xstrdup (format);
             copy[f + 1 - format] = '0' + res_width (gettime_res ());
             f += 2;
           }
-        else
+        അല്ലെങ്കിൽ
           f += f[1] == '%';
       }
 
-  return copy;
+  തിരികെ copy;
 }
 
 /* Set the LC_TIME category of the current locale.
    Return the previous value of the LC_TIME category, as a freshly allocated
    string or null.  */
 
-static char *
-set_LC_TIME (char const *locale)
+സ്ഥിതം അക്ഷരം *
+set_LC_TIME (അക്ഷരം സ്ഥിരം *locale)
 {
   /* It is not sufficient to do
        setlocale (LC_TIME, locale);
@@ -441,8 +441,8 @@ set_LC_TIME (char const *locale)
      'localename-unsafe', that looks at the values of the environment variables
      (in order to distinguish the default locale from the C locale on platforms
      like macOS).  */
-  char const *all = getenv ("LC_ALL");
-  if (all != NULL && *all != '\0')
+  അക്ഷരം സ്ഥിരം *all = getenv ("LC_ALL");
+  എങ്കിൽ (all != ശൂന്യ && *all != '\0')
     {
       /* Setting LC_TIME when LC_ALL is set would have no effect.  Therefore we
          have to unset LC_ALL and sets its value to all locale categories that
@@ -457,40 +457,40 @@ set_LC_TIME (char const *locale)
     }
 
   /* Set LC_TIME as an environment variable.  */
-  char const *value = getenv ("LC_TIME");
-  char *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
-  if (locale != NULL)
+  അക്ഷരം സ്ഥിരം *മൂല്യം = getenv ("LC_TIME");
+  അക്ഷരം *ret = (മൂല്യം == ശൂന്യ || *മൂല്യം == '\0' ? ശൂന്യ : xstrdup (മൂല്യം));
+  എങ്കിൽ (locale != ശൂന്യ)
     xsetenv ("LC_TIME", locale, 1);
-  else
+  അല്ലെങ്കിൽ
     unsetenv ("LC_TIME");
 
   /* Update the current locale accordingly.  */
   setlocale (LC_TIME, "");
 
-  return ret;
+  തിരികെ ret;
 }
 
-static bool
-show_date_helper (char const *format, bool use_c_locale,
-                  struct timespec when, timezone_t tz)
+സ്ഥിതം bool
+show_date_helper (അക്ഷരം സ്ഥിരം *format, bool use_c_locale,
+                  ഘടന timespec when, timezone_t tz)
 {
-  if (parse_datetime_flags & PARSE_DATETIME_DEBUG)
+  എങ്കിൽ (parse_datetime_flags & PARSE_DATETIME_DEBUG)
     error (0, 0, _("output format: %s"), quote (format));
 
   bool ok;
-  if (use_c_locale)
+  എങ്കിൽ (use_c_locale)
     {
-      char *old_locale_category = set_LC_TIME ("C");
+      അക്ഷരം *old_locale_category = set_LC_TIME ("C");
       ok = show_date (format, when, tz);
-      char *new_locale_category = set_LC_TIME (old_locale_category);
-      free (new_locale_category);
-      free (old_locale_category);
+      അക്ഷരം *new_locale_category = set_LC_TIME (old_locale_category);
+      സ്വതന്ത്രം (new_locale_category);
+      സ്വതന്ത്രം (old_locale_category);
     }
-  else
+  അല്ലെങ്കിൽ
     ok = show_date (format, when, tz);
 
   putchar ('\n');
-  return ok;
+  തിരികെ ok;
 }
 
 /* Parse each line in INPUT_FILENAME as with --date and display each
@@ -498,79 +498,79 @@ show_date_helper (char const *format, bool use_c_locale,
    then exit.  Issue a diagnostic for any lines that cannot be parsed.
    Return true if successful.  */
 
-static bool
-batch_convert (char const *input_filename,
-               char const *format, bool format_in_c_locale,
-               timezone_t tz, char const *tzstring)
+സ്ഥിതം bool
+batch_convert (അക്ഷരം സ്ഥിരം *നിവേശം_filename,
+               അക്ഷരം സ്ഥിരം *format, bool format_in_c_locale,
+               timezone_t tz, അക്ഷരം സ്ഥിരം *tzstring)
 {
   FILE *in_stream;
 
-  if (streq (input_filename, "-"))
+  എങ്കിൽ (streq (നിവേശം_filename, "-"))
     {
-      input_filename = _("standard input");
+      നിവേശം_filename = _("standard input");
       in_stream = stdin;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      in_stream = fopen (input_filename, "r");
-      if (in_stream == NULL)
-        error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+      in_stream = fopen (നിവേശം_filename, "r");
+      എങ്കിൽ (in_stream == ശൂന്യ)
+        error (EXIT_FAILURE, errno, "%s", quotef (നിവേശം_filename));
     }
 
-  char *line = NULL;
+  അക്ഷരം *വരി = ശൂന്യ;
   size_t buflen = 0;
   bool ok = true;
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      ssize_t line_length = getline (&line, &buflen, in_stream);
-      if (line_length < 0)
+      ssize_t വരി_length = getline (&വരി, &buflen, in_stream);
+      എങ്കിൽ (വരി_length < 0)
         {
-          if (ferror (in_stream))
+          എങ്കിൽ (ferror (in_stream))
             error (EXIT_FAILURE, errno, _("%s: read error"),
-                   quotef (input_filename));
-          break;
+                   quotef (നിവേശം_filename));
+          നിർത്തുക;
         }
 
-      struct timespec when;
-      if (! parse_datetime2 (&when, line, NULL,
+      ഘടന timespec when;
+      എങ്കിൽ (! parse_datetime2 (&when, വരി, ശൂന്യ,
                              parse_datetime_flags, tz, tzstring))
         {
-          if (line[line_length - 1] == '\n')
-            line[line_length - 1] = '\0';
-          error (0, 0, _("invalid date %s"), quote (line));
+          എങ്കിൽ (വരി[വരി_length - 1] == '\n')
+            വരി[വരി_length - 1] = '\0';
+          error (0, 0, _("invalid date %s"), quote (വരി));
           ok = false;
         }
-      else
+      അല്ലെങ്കിൽ
         {
           ok &= show_date_helper (format, format_in_c_locale, when, tz);
         }
 
-      if (ferror (stdout))
+      എങ്കിൽ (ferror (stdout))
         write_error ();
     }
 
-  if (fclose (in_stream) == EOF)
-    error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+  എങ്കിൽ (fclose (in_stream) == EOF)
+    error (EXIT_FAILURE, errno, "%s", quotef (നിവേശം_filename));
 
-  free (line);
+  സ്വതന്ത്രം (വരി);
 
-  return ok;
+  തിരികെ ok;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  char const *datestr = NULL;
-  char const *set_datestr = NULL;
+  അക്ഷരം സ്ഥിരം *datestr = ശൂന്യ;
+  അക്ഷരം സ്ഥിരം *set_datestr = ശൂന്യ;
   bool set_date = false;
-  char const *format = NULL;
+  അക്ഷരം സ്ഥിരം *format = ശൂന്യ;
   bool format_in_c_locale = false;
   bool get_resolution = false;
-  char *batch_file = NULL;
-  char *reference = NULL;
+  അക്ഷരം *batch_file = ശൂന്യ;
+  അക്ഷരം *reference = ശൂന്യ;
   bool discarded_datestr = false;
   bool discarded_set_datestr = false;
-  char const *tzstring = NULL;
+  അക്ഷരം സ്ഥിരം *tzstring = ശൂന്യ;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -580,44 +580,44 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  പൂർണ്ണസംഖ്യ optc;
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, short_options, long_options, ശൂന്യ))
          != -1)
     {
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case 'd':
-          if (datestr)
+        അവസ്ഥ 'd':
+          എങ്കിൽ (datestr)
             discarded_datestr = true;
           datestr = optarg;
-          break;
-        case DEBUG_DATE_PARSING_OPTION:
+          നിർത്തുക;
+        അവസ്ഥ DEBUG_DATE_PARSING_OPTION:
           parse_datetime_flags |= PARSE_DATETIME_DEBUG;
-          break;
-        case 'f':
+          നിർത്തുക;
+        അവസ്ഥ 'f':
           batch_file = optarg;
-          break;
-        case RESOLUTION_OPTION:
+          നിർത്തുക;
+        അവസ്ഥ RESOLUTION_OPTION:
           get_resolution = true;
-          break;
-        case RFC_3339_OPTION:
+          നിർത്തുക;
+        അവസ്ഥ RFC_3339_OPTION:
           {
-            static char const rfc_3339_format[][32] =
+            സ്ഥിതം അക്ഷരം സ്ഥിരം rfc_3339_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%d %H:%M:%S%:z",
                 "%Y-%m-%d %H:%M:%S.%N%:z"
               };
-            enum Time_spec i =
+            എണ്ണൽ Time_spec i =
               XARGMATCH ("--rfc-3339", optarg,
                          time_spec_string + 2, time_spec + 2);
             format = rfc_3339_format[i];
             format_in_c_locale = true;
-            break;
+            നിർത്തുക;
           }
-        case 'I':
+        അവസ്ഥ 'I':
           {
-            static char const iso_8601_format[][32] =
+            സ്ഥിതം അക്ഷരം സ്ഥിരം iso_8601_format[][32] =
               {
                 "%Y-%m-%d",
                 "%Y-%m-%dT%H:%M:%S%:z",
@@ -625,75 +625,75 @@ main (int argc, char **argv)
                 "%Y-%m-%dT%H%:z",
                 "%Y-%m-%dT%H:%M%:z"
               };
-            enum Time_spec i =
+            എണ്ണൽ Time_spec i =
               (optarg
                ? XARGMATCH ("--iso-8601", optarg, time_spec_string, time_spec)
                : TIME_SPEC_DATE);
             format = iso_8601_format[i];
             format_in_c_locale = true;
-            break;
+            നിർത്തുക;
           }
-        case 'r':
+        അവസ്ഥ 'r':
           reference = optarg;
-          break;
-        case 'R':
+          നിർത്തുക;
+        അവസ്ഥ 'R':
           format = rfc_email_format;
           format_in_c_locale = true;
-          break;
-        case 's':
-          if (set_datestr)
+          നിർത്തുക;
+        അവസ്ഥ 's':
+          എങ്കിൽ (set_datestr)
             discarded_set_datestr = true;
           set_datestr = optarg;
           set_date = true;
-          break;
-        case 'u':
+          നിർത്തുക;
+        അവസ്ഥ 'u':
           tzstring = "UTC0";
-          break;
+          നിർത്തുക;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  int option_specified_date = (!!datestr + !!batch_file + !!reference
+  പൂർണ്ണസംഖ്യ option_specified_date = (!!datestr + !!batch_file + !!reference
                                + get_resolution);
 
-  if (option_specified_date > 1)
+  എങ്കിൽ (option_specified_date > 1)
     {
       error (0, 0,
         _("the options to specify dates for printing are mutually exclusive"));
       usage (EXIT_FAILURE);
     }
 
-  if (set_date && option_specified_date)
+  എങ്കിൽ (set_date && option_specified_date)
     {
       error (0, 0,
           _("the options to print and set the time may not be used together"));
       usage (EXIT_FAILURE);
     }
 
-  if (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  എങ്കിൽ (discarded_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -d options"));
 
-  if (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
+  എങ്കിൽ (discarded_set_datestr && (parse_datetime_flags & PARSE_DATETIME_DEBUG))
     error (0, 0, _("only using last of multiple -s options"));
 
-  if (optind < argc)
+  എങ്കിൽ (optind < argc)
     {
-      if (optind + 1 < argc)
+      എങ്കിൽ (optind + 1 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           usage (EXIT_FAILURE);
         }
 
-      if (argv[optind][0] == '+')
+      എങ്കിൽ (argv[optind][0] == '+')
         {
-          if (format)
+          എങ്കിൽ (format)
             error (EXIT_FAILURE, 0, _("multiple output formats specified"));
           format = argv[optind++] + 1;
         }
-      else if (set_date || option_specified_date)
+      അല്ലെങ്കിൽ എങ്കിൽ (set_date || option_specified_date)
         {
           error (0, 0,
                  _("the argument %s lacks a leading '+';\n"
@@ -704,11 +704,11 @@ main (int argc, char **argv)
         }
     }
 
-  if (!format)
+  എങ്കിൽ (!format)
     {
-      if (get_resolution)
+      എങ്കിൽ (get_resolution)
         format = "%s.%N";
-      else
+      അല്ലെങ്കിൽ
         {
           format = DATE_FMT_LANGINFO ();
 
@@ -719,29 +719,29 @@ main (int argc, char **argv)
              written by date, which means "date" must generate output
              using the POSIX locale; but adding _() would cause "date"
              to use a Korean translation of the format.  */
-          if (! *format)
+          എങ്കിൽ (! *format)
             format = "%a %b %e %H:%M:%S %Z %Y";
         }
     }
 
-  char *format_copy = adjust_resolution (format);
-  char const *format_res = format_copy ? format_copy : format;
-  if (!tzstring)
+  അക്ഷരം *format_copy = adjust_resolution (format);
+  അക്ഷരം സ്ഥിരം *format_res = format_copy ? format_copy : format;
+  എങ്കിൽ (!tzstring)
     tzstring = getenv ("TZ");
   timezone_t tz = tzalloc (tzstring);
 
   bool ok = true;
-  if (batch_file != NULL)
+  എങ്കിൽ (batch_file != ശൂന്യ)
     ok = batch_convert (batch_file, format_res, format_in_c_locale,
                         tz, tzstring);
-  else
+  അല്ലെങ്കിൽ
     {
       bool valid_date = true;
-      struct timespec when;
+      ഘടന timespec when;
 
-      if (!option_specified_date && !set_date)
+      എങ്കിൽ (!option_specified_date && !set_date)
         {
-          if (optind < argc)
+          എങ്കിൽ (optind < argc)
             {
               /* Prepare to set system clock to the specified date/time
                  given in the POSIX-format.  */
@@ -753,46 +753,46 @@ main (int argc, char **argv)
                                        | PDS_CENTURY | PDS_SECONDS));
               when.tv_nsec = 0; /* FIXME: posixtime should set this.  */
             }
-          else
+          അല്ലെങ്കിൽ
             {
               /* Prepare to print the current date/time.  */
               gettime (&when);
             }
         }
-      else
+      അല്ലെങ്കിൽ
         {
           /* (option_specified_date || set_date) */
-          if (reference != NULL)
+          എങ്കിൽ (reference != ശൂന്യ)
             {
-              struct stat refstats;
-              if (stat (reference, &refstats) != 0)
+              ഘടന stat refstats;
+              എങ്കിൽ (stat (reference, &refstats) != 0)
                 error (EXIT_FAILURE, errno, "%s", quotef (reference));
               when = get_stat_mtime (&refstats);
             }
-          else if (get_resolution)
+          അല്ലെങ്കിൽ എങ്കിൽ (get_resolution)
             {
-              long int res = gettime_res ();
+              long പൂർണ്ണസംഖ്യ res = gettime_res ();
               when.tv_sec = res / TIMESPEC_HZ;
               when.tv_nsec = res % TIMESPEC_HZ;
             }
-          else
+          അല്ലെങ്കിൽ
             {
-              if (set_datestr)
+              എങ്കിൽ (set_datestr)
                 datestr = set_datestr;
-              valid_date = parse_datetime2 (&when, datestr, NULL,
+              valid_date = parse_datetime2 (&when, datestr, ശൂന്യ,
                                             parse_datetime_flags,
                                             tz, tzstring);
             }
         }
 
-      if (! valid_date)
+      എങ്കിൽ (! valid_date)
         error (EXIT_FAILURE, 0, _("invalid date %s"), quote (datestr));
 
-      if (set_date)
+      എങ്കിൽ (set_date)
         {
           /* Set the system clock to the specified date, then regardless of
              the success of that operation, format and print that date.  */
-          if (settime (&when) != 0)
+          എങ്കിൽ (settime (&when) != 0)
             {
               error (0, errno, _("cannot set date"));
               ok = false;

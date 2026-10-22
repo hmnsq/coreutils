@@ -17,13 +17,13 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#അന്തര്ഭാവ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#അന്തര്ഭാവ "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dirname"
@@ -32,22 +32,22 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+സ്ഥിതം bool quote_output;
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_argument, ശൂന്യ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,12 +55,12 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; എങ്കിൽ NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output വരി with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   bool use_nuls = false;
 
@@ -90,58 +90,58 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      പൂർണ്ണസംഖ്യ c = getopt_long (argc, argv, "z", longopts, ശൂന്യ);
 
-      if (c == -1)
-        break;
+      എങ്കിൽ (c == -1)
+        നിർത്തുക;
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'z':
+        അവസ്ഥ 'z':
           use_nuls = true;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  എങ്കിൽ (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  എങ്കിൽ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      പൂർണ്ണസംഖ്യ qs = getenv_quoting_style ();
+      എങ്കിൽ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      എങ്കിൽ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (ശൂന്യ, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  വേണ്ടി (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
+      അക്ഷരം സ്ഥിരം *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      എങ്കിൽ (! len)
         {
-          static char const dot = '.';
+          സ്ഥിതം അക്ഷരം സ്ഥിരം dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      എങ്കിൽ (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

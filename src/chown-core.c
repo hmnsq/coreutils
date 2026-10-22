@@ -16,19 +16,19 @@
 
 /* Extracted from chown.c/chgrp.c and librarified by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <pwd.h>
+#അന്തര്ഭാവ <grp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "chown-core.h"
-#include "fts-missing.h"
-#include "ignore-value.h"
-#include "root-dev-ino.h"
-#include "xfts.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "chown-core.h"
+#അന്തര്ഭാവ "fts-missing.h"
+#അന്തര്ഭാവ "ignore-value.h"
+#അന്തര്ഭാവ "root-dev-ino.h"
+#അന്തര്ഭാവ "xfts.h"
 
 #define FTSENT_IS_DIRECTORY(E)	\
   ((E)->fts_info == FTS_D	\
@@ -36,7 +36,7 @@
    || (E)->fts_info == FTS_DP	\
    || (E)->fts_info == FTS_DNR)
 
-enum RCH_status
+എണ്ണൽ RCH_status
   {
     /* we called fchown and close, and both succeeded */
     RC_ok = 2,
@@ -55,44 +55,44 @@ enum RCH_status
     RC_error
   };
 
-extern void
-chopt_init (struct Chown_option *chopt)
+ബാഹ്യ ശൂന്യം
+chopt_init (ഘടന Chown_option *chopt)
 {
   chopt->verbosity = V_off;
-  chopt->root_dev_ino = NULL;
+  chopt->വേര്_dev_ino = ശൂന്യ;
   chopt->affect_symlink_referent = true;
   chopt->recurse = false;
   chopt->force_silent = false;
-  chopt->user_name = NULL;
-  chopt->group_name = NULL;
+  chopt->user_name = ശൂന്യ;
+  chopt->group_name = ശൂന്യ;
 }
 
-extern void
-chopt_free (struct Chown_option *chopt)
+ബാഹ്യ ശൂന്യം
+chopt_free (ഘടന Chown_option *chopt)
 {
-  free (chopt->user_name);
-  free (chopt->group_name);
+  സ്വതന്ത്രം (chopt->user_name);
+  സ്വതന്ത്രം (chopt->group_name);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
    and return it.  Use the decimal representation of the ID.  */
 
-static char *
+സ്ഥിതം അക്ഷരം *
 uid_to_str (uid_t uid)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
+  അക്ഷരം buf[INT_BUFSIZE_BOUND (intmax_t)];
+  തിരികെ xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
                   : umaxtostr (uid, buf));
 }
 
 /* Convert the numeric group-id, GID, to a string stored in xmalloc'd memory,
    and return it.  Use the decimal representation of the ID.  */
 
-static char *
+സ്ഥിതം അക്ഷരം *
 gid_to_str (gid_t gid)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
+  അക്ഷരം buf[INT_BUFSIZE_BOUND (intmax_t)];
+  തിരികെ xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
                   : umaxtostr (gid, buf));
 }
 
@@ -100,110 +100,110 @@ gid_to_str (gid_t gid)
    and return it.  If there's no corresponding group name, use the decimal
    representation of the ID.  */
 
-extern char *
+ബാഹ്യ അക്ഷരം *
 gid_to_name (gid_t gid)
 {
-  struct group *grp = getgrgid (gid);
-  return grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
+  ഘടന group *grp = getgrgid (gid);
+  തിരികെ grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
    and return it.  If there's no corresponding user name, use the decimal
    representation of the ID.  */
 
-extern char *
+ബാഹ്യ അക്ഷരം *
 uid_to_name (uid_t uid)
 {
-  struct passwd *pwd = getpwuid (uid);
-  return pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
+  ഘടന passwd *pwd = getpwuid (uid);
+  തിരികെ pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
 }
 
 /* Allocate a string representing USER and GROUP.  */
 
-static char *
-user_group_str (char const *user, char const *group)
+സ്ഥിതം അക്ഷരം *
+user_group_str (അക്ഷരം സ്ഥിരം *user, അക്ഷരം സ്ഥിരം *group)
 {
-  char *spec = NULL;
+  അക്ഷരം *spec = ശൂന്യ;
 
-  if (user)
+  എങ്കിൽ (user)
     {
-      if (group)
+      എങ്കിൽ (group)
         {
           spec = xmalloc (strlen (user) + 1 + strlen (group) + 1);
           stpcpy (stpcpy (stpcpy (spec, user), ":"), group);
         }
-      else
+      അല്ലെങ്കിൽ
         {
           spec = xstrdup (user);
         }
     }
-  else if (group)
+  അല്ലെങ്കിൽ എങ്കിൽ (group)
     {
       spec = xstrdup (group);
     }
 
-  return spec;
+  തിരികെ spec;
 }
 
 /* Tell the user how/if the user and group of FILE have been changed.
    If USER is null, give the group-oriented messages.
    CHANGED describes what (if anything) has happened. */
 
-static void
-describe_change (char const *file, enum Change_status changed,
-                 char const *old_user, char const *old_group,
-                 char const *user, char const *group)
+സ്ഥിതം ശൂന്യം
+describe_change (അക്ഷരം സ്ഥിരം *file, എണ്ണൽ Change_status changed,
+                 അക്ഷരം സ്ഥിരം *old_user, അക്ഷരം സ്ഥിരം *old_group,
+                 അക്ഷരം സ്ഥിരം *user, അക്ഷരം സ്ഥിരം *group)
 {
-  if (changed == CH_NOT_APPLIED)
+  എങ്കിൽ (changed == CH_NOT_APPLIED)
     {
       printf (_("neither symbolic link %s nor referent has been changed\n"),
               quoteaf (file));
-      return;
+      തിരികെ;
     }
 
-  char *spec = user_group_str (user, group);
-  char *old_spec = user_group_str (user ? old_user : NULL,
-                                   group ? old_group : NULL);
+  അക്ഷരം *spec = user_group_str (user, group);
+  അക്ഷരം *old_spec = user_group_str (user ? old_user : ശൂന്യ,
+                                   group ? old_group : ശൂന്യ);
 
-  char const *fmt;
-  switch (changed)
+  അക്ഷരം സ്ഥിരം *fmt;
+  തിരഞ്ഞെടുപ്പ് (changed)
     {
-    case CH_SUCCEEDED:
+    അവസ്ഥ CH_SUCCEEDED:
       fmt = (user ? _("changed ownership of %s from %s to %s\n")
              : group ? _("changed group of %s from %s to %s\n")
              : _("no change to ownership of %s\n"));
-      break;
-    case CH_FAILED:
-      if (old_spec)
+      നിർത്തുക;
+    അവസ്ഥ CH_FAILED:
+      എങ്കിൽ (old_spec)
         {
           fmt = (user ? _("failed to change ownership of %s from %s to %s\n")
                  : group ? _("failed to change group of %s from %s to %s\n")
                  : _("failed to change ownership of %s\n"));
         }
-      else
+      അല്ലെങ്കിൽ
         {
           fmt = (user ? _("failed to change ownership of %s to %s\n")
                  : group ? _("failed to change group of %s to %s\n")
                  : _("failed to change ownership of %s\n"));
-          free (old_spec);
+          സ്വതന്ത്രം (old_spec);
           old_spec = spec;
-          spec = NULL;
+          spec = ശൂന്യ;
         }
-      break;
-    case CH_NO_CHANGE_REQUESTED:
+      നിർത്തുക;
+    അവസ്ഥ CH_NO_CHANGE_REQUESTED:
       fmt = (user ? _("ownership of %s retained as %s\n")
              : group ? _("group of %s retained as %s\n")
              : _("ownership of %s retained\n"));
-      break;
-    case CH_NOT_APPLIED:
-    default:
+      നിർത്തുക;
+    അവസ്ഥ CH_NOT_APPLIED:
+    സ്ഥിരസ്ഥിതി:
       affirm (false);
     }
 
   printf (fmt, quoteaf (file), old_spec, spec);
 
-  free (old_spec);
-  free (spec);
+  സ്വതന്ത്രം (old_spec);
+  സ്വതന്ത്രം (spec);
 }
 
 /* Change the owner and/or group of the FILE to UID and/or GID (safely)
@@ -224,50 +224,50 @@ describe_change (char const *file, enum Change_status changed,
 
    Return one of the RCH_status values.  */
 
-static enum RCH_status
-restricted_chown (int cwd_fd, char const *file,
-                  struct stat const *orig_st,
+സ്ഥിതം എണ്ണൽ RCH_status
+restricted_chown (പൂർണ്ണസംഖ്യ cwd_fd, അക്ഷരം സ്ഥിരം *file,
+                  ഘടന stat സ്ഥിരം *orig_st,
                   uid_t uid, gid_t gid,
                   uid_t required_uid, gid_t required_gid)
 {
-  if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
-    return RC_do_ordinary_chown;
+  എങ്കിൽ (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
+    തിരികെ RC_do_ordinary_chown;
 
-  int open_flags = O_NONBLOCK | O_NOCTTY;
-  if (! S_ISREG (orig_st->st_mode))
+  പൂർണ്ണസംഖ്യ open_flags = O_NONBLOCK | O_NOCTTY;
+  എങ്കിൽ (! S_ISREG (orig_st->st_mode))
     {
-      if (S_ISDIR (orig_st->st_mode))
+      എങ്കിൽ (S_ISDIR (orig_st->st_mode))
         open_flags |= O_DIRECTORY;
-      else
-        return RC_do_ordinary_chown;
+      അല്ലെങ്കിൽ
+        തിരികെ RC_do_ordinary_chown;
     }
 
-  int fd = openat (cwd_fd, file, O_RDONLY | open_flags);
-  if (! (0 <= fd
+  പൂർണ്ണസംഖ്യ fd = openat (cwd_fd, file, O_RDONLY | open_flags);
+  എങ്കിൽ (! (0 <= fd
          || (errno == EACCES && S_ISREG (orig_st->st_mode)
              && 0 <= (fd = openat (cwd_fd, file, O_WRONLY | open_flags)))))
-    return (errno == EACCES ? RC_do_ordinary_chown : RC_error);
+    തിരികെ (errno == EACCES ? RC_do_ordinary_chown : RC_error);
 
-  enum RCH_status status = RC_ok;
-  struct stat st;
-  if (fstat (fd, &st) != 0)
+  എണ്ണൽ RCH_status status = RC_ok;
+  ഘടന stat st;
+  എങ്കിൽ (fstat (fd, &st) != 0)
     status = RC_error;
-  else if (! psame_inode (orig_st, &st))
+  അല്ലെങ്കിൽ എങ്കിൽ (! psame_inode (orig_st, &st))
     status = RC_inode_changed;
-  else if ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
+  അല്ലെങ്കിൽ എങ്കിൽ ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
            && (required_gid == (gid_t) -1 || required_gid == st.st_gid))
     {
-#if HAVE_FCHOWN
-      if (fchown (fd, uid, gid) == 0)
-        return close (fd) < 0 ? RC_error : RC_ok;
+#എങ്കിൽ HAVE_FCHOWN
+      എങ്കിൽ (fchown (fd, uid, gid) == 0)
+        തിരികെ close (fd) < 0 ? RC_error : RC_ok;
 #endif
       status = RC_error;
     }
 
-  int saved_errno = errno;
+  പൂർണ്ണസംഖ്യ saved_errno = errno;
   close (fd);
   errno = saved_errno;
-  return status;
+  തിരികെ status;
 }
 
 /* Change the owner and/or group of the file specified by FTS and ENT
@@ -276,46 +276,46 @@ restricted_chown (int cwd_fd, char const *file,
    If REQUIRED_GID is not -1, then skip files with any other group ID.
    CHOPT specifies additional options.
    Return true if successful.  */
-static bool
+സ്ഥിതം bool
 change_file_owner (FTS *fts, FTSENT *ent,
                    uid_t uid, gid_t gid,
                    uid_t required_uid, gid_t required_gid,
-                   struct Chown_option const *chopt)
+                   ഘടന Chown_option സ്ഥിരം *chopt)
 {
-  char const *file_full_name = ent->fts_path;
-  char const *file = ent->fts_accpath;
+  അക്ഷരം സ്ഥിരം *file_full_name = ent->fts_path;
+  അക്ഷരം സ്ഥിരം *file = ent->fts_accpath;
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  എങ്കിൽ (ignore_missing && ignorable_fts_error (ent))
+    തിരികെ true;
 
-  switch (ent->fts_info)
+  തിരഞ്ഞെടുപ്പ് (ent->fts_info)
     {
-    case FTS_D:
-      if (chopt->recurse)
+    അവസ്ഥ FTS_D:
+      എങ്കിൽ (chopt->recurse)
         {
-          if (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
+          എങ്കിൽ (വേര്_DEV_INO_CHECK (chopt->വേര്_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chown -R --preserve-root 0 /"
                  and with "chown -RH --preserve-root 0 symlink-to-root".  */
-              ROOT_DEV_INO_WARN (file_full_name);
+              വേര്_DEV_INO_WARN (file_full_name);
               /* Tell fts not to traverse into this hierarchy.  */
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
-              ignore_value (fts_read (fts));
-              return false;
+              ignore_മൂല്യം (fts_read (fts));
+              തിരികെ false;
             }
-          return true;
+          തിരികെ true;
         }
-      break;
+      നിർത്തുക;
 
-    case FTS_DP:
-      if (! chopt->recurse)
-        return true;
-      break;
+    അവസ്ഥ FTS_DP:
+      എങ്കിൽ (! chopt->recurse)
+        തിരികെ true;
+      നിർത്തുക;
 
-    case FTS_NS:
+    അവസ്ഥ FTS_NS:
       /* For a top-level file or directory, this FTS_NS (stat failed)
          indicator is determined at the time of the initial fts_open call.
          With programs like chmod, chown, and chgrp, that modify
@@ -323,73 +323,73 @@ change_file_owner (FTS *fts, FTSENT *ent,
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      എങ്കിൽ (ent->fts_level == FTS_ROOTLEVEL && ent->fts_സംഖ്യ == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_സംഖ്യ = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          തിരികെ true;
         }
-      if (! chopt->force_silent)
+      എങ്കിൽ (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
                quoteaf (file_full_name));
       ok = false;
-      break;
+      നിർത്തുക;
 
-    case FTS_ERR:
-      if (! chopt->force_silent)
+    അവസ്ഥ FTS_ERR:
+      എങ്കിൽ (! chopt->force_silent)
         error (0, ent->fts_errno, "%s", quotef (file_full_name));
       ok = false;
-      break;
+      നിർത്തുക;
 
-    case FTS_DNR:
-      if (! chopt->force_silent)
+    അവസ്ഥ FTS_DNR:
+      എങ്കിൽ (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
                quoteaf (file_full_name));
       ok = false;
-      break;
+      നിർത്തുക;
 
-    case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+    അവസ്ഥ FTS_DC:		/* directory that causes cycles */
+      എങ്കിൽ (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          തിരികെ false;
         }
-      break;
+      നിർത്തുക;
 
-    default:
-      break;
+    സ്ഥിരസ്ഥിതി:
+      നിർത്തുക;
     }
 
   bool do_chown;
-  struct stat stat_buf;
-  struct stat const *file_stats;
-  if (!ok)
+  ഘടന stat stat_buf;
+  ഘടന stat സ്ഥിരം *file_stats;
+  എങ്കിൽ (!ok)
     {
       do_chown = false;
-      file_stats = NULL;
+      file_stats = ശൂന്യ;
     }
-  else if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
+  അല്ലെങ്കിൽ എങ്കിൽ (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
            && chopt->verbosity == V_off
-           && ! chopt->root_dev_ino
+           && ! chopt->വേര്_dev_ino
            && ! chopt->affect_symlink_referent)
     {
       do_chown = true;
       file_stats = ent->fts_statp;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       file_stats = ent->fts_statp;
 
       /* If this is a symlink and we're dereferencing them,
          stat it to get info on the referent.  */
-      if (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
+      എങ്കിൽ (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          എങ്കിൽ (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              എങ്കിൽ (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! chopt->force_silent)
+                തിരികെ true;
+              എങ്കിൽ (! chopt->force_silent)
                 error (0, errno, _("cannot dereference %s"),
                        quoteaf (file_full_name));
               ok = false;
@@ -406,31 +406,31 @@ change_file_owner (FTS *fts, FTSENT *ent,
     }
 
   /* This happens when chown -LR --preserve-root encounters a symlink-to-/.  */
-  if (ok
+  എങ്കിൽ (ok
       && FTSENT_IS_DIRECTORY (ent)
-      && ROOT_DEV_INO_CHECK (chopt->root_dev_ino, file_stats))
+      && വേര്_DEV_INO_CHECK (chopt->വേര്_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
-      return false;
+      വേര്_DEV_INO_WARN (file_full_name);
+      തിരികെ false;
     }
 
   bool symlink_changed = true;
-  if (do_chown)
+  എങ്കിൽ (do_chown)
     {
-      if ( ! chopt->affect_symlink_referent)
+      എങ്കിൽ ( ! chopt->affect_symlink_referent)
         {
           ok = (lchownat (fts->fts_cwd_fd, file, uid, gid) == 0);
 
           /* Ignore any error due to lack of support; POSIX requires
              this behavior for top-level symbolic links with -h, and
              implies that it's required for all symbolic links.  */
-          if (!ok && is_ENOTSUP (errno))
+          എങ്കിൽ (!ok && is_ENOTSUP (errno))
             {
               ok = true;
               symlink_changed = false;
             }
         }
-      else
+      അല്ലെങ്കിൽ
         {
           /* If possible, avoid a race condition with --from=O:G and without the
              (-h) --no-dereference option.  If fts's stat call determined
@@ -442,30 +442,30 @@ change_file_owner (FTS *fts, FTSENT *ent,
              chown(2) calls.  If FILE is a regular file or a directory
              that can be opened, this race condition can be avoided safely.  */
 
-          enum RCH_status err
+          എണ്ണൽ RCH_status err
             = restricted_chown (fts->fts_cwd_fd, file, file_stats, uid, gid,
                                 required_uid, required_gid);
-          switch (err)
+          തിരഞ്ഞെടുപ്പ് (err)
             {
-            case RC_ok:
-              break;
+            അവസ്ഥ RC_ok:
+              നിർത്തുക;
 
-            case RC_do_ordinary_chown:
+            അവസ്ഥ RC_do_ordinary_chown:
               ok = (chownat (fts->fts_cwd_fd, file, uid, gid) == 0);
-              break;
+              നിർത്തുക;
 
-            case RC_error:
+            അവസ്ഥ RC_error:
               ok = false;
-              break;
+              നിർത്തുക;
 
-            case RC_inode_changed:
+            അവസ്ഥ RC_inode_changed:
               /* FIXME: give a diagnostic in this case?  */
-            case RC_excluded:
+            അവസ്ഥ RC_excluded:
               do_chown = false;
               ok = false;
-              break;
+              നിർത്തുക;
 
-            default:
+            സ്ഥിരസ്ഥിതി:
               unreachable ();
             }
         }
@@ -477,12 +477,12 @@ change_file_owner (FTS *fts, FTSENT *ent,
          by some other user and operating on files in a directory
          where M has write access.  */
 
-      if (do_chown && !ok)
+      എങ്കിൽ (do_chown && !ok)
         {
-          if (ignore_missing
+          എങ്കിൽ (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! chopt->force_silent)
+            തിരികെ true;
+          എങ്കിൽ (! chopt->force_silent)
             error (0, errno, (uid != (uid_t) -1
                               ? _("changing ownership of %s")
                               : _("changing group of %s")),
@@ -490,46 +490,46 @@ change_file_owner (FTS *fts, FTSENT *ent,
         }
     }
 
-  if (chopt->verbosity != V_off)
+  എങ്കിൽ (chopt->verbosity != V_off)
     {
       bool changed =
         ((do_chown && ok && symlink_changed)
          && ! ((uid == (uid_t) -1 || uid == file_stats->st_uid)
                && (gid == (gid_t) -1 || gid == file_stats->st_gid)));
 
-      if (changed || chopt->verbosity == V_high)
+      എങ്കിൽ (changed || chopt->verbosity == V_മുകളിലെ)
         {
-          enum Change_status ch_status =
+          എണ്ണൽ Change_status ch_status =
             (!ok ? CH_FAILED
              : !symlink_changed ? CH_NOT_APPLIED
              : !changed ? CH_NO_CHANGE_REQUESTED
              : CH_SUCCEEDED);
-          char *old_usr = (file_stats
-                           ? uid_to_name (file_stats->st_uid) : NULL);
-          char *old_grp = (file_stats
-                           ? gid_to_name (file_stats->st_gid) : NULL);
-          char *new_usr = chopt->user_name
+          അക്ഷരം *old_usr = (file_stats
+                           ? uid_to_name (file_stats->st_uid) : ശൂന്യ);
+          അക്ഷരം *old_grp = (file_stats
+                           ? gid_to_name (file_stats->st_gid) : ശൂന്യ);
+          അക്ഷരം *new_usr = chopt->user_name
                           ? chopt->user_name : uid != -1
-                                               ? uid_to_str (uid) : NULL;
-          char *new_grp = chopt->group_name
+                                               ? uid_to_str (uid) : ശൂന്യ;
+          അക്ഷരം *new_grp = chopt->group_name
                           ? chopt->group_name : gid != -1
-                                               ? gid_to_str (gid) : NULL;
+                                               ? gid_to_str (gid) : ശൂന്യ;
           describe_change (file_full_name, ch_status,
                            old_usr, old_grp,
                            new_usr, new_grp);
-          free (old_usr);
-          free (old_grp);
-          if (new_usr != chopt->user_name)
-            free (new_usr);
-          if (new_grp != chopt->group_name)
-            free (new_grp);
+          സ്വതന്ത്രം (old_usr);
+          സ്വതന്ത്രം (old_grp);
+          എങ്കിൽ (new_usr != chopt->user_name)
+            സ്വതന്ത്രം (new_usr);
+          എങ്കിൽ (new_grp != chopt->group_name)
+            സ്വതന്ത്രം (new_grp);
         }
     }
 
-  if ( ! chopt->recurse)
+  എങ്കിൽ ( ! chopt->recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* Change the owner and/or group of the specified FILES.
@@ -541,48 +541,48 @@ change_file_owner (FTS *fts, FTSENT *ent,
    If REQUIRED_UID and/or REQUIRED_GID is not -1, then change only
    files with user ID and group ID that match the non-(-1) value(s).
    Return true if successful.  */
-extern bool
-chown_files (char **files, int bit_flags,
+ബാഹ്യ bool
+chown_files (അക്ഷരം **files, പൂർണ്ണസംഖ്യ bit_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             ഘടന Chown_option സ്ഥിരം *chopt)
 {
   bool ok = true;
 
   /* Use lstat and stat only if they're needed.  */
-  int stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
+  പൂർണ്ണസംഖ്യ stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
                      || chopt->affect_symlink_referent
                      || chopt->verbosity != V_off)
                     ? 0
                     : FTS_NOSTAT);
 
-  FTS *fts = xfts_open (files, bit_flags | stat_flags, NULL);
+  FTS *fts = xfts_open (files, bit_flags | stat_flags, ശൂന്യ);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       FTSENT *ent = fts_read (fts);
 
-      if (ent == NULL)
+      എങ്കിൽ (ent == ശൂന്യ)
         {
-          if (errno != 0)
+          എങ്കിൽ (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! chopt->force_silent)
+              എങ്കിൽ (! chopt->force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
-          break;
+          നിർത്തുക;
         }
 
       ok &= change_file_owner (fts, ent, uid, gid,
                                required_uid, required_gid, chopt);
     }
 
-  if (fts_close (fts) != 0)
+  എങ്കിൽ (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  തിരികെ ok;
 }

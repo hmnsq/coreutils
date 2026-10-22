@@ -17,24 +17,24 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <signal.h>
 
-#include "system.h"
+#അന്തര്ഭാവ "system.h"
 
-#include <regex.h>
+#അന്തര്ഭാവ <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "fd-reopen.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "safe-read.h"
+#അന്തര്ഭാവ "stdio--.h"
+#അന്തര്ഭാവ "term-sig.h"
+#അന്തര്ഭാവ "xdectoint.h"
+#അന്തര്ഭാവ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "csplit"
@@ -47,16 +47,16 @@
 #define DEFAULT_PREFIX	"xx"
 
 /* A compiled pattern arg. */
-struct control
+ഘടന control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t വരികൾ_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  പൂർണ്ണസംഖ്യ argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  ഘടന re_pattern_buffer re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
@@ -72,138 +72,138 @@ struct control
 #endif
 
 /* A string with a length count. */
-struct cstring
+ഘടന cstring
 {
   idx_t len;
-  char *str;
+  അക്ഷരം *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+ഘടന വരി
 {
   idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
+  idx_t തിരുകുക_index;		/* Next offset to use when inserting line. */
   idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  ഘടന cstring starts[CTRL_SIZE]; /* Lines in the data area. */
+  ഘടന വരി *next;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+ഘടന buffer_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
+  intmax_t start_വരി;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t അക്കം_വരികൾ;		/* Number of complete lines in this buffer. */
+  അക്ഷരം *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
+  ഘടന വരി *വരി_start;	/* Head of list of pointers to lines. */
+  ഘടന വരി *curr_വരി;	/* The line start record currently in use. */
+  ഘടന buffer_record *next;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+സ്ഥിതം ശൂന്യം close_output_file (ശൂന്യം);
+സ്ഥിതം ശൂന്യം create_output_file (ശൂന്യം);
+സ്ഥിതം ശൂന്യം delete_all_files (bool);
+സ്ഥിതം ശൂന്യം save_വരി_to_file (സ്ഥിരം ഘടന cstring *വരി);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+സ്ഥിതം ഘടന buffer_record *head = ശൂന്യ;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+സ്ഥിതം അക്ഷരം *hold_area = ശൂന്യ;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+സ്ഥിതം idx_t hold_എണ്ണം = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+സ്ഥിതം intmax_t last_വരി_സംഖ്യ = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+സ്ഥിതം intmax_t current_വരി = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+സ്ഥിതം bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+സ്ഥിതം അക്ഷരം *അസ്ഥിര filename_space = ശൂന്യ;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *അസ്ഥിര prefix = DEFAULT_PREFIX;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+സ്ഥിതം അക്ഷരം *അസ്ഥിര suffix = ശൂന്യ;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+സ്ഥിതം പൂർണ്ണസംഖ്യ അസ്ഥിര digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+സ്ഥിതം പൂർണ്ണസംഖ്യ അസ്ഥിര files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+സ്ഥിതം intmax_t bytes_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+സ്ഥിതം FILE *output_stream = ശൂന്യ;
 
 /* Output file name. */
-static char *output_filename = NULL;
+സ്ഥിതം അക്ഷരം *output_filename = ശൂന്യ;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+സ്ഥിതം അക്ഷരം **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+സ്ഥിതം bool suppress_എണ്ണം;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+സ്ഥിതം bool അസ്ഥിര remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+സ്ഥിതം bool elide_empty_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+സ്ഥിതം bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+സ്ഥിതം ഘടന control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+സ്ഥിതം idx_t control_used;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+സ്ഥിതം sigset_t caught_signals;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_argument, ശൂന്യ, 'n'},
+  {"quiet", no_argument, ശൂന്യ, 'q'},  /* Deprecated.  */
+  {"silent", no_argument, ശൂന്യ, 's'},
+  {"keep-files", no_argument, ശൂന്യ, 'k'},
+  {"elide-empty-files", no_argument, ശൂന്യ, 'z'},
+  {"prefix", required_argument, ശൂന്യ, 'f'},
+  {"suffix-format", required_argument, ശൂന്യ, 'b'},
+  {"suppress-matched", no_argument, ശൂന്യ, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+സ്ഥിതം ശൂന്യം
+cleanup (ശൂന്യം)
 {
   sigset_t oldset;
 
@@ -211,117 +211,117 @@ cleanup (void)
 
   sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, ശൂന്യ);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+സ്ഥിതം _Noreturn ശൂന്യം
+cleanup_fatal (ശൂന്യം)
 {
   cleanup ();
   exit (EXIT_FAILURE);
 }
 
-extern void
-xalloc_die (void)
+ബാഹ്യ ശൂന്യം
+xalloc_die (ശൂന്യം)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+സ്ഥിതം ശൂന്യം
+interrupt_handler (പൂർണ്ണസംഖ്യ sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  സൂചന (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  ഉയർത്തുക (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+സ്ഥിതം ശൂന്യം
+save_to_hold_area (അക്ഷരം *start, idx_t അക്കം)
 {
-  free (hold_area);
+  സ്വതന്ത്രം (hold_area);
   hold_area = start;
-  hold_count = num;
+  hold_എണ്ണം = അക്കം;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+സ്ഥിതം idx_t
+read_നിവേശം (അക്ഷരം *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  എങ്കിൽ (max_n_bytes == 0)
+    തിരികെ 0;
 
   ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  എങ്കിൽ (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  എങ്കിൽ (bytes_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  തിരികെ bytes_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+സ്ഥിതം ശൂന്യം
+clear_വരി_control (ഘടന വരി *p)
 {
   p->used = 0;
-  p->insert_index = 0;
+  p->തിരുകുക_index = 0;
   p->retrieve_index = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+സ്ഥിതം ഘടന വരി *
+new_വരി_control (ശൂന്യം)
 {
-  struct line *p = xmalloc (sizeof *p);
+  ഘടന വരി *p = xmalloc (വലുപ്പം *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->next = ശൂന്യ;
+  clear_വരി_control (p);
 
-  return p;
+  തിരികെ p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+സ്ഥിതം ശൂന്യം
+keep_new_വരി (ഘടന buffer_record *b, അക്ഷരം *വരി_start, idx_t വരി_len)
 {
-  struct line *l;
+  ഘടന വരി *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  എങ്കിൽ (b->വരി_start == ശൂന്യ)
+    b->വരി_start = b->curr_വരി = new_വരി_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  എങ്കിൽ (b->curr_വരി->used == CTRL_SIZE)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_വരി->next = new_വരി_control ();
+      b->curr_വരി = b->curr_വരി->next;
     }
 
-  l = b->curr_line;
+  l = b->curr_വരി;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
+  l->starts[l->തിരുകുക_index].str = വരി_start;
+  l->starts[l->തിരുകുക_index].len = വരി_len;
   l->used++;
-  l->insert_index++;
+  l->തിരുകുക_index++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,106 +332,106 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+സ്ഥിതം idx_t
+record_വരി_starts (ഘടന buffer_record *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  അക്ഷരം *വരി_start;		/* Start of current line. */
+  idx_t വരികൾ;			/* Number of lines found. */
+  idx_t വരി_length;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  എങ്കിൽ (b->bytes_used == 0)
+    തിരികെ 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
+  വരികൾ = 0;
+  വരി_start = b->buffer;
+  അക്ഷരം *buffer_end = വരി_start + b->bytes_used;
   *buffer_end = '\n';
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      അക്ഷരം *വരി_end = rawmemchr (വരി_start, '\n');
+      എങ്കിൽ (വരി_end == buffer_end)
+        നിർത്തുക;
+      വരി_length = വരി_end - വരി_start + 1;
+      keep_new_വരി (b, വരി_start, വരി_length);
+      വരി_start = വരി_end + 1;
+      വരികൾ++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t bytes_ഇടത് = buffer_end - വരി_start;
+  എങ്കിൽ (bytes_ഇടത്)
     {
-      if (have_read_eof)
+      എങ്കിൽ (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_വരി (b, വരി_start, bytes_ഇടത്);
+          വരികൾ++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      അല്ലെങ്കിൽ
+        save_to_hold_area (ximemdup (വരി_start, bytes_ഇടത്), bytes_ഇടത്);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->അക്കം_വരികൾ = വരികൾ;
+  b->first_available = b->start_വരി = last_വരി_സംഖ്യ + 1;
+  last_വരി_സംഖ്യ += വരികൾ;
 
-  return lines;
+  തിരികെ വരികൾ;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#എങ്കിൽ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
-static void
-free_buffer (struct buffer_record *buf)
+സ്ഥിതം ശൂന്യം
+free_buffer (ഘടന buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  വേണ്ടി (ഘടന വരി *l = buf->വരി_start; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      ഘടന വരി *n = l->next;
+      സ്വതന്ത്രം (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  സ്വതന്ത്രം (buf->buffer);
+  സ്വതന്ത്രം (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
+സ്ഥിതം ATTRIBUTE_DEALLOC (free_buffer, 1)
+ഘടന buffer_record *
 get_new_buffer (idx_t min_size)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
+  ഘടന buffer_record *new_buffer = xmalloc (വലുപ്പം *new_buffer);
   new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  new_buffer->buffer = xpalloc (ശൂന്യ, &new_buffer->bytes_alloc, min_size,
                                 -1, 1);
   new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_buffer->start_വരി = new_buffer->first_available = last_വരി_സംഖ്യ + 1;
+  new_buffer->അക്കം_വരികൾ = 0;
+  new_buffer->വരി_start = new_buffer->curr_വരി = ശൂന്യ;
+  new_buffer->next = ശൂന്യ;
 
-  return new_buffer;
+  തിരികെ new_buffer;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+സ്ഥിതം ശൂന്യം
+save_buffer (ഘടന buffer_record *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->next = ശൂന്യ;
+  buf->curr_വരി = buf->വരി_start;
 
-  if (head == NULL)
+  എങ്കിൽ (head == ശൂന്യ)
     head = buf;
-  else
+  അല്ലെങ്കിൽ
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      ഘടന buffer_record *p;
+      വേണ്ടി (p = head; p->next; p = p->next)
         /* Do nothing. */ ;
       p->next = buf;
     }
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+സ്ഥിതം bool
+load_buffer (ശൂന്യം)
 {
-  if (have_read_eof)
-    return false;
+  എങ്കിൽ (have_read_eof)
+    തിരികെ false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t bytes_wanted = MAX (START_SIZE, hold_എണ്ണം + 1);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
+      ഘടന buffer_record *b = get_new_buffer (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
       idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      അക്ഷരം *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      എങ്കിൽ (hold_എണ്ണം)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_എണ്ണം);
+          b->bytes_used += hold_എണ്ണം;
+          bytes_avail -= hold_എണ്ണം;
+          hold_എണ്ണം = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->bytes_used += read_നിവേശം (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      എങ്കിൽ (record_വരി_starts (b) != 0)
         {
           save_buffer (b);
-          return true;
+          തിരികെ true;
         }
 
       free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      എങ്കിൽ (have_read_eof)
+        തിരികെ false;
+      എങ്കിൽ (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,54 +496,54 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+സ്ഥിതം intmax_t
+get_first_വരി_in_buffer (ശൂന്യം)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  എങ്കിൽ (head == ശൂന്യ && !load_buffer ())
+    തിരികെ 0;
 
-  return head->first_available;
+  തിരികെ head->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+സ്ഥിതം ഘടന cstring *
+remove_വരി (ശൂന്യം)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  സ്ഥിതം ഘടന buffer_record *prev_buf = ശൂന്യ;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  ഘടന cstring *വരി;		/* Return value. */
+  ഘടന വരി *l;		/* For convenience. */
 
-  if (prev_buf)
+  എങ്കിൽ (prev_buf)
     {
       free_buffer (prev_buf);
-      prev_buf = NULL;
+      prev_buf = ശൂന്യ;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  എങ്കിൽ (head == ശൂന്യ && !load_buffer ())
+    തിരികെ ശൂന്യ;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  എങ്കിൽ (current_വരി < head->first_available)
+    current_വരി = head->first_available;
 
   ++(head->first_available);
 
-  l = head->curr_line;
+  l = head->curr_വരി;
 
-  line = &l->starts[l->retrieve_index];
+  വരി = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  എങ്കിൽ (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      head->curr_വരി = l->next;
+      എങ്കിൽ (head->curr_വരി == ശൂന്യ || head->curr_വരി->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,59 +553,59 @@ remove_line (void)
         }
     }
 
-  return line;
+  തിരികെ വരി;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+സ്ഥിതം ഘടന cstring *
+find_വരി (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  എങ്കിൽ (head == ശൂന്യ && !load_buffer ())
+    തിരികെ ശൂന്യ;
 
-  if (linenum < head->start_line)
-    return NULL;
+  എങ്കിൽ (linenum < head->start_വരി)
+    തിരികെ ശൂന്യ;
 
-  for (struct buffer_record *b = head;;)
+  വേണ്ടി (ഘടന buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      എങ്കിൽ (linenum < b->start_വരി + b->അക്കം_വരികൾ)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          ഘടന വരി *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->വരി_start;
+          offset = linenum - b->start_വരി;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          ആകുമ്പോൾ (offset >= CTRL_SIZE)
             {
               l = l->next;
               offset -= CTRL_SIZE;
             }
-          return &l->starts[offset];
+          തിരികെ &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
+      എങ്കിൽ (b->next == ശൂന്യ && !load_buffer ())
+        തിരികെ ശൂന്യ;
       b = b->next;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+സ്ഥിതം bool
+no_more_വരികൾ (ശൂന്യം)
 {
-  return find_line (current_line + 1) == NULL;
+  തിരികെ find_വരി (current_വരി + 1) == ശൂന്യ;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+സ്ഥിതം ശൂന്യം
+set_നിവേശം_file (അക്ഷരം സ്ഥിരം *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  എങ്കിൽ (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -615,62 +615,62 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+സ്ഥിതം ശൂന്യം
+write_to_file (intmax_t last_വരി, bool ignore, പൂർണ്ണസംഖ്യ argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  ഘടന cstring *വരി;
+  intmax_t first_വരി;		/* First available input line. */
+  intmax_t വരികൾ;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  first_വരി = get_first_വരി_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  എങ്കിൽ (! first_വരി || first_വരി > last_വരി)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  വരികൾ = last_വരി - first_വരി;
 
-  for (intmax_t i = 0; i < lines; i++)
+  വേണ്ടി (intmax_t i = 0; i < വരികൾ; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      വരി = remove_വരി ();
+      എങ്കിൽ (വരി == ശൂന്യ)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      എങ്കിൽ (!ignore)
+        save_വരി_to_file (വരി);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+സ്ഥിതം ശൂന്യം
+dump_rest_of_file (ശൂന്യം)
 {
-  struct cstring *line;
+  ഘടന cstring *വരി;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  ആകുമ്പോൾ ((വരി = remove_വരി ()) != ശൂന്യ)
+    save_വരി_to_file (വരി);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+സ്ഥിതം ശൂന്യം
+handle_വരി_error (സ്ഥിരം ഘടന control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  അക്ഷരം buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+           program_name, quote (imaxtostr (p->വരികൾ_required, buf)));
+  എങ്കിൽ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  അല്ലെങ്കിൽ
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -681,54 +681,54 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+സ്ഥിതം ശൂന്യം
+process_വരി_എണ്ണം (സ്ഥിരം ഘടന control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t last_വരി_to_save = p->വരികൾ_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  എങ്കിൽ (no_more_വരികൾ () && suppress_matched)
+    handle_വരി_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  എങ്കിൽ (!(linenum = get_first_വരി_in_buffer ()))
+    handle_വരി_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  ആകുമ്പോൾ (linenum++ < last_വരി_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      ഘടന cstring *വരി = remove_വരി ();
+      എങ്കിൽ (വരി == ശൂന്യ)
+        handle_വരി_error (p, repetition);
+      save_വരി_to_file (വരി);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  എങ്കിൽ (suppress_matched)
+    remove_വരി ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  എങ്കിൽ (no_more_വരികൾ () && !suppress_matched)
+    handle_വരി_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+സ്ഥിതം ശൂന്യം
+regexp_error (ഘടന control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  എങ്കിൽ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  അല്ലെങ്കിൽ
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  എങ്കിൽ (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -740,128 +740,128 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+സ്ഥിതം ശൂന്യം
+process_regexp (ഘടന control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  ഘടന cstring *വരി;		/* From input file. */
+  idx_t വരി_len;		/* To make "$" in regexps work. */
+  intmax_t break_വരി;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  എങ്കിൽ (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  എങ്കിൽ (p->offset >= 0)
     {
-      while (true)
+      ആകുമ്പോൾ (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          വരി = find_വരി (++current_വരി);
+          എങ്കിൽ (വരി == ശൂന്യ)
             {
-              if (p->repeat_forever)
+              എങ്കിൽ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  എങ്കിൽ (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              അല്ലെങ്കിൽ
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          വരി_len = വരി->len;
+          എങ്കിൽ (വരി->str[വരി_len - 1] == '\n')
+            വരി_len--;
+          ret = re_തിരയൽ (&p->re_compiled, വരി->str, വരി_len,
+                           0, വരി_len, ശൂന്യ);
+          എങ്കിൽ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          എങ്കിൽ (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              വരി = remove_വരി ();
+              എങ്കിൽ (!ignore)
+                save_വരി_to_file (വരി);
             }
-          else
-            break;
+          അല്ലെങ്കിൽ
+            നിർത്തുക;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* Buffer the lines. */
-      while (true)
+      ആകുമ്പോൾ (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          വരി = find_വരി (++current_വരി);
+          എങ്കിൽ (വരി == ശൂന്യ)
             {
-              if (p->repeat_forever)
+              എങ്കിൽ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  എങ്കിൽ (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              അല്ലെങ്കിൽ
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          വരി_len = വരി->len;
+          എങ്കിൽ (വരി->str[വരി_len - 1] == '\n')
+            വരി_len--;
+          ret = re_തിരയൽ (&p->re_compiled, വരി->str, വരി_len,
+                           0, വരി_len, ശൂന്യ);
+          എങ്കിൽ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          എങ്കിൽ (ret != -1)
+            നിർത്തുക;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_വരി = current_വരി + p->offset;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_to_file (break_വരി, ignore, p->argnum);
 
-  if (!ignore)
+  എങ്കിൽ (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  എങ്കിൽ (p->offset > 0)
+    current_വരി = break_വരി;
 
-  if (suppress_matched)
-    remove_line ();
+  എങ്കിൽ (suppress_matched)
+    remove_വരി ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+സ്ഥിതം ശൂന്യം
+split_file (ശൂന്യം)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  വേണ്ടി (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      എങ്കിൽ (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          വേണ്ടി (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      അല്ലെങ്കിൽ
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          വേണ്ടി (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_വരി_എണ്ണം (&controls[i], j);
         }
     }
 
@@ -877,46 +877,46 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+സ്ഥിതം അക്ഷരം *
+make_filename (പൂർണ്ണസംഖ്യ അക്കം)
 {
   strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  എങ്കിൽ (suffix)
+    sprintf (filename_space + strlen (prefix), suffix, അക്കം);
+  അല്ലെങ്കിൽ
+    sprintf (filename_space + strlen (prefix), "%0*d", digits, അക്കം);
+  തിരികെ filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+സ്ഥിതം ശൂന്യം
+create_output_file (ശൂന്യം)
 {
-  int nfiles = files_created;
+  പൂർണ്ണസംഖ്യ nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  പൂർണ്ണസംഖ്യ fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  എങ്കിൽ (nfiles == INT_MAX)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
       output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
+      fopen_ok = (output_stream != ശൂന്യ);
       fopen_errno = errno;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, ശൂന്യ);
     }
 
-  if (! fopen_ok)
+  എങ്കിൽ (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -927,16 +927,16 @@ create_output_file (void)
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
+സ്ഥിതം ശൂന്യം
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  എങ്കിൽ (! remove_files)
+    തിരികെ;
 
-  for (int i = files_created; 0 <= --i; )
+  വേണ്ടി (പൂർണ്ണസംഖ്യ i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      അക്ഷരം സ്ഥിരം *name = make_filename (i);
+      എങ്കിൽ (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+സ്ഥിതം ശൂന്യം
+close_output_file (ശൂന്യം)
 {
-  if (output_stream)
+  എങ്കിൽ (output_stream)
     {
-      if (ferror (output_stream))
+      എങ്കിൽ (ferror (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_stream = ശൂന്യ;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      എങ്കിൽ (fclose (output_stream) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          output_stream = ശൂന്യ;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      എങ്കിൽ (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          പൂർണ്ണസംഖ്യ unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
           unlink_errno = errno;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, ശൂന്യ);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          എങ്കിൽ (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      അല്ലെങ്കിൽ
         {
-          if (!suppress_count)
+          എങ്കിൽ (!suppress_എണ്ണം)
             fprintf (stdout, "%jd\n", bytes_written);
         }
-      output_stream = NULL;
+      output_stream = ശൂന്യ;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+സ്ഥിതം ശൂന്യം
+save_വരി_to_file (സ്ഥിരം ഘടന cstring *വരി)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (വരി->str, വലുപ്പം (അക്ഷരം), വരി->len, output_stream);
+  എങ്കിൽ (l != വരി->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      output_stream = ശൂന്യ;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  bytes_written += വരി->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+സ്ഥിതം ഘടന control *
+new_control_record (ശൂന്യം)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  സ്ഥിതം idx_t control_allocated = 0; /* Total space allocated. */
+  ഘടന control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
+  എങ്കിൽ (control_used == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, വലുപ്പം *controls);
   p = &controls[control_used++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
+  p->വരികൾ_required = 0;
   p->offset = 0;
-  return p;
+  തിരികെ p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,10 +1028,10 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+സ്ഥിതം ശൂന്യം
+check_for_offset (ഘടന control *p, അക്ഷരം സ്ഥിരം *str, അക്ഷരം സ്ഥിരം *അക്കം)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  എങ്കിൽ (xstrtoimax (അക്കം, ശൂന്യ, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1041,23 +1041,23 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+സ്ഥിതം ശൂന്യം
+parse_repeat_എണ്ണം (പൂർണ്ണസംഖ്യ argnum, ഘടന control *p, അക്ഷരം *str)
 {
-  char *end;
+  അക്ഷരം *end;
 
   end = str + strlen (str) - 1;
-  if (*end != '}')
+  എങ്കിൽ (*end != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  എങ്കിൽ (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  അല്ലെങ്കിൽ
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      എങ്കിൽ (xstrtoumax (str + 1, ശൂന്യ, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
@@ -1075,17 +1075,17 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+സ്ഥിതം ഘടന control *
+extract_regexp (പൂർണ്ണസംഖ്യ argnum, bool ignore, അക്ഷരം സ്ഥിരം *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  അക്ഷരം delim = *str;
+  അക്ഷരം സ്ഥിരം *closing_delim;
+  ഘടന control *p;
+  അക്ഷരം സ്ഥിരം *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  എങ്കിൽ (closing_delim == ശൂന്യ)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
@@ -1095,72 +1095,72 @@ extract_regexp (int argnum, bool ignore, char const *str)
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.buffer = ശൂന്യ;
   p->re_compiled.allocated = 0;
   p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.translate = ശൂന്യ;
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  എങ്കിൽ (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  എങ്കിൽ (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  തിരികെ p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+സ്ഥിതം ശൂന്യം
+parse_patterns (പൂർണ്ണസംഖ്യ argc, പൂർണ്ണസംഖ്യ start, അക്ഷരം **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  ഘടന control *p;		/* New control record created. */
+  സ്ഥിതം intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  വേണ്ടി (പൂർണ്ണസംഖ്യ i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      എങ്കിൽ (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      അല്ലെങ്കിൽ
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          എങ്കിൽ (xstrtoumax (argv[i], ശൂന്യ, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          എങ്കിൽ (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          എങ്കിൽ (val < last_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          എങ്കിൽ (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
           last_val = val;
 
-          p->lines_required = val;
+          p->വരികൾ_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      എങ്കിൽ (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_എണ്ണം (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+എണ്ണൽ { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+സ്ഥിതം idx_t
+get_format_flags (അക്ഷരം സ്ഥിരം *format, പൂർണ്ണസംഖ്യ *flags_ptr)
 {
-  int flags = 0;
+  പൂർണ്ണസംഖ്യ flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  വേണ്ടി (idx_t എണ്ണം = 0; ; എണ്ണം++)
     {
-      switch (format[count])
+      തിരഞ്ഞെടുപ്പ് (format[എണ്ണം])
         {
-        case '-':
-        case '0':
-          break;
+        അവസ്ഥ '-':
+        അവസ്ഥ '0':
+          നിർത്തുക;
 
-        case '\'':
+        അവസ്ഥ '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          നിർത്തുക;
 
-        case '#':
+        അവസ്ഥ '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          നിർത്തുക;
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           *flags_ptr = flags;
-          return count;
+          തിരികെ എണ്ണം;
         }
     }
 }
@@ -1203,41 +1203,41 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+സ്ഥിതം ശൂന്യം
+check_format_conv_type (അക്ഷരം *format, പൂർണ്ണസംഖ്യ flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  unsigned അക്ഷരം ch = *format;
+  പൂർണ്ണസംഖ്യ compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  തിരഞ്ഞെടുപ്പ് (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    അവസ്ഥ 'd':
+    അവസ്ഥ 'i':
+      നിർത്തുക;
 
-    case 'u':
+    അവസ്ഥ 'u':
       *format = 'd';
-      break;
+      നിർത്തുക;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    അവസ്ഥ 'o':
+    അവസ്ഥ 'x':
+    അവസ്ഥ 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      നിർത്തുക;
 
-    case 0:
+    അവസ്ഥ 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
+    സ്ഥിരസ്ഥിതി:
+      എങ്കിൽ (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      അല്ലെങ്കിൽ
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  എങ്കിൽ (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1246,42 +1246,42 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+സ്ഥിതം idx_t
+max_out (അക്ഷരം *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  വേണ്ടി (അക്ഷരം *f = format; *f; f++)
+    എങ്കിൽ (*f == '%' && *++f != '%')
       {
-        if (percent)
+        എങ്കിൽ (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        പൂർണ്ണസംഖ്യ flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        ആകുമ്പോൾ (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        എങ്കിൽ (*f == '.')
+          ആകുമ്പോൾ (c_isdigit (*++f))
+            തുടരുക;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  എങ്കിൽ (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  പൂർണ്ണസംഖ്യ maxlen = snprintf (ശൂന്യ, 0, format, INT_MAX);
+  എങ്കിൽ (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  തിരികെ maxlen;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int optc;
+  പൂർണ്ണസംഖ്യ optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1293,53 +1293,53 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, ശൂന്യ))
          != -1)
-    switch (optc)
+    തിരഞ്ഞെടുപ്പ് (optc)
       {
-      case 'f':
+      അവസ്ഥ 'f':
         prefix = optarg;
-        break;
+        നിർത്തുക;
 
-      case 'b':
+      അവസ്ഥ 'b':
         suffix = optarg;
-        break;
+        നിർത്തുക;
 
-      case 'k':
+      അവസ്ഥ 'k':
         remove_files = false;
-        break;
+        നിർത്തുക;
 
-      case 'n':
+      അവസ്ഥ 'n':
         digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        നിർത്തുക;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      അവസ്ഥ 's':
+      അവസ്ഥ 'q':
+        suppress_എണ്ണം = true;
+        നിർത്തുക;
 
-      case 'z':
+      അവസ്ഥ 'z':
         elide_empty_files = true;
-        break;
+        നിർത്തുക;
 
-      case SUPPRESS_MATCHED_OPTION:
+      അവസ്ഥ SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        നിർത്തുക;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      സ്ഥിരസ്ഥിതി:
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  എങ്കിൽ (argc - optind < 2)
     {
-      if (argc <= optind)
+      എങ്കിൽ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      അല്ലെങ്കിൽ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -1348,26 +1348,26 @@ main (int argc, char **argv)
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
+       : MAX (INT_STRLEN_BOUND (പൂർണ്ണസംഖ്യ), digits));
   idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+  എങ്കിൽ (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
-  set_input_file (argv[optind++]);
+  set_നിവേശം_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    എണ്ണൽ { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    ഘടന sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        sigaction (term_sig[i], ശൂന്യ, &act);
+        എങ്കിൽ (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,28 +1375,28 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    വേണ്ടി (പൂർണ്ണസംഖ്യ i = 0; i < nsigs; i++)
+      എങ്കിൽ (sigismember (&caught_signals, term_sig[i]))
+        sigaction (term_sig[i], &act, ശൂന്യ);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  എങ്കിൽ (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... FILE PATTERN...\n\
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard നിവേശം എങ്കിൽ FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1423,19 +1423,19 @@ Read standard input if FILE is -\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         ചെയ്യുക not remove output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the വരികൾ matching PATTERN\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified സംഖ്യ of digits instead of 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         ചെയ്യുക not print counts of output file sizes\n\
 "));
       oputs (_("\
   -z, --elide-empty-files\n\
@@ -1446,13 +1446,13 @@ Read standard input if FILE is -\n\
       fputs (_("\
 \n\
 Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
+  INTEGER            copy up to but not including specified വരി സംഖ്യ\n\
+  /REGEXP/[OFFSET]   copy up to but not including a matching വരി\n\
+  %REGEXP%[OFFSET]   skip to, but not including a matching വരി\n\
+  {INTEGER}          repeat the previous pattern specified സംഖ്യ of times\n\
   {*}                repeat the previous pattern as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A വരി OFFSET is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

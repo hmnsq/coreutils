@@ -16,18 +16,18 @@
 
 /* Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include "system.h"
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ "system.h"
 
-#include "chown.h"
+#അന്തര്ഭാവ "chown.h"
 /* Ensure that the main for chown is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_chown (int argc, char **argv);
-int single_binary_main_chgrp (int argc, char **argv);
+പൂർണ്ണസംഖ്യ single_ദ്വിമാന_main_chown (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv);
+പൂർണ്ണസംഖ്യ single_ദ്വിമാന_main_chgrp (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv);
 
-int
-single_binary_main_chgrp (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+single_ദ്വിമാന_main_chgrp (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   chown_mode = CHOWN_CHGRP;
-  return single_binary_main_chown (argc, argv);
+  തിരികെ single_ദ്വിമാന_main_chown (argc, argv);
 }

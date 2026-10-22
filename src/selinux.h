@@ -19,36 +19,36 @@
 #ifndef COREUTILS_SELINUX_H
 # define COREUTILS_SELINUX_H
 
-struct selabel_handle;
+ഘടന selabel_handle;
 
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
-static inline bool
-ignorable_ctx_err (int err)
+സ്ഥിതം വരിയിൽ bool
+ignorable_ctx_err (പൂർണ്ണസംഖ്യ err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  തിരികെ err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# എങ്കിൽ HAVE_SELINUX_LABEL_H
 
-extern bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse);
-extern int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode);
+ബാഹ്യ bool
+restorecon (ഘടന selabel_handle *selabel_handle,
+            അക്ഷരം സ്ഥിരം *path, bool recurse);
+ബാഹ്യ പൂർണ്ണസംഖ്യ
+defaultcon (ഘടന selabel_handle *selabel_handle,
+            അക്ഷരം സ്ഥിരം *path, mode_t mode);
 
-# else
+# അല്ലെങ്കിൽ
 
-static inline bool
-restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+സ്ഥിതം വരിയിൽ bool
+restorecon (MAYBE_UNUSED ഘടന selabel_handle *selabel_handle,
+            MAYBE_UNUSED അക്ഷരം സ്ഥിരം *path, MAYBE_UNUSED bool recurse)
+{ errno = ENOTSUP; തിരികെ false; }
 
-static inline int
-defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+സ്ഥിതം വരിയിൽ പൂർണ്ണസംഖ്യ
+defaultcon (MAYBE_UNUSED ഘടന selabel_handle *selabel_handle,
+            MAYBE_UNUSED അക്ഷരം സ്ഥിരം *path, MAYBE_UNUSED mode_t mode)
+{ errno = ENOTSUP; തിരികെ -1; }
 
 # endif
 

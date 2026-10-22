@@ -19,7 +19,7 @@
 #ifndef _RELPATH_H
 # define _RELPATH_H
 
-extern bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len);
+ബാഹ്യ bool
+relpath (അക്ഷരം സ്ഥിരം *can_fname, അക്ഷരം സ്ഥിരം *can_reldir, അക്ഷരം *buf, size_t len);
 
 #endif

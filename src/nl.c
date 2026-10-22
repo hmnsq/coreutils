@@ -17,21 +17,21 @@
 /* Written by Scott Bartram (nancy!scott@uunet.uu.net)
    Revised by David MacKenzie (djm@gnu.ai.mit.edu) */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ <getopt.h>
 
-#include "system.h"
+#അന്തര്ഭാവ "system.h"
 
-#include <regex.h>
+#അന്തര്ഭാവ <regex.h>
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "mcel.h"
-#include "quote.h"
-#include "xdectoint.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "linebuffer.h"
+#അന്തര്ഭാവ "mcel.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nl"
@@ -44,183 +44,183 @@
    value, and a string separator.  */
 
 /* Right justified, no leading zeroes.  */
-static char const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
+സ്ഥിതം അക്ഷരം സ്ഥിരം FORMAT_വലത്_NOLZ[] = "%*jd%s";
 
 /* Right justified, leading zeroes.  */
-static char const FORMAT_RIGHT_LZ[] = "%0*jd%s";
+സ്ഥിതം അക്ഷരം സ്ഥിരം FORMAT_വലത്_LZ[] = "%0*jd%s";
 
 /* Left justified, no leading zeroes.  */
-static char const FORMAT_LEFT[] = "%-*jd%s";
+സ്ഥിതം അക്ഷരം സ്ഥിരം FORMAT_ഇടത്[] = "%-*jd%s";
 
 /* Default section delimiter characters.  */
-static char DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
+സ്ഥിതം അക്ഷരം DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
 
 /* Types of input lines: either one of the section delimiters,
    or text to output. */
-enum section
+എണ്ണൽ section
 {
   Header, Body, Footer, Text
 };
 
 /* Format of body lines (-b).  */
-static char const *body_type = "t";
+സ്ഥിതം അക്ഷരം സ്ഥിരം *body_type = "t";
 
 /* Format of header lines (-h).  */
-static char const *header_type = "n";
+സ്ഥിതം അക്ഷരം സ്ഥിരം *header_type = "n";
 
 /* Format of footer lines (-f).  */
-static char const *footer_type = "n";
+സ്ഥിതം അക്ഷരം സ്ഥിരം *footer_type = "n";
 
 /* Format currently being used (body, header, or footer).  */
-static char const *current_type;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *current_type;
 
 /* Regex for body lines to number (-bp).  */
-static struct re_pattern_buffer body_regex;
+സ്ഥിതം ഘടന re_pattern_buffer body_regex;
 
 /* Regex for header lines to number (-hp).  */
-static struct re_pattern_buffer header_regex;
+സ്ഥിതം ഘടന re_pattern_buffer header_regex;
 
 /* Regex for footer lines to number (-fp).  */
-static struct re_pattern_buffer footer_regex;
+സ്ഥിതം ഘടന re_pattern_buffer footer_regex;
 
 /* Fastmaps for the above.  */
-static char body_fastmap[UCHAR_MAX + 1];
-static char header_fastmap[UCHAR_MAX + 1];
-static char footer_fastmap[UCHAR_MAX + 1];
+സ്ഥിതം അക്ഷരം body_fastmap[UCHAR_MAX + 1];
+സ്ഥിതം അക്ഷരം header_fastmap[UCHAR_MAX + 1];
+സ്ഥിതം അക്ഷരം footer_fastmap[UCHAR_MAX + 1];
 
 /* Pointer to current regex, if any.  */
-static struct re_pattern_buffer *current_regex = NULL;
+സ്ഥിതം ഘടന re_pattern_buffer *current_regex = ശൂന്യ;
 
 /* Separator string to print after line number (-s).  */
-static char const *separator_str = "\t";
+സ്ഥിതം അക്ഷരം സ്ഥിരം *separator_str = "\t";
 
 /* Input section delimiter string (-d).  */
-static char *section_del = DEFAULT_SECTION_DELIMITERS;
+സ്ഥിതം അക്ഷരം *section_del = DEFAULT_SECTION_DELIMITERS;
 
 /* Input section delimiter length.  */
-static size_t section_del_len;
+സ്ഥിതം size_t section_del_len;
 
 /* Header delimiter string.  */
-static char *header_del = NULL;
+സ്ഥിതം അക്ഷരം *header_del = ശൂന്യ;
 
 /* Header section delimiter length.  */
-static size_t header_del_len;
+സ്ഥിതം size_t header_del_len;
 
 /* Body delimiter string.  */
-static char *body_del = NULL;
+സ്ഥിതം അക്ഷരം *body_del = ശൂന്യ;
 
 /* Body section delimiter length.  */
-static size_t body_del_len;
+സ്ഥിതം size_t body_del_len;
 
 /* Footer delimiter string.  */
-static char *footer_del = NULL;
+സ്ഥിതം അക്ഷരം *footer_del = ശൂന്യ;
 
 /* Footer section delimiter length.  */
-static size_t footer_del_len;
+സ്ഥിതം size_t footer_del_len;
 
 /* Input buffer.  */
-static struct linebuffer line_buf;
+സ്ഥിതം ഘടന linebuffer വരി_buf;
 
 /* printf format string for unnumbered lines.  */
-static char *print_no_line_fmt = NULL;
+സ്ഥിതം അക്ഷരം *print_no_വരി_fmt = ശൂന്യ;
 
 /* Starting line number on each page (-v).  */
-static intmax_t starting_line_number = 1;
+സ്ഥിതം intmax_t starting_വരി_സംഖ്യ = 1;
 
 /* Line number increment (-i).  */
-static intmax_t page_incr = 1;
+സ്ഥിതം intmax_t page_incr = 1;
 
 /* If true, reset line number at start of each page (-p).  */
-static bool reset_numbers = true;
+സ്ഥിതം bool reset_numbers = true;
 
 /* Number of blank lines to consider to be one line for numbering (-l).  */
-static intmax_t blank_join = 1;
+സ്ഥിതം intmax_t blank_join = 1;
 
 /* Width of line numbers (-w).  */
-static int lineno_width = 6;
+സ്ഥിതം പൂർണ്ണസംഖ്യ lineno_width = 6;
 
 /* Line number format (-n).  */
-static char const *lineno_format = FORMAT_RIGHT_NOLZ;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *lineno_format = FORMAT_വലത്_NOLZ;
 
 /* Current print line number.  */
-static intmax_t line_no;
+സ്ഥിതം intmax_t വരി_no;
 
 /* Whether the current line number has incremented past limits.  */
-static bool line_no_overflow;
+സ്ഥിതം bool വരി_no_overflow;
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+സ്ഥിതം bool have_read_stdin;
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"header-numbering", required_argument, NULL, 'h'},
-  {"body-numbering", required_argument, NULL, 'b'},
-  {"footer-numbering", required_argument, NULL, 'f'},
-  {"starting-line-number", required_argument, NULL, 'v'},
-  {"line-increment", required_argument, NULL, 'i'},
-  {"no-renumber", no_argument, NULL, 'p'},
-  {"join-blank-lines", required_argument, NULL, 'l'},
-  {"number-separator", required_argument, NULL, 's'},
-  {"number-width", required_argument, NULL, 'w'},
-  {"number-format", required_argument, NULL, 'n'},
-  {"section-delimiter", required_argument, NULL, 'd'},
+  {"header-numbering", required_argument, ശൂന്യ, 'h'},
+  {"body-numbering", required_argument, ശൂന്യ, 'b'},
+  {"footer-numbering", required_argument, ശൂന്യ, 'f'},
+  {"starting-line-number", required_argument, ശൂന്യ, 'v'},
+  {"line-increment", required_argument, ശൂന്യ, 'i'},
+  {"no-renumber", no_argument, ശൂന്യ, 'p'},
+  {"join-blank-lines", required_argument, ശൂന്യ, 'l'},
+  {"number-separator", required_argument, ശൂന്യ, 's'},
+  {"number-width", required_argument, ശൂന്യ, 'w'},
+  {"number-format", required_argument, ശൂന്യ, 'n'},
+  {"section-delimiter", required_argument, ശൂന്യ, 'd'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
 /* Print a usage message and quit. */
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write each FILE to standard output, with line numbers added.\n\
+Write each FILE to standard output, with വരി numbers added.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --body-numbering=STYLE      use STYLE for numbering body lines\n\
+  -b, --body-numbering=STYLE      use STYLE വേണ്ടി numbering body വരികൾ\n\
 "));
       oputs (_("\
-  -d, --section-delimiter=CC      use CC for logical page delimiters\n\
+  -d, --section-delimiter=CC      use CC വേണ്ടി logical page delimiters\n\
 "));
       oputs (_("\
-  -f, --footer-numbering=STYLE    use STYLE for numbering footer lines\n\
+  -f, --footer-numbering=STYLE    use STYLE വേണ്ടി numbering footer വരികൾ\n\
 "));
       oputs (_("\
-  -h, --header-numbering=STYLE    use STYLE for numbering header lines\n\
+  -h, --header-numbering=STYLE    use STYLE വേണ്ടി numbering header വരികൾ\n\
 "));
       oputs (_("\
-  -i, --line-increment=NUMBER     line number increment at each line\n\
+  -i, --വരി-increment=സംഖ്യ_2     വരി സംഖ്യ increment at each വരി\n\
 "));
       oputs (_("\
-  -l, --join-blank-lines=NUMBER   group of NUMBER empty lines counted as one\n\
+  -l, --join-blank-വരികൾ=സംഖ്യ_2   group of സംഖ്യ_2 empty വരികൾ counted as one\n\
 "));
       oputs (_("\
-  -n, --number-format=FORMAT      insert line numbers according to FORMAT\n\
+  -n, --സംഖ്യ-format=FORMAT      തിരുകുക വരി numbers according to FORMAT\n\
 "));
       oputs (_("\
-  -p, --no-renumber               do not reset line numbers for each section\n\
+  -p, --no-renumber               ചെയ്യുക not reset വരി numbers വേണ്ടി each section\n\
 "));
       oputs (_("\
-  -s, --number-separator=STRING   add STRING after (possible) line number\n\
+  -s, --സംഖ്യ-separator=STRING   add STRING after (possible) വരി സംഖ്യ\n\
 "));
       oputs (_("\
-  -v, --starting-line-number=NUMBER  first line number for each section\n\
+  -v, --starting-വരി-സംഖ്യ=സംഖ്യ_2  first വരി സംഖ്യ വേണ്ടി each section\n\
 "));
       oputs (_("\
-  -w, --number-width=NUMBER       use NUMBER columns for line numbers\n\
+  -w, --സംഖ്യ-width=സംഖ്യ_2       use സംഖ്യ_2 columns വേണ്ടി വരി numbers\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -237,19 +237,19 @@ disables section matching.\n\
 \n\
 STYLE is one of:\n\
 \n\
-  a      number all lines\n\
-  t      number only nonempty lines\n\
-  n      number no lines\n\
-  pBRE   number only lines that contain a match for the basic regular\n\
+  a      സംഖ്യ all വരികൾ\n\
+  t      സംഖ്യ only nonempty വരികൾ\n\
+  n      സംഖ്യ no വരികൾ\n\
+  pBRE   സംഖ്യ only വരികൾ that contain a match വേണ്ടി the basic regular\n\
          expression, BRE\n\
 "), stdout);
       fputs (_("\
 \n\
 FORMAT is one of:\n\
 \n\
-  ln     left justified, no leading zeros\n\
-  rn     right justified, no leading zeros\n\
-  rz     right justified, leading zeros\n\
+  ln     ഇടത് justified, no leading zeros\n\
+  rn     വലത് justified, no leading zeros\n\
+  rz     വലത് justified, leading zeros\n\
 \n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -260,67 +260,67 @@ FORMAT is one of:\n\
 /* Set the command line flag TYPEP and possibly the regex pointer REGEXP,
    according to 'optarg'.  */
 
-static bool
-build_type_arg (char const **typep,
-                struct re_pattern_buffer *regexp, char *fastmap)
+സ്ഥിതം bool
+build_type_arg (അക്ഷരം സ്ഥിരം **typep,
+                ഘടന re_pattern_buffer *regexp, അക്ഷരം *fastmap)
 {
-  char const *errmsg;
+  അക്ഷരം സ്ഥിരം *errmsg;
   bool rval = true;
 
-  switch (*optarg)
+  തിരഞ്ഞെടുപ്പ് (*optarg)
     {
-    case 'a':
-    case 't':
-    case 'n':
+    അവസ്ഥ 'a':
+    അവസ്ഥ 't':
+    അവസ്ഥ 'n':
       *typep = optarg;
-      break;
-    case 'p':
+      നിർത്തുക;
+    അവസ്ഥ 'p':
       *typep = optarg++;
-      regexp->buffer = NULL;
+      regexp->buffer = ശൂന്യ;
       regexp->allocated = 0;
       regexp->fastmap = fastmap;
-      regexp->translate = NULL;
+      regexp->translate = ശൂന്യ;
       re_syntax_options =
         RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
       errmsg = re_compile_pattern (optarg, strlen (optarg), regexp);
-      if (errmsg)
+      എങ്കിൽ (errmsg)
         error (EXIT_FAILURE, 0, "%s", (errmsg));
-      break;
-    default:
+      നിർത്തുക;
+    സ്ഥിരസ്ഥിതി:
       rval = false;
-      break;
+      നിർത്തുക;
     }
-  return rval;
+  തിരികെ rval;
 }
 
 /* Print the line number and separator; increment the line number. */
 
-static void
-print_lineno (void)
+സ്ഥിതം ശൂന്യം
+print_lineno (ശൂന്യം)
 {
-  if (line_no_overflow)
+  എങ്കിൽ (വരി_no_overflow)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
-  printf (lineno_format, lineno_width, line_no, separator_str);
+  printf (lineno_format, lineno_width, വരി_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
-    line_no_overflow = true;
+  എങ്കിൽ (ckd_add (&വരി_no, വരി_no, page_incr))
+    വരി_no_overflow = true;
 }
 
-static void
-reset_lineno (void)
+സ്ഥിതം ശൂന്യം
+reset_lineno (ശൂന്യം)
 {
-  if (reset_numbers)
+  എങ്കിൽ (reset_numbers)
     {
-      line_no = starting_line_number;
-      line_no_overflow = false;
+      വരി_no = starting_വരി_സംഖ്യ;
+      വരി_no_overflow = false;
     }
 }
 
 /* Switch to a header section. */
 
-static void
-proc_header (void)
+സ്ഥിതം ശൂന്യം
+proc_header (ശൂന്യം)
 {
   current_type = header_type;
   current_regex = &header_regex;
@@ -330,8 +330,8 @@ proc_header (void)
 
 /* Switch to a body section. */
 
-static void
-proc_body (void)
+സ്ഥിതം ശൂന്യം
+proc_body (ശൂന്യം)
 {
   current_type = body_type;
   current_regex = &body_regex;
@@ -341,8 +341,8 @@ proc_body (void)
 
 /* Switch to a footer section. */
 
-static void
-proc_footer (void)
+സ്ഥിതം ശൂന്യം
+proc_footer (ശൂന്യം)
 {
   current_type = footer_type;
   current_regex = &footer_regex;
@@ -352,101 +352,101 @@ proc_footer (void)
 
 /* Process a regular text line in 'line_buf'. */
 
-static void
-proc_text (void)
+സ്ഥിതം ശൂന്യം
+proc_text (ശൂന്യം)
 {
-  static intmax_t blank_lines = 0;	/* Consecutive blank lines so far. */
+  സ്ഥിതം intmax_t blank_വരികൾ = 0;	/* Consecutive blank lines so far. */
 
-  switch (*current_type)
+  തിരഞ്ഞെടുപ്പ് (*current_type)
     {
-    case 'a':
-      if (blank_join > 1)
+    അവസ്ഥ 'a':
+      എങ്കിൽ (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          എങ്കിൽ (1 < വരി_buf.length || ++blank_വരികൾ == blank_join)
             {
               print_lineno ();
-              blank_lines = 0;
+              blank_വരികൾ = 0;
             }
-          else
-            fputs (print_no_line_fmt, stdout);
+          അല്ലെങ്കിൽ
+            fputs (print_no_വരി_fmt, stdout);
         }
-      else
+      അല്ലെങ്കിൽ
         print_lineno ();
-      break;
-    case 't':
-      if (1 < line_buf.length)
+      നിർത്തുക;
+    അവസ്ഥ 't':
+      എങ്കിൽ (1 < വരി_buf.length)
         print_lineno ();
-      else
-        fputs (print_no_line_fmt, stdout);
-      break;
-    case 'n':
-      fputs (print_no_line_fmt, stdout);
-      break;
-    case 'p':
-      switch (re_search (current_regex, line_buf.buffer, line_buf.length - 1,
-                         0, line_buf.length - 1, NULL))
+      അല്ലെങ്കിൽ
+        fputs (print_no_വരി_fmt, stdout);
+      നിർത്തുക;
+    അവസ്ഥ 'n':
+      fputs (print_no_വരി_fmt, stdout);
+      നിർത്തുക;
+    അവസ്ഥ 'p':
+      തിരഞ്ഞെടുപ്പ് (re_തിരയൽ (current_regex, വരി_buf.buffer, വരി_buf.length - 1,
+                         0, വരി_buf.length - 1, ശൂന്യ))
         {
-        case -2:
+        അവസ്ഥ -2:
           error (EXIT_FAILURE, errno, _("error in regular expression search"));
 
-        case -1:
-          fputs (print_no_line_fmt, stdout);
-          break;
+        അവസ്ഥ -1:
+          fputs (print_no_വരി_fmt, stdout);
+          നിർത്തുക;
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           print_lineno ();
-          break;
+          നിർത്തുക;
         }
     }
-  fwrite (line_buf.buffer, sizeof (char), line_buf.length, stdout);
+  fwrite (വരി_buf.buffer, വലുപ്പം (അക്ഷരം), വരി_buf.length, stdout);
 }
 
 /* Return the type of line in 'line_buf'. */
 
-static enum section
-check_section (void)
+സ്ഥിതം എണ്ണൽ section
+check_section (ശൂന്യം)
 {
-  size_t len = line_buf.length - 1;
+  size_t len = വരി_buf.length - 1;
 
-  if (len < section_del_len || footer_del_len < section_del_len
-      || !memeq (line_buf.buffer, section_del, section_del_len))
-    return Text;
-  if (len == header_del_len
-      && memeq (line_buf.buffer, header_del, header_del_len))
-    return Header;
-  if (len == body_del_len
-      && memeq (line_buf.buffer, body_del, body_del_len))
-    return Body;
-  if (len == footer_del_len
-      && memeq (line_buf.buffer, footer_del, footer_del_len))
-    return Footer;
-  return Text;
+  എങ്കിൽ (len < section_del_len || footer_del_len < section_del_len
+      || !memeq (വരി_buf.buffer, section_del, section_del_len))
+    തിരികെ Text;
+  എങ്കിൽ (len == header_del_len
+      && memeq (വരി_buf.buffer, header_del, header_del_len))
+    തിരികെ Header;
+  എങ്കിൽ (len == body_del_len
+      && memeq (വരി_buf.buffer, body_del, body_del_len))
+    തിരികെ Body;
+  എങ്കിൽ (len == footer_del_len
+      && memeq (വരി_buf.buffer, footer_del, footer_del_len))
+    തിരികെ Footer;
+  തിരികെ Text;
 }
 
 /* Read and process the file pointed to by FP. */
 
-static void
+സ്ഥിതം ശൂന്യം
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  ആകുമ്പോൾ (readlinebuffer (&വരി_buf, fp))
     {
-      switch (check_section ())
+      തിരഞ്ഞെടുപ്പ് (check_section ())
         {
-        case Header:
+        അവസ്ഥ Header:
           proc_header ();
-          break;
-        case Body:
+          നിർത്തുക;
+        അവസ്ഥ Body:
           proc_body ();
-          break;
-        case Footer:
+          നിർത്തുക;
+        അവസ്ഥ Footer:
           proc_footer ();
-          break;
-        case Text:
+          നിർത്തുക;
+        അവസ്ഥ Text:
           proc_text ();
-          break;
+          നിർത്തുക;
         }
 
-      if (ferror (stdout))
+      എങ്കിൽ (ferror (stdout))
         write_error ();
     }
 }
@@ -454,24 +454,24 @@ process_file (FILE *fp)
 /* Process file FILE to standard output.
    Return true if successful.  */
 
-static bool
-nl_file (char const *file)
+സ്ഥിതം bool
+nl_file (അക്ഷരം സ്ഥിരം *file)
 {
   FILE *stream;
 
-  if (streq (file, "-"))
+  എങ്കിൽ (streq (file, "-"))
     {
       have_read_stdin = true;
       stream = stdin;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  അല്ലെങ്കിൽ
     {
       stream = fopen (file, "r");
-      if (stream == NULL)
+      എങ്കിൽ (stream == ശൂന്യ)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          തിരികെ false;
         }
     }
 
@@ -479,25 +479,25 @@ nl_file (char const *file)
 
   process_file (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  പൂർണ്ണസംഖ്യ err = errno;
+  എങ്കിൽ (!ferror (stream))
     err = 0;
-  if (streq (file, "-"))
+  എങ്കിൽ (streq (file, "-"))
     clearerr (stream);		/* Also clear EOF. */
-  else if (fclose (stream) != 0 && !err)
+  അല്ലെങ്കിൽ എങ്കിൽ (fclose (stream) != 0 && !err)
     err = errno;
-  if (err)
+  എങ്കിൽ (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      തിരികെ false;
     }
-  return true;
+  തിരികെ true;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int c;
+  പൂർണ്ണസംഖ്യ c;
   size_t len;
   bool ok = true;
 
@@ -509,106 +509,106 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
-                           NULL))
+  ആകുമ്പോൾ ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
+                           ശൂന്യ))
          != -1)
     {
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'h':
-          if (! build_type_arg (&header_type, &header_regex, header_fastmap))
+        അവസ്ഥ 'h':
+          എങ്കിൽ (! build_type_arg (&header_type, &header_regex, header_fastmap))
             {
               error (0, 0, _("invalid header numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'b':
-          if (! build_type_arg (&body_type, &body_regex, body_fastmap))
+          നിർത്തുക;
+        അവസ്ഥ 'b':
+          എങ്കിൽ (! build_type_arg (&body_type, &body_regex, body_fastmap))
             {
               error (0, 0, _("invalid body numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'f':
-          if (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
+          നിർത്തുക;
+        അവസ്ഥ 'f':
+          എങ്കിൽ (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
             {
               error (0, 0, _("invalid footer numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'v':
-          starting_line_number = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
+          നിർത്തുക;
+        അവസ്ഥ 'v':
+          starting_വരി_സംഖ്യ = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                              _("invalid starting line number"),
                                              0);
-          break;
-        case 'i':
+          നിർത്തുക;
+        അവസ്ഥ 'i':
           page_incr = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                   _("invalid line number increment"), 0);
-          break;
-        case 'p':
+          നിർത്തുക;
+        അവസ്ഥ 'p':
           reset_numbers = false;
-          break;
-        case 'l':
+          നിർത്തുക;
+        അവസ്ഥ 'l':
           blank_join = xnumtoimax (optarg, 10, 1, INTMAX_MAX, "",
                                    _("invalid line number of blank lines"),
                                    0, XTOINT_MIN_RANGE | XTOINT_MAX_QUIET);
-          break;
-        case 's':
+          നിർത്തുക;
+        അവസ്ഥ 's':
           separator_str = optarg;
-          break;
-        case 'w':
+          നിർത്തുക;
+        അവസ്ഥ 'w':
           lineno_width = xnumtoimax (optarg, 10, 1, INT_MAX, "",
                                      _("invalid line number field width"),
                                      0, XTOINT_MIN_RANGE);
-          break;
-        case 'n':
-          if (streq (optarg, "ln"))
-            lineno_format = FORMAT_LEFT;
-          else if (streq (optarg, "rn"))
-            lineno_format = FORMAT_RIGHT_NOLZ;
-          else if (streq (optarg, "rz"))
-            lineno_format = FORMAT_RIGHT_LZ;
-          else
+          നിർത്തുക;
+        അവസ്ഥ 'n':
+          എങ്കിൽ (streq (optarg, "ln"))
+            lineno_format = FORMAT_ഇടത്;
+          അല്ലെങ്കിൽ എങ്കിൽ (streq (optarg, "rn"))
+            lineno_format = FORMAT_വലത്_NOLZ;
+          അല്ലെങ്കിൽ എങ്കിൽ (streq (optarg, "rz"))
+            lineno_format = FORMAT_വലത്_LZ;
+          അല്ലെങ്കിൽ
             {
               error (0, 0, _("invalid line numbering format: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'd':
+          നിർത്തുക;
+        അവസ്ഥ 'd':
           len = strlen (optarg);
-          if (1 < MB_CUR_MAX)
+          എങ്കിൽ (1 < MB_CUR_MAX)
             {
-              char const *p = optarg;
-              char const *lim = p + len;
-              int n_chars = 0;
-              for (; p < lim && n_chars < 2; ++n_chars)
+              അക്ഷരം സ്ഥിരം *p = optarg;
+              അക്ഷരം സ്ഥിരം *lim = p + len;
+              പൂർണ്ണസംഖ്യ n_chars = 0;
+              വേണ്ടി (; p < lim && n_chars < 2; ++n_chars)
                   p += mcel_scan (p, lim).len;
-              if (n_chars == 1)
-                memcpy (mempcpy (section_del, optarg, len),  ":", sizeof ":");
-              else
+              എങ്കിൽ (n_chars == 1)
+                memcpy (mempcpy (section_del, optarg, len),  ":", വലുപ്പം ":");
+              അല്ലെങ്കിൽ
                 section_del = optarg;
             }
-          else
+          അല്ലെങ്കിൽ
             {
-              if (len == 1)
+              എങ്കിൽ (len == 1)
                 *section_del = *optarg;
-              else
+              അല്ലെങ്കിൽ
                 section_del = optarg;
             }
-          break;
+          നിർത്തുക;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           ok = false;
-          break;
+          നിർത്തുക;
         }
     }
 
-  if (!ok)
+  എങ്കിൽ (!ok)
     usage (EXIT_FAILURE);
 
   /* Initialize the section delimiters.  */
@@ -625,28 +625,28 @@ main (int argc, char **argv)
   footer_del = body_del + len;
 
   /* Initialize the input buffer.  */
-  initbuffer (&line_buf);
+  initbuffer (&വരി_buf);
 
   /* Initialize the printf format for unnumbered lines. */
   len = strlen (separator_str);
-  print_no_line_fmt = xmalloc (lineno_width + len + 1);
-  memset (print_no_line_fmt, ' ', lineno_width + len);
-  print_no_line_fmt[lineno_width + len] = '\0';
+  print_no_വരി_fmt = xmalloc (lineno_width + len + 1);
+  memset (print_no_വരി_fmt, ' ', lineno_width + len);
+  print_no_വരി_fmt[lineno_width + len] = '\0';
 
-  line_no = starting_line_number;
+  വരി_no = starting_വരി_സംഖ്യ;
   current_type = body_type;
   current_regex = &body_regex;
 
   /* Main processing. */
 
-  if (optind == argc)
+  എങ്കിൽ (optind == argc)
     ok = nl_file ("-");
-  else
-    for (; optind < argc; optind++)
+  അല്ലെങ്കിൽ
+    വേണ്ടി (; optind < argc; optind++)
       ok &= nl_file (argv[optind]);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  എങ്കിൽ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

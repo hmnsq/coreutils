@@ -20,17 +20,17 @@
    sort) in Donald E. Knuth, The Art of Computer Programming, Volume
    1/Fundamental Algorithms, page 262.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "readtokens.h"
-#include "stdio--.h"
-#include "quote.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "readtokens.h"
+#അന്തര്ഭാവ "stdio--.h"
+#അന്തര്ഭാവ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tsort"
@@ -41,42 +41,42 @@
 #define DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+ഘടന successor
 {
-  struct item *suc;
-  struct successor *next;
+  ഘടന item *suc;
+  ഘടന successor *next;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+ഘടന item
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  അക്ഷരം സ്ഥിരം *str;
+  ഘടന item *ഇടത്, *വലത്;
+  signed അക്ഷരം balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
-  struct item *qlink;
-  struct successor *top;
+  size_t എണ്ണം;
+  ഘടന item *qlink;
+  ഘടന successor *മുകൾ;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+സ്ഥിതം ഘടന item *head = ശൂന്യ;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+സ്ഥിതം ഘടന item *zeros = ശൂന്യ;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+സ്ഥിതം ഘടന item *loop = ശൂന്യ;
 
 /* The number of strings to sort.  */
-static size_t n_strings = 0;
+സ്ഥിതം size_t n_strings = 0;
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -97,14 +97,14 @@ Write totally ordered list consistent with the partial ordering in FILE.\n\
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+സ്ഥിതം ഘടന item *
+new_item (അക്ഷരം സ്ഥിരം *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  ഘടന item *k = xzalloc (വലുപ്പം *k);
+  എങ്കിൽ (str)
     k->str = xstrdup (str);
-  return k;
+  തിരികെ k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,138 +115,138 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+സ്ഥിതം ഘടന item *
+തിരയൽ_item (ഘടന item *വേര്, അക്ഷരം സ്ഥിരം *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  ഘടന item *p, *q, *r, *s, *t;
+  പൂർണ്ണസംഖ്യ a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  എങ്കിൽ (വേര്->വലത് == ശൂന്യ)
+    തിരികെ (വേര്->വലത് = new_item (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = വേര്;
+  s = p = വേര്->വലത്;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      എങ്കിൽ (a == 0)
+        തിരികെ p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
-        q = p->left;
-      else
-        q = p->right;
+      എങ്കിൽ (a < 0)
+        q = p->ഇടത്;
+      അല്ലെങ്കിൽ
+        q = p->വലത്;
 
-      if (q == NULL)
+      എങ്കിൽ (q == ശൂന്യ)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
-            p->left = q;
-          else
-            p->right = q;
+          എങ്കിൽ (a < 0)
+            p->ഇടത് = q;
+          അല്ലെങ്കിൽ
+            p->വലത് = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          എങ്കിൽ (a < 0)
             {
-              r = p = s->left;
+              r = p = s->ഇടത്;
               a = -1;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->വലത്;
               a = 1;
             }
 
-          while (p != q)
+          ആകുമ്പോൾ (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              പൂർണ്ണസംഖ്യ cmp = strcmp (str, p->str);
+              എങ്കിൽ (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->ഇടത്;
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->വലത്;
                 }
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          എങ്കിൽ (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              തിരികെ q;
             }
 
-          if (r->balance == a)
+          എങ്കിൽ (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              എങ്കിൽ (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->ഇടത് = r->വലത്;
+                  r->വലത് = s;
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->വലത് = r->ഇടത്;
+                  r->ഇടത് = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              എങ്കിൽ (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->വലത്;
+                  r->വലത് = p->ഇടത്;
+                  p->ഇടത് = r;
+                  s->ഇടത് = p->വലത്;
+                  p->വലത് = s;
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->ഇടത്;
+                  r->ഇടത് = p->വലത്;
+                  p->വലത് = r;
+                  s->വലത് = p->ഇടത്;
+                  p->ഇടത് = s;
                 }
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              എങ്കിൽ (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              അല്ലെങ്കിൽ എങ്കിൽ (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
-          else
-            t->left = p;
+          എങ്കിൽ (s == t->വലത്)
+            t->വലത് = p;
+          അല്ലെങ്കിൽ
+            t->ഇടത് = p;
 
-          return q;
+          തിരികെ q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      എങ്കിൽ (q->balance)
         {
           t = p;
           s = q;
@@ -260,43 +260,43 @@ search_item (struct item *root, char const *str)
 
 /* Record the fact that J precedes K.  */
 
-static void
-record_relation (struct item *j, struct item *k)
+സ്ഥിതം ശൂന്യം
+record_relation (ഘടന item *j, ഘടന item *k)
 {
-  struct successor *p;
+  ഘടന successor *p;
 
-  if (!streq (j->str, k->str))
+  എങ്കിൽ (!streq (j->str, k->str))
     {
-      k->count++;
-      p = xmalloc (sizeof *p);
+      k->എണ്ണം++;
+      p = xmalloc (വലുപ്പം *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->next = j->മുകൾ;
+      j->മുകൾ = p;
     }
 }
 
-static bool
-count_items (MAYBE_UNUSED struct item *unused)
+സ്ഥിതം bool
+എണ്ണം_ഇനങ്ങൾ (MAYBE_UNUSED ഘടന item *unused)
 {
   n_strings++;
-  return false;
+  തിരികെ false;
 }
 
-static bool
-scan_zeros (struct item *k)
+സ്ഥിതം bool
+scan_zeros (ഘടന item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  എങ്കിൽ (k->എണ്ണം == 0 && !k->printed)
     {
-      if (head == NULL)
+      എങ്കിൽ (head == ശൂന്യ)
         head = k;
-      else
+      അല്ലെങ്കിൽ
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  തിരികെ false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -317,68 +317,68 @@ scan_zeros (struct item *k)
    loop has completely been constructed.  If the loop was found, the
    global variable LOOP will be null.  */
 
-static bool
-detect_loop (struct item *k)
+സ്ഥിതം bool
+detect_loop (ഘടന item *k)
 {
-  if (k->count > 0)
+  എങ്കിൽ (k->എണ്ണം > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      എങ്കിൽ (loop == ശൂന്യ)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      അല്ലെങ്കിൽ
         {
-          struct successor **p = &k->top;
+          ഘടന successor **p = &k->മുകൾ;
 
-          while (*p)
+          ആകുമ്പോൾ (*p)
             {
-              if ((*p)->suc == loop)
+              എങ്കിൽ ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  എങ്കിൽ (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      ആകുമ്പോൾ (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          ഘടന item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          എങ്കിൽ (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
-                              s->suc->count--;
+                              ഘടന successor *s = *p;
+                              s->suc->എണ്ണം--;
                               *p = s->next;
-                              IF_LINT (free (s));
-                              break;
+                              IF_LINT (സ്വതന്ത്രം (s));
+                              നിർത്തുക;
                             }
 
                           /* Tidy things up since we might have to
                              detect another loop.  */
-                          loop->qlink = NULL;
+                          loop->qlink = ശൂന്യ;
                           loop = tmp;
                         }
 
-                      while (loop)
+                      ആകുമ്പോൾ (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          ഘടന item *tmp = loop->qlink;
 
-                          loop->qlink = NULL;
+                          loop->qlink = ശൂന്യ;
                           loop = tmp;
                         }
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      തിരികെ true;
                     }
-                  else
+                  അല്ലെങ്കിൽ
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      നിർത്തുക;
                     }
                 }
 
@@ -387,102 +387,102 @@ detect_loop (struct item *k)
         }
     }
 
-  return false;
+  തിരികെ false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
-static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+സ്ഥിതം bool
+recurse_വൃക്ഷം (ഘടന item *വേര്, bool (*action) (ഘടന item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  എങ്കിൽ (വേര്->ഇടത് == ശൂന്യ && വേര്->വലത് == ശൂന്യ)
+    തിരികെ (*action) (വേര്);
+  അല്ലെങ്കിൽ
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      എങ്കിൽ (വേര്->ഇടത് != ശൂന്യ)
+        എങ്കിൽ (recurse_വൃക്ഷം (വേര്->ഇടത്, action))
+          തിരികെ true;
+      എങ്കിൽ ((*action) (വേര്))
+        തിരികെ true;
+      എങ്കിൽ (വേര്->വലത് != ശൂന്യ)
+        എങ്കിൽ (recurse_വൃക്ഷം (വേര്->വലത്, action))
+          തിരികെ true;
     }
 
-  return false;
+  തിരികെ false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
-static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+സ്ഥിതം ശൂന്യം
+walk_വൃക്ഷം (ഘടന item *വേര്, bool (*action) (ഘടന item *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  എങ്കിൽ (വേര്->വലത്)
+    recurse_വൃക്ഷം (വേര്->വലത്, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
-static _Noreturn void
-tsort (char const *file)
+സ്ഥിതം _Noreturn ശൂന്യം
+tsort (അക്ഷരം സ്ഥിരം *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
+  ഘടന item *j = ശൂന്യ;
+  ഘടന item *k = ശൂന്യ;
   token_buffer tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  ഘടന item *വേര് = new_item (ശൂന്യ);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  എങ്കിൽ (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      size_t len = readtoken (stdin, DELIM, വലുപ്പം (DELIM) - 1, &tokenbuffer);
+      എങ്കിൽ (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          എങ്കിൽ (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          നിർത്തുക;
         }
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      k = തിരയൽ_item (വേര്, tokenbuffer.buffer);
+      എങ്കിൽ (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
-          k = NULL;
+          k = ശൂന്യ;
         }
 
       j = k;
     }
 
-  if (k != NULL)
+  എങ്കിൽ (k != ശൂന്യ)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_വൃക്ഷം (വേര്, എണ്ണം_ഇനങ്ങൾ);
 
-  while (n_strings > 0)
+  ആകുമ്പോൾ (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_വൃക്ഷം (വേര്, scan_zeros);
 
-      while (head)
+      ആകുമ്പോൾ (head)
         {
-          struct successor *p = head->top;
+          ഘടന successor *p = head->മുകൾ;
 
           /* T5. Output front of queue.  */
           puts (head->str);
@@ -490,10 +490,10 @@ tsort (char const *file)
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          ആകുമ്പോൾ (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->എണ്ണം--;
+              എങ്കിൽ (p->suc->എണ്ണം == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -507,28 +507,28 @@ tsort (char const *file)
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      എങ്കിൽ (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
           ok = false;
 
           /* Print the loop and remove a relation to break it.  */
-          do
-            walk_tree (root, detect_loop);
-          while (loop);
+          ചെയ്യുക
+            walk_വൃക്ഷം (വേര്, detect_loop);
+          ആകുമ്പോൾ (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  എങ്കിൽ (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,34 +538,34 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      static struct option const long_options[] =
+      സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
           {GETOPT_VERSION_OPTION_DECL},
-          {NULL, 0, NULL, 0}
+          {ശൂന്യ, 0, ശൂന്യ, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      പൂർണ്ണസംഖ്യ c = getopt_long (argc, argv, "w", long_options, ശൂന്യ);
 
-      if (c == -1)
-        break;
+      എങ്കിൽ (c == -1)
+        നിർത്തുക;
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'w':
-          break;
+        അവസ്ഥ 'w':
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (1 < argc - optind)
+  എങ്കിൽ (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);

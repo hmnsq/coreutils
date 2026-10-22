@@ -16,24 +16,24 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <endian.h>
-#include <float.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "ftoastr.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xprintf.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#അന്തര്ഭാവ <endian.h>
+#അന്തര്ഭാവ <float.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "argmatch.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "ftoastr.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "stat-size.h"
+#അന്തര്ഭാവ "xbinary-io.h"
+#അന്തര്ഭാവ "xprintf.h"
+#അന്തര്ഭാവ "xstrtol.h"
+#അന്തര്ഭാവ "xstrtol-error.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "od"
@@ -43,27 +43,27 @@
 /* The default number of input bytes per output line.  */
 #define DEFAULT_BYTES_PER_BLOCK 16
 
-#if FLOAT16_SUPPORTED
+#എങ്കിൽ FLOAT16_SUPPORTED
   /* Available since clang 6 (2018), and gcc 7 (2017).  */
-  typedef _Float16 float16;
-#else
+  തരനിർവചനം _Float16 float16;
+#അല്ലെങ്കിൽ
 # define FLOAT16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
-  typedef float float16;
+  തരനിർവചനം ദശാംശം float16;
 #endif
 
-#if BF16_SUPPORTED
+#എങ്കിൽ BF16_SUPPORTED
   /* Available since clang 11 (2020), and gcc 13 (2023). */
-  typedef __bf16 bfloat16;
-#else
+  തരനിർവചനം __bf16 bfloat16;
+#അല്ലെങ്കിൽ
 # define BF16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
-  typedef float bfloat16;
+  തരനിർവചനം ദശാംശം bfloat16;
 #endif
 
-enum size_spec
+എണ്ണൽ size_spec
   {
     NO_SIZE = 0,
     CHAR,
@@ -81,7 +81,7 @@ enum size_spec
     N_SIZE_SPECS
   };
 
-enum output_format
+എണ്ണൽ output_format
   {
     SIGNED_DECIMAL,
     UNSIGNED_DECIMAL,
@@ -94,16 +94,16 @@ enum output_format
     CHARACTER
   };
 
-enum { MAX_INTEGRAL_TYPE_WIDTH = UINTMAX_WIDTH };
+എണ്ണൽ { MAX_INTEGRAL_TYPE_WIDTH = UINTMAX_WIDTH };
 
 /* The maximum number of bytes needed for a format string, including
    the trailing nul.  Each format string expects a variable amount of
    padding (guaranteed to be at least 1 plus the field width), then an
    element that will be formatted in the field.  */
-enum
+എണ്ണൽ
   {
     FMT_BYTES_ALLOCATED =
-      sizeof "%*.%dlld" - sizeof "%d" + INT_STRLEN_BOUND (int) + 1
+      വലുപ്പം "%*.%dlld" - വലുപ്പം "%d" + INT_STRLEN_BOUND (പൂർണ്ണസംഖ്യ) + 1
   };
 
 /* Ensure that our choice for FMT_BYTES_ALLOCATED is reasonable.  */
@@ -113,54 +113,54 @@ static_assert (MAX_INTEGRAL_TYPE_WIDTH <= 3 * 99);
    line, BLANK is the number of fields to leave blank.  WIDTH is width
    of one field, excluding leading space, and PAD is total pad to
    divide among FIELDS.  PAD is at least as large as FIELDS.  */
-typedef void (*print_function_type)
-  (idx_t fields, idx_t blank, void const *data,
-   char const *fmt, int width, idx_t pad);
+തരനിർവചനം ശൂന്യം (*print_function_type)
+  (idx_t fields, idx_t blank, ശൂന്യം സ്ഥിരം *data,
+   അക്ഷരം സ്ഥിരം *fmt, പൂർണ്ണസംഖ്യ width, idx_t pad);
 
 /* Each output format specification (from '-t spec' or from
    old-style options) is represented by one of these structures.  */
-struct tspec
+ഘടന tspec
   {
-    enum output_format fmt;
-    enum size_spec size; /* Type of input object.  */
+    എണ്ണൽ output_format fmt;
+    എണ്ണൽ size_spec size; /* Type of input object.  */
     print_function_type print_function;
-    char fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
+    അക്ഷരം fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
     bool hexl_mode_trailer;
-    int field_width; /* Minimum width of a field, excluding leading space.  */
+    പൂർണ്ണസംഖ്യ field_width; /* Minimum width of a field, excluding leading space.  */
     idx_t pad_width; /* Total padding to be divided among fields.  */
   };
 
 /* Convert enum size_spec to the size of the named type.  */
-static const int width_bytes[] =
+സ്ഥിതം സ്ഥിരം പൂർണ്ണസംഖ്യ width_bytes[] =
 {
   -1,
-  sizeof (unsigned char),
-#if UCHAR_MAX < USHRT_MAX
-  sizeof (unsigned short int),
+  വലുപ്പം (unsigned അക്ഷരം),
+#എങ്കിൽ UCHAR_MAX < USHRT_MAX
+  വലുപ്പം (unsigned short പൂർണ്ണസംഖ്യ),
 #endif
-#if USHRT_MAX < UINT_MAX
-  sizeof (unsigned int),
+#എങ്കിൽ USHRT_MAX < UINT_MAX
+  വലുപ്പം (unsigned പൂർണ്ണസംഖ്യ),
 #endif
-#if UINT_MAX < ULONG_MAX
-  sizeof (unsigned long int),
+#എങ്കിൽ UINT_MAX < ULONG_MAX
+  വലുപ്പം (unsigned long പൂർണ്ണസംഖ്യ),
 #endif
-#if ULONG_MAX < ULLONG_MAX
-  sizeof (unsigned long long int),
+#എങ്കിൽ ULONG_MAX < ULLONG_MAX
+  വലുപ്പം (unsigned long long പൂർണ്ണസംഖ്യ),
 #endif
-#if ULLONG_MAX < UINTMAX_MAX
-  sizeof (uintmax_t),
+#എങ്കിൽ ULLONG_MAX < UINTMAX_MAX
+  വലുപ്പം (uintmax_t),
 #endif
-#if BF16_SUPPORTED
-  sizeof (bfloat16),
-#elif FLOAT16_SUPPORTED
-  sizeof (float16),
+#എങ്കിൽ BF16_SUPPORTED
+  വലുപ്പം (bfloat16),
+#അല്ലെങ്കിലെങ്കിൽ FLOAT16_SUPPORTED
+  വലുപ്പം (float16),
 #endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
-  sizeof (float),
+#എങ്കിൽ FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+  വലുപ്പം (ദശാംശം),
 #endif
-  sizeof (double),
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
-  sizeof (long double),
+  വലുപ്പം (ഇരട്ട),
+#എങ്കിൽ DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+  വലുപ്പം (long ഇരട്ട),
 #endif
 };
 
@@ -169,7 +169,7 @@ static const int width_bytes[] =
 static_assert (countof (width_bytes) == N_SIZE_SPECS);
 
 /* Names for some non-printing characters.  */
-static char const charname[33][4] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം charname[33][4] =
 {
   "nul", "soh", "stx", "etx", "eot", "enq", "ack", "bel",
   "bs", "ht", "nl", "vt", "ff", "cr", "so", "si",
@@ -179,82 +179,82 @@ static char const charname[33][4] =
 };
 
 /* Address base (8, 10 or 16).  */
-static int address_base = 8;
+സ്ഥിതം പൂർണ്ണസംഖ്യ address_base = 8;
 
 /* The number of octal digits required to represent the largest
    address value.  */
-enum { MAX_ADDRESS_LENGTH = ((INTMAX_WIDTH - 1) / 3
+എണ്ണൽ { MAX_ADDRESS_LENGTH = ((INTMAX_WIDTH - 1) / 3
                              + ((INTMAX_WIDTH - 1) % 3 != 0)) };
 
 /* Width of a normal address.  */
-static int address_pad_len = 7;
+സ്ഥിതം പൂർണ്ണസംഖ്യ address_pad_len = 7;
 
 /* Minimum length when detecting --strings.  */
-static idx_t string_min;
+സ്ഥിതം idx_t string_min;
 
 /* True when in --strings mode.  */
-static bool flag_dump_strings;
+സ്ഥിതം bool flag_dump_strings;
 
 /* True if we should recognize the older non-option arguments
    that specified at most one file and optional arguments specifying
    offset and pseudo-start address.  */
-static bool traditional;
+സ്ഥിതം bool traditional;
 
 /* True if an old-style 'pseudo-address' was specified.  */
-static bool flag_pseudo_start;
+സ്ഥിതം bool flag_pseudo_start;
 
 /* The difference between the old-style pseudo starting address and
    the number of bytes to skip.  */
-static intmax_t pseudo_offset;
+സ്ഥിതം intmax_t pseudo_offset;
 
 /* Function that accepts an address and an optional following char,
    and prints the address and char to stdout.  */
-static void format_address_std (intmax_t, char);
-static void (*format_address) (intmax_t, char) = format_address_std;
+സ്ഥിതം ശൂന്യം format_address_std (intmax_t, അക്ഷരം);
+സ്ഥിതം ശൂന്യം (*format_address) (intmax_t, അക്ഷരം) = format_address_std;
 
 /* The number of input bytes to skip before formatting and writing.  */
-static intmax_t n_bytes_to_skip;
+സ്ഥിതം intmax_t n_bytes_to_skip;
 
 /* The offset of the first byte after the last byte to be formatted.
    If negative, there is no limit.  */
-static intmax_t end_offset = -1;
+സ്ഥിതം intmax_t end_offset = -1;
 
 /* When true and two or more consecutive blocks are equal, format
    only the first block and output an asterisk alone on the following
    line to indicate that identical blocks have been elided.  */
-static bool abbreviate_duplicate_blocks = true;
+സ്ഥിതം bool abbreviate_duplicate_blocks = true;
 
 /* An array of specs describing how to format each input block.  */
-static struct tspec *spec;
+സ്ഥിതം ഘടന tspec *spec;
 
 /* The number of format specs.  */
-static idx_t n_specs;
+സ്ഥിതം idx_t n_specs;
 
 /* The allocated length of SPEC.  */
-static idx_t n_specs_allocated;
+സ്ഥിതം idx_t n_specs_allocated;
 
 /* The number of input bytes formatted per output line.  It must be
    a multiple of the least common multiple of the sizes associated with
    the specified output types.  It should be as large as possible, but
    no larger than 16 -- unless specified with the -w option.  */
-static idx_t bytes_per_block;
+സ്ഥിതം idx_t bytes_per_block;
 
 /* Human-readable representation of *file_list (for error messages).
    It differs from file_list[-1] only when file_list[-1] is "-".  */
-static char const *input_filename;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *നിവേശം_filename;
 
 /* A null-terminated list of the file-arguments from the command line.  */
-static char const *const *file_list;
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം *file_list;
 
 /* Initializer for file_list if no file-arguments
    were specified on the command line.  */
-static char const *const default_file_list[] = {"-", NULL};
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം default_file_list[] = {"-", ശൂന്യ};
 
 /* The input stream associated with the current file.  */
-static FILE *in_stream;
+സ്ഥിതം FILE *in_stream;
 
 /* If true, at least one of the files we read was standard input.  */
-static bool have_read_stdin;
+സ്ഥിതം bool have_read_stdin;
 
 /* Map the size in bytes to a type identifier.
    When two types have the same machine layout:
@@ -262,97 +262,97 @@ static bool have_read_stdin;
      - Prefer unsigned long to higher-ranked types, as it is older.
      - Prefer uintmax_t to unsigned long long int; this wins if %lld
        does not work but %jd does (e.g., MS-Windows).  */
-static enum size_spec const integral_type_size[] =
+സ്ഥിതം എണ്ണൽ size_spec സ്ഥിരം integral_type_size[] =
   {
-#if UCHAR_MAX < USHRT_MAX
-    [sizeof (unsigned char)] = CHAR,
+#എങ്കിൽ UCHAR_MAX < USHRT_MAX
+    [വലുപ്പം (unsigned അക്ഷരം)] = CHAR,
 #endif
-#if USHRT_MAX < UINT_MAX
-    [sizeof (unsigned short int)] = SHORT,
+#എങ്കിൽ USHRT_MAX < UINT_MAX
+    [വലുപ്പം (unsigned short പൂർണ്ണസംഖ്യ)] = SHORT,
 #endif
-    [sizeof (unsigned int)] = INT,
-#if UINT_MAX < ULONG_MAX
-    [sizeof (unsigned long int)] = LONG,
+    [വലുപ്പം (unsigned പൂർണ്ണസംഖ്യ)] = INT,
+#എങ്കിൽ UINT_MAX < ULONG_MAX
+    [വലുപ്പം (unsigned long പൂർണ്ണസംഖ്യ)] = LONG,
 #endif
-#if ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
-    [sizeof (unsigned long long int)] = LONG_LONG,
+#എങ്കിൽ ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
+    [വലുപ്പം (unsigned long long പൂർണ്ണസംഖ്യ)] = LONG_LONG,
 #endif
-#if ULONG_MAX < UINTMAX_MAX
-    [sizeof (uintmax_t)] = INTMAX,
+#എങ്കിൽ ULONG_MAX < UINTMAX_MAX
+    [വലുപ്പം (uintmax_t)] = INTMAX,
 #endif
   };
 
 /* Map the size in bytes to a floating type identifier.
    When two types have the same machine layout:
      - Prefer double to the other types, as its format is shorter.  */
-static enum size_spec const fp_type_size[] =
+സ്ഥിതം എണ്ണൽ size_spec സ്ഥിരം fp_type_size[] =
   {
-#if FLOAT16_SUPPORTED
-    [sizeof (float16)] = FLOAT_HALF,
-#elif BF16_SUPPORTED
-    [sizeof (bfloat16)] = FLOAT_HALF,
+#എങ്കിൽ FLOAT16_SUPPORTED
+    [വലുപ്പം (float16)] = FLOAT_HALF,
+#അല്ലെങ്കിലെങ്കിൽ BF16_SUPPORTED
+    [വലുപ്പം (bfloat16)] = FLOAT_HALF,
 #endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
-    [sizeof (float)] = FLOAT_SINGLE,
+#എങ്കിൽ FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+    [വലുപ്പം (ദശാംശം)] = FLOAT_SINGLE,
 #endif
-    [sizeof (double)] = FLOAT_DOUBLE,
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
-    [sizeof (long double)] = FLOAT_LONG_DOUBLE,
+    [വലുപ്പം (ഇരട്ട)] = FLOAT_DOUBLE,
+#എങ്കിൽ DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+    [വലുപ്പം (long ഇരട്ട)] = FLOAT_LONG_DOUBLE,
 #endif
   };
 
 /* Use native endianness by default.  */
-static bool input_swap;
+സ്ഥിതം bool നിവേശം_swap;
 
-static char const short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
+സ്ഥിതം അക്ഷരം സ്ഥിരം short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   TRADITIONAL_OPTION = CHAR_MAX + 1,
   ENDIAN_OPTION,
 };
 
-enum endian_type
+എണ്ണൽ endian_type
 {
   endian_little,
   endian_big
 };
 
-static char const *const endian_args[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം endian_args[] =
 {
-  "little", "big", NULL
+  "little", "big", ശൂന്യ
 };
 
-static enum endian_type const endian_types[] =
+സ്ഥിതം എണ്ണൽ endian_type സ്ഥിരം endian_types[] =
 {
   endian_little, endian_big
 };
 
-static struct option const long_options[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_options[] =
 {
-  {"skip-bytes", required_argument, NULL, 'j'},
-  {"address-radix", required_argument, NULL, 'A'},
-  {"read-bytes", required_argument, NULL, 'N'},
-  {"format", required_argument, NULL, 't'},
-  {"output-duplicates", no_argument, NULL, 'v'},
-  {"strings", optional_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, TRADITIONAL_OPTION},
-  {"width", optional_argument, NULL, 'w'},
-  {"endian", required_argument, NULL, ENDIAN_OPTION },
+  {"skip-bytes", required_argument, ശൂന്യ, 'j'},
+  {"address-radix", required_argument, ശൂന്യ, 'A'},
+  {"read-bytes", required_argument, ശൂന്യ, 'N'},
+  {"format", required_argument, ശൂന്യ, 't'},
+  {"output-duplicates", no_argument, ശൂന്യ, 'v'},
+  {"strings", optional_argument, ശൂന്യ, 'S'},
+  {"traditional", no_argument, ശൂന്യ, TRADITIONAL_OPTION},
+  {"width", optional_argument, ശൂന്യ, 'w'},
+  {"endian", required_argument, ശൂന്യ, ENDIAN_OPTION },
 
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -361,9 +361,9 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name, program_name, program_name);
       fputs (_("\n\
-Write an unambiguous representation, octal bytes by default,\n\
+Write an unambiguous representation, octal bytes by സ്ഥിരസ്ഥിതി,\n\
 of FILE to standard output.  With more than one FILE argument,\n\
-concatenate them in the listed order to form the input.\n\
+concatenate them in the listed order to form the നിവേശം.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -371,36 +371,36 @@ concatenate them in the listed order to form the input.\n\
       fputs (_("\
 \n\
 If first and second call formats both apply, the second format is assumed\n\
-if the last operand begins with + or (if there are 2 operands) a digit.\n\
+എങ്കിൽ the last operand begins with + or (എങ്കിൽ there are 2 operands) a digit.\n\
 An OFFSET operand means -j OFFSET.  LABEL is the pseudo-address\n\
 at first byte printed, incremented when dump is progressing.\n\
 For OFFSET and LABEL, a 0x or 0X prefix indicates hexadecimal;\n\
-suffixes may be . for octal and b for multiply by 512.\n\
+suffixes may be . വേണ്ടി octal and b വേണ്ടി multiply by 512.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -A, --address-radix=RADIX\n\
-         output format for file offsets;\n\
-         RADIX is one of [doxn], for Decimal, Octal, Hex or None\n\
+         output format വേണ്ടി file offsets;\n\
+         RADIX is one of [doxn], വേണ്ടി Decimal, Octal, Hex or None\n\
 "));
       oputs (_("\
       --endian={big|little}\n\
-         swap input bytes according the specified order\n\
+         swap നിവേശം bytes according the specified order\n\
 "));
       oputs (_("\
   -j, --skip-bytes=BYTES\n\
-         skip BYTES input bytes first\n\
+         skip BYTES നിവേശം bytes first\n\
 "));
       oputs (_("\
-  -N, --read-bytes=BYTES\n\
-         limit dump to BYTES input bytes\n\
+  -N, --പഠ-bytes=BYTES\n\
+         limit dump to BYTES നിവേശം bytes\n\
 "));
       oputs (_("\
   -S BYTES, --strings[=BYTES]\n\
          show only NUL terminated strings\n\
-         of at least BYTES (default 3) printable characters\n\
+         of at least BYTES (സ്ഥിരസ്ഥിതി 3) printable characters\n\
 "));
       oputs (_("\
   -t, --format=TYPE\n\
@@ -408,11 +408,11 @@ suffixes may be . for octal and b for multiply by 512.\n\
 "));
       oputs (_("\
   -v, --output-duplicates\n\
-         do not use * to mark line suppression\n\
+         ചെയ്യുക not use * to mark വരി suppression\n\
 "));
       oputs (_("\
   -w[BYTES], --width[=BYTES]\n\
-         output BYTES bytes per output line;\n\
+         output BYTES bytes per output വരി;\n\
          32 is implied when BYTES is not specified\n\
 "));
       oputs (_("\
@@ -427,7 +427,7 @@ suffixes may be . for octal and b for multiply by 512.\n\
 Traditional format specifications may be intermixed; they accumulate:\n\
 "), stdout);
       oputs (_("\
-  -a   same as -t a,  select named characters, ignoring high-order bit\n\
+  -a   same as -t a,  select named characters, ignoring മുകളിലെ-order bit\n\
 "));
       oputs (_("\
   -b   same as -t o1, select octal bytes\n\
@@ -460,28 +460,28 @@ Traditional format specifications may be intermixed; they accumulate:\n\
 \n\
 \n\
 TYPE is made up of one or more of these specifications:\n\
-  a          named character, ignoring high-order bit\n\
+  a          named character, ignoring മുകളിലെ-order bit\n\
   c          printable character or backslash escape\n\
 "), stdout);
       fputs (_("\
   d[SIZE]    signed decimal, SIZE bytes per integer\n\
-  f[SIZE]    floating point, SIZE bytes per float\n\
+  f[SIZE]    floating point, SIZE bytes per ദശാംശം\n\
   o[SIZE]    octal, SIZE bytes per integer\n\
   u[SIZE]    unsigned decimal, SIZE bytes per integer\n\
   x[SIZE]    hexadecimal, SIZE bytes per integer\n\
 "), stdout);
       fputs (_("\
 \n\
-SIZE is a number.  For TYPE in [doux], SIZE may also be C for\n\
-sizeof(char), S for sizeof(short), I for sizeof(int) or L for\n\
-sizeof(long).  If TYPE is f, SIZE may also be B for Brain 16 bit,\n\
-H for Half precision float, F for sizeof(float), D for sizeof(double),\n\
-or L for sizeof(long double).\n\
+SIZE is a സംഖ്യ.  For TYPE in [doux], SIZE may also be C വേണ്ടി\n\
+വലുപ്പം(അക്ഷരം), S വേണ്ടി വലുപ്പം(short), I വേണ്ടി വലുപ്പം(പൂർണ്ണസംഖ്യ) or L വേണ്ടി\n\
+വലുപ്പം(long).  If TYPE is f, SIZE may also be B വേണ്ടി Brain 16 bit,\n\
+H വേണ്ടി Half precision ദശാംശം, F വേണ്ടി വലുപ്പം(ദശാംശം), D വേണ്ടി വലുപ്പം(ഇരട്ട),\n\
+or L വേണ്ടി വലുപ്പം(long ഇരട്ട).\n\
 "), stdout);
       fputs (_("\
 \n\
 Adding a z suffix to any type displays printable characters at the end of\n\
-each output line.\n\
+each output വരി.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -492,8 +492,8 @@ BYTES is hex with 0x or 0X prefix, and may have a multiplier suffix:\n\
   K    1024\n\
   MB   1000*1000\n\
   M    1024*1024\n\
-and so on for G, T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+and so on വേണ്ടി G, T, P, E, Z, Y, R, Q.\n\
+ദ്വിമാന_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -504,10 +504,10 @@ Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 
 /* Print N spaces, where 0 <= N.
    Do not rely on printf ("%*s", N, "") as N may exceed INT_MAX.  */
-static void
+സ്ഥിതം ശൂന്യം
 print_n_spaces (intmax_t n)
 {
-  for (; 0 < n; n--)
+  വേണ്ടി (; 0 < n; n--)
     putchar (' ');
 }
 
@@ -515,44 +515,44 @@ print_n_spaces (intmax_t n)
    start of field I, where I < FIELDS.  PAD is the total padding for
    all fields.  The result equals (PAD * I) / FIELDS, except it does
    not suffer from internal overflow.  */
-static idx_t
+സ്ഥിതം idx_t
 pad_at (idx_t fields, idx_t i, idx_t pad)
 {
   /* This implementation assumes that (FIELDS - 1)^2 does not overflow
      intmax_t, an assumption checked by pad_at_overflow.  */
   intmax_t m = pad % fields;
-  return pad / fields * i + m * i / fields;
+  തിരികെ pad / fields * i + m * i / fields;
 }
-static bool
+സ്ഥിതം bool
 pad_at_overflow (idx_t fields)
 {
   intmax_t product;
-  return ckd_mul (&product, fields - 1, fields - 1);
+  തിരികെ ckd_mul (&product, fields - 1, fields - 1);
 }
 
 #define PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
-static void                                                             \
-N (idx_t fields, idx_t blank, void const *block,			\
-   FMT_STRING_DECL, int width, idx_t pad)				\
+സ്ഥിതം ശൂന്യം                                                             \
+N (idx_t fields, idx_t blank, ശൂന്യം സ്ഥിരം *block,			\
+   FMT_STRING_DECL, പൂർണ്ണസംഖ്യ width, idx_t pad)				\
 {                                                                       \
-  T const *p = block;                                                   \
+  T സ്ഥിരം *p = block;                                                   \
   idx_t pad_remaining = pad;						\
-  for (idx_t i = fields; blank < i; i--)				\
+  വേണ്ടി (idx_t i = fields; blank < i; i--)				\
     {                                                                   \
       idx_t next_pad = pad_at (fields, i - 1, pad);			\
-      int adjusted_width = pad_remaining - next_pad + width;            \
+      പൂർണ്ണസംഖ്യ adjusted_width = pad_remaining - next_pad + width;            \
       T x;                                                              \
-      if (input_swap && sizeof (T) > 1)                                 \
+      എങ്കിൽ (നിവേശം_swap && വലുപ്പം (T) > 1)                                 \
         {                                                               \
-          union {                                                       \
+          സംഘം {                                                       \
             T x;                                                        \
-            char b[sizeof (T)];                                         \
+            അക്ഷരം b[വലുപ്പം (T)];                                         \
           } u;                                                          \
-          for (idx_t j = 0; j < sizeof (T); j++)			\
-            u.b[j] = ((char const *) p)[sizeof (T) - 1 - j];            \
+          വേണ്ടി (idx_t j = 0; j < വലുപ്പം (T); j++)			\
+            u.b[j] = ((അക്ഷരം സ്ഥിരം *) p)[വലുപ്പം (T) - 1 - j];            \
           x = u.x;                                                      \
         }                                                               \
-      else                                                              \
+      അല്ലെങ്കിൽ                                                              \
         x = *p;                                                         \
       p++;                                                              \
       ACTION;                                                           \
@@ -561,64 +561,64 @@ N (idx_t fields, idx_t blank, void const *block,			\
 }
 
 #define PRINT_TYPE(N, T)                                                \
-  PRINT_FIELDS (N, T, char const *fmt_string,                           \
+  PRINT_FIELDS (N, T, അക്ഷരം സ്ഥിരം *fmt_string,                           \
                 xprintf (fmt_string, adjusted_width, x))
 
 #define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-  PRINT_FIELDS (N, T, MAYBE_UNUSED char const *fmt_string,              \
-                char buf[BUFSIZE];                                      \
-                FTOASTR (buf, sizeof buf, 0, 0, x);                     \
+  PRINT_FIELDS (N, T, MAYBE_UNUSED അക്ഷരം സ്ഥിരം *fmt_string,              \
+                അക്ഷരം buf[BUFSIZE];                                      \
+                FTOASTR (buf, വലുപ്പം buf, 0, 0, x);                     \
                 xprintf ("%*s", adjusted_width, buf))
 
-PRINT_TYPE (print_s_char, signed char)
-PRINT_TYPE (print_char, unsigned char)
-PRINT_TYPE (print_s_short, short int)
-PRINT_TYPE (print_short, unsigned short int)
-PRINT_TYPE (print_int, unsigned int)
-PRINT_TYPE (print_long, unsigned long int)
-PRINT_TYPE (print_long_long, unsigned long long int)
+PRINT_TYPE (print_s_char, signed അക്ഷരം)
+PRINT_TYPE (print_char, unsigned അക്ഷരം)
+PRINT_TYPE (print_s_short, short പൂർണ്ണസംഖ്യ)
+PRINT_TYPE (print_short, unsigned short പൂർണ്ണസംഖ്യ)
+PRINT_TYPE (print_int, unsigned പൂർണ്ണസംഖ്യ)
+PRINT_TYPE (print_long, unsigned long പൂർണ്ണസംഖ്യ)
+PRINT_TYPE (print_long_long, unsigned long long പൂർണ്ണസംഖ്യ)
 PRINT_TYPE (print_intmax, uintmax_t)
 
 PRINT_FLOATTYPE (print_bfloat, bfloat16, ftoastr, FLT_BUFSIZE_BOUND)
 PRINT_FLOATTYPE (print_halffloat, float16, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_float, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_double, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_long_double, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_float, ദശാംശം, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_double, ഇരട്ട, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_long_double, long ഇരട്ട, ldtoastr, LDBL_BUFSIZE_BOUND)
 
 #undef PRINT_TYPE
 #undef PRINT_FLOATTYPE
 
-static void
-dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
+സ്ഥിതം ശൂന്യം
+dump_hexl_mode_trailer (idx_t n_bytes, അക്ഷരം സ്ഥിരം *block)
 {
   fputs ("  >", stdout);
-  for (idx_t i = n_bytes; i > 0; i--)
+  വേണ്ടി (idx_t i = n_bytes; i > 0; i--)
     {
-      unsigned char c = *block++;
-      unsigned char c2 = (isprint (c) ? c : '.');
+      unsigned അക്ഷരം c = *block++;
+      unsigned അക്ഷരം c2 = (isprint (c) ? c : '.');
       putchar (c2);
     }
   putchar ('<');
 }
 
-static void
-print_named_ascii (idx_t fields, idx_t blank, void const *block,
-                   MAYBE_UNUSED char const *unused_fmt_string,
-                   int width, idx_t pad)
+സ്ഥിതം ശൂന്യം
+print_named_ascii (idx_t fields, idx_t blank, ശൂന്യം സ്ഥിരം *block,
+                   MAYBE_UNUSED അക്ഷരം സ്ഥിരം *unused_fmt_string,
+                   പൂർണ്ണസംഖ്യ width, idx_t pad)
 {
-  unsigned char const *p = block;
+  unsigned അക്ഷരം സ്ഥിരം *p = block;
   idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  വേണ്ടി (idx_t i = fields; blank < i; i--)
     {
-      int masked_c = *p++ & 0x7f;
-      char const *s;
-      char buf[2];
+      പൂർണ്ണസംഖ്യ masked_c = *p++ & 0x7f;
+      അക്ഷരം സ്ഥിരം *s;
+      അക്ഷരം buf[2];
 
-      if (masked_c == 127)
+      എങ്കിൽ (masked_c == 127)
         s = "del";
-      else if (masked_c <= 040)
+      അല്ലെങ്കിൽ എങ്കിൽ (masked_c <= 040)
         s = charname[masked_c];
-      else
+      അല്ലെങ്കിൽ
         {
           buf[0] = masked_c;
           buf[1] = 0;
@@ -626,66 +626,66 @@ print_named_ascii (idx_t fields, idx_t blank, void const *block,
         }
 
       idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
+      പൂർണ്ണസംഖ്യ adjusted_width = pad_remaining - next_pad + width;
       xprintf ("%*s", adjusted_width, s);
       pad_remaining = next_pad;
     }
 }
 
-static void
-print_ascii (idx_t fields, idx_t blank, void const *block,
-             MAYBE_UNUSED char const *unused_fmt_string, int width,
+സ്ഥിതം ശൂന്യം
+print_ascii (idx_t fields, idx_t blank, ശൂന്യം സ്ഥിരം *block,
+             MAYBE_UNUSED അക്ഷരം സ്ഥിരം *unused_fmt_string, പൂർണ്ണസംഖ്യ width,
              idx_t pad)
 {
-  unsigned char const *p = block;
+  unsigned അക്ഷരം സ്ഥിരം *p = block;
   idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  വേണ്ടി (idx_t i = fields; blank < i; i--)
     {
-      unsigned char c = *p++;
-      char const *s;
-      char buf[4];
+      unsigned അക്ഷരം c = *p++;
+      അക്ഷരം സ്ഥിരം *s;
+      അക്ഷരം buf[4];
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case '\0':
+        അവസ്ഥ '\0':
           s = "\\0";
-          break;
+          നിർത്തുക;
 
-        case '\a':
+        അവസ്ഥ '\a':
           s = "\\a";
-          break;
+          നിർത്തുക;
 
-        case '\b':
+        അവസ്ഥ '\b':
           s = "\\b";
-          break;
+          നിർത്തുക;
 
-        case '\f':
+        അവസ്ഥ '\f':
           s = "\\f";
-          break;
+          നിർത്തുക;
 
-        case '\n':
+        അവസ്ഥ '\n':
           s = "\\n";
-          break;
+          നിർത്തുക;
 
-        case '\r':
+        അവസ്ഥ '\r':
           s = "\\r";
-          break;
+          നിർത്തുക;
 
-        case '\t':
+        അവസ്ഥ '\t':
           s = "\\t";
-          break;
+          നിർത്തുക;
 
-        case '\v':
+        അവസ്ഥ '\v':
           s = "\\v";
-          break;
+          നിർത്തുക;
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           sprintf (buf, (isprint (c) ? "%c" : "%03o"), c);
           s = buf;
         }
 
       idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
+      പൂർണ്ണസംഖ്യ adjusted_width = pad_remaining - next_pad + width;
       xprintf ("%*s", adjusted_width, s);
       pad_remaining = next_pad;
     }
@@ -699,29 +699,29 @@ print_ascii (idx_t fields, idx_t blank, void const *block,
    Otherwise, advance *P to the first non-digit after S, set *VAL to
    the result of the conversion and return true.  */
 
-static bool
-simple_strtoi (char const *s, char const **p, int *val)
+സ്ഥിതം bool
+simple_strtoi (അക്ഷരം സ്ഥിരം *s, അക്ഷരം സ്ഥിരം **p, പൂർണ്ണസംഖ്യ *val)
 {
-  int sum;
+  പൂർണ്ണസംഖ്യ sum;
 
-  for (sum = 0; c_isdigit (*s); s++)
-    if (ckd_mul (&sum, sum, 10) || ckd_add (&sum, sum, *s - '0'))
-      return false;
+  വേണ്ടി (sum = 0; c_isdigit (*s); s++)
+    എങ്കിൽ (ckd_mul (&sum, sum, 10) || ckd_add (&sum, sum, *s - '0'))
+      തിരികെ false;
   *p = s;
   *val = sum;
-  return true;
+  തിരികെ true;
 }
 
 /* Return a printf format for SPEC, given that remaining arguments are
    formats for int, long, long long, and intmax_t, respectively.  */
-static char const *
-ispec_to_format (enum size_spec size_spec,
-                 char const *int_format,
-                 char const *long_format,
-                 char const *long_long_format,
-                 char const *intmax_format)
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
+ispec_to_format (എണ്ണൽ size_spec size_spec,
+                 അക്ഷരം സ്ഥിരം *int_format,
+                 അക്ഷരം സ്ഥിരം *long_format,
+                 അക്ഷരം സ്ഥിരം *long_long_format,
+                 അക്ഷരം സ്ഥിരം *intmax_format)
 {
-  return (LONG < INTMAX && size_spec == INTMAX ? intmax_format
+  തിരികെ (LONG < INTMAX && size_spec == INTMAX ? intmax_format
           : LONG < LONG_LONG && size_spec == LONG_LONG ? long_long_format
           : INT < LONG && size_spec == LONG ? long_format
           : int_format);
@@ -746,107 +746,107 @@ ispec_to_format (enum size_spec size_spec,
    string argument.
    */
 
-static bool ATTRIBUTE_NONNULL ()
-decode_one_format (char const *s_orig, char const *s, char const **next,
-                   struct tspec *tspec)
+സ്ഥിതം bool ATTRIBUTE_NONNULL ()
+decode_one_format (അക്ഷരം സ്ഥിരം *s_orig, അക്ഷരം സ്ഥിരം *s, അക്ഷരം സ്ഥിരം **next,
+                   ഘടന tspec *tspec)
 {
-  enum size_spec size_spec;
-  int size;
-  enum output_format fmt;
+  എണ്ണൽ size_spec size_spec;
+  പൂർണ്ണസംഖ്യ size;
+  എണ്ണൽ output_format fmt;
   print_function_type print_function;
-  char const *p;
-  char c;
-  int field_width;
+  അക്ഷരം സ്ഥിരം *p;
+  അക്ഷരം c;
+  പൂർണ്ണസംഖ്യ field_width;
 
-  switch (*s)
+  തിരഞ്ഞെടുപ്പ് (*s)
     {
-    case 'd':
-    case 'o':
-    case 'u':
-    case 'x':
+    അവസ്ഥ 'd':
+    അവസ്ഥ 'o':
+    അവസ്ഥ 'u':
+    അവസ്ഥ 'x':
       c = *s;
       ++s;
-      switch (*s)
+      തിരഞ്ഞെടുപ്പ് (*s)
         {
-        case 'C':
+        അവസ്ഥ 'C':
           ++s;
-          size = sizeof (unsigned char);
-          break;
+          size = വലുപ്പം (unsigned അക്ഷരം);
+          നിർത്തുക;
 
-        case 'S':
+        അവസ്ഥ 'S':
           ++s;
-          size = sizeof (unsigned short int);
-          break;
+          size = വലുപ്പം (unsigned short പൂർണ്ണസംഖ്യ);
+          നിർത്തുക;
 
-        case 'I':
+        അവസ്ഥ 'I':
           ++s;
-          size = sizeof (unsigned int);
-          break;
+          size = വലുപ്പം (unsigned പൂർണ്ണസംഖ്യ);
+          നിർത്തുക;
 
-        case 'L':
+        അവസ്ഥ 'L':
           ++s;
-          size = sizeof (unsigned long int);
-          break;
+          size = വലുപ്പം (unsigned long പൂർണ്ണസംഖ്യ);
+          നിർത്തുക;
 
-        default:
-          if (! simple_strtoi (s, &p, &size))
+        സ്ഥിരസ്ഥിതി:
+          എങ്കിൽ (! simple_strtoi (s, &p, &size))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              തിരികെ false;
             }
-          if (p == s)
-            size = sizeof (unsigned int);
-          else
+          എങ്കിൽ (p == s)
+            size = വലുപ്പം (unsigned പൂർണ്ണസംഖ്യ);
+          അല്ലെങ്കിൽ
             {
-              if (countof (integral_type_size) <= size
+              എങ്കിൽ (countof (integral_type_size) <= size
                   || integral_type_size[size] == NO_SIZE)
                 {
                   error (0, 0, _("invalid type string %s;\nthis system"
                                  " doesn't provide a %d-byte integral type"),
                          quote (s_orig), size);
-                  return false;
+                  തിരികെ false;
                 }
               s = p;
             }
-          break;
+          നിർത്തുക;
         }
 
       size_spec = integral_type_size[size];
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'd':
+        അവസ്ഥ 'd':
           fmt = SIGNED_DECIMAL;
           field_width = INT_BITS_STRLEN_BOUND (CHAR_BIT * size - 1) + 1;
           sprintf (tspec->fmt_string, "%%*%s",
                    ispec_to_format (size_spec, "d", "ld", "lld", "jd"));
-          break;
+          നിർത്തുക;
 
-        case 'o':
+        അവസ്ഥ 'o':
           fmt = OCTAL;
           field_width = (CHAR_BIT * size + 2) / 3;
           sprintf (tspec->fmt_string, "%%*.%d%s", field_width,
                    ispec_to_format (size_spec, "o", "lo", "llo", "jo"));
-          break;
+          നിർത്തുക;
 
-        case 'u':
+        അവസ്ഥ 'u':
           fmt = UNSIGNED_DECIMAL;
           field_width = INT_BITS_STRLEN_BOUND (CHAR_BIT * size);
           sprintf (tspec->fmt_string, "%%*%s",
                    ispec_to_format (size_spec, "u", "lu", "llu", "ju"));
-          break;
+          നിർത്തുക;
 
-        case 'x':
+        അവസ്ഥ 'x':
           fmt = HEXADECIMAL;
           field_width = (CHAR_BIT * size + 3) / 4;
           sprintf (tspec->fmt_string, "%%*.%d%s", field_width,
                    ispec_to_format (size_spec, "x", "lx", "llx", "jx"));
-          break;
+          നിർത്തുക;
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           affirm (false);
         }
 
@@ -865,134 +865,134 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
            ? print_intmax
            : LONG < LONG_LONG && LONG_LONG < INTMAX && size_spec == LONG_LONG
            ? print_long_long
-           : (affirm (false), (print_function_type) NULL));
-      break;
+           : (affirm (false), (print_function_type) ശൂന്യ));
+      നിർത്തുക;
 
-    case 'f':
+    അവസ്ഥ 'f':
       fmt = FLOATING_POINT;
       ++s;
-      switch (*s)
+      തിരഞ്ഞെടുപ്പ് (*s)
         {
-        case 'B':
+        അവസ്ഥ 'B':
           ++s;
           fmt = BFLOATING_POINT;
-          size = sizeof (bfloat16);
-          break;
+          size = വലുപ്പം (bfloat16);
+          നിർത്തുക;
 
-        case 'H':
+        അവസ്ഥ 'H':
           ++s;
           fmt = HFLOATING_POINT;
-          size = sizeof (float16);
-          break;
+          size = വലുപ്പം (float16);
+          നിർത്തുക;
 
-        case 'F':
+        അവസ്ഥ 'F':
           ++s;
-          size = sizeof (float);
-          break;
+          size = വലുപ്പം (ദശാംശം);
+          നിർത്തുക;
 
-        case 'D':
+        അവസ്ഥ 'D':
           ++s;
-          size = sizeof (double);
-          break;
+          size = വലുപ്പം (ഇരട്ട);
+          നിർത്തുക;
 
-        case 'L':
+        അവസ്ഥ 'L':
           ++s;
-          size = sizeof (long double);
-          break;
+          size = വലുപ്പം (long ഇരട്ട);
+          നിർത്തുക;
 
-        default:
-          if (! simple_strtoi (s, &p, &size))
+        സ്ഥിരസ്ഥിതി:
+          എങ്കിൽ (! simple_strtoi (s, &p, &size))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              തിരികെ false;
             }
-          if (p == s)
-            size = sizeof (double);
-          else
+          എങ്കിൽ (p == s)
+            size = വലുപ്പം (ഇരട്ട);
+          അല്ലെങ്കിൽ
             {
-              if (countof (fp_type_size) <= size
+              എങ്കിൽ (countof (fp_type_size) <= size
                   || fp_type_size[size] == NO_SIZE
                   || (! FLOAT16_SUPPORTED && BF16_SUPPORTED
-                      && size == sizeof (bfloat16)))
+                      && size == വലുപ്പം (bfloat16)))
                 {
                   error (0, 0,
                          _("invalid type string %s;\n"
                            "this system doesn't provide a %d-byte"
                            " floating point type"),
                          quote (s_orig), size);
-                  return false;
+                  തിരികെ false;
                 }
               s = p;
             }
-          break;
+          നിർത്തുക;
         }
       size_spec = fp_type_size[size];
 
-      if ((! FLOAT16_SUPPORTED && fmt == HFLOATING_POINT)
+      എങ്കിൽ ((! FLOAT16_SUPPORTED && fmt == HFLOATING_POINT)
           || (! BF16_SUPPORTED && fmt == BFLOATING_POINT))
       {
         error (0, 0,
                _("this system doesn't provide a %s floating point type"),
                quote (s_orig));
-        return false;
+        തിരികെ false;
       }
 
       {
-        struct lconv const *locale = localeconv ();
+        ഘടന lconv സ്ഥിരം *locale = localeconv ();
         idx_t decimal_point_len =
           (locale->decimal_point[0] ? strlen (locale->decimal_point) : 1);
 
-        if (size_spec == FLOAT_DOUBLE)
+        എങ്കിൽ (size_spec == FLOAT_DOUBLE)
           {
             print_function = print_double;
             field_width = DBL_STRLEN_BOUND_L (decimal_point_len);
           }
-        else if (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
+        അല്ലെങ്കിൽ എങ്കിൽ (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
           {
             print_function = print_float;
             field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
           }
-        else if (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
+        അല്ലെങ്കിൽ എങ്കിൽ (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
           {
             print_function = fmt == BFLOATING_POINT
                              ? print_bfloat : print_halffloat;
             field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
           }
-        else if (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
+        അല്ലെങ്കിൽ എങ്കിൽ (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
                  && size_spec == FLOAT_LONG_DOUBLE)
           {
             print_function = print_long_double;
             field_width = LDBL_STRLEN_BOUND_L (decimal_point_len);
           }
-        else
+        അല്ലെങ്കിൽ
           affirm (false);
 
-        break;
+        നിർത്തുക;
       }
 
-    case 'a':
+    അവസ്ഥ 'a':
       ++s;
       fmt = NAMED_CHARACTER;
       size_spec = CHAR;
       print_function = print_named_ascii;
       field_width = 3;
-      break;
+      നിർത്തുക;
 
-    case 'c':
+    അവസ്ഥ 'c':
       ++s;
       fmt = CHARACTER;
       size_spec = CHAR;
       print_function = print_ascii;
       field_width = 3;
-      break;
+      നിർത്തുക;
 
-    default:
+    സ്ഥിരസ്ഥിതി:
       error (0, 0, _("invalid character '%c' in type string %s"),
              *s, quote (s_orig));
-      return false;
+      തിരികെ false;
     }
 
   tspec->size = size_spec;
@@ -1001,11 +1001,11 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
 
   tspec->field_width = field_width;
   tspec->hexl_mode_trailer = (*s == 'z');
-  if (tspec->hexl_mode_trailer)
+  എങ്കിൽ (tspec->hexl_mode_trailer)
     s++;
 
   *next = s;
-  return true;
+  തിരികെ true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1015,41 +1015,41 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
    interpreted as standard input.  If any file open fails, give an error
    message and return false.  */
 
-static bool
-open_next_file (void)
+സ്ഥിതം bool
+open_next_file (ശൂന്യം)
 {
   bool ok = true;
 
-  do
+  ചെയ്യുക
     {
-      input_filename = *file_list;
-      if (input_filename == NULL)
-        return ok;
+      നിവേശം_filename = *file_list;
+      എങ്കിൽ (നിവേശം_filename == ശൂന്യ)
+        തിരികെ ok;
       ++file_list;
 
-      if (streq (input_filename, "-"))
+      എങ്കിൽ (streq (നിവേശം_filename, "-"))
         {
-          input_filename = _("standard input");
+          നിവേശം_filename = _("standard input");
           in_stream = stdin;
           have_read_stdin = true;
-          xset_binary_mode (STDIN_FILENO, O_BINARY);
+          xset_ദ്വിമാന_mode (STDIN_FILENO, O_ദ്വിമാന);
         }
-      else
+      അല്ലെങ്കിൽ
         {
-          in_stream = fopen (input_filename, (O_BINARY ? "rb" : "r"));
-          if (in_stream == NULL)
+          in_stream = fopen (നിവേശം_filename, (O_ദ്വിമാന ? "rb" : "r"));
+          എങ്കിൽ (in_stream == ശൂന്യ)
             {
-              error (0, errno, "%s", quotef (input_filename));
+              error (0, errno, "%s", quotef (നിവേശം_filename));
               ok = false;
             }
         }
     }
-  while (in_stream == NULL);
+  ആകുമ്പോൾ (in_stream == ശൂന്യ);
 
-  if (0 <= end_offset && !flag_dump_strings)
-    setvbuf (in_stream, NULL, _IONBF, 0);
+  എങ്കിൽ (0 <= end_offset && !flag_dump_strings)
+    setvbuf (in_stream, ശൂന്യ, _IONBF, 0);
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* Test whether there have been errors on in_stream, and close it if
@@ -1059,62 +1059,62 @@ open_next_file (void)
    have occurred.  IN_ERRNO, if nonzero, is the error number
    corresponding to the most recent action for IN_STREAM.  */
 
-static bool
-check_and_close (int in_errno)
+സ്ഥിതം bool
+check_and_close (പൂർണ്ണസംഖ്യ in_errno)
 {
   bool ok = true;
 
-  if (in_stream != NULL)
+  എങ്കിൽ (in_stream != ശൂന്യ)
     {
-      if (!ferror (in_stream))
+      എങ്കിൽ (!ferror (in_stream))
         in_errno = 0;
-      if (streq (file_list[-1], "-"))
+      എങ്കിൽ (streq (file_list[-1], "-"))
         clearerr (in_stream);
-      else if (fclose (in_stream) != 0 && !in_errno)
+      അല്ലെങ്കിൽ എങ്കിൽ (fclose (in_stream) != 0 && !in_errno)
         in_errno = errno;
-      if (in_errno)
+      എങ്കിൽ (in_errno)
         {
-          error (0, in_errno, "%s", quotef (input_filename));
+          error (0, in_errno, "%s", quotef (നിവേശം_filename));
           ok = false;
         }
 
-      in_stream = NULL;
+      in_stream = ശൂന്യ;
     }
 
-  if (ferror (stdout))
+  എങ്കിൽ (ferror (stdout))
     {
       error (0, 0, _("write error"));
       ok = false;
     }
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* Decode the modern od format string S.  Append the decoded
    representation to the global array SPEC, reallocating SPEC if
    necessary.  Return true if S is valid.  */
 
-static bool ATTRIBUTE_NONNULL ()
-decode_format_string (char const *s)
+സ്ഥിതം bool ATTRIBUTE_NONNULL ()
+decode_format_string (അക്ഷരം സ്ഥിരം *s)
 {
-  char const *s_orig = s;
+  അക്ഷരം സ്ഥിരം *s_orig = s;
 
-  while (*s != '\0')
+  ആകുമ്പോൾ (*s != '\0')
     {
-      char const *next;
+      അക്ഷരം സ്ഥിരം *next;
 
-      if (n_specs_allocated <= n_specs)
-        spec = xpalloc (spec, &n_specs_allocated, 1, -1, sizeof *spec);
+      എങ്കിൽ (n_specs_allocated <= n_specs)
+        spec = xpalloc (spec, &n_specs_allocated, 1, -1, വലുപ്പം *spec);
 
-      if (! decode_one_format (s_orig, s, &next, &spec[n_specs]))
-        return false;
+      എങ്കിൽ (! decode_one_format (s_orig, s, &next, &spec[n_specs]))
+        തിരികെ false;
 
       affirm (s != next);
       s = next;
       ++n_specs;
     }
 
-  return true;
+  തിരികെ true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1124,18 +1124,18 @@ decode_format_string (char const *s)
    false.  When possible, use seek rather than read operations to
    advance IN_STREAM.  */
 
-static bool
+സ്ഥിതം bool
 skip (intmax_t n_skip)
 {
   bool ok = true;
-  int in_errno = 0;
+  പൂർണ്ണസംഖ്യ in_errno = 0;
 
-  if (n_skip == 0)
-    return true;
+  എങ്കിൽ (n_skip == 0)
+    തിരികെ true;
 
-  while (in_stream != NULL)	/* EOF.  */
+  ആകുമ്പോൾ (in_stream != ശൂന്യ)	/* EOF.  */
     {
-      struct stat file_stats;
+      ഘടന stat file_stats;
 
       /* First try seeking.  For large offsets, this extra work is
          worthwhile.  If the offset is below some threshold it may be
@@ -1147,7 +1147,7 @@ skip (intmax_t n_skip)
              Try to do that by getting file's size using fstat.
              But that will work only for regular files.  */
 
-      if (fstat (fileno (in_stream), &file_stats) == 0)
+      എങ്കിൽ (fstat (fileno (in_stream), &file_stats) == 0)
         {
           /* The st_size field is valid for regular files.
              If the number of bytes left to skip is larger than
@@ -1156,14 +1156,14 @@ skip (intmax_t n_skip)
              when st_size is no greater than the block size, because
              some kernels report nonsense small file sizes for
              proc-like file systems.  */
-          if (S_ISREG (file_stats.st_mode)
+          എങ്കിൽ (S_ISREG (file_stats.st_mode)
               && STP_BLKSIZE (&file_stats) < file_stats.st_size)
             {
-              if (file_stats.st_size < n_skip)
+              എങ്കിൽ (file_stats.st_size < n_skip)
                 n_skip -= file_stats.st_size;
-              else
+              അല്ലെങ്കിൽ
                 {
-                  if (fseeko (in_stream, n_skip, SEEK_CUR) != 0)
+                  എങ്കിൽ (fseeko (in_stream, n_skip, SEEK_CUR) != 0)
                     {
                       in_errno = errno;
                       ok = false;
@@ -1172,7 +1172,7 @@ skip (intmax_t n_skip)
                 }
             }
 
-          else if (! (S_ISREG (file_stats.st_mode)
+          അല്ലെങ്കിൽ എങ്കിൽ (! (S_ISREG (file_stats.st_mode)
                       || S_TYPEISSHM (&file_stats)
                       || S_TYPEISTMO (&file_stats))
                    && fseeko (in_stream, n_skip, SEEK_CUR) == 0)
@@ -1182,39 +1182,39 @@ skip (intmax_t n_skip)
              regular file so large it can't be in a proc-like file system,
              position the file pointer by reading.  */
 
-          else
+          അല്ലെങ്കിൽ
             {
-              char buf[BUFSIZ];
+              അക്ഷരം buf[BUFSIZ];
               idx_t n_bytes_read, n_bytes_to_read = BUFSIZ;
 
-              while (0 < n_skip)
+              ആകുമ്പോൾ (0 < n_skip)
                 {
-                  if (n_skip < n_bytes_to_read)
+                  എങ്കിൽ (n_skip < n_bytes_to_read)
                     n_bytes_to_read = n_skip;
                   n_bytes_read = fread (buf, 1, n_bytes_to_read, in_stream);
                   n_skip -= n_bytes_read;
-                  if (n_bytes_read != n_bytes_to_read)
+                  എങ്കിൽ (n_bytes_read != n_bytes_to_read)
                     {
-                      if (ferror (in_stream))
+                      എങ്കിൽ (ferror (in_stream))
                         {
                           in_errno = errno;
                           ok = false;
                           n_skip = 0;
-                          break;
+                          നിർത്തുക;
                         }
-                      if (feof (in_stream))
-                        break;
+                      എങ്കിൽ (feof (in_stream))
+                        നിർത്തുക;
                     }
                 }
             }
 
-          if (n_skip == 0)
-            break;
+          എങ്കിൽ (n_skip == 0)
+            നിർത്തുക;
         }
 
-      else   /* cannot fstat() file */
+      അല്ലെങ്കിൽ   /* cannot fstat() file */
         {
-          error (0, errno, "%s", quotef (input_filename));
+          error (0, errno, "%s", quotef (നിവേശം_filename));
           ok = false;
         }
 
@@ -1223,24 +1223,24 @@ skip (intmax_t n_skip)
       ok &= open_next_file ();
     }
 
-  if (n_skip != 0)
+  എങ്കിൽ (n_skip != 0)
     error (EXIT_FAILURE, 0, _("cannot skip past end of combined input"));
 
-  return ok;
+  തിരികെ ok;
 }
 
-static void
+സ്ഥിതം ശൂന്യം
 format_address_none (MAYBE_UNUSED intmax_t address,
-                     MAYBE_UNUSED char c)
+                     MAYBE_UNUSED അക്ഷരം c)
 {
 }
 
-static void
-format_address_std (intmax_t address, char c)
+സ്ഥിതം ശൂന്യം
+format_address_std (intmax_t address, അക്ഷരം c)
 {
-  char buf[MAX_ADDRESS_LENGTH + 2];
-  char *p = buf + sizeof buf;
-  char const *pbound;
+  അക്ഷരം buf[MAX_ADDRESS_LENGTH + 2];
+  അക്ഷരം *p = buf + വലുപ്പം buf;
+  അക്ഷരം സ്ഥിരം *pbound;
 
   *--p = '\0';
   *--p = c;
@@ -1248,49 +1248,49 @@ format_address_std (intmax_t address, char c)
 
   /* Use a special case of the code for each base.  This is measurably
      faster than generic code.  */
-  switch (address_base)
+  തിരഞ്ഞെടുപ്പ് (address_base)
     {
-    case 8:
-      do
+    അവസ്ഥ 8:
+      ചെയ്യുക
         *--p = '0' + (address & 7);
-      while ((address >>= 3) != 0);
-      break;
+      ആകുമ്പോൾ ((address >>= 3) != 0);
+      നിർത്തുക;
 
-    case 10:
-      do
+    അവസ്ഥ 10:
+      ചെയ്യുക
         *--p = '0' + (address % 10);
-      while ((address /= 10) != 0);
-      break;
+      ആകുമ്പോൾ ((address /= 10) != 0);
+      നിർത്തുക;
 
-    case 16:
-      do
+    അവസ്ഥ 16:
+      ചെയ്യുക
         *--p = "0123456789abcdef"[address & 15];
-      while ((address >>= 4) != 0);
-      break;
+      ആകുമ്പോൾ ((address >>= 4) != 0);
+      നിർത്തുക;
     }
 
-  while (pbound < p)
+  ആകുമ്പോൾ (pbound < p)
     *--p = '0';
 
   fputs (p, stdout);
 }
 
-static void
-format_address_paren (intmax_t address, char c)
+സ്ഥിതം ശൂന്യം
+format_address_paren (intmax_t address, അക്ഷരം c)
 {
   putchar ('(');
   format_address_std (address, ')');
-  if (c)
+  എങ്കിൽ (c)
     putchar (c);
 }
 
-static void
-format_address_label (intmax_t address, char c)
+സ്ഥിതം ശൂന്യം
+format_address_label (intmax_t address, അക്ഷരം c)
 {
   format_address_std (address, ' ');
 
   intmax_t addr;
-  if (ckd_add (&addr, address, pseudo_offset))
+  എങ്കിൽ (ckd_add (&addr, address, pseudo_offset))
     error (EXIT_FAILURE, 0, _("pseudo address too large for input"));
 
   format_address_paren (addr, c);
@@ -1306,48 +1306,48 @@ format_address_label (intmax_t address, char c)
    the blocks PREV_BLOCK and CURR_BLOCK only when N_BYTES == BYTES_PER_BLOCK.
    That condition may be false only for the last input block.  */
 
-static void
+സ്ഥിതം ശൂന്യം
 write_block (intmax_t current_offset, idx_t n_bytes,
-             char const *prev_block, char const *curr_block)
+             അക്ഷരം സ്ഥിരം *prev_block, അക്ഷരം സ്ഥിരം *curr_block)
 {
-  static bool first = true;
-  static bool prev_pair_equal = false;
+  സ്ഥിതം bool first = true;
+  സ്ഥിതം bool prev_pair_equal = false;
 
-  if (abbreviate_duplicate_blocks
+  എങ്കിൽ (abbreviate_duplicate_blocks
       && !first && n_bytes == bytes_per_block
       && memeq (prev_block, curr_block, bytes_per_block))
     {
-      if (prev_pair_equal)
+      എങ്കിൽ (prev_pair_equal)
         {
           /* The two preceding blocks were equal, and the current
              block is the same as the last one, so print nothing.  */
         }
-      else
+      അല്ലെങ്കിൽ
         {
           printf ("*\n");
           prev_pair_equal = true;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
       prev_pair_equal = false;
-      for (idx_t i = 0; i < n_specs; i++)
+      വേണ്ടി (idx_t i = 0; i < n_specs; i++)
         {
-          int datum_width = width_bytes[spec[i].size];
+          പൂർണ്ണസംഖ്യ datum_width = width_bytes[spec[i].size];
           idx_t fields_per_block = bytes_per_block / datum_width;
           idx_t blank_fields = (bytes_per_block - n_bytes) / datum_width;
-          if (i == 0)
+          എങ്കിൽ (i == 0)
             format_address (current_offset, '\0');
-          else
+          അല്ലെങ്കിൽ
             print_n_spaces (address_pad_len);
           (*spec[i].print_function) (fields_per_block, blank_fields,
                                      curr_block, spec[i].fmt_string,
                                      spec[i].field_width, spec[i].pad_width);
-          if (spec[i].hexl_mode_trailer)
+          എങ്കിൽ (spec[i].hexl_mode_trailer)
             {
               /* Space-pad out to full line width, then dump the trailer.  */
-              int field_width = spec[i].field_width;
-              for (idx_t f = 0; f < blank_fields; f++)
+              പൂർണ്ണസംഖ്യ field_width = spec[i].field_width;
+              വേണ്ടി (idx_t f = 0; f < blank_fields; f++)
                 print_n_spaces (field_width);
               idx_t pad_width = pad_at (fields_per_block, blank_fields,
                                         spec[i].pad_width);
@@ -1371,20 +1371,20 @@ write_block (intmax_t current_offset, idx_t n_bytes,
    set *C to EOF and return.  Subsequent calls do likewise.  Return
    true if successful.  */
 
-static bool
-read_char (int *c)
+സ്ഥിതം bool
+read_char (പൂർണ്ണസംഖ്യ *c)
 {
   bool ok = true;
 
   *c = EOF;
 
-  while (in_stream && (*c = getc (in_stream)) < 0)
+  ആകുമ്പോൾ (in_stream && (*c = getc (in_stream)) < 0)
     {
       ok &= check_and_close (errno);
       ok &= open_next_file ();
     }
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* Read N bytes into BLOCK from the concatenation of the input files
@@ -1401,8 +1401,8 @@ read_char (int *c)
    closed.  If there is an error, give a message but continue reading
    as usual and return false.  Otherwise return true.  */
 
-static bool
-read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
+സ്ഥിതം bool
+read_block (idx_t n, അക്ഷരം *block, idx_t *n_bytes_in_buffer)
 {
   bool ok = true;
 
@@ -1410,7 +1410,7 @@ read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
 
   *n_bytes_in_buffer = 0;
 
-  while (in_stream != NULL)	/* EOF.  */
+  ആകുമ്പോൾ (in_stream != ശൂന്യ)	/* EOF.  */
     {
       idx_t n_needed = n - *n_bytes_in_buffer;
       idx_t n_read = fread (block + *n_bytes_in_buffer,
@@ -1418,40 +1418,40 @@ read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
 
       *n_bytes_in_buffer += n_read;
 
-      if (n_read == n_needed)
-        break;
+      എങ്കിൽ (n_read == n_needed)
+        നിർത്തുക;
 
       ok &= check_and_close (errno);
 
       ok &= open_next_file ();
     }
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* Return the least common multiple of the sizes associated
    with the format specs.  */
 
 ATTRIBUTE_PURE
-static int
-get_lcm (void)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+get_lcm (ശൂന്യം)
 {
-  int l_c_m = 1;
+  പൂർണ്ണസംഖ്യ l_c_m = 1;
 
-  for (idx_t i = 0; i < n_specs; i++)
+  വേണ്ടി (idx_t i = 0; i < n_specs; i++)
     l_c_m = lcm (l_c_m, width_bytes[spec[i].size]);
-  return l_c_m;
+  തിരികെ l_c_m;
 }
 
 /* Act like xstrtoimax (NPTR, NULL, BASE, VAL, VALID_SUFFIXES),
    except reject negative values, and *VAL may be set if
    LONGINT_INVALID is returned.  */
-static strtol_error
-xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
-             char const *restrict valid_suffixes)
+സ്ഥിതം strtol_error
+xstr2nonneg (അക്ഷരം സ്ഥിരം *restrict nptr, പൂർണ്ണസംഖ്യ base, intmax_t *val,
+             അക്ഷരം സ്ഥിരം *restrict valid_suffixes)
 {
-  strtol_error s_err = xstrtoimax (nptr, NULL, base, val, valid_suffixes);
-  return s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
+  strtol_error s_err = xstrtoimax (nptr, ശൂന്യ, base, val, valid_suffixes);
+  തിരികെ s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
 }
 
 /* If STR is a valid traditional offset specification with an optional
@@ -1460,43 +1460,43 @@ xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
    represented, diagnose the problem and exit.  Otherwise return false
    and possibly set *OFFSET.  */
 
-static bool
-parse_old_offset (char *str, intmax_t *offset)
+സ്ഥിതം bool
+parse_old_offset (അക്ഷരം *str, intmax_t *offset)
 {
   /* Skip over any leading '+'.  */
-  char *s = str + (str[0] == '+');
+  അക്ഷരം *s = str + (str[0] == '+');
 
-  if (! c_isdigit (s[0]))
-    return false;
+  എങ്കിൽ (! c_isdigit (s[0]))
+    തിരികെ false;
 
   /* Determine the radix for S.  If there is a '.', followed first by
      optional 'b' or (undocumented) 'B' and then by end of string,
      it's decimal, otherwise, if the string begins with '0X' or '0x',
      it's hexadecimal, else octal.  */
-  char *dot = strchr (s, '.');
-  if (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
-    dot = NULL;
-  int radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
+  അക്ഷരം *dot = strchr (s, '.');
+  എങ്കിൽ (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
+    dot = ശൂന്യ;
+  പൂർണ്ണസംഖ്യ radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
 
-  if (dot)
+  എങ്കിൽ (dot)
     {
       /* Temporarily remove the '.' from the decimal string.  */
       dot[0] = dot[1];
       dot[1] = '\0';
     }
 
-  enum strtol_error s_err = xstr2nonneg (s, radix, offset, "bB");
+  എണ്ണൽ strtol_error s_err = xstr2nonneg (s, radix, offset, "bB");
 
-  if (dot)
+  എങ്കിൽ (dot)
     {
       /* Restore the decimal string's original value.  */
       dot[1] = dot[0];
       dot[0] = '.';
     }
 
-  if (s_err == LONGINT_OVERFLOW)
+  എങ്കിൽ (s_err == LONGINT_OVERFLOW)
     error (EXIT_FAILURE, ERANGE, "%s", quotef (str));
-  return s_err == LONGINT_OK;
+  തിരികെ s_err == LONGINT_OK;
 }
 
 /* Read a chunk of size BYTES_PER_BLOCK from the input files, write the
@@ -1511,10 +1511,10 @@ parse_old_offset (char *str, intmax_t *offset)
    check_and_close, and if any was false, return false.
    Otherwise, return true.  */
 
-static bool
-dump (void)
+സ്ഥിതം bool
+dump (ശൂന്യം)
 {
-  char *block[2];
+  അക്ഷരം *block[2];
   bool idx = false;
   bool ok = true;
   idx_t n_bytes_read;
@@ -1524,32 +1524,32 @@ dump (void)
 
   intmax_t current_offset = n_bytes_to_skip;
 
-  do
+  ചെയ്യുക
     {
       intmax_t needed_bound
         = end_offset < 0 ? INTMAX_MAX : end_offset - current_offset;
-      if (needed_bound <= 0)
+      എങ്കിൽ (needed_bound <= 0)
         {
           n_bytes_read = 0;
-          break;
+          നിർത്തുക;
         }
       idx_t n_needed = MIN (bytes_per_block, needed_bound);
       ok &= read_block (n_needed, block[idx], &n_bytes_read);
-      if (n_bytes_read < bytes_per_block)
-        break;
+      എങ്കിൽ (n_bytes_read < bytes_per_block)
+        നിർത്തുക;
       affirm (n_bytes_read == bytes_per_block);
       write_block (current_offset, n_bytes_read,
                    block[!idx], block[idx]);
-      if (ferror (stdout))
+      എങ്കിൽ (ferror (stdout))
         ok = false;
       current_offset += n_bytes_read;
       idx = !idx;
     }
-  while (ok);
+  ആകുമ്പോൾ (ok);
 
-  if (n_bytes_read > 0)
+  എങ്കിൽ (n_bytes_read > 0)
     {
-      int l_c_m = get_lcm ();
+      പൂർണ്ണസംഖ്യ l_c_m = get_lcm ();
 
       /* Ensure zero-byte padding up to the smallest multiple of l_c_m that
          is at least as large as n_bytes_read.  */
@@ -1561,15 +1561,15 @@ dump (void)
       current_offset += n_bytes_read;
     }
 
-  if (ok || current_offset)
+  എങ്കിൽ (ok || current_offset)
     format_address (current_offset, '\n');
 
-  if (0 <= end_offset && end_offset <= current_offset)
+  എങ്കിൽ (0 <= end_offset && end_offset <= current_offset)
     ok &= check_and_close (0);
 
-  free (block[0]);
+  സ്വതന്ത്രം (block[0]);
 
-  return ok;
+  തിരികെ ok;
 }
 
 /* STRINGS mode.  Find each "string constant" in the input.
@@ -1578,47 +1578,47 @@ dump (void)
    Based on a function written by Richard Stallman for a
    traditional version of od.  Return true if successful.  */
 
-static bool
-dump_strings (void)
+സ്ഥിതം bool
+dump_strings (ശൂന്യം)
 {
   idx_t bufsize = MAX (100, string_min + 1);
-  char *buf = ximalloc (bufsize);
+  അക്ഷരം *buf = ximalloc (bufsize);
   intmax_t address = n_bytes_to_skip;
   bool ok = true;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       idx_t i = 0;
-      int c = 1;  /* Init to 1 so can distinguish if NUL read.  */
+      പൂർണ്ണസംഖ്യ c = 1;  /* Init to 1 so can distinguish if NUL read.  */
 
-      if (0 <= end_offset
+      എങ്കിൽ (0 <= end_offset
           && (end_offset < string_min || end_offset - string_min < address))
-        break;
+        നിർത്തുക;
 
       /* Store consecutive printable characters to BUF.  */
-      while (! (0 <= end_offset && end_offset <= address))
+      ആകുമ്പോൾ (! (0 <= end_offset && end_offset <= address))
         {
-          if (i == bufsize - 1)
-            buf = xpalloc (buf, &bufsize, 1, -1, sizeof *buf);
+          എങ്കിൽ (i == bufsize - 1)
+            buf = xpalloc (buf, &bufsize, 1, -1, വലുപ്പം *buf);
           ok &= read_char (&c);
-          if (c < 0)
+          എങ്കിൽ (c < 0)
             {
-              free (buf);
-              return ok;
+              സ്വതന്ത്രം (buf);
+              തിരികെ ok;
             }
           address++;
           buf[i++] = c;
-          if (c == '\0')
-            break;		/* Print this string.  */
-          if (! isprint (c))
+          എങ്കിൽ (c == '\0')
+            നിർത്തുക;		/* Print this string.  */
+          എങ്കിൽ (! isprint (c))
             {
               c = -1;		/* Give up on this string.  */
-              break;
+              നിർത്തുക;
             }
         }
 
-      if (c < 0 || i - !c < string_min)
-        continue;
+      എങ്കിൽ (c < 0 || i - !c < string_min)
+        തുടരുക;
 
       buf[i] = 0;
 
@@ -1626,39 +1626,39 @@ dump_strings (void)
 
       format_address (address - i, ' ');
 
-      for (i = 0; (c = buf[i]); i++)
+      വേണ്ടി (i = 0; (c = buf[i]); i++)
         {
-          switch (c)
+          തിരഞ്ഞെടുപ്പ് (c)
             {
-            case '\a':
+            അവസ്ഥ '\a':
               fputs ("\\a", stdout);
-              break;
+              നിർത്തുക;
 
-            case '\b':
+            അവസ്ഥ '\b':
               fputs ("\\b", stdout);
-              break;
+              നിർത്തുക;
 
-            case '\f':
+            അവസ്ഥ '\f':
               fputs ("\\f", stdout);
-              break;
+              നിർത്തുക;
 
-            case '\n':
+            അവസ്ഥ '\n':
               fputs ("\\n", stdout);
-              break;
+              നിർത്തുക;
 
-            case '\r':
+            അവസ്ഥ '\r':
               fputs ("\\r", stdout);
-              break;
+              നിർത്തുക;
 
-            case '\t':
+            അവസ്ഥ '\t':
               fputs ("\\t", stdout);
-              break;
+              നിർത്തുക;
 
-            case '\v':
+            അവസ്ഥ '\v':
               fputs ("\\v", stdout);
-              break;
+              നിർത്തുക;
 
-            default:
+            സ്ഥിരസ്ഥിതി:
               putc (c, stdout);
             }
         }
@@ -1668,22 +1668,22 @@ dump_strings (void)
   /* We reach this point only if we search through
      (max_bytes_to_format - string_min) bytes before reaching EOF.  */
 
-  free (buf);
+  സ്വതന്ത്രം (buf);
 
   ok &= check_and_close (0);
-  return ok;
+  തിരികെ ok;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int n_files;
-  int l_c_m;
+  പൂർണ്ണസംഖ്യ n_files;
+  പൂർണ്ണസംഖ്യ l_c_m;
   idx_t desired_width = 0;
   bool modern = false;
   bool ok = true;
   idx_t width_per_block = 0;
-  static char const multipliers[] = "bEGKkMmPQRTYZ0";
+  സ്ഥിതം അക്ഷരം സ്ഥിരം multipliers[] = "bEGKkMmPQRTYZ0";
 
   /* The maximum number of bytes that will be formatted.
      If negative, there is no limit.  */
@@ -1701,107 +1701,107 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
       intmax_t tmp;
-      enum strtol_error s_err;
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      എണ്ണൽ strtol_error s_err;
+      പൂർണ്ണസംഖ്യ oi = -1;
+      പൂർണ്ണസംഖ്യ c = getopt_long (argc, argv, short_options, long_options, &oi);
+      എങ്കിൽ (c == -1)
+        നിർത്തുക;
 
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'A':
+        അവസ്ഥ 'A':
           modern = true;
-          switch (optarg[0])
+          തിരഞ്ഞെടുപ്പ് (optarg[0])
             {
-            case 'd':
+            അവസ്ഥ 'd':
               format_address = format_address_std;
               address_base = 10;
               address_pad_len = 7;
-              break;
-            case 'o':
+              നിർത്തുക;
+            അവസ്ഥ 'o':
               format_address = format_address_std;
               address_base = 8;
               address_pad_len = 7;
-              break;
-            case 'x':
+              നിർത്തുക;
+            അവസ്ഥ 'x':
               format_address = format_address_std;
               address_base = 16;
               address_pad_len = 6;
-              break;
-            case 'n':
+              നിർത്തുക;
+            അവസ്ഥ 'n':
               format_address = format_address_none;
               address_pad_len = 0;
-              break;
-            default:
+              നിർത്തുക;
+            സ്ഥിരസ്ഥിതി:
               error (EXIT_FAILURE, 0,
                      _("invalid output address radix '%c';"
                        " it must be one character from [doxn]"),
                      optarg[0]);
-              break;
+              നിർത്തുക;
             }
-          break;
+          നിർത്തുക;
 
-        case 'j':
+        അവസ്ഥ 'j':
           modern = true;
           s_err = xstr2nonneg (optarg, 0, &n_bytes_to_skip, multipliers);
-          if (s_err != LONGINT_OK)
+          എങ്കിൽ (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
-          break;
+          നിർത്തുക;
 
-        case 'N':
+        അവസ്ഥ 'N':
           modern = true;
           s_err = xstr2nonneg (optarg, 0, &max_bytes_to_format, multipliers);
-          if (s_err != LONGINT_OK)
+          എങ്കിൽ (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
-          break;
+          നിർത്തുക;
 
-        case 'S':
+        അവസ്ഥ 'S':
           modern = true;
-          if (optarg == NULL)
+          എങ്കിൽ (optarg == ശൂന്യ)
             string_min = 3;
-          else
+          അല്ലെങ്കിൽ
             {
               s_err = xstr2nonneg (optarg, 0, &tmp, multipliers);
               /* The minimum string length + 1 must fit in idx_t,
                  since we may allocate a buffer of this size + 1.  */
               idx_t i;
-              if (s_err == LONGINT_OK && ckd_add (&i, tmp, 1))
+              എങ്കിൽ (s_err == LONGINT_OK && ckd_add (&i, tmp, 1))
                 s_err = LONGINT_OVERFLOW;
-              if (s_err != LONGINT_OK)
+              എങ്കിൽ (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
               string_min = tmp;
             }
           flag_dump_strings = true;
-          break;
+          നിർത്തുക;
 
-        case 't':
+        അവസ്ഥ 't':
           modern = true;
           ok &= decode_format_string (optarg);
-          break;
+          നിർത്തുക;
 
-        case 'v':
+        അവസ്ഥ 'v':
           modern = true;
           abbreviate_duplicate_blocks = false;
-          break;
+          നിർത്തുക;
 
-        case TRADITIONAL_OPTION:
+        അവസ്ഥ TRADITIONAL_OPTION:
           traditional = true;
-          break;
+          നിർത്തുക;
 
-        case ENDIAN_OPTION:
-          switch (XARGMATCH ("--endian", optarg, endian_args, endian_types))
+        അവസ്ഥ ENDIAN_OPTION:
+          തിരഞ്ഞെടുപ്പ് (XARGMATCH ("--endian", optarg, endian_args, endian_types))
             {
-            case endian_big:
-              input_swap = BYTE_ORDER != BIG_ENDIAN;
-              break;
-            case endian_little:
-              input_swap = BYTE_ORDER != LITTLE_ENDIAN;
-              break;
+            അവസ്ഥ endian_big:
+              നിവേശം_swap = BYTE_ORDER != BIG_ENDIAN;
+              നിർത്തുക;
+            അവസ്ഥ endian_little:
+              നിവേശം_swap = BYTE_ORDER != LITTLE_ENDIAN;
+              നിർത്തുക;
             }
-          break;
+          നിർത്തുക;
 
           /* The next several cases map the traditional format
              specification options to the corresponding modern format
@@ -1811,68 +1811,68 @@ main (int argc, char **argv)
              with FreeBSD 4.10 od.  */
 
 #define CASE_OLD_ARG(old_char,new_string)		\
-        case old_char:					\
+        അവസ്ഥ old_char:					\
           ok &= decode_format_string (new_string);	\
-          break
+          നിർത്തുക
 
           CASE_OLD_ARG ('a', "a");
           CASE_OLD_ARG ('b', "o1");
           CASE_OLD_ARG ('c', "c");
           CASE_OLD_ARG ('D', "u4"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('d', "u2");
-        case 'F': /* obsolescent and undocumented alias */
+        അവസ്ഥ 'F': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('e', "fD"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('f', "fF");
-        case 'X': /* obsolescent and undocumented alias */
+        അവസ്ഥ 'X': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('H', "x4"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('i', "dI");
-        case 'I': case 'L': /* obsolescent and undocumented aliases */
+        അവസ്ഥ 'I': അവസ്ഥ 'L': /* obsolescent and undocumented aliases */
           CASE_OLD_ARG ('l', "dL");
           CASE_OLD_ARG ('O', "o4"); /* obsolescent and undocumented */
-        case 'B': /* obsolescent and undocumented alias */
+        അവസ്ഥ 'B': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('o', "o2");
           CASE_OLD_ARG ('s', "d2");
-        case 'h': /* obsolescent and undocumented alias */
+        അവസ്ഥ 'h': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('x', "x2");
 
 #undef CASE_OLD_ARG
 
-        case 'w':
+        അവസ്ഥ 'w':
           modern = true;
-          if (optarg == NULL)
+          എങ്കിൽ (optarg == ശൂന്യ)
             {
               desired_width = 32;
             }
-          else
+          അല്ലെങ്കിൽ
             {
               intmax_t w_tmp;
               s_err = xstr2nonneg (optarg, 10, &w_tmp, "");
-              if (s_err == LONGINT_OK)
+              എങ്കിൽ (s_err == LONGINT_OK)
                 {
-                  if (ckd_add (&desired_width, w_tmp, 0))
+                  എങ്കിൽ (ckd_add (&desired_width, w_tmp, 0))
                     s_err = LONGINT_OVERFLOW;
-                  else if (desired_width == 0)
+                  അല്ലെങ്കിൽ എങ്കിൽ (desired_width == 0)
                     s_err = LONGINT_INVALID;
                 }
-              if (s_err != LONGINT_OK)
+              എങ്കിൽ (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
             }
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
-          break;
+          നിർത്തുക;
         }
     }
 
-  if (!ok)
-    return EXIT_FAILURE;
+  എങ്കിൽ (!ok)
+    തിരികെ EXIT_FAILURE;
 
-  if (flag_dump_strings && n_specs > 0)
+  എങ്കിൽ (flag_dump_strings && n_specs > 0)
     error (EXIT_FAILURE, 0,
            _("no type may be specified when dumping strings"));
 
@@ -1890,29 +1890,29 @@ main (int argc, char **argv)
         od [file] [[+]offset[.][b]]
   */
 
-  if (!modern || traditional)
+  എങ്കിൽ (!modern || traditional)
     {
       intmax_t o1;
       intmax_t o2;
 
-      switch (n_files)
+      തിരഞ്ഞെടുപ്പ് (n_files)
         {
-        case 1:
-          if ((traditional || argv[optind][0] == '+')
+        അവസ്ഥ 1:
+          എങ്കിൽ ((traditional || argv[optind][0] == '+')
               && parse_old_offset (argv[optind], &o1))
             {
               n_bytes_to_skip = o1;
               --n_files;
               ++argv;
             }
-          break;
+          നിർത്തുക;
 
-        case 2:
-          if ((traditional || argv[optind + 1][0] == '+'
+        അവസ്ഥ 2:
+          എങ്കിൽ ((traditional || argv[optind + 1][0] == '+'
                || c_isdigit (argv[optind + 1][0]))
               && parse_old_offset (argv[optind + 1], &o2))
             {
-              if (traditional && parse_old_offset (argv[optind], &o1))
+              എങ്കിൽ (traditional && parse_old_offset (argv[optind], &o1))
                 {
                   n_bytes_to_skip = o1;
                   flag_pseudo_start = true;
@@ -1920,7 +1920,7 @@ main (int argc, char **argv)
                   argv += 2;
                   n_files -= 2;
                 }
-              else
+              അല്ലെങ്കിൽ
                 {
                   n_bytes_to_skip = o2;
                   --n_files;
@@ -1928,10 +1928,10 @@ main (int argc, char **argv)
                   ++argv;
                 }
             }
-          break;
+          നിർത്തുക;
 
-        case 3:
-          if (traditional
+        അവസ്ഥ 3:
+          എങ്കിൽ (traditional
               && parse_old_offset (argv[optind + 1], &o1)
               && parse_old_offset (argv[optind + 2], &o2))
             {
@@ -1942,10 +1942,10 @@ main (int argc, char **argv)
               argv += 2;
               n_files -= 2;
             }
-          break;
+          നിർത്തുക;
         }
 
-      if (traditional && 1 < n_files)
+      എങ്കിൽ (traditional && 1 < n_files)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           error (0, 0, "%s",
@@ -1954,33 +1954,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (flag_pseudo_start)
+  എങ്കിൽ (flag_pseudo_start)
     {
-      if (format_address == format_address_none)
+      എങ്കിൽ (format_address == format_address_none)
         {
           address_base = 8;
           address_pad_len = 7;
           format_address = format_address_paren;
         }
-      else
+      അല്ലെങ്കിൽ
         format_address = format_address_label;
     }
 
-  if (0 <= max_bytes_to_format
+  എങ്കിൽ (0 <= max_bytes_to_format
       && ckd_add (&end_offset, n_bytes_to_skip, max_bytes_to_format))
     error (EXIT_FAILURE, 0, _("skip-bytes + read-bytes is too large"));
 
-  if (n_specs == 0)
+  എങ്കിൽ (n_specs == 0)
     decode_format_string ("oS");
 
-  if (n_files > 0)
+  എങ്കിൽ (n_files > 0)
     {
       /* Set the global pointer FILE_LIST so that it
          references the first file-argument on the command-line.  */
 
-      file_list = (char const *const *) &argv[optind];
+      file_list = (അക്ഷരം സ്ഥിരം *സ്ഥിരം *) &argv[optind];
     }
-  else
+  അല്ലെങ്കിൽ
     {
       /* No files were listed on the command line.
          Set the global pointer FILE_LIST so that it
@@ -1991,50 +1991,50 @@ main (int argc, char **argv)
 
   /* open the first input file */
   ok = open_next_file ();
-  if (in_stream == NULL)
-    goto cleanup;
+  എങ്കിൽ (in_stream == ശൂന്യ)
+    പോകുക cleanup;
 
   /* skip over any unwanted header bytes */
   ok &= skip (n_bytes_to_skip);
-  if (in_stream == NULL)
-    goto cleanup;
+  എങ്കിൽ (in_stream == ശൂന്യ)
+    പോകുക cleanup;
 
   pseudo_offset = (flag_pseudo_start ? pseudo_start - n_bytes_to_skip : 0);
 
   /* Compute output block length.  */
   l_c_m = get_lcm ();
 
-  if (desired_width != 0)
+  എങ്കിൽ (desired_width != 0)
     {
-      if (desired_width % l_c_m == 0)
+      എങ്കിൽ (desired_width % l_c_m == 0)
         bytes_per_block = desired_width;
-      else
+      അല്ലെങ്കിൽ
         {
           error (0, 0, _("warning: invalid width %td; using %d instead"),
                  desired_width, l_c_m);
           bytes_per_block = l_c_m;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      if (l_c_m < DEFAULT_BYTES_PER_BLOCK)
+      എങ്കിൽ (l_c_m < DEFAULT_BYTES_PER_BLOCK)
         bytes_per_block = (DEFAULT_BYTES_PER_BLOCK
                            - DEFAULT_BYTES_PER_BLOCK % l_c_m);
-      else
+      അല്ലെങ്കിൽ
         bytes_per_block = l_c_m;
     }
 
   /* Compute padding necessary to align output block.  */
-  for (idx_t i = 0; i < n_specs; i++)
+  വേണ്ടി (idx_t i = 0; i < n_specs; i++)
     {
       idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      if (pad_at_overflow (fields_per_block))
+      എങ്കിൽ (pad_at_overflow (fields_per_block))
         error (EXIT_FAILURE, 0, _("%td is too large"), desired_width);
       idx_t block_width = (spec[i].field_width + 1) * fields_per_block;
-      if (width_per_block < block_width)
+      എങ്കിൽ (width_per_block < block_width)
         width_per_block = block_width;
     }
-  for (idx_t i = 0; i < n_specs; i++)
+  വേണ്ടി (idx_t i = 0; i < n_specs; i++)
     {
       idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
       idx_t block_width = spec[i].field_width * fields_per_block;
@@ -2043,7 +2043,7 @@ main (int argc, char **argv)
 
 #ifdef DEBUG
   printf ("lcm=%d, width_per_block=%td\n", l_c_m, width_per_block);
-  for (idx_t i = 0; i < n_specs; i++)
+  വേണ്ടി (idx_t i = 0; i < n_specs; i++)
     {
       idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
       affirm (bytes_per_block % width_bytes[spec[i].size] == 0);
@@ -2058,8 +2058,8 @@ main (int argc, char **argv)
 
 cleanup:
 
-  if (have_read_stdin && fclose (stdin) < 0)
+  എങ്കിൽ (have_read_stdin && fclose (stdin) < 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

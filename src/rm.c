@@ -18,18 +18,18 @@
    Reworked to use chdir and avoid recursion, and later, rewritten
    once again, to use fts, by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "remove.h"
-#include "root-dev-ino.h"
-#include "yesno.h"
-#include "priv-set.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "argmatch.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "remove.h"
+#അന്തര്ഭാവ "root-dev-ino.h"
+#അന്തര്ഭാവ "yesno.h"
+#അന്തര്ഭാവ "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "rm"
@@ -42,52 +42,52 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+എണ്ണൽ
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
   ONE_FILE_SYSTEM,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
-  PRESUME_INPUT_TTY_OPTION
+  NO_PRESERVE_വേര്,
+  PRESERVE_വേര്,
+  PRESUME_നിവേശം_TTY_OPTION
 };
 
-enum interactive_type
+എണ്ണൽ interactive_type
   {
     interactive_never,		/* 0: no option or --interactive=never */
     interactive_once,		/* 1: -I or --interactive=once */
     interactive_always		/* 2: default, -i or --interactive=always */
   };
 
-static struct option const long_opts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം long_opts[] =
 {
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
+  {"force", no_argument, ശൂന്യ, 'f'},
+  {"interactive", optional_argument, ശൂന്യ, INTERACTIVE_OPTION},
 
-  {"one-file-system", no_argument, NULL, ONE_FILE_SYSTEM},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", optional_argument, NULL, PRESERVE_ROOT},
+  {"one-file-system", no_argument, ശൂന്യ, ONE_FILE_SYSTEM},
+  {"no-preserve-root", no_argument, ശൂന്യ, NO_PRESERVE_വേര്},
+  {"preserve-root", optional_argument, ശൂന്യ, PRESERVE_വേര്},
 
   /* This is solely for testing.  Do not document.  */
   /* It is relatively difficult to ensure that there is a tty on stdin.
      Since rm acts differently depending on that, without this option,
      it'd be harder to test the parts of rm that depend on that setting.  */
-  {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
+  {"-presume-input-tty", no_argument, ശൂന്യ, PRESUME_നിവേശം_TTY_OPTION},
 
-  {"recursive", no_argument, NULL, 'r'},
-  {"dir", no_argument, NULL, 'd'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_argument, ശൂന്യ, 'r'},
+  {"dir", no_argument, ശൂന്യ, 'd'},
+  {"verbose", no_argument, ശൂന്യ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-static char const *const interactive_args[] =
+സ്ഥിതം അക്ഷരം സ്ഥിരം *സ്ഥിരം interactive_args[] =
 {
   "never", "no", "none",
   "once",
-  "always", "yes", NULL
+  "always", "yes", ശൂന്യ
 };
-static enum interactive_type const interactive_types[] =
+സ്ഥിതം എണ്ണൽ interactive_type സ്ഥിരം interactive_types[] =
 {
   interactive_never, interactive_never, interactive_never,
   interactive_once,
@@ -98,35 +98,35 @@ ARGMATCH_VERIFY (interactive_args, interactive_types);
 /* Advise the user about invalid usages like "rm -foo" if the file
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
-static void
-diagnose_leading_hyphen (int argc, char **argv)
+സ്ഥിതം ശൂന്യം
+diagnose_leading_hyphen (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  വേണ്ടി (പൂർണ്ണസംഖ്യ i = 1; i < argc; i++)
     {
-      char const *arg = argv[i];
-      struct stat st;
+      അക്ഷരം സ്ഥിരം *arg = argv[i];
+      ഘടന stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      എങ്കിൽ (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
           fprintf (stderr,
                    _("Try '%s ./%s' to remove the file %s.\n"),
                    argv[0],
                    quotearg_n_style (1, shell_escape_quoting_style, arg),
                    quoteaf (arg));
-          break;
+          നിർത്തുക;
         }
     }
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -145,7 +145,7 @@ Remove (unlink) the FILE(s).\n\
   -I\n\
          prompt once before removing more than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         ആകുമ്പോൾ still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
@@ -156,16 +156,16 @@ Remove (unlink) the FILE(s).\n\
       --one-file-system\n\
          when removing a hierarchy recursively,\n\
          skip any directory that is on a file system different\n\
-         from that of the corresponding command line argument\n\
+         from that of the corresponding command വരി argument\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially\n\
+      --no-preserve-വേര്\n\
+         ചെയ്യുക not treat '/' specially\n\
 "));
       oputs (_("\
-      --preserve-root[=all]\n\
-         do not remove '/' (default);\n\
-         with 'all', reject any command line argument\n\
+      --preserve-വേര്[=all]\n\
+         ചെയ്യുക not remove '/' (സ്ഥിരസ്ഥിതി);\n\
+         with 'all', reject any command വരി argument\n\
          on a separate device from its parent\n\
 "));
       oputs (_("\
@@ -184,7 +184,7 @@ Remove (unlink) the FILE(s).\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-By default, rm does not remove directories.  Use the --recursive (-r or -R)\n\
+By സ്ഥിരസ്ഥിതി, rm does not remove directories.  Use the --recursive (-r or -R)\n\
 option to remove each listed directory, too, along with all of its contents.\n\
 "), stdout);
       fputs (_("\
@@ -194,7 +194,7 @@ is rejected with a diagnostic.\n\
 "), stdout);
       printf (_("\
 \n\
-To remove a file whose name starts with a '-', for example '-foo',\n\
+To remove a file whose name starts with a '-', വേണ്ടി example '-foo',\n\
 use one of these commands:\n\
   %s -- -foo\n\
 \n\
@@ -212,16 +212,16 @@ assurance that the contents are unrecoverable, consider using shred(1).\n\
   exit (status);
 }
 
-static void
-rm_option_init (struct rm_options *x)
+സ്ഥിതം ശൂന്യം
+rm_option_init (ഘടന rm_options *x)
 {
   x->ignore_missing_files = false;
   x->interactive = RMI_SOMETIMES;
   x->one_file_system = false;
   x->remove_empty_directories = false;
   x->recursive = false;
-  x->root_dev_ino = NULL;
-  x->preserve_all_root = false;
+  x->വേര്_dev_ino = ശൂന്യ;
+  x->preserve_all_വേര് = false;
   x->stdin_tty = isatty (STDIN_FILENO);
   x->verbose = false;
 
@@ -230,13 +230,13 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  bool preserve_root = true;
-  struct rm_options x;
+  bool preserve_വേര് = true;
+  ഘടന rm_options x;
   bool prompt_once = false;
-  int c;
+  പൂർണ്ണസംഖ്യ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -251,131 +251,131 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  ആകുമ്പോൾ ((c = getopt_long (argc, argv, "dfirvIR", long_opts, ശൂന്യ)) != -1)
     {
-      switch (c)
+      തിരഞ്ഞെടുപ്പ് (c)
         {
-        case 'd':
+        അവസ്ഥ 'd':
           x.remove_empty_directories = true;
-          break;
+          നിർത്തുക;
 
-        case 'f':
+        അവസ്ഥ 'f':
           x.interactive = RMI_NEVER;
           x.ignore_missing_files = true;
           prompt_once = false;
-          break;
+          നിർത്തുക;
 
-        case 'i':
+        അവസ്ഥ 'i':
           x.interactive = RMI_ALWAYS;
           x.ignore_missing_files = false;
           prompt_once = false;
-          break;
+          നിർത്തുക;
 
-        case 'I':
+        അവസ്ഥ 'I':
           x.interactive = RMI_SOMETIMES;
           x.ignore_missing_files = false;
           prompt_once = true;
-          break;
+          നിർത്തുക;
 
-        case 'r':
-        case 'R':
+        അവസ്ഥ 'r':
+        അവസ്ഥ 'R':
           x.recursive = true;
-          break;
+          നിർത്തുക;
 
-        case INTERACTIVE_OPTION:
+        അവസ്ഥ INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
+            പൂർണ്ണസംഖ്യ i;
+            എങ്കിൽ (optarg)
               i = XARGMATCH ("--interactive", optarg, interactive_args,
                              interactive_types);
-            else
+            അല്ലെങ്കിൽ
               i = interactive_always;
-            switch (i)
+            തിരഞ്ഞെടുപ്പ് (i)
               {
-              case interactive_never:
+              അവസ്ഥ interactive_never:
                 x.interactive = RMI_NEVER;
                 prompt_once = false;
-                break;
+                നിർത്തുക;
 
-              case interactive_once:
+              അവസ്ഥ interactive_once:
                 x.interactive = RMI_SOMETIMES;
                 x.ignore_missing_files = false;
                 prompt_once = true;
-                break;
+                നിർത്തുക;
 
-              case interactive_always:
+              അവസ്ഥ interactive_always:
                 x.interactive = RMI_ALWAYS;
                 x.ignore_missing_files = false;
                 prompt_once = false;
-                break;
+                നിർത്തുക;
               }
-            break;
+            നിർത്തുക;
           }
 
-        case ONE_FILE_SYSTEM:
+        അവസ്ഥ ONE_FILE_SYSTEM:
           x.one_file_system = true;
-          break;
+          നിർത്തുക;
 
-        case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
+        അവസ്ഥ NO_PRESERVE_വേര്:
+          എങ്കിൽ (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
-          preserve_root = false;
-          break;
+          preserve_വേര് = false;
+          നിർത്തുക;
 
-        case PRESERVE_ROOT:
-          if (optarg)
+        അവസ്ഥ PRESERVE_വേര്:
+          എങ്കിൽ (optarg)
             {
-              if (streq (optarg, "all"))
-                x.preserve_all_root = true;
-              else
+              എങ്കിൽ (streq (optarg, "all"))
+                x.preserve_all_വേര് = true;
+              അല്ലെങ്കിൽ
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
-          preserve_root = true;
-          break;
+          preserve_വേര് = true;
+          നിർത്തുക;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        അവസ്ഥ PRESUME_നിവേശം_TTY_OPTION:
           x.stdin_tty = true;
-          break;
+          നിർത്തുക;
 
-        case 'v':
+        അവസ്ഥ 'v':
           x.verbose = true;
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        സ്ഥിരസ്ഥിതി:
           diagnose_leading_hyphen (argc, argv);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc <= optind)
+  എങ്കിൽ (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      എങ്കിൽ (x.ignore_missing_files)
+        തിരികെ EXIT_SUCCESS;
+      അല്ലെങ്കിൽ
         {
           error (0, 0, _("missing operand"));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (x.recursive && preserve_root)
+  എങ്കിൽ (x.recursive && preserve_വേര്)
     {
-      static struct dev_ino dev_ino_buf;
-      x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      സ്ഥിതം ഘടന dev_ino dev_ino_buf;
+      x.വേര്_dev_ino = get_വേര്_dev_ino (&dev_ino_buf);
+      എങ്കിൽ (x.വേര്_dev_ino == ശൂന്യ)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
   uintmax_t n_files = argc - optind;
-  char **file =  argv + optind;
+  അക്ഷരം **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  എങ്കിൽ (prompt_once && (x.recursive || 3 < n_files))
     {
       fprintf (stderr,
                (x.recursive
@@ -386,11 +386,11 @@ main (int argc, char **argv)
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
                program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+      എങ്കിൽ (!yesno ())
+        തിരികെ EXIT_SUCCESS;
     }
 
-  enum RM_status status = rm (file, &x);
+  എണ്ണൽ RM_status status = rm (file, &x);
   affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  തിരികെ status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
 }

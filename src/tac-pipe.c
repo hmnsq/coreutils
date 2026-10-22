@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* FIXME */
-#include "assure.h"
+#അന്തര്ഭാവ "assure.h"
 
 /* FIXME: this is small for testing */
 #define BUFFER_SIZE (8)
@@ -26,29 +26,29 @@
 
 #define ONE_PAST_END(X, I) ((X)->p[(I)].one_past_end)
 
-struct Line_ptr
+ഘടന വരി_ptr
 {
   size_t i;
-  char *ptr;
+  അക്ഷരം *ptr;
 };
-typedef struct Line_ptr Line_ptr;
+തരനിർവചനം ഘടന വരി_ptr വരി_ptr;
 
-struct B_pair
+ഘടന B_pair
 {
-  char *start;
-  char *one_past_end;
+  അക്ഷരം *start;
+  അക്ഷരം *one_past_end;
 };
 
-struct Buf
+ഘടന Buf
 {
   size_t n_bufs;
-  struct obstack obs;
-  struct B_pair *p;
+  ഘടന obstack obs;
+  ഘടന B_pair *p;
 };
-typedef struct Buf Buf;
+തരനിർവചനം ഘടന Buf Buf;
 
-static bool
-buf_init_from_stdin (Buf *x, char eol_byte)
+സ്ഥിതം bool
+buf_init_from_stdin (Buf *x, അക്ഷരം eol_byte)
 {
   bool last_byte_is_eol_byte = true;
   bool ok = true;
@@ -56,146 +56,146 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 #define OBS (&(x->obs))
   obstack_init (OBS);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      char *buf = malloc (BUFFER_SIZE);
+      അക്ഷരം *buf = malloc (BUFFER_SIZE);
 
-      if (buf == NULL)
+      എങ്കിൽ (buf == ശൂന്യ)
         {
           /* Fall back on the code that relies on a temporary file.
              Write all buffers to that file and free them.  */
           /* FIXME */
           ok = false;
-          break;
+          നിർത്തുക;
         }
       idx_t bytes_read = full_read (STDIN_FILENO, buf, BUFFER_SIZE);
-      if (bytes_read != BUFFER_SIZE && errno != 0)
+      എങ്കിൽ (bytes_read != BUFFER_SIZE && errno != 0)
         error (EXIT_FAILURE, errno, _("read error"));
 
       {
-        struct B_pair bp;
+        ഘടന B_pair bp;
         bp.start = buf;
         bp.one_past_end = buf + bytes_read;
-        obstack_grow (OBS, &bp, sizeof (bp));
+        obstack_grow (OBS, &bp, വലുപ്പം (bp));
       }
 
-      if (bytes_read != 0)
+      എങ്കിൽ (bytes_read != 0)
         last_byte_is_eol_byte = (buf[bytes_read - 1] == eol_byte);
 
-      if (bytes_read < BUFFER_SIZE)
-        break;
+      എങ്കിൽ (bytes_read < BUFFER_SIZE)
+        നിർത്തുക;
     }
 
-  if (ok)
+  എങ്കിൽ (ok)
     {
       /* If the file was non-empty and lacked an EOL_BYTE at its end,
          then add a buffer containing just that one byte.  */
-      if (!last_byte_is_eol_byte)
+      എങ്കിൽ (!last_byte_is_eol_byte)
         {
-          char *buf = malloc (1);
-          if (buf == NULL)
+          അക്ഷരം *buf = malloc (1);
+          എങ്കിൽ (buf == ശൂന്യ)
             {
               /* FIXME: just like above */
               ok = false;
             }
-          else
+          അല്ലെങ്കിൽ
             {
-              struct B_pair bp;
+              ഘടന B_pair bp;
               *buf = eol_byte;
               bp.start = buf;
               bp.one_past_end = buf + 1;
-              obstack_grow (OBS, &bp, sizeof (bp));
+              obstack_grow (OBS, &bp, വലുപ്പം (bp));
             }
         }
     }
 
-  x->n_bufs = obstack_object_size (OBS) / sizeof (x->p[0]);
-  x->p = (struct B_pair *) obstack_finish (OBS);
+  x->n_bufs = obstack_object_size (OBS) / വലുപ്പം (x->p[0]);
+  x->p = (ഘടന B_pair *) obstack_finish (OBS);
 
   /* If there are two or more buffers and the last buffer is empty,
      then free the last one and decrement the buffer count.  */
-  if (x->n_bufs >= 2
+  എങ്കിൽ (x->n_bufs >= 2
       && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
-    free (x->p[--(x->n_bufs)].start);
+    സ്വതന്ത്രം (x->p[--(x->n_bufs)].start);
 
-  return ok;
+  തിരികെ ok;
 }
 
-static void
+സ്ഥിതം ശൂന്യം
 buf_free (Buf *x)
 {
-  for (size_t i = 0; i < x->n_bufs; i++)
-    free (x->p[i].start);
-  obstack_free (OBS, NULL);
+  വേണ്ടി (size_t i = 0; i < x->n_bufs; i++)
+    സ്വതന്ത്രം (x->p[i].start);
+  obstack_free (OBS, ശൂന്യ);
 }
 
-Line_ptr
-line_ptr_decrement (const Buf *x, const Line_ptr *lp)
+വരി_ptr
+വരി_ptr_decrement (സ്ഥിരം Buf *x, സ്ഥിരം വരി_ptr *lp)
 {
-  Line_ptr lp_new;
+  വരി_ptr lp_new;
 
-  if (lp->ptr > x->p[lp->i].start)
+  എങ്കിൽ (lp->ptr > x->p[lp->i].start)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr - 1;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       affirm (lp->i > 0);
       lp_new.i = lp->i - 1;
       lp_new.ptr = ONE_PAST_END (x, lp->i - 1) - 1;
     }
-  return lp_new;
+  തിരികെ lp_new;
 }
 
-Line_ptr
-line_ptr_increment (const Buf *x, const Line_ptr *lp)
+വരി_ptr
+വരി_ptr_increment (സ്ഥിരം Buf *x, സ്ഥിരം വരി_ptr *lp)
 {
-  Line_ptr lp_new;
+  വരി_ptr lp_new;
 
   affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
-  if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
+  എങ്കിൽ (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr + 1;
     }
-  else
+  അല്ലെങ്കിൽ
     {
       affirm (lp->i < x->n_bufs - 1);
       lp_new.i = lp->i + 1;
       lp_new.ptr = x->p[lp->i + 1].start;
     }
-  return lp_new;
+  തിരികെ lp_new;
 }
 
-static bool
-find_bol (const Buf *x,
-          const Line_ptr *last_bol, Line_ptr *new_bol, char eol_byte)
+സ്ഥിതം bool
+find_bol (സ്ഥിരം Buf *x,
+          സ്ഥിരം വരി_ptr *last_bol, വരി_ptr *new_bol, അക്ഷരം eol_byte)
 {
   size_t i;
-  Line_ptr tmp;
-  char *last_bol_ptr;
+  വരി_ptr tmp;
+  അക്ഷരം *last_bol_ptr;
 
-  if (last_bol->ptr == x->p[0].start)
-    return false;
+  എങ്കിൽ (last_bol->ptr == x->p[0].start)
+    തിരികെ false;
 
-  tmp = line_ptr_decrement (x, last_bol);
+  tmp = വരി_ptr_decrement (x, last_bol);
   last_bol_ptr = tmp.ptr;
   i = tmp.i;
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
-      if (nl)
+      അക്ഷരം *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
+      എങ്കിൽ (nl)
         {
-          Line_ptr nl_pos;
+          വരി_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
-          *new_bol = line_ptr_increment (x, &nl_pos);
-          return true;
+          *new_bol = വരി_ptr_increment (x, &nl_pos);
+          തിരികെ true;
         }
 
-      if (i == 0)
-        break;
+      എങ്കിൽ (i == 0)
+        നിർത്തുക;
 
       --i;
       last_bol_ptr = ONE_PAST_END (x, i);
@@ -204,56 +204,56 @@ find_bol (const Buf *x,
   /* If last_bol->ptr didn't point at the first byte of X, then reaching
      this point means that we're about to return the line that is at the
      beginning of X.  */
-  if (last_bol->ptr != x->p[0].start)
+  എങ്കിൽ (last_bol->ptr != x->p[0].start)
     {
       new_bol->i = 0;
       new_bol->ptr = x->p[0].start;
-      return true;
+      തിരികെ true;
     }
 
-  return false;
+  തിരികെ false;
 }
 
-static void
-print_line (FILE *out_stream, const Buf *x,
-            const Line_ptr *bol, const Line_ptr *bol_next)
+സ്ഥിതം ശൂന്യം
+print_വരി (FILE *out_stream, സ്ഥിരം Buf *x,
+            സ്ഥിരം വരി_ptr *bol, സ്ഥിരം വരി_ptr *bol_next)
 {
-  for (size_t i = bol->i; i <= bol_next->i; i++)
+  വേണ്ടി (size_t i = bol->i; i <= bol_next->i; i++)
     {
-      char *a = (i == bol->i ? bol->ptr : x->p[i].start);
-      char *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
+      അക്ഷരം *a = (i == bol->i ? bol->ptr : x->p[i].start);
+      അക്ഷരം *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
       fwrite (a, 1, b - a, out_stream);
     }
 }
 
-static bool
+സ്ഥിതം bool
 tac_mem ()
 {
   Buf x;
-  Line_ptr bol;
-  char eol_byte = '\n';
+  വരി_ptr bol;
+  അക്ഷരം eol_byte = '\n';
 
-  if (! buf_init_from_stdin (&x, eol_byte))
+  എങ്കിൽ (! buf_init_from_stdin (&x, eol_byte))
     {
       buf_free (&x);
-      return false;
+      തിരികെ false;
     }
 
   /* Special case the empty file.  */
-  if (EMPTY (&x))
-    return true;
+  എങ്കിൽ (EMPTY (&x))
+    തിരികെ true;
 
   /* Initially, point at one past the last byte of the file.  */
   bol.i = x.n_bufs - 1;
   bol.ptr = ONE_PAST_END (&x, bol.i);
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      Line_ptr new_bol;
-      if (! find_bol (&x, &bol, &new_bol, eol_byte))
-        break;
-      print_line (stdout, &x, &new_bol, &bol);
+      വരി_ptr new_bol;
+      എങ്കിൽ (! find_bol (&x, &bol, &new_bol, eol_byte))
+        നിർത്തുക;
+      print_വരി (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
-  return true;
+  തിരികെ true;
 }

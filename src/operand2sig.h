@@ -15,5 +15,5 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-extern int operand2sig (char const *operand)
+ബാഹ്യ പൂർണ്ണസംഖ്യ operand2sig (അക്ഷരം സ്ഥിരം *operand)
   _GL_ATTRIBUTE_NONNULL ();

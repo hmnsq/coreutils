@@ -17,26 +17,26 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see https://www.gnu.org/licenses/.  */
 
-#include <inttypes.h>
+#അന്തര്ഭാവ <inttypes.h>
 
-#include <limits.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
+#അന്തര്ഭാവ <limits.h>
+#അന്തര്ഭാവ <stdint.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <string.h>
+#അന്തര്ഭാവ <stdlib.h>
+#അന്തര്ഭാവ <errno.h>
 
 /* This program is compiled in a separate directory to avoid linking to Gnulib
    which may be cross-compiled.  Therefore, we also do not have config.h and
    attribute.h.  Just define what we need.  */
-#if 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
+#എങ്കിൽ 2 < __GNUC__ + (95 <= __GNUC_MINOR__)
 # define ATTRIBUTE_CONST __attribute__ ((__const__))
-#else
+#അല്ലെങ്കിൽ
 # define ATTRIBUTE_CONST
 #endif
-#if 3 < __GNUC__
+#എങ്കിൽ 3 < __GNUC__
 # define ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
-#else
+#അല്ലെങ്കിൽ
 # define ATTRIBUTE_MALLOC
 #endif
 
@@ -48,14 +48,14 @@ this program.  If not, see https://www.gnu.org/licenses/.  */
    for you, please report a bug; in the meantime compile with, e.g.,
    -Dwide_uint='unsigned __int128' to override the heuristic.  */
 #ifndef wide_uint
-# if 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
-typedef unsigned __int128 wide_uint;
-# else
-typedef uintmax_t wide_uint;
+# എങ്കിൽ 4 < __GNUC__ + (6 <= __GNUC_MINOR__) && ULONG_MAX >> 31 >> 31 >> 1 != 0
+തരനിർവചനം unsigned __int128 wide_uint;
+# അല്ലെങ്കിൽ
+തരനിർവചനം uintmax_t wide_uint;
 # endif
 #endif
 
-struct prime
+ഘടന അഭാജ്യം
 {
   unsigned p;
   wide_uint pinv; /* Inverse mod b = 2^{bitsize of wide_uint} */
@@ -63,21 +63,21 @@ struct prime
 };
 
 ATTRIBUTE_CONST
-static wide_uint
+സ്ഥിതം wide_uint
 binvert (wide_uint a)
 {
   wide_uint x = 0xf5397db1 >> (4 * ((a / 2) & 0x7));
-  for (;;)
+  വേണ്ടി (;;)
     {
       wide_uint y = 2 * x - x * x * a;
-      if (y == x)
-        return x;
+      എങ്കിൽ (y == x)
+        തിരികെ x;
       x = y;
     }
 }
 
-static void
-process_prime (struct prime *info, unsigned p)
+സ്ഥിതം ശൂന്യം
+process_അഭാജ്യം (ഘടന അഭാജ്യം *info, unsigned p)
 {
   wide_uint max = -1;
   info->p = p;
@@ -85,28 +85,28 @@ process_prime (struct prime *info, unsigned p)
   info->lim = max / p;
 }
 
-static void
-print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
+സ്ഥിതം ശൂന്യം
+print_wide_uint (wide_uint n, പൂർണ്ണസംഖ്യ nesting, unsigned wide_uint_bits)
 {
   /* Number of bits per integer literal.  8 is too many, because
      uintmax_t is 32 bits on some machines so we cannot shift by 32 bits.
      So use 7.  */
-  int hex_digits_per_literal = 7;
-  int bits_per_literal = hex_digits_per_literal * 4;
+  പൂർണ്ണസംഖ്യ hex_digits_per_literal = 7;
+  പൂർണ്ണസംഖ്യ bits_per_literal = hex_digits_per_literal * 4;
 
   unsigned remainder = n & ((1 << bits_per_literal) - 1);
 
-  if (n != remainder)
+  എങ്കിൽ (n != remainder)
     {
-      int needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
-      if (needs_parentheses)
+      പൂർണ്ണസംഖ്യ needs_parentheses = n >> bits_per_literal >> bits_per_literal != 0;
+      എങ്കിൽ (needs_parentheses)
         printf ("(");
       print_wide_uint (n >> bits_per_literal, nesting + 1, wide_uint_bits);
-      if (needs_parentheses)
+      എങ്കിൽ (needs_parentheses)
         printf (")\n%*s", nesting + 3, "");
       printf (" << %d | ", bits_per_literal);
     }
-  else if (nesting)
+  അല്ലെങ്കിൽ എങ്കിൽ (nesting)
     {
       printf ("(mp_limb_t) ");
       hex_digits_per_literal
@@ -117,34 +117,34 @@ print_wide_uint (wide_uint n, int nesting, unsigned wide_uint_bits)
 }
 
 /* Work around <https://gcc.gnu.org/PR109635>.  */
-#if 13 <= __GNUC__
+#എങ്കിൽ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
-static void
-output_primes (const struct prime *primes, unsigned nprimes)
+സ്ഥിതം ശൂന്യം
+output_primes (സ്ഥിരം ഘടന അഭാജ്യം *primes, unsigned nprimes)
 {
   unsigned i;
   unsigned p;
-  int is_prime;
+  പൂർണ്ണസംഖ്യ is_അഭാജ്യം;
 
   /* Compute wide_uint_bits by repeated shifting, rather than by
      multiplying sizeof by CHAR_BIT, as this works even if the
      wide_uint representation has holes.  */
   unsigned wide_uint_bits = 0;
   wide_uint mask = -1;
-  for (wide_uint_bits = 0; mask; wide_uint_bits++)
+  വേണ്ടി (wide_uint_bits = 0; mask; wide_uint_bits++)
     mask >>= 1;
 
   puts ("/* Generated file -- DO NOT EDIT */\n");
   printf ("#define WIDE_UINT_BITS %u\n", wide_uint_bits);
 
-  for (i = 0; i < nprimes; i++)
+  വേണ്ടി (i = 0; i < nprimes; i++)
     {
       /* Check that primes[i].p fits in int_least16_t on all platforms,
          and that its square fits in int_least32_t on all platforms,
          as factor.c relies on this.  */
-      if ((1 << (16 - 1)) <= primes[i].p)
+      എങ്കിൽ ((1 << (16 - 1)) <= primes[i].p)
         abort ();
 
       printf ("P (%u,\n   (", primes[i].p);
@@ -154,60 +154,60 @@ output_primes (const struct prime *primes, unsigned nprimes)
 
   /* Find next prime */
   p = primes[nprimes - 1].p;
-  do
+  ചെയ്യുക
     {
       p += 2;
-      for (i = 0, is_prime = 1; is_prime; i++)
+      വേണ്ടി (i = 0, is_അഭാജ്യം = 1; is_അഭാജ്യം; i++)
         {
-          if (primes[i].p * primes[i].p > p)
-            break;
-          if (p * primes[i].pinv <= primes[i].lim)
+          എങ്കിൽ (primes[i].p * primes[i].p > p)
+            നിർത്തുക;
+          എങ്കിൽ (p * primes[i].pinv <= primes[i].lim)
             {
-              is_prime = 0;
-              break;
+              is_അഭാജ്യം = 0;
+              നിർത്തുക;
             }
         }
     }
-  while (!is_prime);
+  ആകുമ്പോൾ (!is_അഭാജ്യം);
 
   printf ("#define SQUARE_OF_FIRST_OMITTED_PRIME %u\n", p * p);
 }
 
 ATTRIBUTE_MALLOC
-static void *
+സ്ഥിതം ശൂന്യം *
 xalloc (size_t s)
 {
-  void *p = malloc (s);
-  if (p)
-    return p;
+  ശൂന്യം *p = malloc (s);
+  എങ്കിൽ (p)
+    തിരികെ p;
 
   fprintf (stderr, "Virtual memory exhausted.\n");
   exit (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
-  int limit;
+  പൂർണ്ണസംഖ്യ limit;
 
-  char *sieve;
+  അക്ഷരം *sieve;
   size_t size, i;
 
-  struct prime *prime_list;
+  ഘടന അഭാജ്യം *അഭാജ്യം_list;
   unsigned nprimes;
 
-  if (argc != 2)
+  എങ്കിൽ (argc != 2)
     {
       fprintf (stderr, "Usage: %s LIMIT\n"
                "Produces a list of odd primes <= LIMIT\n", argv[0]);
-      return EXIT_FAILURE;
+      തിരികെ EXIT_FAILURE;
     }
   limit = atoi (argv[1]);
-  if (limit < 3)
-    return EXIT_SUCCESS;
+  എങ്കിൽ (limit < 3)
+    തിരികെ EXIT_SUCCESS;
 
   /* Make limit odd */
-  if ( !(limit & 1))
+  എങ്കിൽ ( !(limit & 1))
     limit--;
 
   size = (limit - 1) / 2;
@@ -215,33 +215,33 @@ main (int argc, char **argv)
   sieve = xalloc (size);
   memset (sieve, 1, size);
 
-  prime_list = xalloc (size * sizeof (*prime_list));
+  അഭാജ്യം_list = xalloc (size * വലുപ്പം (*അഭാജ്യം_list));
   nprimes = 0;
 
-  for (i = 0; i < size;)
+  വേണ്ടി (i = 0; i < size;)
     {
       unsigned p = 3 + 2 * i;
       unsigned j;
 
-      process_prime (&prime_list[nprimes++], p);
+      process_അഭാജ്യം (&അഭാജ്യം_list[nprimes++], p);
 
-      for (j = (p * p - 3) / 2; j < size; j += p)
+      വേണ്ടി (j = (p * p - 3) / 2; j < size; j += p)
         sieve[j] = 0;
 
-      while (++i < size && sieve[i] == 0)
+      ആകുമ്പോൾ (++i < size && sieve[i] == 0)
         ;
     }
 
-  output_primes (prime_list, nprimes);
+  output_primes (അഭാജ്യം_list, nprimes);
 
-  free (sieve);
-  free (prime_list);
+  സ്വതന്ത്രം (sieve);
+  സ്വതന്ത്രം (അഭാജ്യം_list);
 
-  if (ferror (stdout) || fclose (stdout))
+  എങ്കിൽ (ferror (stdout) || fclose (stdout))
     {
       fprintf (stderr, "write error: %s\n", strerror (errno));
-      return EXIT_FAILURE;
+      തിരികെ EXIT_FAILURE;
     }
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }

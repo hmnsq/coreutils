@@ -20,35 +20,35 @@
 /* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
    the shell builtin version. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <sys/types.h>
 
 #define TEST_STANDALONE 1
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (test_mode == TEST_TEST ? "test" : "[")
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "issymlink.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "strnumcmp.h"
-#include "test.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "assure.h"
+#അന്തര്ഭാവ "c-ctype.h"
+#അന്തര്ഭാവ "issymlink.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "stat-time.h"
+#അന്തര്ഭാവ "strnumcmp.h"
+#അന്തര്ഭാവ "test.h"
 
-#include <stdarg.h>
+#അന്തര്ഭാവ <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#എങ്കിൽ HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+എണ്ണൽ { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+എണ്ണൽ binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,36 +58,36 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
+#എങ്കിൽ defined TEST_STANDALONE
 # define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
-   static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+# define test_main_return(val) തിരികെ val
+#അല്ലെങ്കിൽ
+   സ്ഥിതം jmp_buf test_exit_buf;
+   സ്ഥിതം പൂർണ്ണസംഖ്യ test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+സ്ഥിതം പൂർണ്ണസംഖ്യ pos;		/* The offset of the current argument in ARGV. */
+സ്ഥിതം പൂർണ്ണസംഖ്യ argc;	/* The number of arguments present in ARGV. */
+സ്ഥിതം അക്ഷരം **argv;	/* The argument list. */
 
-static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
-static bool two_arguments (void);
-static bool three_arguments (void);
-static bool posixtest (int);
+സ്ഥിതം bool unary_operator (ശൂന്യം);
+സ്ഥിതം bool ദ്വിമാന_operator (bool, എണ്ണൽ binop);
+സ്ഥിതം bool two_arguments (ശൂന്യം);
+സ്ഥിതം bool three_arguments (ശൂന്യം);
+സ്ഥിതം bool posixtest (പൂർണ്ണസംഖ്യ);
 
-static bool expr (void);
-static bool term (void);
-static bool and (void);
-static bool or (void);
+സ്ഥിതം bool വ്യഞ്ജകം (ശൂന്യം);
+സ്ഥിതം bool term (ശൂന്യം);
+സ്ഥിതം bool and (ശൂന്യം);
+സ്ഥിതം bool or (ശൂന്യം);
 
-static void beyond (void);
+സ്ഥിതം ശൂന്യം beyond (ശൂന്യം);
 
 ATTRIBUTE_FORMAT ((printf, 1, 2))
-static _Noreturn void
-test_syntax_error (char const *format, ...)
+സ്ഥിതം _Noreturn ശൂന്യം
+test_syntax_error (അക്ഷരം സ്ഥിരം *format, ...)
 {
   va_list ap;
   va_start (ap, format);
@@ -99,17 +99,17 @@ test_syntax_error (char const *format, ...)
    past the end of the argument list.  This check is suppressed if the
    argument is false.  */
 
-static void
+സ്ഥിതം ശൂന്യം
 advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  എങ്കിൽ (f && pos >= argc)
     beyond ();
 }
 
-static void
-unary_advance (void)
+സ്ഥിതം ശൂന്യം
+unary_advance (ശൂന്യം)
 {
   advance (true);
   ++pos;
@@ -119,8 +119,8 @@ unary_advance (void)
  * beyond - call when we're beyond the end of the argument list (an
  *	error condition)
  */
-static _Noreturn void
-beyond (void)
+സ്ഥിതം _Noreturn ശൂന്യം
+beyond (ശൂന്യം)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+സ്ഥിതം അക്ഷരം സ്ഥിരം *
+find_int (അക്ഷരം സ്ഥിരം *string)
 {
-  char const *p;
-  char const *number_start;
+  അക്ഷരം സ്ഥിരം *p;
+  അക്ഷരം സ്ഥിരം *സംഖ്യ_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
-    continue;
+  വേണ്ടി (p = string; isspace (to_uchar (*p)); p++)
+    തുടരുക;
 
-  if (*p == '+')
+  എങ്കിൽ (*p == '+')
     {
       p++;
-      number_start = p;
+      സംഖ്യ_start = p;
     }
-  else
+  അല്ലെങ്കിൽ
     {
-      number_start = p;
+      സംഖ്യ_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  എങ്കിൽ (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      ആകുമ്പോൾ (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      ആകുമ്പോൾ (isspace (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      എങ്കിൽ (!*p)
+        തിരികെ സംഖ്യ_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+സ്ഥിതം ഘടന timespec
+get_mtime (അക്ഷരം സ്ഥിരം *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  ഘടന stat finfo;
+  തിരികെ (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+binop (അക്ഷരം സ്ഥിരം *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  തിരികെ (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -213,142 +213,142 @@ binop (char const *s)
  *	'-l' string
  *	positive and negative integers
  */
-static bool
-term (void)
+സ്ഥിതം bool
+term (ശൂന്യം)
 {
-  bool value;
+  bool മൂല്യം;
   bool negated = false;
-  int bop;
+  പൂർണ്ണസംഖ്യ bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  ആകുമ്പോൾ (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  എങ്കിൽ (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  എങ്കിൽ (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      പൂർണ്ണസംഖ്യ nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      വേണ്ടി (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        എങ്കിൽ (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            നിർത്തുക;
           }
 
-      value = posixtest (nargs);
-      if (!argv[pos])
+      മൂല്യം = posixtest (nargs);
+      എങ്കിൽ (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      അല്ലെങ്കിൽ
+        എങ്കിൽ (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  അല്ലെങ്കിൽ എങ്കിൽ (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
-    value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+    മൂല്യം = ദ്വിമാന_operator (true, bop);
+  അല്ലെങ്കിൽ എങ്കിൽ (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
-    value = binary_operator (false, bop);
+    മൂല്യം = ദ്വിമാന_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  അല്ലെങ്കിൽ എങ്കിൽ (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
-    value = unary_operator ();
-  else
+    മൂല്യം = unary_operator ();
+  അല്ലെങ്കിൽ
     {
-      value = (argv[pos][0] != '\0');
+      മൂല്യം = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  തിരികെ negated ^ മൂല്യം;
 }
 
-static bool
-binary_operator (bool l_is_l, enum binop bop)
+സ്ഥിതം bool
+ദ്വിമാന_operator (bool l_is_l, എണ്ണൽ binop bop)
 {
-  int op;
+  പൂർണ്ണസംഖ്യ op;
 
-  if (l_is_l)
+  എങ്കിൽ (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  എങ്കിൽ (r_is_l)
     advance (false);
 
   pos += 3;
 
-  switch (bop)
+  തിരഞ്ഞെടുപ്പ് (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    അവസ്ഥ EQ_BINOP: അവസ്ഥ GE_BINOP: അവസ്ഥ GT_BINOP:
+    അവസ്ഥ LE_BINOP: അവസ്ഥ LT_BINOP: അവസ്ഥ NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
+        അക്ഷരം lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        അക്ഷരം rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        അക്ഷരം സ്ഥിരം *l = (l_is_l
                          ? umaxtostr (strlen (argv[op - 1]), lbuf)
                          : find_int (argv[op - 1]));
-        char const *r = (r_is_l
+        അക്ഷരം സ്ഥിരം *r = (r_is_l
                          ? umaxtostr (strlen (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
-        switch (+bop)
+        പൂർണ്ണസംഖ്യ cmp = strintcmp (l, r);
+        തിരഞ്ഞെടുപ്പ് (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          അവസ്ഥ EQ_BINOP: തിരികെ cmp == 0;
+          അവസ്ഥ GE_BINOP: തിരികെ cmp >= 0;
+          അവസ്ഥ GT_BINOP: തിരികെ cmp >  0;
+          അവസ്ഥ LE_BINOP: തിരികെ cmp <= 0;
+          അവസ്ഥ LT_BINOP: തിരികെ cmp <  0;
+          അവസ്ഥ NE_BINOP: തിരികെ cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    അവസ്ഥ NT_BINOP: അവസ്ഥ OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        എങ്കിൽ (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        പൂർണ്ണസംഖ്യ cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        തിരികെ bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    അവസ്ഥ EF_BINOP:
+      എങ്കിൽ (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      അല്ലെങ്കിൽ
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          ഘടന stat st[2];
+          തിരികെ (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    അവസ്ഥ EQ_STRING_BINOP:
+    അവസ്ഥ NE_STRING_BINOP:
+      തിരികെ streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    അവസ്ഥ GT_STRING_BINOP:
+    അവസ്ഥ LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        പൂർണ്ണസംഖ്യ cmp = strcoll (argv[op - 1], argv[op + 1]);
+        തിരികെ bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -356,14 +356,14 @@ binary_operator (bool l_is_l, enum binop bop)
   affirm (false);
 }
 
-static bool
-unary_operator (void)
+സ്ഥിതം bool
+unary_operator (ശൂന്യം)
 {
-  struct stat stat_buf;
+  ഘടന stat stat_buf;
 
-  switch (argv[pos][1])
+  തിരഞ്ഞെടുപ്പ് (argv[pos][1])
     {
-    default:
+    സ്ഥിരസ്ഥിതി:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
       /* All of the following unary operators use unary_advance (), which
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    അവസ്ഥ 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      തിരികെ stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    അവസ്ഥ 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      തിരികെ euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    അവസ്ഥ 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      തിരികെ euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    അവസ്ഥ 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      തിരികെ euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    അവസ്ഥ 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        എങ്കിൽ (stat (argv[pos - 1], &stat_buf) != 0)
+          തിരികെ false;
+        ഘടന timespec atime = get_stat_atime (&stat_buf);
+        ഘടന timespec mtime = get_stat_mtime (&stat_buf);
+        തിരികെ (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    അവസ്ഥ 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        എങ്കിൽ (stat (argv[pos - 1], &stat_buf) != 0)
+          തിരികെ false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        തിരികെ ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    അവസ്ഥ 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        എങ്കിൽ (stat (argv[pos - 1], &stat_buf) != 0)
+          തിരികെ false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        തിരികെ ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    അവസ്ഥ 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    അവസ്ഥ 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    അവസ്ഥ 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    അവസ്ഥ 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    അവസ്ഥ 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    അവസ്ഥ 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    അവസ്ഥ 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
+    അവസ്ഥ 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    അവസ്ഥ 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      തിരികെ issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    അവസ്ഥ 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    അവസ്ഥ 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    അവസ്ഥ 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      തിരികെ (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    അവസ്ഥ 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        long പൂർണ്ണസംഖ്യ fd;
+        അക്ഷരം സ്ഥിരം *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
         errno = 0;
-        fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        fd = strtol (arg, ശൂന്യ, 10);
+        തിരികെ (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    അവസ്ഥ 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      തിരികെ argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    അവസ്ഥ 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      തിരികെ argv[pos - 1][0] == '\0';
     }
 }
 
@@ -504,16 +504,16 @@ unary_operator (void)
  *	term
  *	term '-a' and
  */
-static bool
-and (void)
+സ്ഥിതം bool
+and (ശൂന്യം)
 {
-  bool value = true;
+  bool മൂല്യം = true;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      മൂല്യം &= term ();
+      എങ്കിൽ (! (pos < argc && streq (argv[pos], "-a")))
+        തിരികെ മൂല്യം;
       advance (false);
     }
 }
@@ -523,16 +523,16 @@ and (void)
  *	and
  *	and '-o' or
  */
-static bool
-or (void)
+സ്ഥിതം bool
+or (ശൂന്യം)
 {
-  bool value = false;
+  bool മൂല്യം = false;
 
-  while (true)
+  ആകുമ്പോൾ (true)
     {
-      value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      മൂല്യം |= and ();
+      എങ്കിൽ (! (pos < argc && streq (argv[pos], "-o")))
+        തിരികെ മൂല്യം;
       advance (false);
     }
 }
@@ -541,122 +541,122 @@ or (void)
  * expr:
  *	or
  */
-static bool
-expr (void)
+സ്ഥിതം bool
+വ്യഞ്ജകം (ശൂന്യം)
 {
-  if (pos >= argc)
+  എങ്കിൽ (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  തിരികെ or ();		/* Same with this. */
 }
 
-static bool
-one_argument (void)
+സ്ഥിതം bool
+one_argument (ശൂന്യം)
 {
-  return argv[pos++][0] != '\0';
+  തിരികെ argv[pos++][0] != '\0';
 }
 
-static bool
-two_arguments (void)
+സ്ഥിതം bool
+two_arguments (ശൂന്യം)
 {
-  bool value;
+  bool മൂല്യം;
 
-  if (streq (argv[pos], "!"))
+  എങ്കിൽ (streq (argv[pos], "!"))
     {
       advance (false);
-      value = ! one_argument ();
+      മൂല്യം = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  അല്ലെങ്കിൽ എങ്കിൽ (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
-      value = unary_operator ();
+      മൂല്യം = unary_operator ();
     }
-  else
+  അല്ലെങ്കിൽ
     beyond ();
-  return (value);
+  തിരികെ (മൂല്യം);
 }
 
-static bool
-three_arguments (void)
+സ്ഥിതം bool
+three_arguments (ശൂന്യം)
 {
-  bool value;
-  int bop = binop (argv[pos + 1]);
+  bool മൂല്യം;
+  പൂർണ്ണസംഖ്യ bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
-    value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  എങ്കിൽ (0 <= bop)
+    മൂല്യം = ദ്വിമാന_operator (false, bop);
+  അല്ലെങ്കിൽ എങ്കിൽ (streq (argv[pos], "!"))
     {
       advance (true);
-      value = !two_arguments ();
+      മൂല്യം = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  അല്ലെങ്കിൽ എങ്കിൽ (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
-      value = one_argument ();
+      മൂല്യം = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  അല്ലെങ്കിൽ എങ്കിൽ (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
-    value = expr ();
-  else
+    മൂല്യം = വ്യഞ്ജകം ();
+  അല്ലെങ്കിൽ
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  തിരികെ (മൂല്യം);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
-static bool
-posixtest (int nargs)
+സ്ഥിതം bool
+posixtest (പൂർണ്ണസംഖ്യ nargs)
 {
-  bool value;
+  bool മൂല്യം;
 
-  switch (nargs)
+  തിരഞ്ഞെടുപ്പ് (nargs)
     {
-      case 1:
-        value = one_argument ();
-        break;
+      അവസ്ഥ 1:
+        മൂല്യം = one_argument ();
+        നിർത്തുക;
 
-      case 2:
-        value = two_arguments ();
-        break;
+      അവസ്ഥ 2:
+        മൂല്യം = two_arguments ();
+        നിർത്തുക;
 
-      case 3:
-        value = three_arguments ();
-        break;
+      അവസ്ഥ 3:
+        മൂല്യം = three_arguments ();
+        നിർത്തുക;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      അവസ്ഥ 4:
+        എങ്കിൽ (streq (argv[pos], "!"))
           {
             advance (true);
-            value = !three_arguments ();
-            break;
+            മൂല്യം = !three_arguments ();
+            നിർത്തുക;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        എങ്കിൽ (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
-            value = two_arguments ();
+            മൂല്യം = two_arguments ();
             advance (false);
-            break;
+            നിർത്തുക;
           }
         FALLTHROUGH;
-      case 5:
-      default:
+      അവസ്ഥ 5:
+      സ്ഥിരസ്ഥിതി:
         affirm (0 < nargs);
-        value = expr ();
+        മൂല്യം = വ്യഞ്ജകം ();
     }
 
-  return (value);
+  തിരികെ (മൂല്യം);
 }
 
-#if defined TEST_STANDALONE
+#എങ്കിൽ defined TEST_STANDALONE
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       fputs (_("\
 Usage: test EXPRESSION\n\
@@ -768,7 +768,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -L FILE     FILE exists and is a symbolic link (same as -h)\n\
 "));
       oputs (_("\
-  -N FILE     FILE exists and has been modified since it was last read\n\
+  -N FILE     FILE exists and has been modified since it was last പഠ\n\
 "));
       oputs (_("\
   -O FILE     FILE exists and is owned by the effective user ID\n\
@@ -777,7 +777,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -p FILE     FILE exists and is a named pipe\n\
 "));
       oputs (_("\
-  -r FILE     FILE exists and the user has read access\n\
+  -r FILE     FILE exists and the user has പഠ access\n\
 "));
       oputs (_("\
   -s FILE     FILE exists and has a size greater than zero\n\
@@ -792,20 +792,20 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -u FILE     FILE exists and its set-user-ID bit is set\n\
 "));
       oputs (_("\
-  -w FILE     FILE exists and the user has write access\n\
+  -w FILE     FILE exists and the user has ലിഖ access\n\
 "));
       oputs (_("\
-  -x FILE     FILE exists and the user has execute (or search) access\n\
+  -x FILE     FILE exists and the user has execute (or തിരയൽ) access\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except വേണ്ടി -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) വേണ്ടി shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
 \n\
-Binary -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
+ദ്വിമാന_2 -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
 or 'test EXPR1 || test EXPR2' instead.\n\
 "), stdout);
       fputs (_("\
@@ -819,8 +819,8 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
-# define main test_command
+#എങ്കിൽ !defined TEST_STANDALONE
+# define പ്രധാന test_command
 #endif
 
 #define AUTHORS \
@@ -833,19 +833,19 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ margc, അക്ഷരം **margv)
 {
-  bool value;
+  bool മൂല്യം;
 
-#if !defined TEST_STANDALONE
-  int code;
+#എങ്കിൽ !defined TEST_STANDALONE
+  പൂർണ്ണസംഖ്യ code;
 
   code = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  എങ്കിൽ (code)
+    തിരികെ (test_error_return);
+#അല്ലെങ്കിൽ /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -858,7 +858,7 @@ main (int margc, char **margv)
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  എങ്കിൽ (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      എങ്കിൽ (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          എങ്കിൽ (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          എങ്കിൽ (streq (margv[1], "--version"))
             {
               version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
+                           (അക്ഷരം *) ശൂന്യ);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      എങ്കിൽ (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,13 +887,13 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  എങ്കിൽ (pos >= argc)
     test_main_return (TEST_FALSE);
 
-  value = posixtest (argc - 1);
+  മൂല്യം = posixtest (argc - 1);
 
-  if (pos != argc)
+  എങ്കിൽ (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
-  test_main_return (value ? TEST_TRUE : TEST_FALSE);
+  test_main_return (മൂല്യം ? TEST_TRUE : TEST_FALSE);
 }

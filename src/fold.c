@@ -16,18 +16,18 @@
 
 /* Written by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#അന്തര്ഭാവ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#അന്തര്ഭാവ <stdio.h>
+#അന്തര്ഭാവ <getopt.h>
+#അന്തര്ഭാവ <sys/types.h>
 
-#include "system.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "xdectoint.h"
+#അന്തര്ഭാവ "system.h"
+#അന്തര്ഭാവ "fadvise.h"
+#അന്തര്ഭാവ "ioblksize.h"
+#അന്തര്ഭാവ "mcel.h"
+#അന്തര്ഭാവ "mbbuf.h"
+#അന്തര്ഭാവ "xdectoint.h"
 
 #define TAB_WIDTH 8
 
@@ -37,45 +37,45 @@
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If nonzero, try to break on whitespace. */
-static bool break_spaces;
+സ്ഥിതം bool break_spaces;
 
 /* Mode to operate in.  */
-static enum
+സ്ഥിതം എണ്ണൽ
   {
-    COUNT_COLUMNS,
-    COUNT_BYTES,
-    COUNT_CHARACTERS
-  } counting_mode = COUNT_COLUMNS;
+    എണ്ണം_COLUMNS,
+    എണ്ണം_BYTES,
+    എണ്ണം_CHARACTERS
+  } counting_mode = എണ്ണം_COLUMNS;
 
 /* If nonzero, at least one of the files we read was standard input. */
-static bool have_read_stdin;
+സ്ഥിതം bool have_read_stdin;
 
-static char const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
+സ്ഥിതം അക്ഷരം സ്ഥിരം shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+സ്ഥിതം ഘടന option സ്ഥിരം longopts[] =
 {
-  {"bytes", no_argument, NULL, 'b'},
-  {"characters", no_argument, NULL, 'c'},
-  {"spaces", no_argument, NULL, 's'},
-  {"width", required_argument, NULL, 'w'},
+  {"bytes", no_argument, ശൂന്യ, 'b'},
+  {"characters", no_argument, ശൂന്യ, 'c'},
+  {"spaces", no_argument, ശൂന്യ, 's'},
+  {"width", required_argument, ശൂന്യ, 'w'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ശൂന്യ, 0, ശൂന്യ, 0}
 };
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Wrap input lines in each FILE, writing to standard output.\n\
+Wrap നിവേശം വരികൾ in each FILE, writing to standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -83,15 +83,15 @@ Wrap input lines in each FILE, writing to standard output.\n\
 
       oputs (_("\
   -b, --bytes\n\
-         count bytes rather than columns\n\
+         എണ്ണം bytes rather than columns\n\
 "));
       oputs (_("\
   -c, --characters\n\
-         count characters rather than columns\n\
+         എണ്ണം characters rather than columns\n\
 "));
       oputs (_("\
   -s, --spaces\n\
-         break after blanks, or in words greater than WIDTH\n\
+         നിർത്തുക after blanks, or in വാക്കുകൾ greater than WIDTH\n\
 "));
       oputs (_("\
   -w, --width=WIDTH\n\
@@ -108,34 +108,34 @@ Wrap input lines in each FILE, writing to standard output.\n\
    printing C will move the cursor to.
    The first column is 0. */
 
-static size_t
+സ്ഥിതം size_t
 adjust_column (size_t column, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  എങ്കിൽ (counting_mode != എണ്ണം_BYTES)
     {
-      if (g.ch == '\b')
+      എങ്കിൽ (g.ch == '\b')
         column -= !!column;
-      else if (g.ch == '\r')
+      അല്ലെങ്കിൽ എങ്കിൽ (g.ch == '\r')
         column = 0;
-      else if (g.ch == '\t')
+      അല്ലെങ്കിൽ എങ്കിൽ (g.ch == '\t')
         column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      അല്ലെങ്കിൽ
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          പൂർണ്ണസംഖ്യ width = (counting_mode == എണ്ണം_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
           column += width < 0 ? 1 : width;
         }
     }
-  else
+  അല്ലെങ്കിൽ
     column += g.len;
-  return column;
+  തിരികെ column;
 }
 
-static void
-write_out (char const *line, size_t line_len, bool newline)
+സ്ഥിതം ശൂന്യം
+write_out (അക്ഷരം സ്ഥിരം *വരി, size_t വരി_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
+  എങ്കിൽ (fwrite (വരി, വലുപ്പം (അക്ഷരം), വരി_len, stdout) != വരി_len
       || (newline && putchar ('\n') < 0))
     write_error ();
 }
@@ -144,141 +144,141 @@ write_out (char const *line, size_t line_len, bool newline)
    to stdout, with maximum line length WIDTH.
    Return true if successful.  */
 
-static bool
-fold_file (char const *filename, size_t width)
+സ്ഥിതം bool
+fold_file (അക്ഷരം സ്ഥിരം *filename, size_t width)
 {
   FILE *istream;
   size_t column = 0;		/* Screen column where next char will go. */
   idx_t offset_out = 0;		/* Index in 'line_out' for next char. */
-  static char line_out[IO_BUFSIZE];
-  static char line_in[IO_BUFSIZE];
+  സ്ഥിതം അക്ഷരം വരി_out[IO_BUFSIZE];
+  സ്ഥിതം അക്ഷരം വരി_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  പൂർണ്ണസംഖ്യ saved_errno;
 
-  if (streq (filename, "-"))
+  എങ്കിൽ (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  അല്ലെങ്കിൽ
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  എങ്കിൽ (istream == ശൂന്യ)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      തിരികെ false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
+  mbbuf_init (&mbbuf, വരി_in, വലുപ്പം വരി_in, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  ആകുമ്പോൾ ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      എങ്കിൽ (g.ch == '\n')
         {
-          write_out (line_out, offset_out, /*newline=*/ true);
+          write_out (വരി_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
-          continue;
+          തുടരുക;
         }
     rescan:
       column = adjust_column (column, g);
 
-      if (column > width)
+      എങ്കിൽ (column > width)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          എങ്കിൽ (break_spaces)
             {
-              int space_length = 0;
+              പൂർണ്ണസംഖ്യ space_length = 0;
               idx_t logical_end = offset_out;
-              char *logical_p = line_out;
-              char *logical_lim = logical_p + logical_end;
+              അക്ഷരം *logical_p = വരി_out;
+              അക്ഷരം *logical_lim = logical_p + logical_end;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              വേണ്ടി (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
                   g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  എങ്കിൽ (c32issep (g2.ch))
                     {
                       space_length = g2.len;
-                      logical_end = logical_p - line_out;
+                      logical_end = logical_p - വരി_out;
                     }
                 }
 
-              if (space_length)
+              എങ്കിൽ (space_length)
                 {
                   logical_end += space_length;
                   /* Found a blank.  Don't output the part after it. */
-                  write_out (line_out, logical_end, /*newline=*/ true);
+                  write_out (വരി_out, logical_end, /*newline=*/ true);
                   /* Move the remainder to the beginning of the next line.
                      The areas being copied here might overlap. */
-                  memmove (line_out, line_out + logical_end,
+                  memmove (വരി_out, വരി_out + logical_end,
                            offset_out - logical_end);
                   offset_out -= logical_end;
                   column = 0;
-                  char *printed_p = line_out;
-                  char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  അക്ഷരം *printed_p = വരി_out;
+                  അക്ഷരം *printed_lim = printed_p + offset_out;
+                  വേണ്ടി (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
                       g2 = mcel_scan (printed_p, printed_lim);
                       column = adjust_column (column, g2);
                     }
-                  goto rescan;
+                  പോകുക rescan;
                 }
             }
 
-          if (offset_out == 0)
+          എങ്കിൽ (offset_out == 0)
             {
-              memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
+              memcpy (വരി_out, mbbuf_char_offset (&mbbuf, g), g.len);
               offset_out += g.len;
-              continue;
+              തുടരുക;
             }
 
-          write_out (line_out, offset_out, /*newline=*/ true);
+          write_out (വരി_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
-          goto rescan;
+          പോകുക rescan;
         }
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      എങ്കിൽ (വലുപ്പം വരി_out <= offset_out + g.len)
         {
-          write_out (line_out, offset_out, /*newline=*/ false);
+          write_out (വരി_out, offset_out, /*newline=*/ false);
           offset_out = 0;
         }
 
-      memcpy (line_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
+      memcpy (വരി_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
       offset_out += g.len;
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  എങ്കിൽ (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
-    write_out (line_out, offset_out, /*newline=*/ false);
+  എങ്കിൽ (offset_out)
+    write_out (വരി_out, offset_out, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  എങ്കിൽ (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  അല്ലെങ്കിൽ എങ്കിൽ (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  എങ്കിൽ (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      തിരികെ false;
     }
 
-  return true;
+  തിരികെ true;
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   size_t width = 80;
-  int optc;
+  പൂർണ്ണസംഖ്യ optc;
   bool ok;
 
   initialize_main (&argc, &argv);
@@ -289,61 +289,61 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ആകുമ്പോൾ ((optc = getopt_long (argc, argv, shortopts, longopts, ശൂന്യ)) != -1)
     {
-      char optargbuf[2];
+      അക്ഷരം optargbuf[2];
 
-      switch (optc)
+      തിരഞ്ഞെടുപ്പ് (optc)
         {
-        case 'b':		/* Count bytes rather than columns. */
-          counting_mode = COUNT_BYTES;
-          break;
+        അവസ്ഥ 'b':		/* Count bytes rather than columns. */
+          counting_mode = എണ്ണം_BYTES;
+          നിർത്തുക;
 
-        case 'c':               /* Count characters rather than columns. */
-          counting_mode = COUNT_CHARACTERS;
-          break;
+        അവസ്ഥ 'c':               /* Count characters rather than columns. */
+          counting_mode = എണ്ണം_CHARACTERS;
+          നിർത്തുക;
 
-        case 's':		/* Break at word boundaries. */
+        അവസ്ഥ 's':		/* Break at word boundaries. */
           break_spaces = true;
-          break;
+          നിർത്തുക;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        അവസ്ഥ '0': അവസ്ഥ '1': അവസ്ഥ '2': അവസ്ഥ '3': അവസ്ഥ '4':
+        അവസ്ഥ '5': അവസ്ഥ '6': അവസ്ഥ '7': അവസ്ഥ '8': അവസ്ഥ '9':
+          എങ്കിൽ (optarg)
             optarg--;
-          else
+          അല്ലെങ്കിൽ
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
               optarg = optargbuf;
             }
           FALLTHROUGH;
-        case 'w':		/* Line width. */
+        അവസ്ഥ 'w':		/* Line width. */
           width = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_WIDTH - 1, "",
                               _("invalid number of columns"), 0,
                               XTOINT_MIN_RANGE | XTOINT_MAX_RANGE);
-          break;
+          നിർത്തുക;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        സ്ഥിരസ്ഥിതി:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc == optind)
+  എങ്കിൽ (argc == optind)
     ok = fold_file ("-", width);
-  else
+  അല്ലെങ്കിൽ
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
+      വേണ്ടി (പൂർണ്ണസംഖ്യ i = optind; i < argc; i++)
         ok &= fold_file (argv[i], width);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  എങ്കിൽ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  തിരികെ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

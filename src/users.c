@@ -16,15 +16,15 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#അന്തര്ഭാവ <config.h>
+#അന്തര്ഭാവ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#അന്തര്ഭാവ <sys/types.h>
+#അന്തര്ഭാവ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#അന്തര്ഭാവ "long-options.h"
+#അന്തര്ഭാവ "quote.h"
+#അന്തര്ഭാവ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "users"
@@ -33,25 +33,25 @@
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+സ്ഥിതം പൂർണ്ണസംഖ്യ
+userid_compare (സ്ഥിരം ശൂന്യം *v_a, സ്ഥിരം ശൂന്യം *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  അക്ഷരം **a = (അക്ഷരം **) v_a;
+  അക്ഷരം **b = (അക്ഷരം **) v_b;
+  തിരികെ strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+സ്ഥിതം ശൂന്യം
+list_entries_users (idx_t n, STRUCT_UTMP സ്ഥിരം *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  അക്ഷരം **u = xinmalloc (n, വലുപ്പം *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  ആകുമ്പോൾ (n--)
     {
-      if (IS_USER_PROCESS (this))
+      എങ്കിൽ (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          അക്ഷരം *trimmed_name;
 
           trimmed_name = extract_trimmed_name (this);
 
@@ -61,43 +61,43 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, വലുപ്പം (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  വേണ്ടി (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      അക്ഷരം c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
       putchar (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  വേണ്ടി (idx_t i = 0; i < n_entries; i++)
+    സ്വതന്ത്രം (u[i]);
+  സ്വതന്ത്രം (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+സ്ഥിതം ശൂന്യം
+users (അക്ഷരം സ്ഥിരം *filename, പൂർണ്ണസംഖ്യ options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  എങ്കിൽ (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  സ്വതന്ത്രം (utmp_buf);
 }
 
-void
-usage (int status)
+ശൂന്യം
+usage (പൂർണ്ണസംഖ്യ status)
 {
-  if (status != EXIT_SUCCESS)
+  എങ്കിൽ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  അല്ലെങ്കിൽ
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -113,8 +113,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+പൂർണ്ണസംഖ്യ
+പ്രധാന (പൂർണ്ണസംഖ്യ argc, അക്ഷരം **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -126,22 +126,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (അക്ഷരം സ്ഥിരം *) ശൂന്യ);
 
-  switch (argc - optind)
+  തിരഞ്ഞെടുപ്പ് (argc - optind)
     {
-    case 0:			/* users */
+    അവസ്ഥ 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      നിർത്തുക;
 
-    case 1:			/* users <utmp file> */
+    അവസ്ഥ 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      നിർത്തുക;
 
-    default:			/* lose */
+    സ്ഥിരസ്ഥിതി:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  തിരികെ EXIT_SUCCESS;
 }
