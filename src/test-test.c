@@ -1,2 +1,2 @@
-#include "test.h"
-enum test_modes test_mode = TEST_TEST;
+#ಅನ್ತರ್ಭಾವ "test.h"
+ಗಣನಾ test_modes test_mode = TEST_TEST;

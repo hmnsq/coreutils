@@ -20,15 +20,15 @@
    flexible wrt the size specifications and the use of long options,
    to better fit the "GNU" environment.  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "stat-size.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "truncate"
@@ -36,34 +36,34 @@
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
 /* (-c) If true, don't create if not already there */
-static bool no_create;
+ಸ್ಥಿರ bool no_create;
 
 /* (-o) If true, --size refers to blocks not bytes */
-static bool block_mode;
+ಸ್ಥಿರ bool block_mode;
 
 /* (-r) Reference file to use size from */
-static char const *ref_file;
+ಸ್ಥಿರ ವರ್ಣ ಧ್ರುವ *ref_file;
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ longopts[] =
 {
-  {"no-create", no_argument, NULL, 'c'},
-  {"io-blocks", no_argument, NULL, 'o'},
-  {"reference", required_argument, NULL, 'r'},
-  {"size", required_argument, NULL, 's'},
+  {"no-create", no_argument, ರಿಕ್ತ, 'c'},
+  {"io-blocks", no_argument, ರಿಕ್ತ, 'o'},
+  {"reference", required_argument, ರಿಕ್ತ, 'r'},
+  {"size", required_argument, ರಿಕ್ತ, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
-typedef enum
+ಪ್ರಕಾರನಿರ್ದೇಶ ಗಣನಾ
 { rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_mode_t;
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("Usage: %s OPTION... FILE...\n"), program_name);
       fputs (_("\
@@ -79,10 +79,10 @@ reads as zero bytes.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --no-create        do not create any files\n\
+  -c, --no-create        ಕುರು not create any files\n\
 "));
       oputs (_("\
-  -o, --io-blocks        treat SIZE as number of IO blocks instead of bytes\n\
+  -o, --io-blocks        treat SIZE as ಸಂಖ್ಯೆ of IO blocks instead of bytes\n\
 "));
       oputs (_("\
   -r, --reference=RFILE  base size on RFILE\n\
@@ -103,108 +103,108 @@ SIZE may also be prefixed by one of the following modifying characters:\n\
 }
 
 /* return true on success, false on error.  */
-static bool
-do_ftruncate (int fd, char const *fname, off_t ssize, off_t rsize,
+ಸ್ಥಿರ bool
+do_ftruncate (ಪೂರ್ಣಾಙ್ಕ fd, ವರ್ಣ ಧ್ರುವ *fname, off_t ssize, off_t rsize,
               rel_mode_t rel_mode)
 {
-  struct stat sb;
+  ಸಂರಚನಾ stat sb;
   off_t nsize;
 
-  if ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
+  ಯದಿ ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (fname));
-      return false;
+      ಪ್ರತ್ಯಾಗಮ false;
     }
-  if (block_mode)
+  ಯದಿ (block_mode)
     {
       ptrdiff_t blksize = STP_BLKSIZE (&sb);
       intmax_t ssize0 = ssize;
-      if (ckd_mul (&ssize, ssize, blksize))
+      ಯದಿ (ckd_mul (&ssize, ssize, blksize))
         {
           error (0, 0,
                  _("overflow in %jd * %td byte blocks for file %s"),
                  ssize0, blksize, quoteaf (fname));
-          return false;
+          ಪ್ರತ್ಯಾಗಮ false;
         }
     }
-  if (rel_mode)
+  ಯದಿ (rel_mode)
     {
       off_t fsize;
 
-      if (0 <= rsize)
+      ಯದಿ (0 <= rsize)
         fsize = rsize;
-      else
+      ಅನ್ಯಥಾ
         {
-          if (usable_st_size (&sb))
+          ಯದಿ (usable_st_size (&sb))
             {
               fsize = sb.st_size;
-              if (fsize < 0)
+              ಯದಿ (fsize < 0)
                 {
                   /* Sanity check.  Overflow is the only reason I can think
                      this would ever go negative. */
                   error (0, 0, _("%s has unusable, apparently negative size"),
                          quoteaf (fname));
-                  return false;
+                  ಪ್ರತ್ಯಾಗಮ false;
                 }
             }
-          else
+          ಅನ್ಯಥಾ
             {
               fsize = lseek (fd, 0, SEEK_END);
-              if (fsize < 0)
+              ಯದಿ (fsize < 0)
                 {
                   error (0, errno, _("cannot get the size of %s"),
                          quoteaf (fname));
-                  return false;
+                  ಪ್ರತ್ಯಾಗಮ false;
                 }
             }
         }
 
-      if (rel_mode == rm_min)
+      ಯದಿ (rel_mode == rm_min)
         nsize = MAX (fsize, ssize);
-      else if (rel_mode == rm_max)
+      ಅನ್ಯಥಾ ಯದಿ (rel_mode == rm_max)
         nsize = MIN (fsize, ssize);
-      else if (rel_mode == rm_rdn)
+      ಅನ್ಯಥಾ ಯದಿ (rel_mode == rm_rdn)
         /* 0..ssize-1 -> 0 */
         nsize = fsize - fsize % ssize;
-      else
+      ಅನ್ಯಥಾ
         {
-          if (rel_mode == rm_rup)
+          ಯದಿ (rel_mode == rm_rup)
             {
               /* 1..ssize -> ssize */
               off_t r = fsize % ssize;
               ssize = r == 0 ? 0 : ssize - r;
             }
-          if (ckd_add (&nsize, fsize, ssize))
+          ಯದಿ (ckd_add (&nsize, fsize, ssize))
             {
               error (0, 0, _("overflow extending size of file %s"),
                      quoteaf (fname));
-              return false;
+              ಪ್ರತ್ಯಾಗಮ false;
             }
         }
     }
-  else
+  ಅನ್ಯಥಾ
     nsize = ssize;
-  if (nsize < 0)
+  ಯದಿ (nsize < 0)
     nsize = 0;
 
-  if (ftruncate (fd, nsize) != 0)
+  ಯದಿ (ftruncate (fd, nsize) != 0)
     {
       error (0, errno, _("failed to truncate %s at %jd bytes"),
              quoteaf (fname), (intmax_t) {nsize});
-      return false;
+      ಪ್ರತ್ಯಾಗಮ false;
     }
 
-  return true;
+  ಪ್ರತ್ಯಾಗಮ true;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
   bool got_size = false;
   off_t size IF_LINT ( = 0);
   off_t rsize = -1;
   rel_mode_t rel_mode = rm_abs;
-  int c;
+  ಪೂರ್ಣಾಙ್ಕ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -214,51 +214,51 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
+  ಯಾವತ್ ((c = getopt_long (argc, argv, "cor:s:", longopts, ರಿಕ್ತ)) != -1)
     {
-      switch (c)
+      ವಿಕಲ್ಪ (c)
         {
-        case 'c':
+        ಪಕ್ಷ 'c':
           no_create = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'o':
+        ಪಕ್ಷ 'o':
           block_mode = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'r':
+        ಪಕ್ಷ 'r':
           ref_file = optarg;
-          break;
+          ಭಙ್ಗ;
 
-        case 's':
+        ಪಕ್ಷ 's':
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ಯಾವತ್ (isspace (to_uchar (*optarg)))
             optarg++;
-          switch (*optarg)
+          ವಿಕಲ್ಪ (*optarg)
             {
-            case '<':
+            ಪಕ್ಷ '<':
               rel_mode = rm_max;
               optarg++;
-              break;
-            case '>':
+              ಭಙ್ಗ;
+            ಪಕ್ಷ '>':
               rel_mode = rm_min;
               optarg++;
-              break;
-            case '/':
+              ಭಙ್ಗ;
+            ಪಕ್ಷ '/':
               rel_mode = rm_rdn;
               optarg++;
-              break;
-            case '%':
+              ಭಙ್ಗ;
+            ಪಕ್ಷ '%':
               rel_mode = rm_rup;
               optarg++;
-              break;
+              ಭಙ್ಗ;
             }
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ಯಾವತ್ (isspace (to_uchar (*optarg)))
             optarg++;
-          if (*optarg == '+' || *optarg == '-')
+          ಯದಿ (*optarg == '+' || *optarg == '-')
             {
-              if (rel_mode)
+              ಯದಿ (rel_mode)
                 {
                   error (0, 0, _("multiple relative modifiers specified"));
                   /* Note other combinations are flagged as invalid numbers */
@@ -271,16 +271,16 @@ main (int argc, char **argv)
           size = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
                              _("Invalid number"), 0);
           /* Rounding to multiple of 0 is nonsensical */
-          if ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
+          ಯದಿ ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
             error (EXIT_FAILURE, 0, _("division by zero"));
           got_size = true;
-          break;
+          ಭಙ್ಗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ಸ್ವಭಾವ:
           usage (EXIT_FAILURE);
         }
     }
@@ -289,91 +289,91 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify either size or reference file */
-  if (!ref_file && !got_size)
+  ಯದಿ (!ref_file && !got_size)
     {
       error (0, 0, _("you must specify either %s or %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* must specify a relative size with a reference file */
-  if (ref_file && got_size && !rel_mode)
+  ಯದಿ (ref_file && got_size && !rel_mode)
     {
       error (0, 0, _("you must specify a relative %s with %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* block_mode without size is not valid */
-  if (block_mode && !got_size)
+  ಯದಿ (block_mode && !got_size)
     {
       error (0, 0, _("%s was specified but %s was not"),
              quote_n (0, "--io-blocks"), quote_n (1, "--size"));
       usage (EXIT_FAILURE);
     }
   /* must specify at least 1 file */
-  if (argc < 1)
+  ಯದಿ (argc < 1)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (ref_file)
+  ಯದಿ (ref_file)
     {
-      struct stat sb;
+      ಸಂರಚನಾ stat sb;
       off_t file_size = -1;
-      if (stat (ref_file, &sb) != 0)
+      ಯದಿ (stat (ref_file, &sb) != 0)
         error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (ref_file));
-      if (usable_st_size (&sb))
+      ಯದಿ (usable_st_size (&sb))
         file_size = sb.st_size;
-      else
+      ಅನ್ಯಥಾ
         {
           /* O_NONBLOCK so we do not hang forever on a FIFO with no writer.  */
-          int ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
-          if (0 <= ref_fd)
+          ಪೂರ್ಣಾಙ್ಕ ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
+          ಯದಿ (0 <= ref_fd)
             {
               off_t file_end = lseek (ref_fd, 0, SEEK_END);
-              int saved_errno = errno;
+              ಪೂರ್ಣಾಙ್ಕ saved_errno = errno;
               close (ref_fd); /* ignore failure */
-              if (0 <= file_end)
+              ಯದಿ (0 <= file_end)
                 file_size = file_end;
-              else
+              ಅನ್ಯಥಾ
                 {
                   /* restore, in case close clobbered it. */
                   errno = saved_errno;
                 }
             }
         }
-      if (file_size < 0)
+      ಯದಿ (file_size < 0)
         error (EXIT_FAILURE, errno, _("cannot get the size of %s"),
                quoteaf (ref_file));
-      if (!got_size)
+      ಯದಿ (!got_size)
         size = file_size;
-      else
+      ಅನ್ಯಥಾ
         rsize = file_size;
     }
 
-  int oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
+  ಪೂರ್ಣಾಙ್ಕ oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
   bool errors = false;
 
-  for (char const *fname; (fname = *argv); argv++)
+  ಪ್ರತಿ (ವರ್ಣ ಧ್ರುವ *fname; (fname = *argv); argv++)
     {
-      int fd = open (fname, oflags, MODE_RW_UGO);
-      if (fd < 0)
+      ಪೂರ್ಣಾಙ್ಕ fd = open (fname, oflags, MODE_RW_UGO);
+      ಯದಿ (fd < 0)
         {
           /* 'truncate -s0 -c no-such-file'  shouldn't gen error
              'truncate -s0 no-such-dir/file' should gen ENOENT error
              'truncate -s0 no-such-dir/' should gen EISDIR error
              'truncate -s0 .' should gen EISDIR error */
-          if (!(no_create && errno == ENOENT))
+          ಯದಿ (!(no_create && errno == ENOENT))
             {
               error (0, errno, _("cannot open %s for writing"),
                      quoteaf (fname));
               errors = true;
             }
         }
-      else
+      ಅನ್ಯಥಾ
         {
           errors |= !do_ftruncate (fd, fname, size, rsize, rel_mode);
-          if (close (fd) != 0)
+          ಯದಿ (close (fd) != 0)
             {
               error (0, errno, _("failed to close %s"), quoteaf (fname));
               errors = true;
@@ -381,5 +381,5 @@ main (int argc, char **argv)
         }
     }
 
-  return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+  ಪ್ರತ್ಯಾಗಮ errors ? EXIT_FAILURE : EXIT_SUCCESS;
 }

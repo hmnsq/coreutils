@@ -16,45 +16,45 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include "system.h"
-#include "relpath.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "relpath.h"
 
 
 /* Return the length of the longest common prefix
    of canonical PATH1 and PATH2, ensuring only full path components
    are matched.  Return 0 on no match.  */
 ATTRIBUTE_PURE
-static int
-path_common_prefix (char const *path1, char const *path2)
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ
+path_common_prefix (ವರ್ಣ ಧ್ರುವ *path1, ವರ್ಣ ಧ್ರುವ *path2)
 {
-  int i = 0;
-  int ret = 0;
+  ಪೂರ್ಣಾಙ್ಕ i = 0;
+  ಪೂರ್ಣಾಙ್ಕ ret = 0;
 
   /* We already know path1[0] and path2[0] are '/'.  Special case
      '//', which is only present in a canonical name on platforms
      where it is distinct.  */
-  if ((path1[1] == '/') != (path2[1] == '/'))
-    return 0;
+  ಯದಿ ((path1[1] == '/') != (path2[1] == '/'))
+    ಪ್ರತ್ಯಾಗಮ 0;
 
-  while (*path1 && *path2)
+  ಯಾವತ್ (*path1 && *path2)
     {
-      if (*path1 != *path2)
-        break;
-      if (*path1 == '/')
+      ಯದಿ (*path1 != *path2)
+        ಭಙ್ಗ;
+      ಯದಿ (*path1 == '/')
         ret = i + 1;
       path1++;
       path2++;
       i++;
     }
 
-  if ((!*path1 && !*path2)
+  ಯದಿ ((!*path1 && !*path2)
       || (!*path1 && *path2 == '/')
       || (!*path2 && *path1 == '/'))
     ret = i;
 
-  return ret;
+  ಪ್ರತ್ಯಾಗಮ ret;
 }
 
 /* Either output STR to stdout or
@@ -62,72 +62,72 @@ path_common_prefix (char const *path1, char const *path2)
    and update *PBUF to point to the end of the buffer
    and adjust *PLEN to reflect the remaining space.
    Return TRUE on failure.  */
-static bool
-buffer_or_output (char const *str, char **pbuf, size_t *plen)
+ಸ್ಥಿರ bool
+buffer_or_output (ವರ್ಣ ಧ್ರುವ *str, ವರ್ಣ **pbuf, size_t *plen)
 {
-  if (*pbuf)
+  ಯದಿ (*pbuf)
     {
       size_t slen = strlen (str);
-      if (slen >= *plen)
-        return true;
+      ಯದಿ (slen >= *plen)
+        ಪ್ರತ್ಯಾಗಮ true;
       memcpy (*pbuf, str, slen + 1);
       *pbuf += slen;
       *plen -= slen;
     }
-  else
+  ಅನ್ಯಥಾ
     {
       fputs (str, stdout);
     }
 
-  return false;
+  ಪ್ರತ್ಯಾಗಮ false;
 }
 
 /* Output the relative representation if possible.
    If BUF is non-null, write to that buffer rather than to stdout.  */
 bool
-relpath (char const *can_fname, char const *can_reldir, char *buf, size_t len)
+relpath (ವರ್ಣ ಧ್ರುವ *can_fname, ವರ್ಣ ಧ್ರುವ *can_reldir, ವರ್ಣ *buf, size_t len)
 {
   bool buf_err = false;
 
   /* Skip the prefix common to --relative-to and path.  */
-  int common_index = path_common_prefix (can_reldir, can_fname);
-  if (!common_index)
-    return false;
+  ಪೂರ್ಣಾಙ್ಕ common_index = path_common_prefix (can_reldir, can_fname);
+  ಯದಿ (!common_index)
+    ಪ್ರತ್ಯಾಗಮ false;
 
-  char const *relto_suffix = can_reldir + common_index;
-  char const *fname_suffix = can_fname + common_index;
+  ವರ್ಣ ಧ್ರುವ *relto_suffix = can_reldir + common_index;
+  ವರ್ಣ ಧ್ರುವ *fname_suffix = can_fname + common_index;
 
   /* Skip over extraneous '/'.  */
-  if (*relto_suffix == '/')
+  ಯದಿ (*relto_suffix == '/')
     relto_suffix++;
-  if (*fname_suffix == '/')
+  ಯದಿ (*fname_suffix == '/')
     fname_suffix++;
 
   /* Replace remaining components of --relative-to with '..', to get
      to a common directory.  Then output the remainder of fname.  */
-  if (*relto_suffix)
+  ಯದಿ (*relto_suffix)
     {
       buf_err |= buffer_or_output ("..", &buf, &len);
-      for (; *relto_suffix; ++relto_suffix)
+      ಪ್ರತಿ (; *relto_suffix; ++relto_suffix)
         {
-          if (*relto_suffix == '/')
+          ಯದಿ (*relto_suffix == '/')
             buf_err |= buffer_or_output ("/..", &buf, &len);
         }
 
-      if (*fname_suffix)
+      ಯದಿ (*fname_suffix)
         {
           buf_err |= buffer_or_output ("/", &buf, &len);
           buf_err |= buffer_or_output (fname_suffix, &buf, &len);
         }
     }
-  else
+  ಅನ್ಯಥಾ
     {
         buf_err |= buffer_or_output (*fname_suffix ? fname_suffix : ".",
                                      &buf, &len);
     }
 
-  if (buf_err)
+  ಯದಿ (buf_err)
     error (0, ENAMETOOLONG, "%s", _("generating relative path"));
 
-  return !buf_err;
+  ಪ್ರತ್ಯಾಗಮ !buf_err;
 }

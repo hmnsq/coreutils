@@ -16,38 +16,38 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "modechange.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "selinux.h"
+#ಅನ್ತರ್ಭಾವ "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "mkfifo"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_argument, ರಿಕ್ತ, 'm'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -62,11 +62,11 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         set the SELinux security context to ಸ್ವಭಾವ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or ಯದಿ CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -76,12 +76,12 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  ವರ್ಣ ಧ್ರುವ *specified_mode = ರಿಕ್ತ;
+  ವರ್ಣ ಧ್ರುವ *scontext = ರಿಕ್ತ;
+  ಸಂರಚನಾ selabel_handle *set_security_context = ರಿಕ್ತ;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -91,92 +91,92 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  ಪೂರ್ಣಾಙ್ಕ optc;
+  ಯಾವತ್ ((optc = getopt_long (argc, argv, "m:Z", longopts, ರಿಕ್ತ)) != -1)
     {
-      switch (optc)
+      ವಿಕಲ್ಪ (optc)
         {
-        case 'm':
+        ಪಕ್ಷ 'm':
           specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+          ಭಙ್ಗ;
+        ಪಕ್ಷ 'Z':
+          ಯದಿ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ಅನ್ಯಥಾ ಯದಿ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ಯದಿ (optarg)
                 scontext = optarg;
-              else
+              ಅನ್ಯಥಾ
                 {
                   set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                                                       ರಿಕ್ತ, 0);
+                  ಯದಿ (! set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ಅನ್ಯಥಾ ಯದಿ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ಭಙ್ಗ;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        ಸ್ವಭಾವ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  ಯದಿ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  ಯದಿ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      ಪೂರ್ಣಾಙ್ಕ ret = 0;
+      ಯದಿ (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      ಅನ್ಯಥಾ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ಯದಿ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
   mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  ಯದಿ (specified_mode)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      ಸಂರಚನಾ mode_change *change = mode_compile (specified_mode);
+      ಯದಿ (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_ಮೌಲ್ಯ = umask (0);
+      umask (umask_ಮೌಲ್ಯ);
+      newmode = mode_adjust (newmode, false, umask_ಮೌಲ್ಯ, change, ರಿಕ್ತ);
+      ಮುಕ್ತ (change);
+      ಯದಿ (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
-  for (; optind < argc; ++optind)
+  ಪೂರ್ಣಾಙ್ಕ exit_status = EXIT_SUCCESS;
+  ಪ್ರತಿ (; optind < argc; ++optind)
     {
-      if (set_security_context)
+      ಯದಿ (set_security_context)
         defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      ಯದಿ (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
           exit_status = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      ಅನ್ಯಥಾ ಯದಿ (specified_mode && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
@@ -184,5 +184,5 @@ main (int argc, char **argv)
         }
     }
 
-  return exit_status;
+  ಪ್ರತ್ಯಾಗಮ exit_status;
 }

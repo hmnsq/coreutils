@@ -16,18 +16,18 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu>. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
 
-#include "system.h"
-#include "chown.h"
-#include "chown-core.h"
-#include "fts_.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "userspec.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "chown.h"
+#ಅನ್ತರ್ಭಾವ "chown-core.h"
+#ಅನ್ತರ್ಭಾವ "fts_.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "root-dev-ino.h"
+#ಅನ್ತರ್ಭಾವ "userspec.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (chown_mode == CHOWN_CHOWN ? "chown" : "chgrp")
@@ -38,43 +38,43 @@
 
 /* The argument to the --reference option.  Use the owner and group IDs
    of this file.  This file must exist.  */
-static char *reference_file;
+ಸ್ಥಿರ ವರ್ಣ *reference_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಗಣನಾ
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
   FROM_OPTION,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_ಬೇರು,
+  PRESERVE_ಬೇರು,
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ long_options[] =
 {
-  {"recursive", no_argument, NULL, 'R'},
-  {"changes", no_argument, NULL, 'c'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"quiet", no_argument, NULL, 'f'},
-  {"silent", no_argument, NULL, 'f'},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_argument, ರಿಕ್ತ, 'R'},
+  {"changes", no_argument, ರಿಕ್ತ, 'c'},
+  {"dereference", no_argument, ರಿಕ್ತ, DEREFERENCE_OPTION},
+  {"from", required_argument, ರಿಕ್ತ, FROM_OPTION},
+  {"no-dereference", no_argument, ರಿಕ್ತ, 'h'},
+  {"no-preserve-root", no_argument, ರಿಕ್ತ, NO_PRESERVE_ಬೇರು},
+  {"preserve-root", no_argument, ರಿಕ್ತ, PRESERVE_ಬೇರು},
+  {"quiet", no_argument, ರಿಕ್ತ, 'f'},
+  {"silent", no_argument, ರಿಕ್ತ, 'f'},
+  {"reference", required_argument, ರಿಕ್ತ, REFERENCE_FILE_OPTION},
+  {"verbose", no_argument, ರಿಕ್ತ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("\
 Usage: %s [OPTION]... %s FILE...\n\
@@ -83,13 +83,13 @@ Usage: %s [OPTION]... %s FILE...\n\
               program_name,
               chown_mode == CHOWN_CHOWN ? _("[OWNER][:[GROUP]]") : _("GROUP"),
               program_name);
-      if (chown_mode == CHOWN_CHOWN)
+      ಯದಿ (chown_mode == CHOWN_CHOWN)
         fputs (_("\
 Change the owner and/or group of each FILE to OWNER and/or GROUP.\n\
 With --reference, change the owner and group of each FILE to those of RFILE.\n\
 \n\
 "), stdout);
-      else
+      ಅನ್ಯಥಾ
         fputs (_("\
 Change the group of each FILE to GROUP.\n\
 With --reference, change the group of each FILE to that of RFILE.\n\
@@ -105,12 +105,12 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic ಪ್ರತಿ every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
          affect the referent of each symbolic link (this is\n\
-         the default), rather than the symbolic link itself\n\
+         the ಸ್ವಭಾವ), rather than the symbolic link itself\n\
 "));
       oputs (_("\
   -h, --no-dereference\n\
@@ -119,23 +119,23 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
       --from=CURRENT_OWNER:CURRENT_GROUP\n\
-         change the ownership of each file only if its\n\
+         change the ownership of each file only ಯದಿ its\n\
          current owner and/or group match those specified here.\n\
-         Either may be omitted, in which case a match\n\
-         is not required for the omitted attribute\n\
+         Either may be omitted, in which ಪಕ್ಷ a match\n\
+         is not required ಪ್ರತಿ the omitted attribute\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+      --no-preserve-ಬೇರು\n\
+         ಕುರು not treat '/' specially (the ಸ್ವಭಾವ)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
+      --preserve-ಬೇರು\n\
          fail to operate recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's ownership rather than specifying values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         use RFILE's ownership rather than specifying ಮೌಲ್ಯಗಳು.\n\
+         RFILE is always dereferenced ಯದಿ a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -144,24 +144,24 @@ With --reference, change the group of each FILE to that of RFILE.\n\
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
-      if (chown_mode == CHOWN_CHOWN)
+      ಯದಿ (chown_mode == CHOWN_CHOWN)
         fputs (_("\
 \n\
-Owner is unchanged if missing.  Group is unchanged if missing, but changed\n\
-to login group if implied by a ':' following a symbolic OWNER.\n\
+Owner is unchanged ಯದಿ missing.  Group is unchanged ಯದಿ missing, but changed\n\
+to login group ಯದಿ implied by a ':' following a symbolic OWNER.\n\
 OWNER and GROUP may be numeric as well as symbolic.\n\
 "), stdout);
 
-      if (chown_mode == CHOWN_CHOWN)
+      ಯದಿ (chown_mode == CHOWN_CHOWN)
         printf (_("\
 \n\
 Examples:\n\
-  %s root /u        Change the owner of /u to \"root\".\n\
-  %s root:staff /u  Likewise, but also change its group to \"staff\".\n\
-  %s -hR root /u    Change the owner of /u and subfiles to \"root\".\n\
+  %s ಬೇರು /u        Change the owner of /u to \"ಬೇರು\".\n\
+  %s ಬೇರು:staff /u  Likewise, but also change its group to \"staff\".\n\
+  %s -hR ಬೇರು /u    Change the owner of /u and subfiles to \"ಬೇರು\".\n\
 "),
               program_name, program_name, program_name);
-      else
+      ಅನ್ಯಥಾ
         printf (_("\
 \n\
 Examples:\n\
@@ -174,10 +174,10 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  bool preserve_root = false;
+  bool preserve_ಬೇರು = false;
 
   /* Change the owner (group) of a file only if it has this uid (gid).
      -1 means there's no restriction.  */
@@ -185,13 +185,13 @@ main (int argc, char **argv)
   gid_t required_gid = -1;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  ಪೂರ್ಣಾಙ್ಕ bit_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  ಪೂರ್ಣಾಙ್ಕ dereference = -1;
 
-  struct Chown_option chopt;
+  ಸಂರಚನಾ Chown_option chopt;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -203,100 +203,100 @@ main (int argc, char **argv)
 
   chopt_init (&chopt);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, NULL))
+  ಪೂರ್ಣಾಙ್ಕ optc;
+  ಯಾವತ್ ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, ರಿಕ್ತ))
          != -1)
     {
-      switch (optc)
+      ವಿಕಲ್ಪ (optc)
         {
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
+        ಪಕ್ಷ 'H': /* Traverse command-line symlinks-to-directories.  */
           bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+          ಭಙ್ಗ;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
+        ಪಕ್ಷ 'L': /* Traverse all symlinks-to-directories.  */
           bit_flags = FTS_LOGICAL;
-          break;
+          ಭಙ್ಗ;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
+        ಪಕ್ಷ 'P': /* Traverse no symlinks-to-directories.  */
           bit_flags = FTS_PHYSICAL;
-          break;
+          ಭಙ್ಗ;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        ಪಕ್ಷ 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          ಭಙ್ಗ;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        ಪಕ್ಷ DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          ಭಙ್ಗ;
 
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
-          break;
+        ಪಕ್ಷ NO_PRESERVE_ಬೇರು:
+          preserve_ಬೇರು = false;
+          ಭಙ್ಗ;
 
-        case PRESERVE_ROOT:
-          preserve_root = true;
-          break;
+        ಪಕ್ಷ PRESERVE_ಬೇರು:
+          preserve_ಬೇರು = true;
+          ಭಙ್ಗ;
 
-        case REFERENCE_FILE_OPTION:
+        ಪಕ್ಷ REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
+          ಭಙ್ಗ;
 
-        case FROM_OPTION:
+        ಪಕ್ಷ FROM_OPTION:
           {
             bool warn;
-            char const *e = parse_user_spec_warn (optarg,
+            ವರ್ಣ ಧ್ರುವ *e = parse_user_spec_warn (optarg,
                                                   &required_uid, &required_gid,
-                                                  NULL, NULL, &warn);
-            if (e)
+                                                  ರಿಕ್ತ, ರಿಕ್ತ, &warn);
+            ಯದಿ (e)
               error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (optarg));
-            break;
+            ಭಙ್ಗ;
           }
 
-        case 'R':
+        ಪಕ್ಷ 'R':
           chopt.recurse = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'c':
+        ಪಕ್ಷ 'c':
           chopt.verbosity = V_changes_only;
-          break;
+          ಭಙ್ಗ;
 
-        case 'f':
+        ಪಕ್ಷ 'f':
           chopt.force_silent = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'v':
-          chopt.verbosity = V_high;
-          break;
+        ಪಕ್ಷ 'v':
+          chopt.verbosity = V_ಮೇಲಿನ;
+          ಭಙ್ಗ;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        ಸ್ವಭಾವ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (chopt.recurse)
+  ಯದಿ (chopt.recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      ಯದಿ (bit_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          ಯದಿ (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
-  else
+  ಅನ್ಯಥಾ
     {
       bit_flags = FTS_PHYSICAL;
     }
   chopt.affect_symlink_referent = (dereference != 0);
 
-  if (argc - optind < (reference_file ? 1 : 2))
+  ಯದಿ (argc - optind < (reference_file ? 1 : 2))
     {
-      if (argc <= optind)
+      ಯದಿ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ಅನ್ಯಥಾ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -304,14 +304,14 @@ main (int argc, char **argv)
   uid_t uid = -1;	/* Specified uid; -1 if not to be changed.  */
   gid_t gid = -1;	/* Specified gid; -1 if not to be changed.  */
 
-  if (reference_file)
+  ಯದಿ (reference_file)
     {
-      struct stat ref_stats;
-      if (stat (reference_file, &ref_stats))
+      ಸಂರಚನಾ stat ref_stats;
+      ಯದಿ (stat (reference_file, &ref_stats))
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
 
-      if (chown_mode == CHOWN_CHOWN)
+      ಯದಿ (chown_mode == CHOWN_CHOWN)
         {
           uid = ref_stats.st_uid;
           chopt.user_name = uid_to_name (ref_stats.st_uid);
@@ -319,40 +319,40 @@ main (int argc, char **argv)
       gid = ref_stats.st_gid;
       chopt.group_name = gid_to_name (ref_stats.st_gid);
     }
-  else
+  ಅನ್ಯಥಾ
     {
-      char *ug = argv[optind];
-      if (chown_mode == CHOWN_CHGRP)
+      ವರ್ಣ *ug = argv[optind];
+      ಯದಿ (chown_mode == CHOWN_CHGRP)
         {
           ug = xmalloc (1 + strlen (argv[optind]) + 1);
           stpcpy (stpcpy (ug, ":"), argv[optind]);
         }
 
       bool warn;
-      char const *e = parse_user_spec_warn (ug, &uid, &gid,
+      ವರ್ಣ ಧ್ರುವ *e = parse_user_spec_warn (ug, &uid, &gid,
                                             &chopt.user_name,
                                             &chopt.group_name, &warn);
 
-      if (ug != argv[optind])
-        free (ug);
+      ಯದಿ (ug != argv[optind])
+        ಮುಕ್ತ (ug);
 
-      if (e)
+      ಯದಿ (e)
         error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (argv[optind]));
 
       /* If a group is specified but no user, set the user name to the
          empty string so that diagnostics say "ownership :GROUP"
          rather than "group GROUP".  */
-      if (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
+      ಯದಿ (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
         chopt.user_name = xstrdup ("");
 
       optind++;
     }
 
-  if (chopt.recurse && preserve_root)
+  ಯದಿ (chopt.recurse && preserve_ಬೇರು)
     {
-      static struct dev_ino dev_ino_buf;
-      chopt.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (chopt.root_dev_ino == NULL)
+      ಸ್ಥಿರ ಸಂರಚನಾ dev_ino dev_ino_buf;
+      chopt.ಬೇರು_dev_ino = get_ಬೇರು_dev_ino (&dev_ino_buf);
+      ಯದಿ (chopt.ಬೇರು_dev_ino == ರಿಕ್ತ)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }

@@ -17,21 +17,21 @@
 /* Written by Paul Rubin, Arnold Robbins, Jim Kingdon, David MacKenzie,
    and Randy Smith. */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "fd-reopen.h"
-#include "parse-datetime.h"
-#include "posixtm.h"
-#include "posixver.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "utimens.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "fd-reopen.h"
+#ಅನ್ತರ್ಭಾವ "parse-datetime.h"
+#ಅನ್ತರ್ಭಾವ "posixtm.h"
+#ಅನ್ತರ್ಭಾವ "posixver.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "stat-time.h"
+#ಅನ್ತರ್ಭಾವ "utimens.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "touch"
@@ -48,133 +48,133 @@
 #define CH_MTIME 2
 
 /* Which timestamps to change. */
-static int change_times;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ change_times;
 
 /* (-c) If true, don't create if not already there.  */
-static bool no_create;
+ಸ್ಥಿರ bool no_create;
 
 /* (-r) If true, use times from a reference file.  */
-static bool use_ref;
+ಸ್ಥಿರ bool use_ref;
 
 /* (-h) If true, change the times of an existing symlink, if possible.  */
-static bool no_dereference;
+ಸ್ಥಿರ bool no_dereference;
 
 /* If true, the only thing we have to do is change both the
    modification and access time to the current time, so we don't
    have to own the file, just be able to read and write it.
    On some systems, we can do this if we own the file, even though
    we have neither read nor write access to it.  */
-static bool amtime_now;
+ಸ್ಥಿರ bool amtime_now;
 
 /* New access and modification times to use when setting time.  */
-static struct timespec newtime[2];
+ಸ್ಥಿರ ಸಂರಚನಾ timespec newtime[2];
 
 /* File to use for -r. */
-static char *ref_file;
+ಸ್ಥಿರ ವರ್ಣ *ref_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಗಣನಾ
 {
   TIME_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ longopts[] =
 {
-  {"time", required_argument, NULL, TIME_OPTION},
-  {"no-create", no_argument, NULL, 'c'},
-  {"date", required_argument, NULL, 'd'},
-  {"reference", required_argument, NULL, 'r'},
-  {"no-dereference", no_argument, NULL, 'h'},
+  {"time", required_argument, ರಿಕ್ತ, TIME_OPTION},
+  {"no-create", no_argument, ರಿಕ್ತ, 'c'},
+  {"date", required_argument, ರಿಕ್ತ, 'd'},
+  {"reference", required_argument, ರಿಕ್ತ, 'r'},
+  {"no-dereference", no_argument, ರಿಕ್ತ, 'h'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
 /* Valid arguments to the '--time' option. */
-static char const *const time_args[] =
+ಸ್ಥಿರ ವರ್ಣ ಧ್ರುವ *ಧ್ರುವ time_args[] =
 {
-  "atime", "access", "use", "mtime", "modify", NULL
+  "atime", "access", "use", "mtime", "modify", ರಿಕ್ತ
 };
 
 /* The bits in 'change_times' that those arguments set. */
-static int const time_masks[] =
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ ಧ್ರುವ time_masks[] =
 {
   CH_ATIME, CH_ATIME, CH_ATIME, CH_MTIME, CH_MTIME
 };
 
 /* The interpretation of FLEX_DATE as a date, relative to NOW.  */
 
-static struct timespec
-date_relative (char const *flex_date, struct timespec now)
+ಸ್ಥಿರ ಸಂರಚನಾ timespec
+date_relative (ವರ್ಣ ಧ್ರುವ *flex_date, ಸಂರಚನಾ timespec now)
 {
-  struct timespec result;
-  if (! parse_datetime (&result, flex_date, &now))
+  ಸಂರಚನಾ timespec result;
+  ಯದಿ (! parse_datetime (&result, flex_date, &now))
     error (EXIT_FAILURE, 0, _("invalid date format %s"), quote (flex_date));
-  return result;
+  ಪ್ರತ್ಯಾಗಮ result;
 }
 
 /* Update the time of file FILE according to the options given.
    Return true if successful.  */
 
-static bool
-touch (char const *file)
+ಸ್ಥಿರ bool
+touch (ವರ್ಣ ಧ್ರುವ *file)
 {
-  int fd = -1;
-  int open_errno = 0;
-  struct timespec const *t = newtime;
+  ಪೂರ್ಣಾಙ್ಕ fd = -1;
+  ಪೂರ್ಣಾಙ್ಕ open_errno = 0;
+  ಸಂರಚನಾ timespec ಧ್ರುವ *t = newtime;
 
-  if (streq (file, "-"))
+  ಯದಿ (streq (file, "-"))
     fd = STDOUT_FILENO;
-  else if (! (no_create || no_dereference))
+  ಅನ್ಯಥಾ ಯದಿ (! (no_create || no_dereference))
     {
       /* Try to open FILE, creating it if necessary.  */
       fd = fd_reopen (STDIN_FILENO, file,
                       O_WRONLY | O_CREAT | O_NONBLOCK | O_NOCTTY, MODE_RW_UGO);
-      if (fd < 0)
+      ಯದಿ (fd < 0)
         open_errno = errno;
     }
 
-  if (change_times != (CH_ATIME | CH_MTIME))
+  ಯದಿ (change_times != (CH_ATIME | CH_MTIME))
     {
       /* We're setting only one of the time values.  */
-      if (change_times == CH_MTIME)
+      ಯದಿ (change_times == CH_MTIME)
         newtime[0].tv_nsec = UTIME_OMIT;
-      else
+      ಅನ್ಯಥಾ
         {
           affirm (change_times == CH_ATIME);
           newtime[1].tv_nsec = UTIME_OMIT;
         }
     }
 
-  if (amtime_now)
+  ಯದಿ (amtime_now)
     {
       /* Pass NULL to futimens so it will not fail if we have
          write access to the file, but don't own it.  */
-      t = NULL;
+      t = ರಿಕ್ತ;
     }
 
-  char const *file_opt = fd == STDOUT_FILENO ? NULL : file;
-  int atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
-  int utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
+  ವರ್ಣ ಧ್ರುವ *file_opt = fd == STDOUT_FILENO ? ರಿಕ್ತ : file;
+  ಪೂರ್ಣಾಙ್ಕ atflag = no_dereference ? AT_SYMLINK_NOFOLLOW : 0;
+  ಪೂರ್ಣಾಙ್ಕ utime_errno = (fdutimensat (fd, AT_FDCWD, file_opt, t, atflag) == 0
                      ? 0 : errno);
 
-  if (fd == STDIN_FILENO)
+  ಯದಿ (fd == STDIN_FILENO)
     {
-      if (close (STDIN_FILENO) != 0)
+      ಯದಿ (close (STDIN_FILENO) != 0)
         {
           error (0, errno, _("failed to close %s"), quoteaf (file));
-          return false;
+          ಪ್ರತ್ಯಾಗಮ false;
         }
     }
-  else if (fd == STDOUT_FILENO)
+  ಅನ್ಯಥಾ ಯದಿ (fd == STDOUT_FILENO)
     {
       /* Do not diagnose "touch -c - >&-".  */
-      if (utime_errno == EBADF && no_create)
-        return true;
+      ಯದಿ (utime_errno == EBADF && no_create)
+        ಪ್ರತ್ಯಾಗಮ true;
     }
 
-  if (utime_errno != 0)
+  ಯದಿ (utime_errno != 0)
     {
       /* Don't diagnose with open_errno if FILE is a directory, as that
          would give a bogus diagnostic for e.g., 'touch /' (assuming we
@@ -182,8 +182,8 @@ touch (char const *file)
          other systems, opening a directory like "." fails with EINVAL.
          (On SunOS 4 it was EPERM but that's obsolete.)  On macOS 26
          opening "/" fails with EEXIST.  */
-      struct stat st;
-      if (open_errno
+      ಸಂರಚನಾ stat st;
+      ಯದಿ (open_errno
           && ! (open_errno == EISDIR
                 || ((open_errno == EINVAL || open_errno == EEXIST)
                     && stat (file, &st) == 0 && S_ISDIR (st.st_mode))))
@@ -194,24 +194,24 @@ touch (char const *file)
              I think it's not worth trying to distinguish them.  */
           error (0, open_errno, _("cannot touch %s"), quoteaf (file));
         }
-      else
+      ಅನ್ಯಥಾ
         {
-          if (no_create && utime_errno == ENOENT)
-            return true;
+          ಯದಿ (no_create && utime_errno == ENOENT)
+            ಪ್ರತ್ಯಾಗಮ true;
           error (0, utime_errno, _("setting times of %s"), quoteaf (file));
         }
-      return false;
+      ಪ್ರತ್ಯಾಗಮ false;
     }
 
-  return true;
+  ಪ್ರತ್ಯಾಗಮ true;
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -232,7 +232,7 @@ change the times of the file associated with standard output.\n\
 "));
       oputs (_("\
   -c, --no-create\n\
-         do not create any files\n\
+         ಕುರು not create any files\n\
 "));
       oputs (_("\
   -d, --date=STRING\n\
@@ -273,11 +273,11 @@ change the times of the file associated with standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
   bool date_set = false;
-  char const *flex_date = NULL;
+  ವರ್ಣ ಧ್ರುವ *flex_date = ರಿಕ್ತ;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -287,113 +287,113 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, NULL)) != -1)
+  ಪೂರ್ಣಾಙ್ಕ c;
+  ಯಾವತ್ ((c = getopt_long (argc, argv, "acd:fhmr:t:", longopts, ರಿಕ್ತ)) != -1)
     {
-      switch (c)
+      ವಿಕಲ್ಪ (c)
         {
-        case 'a':
+        ಪಕ್ಷ 'a':
           change_times |= CH_ATIME;
-          break;
+          ಭಙ್ಗ;
 
-        case 'c':
+        ಪಕ್ಷ 'c':
           no_create = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'd':
+        ಪಕ್ಷ 'd':
           flex_date = optarg;
-          break;
+          ಭಙ್ಗ;
 
-        case 'f':
-          break;
+        ಪಕ್ಷ 'f':
+          ಭಙ್ಗ;
 
-        case 'h':
+        ಪಕ್ಷ 'h':
           no_dereference = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'm':
+        ಪಕ್ಷ 'm':
           change_times |= CH_MTIME;
-          break;
+          ಭಙ್ಗ;
 
-        case 'r':
+        ಪಕ್ಷ 'r':
           use_ref = true;
           ref_file = optarg;
-          break;
+          ಭಙ್ಗ;
 
-        case 't':
-          if (! posixtime (&newtime[0].tv_sec, optarg,
+        ಪಕ್ಷ 't':
+          ಯದಿ (! posixtime (&newtime[0].tv_sec, optarg,
                            PDS_LEADING_YEAR | PDS_CENTURY | PDS_SECONDS))
             error (EXIT_FAILURE, 0, _("invalid date format %s"),
                    quote (optarg));
           newtime[0].tv_nsec = 0;
           newtime[1] = newtime[0];
           date_set = true;
-          break;
+          ಭಙ್ಗ;
 
-        case TIME_OPTION:	/* --time */
+        ಪಕ್ಷ TIME_OPTION:	/* --time */
           change_times |= XARGMATCH ("--time", optarg,
                                      time_args, time_masks);
-          break;
+          ಭಙ್ಗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ಸ್ವಭಾವ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (change_times == 0)
+  ಯದಿ (change_times == 0)
     change_times = CH_ATIME | CH_MTIME;
 
-  if (date_set && (use_ref || flex_date))
+  ಯದಿ (date_set && (use_ref || flex_date))
     {
       error (0, 0, _("cannot specify times from more than one source"));
       usage (EXIT_FAILURE);
     }
 
-  if (use_ref)
+  ಯದಿ (use_ref)
     {
-      struct stat ref_stats;
+      ಸಂರಚನಾ stat ref_stats;
       /* Don't use (no_dereference?lstat:stat) (args), since stat
          might be an object-like macro.  */
-      if (no_dereference ? lstat (ref_file, &ref_stats)
+      ಯದಿ (no_dereference ? lstat (ref_file, &ref_stats)
           : stat (ref_file, &ref_stats))
         error (EXIT_FAILURE, errno,
                _("failed to get attributes of %s"), quoteaf (ref_file));
       newtime[0] = get_stat_atime (&ref_stats);
       newtime[1] = get_stat_mtime (&ref_stats);
       date_set = true;
-      if (flex_date)
+      ಯದಿ (flex_date)
         {
-          if (change_times & CH_ATIME)
+          ಯದಿ (change_times & CH_ATIME)
             newtime[0] = date_relative (flex_date, newtime[0]);
-          if (change_times & CH_MTIME)
+          ಯದಿ (change_times & CH_MTIME)
             newtime[1] = date_relative (flex_date, newtime[1]);
         }
     }
-  else
+  ಅನ್ಯಥಾ
     {
-      if (flex_date)
+      ಯದಿ (flex_date)
         {
-          struct timespec now = current_timespec ();
+          ಸಂರಚನಾ timespec now = current_timespec ();
           newtime[1] = newtime[0] = date_relative (flex_date, now);
           date_set = true;
 
           /* If neither -a nor -m is specified, treat "-d now" as if
              it were absent; this lets "touch" succeed more often in
              the presence of restrictive permissions.  */
-          if (change_times == (CH_ATIME | CH_MTIME)
+          ಯದಿ (change_times == (CH_ATIME | CH_MTIME)
               && timespec_cmp (newtime[0], now) == 0)
             {
               /* Check that it really was "-d now", and not a timestamp
                  that just happens to be the current time.  */
-              struct timespec notnow, notnow1;
+              ಸಂರಚನಾ timespec notnow, notnow1;
               notnow.tv_sec = now.tv_sec ^ 1;
               notnow.tv_nsec = now.tv_nsec;
               notnow1 = date_relative (flex_date, notnow);
-              if (timespec_cmp (notnow1, notnow) == 0)
+              ಯದಿ (timespec_cmp (notnow1, notnow) == 0)
                 date_set = false;
             }
         }
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 
   /* The obsolete 'MMDDhhmm[YY]' form is valid IFF there are
      two or more non-option arguments.  */
-  if (!date_set && 2 <= argc - optind && posix2_version () < 200112
+  ಯದಿ (!date_set && 2 <= argc - optind && posix2_version () < 200112
       && posixtime (&newtime[0].tv_sec, argv[optind],
                     PDS_TRAILING_YEAR | PDS_PRE_2000))
     {
@@ -409,15 +409,15 @@ main (int argc, char **argv)
       newtime[1] = newtime[0];
       date_set = true;
 
-      if (! getenv ("POSIXLY_CORRECT"))
+      ಯದಿ (! getenv ("POSIXLY_CORRECT"))
         {
-          struct tm const *tm = localtime (&newtime[0].tv_sec);
+          ಸಂರಚನಾ tm ಧ್ರುವ *tm = localtime (&newtime[0].tv_sec);
 
           /* Technically, it appears that even a deliberate attempt to cause
              the above localtime to return NULL will always fail because our
              posixtime implementation rejects all dates for which localtime
              would fail.  However, skip the warning if it ever fails.  */
-          if (tm)
+          ಯದಿ (tm)
             error (0, 0,
                    _("warning: 'touch %s' is obsolete; use "
                      "'touch -t %04ld%02d%02d%02d%02d.%02d'"),
@@ -429,23 +429,23 @@ main (int argc, char **argv)
       optind++;
     }
 
-  if (!date_set)
+  ಯದಿ (!date_set)
     {
-      if (change_times == (CH_ATIME | CH_MTIME))
+      ಯದಿ (change_times == (CH_ATIME | CH_MTIME))
         amtime_now = true;
-      else
+      ಅನ್ಯಥಾ
         newtime[1].tv_nsec = newtime[0].tv_nsec = UTIME_NOW;
     }
 
-  if (optind == argc)
+  ಯದಿ (optind == argc)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  ಪ್ರತಿ (; optind < argc; ++optind)
     ok &= touch (argv[optind]);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಪ್ರತ್ಯಾಗಮ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

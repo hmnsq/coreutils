@@ -1,2 +1,2 @@
-#include "true.h"
-enum true_modes true_mode = TRUE_FALSE;
+#ಅನ್ತರ್ಭಾವ "true.h"
+ಗಣನಾ true_modes true_mode = TRUE_FALSE;

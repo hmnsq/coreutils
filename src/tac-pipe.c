@@ -16,7 +16,7 @@
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* FIXME */
-#include "assure.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
 
 /* FIXME: this is small for testing */
 #define BUFFER_SIZE (8)
@@ -26,29 +26,29 @@
 
 #define ONE_PAST_END(X, I) ((X)->p[(I)].one_past_end)
 
-struct Line_ptr
+ಸಂರಚನಾ ಸಾಲು_ptr
 {
   size_t i;
-  char *ptr;
+  ವರ್ಣ *ptr;
 };
-typedef struct Line_ptr Line_ptr;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ ಸಾಲು_ptr ಸಾಲು_ptr;
 
-struct B_pair
+ಸಂರಚನಾ B_pair
 {
-  char *start;
-  char *one_past_end;
+  ವರ್ಣ *start;
+  ವರ್ಣ *one_past_end;
 };
 
-struct Buf
+ಸಂರಚನಾ Buf
 {
   size_t n_bufs;
-  struct obstack obs;
-  struct B_pair *p;
+  ಸಂರಚನಾ obstack obs;
+  ಸಂರಚನಾ B_pair *p;
 };
-typedef struct Buf Buf;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ Buf Buf;
 
-static bool
-buf_init_from_stdin (Buf *x, char eol_byte)
+ಸ್ಥಿರ bool
+buf_init_from_stdin (Buf *x, ವರ್ಣ eol_byte)
 {
   bool last_byte_is_eol_byte = true;
   bool ok = true;
@@ -56,146 +56,146 @@ buf_init_from_stdin (Buf *x, char eol_byte)
 #define OBS (&(x->obs))
   obstack_init (OBS);
 
-  while (true)
+  ಯಾವತ್ (true)
     {
-      char *buf = malloc (BUFFER_SIZE);
+      ವರ್ಣ *buf = malloc (BUFFER_SIZE);
 
-      if (buf == NULL)
+      ಯದಿ (buf == ರಿಕ್ತ)
         {
           /* Fall back on the code that relies on a temporary file.
              Write all buffers to that file and free them.  */
           /* FIXME */
           ok = false;
-          break;
+          ಭಙ್ಗ;
         }
       idx_t bytes_read = full_read (STDIN_FILENO, buf, BUFFER_SIZE);
-      if (bytes_read != BUFFER_SIZE && errno != 0)
+      ಯದಿ (bytes_read != BUFFER_SIZE && errno != 0)
         error (EXIT_FAILURE, errno, _("read error"));
 
       {
-        struct B_pair bp;
+        ಸಂರಚನಾ B_pair bp;
         bp.start = buf;
         bp.one_past_end = buf + bytes_read;
-        obstack_grow (OBS, &bp, sizeof (bp));
+        obstack_grow (OBS, &bp, ಪರಿಮಾಣ (bp));
       }
 
-      if (bytes_read != 0)
+      ಯದಿ (bytes_read != 0)
         last_byte_is_eol_byte = (buf[bytes_read - 1] == eol_byte);
 
-      if (bytes_read < BUFFER_SIZE)
-        break;
+      ಯದಿ (bytes_read < BUFFER_SIZE)
+        ಭಙ್ಗ;
     }
 
-  if (ok)
+  ಯದಿ (ok)
     {
       /* If the file was non-empty and lacked an EOL_BYTE at its end,
          then add a buffer containing just that one byte.  */
-      if (!last_byte_is_eol_byte)
+      ಯದಿ (!last_byte_is_eol_byte)
         {
-          char *buf = malloc (1);
-          if (buf == NULL)
+          ವರ್ಣ *buf = malloc (1);
+          ಯದಿ (buf == ರಿಕ್ತ)
             {
               /* FIXME: just like above */
               ok = false;
             }
-          else
+          ಅನ್ಯಥಾ
             {
-              struct B_pair bp;
+              ಸಂರಚನಾ B_pair bp;
               *buf = eol_byte;
               bp.start = buf;
               bp.one_past_end = buf + 1;
-              obstack_grow (OBS, &bp, sizeof (bp));
+              obstack_grow (OBS, &bp, ಪರಿಮಾಣ (bp));
             }
         }
     }
 
-  x->n_bufs = obstack_object_size (OBS) / sizeof (x->p[0]);
-  x->p = (struct B_pair *) obstack_finish (OBS);
+  x->n_bufs = obstack_object_size (OBS) / ಪರಿಮಾಣ (x->p[0]);
+  x->p = (ಸಂರಚನಾ B_pair *) obstack_finish (OBS);
 
   /* If there are two or more buffers and the last buffer is empty,
      then free the last one and decrement the buffer count.  */
-  if (x->n_bufs >= 2
+  ಯದಿ (x->n_bufs >= 2
       && x->p[x->n_bufs - 1].start == x->p[x->n_bufs - 1].one_past_end)
-    free (x->p[--(x->n_bufs)].start);
+    ಮುಕ್ತ (x->p[--(x->n_bufs)].start);
 
-  return ok;
+  ಪ್ರತ್ಯಾಗಮ ok;
 }
 
-static void
+ಸ್ಥಿರ ಶೂನ್ಯ
 buf_free (Buf *x)
 {
-  for (size_t i = 0; i < x->n_bufs; i++)
-    free (x->p[i].start);
-  obstack_free (OBS, NULL);
+  ಪ್ರತಿ (size_t i = 0; i < x->n_bufs; i++)
+    ಮುಕ್ತ (x->p[i].start);
+  obstack_free (OBS, ರಿಕ್ತ);
 }
 
-Line_ptr
-line_ptr_decrement (const Buf *x, const Line_ptr *lp)
+ಸಾಲು_ptr
+ಸಾಲು_ptr_decrement (ಧ್ರುವ Buf *x, ಧ್ರುವ ಸಾಲು_ptr *lp)
 {
-  Line_ptr lp_new;
+  ಸಾಲು_ptr lp_new;
 
-  if (lp->ptr > x->p[lp->i].start)
+  ಯದಿ (lp->ptr > x->p[lp->i].start)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr - 1;
     }
-  else
+  ಅನ್ಯಥಾ
     {
       affirm (lp->i > 0);
       lp_new.i = lp->i - 1;
       lp_new.ptr = ONE_PAST_END (x, lp->i - 1) - 1;
     }
-  return lp_new;
+  ಪ್ರತ್ಯಾಗಮ lp_new;
 }
 
-Line_ptr
-line_ptr_increment (const Buf *x, const Line_ptr *lp)
+ಸಾಲು_ptr
+ಸಾಲು_ptr_increment (ಧ್ರುವ Buf *x, ಧ್ರುವ ಸಾಲು_ptr *lp)
 {
-  Line_ptr lp_new;
+  ಸಾಲು_ptr lp_new;
 
   affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
-  if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
+  ಯದಿ (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
     {
       lp_new.i = lp->i;
       lp_new.ptr = lp->ptr + 1;
     }
-  else
+  ಅನ್ಯಥಾ
     {
       affirm (lp->i < x->n_bufs - 1);
       lp_new.i = lp->i + 1;
       lp_new.ptr = x->p[lp->i + 1].start;
     }
-  return lp_new;
+  ಪ್ರತ್ಯಾಗಮ lp_new;
 }
 
-static bool
-find_bol (const Buf *x,
-          const Line_ptr *last_bol, Line_ptr *new_bol, char eol_byte)
+ಸ್ಥಿರ bool
+find_bol (ಧ್ರುವ Buf *x,
+          ಧ್ರುವ ಸಾಲು_ptr *last_bol, ಸಾಲು_ptr *new_bol, ವರ್ಣ eol_byte)
 {
   size_t i;
-  Line_ptr tmp;
-  char *last_bol_ptr;
+  ಸಾಲು_ptr tmp;
+  ವರ್ಣ *last_bol_ptr;
 
-  if (last_bol->ptr == x->p[0].start)
-    return false;
+  ಯದಿ (last_bol->ptr == x->p[0].start)
+    ಪ್ರತ್ಯಾಗಮ false;
 
-  tmp = line_ptr_decrement (x, last_bol);
+  tmp = ಸಾಲು_ptr_decrement (x, last_bol);
   last_bol_ptr = tmp.ptr;
   i = tmp.i;
-  while (true)
+  ಯಾವತ್ (true)
     {
-      char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
-      if (nl)
+      ವರ್ಣ *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
+      ಯದಿ (nl)
         {
-          Line_ptr nl_pos;
+          ಸಾಲು_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
-          *new_bol = line_ptr_increment (x, &nl_pos);
-          return true;
+          *new_bol = ಸಾಲು_ptr_increment (x, &nl_pos);
+          ಪ್ರತ್ಯಾಗಮ true;
         }
 
-      if (i == 0)
-        break;
+      ಯದಿ (i == 0)
+        ಭಙ್ಗ;
 
       --i;
       last_bol_ptr = ONE_PAST_END (x, i);
@@ -204,56 +204,56 @@ find_bol (const Buf *x,
   /* If last_bol->ptr didn't point at the first byte of X, then reaching
      this point means that we're about to return the line that is at the
      beginning of X.  */
-  if (last_bol->ptr != x->p[0].start)
+  ಯದಿ (last_bol->ptr != x->p[0].start)
     {
       new_bol->i = 0;
       new_bol->ptr = x->p[0].start;
-      return true;
+      ಪ್ರತ್ಯಾಗಮ true;
     }
 
-  return false;
+  ಪ್ರತ್ಯಾಗಮ false;
 }
 
-static void
-print_line (FILE *out_stream, const Buf *x,
-            const Line_ptr *bol, const Line_ptr *bol_next)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_ಸಾಲು (FILE *out_stream, ಧ್ರುವ Buf *x,
+            ಧ್ರುವ ಸಾಲು_ptr *bol, ಧ್ರುವ ಸಾಲು_ptr *bol_next)
 {
-  for (size_t i = bol->i; i <= bol_next->i; i++)
+  ಪ್ರತಿ (size_t i = bol->i; i <= bol_next->i; i++)
     {
-      char *a = (i == bol->i ? bol->ptr : x->p[i].start);
-      char *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
+      ವರ್ಣ *a = (i == bol->i ? bol->ptr : x->p[i].start);
+      ವರ್ಣ *b = (i == bol_next->i ? bol_next->ptr : ONE_PAST_END (x, i));
       fwrite (a, 1, b - a, out_stream);
     }
 }
 
-static bool
+ಸ್ಥಿರ bool
 tac_mem ()
 {
   Buf x;
-  Line_ptr bol;
-  char eol_byte = '\n';
+  ಸಾಲು_ptr bol;
+  ವರ್ಣ eol_byte = '\n';
 
-  if (! buf_init_from_stdin (&x, eol_byte))
+  ಯದಿ (! buf_init_from_stdin (&x, eol_byte))
     {
       buf_free (&x);
-      return false;
+      ಪ್ರತ್ಯಾಗಮ false;
     }
 
   /* Special case the empty file.  */
-  if (EMPTY (&x))
-    return true;
+  ಯದಿ (EMPTY (&x))
+    ಪ್ರತ್ಯಾಗಮ true;
 
   /* Initially, point at one past the last byte of the file.  */
   bol.i = x.n_bufs - 1;
   bol.ptr = ONE_PAST_END (&x, bol.i);
 
-  while (true)
+  ಯಾವತ್ (true)
     {
-      Line_ptr new_bol;
-      if (! find_bol (&x, &bol, &new_bol, eol_byte))
-        break;
-      print_line (stdout, &x, &new_bol, &bol);
+      ಸಾಲು_ptr new_bol;
+      ಯದಿ (! find_bol (&x, &bol, &new_bol, eol_byte))
+        ಭಙ್ಗ;
+      print_ಸಾಲು (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
-  return true;
+  ಪ್ರತ್ಯಾಗಮ true;
 }

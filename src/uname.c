@@ -17,18 +17,18 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-#include <getopt.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <sys/utsname.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
 
-#if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
+#ಯದಿ HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
 # include <sys/systeminfo.h>
 #endif
 
-#if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
-# if HAVE_SYS_PARAM_H
+#ಯದಿ HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
+# ಯದಿ HAVE_SYS_PARAM_H
 #  include <sys/param.h> /* needed for OpenBSD 3.0 */
 # endif
 # include <sys/sysctl.h>
@@ -37,16 +37,16 @@
 /* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
-#  else
+#  ಅನ್ಯಥಾ
 /* E.g., OpenBSD 3.0 */
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
 # endif
 #endif
 
-#include "system.h"
-#include "quote.h"
-#include "uname.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "uname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (uname_mode == UNAME_UNAME ? "uname" : "arch")
@@ -79,44 +79,44 @@
 /* Operating system.  */
 #define PRINT_OPERATING_SYSTEM 128
 
-static bool labeled = false;
+ಸ್ಥಿರ bool labeled = false;
 
-static struct option const uname_long_options[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ uname_long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"all-labeled", no_argument, NULL, 'A'},
-  {"kernel-name", no_argument, NULL, 's'},
-  {"sysname", no_argument, NULL, 's'},	/* Obsolescent.  */
-  {"nodename", no_argument, NULL, 'n'},
-  {"kernel-release", no_argument, NULL, 'r'},
-  {"release", no_argument, NULL, 'r'},  /* Obsolescent.  */
-  {"kernel-version", no_argument, NULL, 'v'},
-  {"machine", no_argument, NULL, 'm'},
-  {"processor", no_argument, NULL, 'p'},
-  {"hardware-platform", no_argument, NULL, 'i'},
-  {"operating-system", no_argument, NULL, 'o'},
+  {"all", no_argument, ರಿಕ್ತ, 'a'},
+  {"all-labeled", no_argument, ರಿಕ್ತ, 'A'},
+  {"kernel-name", no_argument, ರಿಕ್ತ, 's'},
+  {"sysname", no_argument, ರಿಕ್ತ, 's'},	/* Obsolescent.  */
+  {"nodename", no_argument, ರಿಕ್ತ, 'n'},
+  {"kernel-release", no_argument, ರಿಕ್ತ, 'r'},
+  {"release", no_argument, ರಿಕ್ತ, 'r'},  /* Obsolescent.  */
+  {"kernel-version", no_argument, ರಿಕ್ತ, 'v'},
+  {"machine", no_argument, ರಿಕ್ತ, 'm'},
+  {"processor", no_argument, ರಿಕ್ತ, 'p'},
+  {"hardware-platform", no_argument, ರಿಕ್ತ, 'i'},
+  {"operating-system", no_argument, ರಿಕ್ತ, 'o'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
-static struct option const arch_long_options[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ arch_long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
 
-      if (uname_mode == UNAME_UNAME)
+      ಯದಿ (uname_mode == UNAME_UNAME)
         {
           fputs (_("\
 Print certain system information.  With no OPTION, same as -s.\n\
@@ -124,17 +124,17 @@ Print certain system information.  With no OPTION, same as -s.\n\
 "), stdout);
           oputs (_("\
   -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown\n\
+                             except omit -p and -i ಯದಿ unknown\n\
 "));
           oputs (_("\
-  -A, --all-labeled        print all information, one labeled field per line,\n\
-                             except omit -p and -i if unknown\n\
+  -A, --all-labeled        print all information, one labeled field per ಸಾಲು,\n\
+                             except omit -p and -i ಯದಿ unknown\n\
 "));
           oputs (_("\
   -s, --kernel-name        print the kernel name\n\
 "));
           oputs (_("\
-  -n, --nodename           print the network node hostname\n\
+  -n, --nodename           print the network ಗಂಟು hostname\n\
 "));
           oputs (_("\
   -r, --kernel-release     print the kernel release\n\
@@ -155,7 +155,7 @@ Print certain system information.  With no OPTION, same as -s.\n\
   -o, --operating-system   print the operating system\n\
 "));
         }
-      else
+      ಅನ್ಯಥಾ
         {
           fputs (_("\
 Print machine architecture.\n\
@@ -173,17 +173,17 @@ Print machine architecture.\n\
 /* Print ELEMENT, preceded by a space if something has already been
    printed.  */
 
-static void
-print_element (char const *element, char const *label)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_element (ವರ್ಣ ಧ್ರುವ *element, ವರ್ಣ ಧ್ರುವ *label)
 {
-  if (labeled)
+  ಯದಿ (labeled)
     {
       printf ("%s: %s\n", label, element);
     }
-  else
+  ಅನ್ಯಥಾ
     {
-      static bool printed;
-      if (printed)
+      ಸ್ಥಿರ bool printed;
+      ಯದಿ (printed)
         putchar (' ');
       printed = true;
       fputs (element, stdout);
@@ -194,16 +194,16 @@ print_element (char const *element, char const *label)
    printed.  But if the environment variable ENVVAR is set, print its
    value instead of ELEMENT.  */
 
-static void
-print_element_env (char const *element,
-                   MAYBE_UNUSED char const *envvar,
-                   char const *label)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_element_env (ವರ್ಣ ಧ್ರುವ *element,
+                   MAYBE_UNUSED ವರ್ಣ ಧ್ರುವ *envvar,
+                   ವರ್ಣ ಧ್ರುವ *label)
 {
 #ifdef __APPLE__
-  if (envvar)
+  ಯದಿ (envvar)
     {
-      char const *val = getenv (envvar);
-      if (val)
+      ವರ್ಣ ಧ್ರುವ *val = getenv (envvar);
+      ಯದಿ (val)
         element = val;
     }
 #endif
@@ -214,106 +214,106 @@ print_element_env (char const *element,
 /* Set all the option flags according to the switches specified.
    Return the mask indicating which elements to print.  */
 
-static int
-decode_switches (int argc, char **argv)
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ
+decode_switches (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  int c;
-  unsigned int toprint = 0;
+  ಪೂರ್ಣಾಙ್ಕ c;
+  unsigned ಪೂರ್ಣಾಙ್ಕ toprint = 0;
 
-  if (uname_mode == UNAME_ARCH)
+  ಯದಿ (uname_mode == UNAME_ARCH)
     {
-      while ((c = getopt_long (argc, argv, "",
-                               arch_long_options, NULL))
+      ಯಾವತ್ ((c = getopt_long (argc, argv, "",
+                               arch_long_options, ರಿಕ್ತ))
              != -1)
         {
-          switch (c)
+          ವಿಕಲ್ಪ (c)
             {
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, ARCH_AUTHORS);
 
-            default:
+            ಸ್ವಭಾವ:
               usage (EXIT_FAILURE);
             }
         }
       toprint = PRINT_MACHINE;
     }
-  else
+  ಅನ್ಯಥಾ
     {
-      while ((c = getopt_long (argc, argv, "asnrvmpioA",
-                               uname_long_options, NULL))
+      ಯಾವತ್ ((c = getopt_long (argc, argv, "asnrvmpioA",
+                               uname_long_options, ರಿಕ್ತ))
              != -1)
         {
-          switch (c)
+          ವಿಕಲ್ಪ (c)
             {
-            case 'a':
+            ಪಕ್ಷ 'a':
               toprint = UINT_MAX;
               labeled = false;
-              break;
+              ಭಙ್ಗ;
 
-            case 'A':
+            ಪಕ್ಷ 'A':
               toprint = UINT_MAX;
               labeled = true;
-              break;
+              ಭಙ್ಗ;
 
-            case 's':
+            ಪಕ್ಷ 's':
               toprint |= PRINT_KERNEL_NAME;
-              break;
+              ಭಙ್ಗ;
 
-            case 'n':
+            ಪಕ್ಷ 'n':
               toprint |= PRINT_NODENAME;
-              break;
+              ಭಙ್ಗ;
 
-            case 'r':
+            ಪಕ್ಷ 'r':
               toprint |= PRINT_KERNEL_RELEASE;
-              break;
+              ಭಙ್ಗ;
 
-            case 'v':
+            ಪಕ್ಷ 'v':
               toprint |= PRINT_KERNEL_VERSION;
-              break;
+              ಭಙ್ಗ;
 
-            case 'm':
+            ಪಕ್ಷ 'm':
               toprint |= PRINT_MACHINE;
-              break;
+              ಭಙ್ಗ;
 
-            case 'p':
+            ಪಕ್ಷ 'p':
               toprint |= PRINT_PROCESSOR;
-              break;
+              ಭಙ್ಗ;
 
-            case 'i':
+            ಪಕ್ಷ 'i':
               toprint |= PRINT_HARDWARE_PLATFORM;
-              break;
+              ಭಙ್ಗ;
 
-            case 'o':
+            ಪಕ್ಷ 'o':
               toprint |= PRINT_OPERATING_SYSTEM;
-              break;
+              ಭಙ್ಗ;
 
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-            default:
+            ಸ್ವಭಾವ:
               usage (EXIT_FAILURE);
             }
         }
     }
 
-  if (argc != optind)
+  ಯದಿ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  return toprint;
+  ಪ್ರತ್ಯಾಗಮ toprint;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  static char const unknown[] = "unknown";
+  ಸ್ಥಿರ ವರ್ಣ ಧ್ರುವ unknown[] = "unknown";
 
   /* Mask indicating which elements to print. */
-  unsigned int toprint = 0;
+  unsigned ಪೂರ್ಣಾಙ್ಕ toprint = 0;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -325,35 +325,35 @@ main (int argc, char **argv)
 
   toprint = decode_switches (argc, argv);
 
-  if (toprint == 0)
+  ಯದಿ (toprint == 0)
     toprint = PRINT_KERNEL_NAME;
 
-  if (toprint
+  ಯದಿ (toprint
        & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
           | PRINT_KERNEL_VERSION | PRINT_MACHINE))
     {
-      struct utsname name;
+      ಸಂರಚನಾ utsname name;
 
-      if (uname (&name) == -1)
+      ಯದಿ (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
+      ಯದಿ (toprint & PRINT_KERNEL_NAME)
         print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
+      ಯದಿ (toprint & PRINT_NODENAME)
         print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
+      ಯದಿ (toprint & PRINT_KERNEL_RELEASE)
         print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
+      ಯದಿ (toprint & PRINT_KERNEL_VERSION)
         print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
+      ಯದಿ (toprint & PRINT_MACHINE)
         print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  ಯದಿ (toprint & PRINT_PROCESSOR)
     {
-      char const *element = unknown;
+      ವರ್ಣ ಧ್ರುವ *element = unknown;
 #ifdef __APPLE__
-# if defined __arm__ || defined __arm64__
+# ಯದಿ defined __arm__ || defined __arm64__
       element = "arm";
 # elif defined __i386__ || defined __x86_64__
       element = "i386";
@@ -361,58 +361,58 @@ main (int argc, char **argv)
       element = "powerpc";
 # endif
 #endif
-#if HAVE_SYSINFO && defined SI_ARCHITECTURE
-      if (element == unknown)
+#ಯದಿ HAVE_SYSINFO && defined SI_ARCHITECTURE
+      ಯದಿ (element == unknown)
         {
-          static char processor[257];
-          if (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
+          ಸ್ಥಿರ ವರ್ಣ processor[257];
+          ಯದಿ (0 <= sysinfo (SI_ARCHITECTURE, processor, ಪರಿಮಾಣ processor))
             element = processor;
         }
 #endif
 #ifdef UNAME_PROCESSOR
-      if (element == unknown)
+      ಯದಿ (element == unknown)
         {
-          static char processor[257];
-          size_t s = sizeof processor;
-          static int mib[] = { CTL_HW, UNAME_PROCESSOR };
-          if (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
+          ಸ್ಥಿರ ವರ್ಣ processor[257];
+          size_t s = ಪರಿಮಾಣ processor;
+          ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ mib[] = { CTL_HW, UNAME_PROCESSOR };
+          ಯದಿ (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
             element = processor;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
+      ಯದಿ (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  ಯದಿ (toprint & PRINT_HARDWARE_PLATFORM)
     {
-      char const *element = unknown;
-#if HAVE_SYSINFO && defined SI_PLATFORM
+      ವರ್ಣ ಧ್ರುವ *element = unknown;
+#ಯದಿ HAVE_SYSINFO && defined SI_PLATFORM
       {
-        static char hardware_platform[257];
-        if (0 <= sysinfo (SI_PLATFORM,
-                          hardware_platform, sizeof hardware_platform))
+        ಸ್ಥಿರ ವರ್ಣ hardware_platform[257];
+        ಯದಿ (0 <= sysinfo (SI_PLATFORM,
+                          hardware_platform, ಪರಿಮಾಣ hardware_platform))
           element = hardware_platform;
       }
 #endif
 #ifdef UNAME_HARDWARE_PLATFORM
-      if (element == unknown)
+      ಯದಿ (element == unknown)
         {
-          static char hardware_platform[257];
-          size_t s = sizeof hardware_platform;
-          static int mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
-          if (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
+          ಸ್ಥಿರ ವರ್ಣ hardware_platform[257];
+          size_t s = ಪರಿಮಾಣ hardware_platform;
+          ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
+          ಯದಿ (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
             element = hardware_platform;
         }
 #endif
-      if (! (toprint == UINT_MAX && element == unknown))
+      ಯದಿ (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
+  ಯದಿ (toprint & PRINT_OPERATING_SYSTEM)
     print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
-  if (!labeled)
+  ಯದಿ (!labeled)
     putchar ('\n');
 
-  return EXIT_SUCCESS;
+  ಪ್ರತ್ಯಾಗಮ EXIT_SUCCESS;
 }

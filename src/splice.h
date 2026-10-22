@@ -17,7 +17,7 @@
 #ifndef SPLICE_H
 # define SPLICE_H 1
 
-# if HAVE_VMSPLICE
+# ಯದಿ HAVE_VMSPLICE
 
 /* splice() and vmsplice() were introduced at the same time,
    so assume splice() is available.  Note AIX also has a different
@@ -26,19 +26,19 @@
 
 /* Empirically determined pipe size for best throughput.
    Needs to be <= /proc/sys/fs/pipe-max-size  */
-enum { SPLICE_PIPE_SIZE = 512 * 1024 };
+ಗಣನಾ { SPLICE_PIPE_SIZE = 512 * 1024 };
 
-static inline idx_t
-increase_pipe_size (int fd)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ idx_t
+increase_pipe_size (ಪೂರ್ಣಾಙ್ಕ fd)
 {
-  int pipe_cap = 0;
-#  if defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
-  if ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
+  ಪೂರ್ಣಾಙ್ಕ pipe_cap = 0;
+#  ಯದಿ defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
+  ಯದಿ ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
     pipe_cap = fcntl (fd, F_GETPIPE_SZ);
 #  endif
-  if (pipe_cap <= 0)
+  ಯದಿ (pipe_cap <= 0)
     pipe_cap = 64 * 1024;
-  return pipe_cap;
+  ಪ್ರತ್ಯಾಗಮ pipe_cap;
 }
 
 # endif

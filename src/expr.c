@@ -28,17 +28,17 @@
 
    Define EVAL_TRACE to print an evaluation trace.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ "system.h"
 
-#include <gmp.h>
-#include <regex.h>
-#include "c-ctype.h"
-#include "long-options.h"
-#include "mcel.h"
-#include "strnumcmp.h"
+#ಅನ್ತರ್ಭಾವ <gmp.h>
+#ಅನ್ತರ್ಭಾವ <regex.h>
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "long-options.h"
+#ಅನ್ತರ್ಭಾವ "mcel.h"
+#ಅನ್ತರ್ಭಾವ "strnumcmp.h"
 
 /* Various parts of this code assume size_t fits into unsigned long
    int, the widest unsigned type that GMP supports.  */
@@ -53,45 +53,45 @@ static_assert (SIZE_MAX <= ULONG_MAX);
   proper_name ("Paul Eggert")
 
 /* Exit statuses.  */
-enum
+ಗಣನಾ
   {
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
        POSIX grammar.  */
-    EXPR_INVALID = 2,
+    ಅಭಿವ್ಯಕ್ತಿ_INVALID = 2,
 
     /* An internal error occurred, e.g., arithmetic overflow, storage
        exhaustion.  */
-    EXPR_FAILURE
+    ಅಭಿವ್ಯಕ್ತಿ_FAILURE
   };
 
 /* The kinds of value we can have.  */
-enum valtype
+ಗಣನಾ valtype
 {
   integer,
   string
 };
-typedef enum valtype TYPE;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಗಣನಾ valtype TYPE;
 
 /* A value is.... */
-struct valinfo
+ಸಂರಚನಾ valinfo
 {
   TYPE type;			/* Which kind. */
-  union
+  ಸಙ್ಘ
   {				/* The value itself. */
     mpz_t i;
-    char *s;
+    ವರ್ಣ *s;
   } u;
 };
-typedef struct valinfo VALUE;
+ಪ್ರಕಾರನಿರ್ದೇಶ ಸಂರಚನಾ valinfo ಮೌಲ್ಯ_2;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+ಸ್ಥಿರ ವರ್ಣ **args;
 
-static VALUE *eval (bool);
-static bool nomoreargs (void);
-static bool null (VALUE *v);
-static void printv (VALUE *v);
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *eval (bool);
+ಸ್ಥಿರ bool nomoreargs (ಶೂನ್ಯ);
+ಸ್ಥಿರ bool null (ಮೌಲ್ಯ_2 *v);
+ಸ್ಥಿರ ಶೂನ್ಯ printv (ಮೌಲ್ಯ_2 *v);
 
 
 /*
@@ -111,47 +111,47 @@ static void printv (VALUE *v);
    In UTF-8 \xCE\xB1 is a single character (greek alpha):
      mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
      mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
-static size_t
-mbs_logical_cspn (char const *s, char const *accept)
+ಸ್ಥಿರ size_t
+mbs_logical_cspn (ವರ್ಣ ಧ್ರುವ *s, ವರ್ಣ ಧ್ರುವ *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  ಯದಿ (accept[0] == '\0')
+    ಪ್ರತ್ಯಾಗಮ 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  ಯದಿ (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      ಪ್ರತಿ (ವರ್ಣ ಧ್ರುವ *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          ಯದಿ (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              ಯದಿ (mbschr (accept, *p))
+                ಪ್ರತ್ಯಾಗಮ idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          ಅನ್ಯಥಾ
+            ಪ್ರತಿ (ವರ್ಣ ಧ್ರುವ *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                ಯದಿ (mcel_eq (g, h))
+                  ಪ್ರತ್ಯಾಗಮ idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  ಅನ್ಯಥಾ
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      ಯದಿ (s[i])
+        ಪ್ರತ್ಯಾಗಮ i + 1;
     }
 
   /* not found */
-  return 0;
+  ಪ್ರತ್ಯಾಗಮ 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -161,8 +161,8 @@ mbs_logical_cspn (char const *s, char const *accept)
 
    Upon exit, sets v->s to the new string.
    The new string might be empty if POS/LEN are invalid. */
-static char *
-mbs_logical_substr (char const *s, size_t pos, size_t len)
+ಸ್ಥಿರ ವರ್ಣ *
+mbs_logical_substr (ವರ್ಣ ಧ್ರುವ *s, size_t pos, size_t len)
 {
   size_t mb_cur_max = MB_CUR_MAX;
   idx_t llen = mb_cur_max <= 1 ? strlen (s) : mbslen (s); /* logical length */
@@ -170,26 +170,26 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
   /* characters to copy */
   size_t vlen = MIN (len, pos <= llen ? llen - pos + 1 : 0);
 
-  char const *substart = s;
+  ವರ್ಣ ಧ್ರುವ *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  ಯದಿ (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  ಅನ್ಯಥಾ ಯದಿ (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  ಅನ್ಯಥಾ
+    ಪ್ರತಿ (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        ಯದಿ (pos <= idx)
           {
-            if (pos == idx)
+            ಯದಿ (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  ಪ್ರತ್ಯಾಗಮ ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -211,23 +211,23 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
    In the string below, there are only two characters
    up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
       mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
-static size_t
-mbs_offset_to_chars (char const *s, size_t ofs)
+ಸ್ಥಿರ size_t
+mbs_offset_to_chars (ವರ್ಣ ಧ್ರುವ *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  ಪ್ರತಿ (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  ಪ್ರತ್ಯಾಗಮ c;
 }
 
 
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -239,12 +239,12 @@ Usage: %s EXPRESSION\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Print the value of EXPRESSION to standard output.  A blank line below\n\
+Print the ಮೌಲ್ಯ of EXPRESSION to standard output.  A blank ಸಾಲು below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 ಯದಿ it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 ಯದಿ neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even ಯದಿ it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
-  ( EXPRESSION )             value of EXPRESSION\n\
+  ( EXPRESSION )             ಮೌಲ್ಯ of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted ಪ್ರತಿ shells.\n\
+Comparisons are arithmetic ಯದಿ both ARGs are numbers, ಅನ್ಯಥಾ lexicographical.\n\
+Pattern matches ಪ್ರತ್ಯಾಗಮ the string matched between \\( and \\) or null; ಯದಿ\n\
+\\( and \\) are not used, they ಪ್ರತ್ಯಾಗಮ the ಸಂಖ್ಯೆ of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 ಯದಿ EXPRESSION is neither null nor 0, 1 ಯದಿ EXPRESSION is null\n\
+or 0, 2 ಯದಿ EXPRESSION is syntactically invalid, and 3 ಯದಿ an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -310,31 +310,31 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (EXPR_FAILURE);
+  initialize_exit_failure (ಅಭಿವ್ಯಕ್ತಿ_FAILURE);
   atexit (close_stdout);
 
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
-                      usage, AUTHORS, (char const *) NULL);
+                      usage, AUTHORS, (ವರ್ಣ ಧ್ರುವ *) ರಿಕ್ತ);
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ಯದಿ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ಯದಿ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXPR_INVALID);
+      usage (ಅಭಿವ್ಯಕ್ತಿ_INVALID);
     }
 
   args = argv + 1;
 
-  VALUE *v = eval (true);
-  if (!nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
+  ಮೌಲ್ಯ_2 *v = eval (true);
+  ಯದಿ (!nomoreargs ())
+    error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
   printv (v);
@@ -344,53 +344,53 @@ main (int argc, char **argv)
 
 /* Return a VALUE for I.  */
 
-static VALUE *
-int_value (unsigned long int i)
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
+int_ಮೌಲ್ಯ (unsigned long ಪೂರ್ಣಾಙ್ಕ i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  ಮೌಲ್ಯ_2 *v = xmalloc (ಪರಿಮಾಣ *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  ಪ್ರತ್ಯಾಗಮ v;
 }
 
 /* Return a VALUE for S.  */
 
-static VALUE *
-str_value (char const *s)
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
+str_ಮೌಲ್ಯ (ವರ್ಣ ಧ್ರುವ *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  ಮೌಲ್ಯ_2 *v = xmalloc (ಪರಿಮಾಣ *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  ಪ್ರತ್ಯಾಗಮ v;
 }
 
 /* Free VALUE V, including structure components.  */
 
-static void
-freev (VALUE *v)
+ಸ್ಥಿರ ಶೂನ್ಯ
+freev (ಮೌಲ್ಯ_2 *v)
 {
-  if (v->type == string)
-    free (v->u.s);
-  else
+  ಯದಿ (v->type == string)
+    ಮುಕ್ತ (v->u.s);
+  ಅನ್ಯಥಾ
     mpz_clear (v->u.i);
-  free (v);
+  ಮುಕ್ತ (v);
 }
 
 /* Print VALUE V.  */
 
-static void
-printv (VALUE *v)
+ಸ್ಥಿರ ಶೂನ್ಯ
+printv (ಮೌಲ್ಯ_2 *v)
 {
-  switch (v->type)
+  ವಿಕಲ್ಪ (v->type)
     {
-    case integer:
+    ಪಕ್ಷ integer:
       mpz_out_str (stdout, 10, v->u.i);
       putchar ('\n');
-      break;
-    case string:
+      ಭಙ್ಗ;
+    ಪಕ್ಷ string:
       puts (v->u.s);
-      break;
-    default:
+      ಭಙ್ಗ;
+    ಸ್ವಭಾವ:
       unreachable ();
     }
 }
@@ -398,31 +398,31 @@ printv (VALUE *v)
 /* Return true if V is a null-string or zero-number.  */
 
 ATTRIBUTE_PURE
-static bool
-null (VALUE *v)
+ಸ್ಥಿರ bool
+null (ಮೌಲ್ಯ_2 *v)
 {
-  switch (v->type)
+  ವಿಕಲ್ಪ (v->type)
     {
-    case integer:
-      return mpz_sgn (v->u.i) == 0;
-    case string:
+    ಪಕ್ಷ integer:
+      ಪ್ರತ್ಯಾಗಮ mpz_sgn (v->u.i) == 0;
+    ಪಕ್ಷ string:
       {
-        char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        ವರ್ಣ ಧ್ರುವ *cp = v->u.s;
+        ಯದಿ (*cp == '\0')
+          ಪ್ರತ್ಯಾಗಮ true;
 
         cp += (*cp == '-');
 
-        do
+        ಕುರು
           {
-            if (*cp != '0')
-              return false;
+            ಯದಿ (*cp != '0')
+              ಪ್ರತ್ಯಾಗಮ false;
           }
-        while (*++cp);
+        ಯಾವತ್ (*++cp);
 
-        return true;
+        ಪ್ರತ್ಯಾಗಮ true;
       }
-    default:
+    ಸ್ವಭಾವ:
       unreachable ();
     }
 }
@@ -430,63 +430,63 @@ null (VALUE *v)
 /* Return true if CP takes the form of an integer.  */
 
 ATTRIBUTE_PURE
-static bool
-looks_like_integer (char const *cp)
+ಸ್ಥಿರ bool
+looks_like_integer (ವರ್ಣ ಧ್ರುವ *cp)
 {
   cp += (*cp == '-');
 
-  do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+  ಕುರು
+    ಯದಿ (! c_isdigit (*cp))
+      ಪ್ರತ್ಯಾಗಮ false;
+  ಯಾವತ್ (*++cp);
 
-  return true;
+  ಪ್ರತ್ಯಾಗಮ true;
 }
 
 /* Coerce V to a string value (can't fail).  */
 
-static void
-tostring (VALUE *v)
+ಸ್ಥಿರ ಶೂನ್ಯ
+tostring (ಮೌಲ್ಯ_2 *v)
 {
-  switch (v->type)
+  ವಿಕಲ್ಪ (v->type)
     {
-    case integer:
+    ಪಕ್ಷ integer:
       {
-        char *s = mpz_get_str (NULL, 10, v->u.i);
+        ವರ್ಣ *s = mpz_get_str (ರಿಕ್ತ, 10, v->u.i);
         mpz_clear (v->u.i);
         v->u.s = s;
         v->type = string;
       }
-      break;
-    case string:
-      break;
-    default:
+      ಭಙ್ಗ;
+    ಪಕ್ಷ string:
+      ಭಙ್ಗ;
+    ಸ್ವಭಾವ:
       unreachable ();
     }
 }
 
 /* Coerce V to an integer value.  Return true on success, false on failure.  */
 
-static bool
-toarith (VALUE *v)
+ಸ್ಥಿರ bool
+toarith (ಮೌಲ್ಯ_2 *v)
 {
-  switch (v->type)
+  ವಿಕಲ್ಪ (v->type)
     {
-    case integer:
-      return true;
-    case string:
+    ಪಕ್ಷ integer:
+      ಪ್ರತ್ಯಾಗಮ true;
+    ಪಕ್ಷ string:
       {
-        char *s = v->u.s;
+        ವರ್ಣ *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
-          error (EXPR_FAILURE, ERANGE, "%s", (s));
-        free (s);
+        ಯದಿ (! looks_like_integer (s))
+          ಪ್ರತ್ಯಾಗಮ false;
+        ಯದಿ (mpz_init_set_str (v->u.i, s, 10) != 0)
+          error (ಅಭಿವ್ಯಕ್ತಿ_FAILURE, ERANGE, "%s", (s));
+        ಮುಕ್ತ (s);
         v->type = integer;
-        return true;
+        ಪ್ರತ್ಯಾಗಮ true;
       }
-    default:
+    ಸ್ವಭಾವ:
       unreachable ();
     }
 }
@@ -494,52 +494,52 @@ toarith (VALUE *v)
 /* Extract a size_t value from an integer value I.
    If the value is negative, return SIZE_MAX.
    If the value is too large, return SIZE_MAX - 1.  */
-static size_t
+ಸ್ಥಿರ size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  ಯದಿ (mpz_sgn (i) < 0)
+    ಪ್ರತ್ಯಾಗಮ SIZE_MAX;
+  ಯದಿ (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long ಪೂರ್ಣಾಙ್ಕ ul = mpz_get_ui (i);
+      ಯದಿ (ul < SIZE_MAX)
+        ಪ್ರತ್ಯಾಗಮ ul;
     }
-  return SIZE_MAX - 1;
+  ಪ್ರತ್ಯಾಗಮ SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
    STR must not be null.  */
 
-static bool
-nextarg (char const *str)
+ಸ್ಥಿರ bool
+nextarg (ವರ್ಣ ಧ್ರುವ *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  ಯದಿ (*args == ರಿಕ್ತ)
+    ಪ್ರತ್ಯಾಗಮ false;
+  ಅನ್ಯಥಾ
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      ಪ್ರತ್ಯಾಗಮ r;
     }
 }
 
 /* Return true if there no more tokens.  */
 
-static bool
-nomoreargs (void)
+ಸ್ಥಿರ bool
+nomoreargs (ಶೂನ್ಯ)
 {
-  return !*args;
+  ಪ್ರತ್ಯಾಗಮ !*args;
 }
 
 /* Report missing operand.
    There is an implicit assumption that there was a previous argument,
    and (args-1) is valid. */
-static void
-require_more_args (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+require_more_args (ಶೂನ್ಯ)
 {
-  if (nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
+  ಯದಿ (nomoreargs ())
+    error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
 
@@ -547,11 +547,11 @@ require_more_args (void)
 #ifdef EVAL_TRACE
 /* Print evaluation trace and args remaining.  */
 
-static void
-trace (char const *fxn)
+ಸ್ಥಿರ ಶೂನ್ಯ
+trace (ವರ್ಣ ಧ್ರುವ *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  ಪ್ರತಿ (ವರ್ಣ **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -561,83 +561,83 @@ trace (char const *fxn)
    SV is the VALUE for the lhs (the string),
    PV is the VALUE for the rhs (the pattern).  */
 
-static VALUE *
-docolon (VALUE *sv, VALUE *pv)
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
+docolon (ಮೌಲ್ಯ_2 *sv, ಮೌಲ್ಯ_2 *pv)
 {
   tostring (sv);
   tostring (pv);
 
-  struct re_registers re_regs;
-  re_regs.num_regs = 0;
-  re_regs.start = NULL;
-  re_regs.end = NULL;
+  ಸಂರಚನಾ re_registers re_regs;
+  re_regs.ಅಂಕೆ_regs = 0;
+  re_regs.start = ರಿಕ್ತ;
+  re_regs.end = ರಿಕ್ತ;
 
-  struct re_pattern_buffer re_buffer;
-  char fastmap[UCHAR_MAX + 1];
-  re_buffer.buffer = NULL;
+  ಸಂರಚನಾ re_pattern_buffer re_buffer;
+  ವರ್ಣ fastmap[UCHAR_MAX + 1];
+  re_buffer.buffer = ರಿಕ್ತ;
   re_buffer.allocated = 0;
   re_buffer.fastmap = fastmap;
-  re_buffer.translate = NULL;
+  re_buffer.translate = ರಿಕ್ತ;
   re_syntax_options = (RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP
                        & ~RE_NO_EMPTY_RANGES);
-  char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
+  ವರ್ಣ ಧ್ರುವ *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
-    error (EXPR_INVALID, 0, "%s", (errmsg));
+  ಯದಿ (errmsg)
+    error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
-  VALUE *v;
+  ಮೌಲ್ಯ_2 *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  ಯದಿ (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      ಯದಿ (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
-            v = str_value ("");
-          else
+          ಯದಿ (re_regs.end[1] < 0)
+            v = str_ಮೌಲ್ಯ ("");
+          ಅನ್ಯಥಾ
             {
               sv->u.s[re_regs.end[1]] = '\0';
-              v = str_value (sv->u.s + re_regs.start[1]);
+              v = str_ಮೌಲ್ಯ (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      ಅನ್ಯಥಾ
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
           size_t i = (MB_CUR_MAX == 1
                       ? matchlen
                       : mbs_offset_to_chars (sv->u.s, matchlen));
-          v = int_value (i);
+          v = int_ಮೌಲ್ಯ (i);
         }
     }
-  else if (matchlen == -1)
+  ಅನ್ಯಥಾ ಯದಿ (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
-        v = str_value ("");
-      else
-        v = int_value (0);
+      ಯದಿ (re_buffer.re_nsub > 0)
+        v = str_ಮೌಲ್ಯ ("");
+      ಅನ್ಯಥಾ
+        v = int_ಮೌಲ್ಯ (0);
     }
-  else
-    error (EXPR_FAILURE,
+  ಅನ್ಯಥಾ
+    error (ಅಭಿವ್ಯಕ್ತಿ_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  ಯದಿ (0 < re_regs.ಅಂಕೆ_regs)
     {
-      free (re_regs.start);
-      free (re_regs.end);
+      ಮುಕ್ತ (re_regs.start);
+      ಮುಕ್ತ (re_regs.end);
     }
-  re_buffer.fastmap = NULL;
+  re_buffer.fastmap = ರಿಕ್ತ;
   regfree (&re_buffer);
-  return v;
+  ಪ್ರತ್ಯಾಗಮ v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval7 (bool evaluate)
 {
 #ifdef EVAL_TRACE
@@ -645,156 +645,156 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  ಯದಿ (nextarg ("("))
     {
-      VALUE *v = eval (evaluate);
-      if (nomoreargs ())
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
+      ಮೌಲ್ಯ_2 *v = eval (evaluate);
+      ಯದಿ (nomoreargs ())
+        error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
+      ಯದಿ (!nextarg (")"))
+        error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      ಪ್ರತ್ಯಾಗಮ v;
     }
 
-  if (nextarg (")"))
-    error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
+  ಯದಿ (nextarg (")"))
+    error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  ಪ್ರತ್ಯಾಗಮ str_ಮೌಲ್ಯ (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval6 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  ಯದಿ (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      ಪ್ರತ್ಯಾಗಮ str_ಮೌಲ್ಯ (*args++);
     }
-  else if (nextarg ("length"))
+  ಅನ್ಯಥಾ ಯದಿ (nextarg ("length"))
     {
-      VALUE *r = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *r = eval6 (evaluate);
       tostring (r);
-      VALUE *v = int_value (mbslen (r->u.s));
+      ಮೌಲ್ಯ_2 *v = int_ಮೌಲ್ಯ (mbslen (r->u.s));
       freev (r);
-      return v;
+      ಪ್ರತ್ಯಾಗಮ v;
     }
-  else if (nextarg ("match"))
+  ಅನ್ಯಥಾ ಯದಿ (nextarg ("match"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
-      VALUE *v;
-      if (evaluate)
+      ಮೌಲ್ಯ_2 *l = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *r = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *v;
+      ಯದಿ (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      ಅನ್ಯಥಾ
         v = l;
       freev (r);
-      return v;
+      ಪ್ರತ್ಯಾಗಮ v;
     }
-  else if (nextarg ("index"))
+  ಅನ್ಯಥಾ ಯದಿ (nextarg ("index"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *l = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *r = eval6 (evaluate);
       tostring (l);
       tostring (r);
       size_t pos = mbs_logical_cspn (l->u.s, r->u.s);
-      VALUE *v = int_value (pos);
+      ಮೌಲ್ಯ_2 *v = int_ಮೌಲ್ಯ (pos);
       freev (l);
       freev (r);
-      return v;
+      ಪ್ರತ್ಯಾಗಮ v;
     }
-  else if (nextarg ("substr"))
+  ಅನ್ಯಥಾ ಯದಿ (nextarg ("substr"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *i1 = eval6 (evaluate);
-      VALUE *i2 = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *l = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *i1 = eval6 (evaluate);
+      ಮೌಲ್ಯ_2 *i2 = eval6 (evaluate);
       tostring (l);
 
-      VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
-        v = str_value ("");
-      else
+      ಮೌಲ್ಯ_2 *v;
+      ಯದಿ (!toarith (i1) || !toarith (i2))
+        v = str_ಮೌಲ್ಯ ("");
+      ಅನ್ಯಥಾ
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
-          char *s = mbs_logical_substr (l->u.s, pos, len);
-          v = str_value (s);
-          free (s);
+          ವರ್ಣ *s = mbs_logical_substr (l->u.s, pos, len);
+          v = str_ಮೌಲ್ಯ (s);
+          ಮುಕ್ತ (s);
         }
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      ಪ್ರತ್ಯಾಗಮ v;
     }
-  else
-    return eval7 (evaluate);
+  ಅನ್ಯಥಾ
+    ಪ್ರತ್ಯಾಗಮ eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
    Calls docolon to do the real work.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval5 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval5");
 #endif
-  VALUE *l = eval6 (evaluate);
-  while (true)
+  ಮೌಲ್ಯ_2 *l = eval6 (evaluate);
+  ಯಾವತ್ (true)
     {
-      if (nextarg (":"))
+      ಯದಿ (nextarg (":"))
         {
-          VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          ಮೌಲ್ಯ_2 *r = eval6 (evaluate);
+          ಯದಿ (evaluate)
             {
-              VALUE *v = docolon (l, r);
+              ಮೌಲ್ಯ_2 *v = docolon (l, r);
               freev (l);
               l = v;
             }
           freev (r);
         }
-      else
-        return l;
+      ಅನ್ಯಥಾ
+        ಪ್ರತ್ಯಾಗಮ l;
     }
 }
 
 /* Handle *, /, % operators.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval4 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval4");
 #endif
-  VALUE *l = eval5 (evaluate);
-  while (true)
+  ಮೌಲ್ಯ_2 *l = eval5 (evaluate);
+  ಯಾವತ್ (true)
     {
-      enum { multiply, divide, mod } fxn;
+      ಗಣನಾ { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      ಯದಿ (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
-      VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      ಅನ್ಯಥಾ
+        ಪ್ರತ್ಯಾಗಮ l;
+      ಮೌಲ್ಯ_2 *r = eval5 (evaluate);
+      ಯದಿ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
-            error (EXPR_INVALID, 0, _("division by zero"));
+          ಯದಿ (!toarith (l) || !toarith (r))
+            error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("non-integer argument"));
+          ಯದಿ (fxn != multiply && mpz_sgn (r->u.i) == 0)
+            error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
             : mpz_tdiv_r)
@@ -806,28 +806,28 @@ eval4 (bool evaluate)
 
 /* Handle +, - operators.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval3 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval3");
 #endif
-  VALUE *l = eval4 (evaluate);
-  while (true)
+  ಮೌಲ್ಯ_2 *l = eval4 (evaluate);
+  ಯಾವತ್ (true)
     {
-      enum { plus, minus } fxn;
+      ಗಣನಾ { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      ಯದಿ (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
-      VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      ಅನ್ಯಥಾ
+        ಪ್ರತ್ಯಾಗಮ l;
+      ಮೌಲ್ಯ_2 *r = eval4 (evaluate);
+      ಯದಿ (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
+          ಯದಿ (!toarith (l) || !toarith (r))
+            error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
       freev (r);
@@ -836,135 +836,135 @@ eval3 (bool evaluate)
 
 /* Handle comparisons.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval2 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval2");
 #endif
-  VALUE *l = eval3 (evaluate);
-  while (true)
+  ಮೌಲ್ಯ_2 *l = eval3 (evaluate);
+  ಯಾವತ್ (true)
     {
-      enum
+      ಗಣನಾ
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      ಯದಿ (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      ಅನ್ಯಥಾ ಯದಿ (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
-      VALUE *r = eval3 (evaluate);
+      ಅನ್ಯಥಾ
+        ಪ್ರತ್ಯಾಗಮ l;
+      ಮೌಲ್ಯ_2 *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      ಯದಿ (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          ಪೂರ್ಣಾಙ್ಕ cmp;
+          ಯದಿ (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          ಅನ್ಯಥಾ
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              ಯದಿ (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
-                  error (EXPR_INVALID, 0,
+                  error (ಅಭಿವ್ಯಕ್ತಿ_INVALID, 0,
                          _("the strings compared were %s and %s"),
                          quotearg_n_style (0, locale_quoting_style, l->u.s),
                          quotearg_n_style (1, locale_quoting_style, r->u.s));
                 }
             }
 
-          switch (fxn)
+          ವಿಕಲ್ಪ (fxn)
             {
-            case less_than:     val = (cmp <  0); break;
-            case less_equal:    val = (cmp <= 0); break;
-            case equal:         val = (cmp == 0); break;
-            case not_equal:     val = (cmp != 0); break;
-            case greater_equal: val = (cmp >= 0); break;
-            case greater_than:  val = (cmp >  0); break;
-            default: unreachable ();
+            ಪಕ್ಷ less_than:     val = (cmp <  0); ಭಙ್ಗ;
+            ಪಕ್ಷ less_equal:    val = (cmp <= 0); ಭಙ್ಗ;
+            ಪಕ್ಷ equal:         val = (cmp == 0); ಭಙ್ಗ;
+            ಪಕ್ಷ not_equal:     val = (cmp != 0); ಭಙ್ಗ;
+            ಪಕ್ಷ greater_equal: val = (cmp >= 0); ಭಙ್ಗ;
+            ಪಕ್ಷ greater_than:  val = (cmp >  0); ಭಙ್ಗ;
+            ಸ್ವಭಾವ: unreachable ();
             }
         }
 
       freev (l);
       freev (r);
-      l = int_value (val);
+      l = int_ಮೌಲ್ಯ (val);
     }
 }
 
 /* Handle &.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval1 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval1");
 #endif
-  VALUE *l = eval2 (evaluate);
-  while (true)
+  ಮೌಲ್ಯ_2 *l = eval2 (evaluate);
+  ಯಾವತ್ (true)
     {
-      if (nextarg ("&"))
+      ಯದಿ (nextarg ("&"))
         {
-          VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          ಮೌಲ್ಯ_2 *r = eval2 (evaluate && !null (l));
+          ಯದಿ (null (l) || null (r))
             {
               freev (l);
               freev (r);
-              l = int_value (0);
+              l = int_ಮೌಲ್ಯ (0);
             }
-          else
+          ಅನ್ಯಥಾ
             freev (r);
         }
-      else
-        return l;
+      ಅನ್ಯಥಾ
+        ಪ್ರತ್ಯಾಗಮ l;
     }
 }
 
 /* Handle |.  */
 
-static VALUE *
+ಸ್ಥಿರ ಮೌಲ್ಯ_2 *
 eval (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval");
 #endif
-  VALUE *l = eval1 (evaluate);
-  while (true)
+  ಮೌಲ್ಯ_2 *l = eval1 (evaluate);
+  ಯಾವತ್ (true)
     {
-      if (nextarg ("|"))
+      ಯದಿ (nextarg ("|"))
         {
-          VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          ಮೌಲ್ಯ_2 *r = eval1 (evaluate && null (l));
+          ಯದಿ (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              ಯದಿ (null (l))
                 {
                   freev (l);
-                  l = int_value (0);
+                  l = int_ಮೌಲ್ಯ (0);
                 }
             }
-          else
+          ಅನ್ಯಥಾ
             freev (r);
         }
-      else
-        return l;
+      ಅನ್ಯಥಾ
+        ಪ್ರತ್ಯಾಗಮ l;
     }
 }

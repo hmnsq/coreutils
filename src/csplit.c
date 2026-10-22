@@ -17,24 +17,24 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
 
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
 
-#include <regex.h>
+#ಅನ್ತರ್ಭಾವ <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "fd-reopen.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "safe-read.h"
+#ಅನ್ತರ್ಭಾವ "stdio--.h"
+#ಅನ್ತರ್ಭಾವ "term-sig.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "csplit"
@@ -47,16 +47,16 @@
 #define DEFAULT_PREFIX	"xx"
 
 /* A compiled pattern arg. */
-struct control
+ಸಂರಚನಾ control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t ಸಾಲುಗಳು_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  ಪೂರ್ಣಾಙ್ಕ argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  ಸಂರಚನಾ re_pattern_buffer re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
@@ -72,138 +72,138 @@ struct control
 #endif
 
 /* A string with a length count. */
-struct cstring
+ಸಂರಚನಾ cstring
 {
   idx_t len;
-  char *str;
+  ವರ್ಣ *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+ಸಂರಚನಾ ಸಾಲು
 {
   idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
+  idx_t ಸೇರಿಸು_index;		/* Next offset to use when inserting line. */
   idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  ಸಂರಚನಾ cstring starts[CTRL_SIZE]; /* Lines in the data area. */
+  ಸಂರಚನಾ ಸಾಲು *next;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+ಸಂರಚನಾ buffer_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
+  intmax_t start_ಸಾಲು;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t ಅಂಕೆ_ಸಾಲುಗಳು;		/* Number of complete lines in this buffer. */
+  ವರ್ಣ *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
+  ಸಂರಚನಾ ಸಾಲು *ಸಾಲು_start;	/* Head of list of pointers to lines. */
+  ಸಂರಚನಾ ಸಾಲು *curr_ಸಾಲು;	/* The line start record currently in use. */
+  ಸಂರಚನಾ buffer_record *next;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+ಸ್ಥಿರ ಶೂನ್ಯ close_output_file (ಶೂನ್ಯ);
+ಸ್ಥಿರ ಶೂನ್ಯ create_output_file (ಶೂನ್ಯ);
+ಸ್ಥಿರ ಶೂನ್ಯ delete_all_files (bool);
+ಸ್ಥಿರ ಶೂನ್ಯ save_ಸಾಲು_to_file (ಧ್ರುವ ಸಂರಚನಾ cstring *ಸಾಲು);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+ಸ್ಥಿರ ಸಂರಚನಾ buffer_record *head = ರಿಕ್ತ;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+ಸ್ಥಿರ ವರ್ಣ *hold_area = ರಿಕ್ತ;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+ಸ್ಥಿರ idx_t hold_ಎಣಿಕೆ = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+ಸ್ಥಿರ intmax_t last_ಸಾಲು_ಸಂಖ್ಯೆ = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+ಸ್ಥಿರ intmax_t current_ಸಾಲು = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+ಸ್ಥಿರ bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+ಸ್ಥಿರ ವರ್ಣ *ಚಞ್ಚಲ filename_space = ರಿಕ್ತ;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+ಸ್ಥಿರ ವರ್ಣ ಧ್ರುವ *ಚಞ್ಚಲ prefix = DEFAULT_PREFIX;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+ಸ್ಥಿರ ವರ್ಣ *ಚಞ್ಚಲ suffix = ರಿಕ್ತ;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ ಚಞ್ಚಲ digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ ಚಞ್ಚಲ files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+ಸ್ಥಿರ intmax_t bytes_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+ಸ್ಥಿರ FILE *output_stream = ರಿಕ್ತ;
 
 /* Output file name. */
-static char *output_filename = NULL;
+ಸ್ಥಿರ ವರ್ಣ *output_filename = ರಿಕ್ತ;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+ಸ್ಥಿರ ವರ್ಣ **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+ಸ್ಥಿರ bool suppress_ಎಣಿಕೆ;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+ಸ್ಥಿರ bool ಚಞ್ಚಲ remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+ಸ್ಥಿರ bool elide_empty_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+ಸ್ಥಿರ bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+ಸ್ಥಿರ ಸಂರಚನಾ control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+ಸ್ಥಿರ idx_t control_used;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+ಸ್ಥಿರ sigset_t caught_signals;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಗಣನಾ
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_argument, ರಿಕ್ತ, 'n'},
+  {"quiet", no_argument, ರಿಕ್ತ, 'q'},  /* Deprecated.  */
+  {"silent", no_argument, ರಿಕ್ತ, 's'},
+  {"keep-files", no_argument, ರಿಕ್ತ, 'k'},
+  {"elide-empty-files", no_argument, ರಿಕ್ತ, 'z'},
+  {"prefix", required_argument, ರಿಕ್ತ, 'f'},
+  {"suffix-format", required_argument, ರಿಕ್ತ, 'b'},
+  {"suppress-matched", no_argument, ರಿಕ್ತ, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+cleanup (ಶೂನ್ಯ)
 {
   sigset_t oldset;
 
@@ -211,117 +211,117 @@ cleanup (void)
 
   sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, ರಿಕ್ತ);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+ಸ್ಥಿರ _Noreturn ಶೂನ್ಯ
+cleanup_fatal (ಶೂನ್ಯ)
 {
   cleanup ();
   exit (EXIT_FAILURE);
 }
 
-extern void
-xalloc_die (void)
+ಬಾಹ್ಯ ಶೂನ್ಯ
+xalloc_die (ಶೂನ್ಯ)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+ಸ್ಥಿರ ಶೂನ್ಯ
+interrupt_handler (ಪೂರ್ಣಾಙ್ಕ sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  ಸಙ್ಕೇತ (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  ಉತ್ಥಾಪಯ (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+ಸ್ಥಿರ ಶೂನ್ಯ
+save_to_hold_area (ವರ್ಣ *start, idx_t ಅಂಕೆ)
 {
-  free (hold_area);
+  ಮುಕ್ತ (hold_area);
   hold_area = start;
-  hold_count = num;
+  hold_ಎಣಿಕೆ = ಅಂಕೆ;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+ಸ್ಥಿರ idx_t
+read_ಒಳಹರಿವು (ವರ್ಣ *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  ಯದಿ (max_n_bytes == 0)
+    ಪ್ರತ್ಯಾಗಮ 0;
 
   ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  ಯದಿ (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  ಯದಿ (bytes_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  ಪ್ರತ್ಯಾಗಮ bytes_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+ಸ್ಥಿರ ಶೂನ್ಯ
+clear_ಸಾಲು_control (ಸಂರಚನಾ ಸಾಲು *p)
 {
   p->used = 0;
-  p->insert_index = 0;
+  p->ಸೇರಿಸು_index = 0;
   p->retrieve_index = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+ಸ್ಥಿರ ಸಂರಚನಾ ಸಾಲು *
+new_ಸಾಲು_control (ಶೂನ್ಯ)
 {
-  struct line *p = xmalloc (sizeof *p);
+  ಸಂರಚನಾ ಸಾಲು *p = xmalloc (ಪರಿಮಾಣ *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->next = ರಿಕ್ತ;
+  clear_ಸಾಲು_control (p);
 
-  return p;
+  ಪ್ರತ್ಯಾಗಮ p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+ಸ್ಥಿರ ಶೂನ್ಯ
+keep_new_ಸಾಲು (ಸಂರಚನಾ buffer_record *b, ವರ್ಣ *ಸಾಲು_start, idx_t ಸಾಲು_len)
 {
-  struct line *l;
+  ಸಂರಚನಾ ಸಾಲು *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  ಯದಿ (b->ಸಾಲು_start == ರಿಕ್ತ)
+    b->ಸಾಲು_start = b->curr_ಸಾಲು = new_ಸಾಲು_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  ಯದಿ (b->curr_ಸಾಲು->used == CTRL_SIZE)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_ಸಾಲು->next = new_ಸಾಲು_control ();
+      b->curr_ಸಾಲು = b->curr_ಸಾಲು->next;
     }
 
-  l = b->curr_line;
+  l = b->curr_ಸಾಲು;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
+  l->starts[l->ಸೇರಿಸು_index].str = ಸಾಲು_start;
+  l->starts[l->ಸೇರಿಸು_index].len = ಸಾಲು_len;
   l->used++;
-  l->insert_index++;
+  l->ಸೇರಿಸು_index++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,106 +332,106 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+ಸ್ಥಿರ idx_t
+record_ಸಾಲು_starts (ಸಂರಚನಾ buffer_record *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  ವರ್ಣ *ಸಾಲು_start;		/* Start of current line. */
+  idx_t ಸಾಲುಗಳು;			/* Number of lines found. */
+  idx_t ಸಾಲು_length;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  ಯದಿ (b->bytes_used == 0)
+    ಪ್ರತ್ಯಾಗಮ 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
+  ಸಾಲುಗಳು = 0;
+  ಸಾಲು_start = b->buffer;
+  ವರ್ಣ *buffer_end = ಸಾಲು_start + b->bytes_used;
   *buffer_end = '\n';
 
-  while (true)
+  ಯಾವತ್ (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      ವರ್ಣ *ಸಾಲು_end = rawmemchr (ಸಾಲು_start, '\n');
+      ಯದಿ (ಸಾಲು_end == buffer_end)
+        ಭಙ್ಗ;
+      ಸಾಲು_length = ಸಾಲು_end - ಸಾಲು_start + 1;
+      keep_new_ಸಾಲು (b, ಸಾಲು_start, ಸಾಲು_length);
+      ಸಾಲು_start = ಸಾಲು_end + 1;
+      ಸಾಲುಗಳು++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t bytes_ಎಡ = buffer_end - ಸಾಲು_start;
+  ಯದಿ (bytes_ಎಡ)
     {
-      if (have_read_eof)
+      ಯದಿ (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_ಸಾಲು (b, ಸಾಲು_start, bytes_ಎಡ);
+          ಸಾಲುಗಳು++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      ಅನ್ಯಥಾ
+        save_to_hold_area (ximemdup (ಸಾಲು_start, bytes_ಎಡ), bytes_ಎಡ);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->ಅಂಕೆ_ಸಾಲುಗಳು = ಸಾಲುಗಳು;
+  b->first_available = b->start_ಸಾಲು = last_ಸಾಲು_ಸಂಖ್ಯೆ + 1;
+  last_ಸಾಲು_ಸಂಖ್ಯೆ += ಸಾಲುಗಳು;
 
-  return lines;
+  ಪ್ರತ್ಯಾಗಮ ಸಾಲುಗಳು;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#ಯದಿ 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
-static void
-free_buffer (struct buffer_record *buf)
+ಸ್ಥಿರ ಶೂನ್ಯ
+free_buffer (ಸಂರಚನಾ buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  ಪ್ರತಿ (ಸಂರಚನಾ ಸಾಲು *l = buf->ಸಾಲು_start; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      ಸಂರಚನಾ ಸಾಲು *n = l->next;
+      ಮುಕ್ತ (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  ಮುಕ್ತ (buf->buffer);
+  ಮುಕ್ತ (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
+ಸ್ಥಿರ ATTRIBUTE_DEALLOC (free_buffer, 1)
+ಸಂರಚನಾ buffer_record *
 get_new_buffer (idx_t min_size)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
+  ಸಂರಚನಾ buffer_record *new_buffer = xmalloc (ಪರಿಮಾಣ *new_buffer);
   new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  new_buffer->buffer = xpalloc (ರಿಕ್ತ, &new_buffer->bytes_alloc, min_size,
                                 -1, 1);
   new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_buffer->start_ಸಾಲು = new_buffer->first_available = last_ಸಾಲು_ಸಂಖ್ಯೆ + 1;
+  new_buffer->ಅಂಕೆ_ಸಾಲುಗಳು = 0;
+  new_buffer->ಸಾಲು_start = new_buffer->curr_ಸಾಲು = ರಿಕ್ತ;
+  new_buffer->next = ರಿಕ್ತ;
 
-  return new_buffer;
+  ಪ್ರತ್ಯಾಗಮ new_buffer;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+ಸ್ಥಿರ ಶೂನ್ಯ
+save_buffer (ಸಂರಚನಾ buffer_record *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->next = ರಿಕ್ತ;
+  buf->curr_ಸಾಲು = buf->ಸಾಲು_start;
 
-  if (head == NULL)
+  ಯದಿ (head == ರಿಕ್ತ)
     head = buf;
-  else
+  ಅನ್ಯಥಾ
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      ಸಂರಚನಾ buffer_record *p;
+      ಪ್ರತಿ (p = head; p->next; p = p->next)
         /* Do nothing. */ ;
       p->next = buf;
     }
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+ಸ್ಥಿರ bool
+load_buffer (ಶೂನ್ಯ)
 {
-  if (have_read_eof)
-    return false;
+  ಯದಿ (have_read_eof)
+    ಪ್ರತ್ಯಾಗಮ false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t bytes_wanted = MAX (START_SIZE, hold_ಎಣಿಕೆ + 1);
 
-  while (true)
+  ಯಾವತ್ (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
+      ಸಂರಚನಾ buffer_record *b = get_new_buffer (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
       idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      ವರ್ಣ *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      ಯದಿ (hold_ಎಣಿಕೆ)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_ಎಣಿಕೆ);
+          b->bytes_used += hold_ಎಣಿಕೆ;
+          bytes_avail -= hold_ಎಣಿಕೆ;
+          hold_ಎಣಿಕೆ = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->bytes_used += read_ಒಳಹರಿವು (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      ಯದಿ (record_ಸಾಲು_starts (b) != 0)
         {
           save_buffer (b);
-          return true;
+          ಪ್ರತ್ಯಾಗಮ true;
         }
 
       free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      ಯದಿ (have_read_eof)
+        ಪ್ರತ್ಯಾಗಮ false;
+      ಯದಿ (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,54 +496,54 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+ಸ್ಥಿರ intmax_t
+get_first_ಸಾಲು_in_buffer (ಶೂನ್ಯ)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  ಯದಿ (head == ರಿಕ್ತ && !load_buffer ())
+    ಪ್ರತ್ಯಾಗಮ 0;
 
-  return head->first_available;
+  ಪ್ರತ್ಯಾಗಮ head->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+ಸ್ಥಿರ ಸಂರಚನಾ cstring *
+remove_ಸಾಲು (ಶೂನ್ಯ)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  ಸ್ಥಿರ ಸಂರಚನಾ buffer_record *prev_buf = ರಿಕ್ತ;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  ಸಂರಚನಾ cstring *ಸಾಲು;		/* Return value. */
+  ಸಂರಚನಾ ಸಾಲು *l;		/* For convenience. */
 
-  if (prev_buf)
+  ಯದಿ (prev_buf)
     {
       free_buffer (prev_buf);
-      prev_buf = NULL;
+      prev_buf = ರಿಕ್ತ;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ಯದಿ (head == ರಿಕ್ತ && !load_buffer ())
+    ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  ಯದಿ (current_ಸಾಲು < head->first_available)
+    current_ಸಾಲು = head->first_available;
 
   ++(head->first_available);
 
-  l = head->curr_line;
+  l = head->curr_ಸಾಲು;
 
-  line = &l->starts[l->retrieve_index];
+  ಸಾಲು = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  ಯದಿ (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      head->curr_ಸಾಲು = l->next;
+      ಯದಿ (head->curr_ಸಾಲು == ರಿಕ್ತ || head->curr_ಸಾಲು->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,59 +553,59 @@ remove_line (void)
         }
     }
 
-  return line;
+  ಪ್ರತ್ಯಾಗಮ ಸಾಲು;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+ಸ್ಥಿರ ಸಂರಚನಾ cstring *
+find_ಸಾಲು (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  ಯದಿ (head == ರಿಕ್ತ && !load_buffer ())
+    ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
 
-  if (linenum < head->start_line)
-    return NULL;
+  ಯದಿ (linenum < head->start_ಸಾಲು)
+    ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
 
-  for (struct buffer_record *b = head;;)
+  ಪ್ರತಿ (ಸಂರಚನಾ buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      ಯದಿ (linenum < b->start_ಸಾಲು + b->ಅಂಕೆ_ಸಾಲುಗಳು)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          ಸಂರಚನಾ ಸಾಲು *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->ಸಾಲು_start;
+          offset = linenum - b->start_ಸಾಲು;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          ಯಾವತ್ (offset >= CTRL_SIZE)
             {
               l = l->next;
               offset -= CTRL_SIZE;
             }
-          return &l->starts[offset];
+          ಪ್ರತ್ಯಾಗಮ &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
+      ಯದಿ (b->next == ರಿಕ್ತ && !load_buffer ())
+        ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
       b = b->next;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+ಸ್ಥಿರ bool
+no_more_ಸಾಲುಗಳು (ಶೂನ್ಯ)
 {
-  return find_line (current_line + 1) == NULL;
+  ಪ್ರತ್ಯಾಗಮ find_ಸಾಲು (current_ಸಾಲು + 1) == ರಿಕ್ತ;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+ಸ್ಥಿರ ಶೂನ್ಯ
+set_ಒಳಹರಿವು_file (ವರ್ಣ ಧ್ರುವ *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  ಯದಿ (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -615,62 +615,62 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+ಸ್ಥಿರ ಶೂನ್ಯ
+write_to_file (intmax_t last_ಸಾಲು, bool ignore, ಪೂರ್ಣಾಙ್ಕ argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  ಸಂರಚನಾ cstring *ಸಾಲು;
+  intmax_t first_ಸಾಲು;		/* First available input line. */
+  intmax_t ಸಾಲುಗಳು;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  first_ಸಾಲು = get_first_ಸಾಲು_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  ಯದಿ (! first_ಸಾಲು || first_ಸಾಲು > last_ಸಾಲು)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  ಸಾಲುಗಳು = last_ಸಾಲು - first_ಸಾಲು;
 
-  for (intmax_t i = 0; i < lines; i++)
+  ಪ್ರತಿ (intmax_t i = 0; i < ಸಾಲುಗಳು; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      ಸಾಲು = remove_ಸಾಲು ();
+      ಯದಿ (ಸಾಲು == ರಿಕ್ತ)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      ಯದಿ (!ignore)
+        save_ಸಾಲು_to_file (ಸಾಲು);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+dump_rest_of_file (ಶೂನ್ಯ)
 {
-  struct cstring *line;
+  ಸಂರಚನಾ cstring *ಸಾಲು;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  ಯಾವತ್ ((ಸಾಲು = remove_ಸಾಲು ()) != ರಿಕ್ತ)
+    save_ಸಾಲು_to_file (ಸಾಲು);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+ಸ್ಥಿರ ಶೂನ್ಯ
+handle_ಸಾಲು_error (ಧ್ರುವ ಸಂರಚನಾ control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  ವರ್ಣ buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+           program_name, quote (imaxtostr (p->ಸಾಲುಗಳು_required, buf)));
+  ಯದಿ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  ಅನ್ಯಥಾ
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -681,54 +681,54 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+ಸ್ಥಿರ ಶೂನ್ಯ
+process_ಸಾಲು_ಎಣಿಕೆ (ಧ್ರುವ ಸಂರಚನಾ control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t last_ಸಾಲು_to_save = p->ಸಾಲುಗಳು_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  ಯದಿ (no_more_ಸಾಲುಗಳು () && suppress_matched)
+    handle_ಸಾಲು_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  ಯದಿ (!(linenum = get_first_ಸಾಲು_in_buffer ()))
+    handle_ಸಾಲು_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  ಯಾವತ್ (linenum++ < last_ಸಾಲು_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      ಸಂರಚನಾ cstring *ಸಾಲು = remove_ಸಾಲು ();
+      ಯದಿ (ಸಾಲು == ರಿಕ್ತ)
+        handle_ಸಾಲು_error (p, repetition);
+      save_ಸಾಲು_to_file (ಸಾಲು);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  ಯದಿ (suppress_matched)
+    remove_ಸಾಲು ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  ಯದಿ (no_more_ಸಾಲುಗಳು () && !suppress_matched)
+    handle_ಸಾಲು_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+ಸ್ಥಿರ ಶೂನ್ಯ
+regexp_error (ಸಂರಚನಾ control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  ಯದಿ (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  ಅನ್ಯಥಾ
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  ಯದಿ (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -740,128 +740,128 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+ಸ್ಥಿರ ಶೂನ್ಯ
+process_regexp (ಸಂರಚನಾ control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  ಸಂರಚನಾ cstring *ಸಾಲು;		/* From input file. */
+  idx_t ಸಾಲು_len;		/* To make "$" in regexps work. */
+  intmax_t break_ಸಾಲು;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  ಯದಿ (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  ಯದಿ (p->offset >= 0)
     {
-      while (true)
+      ಯಾವತ್ (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          ಸಾಲು = find_ಸಾಲು (++current_ಸಾಲು);
+          ಯದಿ (ಸಾಲು == ರಿಕ್ತ)
             {
-              if (p->repeat_forever)
+              ಯದಿ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ಯದಿ (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              ಅನ್ಯಥಾ
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          ಸಾಲು_len = ಸಾಲು->len;
+          ಯದಿ (ಸಾಲು->str[ಸಾಲು_len - 1] == '\n')
+            ಸಾಲು_len--;
+          ret = re_ಹುಡುಕು (&p->re_compiled, ಸಾಲು->str, ಸಾಲು_len,
+                           0, ಸಾಲು_len, ರಿಕ್ತ);
+          ಯದಿ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          ಯದಿ (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              ಸಾಲು = remove_ಸಾಲು ();
+              ಯದಿ (!ignore)
+                save_ಸಾಲು_to_file (ಸಾಲು);
             }
-          else
-            break;
+          ಅನ್ಯಥಾ
+            ಭಙ್ಗ;
         }
     }
-  else
+  ಅನ್ಯಥಾ
     {
       /* Buffer the lines. */
-      while (true)
+      ಯಾವತ್ (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          ಸಾಲು = find_ಸಾಲು (++current_ಸಾಲು);
+          ಯದಿ (ಸಾಲು == ರಿಕ್ತ)
             {
-              if (p->repeat_forever)
+              ಯದಿ (p->repeat_forever)
                 {
-                  if (!ignore)
+                  ಯದಿ (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              ಅನ್ಯಥಾ
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          ಸಾಲು_len = ಸಾಲು->len;
+          ಯದಿ (ಸಾಲು->str[ಸಾಲು_len - 1] == '\n')
+            ಸಾಲು_len--;
+          ret = re_ಹುಡುಕು (&p->re_compiled, ಸಾಲು->str, ಸಾಲು_len,
+                           0, ಸಾಲು_len, ರಿಕ್ತ);
+          ಯದಿ (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          ಯದಿ (ret != -1)
+            ಭಙ್ಗ;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_ಸಾಲು = current_ಸಾಲು + p->offset;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_to_file (break_ಸಾಲು, ignore, p->argnum);
 
-  if (!ignore)
+  ಯದಿ (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  ಯದಿ (p->offset > 0)
+    current_ಸಾಲು = break_ಸಾಲು;
 
-  if (suppress_matched)
-    remove_line ();
+  ಯದಿ (suppress_matched)
+    remove_ಸಾಲು ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+split_file (ಶೂನ್ಯ)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  ಪ್ರತಿ (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      ಯದಿ (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          ಪ್ರತಿ (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      ಅನ್ಯಥಾ
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          ಪ್ರತಿ (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_ಸಾಲು_ಎಣಿಕೆ (&controls[i], j);
         }
     }
 
@@ -877,46 +877,46 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+ಸ್ಥಿರ ವರ್ಣ *
+make_filename (ಪೂರ್ಣಾಙ್ಕ ಅಂಕೆ)
 {
   strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  ಯದಿ (suffix)
+    sprintf (filename_space + strlen (prefix), suffix, ಅಂಕೆ);
+  ಅನ್ಯಥಾ
+    sprintf (filename_space + strlen (prefix), "%0*d", digits, ಅಂಕೆ);
+  ಪ್ರತ್ಯಾಗಮ filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+create_output_file (ಶೂನ್ಯ)
 {
-  int nfiles = files_created;
+  ಪೂರ್ಣಾಙ್ಕ nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  ಪೂರ್ಣಾಙ್ಕ fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  ಯದಿ (nfiles == INT_MAX)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  ಅನ್ಯಥಾ
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
       output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
+      fopen_ok = (output_stream != ರಿಕ್ತ);
       fopen_errno = errno;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, ರಿಕ್ತ);
     }
 
-  if (! fopen_ok)
+  ಯದಿ (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -927,16 +927,16 @@ create_output_file (void)
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
+ಸ್ಥಿರ ಶೂನ್ಯ
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  ಯದಿ (! remove_files)
+    ಪ್ರತ್ಯಾಗಮ;
 
-  for (int i = files_created; 0 <= --i; )
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      ವರ್ಣ ಧ್ರುವ *name = make_filename (i);
+      ಯದಿ (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+close_output_file (ಶೂನ್ಯ)
 {
-  if (output_stream)
+  ಯದಿ (output_stream)
     {
-      if (ferror (output_stream))
+      ಯದಿ (ferror (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_stream = ರಿಕ್ತ;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      ಯದಿ (fclose (output_stream) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          output_stream = ರಿಕ್ತ;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      ಯದಿ (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          ಪೂರ್ಣಾಙ್ಕ unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
           unlink_errno = errno;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, ರಿಕ್ತ);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          ಯದಿ (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      ಅನ್ಯಥಾ
         {
-          if (!suppress_count)
+          ಯದಿ (!suppress_ಎಣಿಕೆ)
             fprintf (stdout, "%jd\n", bytes_written);
         }
-      output_stream = NULL;
+      output_stream = ರಿಕ್ತ;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+ಸ್ಥಿರ ಶೂನ್ಯ
+save_ಸಾಲು_to_file (ಧ್ರುವ ಸಂರಚನಾ cstring *ಸಾಲು)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (ಸಾಲು->str, ಪರಿಮಾಣ (ವರ್ಣ), ಸಾಲು->len, output_stream);
+  ಯದಿ (l != ಸಾಲು->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      output_stream = ರಿಕ್ತ;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  bytes_written += ಸಾಲು->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+ಸ್ಥಿರ ಸಂರಚನಾ control *
+new_control_record (ಶೂನ್ಯ)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  ಸ್ಥಿರ idx_t control_allocated = 0; /* Total space allocated. */
+  ಸಂರಚನಾ control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
+  ಯದಿ (control_used == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, ಪರಿಮಾಣ *controls);
   p = &controls[control_used++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
+  p->ಸಾಲುಗಳು_required = 0;
   p->offset = 0;
-  return p;
+  ಪ್ರತ್ಯಾಗಮ p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,10 +1028,10 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+ಸ್ಥಿರ ಶೂನ್ಯ
+check_for_offset (ಸಂರಚನಾ control *p, ವರ್ಣ ಧ್ರುವ *str, ವರ್ಣ ಧ್ರುವ *ಅಂಕೆ)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  ಯದಿ (xstrtoimax (ಅಂಕೆ, ರಿಕ್ತ, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1041,23 +1041,23 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+ಸ್ಥಿರ ಶೂನ್ಯ
+parse_repeat_ಎಣಿಕೆ (ಪೂರ್ಣಾಙ್ಕ argnum, ಸಂರಚನಾ control *p, ವರ್ಣ *str)
 {
-  char *end;
+  ವರ್ಣ *end;
 
   end = str + strlen (str) - 1;
-  if (*end != '}')
+  ಯದಿ (*end != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  ಯದಿ (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  ಅನ್ಯಥಾ
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      ಯದಿ (xstrtoumax (str + 1, ರಿಕ್ತ, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
@@ -1075,17 +1075,17 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+ಸ್ಥಿರ ಸಂರಚನಾ control *
+extract_regexp (ಪೂರ್ಣಾಙ್ಕ argnum, bool ignore, ವರ್ಣ ಧ್ರುವ *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  ವರ್ಣ delim = *str;
+  ವರ್ಣ ಧ್ರುವ *closing_delim;
+  ಸಂರಚನಾ control *p;
+  ವರ್ಣ ಧ್ರುವ *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  ಯದಿ (closing_delim == ರಿಕ್ತ)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
@@ -1095,72 +1095,72 @@ extract_regexp (int argnum, bool ignore, char const *str)
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.buffer = ರಿಕ್ತ;
   p->re_compiled.allocated = 0;
   p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.translate = ರಿಕ್ತ;
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  ಯದಿ (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  ಯದಿ (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  ಪ್ರತ್ಯಾಗಮ p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+ಸ್ಥಿರ ಶೂನ್ಯ
+parse_patterns (ಪೂರ್ಣಾಙ್ಕ argc, ಪೂರ್ಣಾಙ್ಕ start, ವರ್ಣ **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  ಸಂರಚನಾ control *p;		/* New control record created. */
+  ಸ್ಥಿರ intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      ಯದಿ (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      ಅನ್ಯಥಾ
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          ಯದಿ (xstrtoumax (argv[i], ರಿಕ್ತ, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          ಯದಿ (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          ಯದಿ (val < last_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          ಯದಿ (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
           last_val = val;
 
-          p->lines_required = val;
+          p->ಸಾಲುಗಳು_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      ಯದಿ (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_ಎಣಿಕೆ (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+ಗಣನಾ { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+ಸ್ಥಿರ idx_t
+get_format_flags (ವರ್ಣ ಧ್ರುವ *format, ಪೂರ್ಣಾಙ್ಕ *flags_ptr)
 {
-  int flags = 0;
+  ಪೂರ್ಣಾಙ್ಕ flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  ಪ್ರತಿ (idx_t ಎಣಿಕೆ = 0; ; ಎಣಿಕೆ++)
     {
-      switch (format[count])
+      ವಿಕಲ್ಪ (format[ಎಣಿಕೆ])
         {
-        case '-':
-        case '0':
-          break;
+        ಪಕ್ಷ '-':
+        ಪಕ್ಷ '0':
+          ಭಙ್ಗ;
 
-        case '\'':
+        ಪಕ್ಷ '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          ಭಙ್ಗ;
 
-        case '#':
+        ಪಕ್ಷ '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          ಭಙ್ಗ;
 
-        default:
+        ಸ್ವಭಾವ:
           *flags_ptr = flags;
-          return count;
+          ಪ್ರತ್ಯಾಗಮ ಎಣಿಕೆ;
         }
     }
 }
@@ -1203,41 +1203,41 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+ಸ್ಥಿರ ಶೂನ್ಯ
+check_format_conv_type (ವರ್ಣ *format, ಪೂರ್ಣಾಙ್ಕ flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  unsigned ವರ್ಣ ch = *format;
+  ಪೂರ್ಣಾಙ್ಕ compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  ವಿಕಲ್ಪ (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    ಪಕ್ಷ 'd':
+    ಪಕ್ಷ 'i':
+      ಭಙ್ಗ;
 
-    case 'u':
+    ಪಕ್ಷ 'u':
       *format = 'd';
-      break;
+      ಭಙ್ಗ;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    ಪಕ್ಷ 'o':
+    ಪಕ್ಷ 'x':
+    ಪಕ್ಷ 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      ಭಙ್ಗ;
 
-    case 0:
+    ಪಕ್ಷ 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
+    ಸ್ವಭಾವ:
+      ಯದಿ (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      ಅನ್ಯಥಾ
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  ಯದಿ (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1246,42 +1246,42 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+ಸ್ಥಿರ idx_t
+max_out (ವರ್ಣ *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  ಪ್ರತಿ (ವರ್ಣ *f = format; *f; f++)
+    ಯದಿ (*f == '%' && *++f != '%')
       {
-        if (percent)
+        ಯದಿ (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        ಪೂರ್ಣಾಙ್ಕ flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        ಯಾವತ್ (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        ಯದಿ (*f == '.')
+          ಯಾವತ್ (c_isdigit (*++f))
+            ಅನುವರ್ತ;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  ಯದಿ (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  ಪೂರ್ಣಾಙ್ಕ maxlen = snprintf (ರಿಕ್ತ, 0, format, INT_MAX);
+  ಯದಿ (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  ಪ್ರತ್ಯಾಗಮ maxlen;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  int optc;
+  ಪೂರ್ಣಾಙ್ಕ optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1293,53 +1293,53 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  ಯಾವತ್ ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, ರಿಕ್ತ))
          != -1)
-    switch (optc)
+    ವಿಕಲ್ಪ (optc)
       {
-      case 'f':
+      ಪಕ್ಷ 'f':
         prefix = optarg;
-        break;
+        ಭಙ್ಗ;
 
-      case 'b':
+      ಪಕ್ಷ 'b':
         suffix = optarg;
-        break;
+        ಭಙ್ಗ;
 
-      case 'k':
+      ಪಕ್ಷ 'k':
         remove_files = false;
-        break;
+        ಭಙ್ಗ;
 
-      case 'n':
+      ಪಕ್ಷ 'n':
         digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        ಭಙ್ಗ;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      ಪಕ್ಷ 's':
+      ಪಕ್ಷ 'q':
+        suppress_ಎಣಿಕೆ = true;
+        ಭಙ್ಗ;
 
-      case 'z':
+      ಪಕ್ಷ 'z':
         elide_empty_files = true;
-        break;
+        ಭಙ್ಗ;
 
-      case SUPPRESS_MATCHED_OPTION:
+      ಪಕ್ಷ SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        ಭಙ್ಗ;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      ಸ್ವಭಾವ:
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  ಯದಿ (argc - optind < 2)
     {
-      if (argc <= optind)
+      ಯದಿ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ಅನ್ಯಥಾ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -1348,26 +1348,26 @@ main (int argc, char **argv)
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
+       : MAX (INT_STRLEN_BOUND (ಪೂರ್ಣಾಙ್ಕ), digits));
   idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+  ಯದಿ (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
-  set_input_file (argv[optind++]);
+  set_ಒಳಹರಿವು_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    ಗಣನಾ { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    ಸಂರಚನಾ sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        sigaction (term_sig[i], ರಿಕ್ತ, &act);
+        ಯದಿ (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,28 +1375,28 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = 0; i < nsigs; i++)
+      ಯದಿ (sigismember (&caught_signals, term_sig[i]))
+        sigaction (term_sig[i], &act, ರಿಕ್ತ);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  ಯದಿ (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  ಪ್ರತ್ಯಾಗಮ EXIT_SUCCESS;
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("\
 Usage: %s [OPTION]... FILE PATTERN...\n\
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard ಒಳಹರಿವು ಯದಿ FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1423,19 +1423,19 @@ Read standard input if FILE is -\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         ಕುರು not remove output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the ಸಾಲುಗಳು matching PATTERN\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified ಸಂಖ್ಯೆ of digits instead of 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         ಕುರು not print counts of output file sizes\n\
 "));
       oputs (_("\
   -z, --elide-empty-files\n\
@@ -1446,13 +1446,13 @@ Read standard input if FILE is -\n\
       fputs (_("\
 \n\
 Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
+  INTEGER            copy up to but not including specified ಸಾಲು ಸಂಖ್ಯೆ\n\
+  /REGEXP/[OFFSET]   copy up to but not including a matching ಸಾಲು\n\
+  %REGEXP%[OFFSET]   skip to, but not including a matching ಸಾಲು\n\
+  {INTEGER}          repeat the previous pattern specified ಸಂಖ್ಯೆ of times\n\
   {*}                repeat the previous pattern as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A ಸಾಲು OFFSET is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

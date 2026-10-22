@@ -14,16 +14,16 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "cl-strtod.h"
-#include "dtimespec-bound.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xnanosleep.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "cl-strtod.h"
+#ಅನ್ತರ್ಭಾವ "dtimespec-bound.h"
+#ಅನ್ತರ್ಭಾವ "long-options.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "xnanosleep.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "sleep"
@@ -32,19 +32,19 @@
   proper_name ("Jim Meyering"), \
   proper_name ("Paul Eggert")
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("\
-Usage: %s NUMBER[SUFFIX]...\n\
+Usage: %s ಸಂಖ್ಯೆ_2[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause ಪ್ರತಿ ಸಂಖ್ಯೆ_2 seconds, where ಸಂಖ್ಯೆ_2 is an integer or floating-point.\n\
+SUFFIX may be 's','m','h', or 'd', ಪ್ರತಿ seconds, minutes, hours, days.\n\
+With multiple arguments, pause ಪ್ರತಿ the sum of their ಮೌಲ್ಯಗಳು.\n\
 \n\
 "),
               program_name, program_name);
@@ -61,39 +61,39 @@ With multiple arguments, pause for the sum of their values.\n\
    hours, or 'd' for days.  If SUFFIX_CHAR is invalid, don't modify *X
    and return false.  Otherwise return true.  */
 
-static bool
-apply_suffix (double *x, char suffix_char)
+ಸ್ಥಿರ bool
+apply_suffix (ದ್ವಿಗುಣ *x, ವರ್ಣ suffix_char)
 {
-  int multiplier;
+  ಪೂರ್ಣಾಙ್ಕ multiplier;
 
-  switch (suffix_char)
+  ವಿಕಲ್ಪ (suffix_char)
     {
-    case 0:
-    case 's':
+    ಪಕ್ಷ 0:
+    ಪಕ್ಷ 's':
       multiplier = 1;
-      break;
-    case 'm':
+      ಭಙ್ಗ;
+    ಪಕ್ಷ 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      ಭಙ್ಗ;
+    ಪಕ್ಷ 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      ಭಙ್ಗ;
+    ಪಕ್ಷ 'd':
       multiplier = 60 * 60 * 24;
-      break;
-    default:
-      return false;
+      ಭಙ್ಗ;
+    ಸ್ವಭಾವ:
+      ಪ್ರತ್ಯಾಗಮ false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  ಪ್ರತ್ಯಾಗಮ true;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  double seconds = 0.0;
+  ದ್ವಿಗುಣ seconds = 0.0;
   bool ok = true;
 
   initialize_main (&argc, &argv);
@@ -106,21 +106,21 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (ವರ್ಣ ಧ್ರುವ *) ರಿಕ್ತ);
 
-  if (argc == 1)
+  ಯದಿ (argc == 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (int i = optind; i < argc; i++)
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = optind; i < argc; i++)
     {
-      char *p;
+      ವರ್ಣ *p;
       errno = 0;
-      double duration = cl_strtod (argv[i], &p);
-      double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      ದ್ವಿಗುಣ duration = cl_strtod (argv[i], &p);
+      ದ್ವಿಗುಣ s = dtimespec_bound (duration, errno);
+      ಯದಿ (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
+  ಯದಿ (!ok)
     usage (EXIT_FAILURE);
 
-  if (xnanosleep (seconds))
+  ಯದಿ (xnanosleep (seconds))
     error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  ಪ್ರತ್ಯಾಗಮ EXIT_SUCCESS;
 }

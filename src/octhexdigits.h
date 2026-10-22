@@ -1,16 +1,16 @@
-static inline bool _GL_ATTRIBUTE_CONST
-isoct (char c)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ bool _GL_ATTRIBUTE_CONST
+isoct (ವರ್ಣ c)
 {
-  return '0' <= c && c <= '7';
+  ಪ್ರತ್ಯಾಗಮ '0' <= c && c <= '7';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromoct (char c)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಪೂರ್ಣಾಙ್ಕ _GL_ATTRIBUTE_CONST
+fromoct (ವರ್ಣ c)
 {
-  return c - '0';
+  ಪ್ರತ್ಯಾಗಮ c - '0';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromhex (char c)
+ಸ್ಥಿರ ಅನ್ತಃಸ್ಥ ಪೂರ್ಣಾಙ್ಕ _GL_ATTRIBUTE_CONST
+fromhex (ವರ್ಣ c)
 {
-  return ('a' <= c && c <= 'f' ? c - 'a' + 10
+  ಪ್ರತ್ಯಾಗಮ ('a' <= c && c <= 'f' ? c - 'a' + 10
           : 'A' <= c && c <= 'F' ? c - 'A' + 10 : c - '0');
 }

@@ -44,25 +44,25 @@
 
    Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <signal.h>
-#if HAVE_PRCTL
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
+#ಯದಿ HAVE_PRCTL
 # include <sys/prctl.h>
 #endif
-#include <sys/wait.h>
+#ಅನ್ತರ್ಭಾವ <sys/wait.h>
 
-#include "system.h"
-#include "cl-strtod.h"
-#include "dtimespec-bound.h"
-#include "sig2str.h"
-#include "operand2sig.h"
-#include "term-sig.h"
-#include "quote.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "cl-strtod.h"
+#ಅನ್ತರ್ಭಾವ "dtimespec-bound.h"
+#ಅನ್ತರ್ಭಾವ "sig2str.h"
+#ಅನ್ತರ್ಭಾವ "operand2sig.h"
+#ಅನ್ತರ್ಭಾವ "term-sig.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
 
-#if HAVE_SETRLIMIT
+#ಯದಿ HAVE_SETRLIMIT
 /* FreeBSD 5.0 at least needs <sys/types.h> and <sys/time.h> included
    before <sys/resource.h>.  Currently "system.h" includes <sys/time.h>.  */
 # include <sys/resource.h>
@@ -85,25 +85,25 @@
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static int timed_out;
-static int term_signal = SIGTERM;  /* same default as kill command.  */
-static pid_t monitored_pid;
-static double kill_after;
-static bool foreground;      /* whether to use another program group.  */
-static bool preserve_status; /* whether to use a timeout status or not.  */
-static bool verbose;         /* whether to diagnose timeouts or not.  */
-static char const *command;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ timed_out;
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ term_signal = SIGTERM;  /* same default as kill command.  */
+ಸ್ಥಿರ pid_t monitored_pid;
+ಸ್ಥಿರ ದ್ವಿಗುಣ kill_after;
+ಸ್ಥಿರ bool foreground;      /* whether to use another program group.  */
+ಸ್ಥಿರ bool preserve_status; /* whether to use a timeout status or not.  */
+ಸ್ಥಿರ bool verbose;         /* whether to diagnose timeouts or not.  */
+ಸ್ಥಿರ ವರ್ಣ ಧ್ರುವ *command;
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ಸಂರಚನಾ option ಧ್ರುವ long_options[] =
 {
-  {"foreground", no_argument, NULL, 'f'},
-  {"kill-after", required_argument, NULL, 'k'},
-  {"preserve-status", no_argument, NULL, 'p'},
-  {"signal", required_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"foreground", no_argument, ರಿಕ್ತ, 'f'},
+  {"kill-after", required_argument, ರಿಕ್ತ, 'k'},
+  {"preserve-status", no_argument, ರಿಕ್ತ, 'p'},
+  {"signal", required_argument, ರಿಕ್ತ, 's'},
+  {"verbose", no_argument, ರಿಕ್ತ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {ರಿಕ್ತ, 0, ರಿಕ್ತ, 0}
 };
 
 /* Start the timeout after which we'll receive a SIGALRM.
@@ -111,66 +111,66 @@ static struct option const long_options[] =
    Treat out-of-range values as if they were maximal,
    as that's more useful in practice than reporting an error.
    '0' means don't timeout.  */
-static void
-settimeout (double duration, bool warn)
+ಸ್ಥಿರ ಶೂನ್ಯ
+settimeout (ದ್ವಿಗುಣ duration, bool warn)
 {
 
-#if HAVE_TIMER_SETTIME
+#ಯದಿ HAVE_TIMER_SETTIME
   /* timer_settime() provides potentially nanosecond resolution.  */
 
-  struct timespec ts = dtotimespec (duration);
-  struct itimerspec its = {.it_interval = {0}, .it_value = ts};
+  ಸಂರಚನಾ timespec ts = dtotimespec (duration);
+  ಸಂರಚನಾ itimerspec its = {.it_interval = {0}, .it_ಮೌಲ್ಯ = ts};
   timer_t timerid;
-  if (timer_create (CLOCK_REALTIME, NULL, &timerid) == 0)
+  ಯದಿ (timer_create (CLOCK_REALTIME, ರಿಕ್ತ, &timerid) == 0)
     {
-      if (timer_settime (timerid, 0, &its, NULL) == 0)
-        return;
-      else
+      ಯದಿ (timer_settime (timerid, 0, &its, ರಿಕ್ತ) == 0)
+        ಪ್ರತ್ಯಾಗಮ;
+      ಅನ್ಯಥಾ
         {
-          if (warn)
+          ಯದಿ (warn)
             error (0, errno, _("warning: timer_settime"));
           timer_delete (timerid);
         }
     }
-  else if (warn && errno != ENOSYS)
+  ಅನ್ಯಥಾ ಯದಿ (warn && errno != ENOSYS)
     error (0, errno, _("warning: timer_create"));
 
-#elif HAVE_SETITIMER
+#ನೋಚೇದ್ಯದಿ HAVE_SETITIMER
   /* setitimer() is more portable (to Darwin for example),
      but only provides microsecond resolution.  */
 
-  struct timeval tv;
-  struct timespec ts = dtotimespec (duration);
+  ಸಂರಚನಾ timeval tv;
+  ಸಂರಚನಾ timespec ts = dtotimespec (duration);
   tv.tv_sec = ts.tv_sec;
   tv.tv_usec = (ts.tv_nsec + 999) / 1000;
-  if (tv.tv_usec == 1000 * 1000)
+  ಯದಿ (tv.tv_usec == 1000 * 1000)
     {
-      if (tv.tv_sec != TYPE_MAXIMUM (time_t))
+      ಯದಿ (tv.tv_sec != TYPE_MAXIMUM (time_t))
         {
           tv.tv_sec++;
           tv.tv_usec = 0;
         }
-      else
+      ಅನ್ಯಥಾ
         tv.tv_usec--;
     }
-  struct itimerval it = {.it_interval = {0}, .it_value = tv };
-  if (setitimer (ITIMER_REAL, &it, NULL) == 0)
-    return;
-  else
+  ಸಂರಚನಾ itimerval it = {.it_interval = {0}, .it_ಮೌಲ್ಯ = tv };
+  ಯದಿ (setitimer (ITIMER_REAL, &it, ರಿಕ್ತ) == 0)
+    ಪ್ರತ್ಯಾಗಮ;
+  ಅನ್ಯಥಾ
     {
-      if (warn && errno != ENOSYS)
+      ಯದಿ (warn && errno != ENOSYS)
         error (0, errno, _("warning: setitimer"));
     }
 #endif
 
   /* fallback to single second resolution provided by alarm().  */
 
-  unsigned int timeint;
-  if (UINT_MAX <= duration)
+  unsigned ಪೂರ್ಣಾಙ್ಕ timeint;
+  ಯದಿ (UINT_MAX <= duration)
     timeint = UINT_MAX;
-  else
+  ಅನ್ಯಥಾ
     {
-      unsigned int duration_floor = duration;
+      unsigned ಪೂರ್ಣಾಙ್ಕ duration_floor = duration;
       timeint = duration_floor + (duration_floor < duration);
     }
   alarm (timeint);
@@ -178,8 +178,8 @@ settimeout (double duration, bool warn)
 
 /* send SIG avoiding the current process.  */
 
-static int
-send_sig (pid_t where, int sig)
+ಸ್ಥಿರ ಪೂರ್ಣಾಙ್ಕ
+send_sig (pid_t where, ಪೂರ್ಣಾಙ್ಕ sig)
 {
   /* If sending to the group, then ignore the signal,
      so we don't go into a signal loop.  Note that this will ignore any of the
@@ -188,22 +188,22 @@ send_sig (pid_t where, int sig)
      process can be implicitly multithreaded due to some timer_settime()
      implementations, therefore a signal sent to the group, can be sent
      multiple times to this process.  */
-  if (where == 0)
-    signal (sig, SIG_IGN);
-  return kill (where, sig);
+  ಯದಿ (where == 0)
+    ಸಙ್ಕೇತ (sig, SIG_IGN);
+  ಪ್ರತ್ಯಾಗಮ kill (where, sig);
 }
 
 /* Signal handler which is required for sigsuspend() to be interrupted
    whenever SIGCHLD is received.  */
-static void
-chld (MAYBE_UNUSED int sig)
+ಸ್ಥಿರ ಶೂನ್ಯ
+chld (MAYBE_UNUSED ಪೂರ್ಣಾಙ್ಕ sig)
 {
 }
 
-static void
-cleanup (int sig)
+ಸ್ಥಿರ ಶೂನ್ಯ
+cleanup (ಪೂರ್ಣಾಙ್ಕ sig)
 {
-  if (sig == SIGALRM)
+  ಯದಿ (sig == SIGALRM)
     {
       timed_out = 1;
       /* In case there is an issue with close_stdout,
@@ -214,11 +214,11 @@ cleanup (int sig)
       initialize_exit_failure (EXIT_TIMEDOUT);
       sig = term_signal;
     }
-  if (0 < monitored_pid)
+  ಯದಿ (0 < monitored_pid)
     {
-      if (kill_after)
+      ಯದಿ (kill_after)
         {
-          int saved_errno = errno; /* settimeout may reset.  */
+          ಪೂರ್ಣಾಙ್ಕ saved_errno = errno; /* settimeout may reset.  */
           /* Start a new timeout after which we'll send SIGKILL.  */
           term_signal = SIGKILL;
           settimeout (kill_after, false);
@@ -229,11 +229,11 @@ cleanup (int sig)
       /* Send the signal directly to the monitored child,
          in case it has itself become group leader,
          or is not running in a separate group.  */
-      if (verbose)
+      ಯದಿ (verbose)
         {
-          char signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (int))];
-          if (sig == 0 || sig2str (sig, signame) != 0)
-            snprintf (signame, sizeof signame, "%d", sig);
+          ವರ್ಣ signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (ಪೂರ್ಣಾಙ್ಕ))];
+          ಯದಿ (sig == 0 || sig2str (sig, signame) != 0)
+            snprintf (signame, ಪರಿಮಾಣ signame, "%d", sig);
           error (0, 0, _("sending signal %s to command %s"),
                  signame, quote (command));
         }
@@ -241,37 +241,37 @@ cleanup (int sig)
 
       /* The normal case is the job has remained in our
          newly created process group, so send to all processes in that.  */
-      if (!foreground)
+      ಯದಿ (!foreground)
         {
           send_sig (0, sig);
-          if (sig != SIGKILL && sig != SIGCONT)
+          ಯದಿ (sig != SIGKILL && sig != SIGCONT)
             {
               send_sig (monitored_pid, SIGCONT);
               send_sig (0, SIGCONT);
             }
         }
     }
-  else if (monitored_pid == -1)
+  ಅನ್ಯಥಾ ಯದಿ (monitored_pid == -1)
     { /* were in the parent, so let it continue to exit below.  */
     }
-  else /* monitored_pid == 0  */
+  ಅನ್ಯಥಾ /* monitored_pid == 0  */
     { /* parent hasn't forked yet, or child has not exec'd yet.  */
       _exit (128 + sig);
     }
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಙ್ಕ status)
 {
-  if (status != EXIT_SUCCESS)
+  ಯದಿ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಅನ್ಯಥಾ
     {
       printf (_("\
 Usage: %s [OPTION]... DURATION COMMAND [ARG]...\n"), program_name);
 
       fputs (_("\
-Start COMMAND, and kill it if still running after DURATION.\n\
+Start COMMAND, and kill it ಯದಿ still running after DURATION.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -279,13 +279,13 @@ Start COMMAND, and kill it if still running after DURATION.\n\
       oputs (_("\
   -f, --foreground\n\
          when not running timeout directly from a shell prompt,\n\
-         allow COMMAND to read from the TTY and get TTY signals;\n\
+         allow COMMAND to ಪಠ from the TTY and get TTY signals;\n\
          in this mode, children of COMMAND will not be timed out\n\
 "));
       oputs (_("\
   -k, --kill-after=DURATION\n\
-         also send a KILL signal if COMMAND is still running\n\
-         this long after the initial signal was sent\n\
+         also send a KILL ಸಙ್ಕೇತ ಯದಿ COMMAND is still running\n\
+         this long after the initial ಸಙ್ಕೇತ was sent\n\
 "));
       oputs (_("\
   -p, --preserve-status\n\
@@ -293,37 +293,37 @@ Start COMMAND, and kill it if still running after DURATION.\n\
          even when the command times out\n\
 "));
       oputs (_("\
-  -s, --signal=SIGNAL\n\
-         specify the signal to be sent on timeout;\n\
-         SIGNAL may be a name like 'HUP' or a number;\n\
-         see 'kill -l' for a list of signals\n\
+  -s, --ಸಙ್ಕೇತ=SIGNAL\n\
+         specify the ಸಙ್ಕೇತ to be sent on timeout;\n\
+         SIGNAL may be a name like 'HUP' or a ಸಂಖ್ಯೆ;\n\
+         see 'kill -l' ಪ್ರತಿ a list of signals\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         diagnose to standard error any signal sent upon timeout\n\
+         diagnose to standard error any ಸಙ್ಕೇತ sent upon timeout\n\
 "));
 
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
 
       fputs (_("\n\
-DURATION is a floating point number with an optional suffix:\n\
-'s' for seconds (the default), 'm' for minutes, 'h' for hours or \
-'d' for days.\nA duration of 0 disables the associated timeout.\n"), stdout);
+DURATION is a floating point ಸಂಖ್ಯೆ with an optional suffix:\n\
+'s' ಪ್ರತಿ seconds (the ಸ್ವಭಾವ), 'm' ಪ್ರತಿ minutes, 'h' ಪ್ರತಿ hours or \
+'d' ಪ್ರತಿ days.\nA duration of 0 disables the associated timeout.\n"), stdout);
 
       fputs (_("\n\
-Upon timeout, send the TERM signal to COMMAND, if no other SIGNAL specified.\n\
-The TERM signal kills any process that does not block or catch that signal.\n\
-It may be necessary to use the KILL signal, since this signal can't be caught.\
+Upon timeout, send the TERM ಸಙ್ಕೇತ to COMMAND, ಯದಿ no other SIGNAL specified.\n\
+The TERM ಸಙ್ಕೇತ kills any process that does not block or catch that ಸಙ್ಕೇತ.\n\
+It may be necessary to use the KILL ಸಙ್ಕೇತ, since this ಸಙ್ಕೇತ can't be caught.\
 \n"), stdout);
 
       fputs (_("\n\
 Exit status:\n\
-  124  if COMMAND times out, and --preserve-status is not specified\n\
-  125  if the timeout command itself fails\n\
-  126  if COMMAND is found but cannot be invoked\n\
-  127  if COMMAND cannot be found\n\
-  137  if COMMAND (or timeout itself) is sent the KILL (9) signal (128+9)\n\
+  124  ಯದಿ COMMAND times out, and --preserve-status is not specified\n\
+  125  ಯದಿ the timeout command itself fails\n\
+  126  ಯದಿ COMMAND is found but cannot be invoked\n\
+  127  ಯದಿ COMMAND cannot be found\n\
+  137  ಯದಿ COMMAND (or timeout itself) is sent the KILL (9) ಸಙ್ಕೇತ (128+9)\n\
   -    the exit status of COMMAND otherwise\n\
 "), stdout);
 
@@ -338,44 +338,44 @@ Exit status:\n\
    hours, or 'd' for days.  If SUFFIX_CHAR is invalid, don't modify *X
    and return false.  Otherwise return true.  */
 
-static bool
-apply_time_suffix (double *x, char suffix_char)
+ಸ್ಥಿರ bool
+apply_time_suffix (ದ್ವಿಗುಣ *x, ವರ್ಣ suffix_char)
 {
-  int multiplier;
+  ಪೂರ್ಣಾಙ್ಕ multiplier;
 
-  switch (suffix_char)
+  ವಿಕಲ್ಪ (suffix_char)
     {
-    case 0:
-    case 's':
+    ಪಕ್ಷ 0:
+    ಪಕ್ಷ 's':
       multiplier = 1;
-      break;
-    case 'm':
+      ಭಙ್ಗ;
+    ಪಕ್ಷ 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      ಭಙ್ಗ;
+    ಪಕ್ಷ 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      ಭಙ್ಗ;
+    ಪಕ್ಷ 'd':
       multiplier = 60 * 60 * 24;
-      break;
-    default:
-      return false;
+      ಭಙ್ಗ;
+    ಸ್ವಭಾವ:
+      ಪ್ರತ್ಯಾಗಮ false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  ಪ್ರತ್ಯಾಗಮ true;
 }
 
-static double
-parse_duration (char const *str)
+ಸ್ಥಿರ ದ್ವಿಗುಣ
+parse_duration (ವರ್ಣ ಧ್ರುವ *str)
 {
-  char *ep;
+  ವರ್ಣ *ep;
   errno = 0;
-  double duration = cl_strtod (str, &ep);
-  double s = dtimespec_bound (duration, errno);
+  ದ್ವಿಗುಣ duration = cl_strtod (str, &ep);
+  ದ್ವಿಗುಣ s = dtimespec_bound (duration, errno);
 
-  if (ep == str
+  ಯದಿ (ep == str
       /* Nonnegative interval.  */
       || ! (0 <= s)
       /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -387,29 +387,29 @@ parse_duration (char const *str)
       usage (EXIT_CANCELED);
     }
 
-  return s;
+  ಪ್ರತ್ಯಾಗಮ s;
 }
 
-static void
-unblock_signal (int sig)
+ಸ್ಥಿರ ಶೂನ್ಯ
+unblock_signal (ಪೂರ್ಣಾಙ್ಕ sig)
 {
   sigset_t unblock_set;
   sigemptyset (&unblock_set);
   sigaddset (&unblock_set, sig);
-  if (sigprocmask (SIG_UNBLOCK, &unblock_set, NULL) != 0)
+  ಯದಿ (sigprocmask (SIG_UNBLOCK, &unblock_set, ರಿಕ್ತ) != 0)
     error (0, errno, _("warning: sigprocmask"));
 }
 
-static void
-install_sigchld (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+install_sigchld (ಶೂನ್ಯ)
 {
-  struct sigaction sa;
+  ಸಂರಚನಾ sigaction sa;
   sigemptyset (&sa.sa_mask);  /* Allow concurrent calls to handler */
   sa.sa_handler = chld;
   sa.sa_flags = SA_RESTART;   /* Restart syscalls if possible, as that's
                                  more likely to work cleanly.  */
 
-  sigaction (SIGCHLD, &sa, NULL);
+  sigaction (SIGCHLD, &sa, ರಿಕ್ತ);
 
   /* We inherit the signal mask from our parent process,
      so ensure SIGCHLD is not blocked. */
@@ -418,40 +418,40 @@ install_sigchld (void)
 
 /* Filter out signals that were ignored.  */
 
-static bool
-sig_needs_handling (int sig, int sigterm)
+ಸ್ಥಿರ bool
+sig_needs_handling (ಪೂರ್ಣಾಙ್ಕ sig, ಪೂರ್ಣಾಙ್ಕ sigterm)
 {
-  if (sig == SIGALRM || sig == sigterm)
-    return true;  /* We can't ignore these.  */
+  ಯದಿ (sig == SIGALRM || sig == sigterm)
+    ಪ್ರತ್ಯಾಗಮ true;  /* We can't ignore these.  */
 
   /* Note background jobs in shells have SIGINT and SIGQUIT
      set to SIG_IGN by default.  I.e., those signals will
      not be propagated through background timeout jobs.  */
-  struct sigaction old_sa;
-  sigaction (sig, NULL, &old_sa);
+  ಸಂರಚನಾ sigaction old_sa;
+  sigaction (sig, ರಿಕ್ತ, &old_sa);
   bool ret = old_sa.sa_handler != SIG_IGN;
-  return ret;
+  ಪ್ರತ್ಯಾಗಮ ret;
 }
 
-static void
-install_cleanup (int sigterm)
+ಸ್ಥಿರ ಶೂನ್ಯ
+install_cleanup (ಪೂರ್ಣಾಙ್ಕ sigterm)
 {
-  struct sigaction sa;
+  ಸಂರಚನಾ sigaction sa;
   sigemptyset (&sa.sa_mask);  /* Allow concurrent calls to handler */
   sa.sa_handler = cleanup;
   sa.sa_flags = SA_RESTART;   /* Restart syscalls if possible, as that's
                                  more likely to work cleanly.  */
 
-  for (int i = 0; i < countof (term_sig); i++)
-    if (sig_needs_handling (term_sig[i], sigterm))
-      sigaction (term_sig[i], &sa, NULL);
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = 0; i < countof (term_sig); i++)
+    ಯದಿ (sig_needs_handling (term_sig[i], sigterm))
+      sigaction (term_sig[i], &sa, ರಿಕ್ತ);
 
   /* Real Time signals also terminate by default.  */
-  for (int s = SIGRTMIN; s <= SIGRTMAX; s++)
-    if (sig_needs_handling (s, sigterm))
-      sigaction (s, &sa, NULL);
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ s = SIGRTMIN; s <= SIGRTMAX; s++)
+    ಯದಿ (sig_needs_handling (s, sigterm))
+      sigaction (s, &sa, ರಿಕ್ತ);
 
-  sigaction (sigterm, &sa, NULL); /* user specified termination signal.  */
+  sigaction (sigterm, &sa, ರಿಕ್ತ); /* user specified termination signal.  */
 }
 
 /* Block all signals which were registered with cleanup() as the signal
@@ -459,56 +459,56 @@ install_cleanup (int sigterm)
    Also block SIGCHLD to ensure it doesn't fire between
    waitpid() polling and sigsuspend() waiting for a signal.
    Return original mask in OLD_SET.  */
-static void
-block_cleanup_and_chld (int sigterm, sigset_t *old_set)
+ಸ್ಥಿರ ಶೂನ್ಯ
+block_cleanup_and_chld (ಪೂರ್ಣಾಙ್ಕ sigterm, sigset_t *old_set)
 {
   sigset_t block_set;
   sigemptyset (&block_set);
 
-  for (int i = 0; i < countof (term_sig); i++)
-    if (sig_needs_handling (term_sig[i], sigterm))
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ i = 0; i < countof (term_sig); i++)
+    ಯದಿ (sig_needs_handling (term_sig[i], sigterm))
       sigaddset (&block_set, term_sig[i]);
 
-  for (int s = SIGRTMIN; s <= SIGRTMAX; s++)
-    if (sig_needs_handling (s, sigterm))
+  ಪ್ರತಿ (ಪೂರ್ಣಾಙ್ಕ s = SIGRTMIN; s <= SIGRTMAX; s++)
+    ಯದಿ (sig_needs_handling (s, sigterm))
       sigaddset (&block_set, s);
 
   sigaddset (&block_set, sigterm);
 
   sigaddset (&block_set, SIGCHLD);
 
-  if (sigprocmask (SIG_BLOCK, &block_set, old_set) != 0)
+  ಯದಿ (sigprocmask (SIG_BLOCK, &block_set, old_set) != 0)
     error (0, errno, _("warning: sigprocmask"));
 }
 
 /* Try to disable core dumps for this process.
    Return TRUE if successful, FALSE otherwise.  */
-static bool
-disable_core_dumps (void)
+ಸ್ಥಿರ bool
+disable_core_dumps (ಶೂನ್ಯ)
 {
-#if HAVE_PRCTL && defined PR_SET_DUMPABLE
-  if (prctl (PR_SET_DUMPABLE, 0) == 0)
-    return true;
+#ಯದಿ HAVE_PRCTL && defined PR_SET_DUMPABLE
+  ಯದಿ (prctl (PR_SET_DUMPABLE, 0) == 0)
+    ಪ್ರತ್ಯಾಗಮ true;
 
-#elif HAVE_SETRLIMIT && defined RLIMIT_CORE
+#ನೋಚೇದ್ಯದಿ HAVE_SETRLIMIT && defined RLIMIT_CORE
   /* Note this doesn't disable processing by a filter in
      /proc/sys/kernel/core_pattern on Linux.  */
-  if (setrlimit (RLIMIT_CORE, &(struct rlimit) {0}) == 0)
-    return true;
+  ಯದಿ (setrlimit (RLIMIT_CORE, &(ಸಂರಚನಾ rlimit) {0}) == 0)
+    ಪ್ರತ್ಯಾಗಮ true;
 
-#else
-  return false;
+#ಅನ್ಯಥಾ
+  ಪ್ರತ್ಯಾಗಮ false;
 #endif
 
   error (0, errno, _("warning: disabling core dumps failed"));
-  return false;
+  ಪ್ರತ್ಯಾಗಮ false;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಙ್ಕ
+main (ಪೂರ್ಣಾಙ್ಕ argc, ವರ್ಣ **argv)
 {
-  double timeout;
-  int c;
+  ದ್ವಿಗುಣ timeout;
+  ಪೂರ್ಣಾಙ್ಕ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -519,44 +519,44 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+fk:ps:v", long_options, NULL))
+  ಯಾವತ್ ((c = getopt_long (argc, argv, "+fk:ps:v", long_options, ರಿಕ್ತ))
          != -1)
     {
-      switch (c)
+      ವಿಕಲ್ಪ (c)
         {
-        case 'f':
+        ಪಕ್ಷ 'f':
           foreground = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 'k':
+        ಪಕ್ಷ 'k':
           kill_after = parse_duration (optarg);
-          break;
+          ಭಙ್ಗ;
 
-        case 'p':
+        ಪಕ್ಷ 'p':
           preserve_status = true;
-          break;
+          ಭಙ್ಗ;
 
-        case 's':
+        ಪಕ್ಷ 's':
           term_signal = operand2sig (optarg);
-          if (term_signal == -1)
+          ಯದಿ (term_signal == -1)
             usage (EXIT_CANCELED);
-          break;
+          ಭಙ್ಗ;
 
-        case 'v':
+        ಪಕ್ಷ 'v':
           verbose = true;
-          break;
+          ಭಙ್ಗ;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        ಸ್ವಭಾವ:
           usage (EXIT_CANCELED);
-          break;
+          ಭಙ್ಗ;
         }
     }
 
-  if (argc - optind < 2)
+  ಯದಿ (argc - optind < 2)
     usage (EXIT_CANCELED);
 
   timeout = parse_duration (argv[optind++]);
@@ -568,14 +568,14 @@ main (int argc, char **argv)
      Note we don't just put the child in a separate group as
      then we would need to worry about foreground and background groups
      and propagating signals between them.  */
-  if (!foreground)
+  ಯದಿ (!foreground)
     setpgid (0, 0);
 
   /* Setup handlers before fork() so that we
      handle any signals caused by child, without races.  */
   install_cleanup (term_signal);
-  signal (SIGTTIN, SIG_IGN);   /* Don't stop if background child needs tty.  */
-  signal (SIGTTOU, SIG_IGN);   /* Don't stop if background child needs tty.  */
+  ಸಙ್ಕೇತ (SIGTTIN, SIG_IGN);   /* Don't stop if background child needs tty.  */
+  ಸಙ್ಕೇತ (SIGTTOU, SIG_IGN);   /* Don't stop if background child needs tty.  */
   install_sigchld ();          /* Interrupt sigsuspend() when child exits.   */
 
   /* We configure timers so that SIGALRM is sent on expiry.
@@ -598,45 +598,45 @@ main (int argc, char **argv)
      should exit with EXIT_CANNOT_INVOKE or EXIT_ENOENT upon checking the exit
      status of the child.  */
   monitored_pid = fork ();
-  if (monitored_pid == -1)
+  ಯದಿ (monitored_pid == -1)
     {
       error (0, errno, _("fork system call failed"));
-      return EXIT_CANCELED;
+      ಪ್ರತ್ಯಾಗಮ EXIT_CANCELED;
     }
-  else if (monitored_pid == 0)  /* child */
+  ಅನ್ಯಥಾ ಯದಿ (monitored_pid == 0)  /* child */
     {
-#if HAVE_PRCTL && defined PR_SET_PDEATHSIG
+#ಯದಿ HAVE_PRCTL && defined PR_SET_PDEATHSIG
       /* Add protection if the parent dies without signaling child.  */
       prctl (PR_SET_PDEATHSIG, term_signal);
 #endif
       /* If we're already reparented to init, don't proceed.  Be aware that
          'timeout' may actually be started by the init process.  E.g., when
          the shell is the entrypoint to a container.  */
-      if (getppid () != timeout_pid)
-        return EXIT_CANCELED;
+      ಯದಿ (getppid () != timeout_pid)
+        ಪ್ರತ್ಯಾಗಮ EXIT_CANCELED;
 
       /* Restore signal mask for child.  */
-      if (sigprocmask (SIG_SETMASK, &orig_set, NULL) != 0)
+      ಯದಿ (sigprocmask (SIG_SETMASK, &orig_set, ರಿಕ್ತ) != 0)
         {
           error (0, errno, _("child failed to reset signal mask"));
-          return EXIT_CANCELED;
+          ಪ್ರತ್ಯಾಗಮ EXIT_CANCELED;
         }
 
       /* exec doesn't reset SIG_IGN -> SIG_DFL.  */
-      signal (SIGTTIN, SIG_DFL);
-      signal (SIGTTOU, SIG_DFL);
+      ಸಙ್ಕೇತ (SIGTTIN, SIG_DFL);
+      ಸಙ್ಕೇತ (SIGTTOU, SIG_DFL);
 
       execvp (argv[0], argv);
 
       /* exit like sh, env, nohup, ...  */
-      int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+      ಪೂರ್ಣಾಙ್ಕ exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
       error (0, errno, _("failed to run command %s"), quote (command));
-      return exit_status;
+      ಪ್ರತ್ಯಾಗಮ exit_status;
     }
-  else
+  ಅನ್ಯಥಾ
     {
       pid_t wait_result;
-      int status;
+      ಪೂರ್ಣಾಙ್ಕ status;
 
       settimeout (timeout, true);
 
@@ -644,39 +644,39 @@ main (int argc, char **argv)
          we don't cleanup() after waitpid() reaps the child,
          to avoid sending signals to a possibly different process.  */
 
-      while ((wait_result = waitpid (monitored_pid, &status, WNOHANG)) == 0)
+      ಯಾವತ್ ((wait_result = waitpid (monitored_pid, &status, WNOHANG)) == 0)
         sigsuspend (&orig_set);  /* Wait with cleanup signals unblocked.  */
 
-      if (wait_result < 0)
+      ಯದಿ (wait_result < 0)
         {
           /* shouldn't happen.  */
           error (0, errno, _("error waiting for command"));
           status = EXIT_CANCELED;
         }
-      else
+      ಅನ್ಯಥಾ
         {
-          if (WIFEXITED (status))
+          ಯದಿ (WIFEXITED (status))
             status = WEXITSTATUS (status);
-          else if (WIFSIGNALED (status))
+          ಅನ್ಯಥಾ ಯದಿ (WIFSIGNALED (status))
             {
-              int sig = WTERMSIG (status);
-              if (WCOREDUMP (status))
+              ಪೂರ್ಣಾಙ್ಕ sig = WTERMSIG (status);
+              ಯದಿ (WCOREDUMP (status))
                 error (0, 0, _("the monitored command dumped core"));
-              if (!timed_out && disable_core_dumps ())
+              ಯದಿ (!timed_out && disable_core_dumps ())
                 {
                   /* exit with the signal flag set.  */
-                  signal (sig, SIG_DFL);
+                  ಸಙ್ಕೇತ (sig, SIG_DFL);
                   unblock_signal (sig);
-                  raise (sig);
+                  ಉತ್ಥಾಪಯ (sig);
                 }
               /* Allow users to distinguish if command was forcibly killed.
                  Needed with --foreground where we don't send SIGKILL to
                  the timeout process itself.  */
-              if (timed_out && sig == SIGKILL)
+              ಯದಿ (timed_out && sig == SIGKILL)
                 preserve_status = true;
               status = sig + 128; /* what sh returns for signaled processes.  */
             }
-          else
+          ಅನ್ಯಥಾ
             {
               /* shouldn't happen.  */
               error (0, 0, _("unknown status from command (%d)"), status);
@@ -684,8 +684,8 @@ main (int argc, char **argv)
             }
         }
 
-      if (timed_out && !preserve_status)
+      ಯದಿ (timed_out && !preserve_status)
         status = EXIT_TIMEDOUT;
-      return status;
+      ಪ್ರತ್ಯಾಗಮ status;
     }
 }

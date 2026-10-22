@@ -14,82 +14,82 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "save-cwd.h"
-#include "xgetcwd.h"
-#include "find-mount-point.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "save-cwd.h"
+#ಅನ್ತರ್ಭಾವ "xgetcwd.h"
+#ಅನ್ತರ್ಭಾವ "find-mount-point.h"
 
 /* Return the root mountpoint of the file system on which FILE exists, in
    malloced storage.  FILE_STAT should be the result of stating FILE.
    Give a diagnostic and return NULL if unable to determine the mount point.
    Exit if unable to restore current working directory.  */
-extern char *
-find_mount_point (char const *file, struct stat const *file_stat)
+ಬಾಹ್ಯ ವರ್ಣ *
+find_mount_point (ವರ್ಣ ಧ್ರುವ *file, ಸಂರಚನಾ stat ಧ್ರುವ *file_stat)
 {
-  struct saved_cwd cwd;
-  struct stat last_stat;
-  char *mp = NULL;		/* The malloc'd mount point.  */
+  ಸಂರಚನಾ saved_cwd cwd;
+  ಸಂರಚನಾ stat last_stat;
+  ವರ್ಣ *mp = ರಿಕ್ತ;		/* The malloc'd mount point.  */
 
-  if (save_cwd (&cwd) != 0)
+  ಯದಿ (save_cwd (&cwd) != 0)
     {
       error (0, errno, _("cannot get current directory"));
-      return NULL;
+      ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
     }
 
-  if (S_ISDIR (file_stat->st_mode))
+  ಯದಿ (S_ISDIR (file_stat->st_mode))
     /* FILE is a directory, so just chdir there directly.  */
     {
       last_stat = *file_stat;
-      if (chdir (file) < 0)
+      ಯದಿ (chdir (file) < 0)
         {
           error (0, errno, _("cannot change to directory %s"), quoteaf (file));
-          return NULL;
+          ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
         }
     }
-  else
+  ಅನ್ಯಥಾ
     /* FILE is some other kind of file; use its directory.  */
     {
-      char *dir = dir_name (file);
+      ವರ್ಣ *dir = dir_name (file);
 
-      if (chdir (dir) < 0)
+      ಯದಿ (chdir (dir) < 0)
         {
           error (0, errno, _("cannot change to directory %s"), quoteaf (dir));
-          free (dir);
-          return NULL;
+          ಮುಕ್ತ (dir);
+          ಪ್ರತ್ಯಾಗಮ ರಿಕ್ತ;
         }
 
-      if (stat (".", &last_stat) < 0)
+      ಯದಿ (stat (".", &last_stat) < 0)
         {
           error (0, errno, _("cannot stat current directory (now %s)"),
                  quoteaf (dir));
-          free (dir);
-          goto done;
+          ಮುಕ್ತ (dir);
+          ಗಚ್ಛ done;
         }
 
-      free (dir);
+      ಮುಕ್ತ (dir);
     }
 
   /* Now walk up FILE's parents until we find another file system or /,
      chdiring as we go.  LAST_STAT holds stat information for the last place
      we visited.  */
-  while (true)
+  ಯಾವತ್ (true)
     {
-      struct stat st;
-      if (stat ("..", &st) < 0)
+      ಸಂರಚನಾ stat st;
+      ಯದಿ (stat ("..", &st) < 0)
         {
           error (0, errno, _("cannot stat %s"), quoteaf (".."));
-          goto done;
+          ಗಚ್ಛ done;
         }
-      if (st.st_dev != last_stat.st_dev || st.st_ino == last_stat.st_ino)
+      ಯದಿ (st.st_dev != last_stat.st_dev || st.st_ino == last_stat.st_ino)
         /* cwd is the mount point.  */
-        break;
-      if (chdir ("..") < 0)
+        ಭಙ್ಗ;
+      ಯದಿ (chdir ("..") < 0)
         {
           error (0, errno, _("cannot change to directory %s"), quoteaf (".."));
-          goto done;
+          ಗಚ್ಛ done;
         }
       last_stat = st;
     }
@@ -100,13 +100,13 @@ find_mount_point (char const *file, struct stat const *file_stat)
 done:
   /* Restore the original cwd.  */
   {
-    int save_errno = errno;
-    if (restore_cwd (&cwd) != 0)
+    ಪೂರ್ಣಾಙ್ಕ save_errno = errno;
+    ಯದಿ (restore_cwd (&cwd) != 0)
       error (EXIT_FAILURE, errno,
              _("failed to return to initial working directory"));
     free_cwd (&cwd);
     errno = save_errno;
   }
 
-  return mp;
+  ಪ್ರತ್ಯಾಗಮ mp;
 }
