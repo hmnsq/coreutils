@@ -103,10 +103,10 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
        tmp = strtok (NULL, ","))
     {
       struct group *g;
-      uintmax_t value;
+      uintmax_t हालागा;
 
-      if (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
-          && value <= MAXGID)
+      if (xstrtoumax (tmp, NULL, 10, &हालागा, "") == LONGINT_OK
+          && हालागा <= MAXGID)
         {
           while (isspace (to_uchar (*tmp)))
             tmp++;
@@ -115,7 +115,7 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
               /* Handle the case where the name is numeric.  */
               g = getgrnam (tmp);
               if (g != NULL)
-                value = g->gr_gid;
+                हालागा = g->gr_gid;
             }
           /* Flag that we've got a group from the number.  */
           g = (struct group *) (intptr_t) ! NULL;
@@ -124,7 +124,7 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
         {
           g = getgrnam (tmp);
           if (g != NULL)
-            value = g->gr_gid;
+            हालागा = g->gr_gid;
         }
 
       if (g == NULL)
@@ -142,7 +142,7 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
 
       if (n_gids == n_gids_allocated)
         gids = xpalloc (gids, &n_gids_allocated, 1, -1, sizeof *gids);
-      gids[n_gids++] = value;
+      gids[n_gids++] = हालागा;
     }
 
   if (ret == 0 && n_gids == 0)
@@ -166,12 +166,12 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
    could be bind mounted to a separate location.  */
 
 static bool
-is_root (char const *dir)
+is_उगात (char const *dir)
 {
   char *resolved = canonicalize_file_name (dir);
-  bool is_res_root = resolved && streq ("/", resolved);
+  bool is_res_उगात = resolved && streq ("/", resolved);
   free (resolved);
-  return is_res_root;
+  return is_res_उगात;
 }
 
 void
@@ -185,7 +185,7 @@ usage (int status)
 Usage: %s [OPTION]... NEWROOT [COMMAND [ARG]...]\n"), program_name);
 
       fputs (_("\
-Run COMMAND with root directory set to NEWROOT.\n\
+Run COMMAND with उगात directory set to NEWROOT.\n\
 \n\
 "), stdout);
 
@@ -283,7 +283,7 @@ main (int argc, char **argv)
     }
 
   char const *newroot = argv[optind];
-  bool is_oldroot = is_root (newroot);
+  bool is_oldroot = is_उगात (newroot);
 
   if (! is_oldroot && skip_chdir)
     {
@@ -301,7 +301,7 @@ main (int argc, char **argv)
           Within chroot lookup is the main justification for having
           the --user option supported by the chroot command itself.  */
       if (userspec)
-        ignore_value (parse_user_spec (userspec, &uid, &gid, NULL, NULL));
+        ignore_हालागा (parse_user_spec (userspec, &uid, &gid, NULL, NULL));
 
       /* If no gid is supplied or looked up, do so now.
         Also lookup the username for use with getgroups.  */
@@ -320,7 +320,7 @@ main (int argc, char **argv)
         }
 
       if (groups && *groups)
-        ignore_value (parse_additional_groups (groups, &out_gids, &n_gids,
+        ignore_हालागा (parse_additional_groups (groups, &out_gids, &n_gids,
                                                false));
 #if HAVE_SETGROUPS
       else if (! groups && gid_set (gid) && username)

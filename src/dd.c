@@ -110,7 +110,7 @@ enum
   };
 
 /* The name of the input file, or NULL for the standard input. */
-static char const *input_file = NULL;
+static char const *पासोक_file = NULL;
 
 /* The name of the output file, or NULL for the standard output. */
 static char const *output_file = NULL;
@@ -119,7 +119,7 @@ static char const *output_file = NULL;
 static idx_t page_size;
 
 /* The number of bytes in which atomic reads are done. */
-static idx_t input_blocksize = 0;
+static idx_t पासोक_blocksize = 0;
 
 /* The number of bytes in which atomic writes are done. */
 static idx_t output_blocksize = 0;
@@ -154,7 +154,7 @@ static idx_t max_bytes = 0;
 static int conversions_mask = 0;
 
 /* Open flags for the input and output files.  */
-static int input_flags = 0;
+static int पासोक_flags = 0;
 static int output_flags = 0;
 
 /* Status flags for what is printed to stderr.  */
@@ -191,14 +191,14 @@ static xtime_t next_time;
 static int progress_len;
 
 /* True if input is seekable.  */
-static bool input_seekable;
+static bool पासोक_seekable;
 
 /* Error number corresponding to initial attempt to lseek input.
    If ESPIPE, do not issue any more diagnostics about it.  */
-static int input_seek_errno;
+static int पासोक_seek_errno;
 
 /* File offset of the input, in bytes, or -1 if it overflowed.  */
-static off_t input_offset;
+static off_t पासोक_offset;
 
 /* True if a partial read should be diagnosed.  */
 static bool warn_partial_read;
@@ -228,7 +228,7 @@ static sigset_t caught_signals;
 static sig_atomic_t volatile interrupt_signal;
 
 /* A count of the number of pending info signals that have been received.  */
-static sig_atomic_t volatile info_signal_count;
+static sig_atomic_t volatile info_signal_बिलांग;
 
 /* Whether to discard cache for input or output.  */
 static bool i_nocache, o_nocache;
@@ -240,17 +240,17 @@ static bool i_nocache_eof, o_nocache_eof;
 static ssize_t (*iread_fnc) (int fd, char *buf, idx_t size);
 
 /* A longest symbol in the struct symbol_values tables below.  */
-#define LONGEST_SYMBOL "count_bytes"
+#define LONGEST_सिम्बोलो "count_bytes"
 
 /* A symbol and the corresponding integer value.  */
-struct symbol_value
+struct सिम्बोलो_हालागा
 {
-  char symbol[sizeof LONGEST_SYMBOL];
-  int value;
+  char सिम्बोलो[sizeof LONGEST_सिम्बोलो];
+  int हालागा;
 };
 
 /* Conversion symbols, for conv="...".  */
-static struct symbol_value const conversions[] =
+static struct सिम्बोलो_हालागा const conversions[] =
 {
   {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	/* EBCDIC to ASCII. */
   {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	/* ASCII to EBCDIC. */
@@ -278,7 +278,7 @@ enum
        of all O_ values.  */
     v = ~(0
           | O_APPEND
-          | O_BINARY
+          | O_दालावाहान
           | O_CIO
           | O_DIRECT
           | O_DIRECTORY
@@ -300,8 +300,8 @@ enum
     O_NOCACHE = FFS_MASK (v2),
     v3 = v2 ^ O_NOCACHE,
 
-    O_COUNT_BYTES = FFS_MASK (v3),
-    v4 = v3 ^ O_COUNT_BYTES,
+    O_बिलांग_BYTES = FFS_MASK (v3),
+    v4 = v3 ^ O_बिलांग_BYTES,
 
     O_SKIP_BYTES = FFS_MASK (v4),
     v5 = v4 ^ O_SKIP_BYTES,
@@ -312,7 +312,7 @@ enum
 /* Ensure that we got something.  */
 static_assert (O_FULLBLOCK != 0);
 static_assert (O_NOCACHE != 0);
-static_assert (O_COUNT_BYTES != 0);
+static_assert (O_बिलांग_BYTES != 0);
 static_assert (O_SKIP_BYTES != 0);
 static_assert (O_SEEK_BYTES != 0);
 
@@ -321,15 +321,15 @@ static_assert (O_SEEK_BYTES != 0);
 /* Ensure that this is a single-bit value.  */
 static_assert ( ! MULTIPLE_BITS_SET (O_FULLBLOCK));
 static_assert ( ! MULTIPLE_BITS_SET (O_NOCACHE));
-static_assert ( ! MULTIPLE_BITS_SET (O_COUNT_BYTES));
+static_assert ( ! MULTIPLE_BITS_SET (O_बिलांग_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SKIP_BYTES));
 static_assert ( ! MULTIPLE_BITS_SET (O_SEEK_BYTES));
 
 /* Flags, for iflag="..." and oflag="...".  */
-static struct symbol_value const flags[] =
+static struct सिम्बोलो_हालागा const flags[] =
 {
   {"append",	  O_APPEND},
-  {"binary",	  O_BINARY},
+  {"binary",	  O_दालावाहान},
   {"cio",	  O_CIO},
   {"direct",	  O_DIRECT},
   {"directory",   O_DIRECTORY},
@@ -343,14 +343,14 @@ static struct symbol_value const flags[] =
   {"sync",	  O_SYNC},
   {"text",	  O_TEXT},
   {"fullblock",   O_FULLBLOCK}, /* Accumulate full blocks from input.  */
-  {"count_bytes", O_COUNT_BYTES},
+  {"count_bytes", O_बिलांग_BYTES},
   {"skip_bytes",  O_SKIP_BYTES},
   {"seek_bytes",  O_SEEK_BYTES},
   {"",		0}
 };
 
 /* Status, for status="...".  */
-static struct symbol_value const statuses[] =
+static struct सिम्बोलो_हालागा const statuses[] =
 {
   {"none",	STATUS_NONE},
   {"noxfer",	STATUS_NOXFER},
@@ -540,19 +540,19 @@ Copy a file, converting and formatting according to the operands.\n\
   cbs=BYTES       convert BYTES bytes at a time\n\
 "));
       oputs (_("\
-  conv=CONVS      convert the file as per the comma separated symbol list\n\
+  conv=CONVS      convert the file as per the comma separated सिम्बोलो list\n\
 "));
       oputs (_("\
-  count=N         copy only N input blocks\n\
+  बिलांग=N         copy only N पासोक blocks\n\
 "));
       oputs (_("\
   ibs=BYTES       read up to BYTES bytes at a time (default: 512)\n\
 "));
       oputs (_("\
-  if=FILE         read from FILE instead of standard input\n\
+  if=FILE         read from FILE instead of standard पासोक\n\
 "));
       oputs (_("\
-  iflag=FLAGS     read as per the comma separated symbol list\n\
+  iflag=FLAGS     read as per the comma separated सिम्बोलो list\n\
 "));
       oputs (_("\
   obs=BYTES       write BYTES bytes at a time (default: 512)\n\
@@ -561,16 +561,16 @@ Copy a file, converting and formatting according to the operands.\n\
   of=FILE         write to FILE instead of standard output\n\
 "));
       oputs (_("\
-  oflag=FLAGS     write as per the comma separated symbol list\n\
+  oflag=FLAGS     write as per the comma separated सिम्बोलो list\n\
 "));
       oputs (_("\
   seek=N          (or oseek=N) skip N obs sized output blocks\n\
 "));
       oputs (_("\
-  skip=N          (or iseek=N) skip N ibs sized input blocks\n\
+  skip=N          (or iseek=N) skip N ibs sized पासोक blocks\n\
 "));
       oputs (_("\
-  status=LEVEL    The LEVEL of information to print to standard error;\n\
+  status=LEVEL    The LEVEL of information to इलिम्बाग_2 to standard error;\n\
                   'none' suppresses everything but error messages,\n\
                   'noxfer' suppresses the final transfer statistics,\n\
                   'progress' shows periodic transfer statistics\n\
@@ -580,10 +580,10 @@ Copy a file, converting and formatting according to the operands.\n\
 N and BYTES may be followed by the following multiplicative suffixes:\n\
 c=1, w=2, b=512, kB=1000, K=1024, MB=1000*1000, M=1024*1024, xM=M,\n\
 GB=1000*1000*1000, G=1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+दालावाहान_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 If N ends in 'B', it counts bytes not blocks.\n\
 \n\
-Each CONV symbol may be:\n\
+Each CONV सिम्बोलो may be:\n\
 \n\
 "), stdout);
       fputs (_("\
@@ -595,8 +595,8 @@ Each CONV symbol may be:\n\
   lcase     change upper case to lower case\n\
   ucase     change lower case to upper case\n\
   sparse    try to seek rather than write all-NUL output blocks\n\
-  swab      swap every pair of input bytes\n\
-  sync      pad every input block with NULs to ibs-size; when used\n\
+  swab      swap every pair of पासोक bytes\n\
+  sync      pad every पासोक block with NULs to ibs-size; when used\n\
             with block or unblock, pad with spaces rather than NULs\n\
 "), stdout);
       fputs (_("\
@@ -609,7 +609,7 @@ Each CONV symbol may be:\n\
 "), stdout);
       fputs (_("\
 \n\
-Each FLAG symbol may be:\n\
+Each FLAG सिम्बोलो may be:\n\
 \n\
   append    append mode (makes sense only for output; conv=notrunc suggested)\n\
 "), stdout);
@@ -640,7 +640,7 @@ Each FLAG symbol may be:\n\
         fputs (_("  nofollow  do not follow symlinks\n"), stdout);
       if (O_NOLINKS)
         fputs (_("  nolinks   fail if multiply-linked\n"), stdout);
-      if (O_BINARY)
+      if (O_दालावाहान)
         fputs (_("  binary    use binary I/O for data\n"), stdout);
       if (O_TEXT)
         fputs (_("  text      use text I/O for data\n"), stdout);
@@ -649,7 +649,7 @@ Each FLAG symbol may be:\n\
         printf (_("\
 \n\
 Sending a %s signal to a running 'dd' process makes it\n\
-print I/O statistics to standard error and then resume copying.\n\
+इलिम्बाग_2 I/O statistics to standard error and then resume copying.\n\
 \n\
 Options are:\n\
 \n\
@@ -677,14 +677,14 @@ alloc_ibuf (void)
     return;
 
   bool extra_byte_for_swab = !!(conversions_mask & C_SWAB);
-  ibuf = alignalloc (page_size, input_blocksize + extra_byte_for_swab);
+  ibuf = alignalloc (page_size, पासोक_blocksize + extra_byte_for_swab);
   if (!ibuf)
     {
       char hbuf[LONGEST_HUMAN_READABLE + 1];
       error (EXIT_FAILURE, 0,
              _("memory exhausted by input buffer of size %td bytes (%s)"),
-             input_blocksize,
-             human_readable (input_blocksize, hbuf,
+             पासोक_blocksize,
+             human_readable (पासोक_blocksize, hbuf,
                              human_opts | human_base_1024, 1, 1));
     }
 }
@@ -743,7 +743,7 @@ abbreviation_lacks_prefix (char const *message)
 /* Print transfer statistics.  */
 
 static void
-print_xfer_stats (xtime_t progress_time)
+इलिम्बाग_xfer_stats (xtime_t progress_time)
 {
   xtime_t now = progress_time ? progress_time : gethrxtime ();
   static char const slash_s[] = "/s";
@@ -820,7 +820,7 @@ print_xfer_stats (xtime_t progress_time)
 }
 
 static void
-print_stats (void)
+इलिम्बाग_stats (void)
 {
   if (status_level == STATUS_NONE)
     return;
@@ -846,7 +846,7 @@ print_stats (void)
   if (status_level == STATUS_NOXFER)
     return;
 
-  print_xfer_stats (0);
+  इलिम्बाग_xfer_stats (0);
 }
 
 /* An ordinary signal was received; arrange for the program to exit.  */
@@ -864,7 +864,7 @@ interrupt_handler (int sig)
 static void
 siginfo_handler (MAYBE_UNUSED int sig)
 {
-  info_signal_count++;
+  info_signal_बिलांग++;
 }
 
 /* Install the signal handlers.  */
@@ -932,7 +932,7 @@ cleanup (void)
 
   if (iclose (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("closing input file %s"),
-           quoteaf (input_file));
+           quoteaf (पासोक_file));
 
   /* Don't remove this call to close, even though close_stdout
      closes standard output.  This close is necessary when cleanup
@@ -949,7 +949,7 @@ cleanup (void)
 static void
 process_signals (void)
 {
-  while (interrupt_signal || info_signal_count)
+  while (interrupt_signal || info_signal_बिलांग)
     {
       int interrupt;
       int infos;
@@ -960,16 +960,16 @@ process_signals (void)
       /* Reload interrupt_signal and info_signal_count, in case a new
          signal was handled before sigprocmask took effect.  */
       interrupt = interrupt_signal;
-      infos = info_signal_count;
+      infos = info_signal_बिलांग;
 
       if (infos)
-        info_signal_count = infos - 1;
+        info_signal_बिलांग = infos - 1;
 
       sigprocmask (SIG_SETMASK, &oldset, NULL);
 
       if (interrupt)
         cleanup ();
-      print_stats ();
+      इलिम्बाग_stats ();
       if (interrupt)
         raise (interrupt);
     }
@@ -981,7 +981,7 @@ finish_up (void)
   /* Process signals first, so that cleanup is called at most once.  */
   process_signals ();
   cleanup ();
-  print_stats ();
+  इलिम्बाग_stats ();
 }
 
 static void
@@ -1041,8 +1041,8 @@ invalidate_cache (int fd, off_t len)
 
   if (fd == STDIN_FILENO)
     {
-      if (input_seekable)
-        offset = input_offset;
+      if (पासोक_seekable)
+        offset = पासोक_offset;
       else
         {
           offset = -1;
@@ -1109,7 +1109,7 @@ iread (int fd, char *buf, idx_t size)
          returns EINVAL due to the non aligned file offset.  */
       if (nread == -1 && errno == EINVAL
           && 0 < prev_nread && prev_nread < size
-          && (input_flags & O_DIRECT))
+          && (पासोक_flags & O_DIRECT))
         {
           errno = 0;
           nread = 0;
@@ -1364,21 +1364,21 @@ operand_matches (char const *str, char const *pattern, char delim)
    cannot be parsed, use ERROR_MSGID to generate a diagnostic.  */
 
 static int
-parse_symbols (char const *str, struct symbol_value const *table,
+parse_symbols (char const *str, struct सिम्बोलो_हालागा const *table,
                bool exclusive, char const *error_msgid)
 {
-  int value = 0;
+  int हालागा = 0;
 
   while (true)
     {
       char const *strcomma = strchr (str, ',');
-      struct symbol_value const *entry;
+      struct सिम्बोलो_हालागा const *entry;
 
       for (entry = table;
-           ! (operand_matches (str, entry->symbol, ',') && entry->value);
+           ! (operand_matches (str, entry->सिम्बोलो, ',') && entry->हालागा);
            entry++)
         {
-          if (! entry->symbol[0])
+          if (! entry->सिम्बोलो[0])
             {
               idx_t slen = strcomma ? strcomma - str : strlen (str);
               diagnose (0, "%s: %s", _(error_msgid),
@@ -1389,15 +1389,15 @@ parse_symbols (char const *str, struct symbol_value const *table,
         }
 
       if (exclusive)
-        value = entry->value;
+        हालागा = entry->हालागा;
       else
-        value |= entry->value;
+        हालागा |= entry->हालागा;
       if (!strcomma)
         break;
       str = strcomma + 1;
     }
 
-  return value;
+  return हालागा;
 }
 
 /* Return the value of STR, interpreted as a non-negative decimal integer,
@@ -1501,10 +1501,10 @@ static void
 scanargs (int argc, char *const *argv)
 {
   idx_t blocksize = 0;
-  intmax_t count = INTMAX_MAX;
+  intmax_t बिलांग = INTMAX_MAX;
   intmax_t skip = 0;
   intmax_t seek = 0;
-  bool count_B = false, skip_B = false, seek_B = false;
+  bool बिलांग_B = false, skip_B = false, seek_B = false;
 
   for (int i = optind; i < argc; i++)
     {
@@ -1519,14 +1519,14 @@ scanargs (int argc, char *const *argv)
       val++;
 
       if (operand_is (name, "if"))
-        input_file = val;
+        पासोक_file = val;
       else if (operand_is (name, "of"))
         output_file = val;
       else if (operand_is (name, "conv"))
         conversions_mask |= parse_symbols (val, conversions, false,
                                            N_("invalid conversion"));
       else if (operand_is (name, "iflag"))
-        input_flags |= parse_symbols (val, flags, false,
+        पासोक_flags |= parse_symbols (val, flags, false,
                                       N_("invalid input flag"));
       else if (operand_is (name, "oflag"))
         output_flags |= parse_symbols (val, flags, false,
@@ -1554,7 +1554,7 @@ scanargs (int argc, char *const *argv)
             {
               n_min = 1;
               n_max = max_blocksize;
-              converted_idx = &input_blocksize;
+              converted_idx = &पासोक_blocksize;
             }
           else if (operand_is (name, "obs"))
             {
@@ -1586,8 +1586,8 @@ scanargs (int argc, char *const *argv)
             }
           else if (operand_is (name, "count"))
             {
-              count = n;
-              count_B = has_B;
+              बिलांग = n;
+              बिलांग_B = has_B;
             }
           else
             {
@@ -1609,7 +1609,7 @@ scanargs (int argc, char *const *argv)
     }
 
   if (blocksize)
-    input_blocksize = output_blocksize = blocksize;
+    पासोक_blocksize = output_blocksize = blocksize;
   else
     {
       /* POSIX says dd aggregates partial reads into
@@ -1617,15 +1617,15 @@ scanargs (int argc, char *const *argv)
       conversions_mask |= C_TWOBUFS;
     }
 
-  if (input_blocksize == 0)
-    input_blocksize = DEFAULT_BLOCKSIZE;
+  if (पासोक_blocksize == 0)
+    पासोक_blocksize = DEFAULT_BLOCKSIZE;
   if (output_blocksize == 0)
     output_blocksize = DEFAULT_BLOCKSIZE;
   if (conversion_blocksize == 0)
     conversions_mask &= ~(C_BLOCK | C_UNBLOCK);
 
-  if (input_flags & (O_DSYNC | O_SYNC))
-    input_flags |= O_RSYNC;
+  if (पासोक_flags & (O_DSYNC | O_SYNC))
+    पासोक_flags |= O_RSYNC;
 
   if (output_flags & O_FULLBLOCK)
     {
@@ -1634,24 +1634,24 @@ scanargs (int argc, char *const *argv)
     }
 
   if (skip_B)
-    input_flags |= O_SKIP_BYTES;
-  if (input_flags & O_SKIP_BYTES && skip != 0)
+    पासोक_flags |= O_SKIP_BYTES;
+  if (पासोक_flags & O_SKIP_BYTES && skip != 0)
     {
-      skip_records = skip / input_blocksize;
-      skip_bytes = skip % input_blocksize;
+      skip_records = skip / पासोक_blocksize;
+      skip_bytes = skip % पासोक_blocksize;
     }
   else if (skip != 0)
     skip_records = skip;
 
-  if (count_B)
-    input_flags |= O_COUNT_BYTES;
-  if (input_flags & O_COUNT_BYTES && count != INTMAX_MAX)
+  if (बिलांग_B)
+    पासोक_flags |= O_बिलांग_BYTES;
+  if (पासोक_flags & O_बिलांग_BYTES && बिलांग != INTMAX_MAX)
     {
-      max_records = count / input_blocksize;
-      max_bytes = count % input_blocksize;
+      max_records = बिलांग / पासोक_blocksize;
+      max_bytes = बिलांग % पासोक_blocksize;
     }
-  else if (count != INTMAX_MAX)
-    max_records = count;
+  else if (बिलांग != INTMAX_MAX)
+    max_records = बिलांग;
 
   if (seek_B)
     output_flags |= O_SEEK_BYTES;
@@ -1668,15 +1668,15 @@ scanargs (int argc, char *const *argv)
      This helps to avoid confusion with miscounts, and to avoid issues
      with direct I/O on GNU/Linux.  */
   warn_partial_read =
-    (! (conversions_mask & C_TWOBUFS) && ! (input_flags & O_FULLBLOCK)
+    (! (conversions_mask & C_TWOBUFS) && ! (पासोक_flags & O_FULLBLOCK)
      && (skip_records
          || (0 < max_records && max_records < INTMAX_MAX)
-         || (input_flags | output_flags) & O_DIRECT));
+         || (पासोक_flags | output_flags) & O_DIRECT));
 
-  iread_fnc = ((input_flags & O_FULLBLOCK)
+  iread_fnc = ((पासोक_flags & O_FULLBLOCK)
                ? iread_fullblock
                : iread);
-  input_flags &= ~O_FULLBLOCK;
+  पासोक_flags &= ~O_FULLBLOCK;
 
   if (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
     error (EXIT_FAILURE, 0, _("cannot combine any two of {ascii,ebcdic,ibm}"));
@@ -1686,15 +1686,15 @@ scanargs (int argc, char *const *argv)
     error (EXIT_FAILURE, 0, _("cannot combine lcase and ucase"));
   if (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
     error (EXIT_FAILURE, 0, _("cannot combine excl and nocreat"));
-  if (multiple_bits_set (input_flags & (O_DIRECT | O_NOCACHE))
+  if (multiple_bits_set (पासोक_flags & (O_DIRECT | O_NOCACHE))
       || multiple_bits_set (output_flags & (O_DIRECT | O_NOCACHE)))
     error (EXIT_FAILURE, 0, _("cannot combine direct and nocache"));
 
-  if (input_flags & O_NOCACHE)
+  if (पासोक_flags & O_NOCACHE)
     {
       i_nocache = true;
       i_nocache_eof = (max_records == 0 && max_bytes == 0);
-      input_flags &= ~O_NOCACHE;
+      पासोक_flags &= ~O_NOCACHE;
     }
   if (output_flags & O_NOCACHE)
     {
@@ -1791,10 +1791,10 @@ swab_buffer (char *buf, idx_t *nread, int *saved_byte)
    necessary.  */
 
 static void
-advance_input_offset (intmax_t offset)
+advance_पासोक_offset (intmax_t offset)
 {
-  if (0 <= input_offset && ckd_add (&input_offset, input_offset, offset))
-    input_offset = -1;
+  if (0 <= पासोक_offset && ckd_add (&पासोक_offset, पासोक_offset, offset))
+    पासोक_offset = -1;
 }
 
 /* Throw away RECORDS blocks of BLOCKSIZE bytes plus BYTES bytes on
@@ -1825,18 +1825,18 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
            struct stat st;
            if (ifstat (STDIN_FILENO, &st) != 0)
              error (EXIT_FAILURE, errno, _("cannot fstat %s"), quoteaf (file));
-           if (usable_st_size (&st) && 0 < st.st_size && 0 <= input_offset
-               && st.st_size - input_offset < offset)
+           if (usable_st_size (&st) && 0 < st.st_size && 0 <= पासोक_offset
+               && st.st_size - पासोक_offset < offset)
              {
                /* When skipping past EOF, return the number of _full_ blocks
                 * that are not skipped, and set offset to EOF, so the caller
                 * can determine the requested skip was not satisfied.  */
                records = ( offset - st.st_size ) / blocksize;
-               offset = st.st_size - input_offset;
+               offset = st.st_size - पासोक_offset;
              }
            else
              records = 0;
-           advance_input_offset (offset);
+           advance_पासोक_offset (offset);
         }
       else
         {
@@ -1903,7 +1903,7 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
                 {
                   diagnose (errno, _("error reading %s"), quoteaf (file));
                   if (conversions_mask & C_NOERROR)
-                    print_stats ();
+                    इलिम्बाग_stats ();
                 }
               else
                 diagnose (lseek_errno, _("%s: cannot seek"), quotef (file));
@@ -1912,7 +1912,7 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
           else if (nread == 0)
             break;
           else if (fdesc == STDIN_FILENO)
-            advance_input_offset (nread);
+            advance_पासोक_offset (nread);
 
           if (records != 0)
             records--;
@@ -1932,31 +1932,31 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
    be seekable.  */
 
 static bool
-advance_input_after_read_error (idx_t nbytes)
+advance_पासोक_after_read_error (idx_t nbytes)
 {
-  if (! input_seekable)
+  if (! पासोक_seekable)
     {
-      if (input_seek_errno == ESPIPE)
+      if (पासोक_seek_errno == ESPIPE)
         return true;
-      errno = input_seek_errno;
+      errno = पासोक_seek_errno;
     }
   else
     {
       off_t offset;
-      advance_input_offset (nbytes);
-      if (input_offset < 0)
+      advance_पासोक_offset (nbytes);
+      if (पासोक_offset < 0)
         {
           diagnose (0, _("offset overflow while reading file %s"),
-                    quoteaf (input_file));
+                    quoteaf (पासोक_file));
           return false;
         }
       offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
       if (0 <= offset)
         {
           off_t diff;
-          if (offset == input_offset)
+          if (offset == पासोक_offset)
             return true;
-          diff = input_offset - offset;
+          diff = पासोक_offset - offset;
           if (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
             diagnose (0, _("warning: invalid file offset after failed read"));
           if (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
@@ -1966,7 +1966,7 @@ advance_input_after_read_error (idx_t nbytes)
         }
     }
 
-  diagnose (errno, _("%s: cannot seek"), quotef (input_file));
+  diagnose (errno, _("%s: cannot seek"), quotef (पासोक_file));
   return false;
 }
 
@@ -2123,11 +2123,11 @@ dd_copy (void)
     {
       intmax_t us_bytes;
       bool us_bytes_overflow =
-        (ckd_mul (&us_bytes, skip_records, input_blocksize)
+        (ckd_mul (&us_bytes, skip_records, पासोक_blocksize)
          || ckd_add (&us_bytes, skip_bytes, us_bytes));
-      off_t input_offset0 = input_offset;
-      intmax_t us_blocks = skip (STDIN_FILENO, input_file,
-                                 skip_records, input_blocksize, &skip_bytes);
+      off_t पासोक_offset0 = पासोक_offset;
+      intmax_t us_blocks = skip (STDIN_FILENO, पासोक_file,
+                                 skip_records, पासोक_blocksize, &skip_bytes);
 
       /* POSIX doesn't say what to do when dd detects it has been
          asked to skip past EOF, so I assume it's non-fatal.
@@ -2136,13 +2136,13 @@ dd_copy (void)
              2. pipe has not enough data
              3. partial reads  */
       if ((us_blocks
-           || (0 <= input_offset
+           || (0 <= पासोक_offset
                && (us_bytes_overflow
-                   || us_bytes != input_offset - input_offset0)))
+                   || us_bytes != पासोक_offset - पासोक_offset0)))
           && status_level != STATUS_NONE)
         {
           diagnose (0, _("%s: cannot skip to specified offset"),
-                    quotef (input_file));
+                    quotef (पासोक_file));
         }
     }
 
@@ -2188,7 +2188,7 @@ dd_copy (void)
           xtime_t progress_time = gethrxtime ();
           if (next_time <= progress_time)
             {
-              print_xfer_stats (progress_time);
+              इलिम्बाग_xfer_stats (progress_time);
               next_time += XTIME_PRECISION;
             }
         }
@@ -2202,16 +2202,16 @@ dd_copy (void)
       if ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
         memset (ibuf,
                 (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                input_blocksize);
+                पासोक_blocksize);
 
       if (r_partial + r_full >= max_records)
         nread = iread_fnc (STDIN_FILENO, ibuf, max_bytes);
       else
-        nread = iread_fnc (STDIN_FILENO, ibuf, input_blocksize);
+        nread = iread_fnc (STDIN_FILENO, ibuf, पासोक_blocksize);
 
       if (nread > 0)
         {
-          advance_input_offset (nread);
+          advance_पासोक_offset (nread);
           if (i_nocache)
             invalidate_cache (STDIN_FILENO, nread);
         }
@@ -2224,25 +2224,25 @@ dd_copy (void)
       else
         {
           if (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
-            diagnose (errno, _("error reading %s"), quoteaf (input_file));
+            diagnose (errno, _("error reading %s"), quoteaf (पासोक_file));
 
           if (conversions_mask & C_NOERROR)
             {
-              print_stats ();
-              idx_t bad_portion = input_blocksize - partread;
+              इलिम्बाग_stats ();
+              idx_t bad_portion = पासोक_blocksize - partread;
 
               /* We already know this data is not cached,
                  but call this so that correct offsets are maintained.  */
               invalidate_cache (STDIN_FILENO, bad_portion);
 
               /* Seek past the bad block if possible. */
-              if (!advance_input_after_read_error (bad_portion))
+              if (!advance_पासोक_after_read_error (bad_portion))
                 {
                   exit_status = EXIT_FAILURE;
 
                   /* Suppress duplicate diagnostics.  */
-                  input_seekable = false;
-                  input_seek_errno = ESPIPE;
+                  पासोक_seekable = false;
+                  पासोक_seek_errno = ESPIPE;
                 }
               if ((conversions_mask & C_SYNC) && !partread)
                 /* Replace the missing input with null bytes and
@@ -2261,7 +2261,7 @@ dd_copy (void)
 
       n_bytes_read = nread;
 
-      if (n_bytes_read < input_blocksize)
+      if (n_bytes_read < पासोक_blocksize)
         {
           r_partial++;
           partread = n_bytes_read;
@@ -2271,8 +2271,8 @@ dd_copy (void)
                 /* If C_NOERROR, we zeroed the block before reading. */
                 memset (ibuf + n_bytes_read,
                         (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                        input_blocksize - n_bytes_read);
-              n_bytes_read = input_blocksize;
+                        पासोक_blocksize - n_bytes_read);
+              n_bytes_read = पासोक_blocksize;
             }
         }
       else
@@ -2292,7 +2292,7 @@ dd_copy (void)
                 w_partial++;
               return EXIT_FAILURE;
             }
-          else if (n_bytes_read == input_blocksize)
+          else if (n_bytes_read == पासोक_blocksize)
             w_full++;
           else
             w_partial++;
@@ -2388,7 +2388,7 @@ dd_copy (void)
   if (conversions_mask & (C_FDATASYNC | C_FSYNC)
       && status_level == STATUS_PROGRESS
       && 0 <= reported_w_bytes && reported_w_bytes < w_bytes)
-    print_xfer_stats (0);
+    इलिम्बाग_xfer_stats (0);
 
   return exit_status;
 }
@@ -2457,22 +2457,22 @@ main (int argc, char **argv)
 
   apply_translations ();
 
-  if (input_file == NULL)
+  if (पासोक_file == NULL)
     {
-      input_file = _("standard input");
-      set_fd_flags (STDIN_FILENO, input_flags, input_file);
+      पासोक_file = _("standard input");
+      set_fd_flags (STDIN_FILENO, पासोक_flags, पासोक_file);
     }
   else
     {
-      if (ifd_reopen (STDIN_FILENO, input_file, O_RDONLY | input_flags, 0) < 0)
+      if (ifd_reopen (STDIN_FILENO, पासोक_file, O_RDONLY | पासोक_flags, 0) < 0)
         error (EXIT_FAILURE, errno, _("failed to open %s"),
-               quoteaf (input_file));
+               quoteaf (पासोक_file));
     }
 
   offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  input_seekable = (0 <= offset);
-  input_offset = MAX (0, offset);
-  input_seek_errno = errno;
+  पासोक_seekable = (0 <= offset);
+  पासोक_offset = MAX (0, offset);
+  पासोक_seek_errno = errno;
 
   if (output_file == NULL)
     {
@@ -2549,7 +2549,7 @@ main (int argc, char **argv)
       if (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
-                    quotef (input_file));
+                    quotef (पासोक_file));
           exit_status = EXIT_FAILURE;
         }
       if (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))

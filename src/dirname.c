@@ -60,7 +60,7 @@ removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);

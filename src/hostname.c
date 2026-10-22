@@ -58,7 +58,7 @@ usage (int status)
       printf (_("\
 Usage: %s [NAME]\n\
   or:  %s OPTION\n\
-Print or set the hostname of the current system.\n\
+इलिम्बाग or set the hostname of the current system.\n\
 \n\
 "),
              program_name, program_name);

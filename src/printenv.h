@@ -18,7 +18,7 @@
 # define PRINTENV_H 1
 
 static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+इलिम्बाग_envvar (char const *entry, char terminator, bool quoted)
 {
   if (! quoted)
     fputs (entry, stdout);

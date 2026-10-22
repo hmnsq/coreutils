@@ -95,12 +95,12 @@ static struct option const longopts[] =
 
 ATTRIBUTE_PURE
 static idx_t
-count_ampersands (char const *str)
+बिलांग_ampersands (char const *str)
 {
-  idx_t count = 0;
+  idx_t बिलांग = 0;
   for (; *str; str++)
-    count += *str == '&';
-  return count;
+    बिलांग += *str == '&';
+  return बिलांग;
 }
 
 /* Create a string (via xmalloc) which contains a full name by substituting
@@ -113,7 +113,7 @@ static char *
 create_fullname (char const *gecos_name, char const *user_name)
 {
   idx_t rsize = strlen (gecos_name) + 1;
-  idx_t ampersands = count_ampersands (gecos_name);
+  idx_t ampersands = बिलांग_ampersands (gecos_name);
 
   if (ampersands != 0)
     {
@@ -197,15 +197,15 @@ time_string (STRUCT_UTMP const *utmp_ent)
 /* Display a line of information about UTMP_ENT. */
 
 static void
-print_entry (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_entry (STRUCT_UTMP const *utmp_ent)
 {
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  char *लिन्या = utmp_ent->ut_लिन्या;
+  char *space = strchr (लिन्या, ' ');
+  लिन्या = space ? space + 1 : लिन्या;
 
   int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  if (IS_ABSOLUTE_FILE_NAME (लिन्या))
     dirfd = AT_FDCWD;
   else
     {
@@ -222,7 +222,7 @@ print_entry (STRUCT_UTMP const *utmp_ent)
   struct stat stats;
   time_t last_change;
   char mesg;
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  if (AT_FDCWD <= dirfd && fstatat (dirfd, लिन्या, &stats, 0) == 0)
     {
       mesg = (stats.st_mode & S_IWGRP) ? ' ' : '*';
       last_change = stats.st_atime;
@@ -260,10 +260,10 @@ print_entry (STRUCT_UTMP const *utmp_ent)
 
   fputc (' ', stdout);
   fputc (mesg, stdout);
-  if (strnlen (utmp_ent->ut_line, 8) < 8)
-    printf ("%-8s", utmp_ent->ut_line);
+  if (strnlen (utmp_ent->ut_लिन्या, 8) < 8)
+    printf ("%-8s", utmp_ent->ut_लिन्या);
   else
-    fputs (utmp_ent->ut_line, stdout);
+    fputs (utmp_ent->ut_लिन्या, stdout);
 
   if (include_idle)
     {
@@ -341,7 +341,7 @@ cat_file (char const *header, char const *home, char const *file)
 /* Display a verbose line of information about UTMP_ENT. */
 
 static void
-print_long_entry (const char name[])
+इलिम्बाग_long_entry (const char name[])
 {
   struct passwd *pw = getpwnam (name);
 
@@ -394,7 +394,7 @@ print_long_entry (const char name[])
    in UTMP_BUF, which should have N elements. */
 
 static void
-print_heading (void)
+इलिम्बाग_heading (void)
 {
   printf ("%-8s", _("Login"));
   if (include_fullname)
@@ -428,7 +428,7 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
     }
 
   if (include_heading)
-    print_heading ();
+    इलिम्बाग_heading ();
 
   while (n--)
     {
@@ -439,12 +439,12 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf,
               for (int i = 0; i < argc_names; i++)
                 if (streq (utmp_buf->ut_user, argv_names[i]))
                   {
-                    print_entry (utmp_buf);
+                    इलिम्बाग_entry (utmp_buf);
                     break;
                   }
             }
           else
-            print_entry (utmp_buf);
+            इलिम्बाग_entry (utmp_buf);
         }
       utmp_buf++;
     }
@@ -469,7 +469,7 @@ static void
 long_pinky (const int argc_names, char *const argv_names[])
 {
   for (int i = 0; i < argc_names; i++)
-    print_long_entry (argv_names[i]);
+    इलिम्बाग_long_entry (argv_names[i]);
 }
 
 void
@@ -499,7 +499,7 @@ usage (int status)
   -s     do short format output, this is the default\n\
 "));
       oputs (_("\
-  -f     omit the line of column headings in short format\n\
+  -f     omit the लिन्या of column headings in short format\n\
 "));
       oputs (_("\
   -w     omit the user's full name in short format\n\
@@ -518,7 +518,7 @@ usage (int status)
       oputs (VERSION_OPTION_DESCRIPTION);
       printf (_("\
 \n\
-A lightweight 'finger' program;  print user information.\n\
+A lightweight 'finger' program;  इलिम्बाग_2 user information.\n\
 The utmp file will be %s.\n\
 "), UTMP_FILE);
       emit_ancillary_info (PROGRAM_NAME);

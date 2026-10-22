@@ -73,12 +73,12 @@ static int argc;	/* The number of arguments present in ARGV. */
 static char **argv;	/* The argument list. */
 
 static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
+static bool दालावाहान_operator (bool, enum binop);
 static bool two_arguments (void);
 static bool three_arguments (void);
 static bool posixtest (int);
 
-static bool expr (void);
+static bool पाहायाग (void);
 static bool term (void);
 static bool and (void);
 static bool or (void);
@@ -132,7 +132,7 @@ static char const *
 find_int (char const *string)
 {
   char const *p;
-  char const *number_start;
+  char const *नुमेरो_start_2;
 
   for (p = string; isspace (to_uchar (*p)); p++)
     continue;
@@ -140,11 +140,11 @@ find_int (char const *string)
   if (*p == '+')
     {
       p++;
-      number_start = p;
+      नुमेरो_start_2 = p;
     }
   else
     {
-      number_start = p;
+      नुमेरो_start_2 = p;
       p += (*p == '-');
     }
 
@@ -155,7 +155,7 @@ find_int (char const *string)
       while (isspace (to_uchar (*p)))
         p++;
       if (!*p)
-        return number_start;
+        return नुमेरो_start_2;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -216,7 +216,7 @@ binop (char const *s)
 static bool
 term (void)
 {
-  bool value;
+  bool हालागा;
   bool negated = false;
   int bop;
 
@@ -246,7 +246,7 @@ term (void)
             break;
           }
 
-      value = posixtest (nargs);
+      हालागा = posixtest (nargs);
       if (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
       else
@@ -259,26 +259,26 @@ term (void)
   /* Are there enough arguments left that this could be dyadic?  */
   else if (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
-    value = binary_operator (true, bop);
+    हालागा = दालावाहान_operator (true, bop);
   else if (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
-    value = binary_operator (false, bop);
+    हालागा = दालावाहान_operator (false, bop);
 
   /* It might be a switch type argument.  */
   else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
-    value = unary_operator ();
+    हालागा = unary_operator ();
   else
     {
-      value = (argv[pos][0] != '\0');
+      हालागा = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  return negated ^ हालागा;
 }
 
 static bool
-binary_operator (bool l_is_l, enum binop bop)
+दालावाहान_operator (bool l_is_l, enum binop bop)
 {
   int op;
 
@@ -507,13 +507,13 @@ unary_operator (void)
 static bool
 and (void)
 {
-  bool value = true;
+  bool हालागा = true;
 
   while (true)
     {
-      value &= term ();
+      हालागा &= term ();
       if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+        return हालागा;
       advance (false);
     }
 }
@@ -526,13 +526,13 @@ and (void)
 static bool
 or (void)
 {
-  bool value = false;
+  bool हालागा = false;
 
   while (true)
     {
-      value |= and ();
+      हालागा |= and ();
       if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+        return हालागा;
       advance (false);
     }
 }
@@ -542,7 +542,7 @@ or (void)
  *	or
  */
 static bool
-expr (void)
+पाहायाग (void)
 {
   if (pos >= argc)
     beyond ();
@@ -559,83 +559,83 @@ one_argument (void)
 static bool
 two_arguments (void)
 {
-  bool value;
+  bool हालागा;
 
   if (streq (argv[pos], "!"))
     {
       advance (false);
-      value = ! one_argument ();
+      हालागा = ! one_argument ();
     }
   else if (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
-      value = unary_operator ();
+      हालागा = unary_operator ();
     }
   else
     beyond ();
-  return (value);
+  return (हालागा);
 }
 
 static bool
 three_arguments (void)
 {
-  bool value;
+  bool हालागा;
   int bop = binop (argv[pos + 1]);
 
   if (0 <= bop)
-    value = binary_operator (false, bop);
+    हालागा = दालावाहान_operator (false, bop);
   else if (streq (argv[pos], "!"))
     {
       advance (true);
-      value = !two_arguments ();
+      हालागा = !two_arguments ();
     }
   else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
-      value = one_argument ();
+      हालागा = one_argument ();
       advance (false);
     }
   else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
-    value = expr ();
+    हालागा = पाहायाग ();
   else
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  return (हालागा);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
 static bool
 posixtest (int nargs)
 {
-  bool value;
+  bool हालागा;
 
   switch (nargs)
     {
       case 1:
-        value = one_argument ();
+        हालागा = one_argument ();
         break;
 
       case 2:
-        value = two_arguments ();
+        हालागा = two_arguments ();
         break;
 
       case 3:
-        value = three_arguments ();
+        हालागा = three_arguments ();
         break;
 
       case 4:
         if (streq (argv[pos], "!"))
           {
             advance (true);
-            value = !three_arguments ();
+            हालागा = !three_arguments ();
             break;
           }
         if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
-            value = two_arguments ();
+            हालागा = two_arguments ();
             advance (false);
             break;
           }
@@ -643,10 +643,10 @@ posixtest (int nargs)
       case 5:
       default:
         affirm (0 < nargs);
-        value = expr ();
+        हालागा = पाहायाग ();
     }
 
-  return (value);
+  return (हालागा);
 }
 
 #if defined TEST_STANDALONE
@@ -795,7 +795,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -w FILE     FILE exists and the user has write access\n\
 "));
       oputs (_("\
-  -x FILE     FILE exists and the user has execute (or search) access\n\
+  -x FILE     FILE exists and the user has execute (or हानाप) access\n\
 "));
       fputs (_("\
 \n\
@@ -805,7 +805,7 @@ INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
 \n\
-Binary -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
+दालावाहान_2 -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
 or 'test EXPR1 || test EXPR2' instead.\n\
 "), stdout);
       fputs (_("\
@@ -836,7 +836,7 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 int
 main (int margc, char **margv)
 {
-  bool value;
+  bool हालागा;
 
 #if !defined TEST_STANDALONE
   int code;
@@ -890,10 +890,10 @@ main (int margc, char **margv)
   if (pos >= argc)
     test_main_return (TEST_FALSE);
 
-  value = posixtest (argc - 1);
+  हालागा = posixtest (argc - 1);
 
   if (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
-  test_main_return (value ? TEST_TRUE : TEST_FALSE);
+  test_main_return (हालागा ? TEST_TRUE : TEST_FALSE);
 }

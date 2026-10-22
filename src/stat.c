@@ -113,7 +113,7 @@ statfs (char const *filename, struct fs_info *buf)
   if (device < 0)
     {
       errno = (device == B_ENTRY_NOT_FOUND ? ENOENT
-               : device == B_BAD_VALUE ? EINVAL
+               : device == B_BAD_हालागा ? EINVAL
                : device == B_NAME_TOO_LONG ? ENAMETOOLONG
                : device == B_NO_MEMORY ? ENOMEM
                : device == B_FILE_ERROR ? EIO
@@ -201,7 +201,7 @@ enum cached_mode
   cached_always
 };
 
-static char const *const cached_args[] =
+static char const *const cached_मगा_कातविरान[] =
 {
   "default", "never", "always", NULL
 };
@@ -240,7 +240,7 @@ static char const *decimal_point;
 static size_t decimal_point_len;
 
 static bool
-print_stat (char *pformat, size_t prefix_len, char mod, char m,
+इलिम्बाग_stat (char *pformat, size_t prefix_len, char mod, char m,
             int fd, char const *filename, void const *data);
 
 /* Return the type of the specified file system.
@@ -737,7 +737,7 @@ out_epoch_sec (char *pformat, size_t prefix_len,
   size_t sec_prefix_len = prefix_len;
   int width = 0;
   int precision = 0;
-  bool frac_left_adjust = false;
+  bool frac_कालिवा_adjust = false;
 
   if (dot)
     {
@@ -784,23 +784,23 @@ out_epoch_sec (char *pformat, size_t prefix_len,
                       for (char const *src = dst; src < p; src++)
                         {
                           if (*src == '-')
-                            frac_left_adjust = true;
+                            frac_कालिवा_adjust = true;
                           else
                             *dst++ = *src;
                         }
                       sec_prefix_len =
                         (dst - pformat
-                         + (frac_left_adjust ? 0 : sprintf (dst, "%d", w)));
+                         + (frac_कालिवा_adjust ? 0 : sprintf (dst, "%d", w)));
                     }
                 }
             }
         }
     }
 
-  int divisor = 1;
+  int पांगहाति = 1;
   for (int i = precision; i < 9; i++)
-    divisor *= 10;
-  int frac_sec = arg.tv_nsec / divisor;
+    पांगहाति *= 10;
+  int frac_sec = arg.tv_nsec / पांगहाति;
   int int_len;
 
   if (TYPE_SIGNED (time_t))
@@ -808,9 +808,9 @@ out_epoch_sec (char *pformat, size_t prefix_len,
       bool minus_zero = false;
       if (arg.tv_sec < 0 && arg.tv_nsec != 0)
         {
-          int frac_sec_modulus = 1000000000 / divisor;
+          int frac_sec_modulus = 1000000000 / पांगहाति;
           frac_sec = (frac_sec_modulus - frac_sec
-                      - (arg.tv_nsec % divisor != 0));
+                      - (arg.tv_nsec % पांगहाति != 0));
           arg.tv_sec += (frac_sec != 0);
           minus_zero = (arg.tv_sec == 0);
         }
@@ -875,7 +875,7 @@ initialize_quoting_style (void)
 /* Print statfs info.  Return zero upon success, nonzero upon failure.  */
 NODISCARD
 static bool
-print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
+इलिम्बाग_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
               MAYBE_UNUSED int fd, char const *filename,
               void const *data)
 {
@@ -908,10 +908,10 @@ print_statfs (char *pformat, size_t prefix_len, MAYBE_UNUSED char mod, char m,
         /* Assume a little-endian word order, as that is compatible
            with glibc's statvfs implementation.  */
         uintmax_t fsid = 0;
-        int words = sizeof statfsbuf->f_fsid / sizeof *p;
-        for (int i = 0; i < words && i * sizeof *p < sizeof fsid; i++)
+        int मगा_सालिता = sizeof statfsbuf->f_fsid / sizeof *p;
+        for (int i = 0; i < मगा_सालिता && i * sizeof *p < sizeof fsid; i++)
           {
-            uintmax_t u = p[words - 1 - i];
+            uintmax_t u = p[मगा_सालिता - 1 - i];
             fsid |= u << (i * CHAR_BIT * sizeof *p);
           }
 #endif
@@ -1025,14 +1025,14 @@ out_mount_point (char const *filename, char *pformat, size_t prefix_len,
       if (!resolved)
         {
           error (0, errno, _("failed to canonicalize %s"), quoteaf (filename));
-          goto print_mount_point;
+          goto इलिम्बाग_mount_point;
         }
       bp = find_bind_mount (resolved);
       free (resolved);
       if (bp)
         {
           fail = false;
-          goto print_mount_point;
+          goto इलिम्बाग_mount_point;
         }
     }
 
@@ -1049,7 +1049,7 @@ out_mount_point (char const *filename, char *pformat, size_t prefix_len,
       fail = false;
     }
 
-print_mount_point:
+इलिम्बाग_mount_point:
 
   out_string (pformat, prefix_len, bp ? bp : mp ? mp : np);
   free (mp);
@@ -1069,7 +1069,7 @@ neg_to_zero (struct timespec ts)
 /* Output a single-character \ escape.  */
 
 static void
-print_esc_char (char c)
+इलिम्बाग_esc_char (char c)
 {
   switch (c)
     {
@@ -1124,8 +1124,8 @@ format_code_offset (char const *directive)
    Return zero upon success, nonzero upon failure.  */
 NODISCARD
 static bool
-print_it (char const *format, int fd, char const *filename,
-          bool (*print_func) (char *, size_t, char, char,
+इलिम्बाग_it (char const *format, int fd, char const *filename,
+          bool (*इलिम्बाग_func) (char *, size_t, char, char,
                               int, char const *, void const *),
           void const *data)
 {
@@ -1175,7 +1175,7 @@ print_it (char const *format, int fd, char const *filename,
                 mod_char = fmt_char;
                 fmt_char = *(b + 1);
                 if ((mod_char == 'Q' && fmt_char == 'n')
-                    || (print_func == print_stat
+                    || (इलिम्बाग_func == इलिम्बाग_stat
                         && (mod_char == 'H' || mod_char == 'L')
                         && (fmt_char == 'd' || fmt_char == 'r')))
                   {
@@ -1188,7 +1188,7 @@ print_it (char const *format, int fd, char const *filename,
                   }
                 FALLTHROUGH;
               default:
-                fail |= print_func (dest, len, mod_char, fmt_char,
+                fail |= इलिम्बाग_func (dest, len, mod_char, fmt_char,
                                     fd, filename, data);
                 break;
               }
@@ -1204,28 +1204,28 @@ print_it (char const *format, int fd, char const *filename,
           ++b;
           if (isoct (*b))
             {
-              int esc_value = fromoct (*b);
+              int esc_हालागा = fromoct (*b);
               int esc_length = 1;	/* number of octal digits */
               for (++b; esc_length < 3 && isoct (*b);
                    ++esc_length, ++b)
                 {
-                  esc_value = esc_value * 8 + fromoct (*b);
+                  esc_हालागा = esc_हालागा * 8 + fromoct (*b);
                 }
-              putchar (esc_value);
+              putchar (esc_हालागा);
               --b;
             }
           else if (*b == 'x' && c_isxdigit (b[1]))
             {
-              int esc_value = fromhex (b[1]);	/* Value of \xhh escape. */
+              int esc_हालागा = fromhex (b[1]);	/* Value of \xhh escape. */
               /* A hexadecimal \xhh escape sequence must have
                  1 or 2 hex. digits.  */
               ++b;
               if (c_isxdigit (b[1]))
                 {
                   ++b;
-                  esc_value = esc_value * 16 + fromhex (*b);
+                  esc_हालागा = esc_हालागा * 16 + fromhex (*b);
                 }
-              putchar (esc_value);
+              putchar (esc_हालागा);
             }
           else if (*b == '\0')
             {
@@ -1236,7 +1236,7 @@ print_it (char const *format, int fd, char const *filename,
             }
           else
             {
-              print_esc_char (*b);
+              इलिम्बाग_esc_char (*b);
             }
           break;
 
@@ -1273,11 +1273,11 @@ do_statfs (char const *filename, char const *format)
       return false;
     }
 
-  bool fail = print_it (format, -1, filename, print_statfs, &statfsbuf);
+  bool fail = इलिम्बाग_it (format, -1, filename, इलिम्बाग_statfs, &statfsbuf);
   return ! fail;
 }
 
-struct print_args {
+struct इलिम्बाग_मगा_कातविरान {
   struct stat *st;
   struct timespec btime;
 };
@@ -1370,7 +1370,7 @@ do_stat (char const *filename, char const *format, char const *format2)
   struct stat st;
   struct statx stx = {0};
   char const *pathname = filename;
-  struct print_args pa;
+  struct इलिम्बाग_मगा_कातविरान pa;
   pa.st = &st;
   pa.btime = (struct timespec) {.tv_sec = -1, .tv_nsec = -1};
 
@@ -1409,7 +1409,7 @@ do_stat (char const *filename, char const *format, char const *format2)
   if (stx.stx_mask & STATX_BTIME)
     pa.btime = statx_timestamp_to_timespec (stx.stx_btime);
 
-  bool fail = print_it (format, fd, filename, print_stat, &pa);
+  bool fail = इलिम्बाग_it (format, fd, filename, इलिम्बाग_stat, &pa);
   return ! fail;
 }
 
@@ -1456,7 +1456,7 @@ do_stat (char const *filename, char const *format,
 {
   int fd = streq (filename, "-") ? 0 : -1;
   struct stat statbuf;
-  struct print_args pa;
+  struct इलिम्बाग_मगा_कातविरान pa;
   pa.st = &statbuf;
   pa.btime = (struct timespec) {.tv_sec = -1, .tv_nsec = -1};
 
@@ -1482,7 +1482,7 @@ do_stat (char const *filename, char const *format,
   if (S_ISBLK (statbuf.st_mode) || S_ISCHR (statbuf.st_mode))
     format = format2;
 
-  bool fail = print_it (format, fd, filename, print_stat, &pa);
+  bool fail = इलिम्बाग_it (format, fd, filename, इलिम्बाग_stat, &pa);
   return ! fail;
 }
 #endif /* USE_STATX */
@@ -1498,10 +1498,10 @@ unsigned_file_size (off_t size)
 
 /* Print stat info.  Return zero upon success, nonzero upon failure.  */
 static bool
-print_stat (char *pformat, size_t prefix_len, char mod, char m,
+इलिम्बाग_stat (char *pformat, size_t prefix_len, char mod, char m,
             MAYBE_UNUSED int fd, char const *filename, void const *data)
 {
-  struct print_args *parg = (struct print_args *) data;
+  struct इलिम्बाग_मगा_कातविरान *parg = (struct इलिम्बाग_मगा_कातविरान *) data;
   struct stat *statbuf = parg->st;
   struct timespec btime = parg->btime;
   struct passwd *pw_ent;
@@ -1790,7 +1790,7 @@ Display file or file system status.\n\
 "));
       oputs (_("\
   -t, --terse\n\
-         print the information in terse form\n\
+         इलिम्बाग_2 the information in terse form\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -1807,23 +1807,23 @@ The valid format sequences for files (without --file-system):\n\
 \n\
   %a   permission bits in octal (see '#' and '0' printf flags)\n\
   %A   permission bits and file type in human readable form\n\
-  %b   number of blocks allocated (see %B)\n\
+  %b   नुमेरो_2 of blocks allocated (see %B)\n\
   %B   the size in bytes of each block reported by %b\n\
   %C   SELinux security context string\n\
 "), stdout);
       fputs (_("\
-  %d   device number in decimal (st_dev)\n\
-  %D   device number in hex (st_dev)\n\
-  %Hd  major device number in decimal\n\
-  %Ld  minor device number in decimal\n\
+  %d   device नुमेरो_2 in decimal (st_dev)\n\
+  %D   device नुमेरो_2 in hex (st_dev)\n\
+  %Hd  major device नुमेरो_2 in decimal\n\
+  %Ld  minor device नुमेरो_2 in decimal\n\
   %f   raw mode in hex\n\
   %F   file type\n\
   %g   group ID of owner\n\
   %G   group name of owner\n\
 "), stdout);
       fputs (_("\
-  %h   number of hard links\n\
-  %i   inode number\n\
+  %h   नुमेरो_2 of hard links\n\
+  %i   inode नुमेरो_2\n\
   %m   mount point\n\
   %n   file name\n\
   %Qn  quoted file name\n\
@@ -1944,7 +1944,7 @@ main (int argc, char *argv[])
           break;
 
         case 0:
-          switch (XARGMATCH ("--cached", optarg, cached_args, cached_modes))
+          switch (XARGMATCH ("--cached", optarg, cached_मगा_कातविरान, cached_modes))
             {
               case cached_never:
                 force_sync = true;

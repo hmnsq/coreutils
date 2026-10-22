@@ -39,7 +39,7 @@ usage (int status)
     {
       printf (_("\
 Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+इलिम्बाग the numeric identifier (in hexadecimal) for the current host.\n\
 \n\
 "), program_name);
       oputs (HELP_OPTION_DESCRIPTION);

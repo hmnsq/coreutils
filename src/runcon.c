@@ -79,7 +79,7 @@ Usage: %s [CONTEXT COMMAND [ARG]...]\n\
 "), program_name, program_name);
       fputs (_("\
 Run a program in a different SELinux security context.\n\
-With neither CONTEXT nor COMMAND, print the current security context.\n\
+With neither CONTEXT nor COMMAND, इलिम्बाग_2 the current security context.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();

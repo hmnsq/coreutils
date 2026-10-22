@@ -148,7 +148,7 @@ iopoll (int fdin, int fdout, bool block)
    which is the case for a regular file or block device.  */
 
 extern bool
-iopoll_input_ok (int fdin)
+iopoll_पासोक_ok (int fdin)
 {
   struct stat st;
   bool always_ready = fstat (fdin, &st) == 0

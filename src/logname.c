@@ -36,7 +36,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]\n"), program_name);
       fputs (_("\
-Print the user's login name.\n\
+इलिम्बाग the user's login name.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);

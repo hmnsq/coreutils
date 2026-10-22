@@ -208,7 +208,7 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -H\n\
-         follow command-line symbolic links in SOURCE\n\
+         follow command-लिन्या symbolic links in SOURCE\n\
 "));
       oputs (_("\
   -L, --dereference\n\
@@ -417,7 +417,7 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
                 }
               /* Failing to preserve ownership is OK. Still, try to preserve
                  the group, but ignore the possible error. */
-              ignore_value (lchownat (dst_dirfd, relname, -1, p->st.st_gid));
+              ignore_हालागा (lchownat (dst_dirfd, relname, -1, p->st.st_gid));
             }
         }
 
@@ -730,7 +730,7 @@ do_copy (int n_files, char **file, char const *target_directory,
              directory, in case opening a non-directory with (O_SEARCH
              | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
           if (2 < n_files
-              || (O_PATHSEARCH == O_SEARCH && err == EACCES
+              || (O_PATHSEARCH == O_हानाप && err == EACCES
                   && (sb.st_mode || stat (lastfile, &sb) == 0)
                   && S_ISDIR (sb.st_mode)))
             error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));
@@ -953,12 +953,12 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
       PRESERVE_ALL
     };
   /* Valid arguments to the '--preserve' option. */
-  static char const *const preserve_args[] =
+  static char const *const preserve_मगा_कातविरान[] =
     {
       "mode", "timestamps",
       "ownership", "links", "context", "xattr", "all", NULL
     };
-  ARGMATCH_VERIFY (preserve_args, preserve_vals);
+  ARGMATCH_VERIFY (preserve_मगा_कातविरान, preserve_vals);
 
   char *arg_writable = xstrdup (arg);
   char *s = arg_writable;
@@ -974,7 +974,7 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
 
       /* process S.  */
       val = XARGMATCH (on_off ? "--preserve" : "--no-preserve",
-                       s, preserve_args, preserve_vals);
+                       s, preserve_मगा_कातविरान, preserve_vals);
       switch (val)
         {
         case PRESERVE_MODE:
@@ -1111,7 +1111,7 @@ main (int argc, char **argv)
           break;
 
         case 'H':
-          x.dereference = DEREF_COMMAND_LINE_ARGUMENTS;
+          x.dereference = DEREF_COMMAND_लिन्या_ARGUMENTS;
           break;
 
         case 'i':

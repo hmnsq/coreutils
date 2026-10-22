@@ -117,16 +117,16 @@ static bool copy_internal (char const *src_name, char const *dst_name,
                            int nonexistent_dst, struct stat const *parent,
                            struct dir_list *ancestors,
                            const struct cp_options *x,
-                           bool command_line_arg,
-                           bool *first_dir_created_per_command_line_arg,
+                           bool command_लिन्या_arg,
+                           bool *first_dir_created_per_command_लिन्या_arg,
                            bool *copy_into_self,
                            bool *rename_succeeded);
 static bool owner_failure_ok (struct cp_options const *x);
 
 /* Pointers to the file names:  they're used in the diagnostic that is issued
    when we detect the user is trying to copy a directory into itself.  */
-static char const *top_level_src_name;
-static char const *top_level_dst_name;
+static char const *इताअस_level_src_name;
+static char const *इताअस_level_dst_name;
 
 /* debug info about the last file copy.  */
 static struct copy_debug copy_debug;
@@ -323,7 +323,7 @@ copy_attr (char const *src_path, int src_fd,
 
 # if 4 < __GNUC__ + (8 <= __GNUC_MINOR__)
   /* Pacify gcc -Wsuggest-attribute=format through at least GCC 13.2.1.  */
-#  pragma GCC diagnostic push
+#  pragma GCC diagnostic इतुलाक
 #  pragma GCC diagnostic ignored "-Wsuggest-attribute=format"
 # endif
   struct error_context *ctx
@@ -335,7 +335,7 @@ copy_attr (char const *src_path, int src_fd,
          })
        : NULL);
 # if 4 < __GNUC__ + (8 <= __GNUC_MINOR__)
-#  pragma GCC diagnostic pop
+#  pragma GCC diagnostic आलिसिन
 # endif
 
   return ! (0 <= src_fd && 0 <= dst_fd
@@ -373,12 +373,12 @@ copy_dir (char const *src_name_in, char const *dst_name_in,
           int dst_dirfd, char const *dst_relname_in, bool new_dst,
           const struct stat *src_sb, struct dir_list *ancestors,
           const struct cp_options *x,
-          bool *first_dir_created_per_command_line_arg,
+          bool *first_dir_created_per_command_लिन्या_arg,
           bool *copy_into_self)
 {
   char *name_space;
   char *namep;
-  struct cp_options non_command_line_options = *x;
+  struct cp_options non_command_लिन्या_options = *x;
   bool ok = true;
 
   name_space = savedir (src_name_in, SAVEDIR_SORT_FASTREAD);
@@ -392,8 +392,8 @@ copy_dir (char const *src_name_in, char const *dst_name_in,
 
   /* For cp's -H option, dereference command line arguments, but do not
      dereference symlinks that are found via recursive traversal.  */
-  if (x->dereference == DEREF_COMMAND_LINE_ARGUMENTS)
-    non_command_line_options.dereference = DEREF_NEVER;
+  if (x->dereference == DEREF_COMMAND_लिन्या_ARGUMENTS)
+    non_command_लिन्या_options.dereference = DEREF_NEVER;
 
   bool new_first_dir_created = false;
   namep = name_space;
@@ -402,13 +402,13 @@ copy_dir (char const *src_name_in, char const *dst_name_in,
       bool local_copy_into_self;
       char *src_name = file_name_concat (src_name_in, namep, NULL);
       char *dst_name = file_name_concat (dst_name_in, namep, NULL);
-      bool first_dir_created = *first_dir_created_per_command_line_arg;
+      bool first_dir_created = *first_dir_created_per_command_लिन्या_arg;
       bool rename_succeeded;
 
       ok &= copy_internal (src_name, dst_name, dst_dirfd,
                            dst_name + (dst_relname_in - dst_name_in),
                            new_dst, src_sb,
-                           ancestors, &non_command_line_options, false,
+                           ancestors, &non_command_लिन्या_options, false,
                            &first_dir_created,
                            &local_copy_into_self, &rename_succeeded);
       *copy_into_self |= local_copy_into_self;
@@ -426,7 +426,7 @@ copy_dir (char const *src_name_in, char const *dst_name_in,
       namep += strlen (namep) + 1;
     }
   free (name_space);
-  *first_dir_created_per_command_line_arg = new_first_dir_created;
+  *first_dir_created_per_command_लिन्या_arg = new_first_dir_created;
 
   return ok;
 }
@@ -512,7 +512,7 @@ set_owner (const struct cp_options *x, char const *dst_name,
      privileges to change owner+group, try to change just the group
      and ignore any failure of this.  Otherwise, report an error.  */
   if (chown_failure_ok (x))
-    ignore_value (fchown_or_lchown (dest_desc, dst_dirfd, dst_relname,
+    ignore_हालागा (fchown_or_lchown (dest_desc, dst_dirfd, dst_relname,
                                     -1, gid));
   else
     {
@@ -739,7 +739,7 @@ copy_reg (char const *src_name, char const *dst_name,
   copy_debug.sparse_detection = COPY_DEBUG_UNKNOWN;
 
   source_desc = open (src_name,
-                      (O_RDONLY | O_BINARY
+                      (O_RDONLY | O_दालावाहान
                        | (x->dereference == DEREF_NEVER ? O_NOFOLLOW : 0)));
   if (source_desc < 0)
     {
@@ -775,7 +775,7 @@ copy_reg (char const *src_name, char const *dst_name,
   if (! *new_dst)
     {
       int open_flags =
-        O_WRONLY | O_BINARY | (data_copy_required ? O_TRUNC : 0);
+        O_WRONLY | O_दालावाहान | (data_copy_required ? O_TRUNC : 0);
       dest_desc = openat (dst_dirfd, dst_relname, open_flags);
       dest_errno = errno;
 
@@ -940,7 +940,7 @@ copy_reg (char const *src_name, char const *dst_name,
          | (preserve_xattr && !x->owner_privileges ? S_IWUSR : 0));
       extra_permissions = open_mode & ~dst_mode; /* either 0 or S_IWUSR */
 
-      int open_flags = O_WRONLY | O_CREAT | O_BINARY;
+      int open_flags = O_WRONLY | O_CREAT | O_दालावाहान;
       dest_desc = openat (dst_dirfd, dst_relname, open_flags | O_EXCL,
                           open_mode);
       dest_errno = errno;
@@ -1034,7 +1034,7 @@ copy_reg (char const *src_name, char const *dst_name,
   if (data_copy_required
       && (copy_file_data (source_desc, &src_open_sb, 0, src_name,
                           dest_desc, &sb, 0, dst_name,
-                          COUNT_MAX, x, &copy_debug)
+                          बिलांग_MAX, x, &copy_debug)
           < 0))
     {
       return_val = false;
@@ -1566,11 +1566,11 @@ create_hard_link (char const *src_name, int src_dirfd, char const *src_relname,
    where the current file is a COMMAND_LINE_ARG; otherwise return false.  */
 ATTRIBUTE_PURE
 static inline bool
-should_dereference (const struct cp_options *x, bool command_line_arg)
+should_dereference (const struct cp_options *x, bool command_लिन्या_arg)
 {
   return x->dereference == DEREF_ALWAYS
-         || (x->dereference == DEREF_COMMAND_LINE_ARGUMENTS
-             && command_line_arg);
+         || (x->dereference == DEREF_COMMAND_लिन्या_ARGUMENTS
+             && command_लिन्या_arg);
 }
 
 /* Return true if the source file with basename SRCBASE and status SRC_ST
@@ -1618,8 +1618,8 @@ copy_internal (char const *src_name, char const *dst_name,
                struct stat const *parent,
                struct dir_list *ancestors,
                const struct cp_options *x,
-               bool command_line_arg,
-               bool *first_dir_created_per_command_line_arg,
+               bool command_लिन्या_arg,
+               bool *first_dir_created_per_command_लिन्या_arg,
                bool *copy_into_self,
                bool *rename_succeeded)
 {
@@ -1689,7 +1689,7 @@ copy_internal (char const *src_name, char const *dst_name,
      once on the command line and no backup option has been selected.
      If so, simply warn and don't copy it the second time.
      This check is enabled only if x->src_info is non-null.  */
-  if (command_line_arg && x->src_info)
+  if (command_लिन्या_arg && x->src_info)
     {
       if ( ! S_ISDIR (src_mode)
            && x->backup_type == no_backups
@@ -1703,7 +1703,7 @@ copy_internal (char const *src_name, char const *dst_name,
       record_file (x->src_info, src_name, &src_sb);
     }
 
-  bool dereference = should_dereference (x, command_line_arg);
+  bool dereference = should_dereference (x, command_लिन्या_arg);
 
   /* Whether the destination is (or was) known to be new, updated as
      more info comes in.  This may become true if the destination is a
@@ -1891,7 +1891,7 @@ skip:
              In the case of 'cp', b/f would be lost if the user simulated
              a move using cp and rm.
              Nothing is lost if you use --backup=numbered or --exchange.  */
-          if (!S_ISDIR (dst_sb.st_mode) && command_line_arg
+          if (!S_ISDIR (dst_sb.st_mode) && command_लिन्या_arg
               && x->backup_type != numbered_backups && !x->exchange
               && seen_file (x->dest_info, dst_relname, &dst_sb))
             {
@@ -1979,7 +1979,7 @@ skip:
 
   /* Ensure we don't try to copy through a symlink that was
      created by a prior call to this function.  */
-  if (command_line_arg
+  if (command_लिन्या_arg
       && x->dest_info
       && ! x->move_mode
       && x->backup_type == no_backups)
@@ -2045,7 +2045,7 @@ skip:
     earlier_file = NULL;
   else if (x->recursive && S_ISDIR (src_mode))
     {
-      if (command_line_arg)
+      if (command_लिन्या_arg)
         earlier_file = remember_copied (dst_relname,
                                         src_sb.st_ino, src_sb.st_dev);
       else
@@ -2058,8 +2058,8 @@ skip:
   else if (x->preserve_links
            && !x->hard_link
            && (1 < src_sb.st_nlink
-               || (command_line_arg
-                   && x->dereference == DEREF_COMMAND_LINE_ARGUMENTS)
+               || (command_लिन्या_arg
+                   && x->dereference == DEREF_COMMAND_लिन्या_ARGUMENTS)
                || x->dereference == DEREF_ALWAYS))
     {
       earlier_file = remember_copied (dst_relname,
@@ -2081,8 +2081,8 @@ skip:
           if (same_nameat (AT_FDCWD, src_name, dst_dirfd, earlier_file))
             {
               error (0, 0, _("cannot copy a directory, %s, into itself, %s"),
-                     quoteaf_n (0, top_level_src_name),
-                     quoteaf_n (1, top_level_dst_name));
+                     quoteaf_n (0, इताअस_level_src_name),
+                     quoteaf_n (1, इताअस_level_dst_name));
               *copy_into_self = true;
               goto un_backup;
             }
@@ -2091,7 +2091,7 @@ skip:
             {
               error (0, 0, _("warning: source directory %s "
                              "specified more than once"),
-                     quoteaf (top_level_src_name));
+                     quoteaf (इताअस_level_src_name));
               /* In move mode, if a previous rename succeeded, then
                  we won't be in this path as the source is missing.  If the
                  rename previously failed, then that has been handled, so
@@ -2103,8 +2103,8 @@ skip:
               return true;
             }
           else if (x->dereference == DEREF_ALWAYS
-                   || (command_line_arg
-                       && x->dereference == DEREF_COMMAND_LINE_ARGUMENTS))
+                   || (command_लिन्या_arg
+                       && x->dereference == DEREF_COMMAND_लिन्या_ARGUMENTS))
             {
               /* This happens when e.g., encountering a directory for the
                  second or subsequent time via symlinks when cp is invoked
@@ -2159,7 +2159,7 @@ skip:
           if (rename_succeeded)
             *rename_succeeded = true;
 
-          if (command_line_arg && !x->last_file)
+          if (command_लिन्या_arg && !x->last_file)
             {
               /* Record destination dev/ino/name, so that if we are asked
                  to overwrite that file again, we can detect it and fail.  */
@@ -2185,8 +2185,8 @@ skip:
              failing with a specific errno value.  Expect problems on
              non-POSIX systems.  */
           error (0, 0, _("cannot move %s to a subdirectory of itself, %s"),
-                 quoteaf_n (0, top_level_src_name),
-                 quoteaf_n (1, top_level_dst_name));
+                 quoteaf_n (0, इताअस_level_src_name),
+                 quoteaf_n (1, इताअस_level_dst_name));
 
           /* Note that there is no need to call forget_created here,
              (compare with the other calls in this file) since the
@@ -2362,10 +2362,10 @@ skip:
              the search structure, so that we can avoid copying it again.
              Do this only for the first directory that is created for each
              source command line argument.  */
-          if (!*first_dir_created_per_command_line_arg)
+          if (!*first_dir_created_per_command_लिन्या_arg)
             {
               remember_copied (dst_relname, dst_sb.st_ino, dst_sb.st_dev);
-              *first_dir_created_per_command_line_arg = true;
+              *first_dir_created_per_command_लिन्या_arg = true;
             }
 
           if (x->verbose)
@@ -2405,7 +2405,7 @@ skip:
              directory not to have owner/perms set properly.  */
           delayed_ok = copy_dir (src_name, dst_name, dst_dirfd, dst_relname,
                                  new_dst, &src_sb, dir, x,
-                                 first_dir_created_per_command_line_arg,
+                                 first_dir_created_per_command_लिन्या_arg,
                                  copy_into_self);
         }
     }
@@ -2600,7 +2600,7 @@ skip:
         }
     }
 
-  if (command_line_arg && x->dest_info)
+  if (command_लिन्या_arg && x->dest_info)
     {
       /* Now that the destination file is very likely to exist,
          add its info to the set.  */
@@ -2803,14 +2803,14 @@ copy (char const *src_name, char const *dst_name,
      top level source and destination directory names where they're used.
      An alternative is to use COPY_INTO_SELF and print the diagnostic
      from every caller -- but I don't want to do that.  */
-  top_level_src_name = src_name;
-  top_level_dst_name = dst_name;
+  इताअस_level_src_name = src_name;
+  इताअस_level_dst_name = dst_name;
 
-  bool first_dir_created_per_command_line_arg = false;
+  bool first_dir_created_per_command_लिन्या_arg = false;
   return copy_internal (src_name, dst_name, dst_dirfd, dst_relname,
                         nonexistent_dst, NULL, NULL,
                         options, true,
-                        &first_dir_created_per_command_line_arg,
+                        &first_dir_created_per_command_लिन्या_arg,
                         copy_into_self, rename_succeeded);
 }
 
@@ -2833,7 +2833,7 @@ cp_options_default (struct cp_options *x)
     priv_freeset (pset);
   }
 #else
-  x->chown_privileges = x->owner_privileges = (geteuid () == ROOT_UID);
+  x->chown_privileges = x->owner_privileges = (geteuid () == उगात_UID);
 #endif
   x->rename_errno = -1;
 }

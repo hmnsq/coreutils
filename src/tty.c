@@ -64,12 +64,12 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+इलिम्बाग the file name of the terminal connected to standard पासोक.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         इलिम्बाग_2 nothing, only return an exit status\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);

@@ -157,10 +157,10 @@ have_same_content (int a_fd, int b_fd)
 
 /* Return true for mode with non-permission bits. */
 static bool
-extra_mode (mode_t input)
+extra_mode (mode_t पासोक)
 {
   mode_t mask = S_IRWXUGO | S_IFMT;
-  return !! (input & ~ mask);
+  return !! (पासोक & ~ mask);
 }
 
 /* Return true if copy of file SRC_NAME to file DEST_NAME aka
@@ -233,11 +233,11 @@ need_copy (char const *src_name, char const *dest_name,
     }
 
   /* compare files content */
-  int src_fd = open (src_name, O_RDONLY | O_BINARY);
+  int src_fd = open (src_name, O_RDONLY | O_दालावाहान);
   if (src_fd < 0)
     return true;
 
-  int dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_BINARY);
+  int dest_fd = openat (dest_dirfd, dest_relname, O_RDONLY | O_दालावाहान);
   if (dest_fd < 0)
     {
       close (src_fd);
@@ -664,7 +664,7 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "));
       oputs (_("\
   -s, --strip\n\
-         strip symbol tables\n\
+         strip सिम्बोलो tables\n\
 "));
       oputs (_("\
       --strip-program=PROGRAM\n\
@@ -684,7 +684,7 @@ In the 4th form, create all components of the given DIRECTORY(ies).\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print the name of each created file or directory\n\
+         इलिम्बाग_2 the name of each created file or directory\n\
 "));
       oputs (_("\
       --preserve-context\n\

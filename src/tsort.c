@@ -51,12 +51,12 @@ struct successor
 struct item
 {
   char const *str;
-  struct item *left, *right;
+  struct item *कालिवा, *कानान;
   signed char balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
+  size_t बिलांग;
   struct item *qlink;
-  struct successor *top;
+  struct successor *इताअस;
 };
 
 /* The head of the sorted list.  */
@@ -116,19 +116,19 @@ new_item (char const *str)
    Volume 3/Searching and Sorting, pages 455--457.  */
 
 static struct item *
-search_item (struct item *root, char const *str)
+हानाप_item (struct item *उगात, char const *str)
 {
   struct item *p, *q, *r, *s, *t;
   int a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  if (उगात->कानान == NULL)
+    return (उगात->कानान = new_item (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = उगात;
+  s = p = उगात->कानान;
 
   while (true)
     {
@@ -139,9 +139,9 @@ search_item (struct item *root, char const *str)
 
       /* A3 & A4.  Move left & right.  */
       if (a < 0)
-        q = p->left;
+        q = p->कालिवा;
       else
-        q = p->right;
+        q = p->कानान;
 
       if (q == NULL)
         {
@@ -150,21 +150,21 @@ search_item (struct item *root, char const *str)
 
           /* A3 & A4.  (continued).  */
           if (a < 0)
-            p->left = q;
+            p->कालिवा = q;
           else
-            p->right = q;
+            p->कानान = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
           if (a < 0)
             {
-              r = p = s->left;
+              r = p = s->कालिवा;
               a = -1;
             }
           else
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->कानान;
               a = 1;
             }
 
@@ -174,13 +174,13 @@ search_item (struct item *root, char const *str)
               if (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->कालिवा;
                 }
               else
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->कानान;
                 }
             }
 
@@ -197,13 +197,13 @@ search_item (struct item *root, char const *str)
               p = r;
               if (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->कालिवा = r->कानान;
+                  r->कानान = s;
                 }
               else
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->कानान = r->कालिवा;
+                  r->कालिवा = s;
                 }
               s->balance = r->balance = 0;
             }
@@ -212,19 +212,19 @@ search_item (struct item *root, char const *str)
               /* A9. Double rotation.  */
               if (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->कानान;
+                  r->कानान = p->कालिवा;
+                  p->कालिवा = r;
+                  s->कालिवा = p->कानान;
+                  p->कानान = s;
                 }
               else
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->कालिवा;
+                  r->कालिवा = p->कानान;
+                  p->कानान = r;
+                  s->कानान = p->कालिवा;
+                  p->कालिवा = s;
                 }
 
               s->balance = 0;
@@ -237,10 +237,10 @@ search_item (struct item *root, char const *str)
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
+          if (s == t->कानान)
+            t->कानान = p;
           else
-            t->left = p;
+            t->कालिवा = p;
 
           return q;
         }
@@ -267,16 +267,16 @@ record_relation (struct item *j, struct item *k)
 
   if (!streq (j->str, k->str))
     {
-      k->count++;
+      k->बिलांग++;
       p = xmalloc (sizeof *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->next = j->इताअस;
+      j->इताअस = p;
     }
 }
 
 static bool
-count_items (MAYBE_UNUSED struct item *unused)
+बिलांग_मगा_बागाय (MAYBE_UNUSED struct item *unused)
 {
   n_strings++;
   return false;
@@ -286,7 +286,7 @@ static bool
 scan_zeros (struct item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  if (k->बिलांग == 0 && !k->printed)
     {
       if (head == NULL)
         head = k;
@@ -320,7 +320,7 @@ scan_zeros (struct item *k)
 static bool
 detect_loop (struct item *k)
 {
-  if (k->count > 0)
+  if (k->बिलांग > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
@@ -330,7 +330,7 @@ detect_loop (struct item *k)
         loop = k;
       else
         {
-          struct successor **p = &k->top;
+          struct successor **p = &k->इताअस;
 
           while (*p)
             {
@@ -350,7 +350,7 @@ detect_loop (struct item *k)
                             {
                               /* Remove relation.  */
                               struct successor *s = *p;
-                              s->suc->count--;
+                              s->suc->बिलांग--;
                               *p = s->next;
                               IF_LINT (free (s));
                               break;
@@ -394,19 +394,19 @@ detect_loop (struct item *k)
    Stop when ACTION returns true.  */
 
 static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+recurse_पुनो (struct item *उगात, bool (*action) (struct item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
+  if (उगात->कालिवा == NULL && उगात->कानान == NULL)
+    return (*action) (उगात);
   else
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
+      if (उगात->कालिवा != NULL)
+        if (recurse_पुनो (उगात->कालिवा, action))
           return true;
-      if ((*action) (root))
+      if ((*action) (उगात))
         return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
+      if (उगात->कानान != NULL)
+        if (recurse_पुनो (उगात->कानान, action))
           return true;
     }
 
@@ -417,10 +417,10 @@ recurse_tree (struct item *root, bool (*action) (struct item *))
    each node.  */
 
 static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+walk_पुनो (struct item *उगात, bool (*action) (struct item *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  if (उगात->कानान)
+    recurse_पुनो (उगात->कानान, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
@@ -435,7 +435,7 @@ tsort (char const *file)
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  struct item *उगात = new_item (NULL);
 
   if (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
@@ -457,7 +457,7 @@ tsort (char const *file)
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
+      k = हानाप_item (उगात, tokenbuffer.buffer);
       if (j)
         {
           /* T3. Record the relation.  */
@@ -473,16 +473,16 @@ tsort (char const *file)
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_पुनो (उगात, बिलांग_मगा_बागाय);
 
   while (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_पुनो (उगात, scan_zeros);
 
       while (head)
         {
-          struct successor *p = head->top;
+          struct successor *p = head->इताअस;
 
           /* T5. Output front of queue.  */
           puts (head->str);
@@ -492,8 +492,8 @@ tsort (char const *file)
           /* T6. Erase relations.  */
           while (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->बिलांग--;
+              if (p->suc->बिलांग == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -515,7 +515,7 @@ tsort (char const *file)
 
           /* Print the loop and remove a relation to break it.  */
           do
-            walk_tree (root, detect_loop);
+            walk_पुनो (उगात, detect_loop);
           while (loop);
         }
     }

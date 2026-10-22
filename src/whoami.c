@@ -41,7 +41,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the user name associated with the current effective user ID.\n\
+इलिम्बाग the user name associated with the current effective user ID.\n\
 Same as id -un.\n\
 \n\
 "), stdout);

@@ -127,7 +127,7 @@ static bool opt_all = false;
 static bool apparent_size = false;
 
 /* If true, count each hard link of files with multiple links.  */
-static bool opt_count_all = false;
+static bool opt_बिलांग_all = false;
 
 /* If true, hash all files to look for hard links.  */
 static bool hash_all;
@@ -139,7 +139,7 @@ static bool opt_nul_terminate_output = false;
 static bool quote_output;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total = false;
+static bool इलिम्बाग_grand_total = false;
 
 /* If nonzero, do not add sizes of subdirectories.  */
 static bool opt_separate_dirs = false;
@@ -243,7 +243,7 @@ static struct option const long_options[] =
   {NULL, 0, NULL, 0}
 };
 
-static char const *const time_args[] =
+static char const *const time_मगा_कातविरान[] =
 {
   "atime", "access", "use", "ctime", "status", NULL
 };
@@ -251,7 +251,7 @@ static enum time_type const time_types[] =
 {
   time_atime, time_atime, time_atime, time_ctime, time_ctime
 };
-ARGMATCH_VERIFY (time_args, time_types);
+ARGMATCH_VERIFY (time_मगा_कातविरान, time_types);
 
 /* 'full-iso' uses full ISO-style dates and times.  'long-iso' uses longer
    ISO-style timestamps, though shorter than 'full-iso'.  'iso' uses shorter
@@ -263,7 +263,7 @@ enum time_style
     iso_time_style	       /* --time-style=iso */
   };
 
-static char const *const time_style_args[] =
+static char const *const time_style_मगा_कातविरान[] =
 {
   "full-iso", "long-iso", "iso", NULL
 };
@@ -271,7 +271,7 @@ static enum time_style const time_style_types[] =
 {
   full_iso_time_style, long_iso_time_style, iso_time_style
 };
-ARGMATCH_VERIFY (time_style_args, time_style_types);
+ARGMATCH_VERIFY (time_style_मगा_कातविरान, time_style_types);
 
 void
 usage (int status)
@@ -292,7 +292,7 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (_("\
   -a, --all\n\
@@ -300,7 +300,7 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
 "));
       oputs (_("\
   -A, --apparent-size\n\
-         print apparent sizes rather than device usage;\n\
+         इलिम्बाग_2 apparent sizes rather than device usage;\n\
          although the apparent size is usually smaller, it may be\n\
          larger due to holes in ('sparse') files,\n\
          internal fragmentation, indirect blocks, etc.\n\
@@ -319,27 +319,27 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
          produce a grand total\n\
 "));
       oputs (_("\
-  -D, --dereference-args\n\
-         dereference only symlinks that are listed on the command line\n\
+  -D, --dereference-मगा_कातविरान\n\
+         dereference only symlinks that are listed on the command लिन्या\n\
 "));
       oputs (_("\
   -d, --max-depth=N\n\
-         print the total for a directory (or file, with --all)\n\
+         इलिम्बाग_2 the total for a directory (or file, with --all)\n\
          only if it is N or fewer levels below the command\n\
-         line argument;  --max-depth=0 is the same as --summarize\n\
+         लिन्या argument;  --max-depth=0 is the same as --summarize\n\
 "));
       oputs (_("\
       --files0-from=F\n\
          summarize device usage of the NUL-terminated file names\n\
-         specified in file F;  if F is -, read names from standard input\n\
+         specified in file F;  if F is -, read names from standard पासोक\n\
 "));
       oputs (_("\
   -H\n\
-         equivalent to --dereference-args (-D)\n\
+         equivalent to --dereference-मगा_कातविरान (-D)\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in human readable format (e.g., 1K 234M 2G)\n\
+         इलिम्बाग_2 sizes in human readable format (e.g., 1K 234M 2G)\n\
 "));
       oputs (_("\
       --inodes\n\
@@ -354,8 +354,8 @@ Summarize device usage of the set of FILEs, recursively for directories.\n\
          dereference all symbolic links\n\
 "));
       oputs (_("\
-  -l, --count-links\n\
-         count sizes many times if hard linked\n\
+  -l, --बिलांग-links\n\
+         बिलांग sizes many times if hard linked\n\
 "));
       oputs (_("\
   -m\n\
@@ -429,7 +429,7 @@ Also the TIME_STYLE environment variable sets the default style to use.\n\
 static bool
 hash_ins (struct di_set *di_set, ino_t ino, dev_t dev)
 {
-  int inserted = di_set_insert (di_set, dev, ino);
+  int inserted = di_set_इसिंगित (di_set, dev, ino);
   if (inserted < 0)
     xalloc_die ();
   return inserted;
@@ -438,7 +438,7 @@ hash_ins (struct di_set *di_set, ino_t ino, dev_t dev)
 /* Print N_BYTES.  Convert it to a readable value before printing.  */
 
 static void
-print_only_size (uintmax_t n_bytes)
+इलिम्बाग_only_size (uintmax_t n_bytes)
 {
   char buf[LONGEST_HUMAN_READABLE + 1];
   fputs ((n_bytes == UINTMAX_MAX
@@ -452,9 +452,9 @@ print_only_size (uintmax_t n_bytes)
    quoting STRING if QUOTE is true.  */
 
 static void
-print_size (const struct duinfo *pdui, char const *string, bool quote)
+इलिम्बाग_size (const struct duinfo *pdui, char const *string, bool quote)
 {
-  print_only_size (opt_inodes
+  इलिम्बाग_only_size (opt_inodes
                    ? pdui->inodes
                    : pdui->size);
 
@@ -544,7 +544,7 @@ process_file (FTS *fts, FTSENT *ent)
 {
   bool ok = true;
   struct duinfo dui;
-  struct duinfo dui_to_print;
+  struct duinfo dui_to_इलिम्बाग;
   static idx_t n_alloc;
   /* First element of the structure contains:
      The sum of the sizes of all entries in the single directory
@@ -606,7 +606,7 @@ process_file (FTS *fts, FTSENT *ent)
         }
 
       if (excluded
-          || (! opt_count_all
+          || (! opt_बिलांग_all
               && (hash_all || (! S_ISDIR (sb->st_mode) && 1 < sb->st_nlink))
               && ! hash_ins (di_files, sb->st_ino, sb->st_dev)))
         {
@@ -655,7 +655,7 @@ process_file (FTS *fts, FTSENT *ent)
                : get_stat_ctime (sb)));
 
   idx_t level = ent->fts_level;
-  dui_to_print = dui;
+  dui_to_इलिम्बाग = dui;
 
   if (n_alloc == 0)
     {
@@ -694,9 +694,9 @@ process_file (FTS *fts, FTSENT *ent)
              Here, the current level is always one smaller than the
              previous one.  */
           affirm (level == prev_level - 1);
-          duinfo_add (&dui_to_print, &dulvl[prev_level].ent);
+          duinfo_add (&dui_to_इलिम्बाग, &dulvl[prev_level].ent);
           if (!opt_separate_dirs)
-            duinfo_add (&dui_to_print, &dulvl[prev_level].subdir);
+            duinfo_add (&dui_to_इलिम्बाग, &dulvl[prev_level].subdir);
           duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].ent);
           duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].subdir);
         }
@@ -718,11 +718,11 @@ process_file (FTS *fts, FTSENT *ent)
       || level == 0)
     {
       /* Print or elide this entry according to the --threshold option.  */
-      uintmax_t v = opt_inodes ? dui_to_print.inodes : dui_to_print.size;
+      uintmax_t v = opt_inodes ? dui_to_इलिम्बाग.inodes : dui_to_इलिम्बाग.size;
       if (opt_threshold < 0
           ? v <= -opt_threshold
           : v >= opt_threshold)
-        print_size (&dui_to_print, file, quote_output);
+        इलिम्बाग_size (&dui_to_इलिम्बाग, file, quote_output);
     }
 
   return ok;
@@ -850,7 +850,7 @@ main (int argc, char **argv)
           break;
 
         case 'c':
-          print_grand_total = true;
+          इलिम्बाग_grand_total = true;
           break;
 
         case 'h':
@@ -889,7 +889,7 @@ main (int argc, char **argv)
           break;
 
         case 'l':
-          opt_count_all = true;
+          opt_बिलांग_all = true;
           break;
 
         case 's':
@@ -966,7 +966,7 @@ main (int argc, char **argv)
           opt_time = true;
           time_type =
             (optarg
-             ? XARGMATCH ("--time", optarg, time_args, time_types)
+             ? XARGMATCH ("--time", optarg, time_मगा_कातविरान, time_types)
              : time_mtime);
           localtz = tzalloc (getenv ("TZ"));
           break;
@@ -1064,7 +1064,7 @@ main (int argc, char **argv)
       else
         {
           switch (x_timestyle_match (time_style, /*allow_posix=*/ false,
-                                     time_style_args,
+                                     time_style_मगा_कातविरान,
                                      (char const *) time_style_types,
                                      sizeof (*time_style_types), EXIT_FAILURE))
             {
@@ -1127,7 +1127,7 @@ main (int argc, char **argv)
 
   /* If not hashing everything, process_file won't find cycles on its
      own, so ask fts_read to check for them accurately.  */
-  if (opt_count_all || ! hash_all)
+  if (opt_बिलांग_all || ! hash_all)
     bit_flags |= FTS_TIGHT_CYCLE_CHECK;
 
   bit_flags |= symlink_deref_bits;
@@ -1182,9 +1182,9 @@ main (int argc, char **argv)
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
-              idx_t file_number = argv_iter_n_args (ai);
+              idx_t file_नुमेरो = argv_iter_n_मगा_कातविरान (ai);
               error (0, 0, "%s:%td: %s", quotef (files_from),
-                     file_number, _("invalid zero-length file name"));
+                     file_नुमेरो, _("invalid zero-length file name"));
             }
           skip_file = true;
         }
@@ -1207,8 +1207,8 @@ main (int argc, char **argv)
   if (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
     error (EXIT_FAILURE, 0, _("error reading %s"), quoteaf (files_from));
 
-  if (print_grand_total)
-    print_size (&tot_dui, _("total"), false);
+  if (इलिम्बाग_grand_total)
+    इलिम्बाग_size (&tot_dui, _("total"), false);
 
   return ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

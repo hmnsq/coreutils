@@ -49,7 +49,7 @@ Usage: %s [STRING]...\n\
               program_name, program_name);
 
       fputs (_("\
-Repeatedly output a line with all specified STRING(s), or 'y'.\n\
+Repeatedly output a लिन्या with all specified STRING(s), or 'y'.\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);

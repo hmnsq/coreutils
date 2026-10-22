@@ -40,7 +40,7 @@ static bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+static char const *const cfcc_मेनसाहे =
  N_("warning: %s: character(s) following character constant have been ignored");
 
 void
@@ -56,7 +56,7 @@ Usage: %s FORMAT [ARGUMENT]...\n\
 "),
               program_name, program_name);
       fputs (_("\
-Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
+इलिम्बाग ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
@@ -74,23 +74,23 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
+  \\n      new लिन्या\n\
   \\r      carriage return\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
       fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
+  \\NNN    byte with octal हालागा NNN (1 to 3 digits)\n\
+  \\xHH    byte with hexadecimal हालागा HH (1 to 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex हालागा HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex हालागा HHHHHHHH (8 digits)\n\
 "), stdout);
       fputs (_("\
 \n\
   %%      a single %\n\
   %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      ARGUMENT is printed in a format that can be reused as shell पासोक,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
 and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
@@ -104,8 +104,8 @@ The following table shows supported conversion specifiers,\n\
 with examples including usage of width, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  कालिवा pad]\n\
+  %s          '[%-10s]' 'right pad'       [कानान pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -146,7 +146,7 @@ verify_numeric (char const *s, char const *end)
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
+#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_पाहायाग)				 \
 static TYPE								 \
 FUNC_NAME (char const *s)						 \
 {									 \
@@ -178,12 +178,12 @@ FUNC_NAME (char const *s)						 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
       if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+        error (0, 0, _(cfcc_मेनसाहे), s);					 \
     }									 \
   else									 \
     {									 \
       errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
+      val = (LIB_FUNC_पाहायाग);						 \
       verify_numeric (s, end);						 \
     }									 \
   return val;								 \
@@ -196,7 +196,7 @@ STRTOX (long double, vstrtold,   cl_strtold (s, &end))
 /* Output a single-character \ escape.  */
 
 static void
-print_esc_char (char c)
+इलिम्बाग_esc_char (char c)
 {
   switch (c)
     {
@@ -240,10 +240,10 @@ print_esc_char (char c)
    is an octal digit; otherwise they are of the form \ooo.  */
 
 static int
-print_esc (char const *escstart, bool octal_0)
+इलिम्बाग_esc (char const *escstart, bool octal_0)
 {
   char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
+  int esc_हालागा = 0;		/* Value of \nnn escape. */
   int esc_length;		/* Length of \nnn escape. */
 
   if (*p == 'x')
@@ -252,10 +252,10 @@ print_esc (char const *escstart, bool octal_0)
       for (esc_length = 0, ++p;
            esc_length < 2 && c_isxdigit (*p);
            ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
+        esc_हालागा = esc_हालागा * 16 + fromhex (*p);
       if (esc_length == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+      putchar (esc_हालागा);
     }
   else if (isoct (*p))
     {
@@ -265,33 +265,33 @@ print_esc (char const *escstart, bool octal_0)
       for (esc_length = 0, p += octal_0 && *p == '0';
            esc_length < 3 && isoct (*p);
            ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+        esc_हालागा = esc_हालागा * 8 + fromoct (*p);
+      putchar (esc_हालागा);
     }
   else if (*p && strchr ("\"\\abcefnrtv", *p))
-    print_esc_char (*p++);
+    इलिम्बाग_esc_char (*p++);
   else if (*p == 'u' || *p == 'U')
     {
       char esc_char = *p;
-      unsigned int uni_value;
+      unsigned int uni_हालागा;
 
-      uni_value = 0;
+      uni_हालागा = 0;
       for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
            esc_length > 0;
            --esc_length, ++p)
         {
           if (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          uni_हालागा = uni_हालागा * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      if (uni_हालागा >= 0xd800 && uni_हालागा <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_हालागा);
 
-      print_unicode_char (stdout, uni_value, 0);
+      इलिम्बाग_unicode_char (stdout, uni_हालागा, 0);
     }
   else
     {
@@ -308,11 +308,11 @@ print_esc (char const *escstart, bool octal_0)
 /* Print string STR, evaluating \ escapes. */
 
 static void
-print_esc_string (char const *str)
+इलिम्बाग_esc_string (char const *str)
 {
   for (; *str; str++)
     if (*str == '\\')
-      str += print_esc (str, true);
+      str += इलिम्बाग_esc (str, true);
     else
       putchar (*str);
 }
@@ -324,7 +324,7 @@ print_esc_string (char const *str)
    ARGUMENT is the argument to be formatted.  */
 
 static void
-print_direc (char const *start, char conversion,
+इलिम्बाग_direc (char const *start, char conversion,
              bool have_field_width, int field_width,
              bool have_precision, int precision,
              char const *argument)
@@ -533,7 +533,7 @@ get_curr_arg (int pos, struct arg_cursor ac)
    Return the number of elements of ARGV used.  */
 
 static int
-print_formatted (char const *format, int argc, char **argv)
+इलिम्बाग_formatted (char const *format, int argc, char **argv)
 {
   struct arg_cursor ac;
   ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
@@ -571,7 +571,7 @@ print_formatted (char const *format, int argc, char **argv)
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
               if (ac.curr_arg < argc)
-                print_esc_string (argv[ac.curr_arg]);
+                इलिम्बाग_esc_string (argv[ac.curr_arg]);
               break;
             }
 
@@ -691,7 +691,7 @@ print_formatted (char const *format, int argc, char **argv)
 
           ac = get_curr_arg (3, ac);
 
-          print_direc (direc, *ac.f,
+          इलिम्बाग_direc (direc, *ac.f,
                        have_field_width, field_width,
                        have_precision, precision,
                        ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
@@ -699,7 +699,7 @@ print_formatted (char const *format, int argc, char **argv)
           break;
 
         case '\\':
-          ac.f += print_esc (ac.f, false);
+          ac.f += इलिम्बाग_esc (ac.f, false);
           break;
 
         default:
@@ -715,7 +715,7 @@ int
 main (int argc, char **argv)
 {
   char *format;
-  int args_used;
+  int मगा_कातविरान_used;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -762,11 +762,11 @@ main (int argc, char **argv)
 
   do
     {
-      args_used = print_formatted (format, argc, argv);
-      argc -= args_used;
-      argv += args_used;
+      मगा_कातविरान_used = इलिम्बाग_formatted (format, argc, argv);
+      argc -= मगा_कातविरान_used;
+      argv += मगा_कातविरान_used;
     }
-  while (args_used > 0 && argc > 0);
+  while (मगा_कातविरान_used > 0 && argc > 0);
 
   if (argc > 0)
     error (0, 0,

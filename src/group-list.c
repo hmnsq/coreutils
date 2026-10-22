@@ -32,7 +32,7 @@
 
 /* Print all of the distinct groups the user is in. */
 extern bool
-print_group_list (char const *username,
+इलिम्बाग_group_list (char const *username,
                   uid_t ruid, gid_t rgid, gid_t egid,
                   bool use_names, char delim)
 {
@@ -46,13 +46,13 @@ print_group_list (char const *username,
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  if (!इलिम्बाग_group (rgid, use_names))
     ok = false;
 
   if (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      if (!इलिम्बाग_group (egid, use_names))
         ok = false;
     }
 
@@ -78,7 +78,7 @@ print_group_list (char const *username,
       if (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          if (!इलिम्बाग_group (groups[i], use_names))
             ok = false;
         }
     free (groups);
@@ -88,7 +88,7 @@ print_group_list (char const *username,
 
 /* Print the name or value of group ID GID. */
 extern bool
-print_group (gid_t gid, bool use_name)
+इलिम्बाग_group (gid_t gid, bool use_name)
 {
   struct group *grp = NULL;
   bool ok = true;

@@ -70,7 +70,7 @@ Send signals to processes, or list signals.\n\
 
       oputs (_("\
   -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+         specify the name or नुमेरो_2 of the signal to be sent\n\
 "));
       oputs (_("\
   -l, --list\n\
@@ -78,12 +78,12 @@ Send signals to processes, or list signals.\n\
 "));
       oputs (_("\
   -t, --table\n\
-         print a table of signal information\n\
+         इलिम्बाग_2 a table of signal information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
+SIGNAL may be a signal name like 'HUP', or a signal नुमेरो_2 like '1',\n\
 or the exit status of a process terminated by a signal.\n\
 PID is an integer; if negative it identifies a process group.\n\
 "), stdout);
@@ -98,11 +98,11 @@ PID is an integer; if negative it identifies a process group.\n\
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
 static void
-print_table_row (int num_width, int signum,
+इलिम्बाग_table_row (int नुमेरो_width, int signum,
                  int name_width, char const *signame)
 {
   char const *description = strsignal (signum);
-  printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
+  printf ("%*d %-*s %s\n", नुमेरो_width, signum, name_width, signame,
           description ? description : "?");
 }
 
@@ -121,9 +121,9 @@ list_signals (bool table, char *const *argv)
       int name_width = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
+      int नुमेरो_width = 1;
       for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
-        num_width++;
+        नुमेरो_width++;
 
       /* Compute the maximum width of a signal name.  */
       for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
@@ -144,13 +144,13 @@ list_signals (bool table, char *const *argv)
               {
                 if (sig2str (signum, signame) != 0)
                   snprintf (signame, sizeof signame, "SIG%d", signum);
-                print_table_row (num_width, signum, name_width, signame);
+                इलिम्बाग_table_row (नुमेरो_width, signum, name_width, signame);
               }
           }
       else
         for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
           if (sig2str (signum, signame) == 0)
-            print_table_row (num_width, signum, name_width, signame);
+            इलिम्बाग_table_row (नुमेरो_width, signum, name_width, signame);
     }
   else
     {

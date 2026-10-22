@@ -55,15 +55,15 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
+इलिम्बाग the नुमेरो_2 of processing units available to the current process,\n\
+which may be less than the नुमेरो_2 of online processors.\n\
 If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+then they will determine the minimum and maximum returned हालागा respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         इलिम्बाग_2 the नुमेरो_2 of installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
@@ -124,7 +124,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  unsigned long nproc = नुमेरो_processors (mode);
 
   if (ignore < nproc)
     nproc -= ignore;

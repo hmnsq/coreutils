@@ -25,10 +25,10 @@
 #include <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+extern struct wc_मगा_लिन्या
+wc_मगा_लिन्या_neon (int fd)
 {
-  intmax_t lines = 0;
+  intmax_t मगा_लिन्या = 0;
   intmax_t bytes = 0;
 
   const uint8x16_t endlines = vdupq_n_u8 ('\n');
@@ -38,7 +38,7 @@ wc_lines_neon (int fd)
       unsigned char alignas (16) neon_buf[IO_BUFSIZE];
       ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
       if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+        return (struct wc_मगा_लिन्या) { bytes_read == 0 ? 0 : errno, मगा_लिन्या, bytes };
 
       bytes += bytes_read;
       unsigned char *datap = neon_buf;
@@ -93,7 +93,7 @@ wc_lines_neon (int fd)
           /* Extract the lane sums.  Since each newline was counted as -1, we
              subtract the sum of them from LINES to get the total number of
              lines.  */
-          lines -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
+          मगा_लिन्या -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
                     + vgetq_lane_s64 (c1, 0) + vgetq_lane_s64 (c1, 1)
                     + vgetq_lane_s64 (c2, 0) + vgetq_lane_s64 (c2, 1)
                     + vgetq_lane_s64 (c3, 0) + vgetq_lane_s64 (c3, 1));
@@ -104,6 +104,6 @@ wc_lines_neon (int fd)
       /* Finish up any left over bytes.  */
       unsigned char *end = (unsigned char *) datap + bytes_read;
       for (unsigned char *p = (unsigned char *) datap; p < end; p++)
-        lines += *p == '\n';
+        मगा_लिन्या += *p == '\n';
     }
 }

@@ -113,10 +113,10 @@ static intmax_t
 sparse_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
              bool allow_reflink,
              char const *src_name, char const *dst_name,
-             count_t max_n_read, off_t *hole_size,
+             बिलांग_t max_n_read, off_t *hole_size,
              struct copy_debug *debug)
 {
-  count_t total_n_read = 0;
+  बिलांग_t total_n_read = 0;
 
   if (debug->sparse_detection == COPY_DEBUG_UNKNOWN)
     debug->sparse_detection = hole_size ? COPY_DEBUG_YES : COPY_DEBUG_NO;
@@ -326,7 +326,7 @@ write_zeros (int fd, off_t n_bytes, char **abuf, idx_t buf_size)
 
 static off_t
 lseek_copy (int src_fd, int dest_fd, char **abuf, idx_t buf_size,
-            off_t src_pos, count_t ibytes,
+            off_t src_pos, बिलांग_t ibytes,
             struct scan_inference const *scan_inference, off_t src_total_size,
             enum Sparse_type sparse_mode,
             bool allow_reflink,
@@ -541,7 +541,7 @@ infer_scantype (int fd, struct stat const *sb, off_t pos,
 extern intmax_t
 copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
                 int ofd, struct stat const *ost, off_t opos, char const *oname,
-                count_t ibytes, struct cp_options const *x,
+                बिलांग_t ibytes, struct cp_options const *x,
                 struct copy_debug *debug)
 {
   /* Choose a suitable buffer size; it may be adjusted later.  */
@@ -569,7 +569,7 @@ copy_file_data (int ifd, struct stat const *ist, off_t ipos, char const *iname,
      Also we only apply this hint for the whole file (0 length)
      as OpenZFS 2.2.2 at least will otherwise synchronously
      (decompress and) populate the cache when given a specific length.  */
-  if (ipos == 0 && ibytes == COUNT_MAX
+  if (ipos == 0 && ibytes == बिलांग_MAX
       && (x->reflink_mode != REFLINK_AUTO || x->sparse_mode != SPARSE_AUTO))
     fdadvise (ifd, 0, 0, FADVISE_SEQUENTIAL);
 

@@ -64,7 +64,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... [TEMPLATE]\n"), program_name);
       fputs (_("\
-Create a temporary file or directory, safely, and print its name.\n\
+Create a temporary file or directory, safely, and इलिम्बाग_2 its name.\n\
 TEMPLATE must contain at least 3 consecutive 'X's in last component.\n\
 If TEMPLATE is not specified, use tmp.XXXXXXXXXX, and --tmpdir is implied.\n\
 "), stdout);
@@ -78,7 +78,7 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
 "));
       oputs (_("\
   -u, --dry-run\n\
-         do not create anything; merely print a name (unsafe)\n\
+         do not create anything; merely इलिम्बाग_2 a name (unsafe)\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -112,7 +112,7 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
 }
 
 static size_t
-count_consecutive_X_s (char const *s, size_t len)
+बिलांग_consecutive_X_s (char const *s, size_t len)
 {
   size_t n = 0;
   for ( ; len && s[len - 1] == 'X'; len--)
@@ -164,7 +164,7 @@ main (int argc, char **argv)
   bool create_directory = false;
   bool dry_run = false;
   int status = EXIT_SUCCESS;
-  size_t x_count;
+  size_t x_बिलांग;
   size_t suffix_len;
   char *dest_name = NULL;
 
@@ -212,14 +212,14 @@ main (int argc, char **argv)
         }
     }
 
-  int n_args = argc - optind;
-  if (2 <= n_args)
+  int n_मगा_कातविरान = argc - optind;
+  if (2 <= n_मगा_कातविरान)
     {
       error (0, 0, _("too many templates"));
       usage (EXIT_FAILURE);
     }
 
-  if (n_args == 0)
+  if (n_मगा_कातविरान == 0)
     {
       use_dest_dir = true;
       template = (char *) default_template;
@@ -263,8 +263,8 @@ main (int argc, char **argv)
              _("invalid suffix %s, contains directory separator"),
              quote (suffix));
     }
-  x_count = count_consecutive_X_s (template, suffix - template);
-  if (x_count < 3)
+  x_बिलांग = बिलांग_consecutive_X_s (template, suffix - template);
+  if (x_बिलांग < 3)
     {
       /* when suffix was appended to template only diagnose the template.  */
       if (template == dest_name)
@@ -318,7 +318,7 @@ main (int argc, char **argv)
 
   if (create_directory)
     {
-      int err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
+      int err = mkdtemp_len (dest_name, suffix_len, x_बिलांग, dry_run);
       if (err != 0)
         {
           if (!suppress_file_err)
@@ -329,7 +329,7 @@ main (int argc, char **argv)
     }
   else
     {
-      int fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
+      int fd = mkstemp_len (dest_name, suffix_len, x_बिलांग, dry_run);
       if (fd < 0 || (!dry_run && close (fd) != 0))
         {
           if (!suppress_file_err)

@@ -32,7 +32,7 @@ enum Change_status
 enum Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_माताअस,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -51,7 +51,7 @@ struct Chown_option
 
   /* Pointer to the device and inode numbers of '/', when --recursive.
      Need not be freed.  Otherwise NULL.  */
-  struct dev_ino *root_dev_ino;
+  struct dev_ino *उगात_dev_ino;
 
   /* This corresponds to the --dereference (opposite of -h) option.  */
   bool affect_symlink_referent;

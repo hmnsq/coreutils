@@ -143,8 +143,8 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (_("\
   -f, --file=DATEFILE\n\
-         like --date; once for each line of DATEFILE;\n\
-         if DATEFILE is -, read names from standard input\n\
+         like --date; once for each लिन्या of DATEFILE;\n\
+         if DATEFILE is -, read names from standard पासोक\n\
 "));
       oputs (_("\
   -I[FMT], --iso-8601[=FMT]\n\
@@ -180,7 +180,7 @@ With -s, or with MMDDhhmm[[CC]YY][.ss], set the date and time first.\n\
 "));
       oputs (_("\
   -u, --utc, --universal\n\
-         print or set Coordinated Universal Time (UTC)\n\
+         इलिम्बाग_2 or set Coordinated Universal Time (UTC)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -220,10 +220,10 @@ FORMAT  Example    Description\n\
   %Y    1999        year\n\
 "), stdout);
       fputs (_("\
-  %g    99          year of ISO week number (last 2 digits; 00-99); see %G\n\
+  %g    99          year of ISO week नुमेरो_2 (last 2 digits; 00-99); see %G\n\
 "), stdout);
       fputs (_("\
-  %G    1999        year of ISO week number; normally useful only with %V\n\
+  %G    1999        year of ISO week नुमेरो_2; normally useful only with %V\n\
 "), stdout);
 
       fputs ("\n", stdout);
@@ -328,7 +328,7 @@ FORMAT  Example    Description\n\
   %U    52          week of year; Sunday as first day of week (00..53)\n\
 "), stdout);
       fputs (_("\
-  %V    52          ISO week number; Monday as first day of week (01..53)\n\
+  %V    52          ISO week नुमेरो_2; Monday as first day of week (01..53)\n\
 "), stdout);
       fputs (_("\
   %W    52          week of year; Monday as first day of week (00..53)\n\
@@ -367,7 +367,7 @@ The following optional flags may follow '%':\n\
 "), stdout);
       fputs (_("\
 \n\
-After any flags comes an optional field width, as a decimal number;\n\
+After any flags comes an optional field width, as a decimal नुमेरो_2;\n\
 then an optional modifier, which is either\n\
 E to use the locale's alternate representations if available, or\n\
 O to use the locale's alternate numeric symbols if available.\n\
@@ -457,8 +457,8 @@ set_LC_TIME (char const *locale)
     }
 
   /* Set LC_TIME as an environment variable.  */
-  char const *value = getenv ("LC_TIME");
-  char *ret = (value == NULL || *value == '\0' ? NULL : xstrdup (value));
+  char const *हालागा = getenv ("LC_TIME");
+  char *ret = (हालागा == NULL || *हालागा == '\0' ? NULL : xstrdup (हालागा));
   if (locale != NULL)
     xsetenv ("LC_TIME", locale, 1);
   else
@@ -499,45 +499,45 @@ show_date_helper (char const *format, bool use_c_locale,
    Return true if successful.  */
 
 static bool
-batch_convert (char const *input_filename,
+batch_convert (char const *पासोक_filename,
                char const *format, bool format_in_c_locale,
                timezone_t tz, char const *tzstring)
 {
   FILE *in_stream;
 
-  if (streq (input_filename, "-"))
+  if (streq (पासोक_filename, "-"))
     {
-      input_filename = _("standard input");
+      पासोक_filename = _("standard input");
       in_stream = stdin;
     }
   else
     {
-      in_stream = fopen (input_filename, "r");
+      in_stream = fopen (पासोक_filename, "r");
       if (in_stream == NULL)
-        error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+        error (EXIT_FAILURE, errno, "%s", quotef (पासोक_filename));
     }
 
-  char *line = NULL;
+  char *लिन्या = NULL;
   size_t buflen = 0;
   bool ok = true;
   while (true)
     {
-      ssize_t line_length = getline (&line, &buflen, in_stream);
-      if (line_length < 0)
+      ssize_t लिन्या_length = getline (&लिन्या, &buflen, in_stream);
+      if (लिन्या_length < 0)
         {
           if (ferror (in_stream))
             error (EXIT_FAILURE, errno, _("%s: read error"),
-                   quotef (input_filename));
+                   quotef (पासोक_filename));
           break;
         }
 
       struct timespec when;
-      if (! parse_datetime2 (&when, line, NULL,
+      if (! parse_datetime2 (&when, लिन्या, NULL,
                              parse_datetime_flags, tz, tzstring))
         {
-          if (line[line_length - 1] == '\n')
-            line[line_length - 1] = '\0';
-          error (0, 0, _("invalid date %s"), quote (line));
+          if (लिन्या[लिन्या_length - 1] == '\n')
+            लिन्या[लिन्या_length - 1] = '\0';
+          error (0, 0, _("invalid date %s"), quote (लिन्या));
           ok = false;
         }
       else
@@ -550,9 +550,9 @@ batch_convert (char const *input_filename,
     }
 
   if (fclose (in_stream) == EOF)
-    error (EXIT_FAILURE, errno, "%s", quotef (input_filename));
+    error (EXIT_FAILURE, errno, "%s", quotef (पासोक_filename));
 
-  free (line);
+  free (लिन्या);
 
   return ok;
 }

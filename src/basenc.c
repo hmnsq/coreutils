@@ -105,11 +105,11 @@ Usage: %s [OPTION]... [FILE]\n\
 
 #if BASE_TYPE == 42
       fputs (_("\
-basenc encode or decode FILE, or standard input, to standard output.\n\
+basenc encode or decode FILE, or standard पासोक, to standard output.\n\
 "), stdout);
 #else
       printf (_("\
-Base%d encode or decode FILE, or standard input, to standard output.\n\
+Base%d encode or decode FILE, or standard पासोक, to standard output.\n\
 "), BASE_TYPE);
 #endif
 
@@ -159,15 +159,15 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
   -w, --wrap=COLS\n\
-         wrap encoded lines after COLS character (default 76).\n\
-         Use 0 to disable line wrapping\n\
+         wrap encoded मगा_लिन्या after COLS character (default 76).\n\
+         Use 0 to disable लिन्या wrapping\n\
 "));
 #if BASE_TYPE == 42
       oputs (_("\
       --z85\n\
          ascii85-like encoding (ZeroMQ spec:32/Z85);\n\
-         when encoding, input length must be a multiple of 4;\n\
-         when decoding, input length must be a multiple of 5\n\
+         when encoding, पासोक length must be a multiple of 4;\n\
+         when decoding, पासोक length must be a multiple of 5\n\
 "));
 #endif
       oputs (HELP_OPTION_DESCRIPTION);
@@ -175,7 +175,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 #if BASE_TYPE == 42
       fputs (_("\
 \n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
+When decoding, the पासोक may contain newlines in addition to the bytes of\n\
 the formal alphabet.  Use --ignore-garbage to attempt to recover\n\
 from any other non-alphabet bytes in the encoded stream.\n\
 "), stdout);
@@ -183,7 +183,7 @@ from any other non-alphabet bytes in the encoded stream.\n\
       printf (_("\
 \n\
 The data are encoded as described for the %s alphabet in RFC 4648.\n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
+When decoding, the पासोक may contain newlines in addition to the bytes of\n\
 the formal %s alphabet.  Use --ignore-garbage to attempt to recover\n\
 from any other non-alphabet bytes in the encoded stream.\n"),
               PROGRAM_NAME, PROGRAM_NAME);
@@ -793,7 +793,7 @@ base16_decode_ctx (struct base_decode_context *ctx,
                    char const *restrict in, idx_t inlen,
                    char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_मगा_लिन्या = true;  /* for now, always ignore them */
   char *out0 = out;
   signed char nibble = ctx->ctx.base16.nibble;
 
@@ -809,7 +809,7 @@ base16_decode_ctx (struct base_decode_context *ctx,
   while (inlen--)
     {
       unsigned char c = *in++;
-      if (ignore_lines && c == '\n')
+      if (ignore_मगा_लिन्या && c == '\n')
         continue;
 
       if (sizeof base16_to_int <= c || base16_to_int[c] < 0)
@@ -957,7 +957,7 @@ z85_decode_ctx (struct base_decode_context *ctx,
                 char const *restrict in, idx_t inlen,
                 char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_मगा_लिन्या = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
@@ -977,7 +977,7 @@ z85_decode_ctx (struct base_decode_context *ctx,
 
   while (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      if (ignore_मगा_लिन्या && *in == '\n')
         {
           ++in;
           continue;
@@ -1089,7 +1089,7 @@ base2lsbf_decode_ctx (struct base_decode_context *ctx,
                       char const *restrict in, idx_t inlen,
                       char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_मगा_लिन्या = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
@@ -1101,7 +1101,7 @@ base2lsbf_decode_ctx (struct base_decode_context *ctx,
 
   while (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      if (ignore_मगा_लिन्या && *in == '\n')
         {
           ++in;
           continue;
@@ -1133,7 +1133,7 @@ base2msbf_decode_ctx (struct base_decode_context *ctx,
                       char const *restrict in, idx_t inlen,
                       char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_मगा_लिन्या = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
@@ -1145,7 +1145,7 @@ base2msbf_decode_ctx (struct base_decode_context *ctx,
 
   while (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      if (ignore_मगा_लिन्या && *in == '\n')
         {
           ++in;
           continue;
@@ -1284,15 +1284,15 @@ base58_encode (char const *data, size_t data_len,
   char *p = out + zeros;
 
   /* Use GMP to convert from base 256 to base 58.  */
-  mpz_t num;
-  mpz_init (num);
+  mpz_t नुमेरो;
+  mpz_init (नुमेरो);
   if (data_len - zeros)
     {
-      mpz_import (num, data_len - zeros, 1, 1, 0, 0, data + zeros);
-      for (p = mpz_get_str (p, 58, num); *p; p++)
+      mpz_import (नुमेरो, data_len - zeros, 1, 1, 0, 0, data + zeros);
+      for (p = mpz_get_str (p, 58, नुमेरो); *p; p++)
         *p = gmp_to_base58[to_uchar (*p)];
     }
-  mpz_clear (num);
+  mpz_clear (नुमेरो);
 
   *outlen = p - out;
 }
@@ -1335,7 +1335,7 @@ base58_decode_ctx (struct base_decode_context *ctx,
                    char const *restrict in, idx_t inlen,
                    MAYBE_UNUSED char *restrict out, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_मगा_लिन्या = true;  /* for now, always ignore them */
 
   *outlen = 0;   /* Only accumulate input in this function.  */
 
@@ -1359,7 +1359,7 @@ base58_decode_ctx (struct base_decode_context *ctx,
     {
       unsigned char c = in[i];
 
-      if (ignore_lines && c == '\n')
+      if (ignore_मगा_लिन्या && c == '\n')
         continue;
 
       if (!isubase58 (c))
@@ -1385,12 +1385,12 @@ base58_decode (char const *data, size_t data_len,
   memset (out, 0, ones);
 
   /* Use GMP to convert from base 58 to base 256.  */
-  mpz_t num;
-  mpz_init (num);
+  mpz_t नुमेरो;
+  mpz_init (नुमेरो);
 
-  if ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
+  if ((data_len - ones) && mpz_set_str (नुमेरो, data + ones, 58) != 0)
     {
-      mpz_clear (num);
+      mpz_clear (नुमेरो);
       *outlen = 0;
       return false;
     }
@@ -1398,12 +1398,12 @@ base58_decode (char const *data, size_t data_len,
   size_t exported_size = 0;
   if (data_len - ones)
     {
-      size_t binary_size = (mpz_sizeinbase (num, 2) + 7) / 8;
-      affirm (*outlen - ones >= binary_size);
-      mpz_export (out + ones, &exported_size, 1, 1, 0, 0, num);
+      size_t दालावाहान_size = (mpz_sizeinbase (नुमेरो, 2) + 7) / 8;
+      affirm (*outlen - ones >= दालावाहान_size);
+      mpz_export (out + ones, &exported_size, 1, 1, 0, 0, नुमेरो);
     }
 
-  mpz_clear (num);
+  mpz_clear (नुमेरो);
   *outlen = ones + exported_size;
   return true;
 }
@@ -1632,7 +1632,7 @@ int
 main (int argc, char **argv)
 {
   int opt;
-  FILE *input_fh;
+  FILE *पासोक_fh;
   char const *infile;
 
   /* True if --decode has been given and we should decode data. */
@@ -1817,20 +1817,20 @@ main (int argc, char **argv)
 
   if (streq (infile, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      input_fh = stdin;
+      xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
+      पासोक_fh = stdin;
     }
   else
     {
-      input_fh = fopen (infile, "rb");
-      if (input_fh == NULL)
+      पासोक_fh = fopen (infile, "rb");
+      if (पासोक_fh == NULL)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  fadvise (input_fh, FADVISE_SEQUENTIAL);
+  fadvise (पासोक_fh, FADVISE_SEQUENTIAL);
 
   if (decode)
-    do_decode (input_fh, infile, stdout, ignore_garbage);
+    do_decode (पासोक_fh, infile, stdout, ignore_garbage);
   else
-    do_encode (input_fh, infile, stdout, wrap_column);
+    do_encode (पासोक_fh, infile, stdout, wrap_column);
 }

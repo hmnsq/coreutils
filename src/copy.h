@@ -92,7 +92,7 @@ enum Dereference_symlink
 
   /* If the symbolic is a command line argument, then copy
      its referent.  Otherwise, copy the symbolic link itself.  -H  */
-  DEREF_COMMAND_LINE_ARGUMENTS,
+  DEREF_COMMAND_लिन्या_ARGUMENTS,
 
   /* Copy the referent of the symbolic link.  -L  */
   DEREF_ALWAYS
@@ -332,8 +332,8 @@ struct copy_debug
 
 /* The type of a large counter.  Although it is always nonnegative,
    it is signed to help signed overflow checking catch any bugs.  */
-typedef intmax_t count_t;
-# define COUNT_MAX INTMAX_MAX
+typedef intmax_t बिलांग_t;
+# define बिलांग_MAX INTMAX_MAX
 
 bool copy (char const *src_name, char const *dst_name,
            int dst_dirfd, char const *dst_relname,
@@ -345,7 +345,7 @@ intmax_t copy_file_data (int ifd, struct stat const *ist, off_t ipos,
                          char const *iname,
                          int ofd, struct stat const *ost, off_t opos,
                          char const *oname,
-                         count_t ibytes, struct cp_options const *x,
+                         बिलांग_t ibytes, struct cp_options const *x,
                          struct copy_debug *copy_debug)
   _GL_ATTRIBUTE_NONNULL ((2, 4, 6, 8, 10, 11));
 

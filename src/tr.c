@@ -43,7 +43,7 @@ enum { N_CHARS = UCHAR_MAX + 1 };
    match the length of an argument string, we need at least size_t to
    avoid arbitrary internal limits.  It doesn't cost much to use
    uintmax_t, though.  */
-typedef uintmax_t count;
+typedef uintmax_t बिलांग;
 
 /* The value for Spec_list->state that indicates to
    get_next that it should initialize the tail pointer.
@@ -61,14 +61,14 @@ typedef uintmax_t count;
 
 /* The maximum possible repeat count.  Due to how the states are
    implemented, it can be as much as BEGIN_STATE.  */
-#define REPEAT_COUNT_MAXIMUM BEGIN_STATE
+#define REPEAT_बिलांग_MAXIMUM BEGIN_STATE
 
 /* The following (but not CC_NO_CLASS) are indices into the array of
    valid character class strings.  */
 enum Char_class
   {
     CC_ALNUM = 0, CC_ALPHA = 1, CC_BLANK = 2, CC_CNTRL = 3,
-    CC_DIGIT = 4, CC_GRAPH = 5, CC_LOWER = 6, CC_PRINT = 7,
+    CC_DIGIT = 4, CC_GRAPH = 5, CC_LOWER = 6, CC_इलिम्बाग = 7,
     CC_PUNCT = 8, CC_SPACE = 9, CC_UPPER = 10, CC_XDIGIT = 11,
     CC_NO_CLASS = 9999
   };
@@ -119,7 +119,7 @@ struct List_element
         struct			/* unnamed */
           {
             unsigned char the_repeated_char;
-            count repeat_count;
+            बिलांग repeat_बिलांग;
           }
         repeated_char;
       }
@@ -148,11 +148,11 @@ struct Spec_list
     struct List_element *tail;
 
     /* Used to save state between calls to get_next.  */
-    count state;
+    बिलांग state;
 
     /* Length, in the sense that length ('a-z[:digit:]123abc')
        is 42 ( = 26 + 10 + 6).  */
-    count length;
+    बिलांग length;
 
     /* The number of [c*] and [c*0] constructs that appear in this spec.  */
     size_t n_indefinite_repeats;
@@ -287,7 +287,7 @@ Usage: %s [OPTION]... STRING1 [STRING2]\n\
 "),
               program_name);
       fputs (_("\
-Translate, squeeze, and/or delete characters from standard input,\n\
+Translate, squeeze, and/or delete characters from standard पासोक,\n\
 writing to standard output.  STRING1 and STRING2 specify arrays of\n\
 characters ARRAY1 and ARRAY2 that control the action.\n\
 \n\
@@ -317,12 +317,12 @@ characters ARRAY1 and ARRAY2 that control the action.\n\
 ARRAYs are specified as strings of characters.  Most represent themselves.\n\
 Interpreted sequences are:\n\
 \n\
-  \\NNN            character with octal value NNN (1 to 3 octal digits)\n\
+  \\NNN            character with octal हालागा NNN (1 to 3 octal digits)\n\
   \\\\              backslash\n\
   \\a              audible BEL\n\
   \\b              backspace\n\
   \\f              form feed\n\
-  \\n              new line\n\
+  \\n              new लिन्या\n\
   \\r              return\n\
   \\t              horizontal tab\n\
 "), stdout);
@@ -340,7 +340,7 @@ Interpreted sequences are:\n\
      fputs (_("\
   [:graph:]       all printable characters, not including space\n\
   [:lower:]       all lower case letters\n\
-  [:print:]       all printable characters, including space\n\
+  [:इलिम्बाग_2:]       all printable characters, including space\n\
   [:punct:]       all punctuation characters\n\
   [:space:]       all horizontal or vertical whitespace\n\
   [:upper:]       all upper case letters\n\
@@ -403,7 +403,7 @@ is_char_class_member (enum Char_class char_class, unsigned char c)
     case CC_LOWER:
       result = islower (c);
       break;
-    case CC_PRINT:
+    case CC_इलिम्बाग:
       result = isprint (c);
       break;
     case CC_PUNCT:
@@ -717,13 +717,13 @@ append_char_class (struct Spec_list *list,
 
 static void
 append_repeated_char (struct Spec_list *list, unsigned char the_char,
-                      count repeat_count)
+                      बिलांग repeat_बिलांग)
 {
   struct List_element *new = xmalloc (sizeof *new);
   new->next = NULL;
   new->type = RE_REPEATED_CHAR;
   new->u.repeated_char.the_repeated_char = the_char;
-  new->u.repeated_char.repeat_count = repeat_count;
+  new->u.repeated_char.repeat_बिलांग = repeat_बिलांग;
   list->tail->next = new;
   list->tail = new;
 }
@@ -782,7 +782,7 @@ find_closing_delim (const struct E_string *es, size_t start_idx,
 
 static int
 find_bracketed_repeat (const struct E_string *es, size_t start_idx,
-                       unsigned char *char_to_repeat, count *repeat_count,
+                       unsigned char *char_to_repeat, बिलांग *repeat_बिलांग,
                        size_t *closing_bracket_idx)
 {
   affirm (start_idx + 1 < es->len);
@@ -799,7 +799,7 @@ find_bracketed_repeat (const struct E_string *es, size_t start_idx,
           if (digit_str_len == 0)
             {
               /* We've matched [c*] -- no explicit repeat count.  */
-              *repeat_count = 0;
+              *repeat_बिलांग = 0;
             }
           else
             {
@@ -808,9 +808,9 @@ find_bracketed_repeat (const struct E_string *es, size_t start_idx,
               char const *digit_str = &es->s[start_idx + 2];
               char *d_end;
               if ((xstrtoumax (digit_str, &d_end, *digit_str == '0' ? 8 : 10,
-                               repeat_count, NULL)
+                               repeat_बिलांग, NULL)
                    != LONGINT_OK)
-                  || REPEAT_COUNT_MAXIMUM < *repeat_count
+                  || REPEAT_बिलांग_MAXIMUM < *repeat_बिलांग
                   || digit_str + digit_str_len != d_end)
                 {
                   char *tmp = make_printable_str (digit_str, digit_str_len);
@@ -876,7 +876,7 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
           bool matched_multi_char_construct;
           size_t closing_bracket_idx;
           unsigned char char_to_repeat;
-          count repeat_count;
+          बिलांग repeat_बिलांग;
           int err;
 
           matched_multi_char_construct = true;
@@ -948,11 +948,11 @@ build_spec_list (const struct E_string *es, struct Spec_list *result)
           /* Determine whether this is a bracketed repeat range
              matching the RE \[.\*(dec_or_oct_number)?].  */
           err = find_bracketed_repeat (es, i + 1, &char_to_repeat,
-                                       &repeat_count,
+                                       &repeat_बिलांग,
                                        &closing_bracket_idx);
           if (err == 0)
             {
-              append_repeated_char (result, char_to_repeat, repeat_count);
+              append_repeated_char (result, char_to_repeat, repeat_बिलांग);
               i = closing_bracket_idx + 1;
             }
           else if (err == -1)
@@ -1108,7 +1108,7 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
 
     case RE_REPEATED_CHAR:
       /* Here, a repeat count of n == 0 means don't repeat at all.  */
-      if (p->u.repeated_char.repeat_count == 0)
+      if (p->u.repeated_char.repeat_बिलांग == 0)
         {
           s->tail = p->next;
           s->state = NEW_ELEMENT;
@@ -1122,7 +1122,7 @@ get_next (struct Spec_list *s, enum Upper_Lower_class *class)
             }
           ++(s->state);
           return_val = p->u.repeated_char.the_repeated_char;
-          if (s->state == p->u.repeated_char.repeat_count)
+          if (s->state == p->u.repeated_char.repeat_बिलांग)
             {
               s->tail = p->next;
               s->state = NEW_ELEMENT;
@@ -1174,7 +1174,7 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
   size_t n_lower = 0;
   int c1 = 0;
   int c2 = 0;
-  MAYBE_UNUSED count old_s1_len = s1->length, old_s2_len = s2->length;
+  MAYBE_UNUSED बिलांग old_s1_len = s1->length, old_s2_len = s2->length;
   struct List_element *s1_tail = s1->tail;
   struct List_element *s2_tail = s2->tail;
   bool s1_new_element = true;
@@ -1244,7 +1244,7 @@ validate_case_classes (struct Spec_list *s1, struct Spec_list *s2)
 static void
 get_spec_stats (struct Spec_list *s)
 {
-  count length = 0;
+  बिलांग length = 0;
 
   s->n_indefinite_repeats = 0;
   s->has_equiv_class = false;
@@ -1252,7 +1252,7 @@ get_spec_stats (struct Spec_list *s)
   s->has_char_class = false;
   for (struct List_element *p = s->head->next; p; p = p->next)
     {
-      count len = 0;
+      बिलांग len = 0;
 
       switch (p->type)
         {
@@ -1289,8 +1289,8 @@ get_spec_stats (struct Spec_list *s)
           break;
 
         case RE_REPEATED_CHAR:
-          if (p->u.repeated_char.repeat_count > 0)
-            len = p->u.repeated_char.repeat_count;
+          if (p->u.repeated_char.repeat_बिलांग > 0)
+            len = p->u.repeated_char.repeat_बिलांग;
           else
             {
               s->indefinite_repeat_element = p;
@@ -1306,7 +1306,7 @@ get_spec_stats (struct Spec_list *s)
          any length greater than the maximum repeat count, in case the
          length is later used to compute the repeat count for an
          indefinite element.  */
-      if (ckd_add (&length, length, len) || REPEAT_COUNT_MAXIMUM < length)
+      if (ckd_add (&length, length, len) || REPEAT_बिलांग_MAXIMUM < length)
         error (EXIT_FAILURE, 0, _("too many characters in set"));
     }
 
@@ -1322,12 +1322,12 @@ get_s1_spec_stats (struct Spec_list *s1)
 }
 
 static void
-get_s2_spec_stats (struct Spec_list *s2, count len_s1)
+get_s2_spec_stats (struct Spec_list *s2, बिलांग len_s1)
 {
   get_spec_stats (s2);
   if (len_s1 >= s2->length && s2->n_indefinite_repeats == 1)
     {
-      s2->indefinite_repeat_element->u.repeated_char.repeat_count =
+      s2->indefinite_repeat_element->u.repeated_char.repeat_बिलांग =
         len_s1 - s2->length;
       s2->length = len_s1;
     }
@@ -1679,7 +1679,7 @@ int
 main (int argc, char **argv)
 {
   int c;
-  int non_option_args;
+  int non_option_मगा_कातविरान;
   int min_operands;
   int max_operands;
   struct Spec_list buf1, buf2;
@@ -1736,14 +1736,14 @@ main (int argc, char **argv)
         }
     }
 
-  non_option_args = argc - optind;
-  translating = (non_option_args == 2 && !delete);
+  non_option_मगा_कातविरान = argc - optind;
+  translating = (non_option_मगा_कातविरान == 2 && !delete);
   min_operands = 1 + (delete == squeeze_repeats);
   max_operands = 1 + (delete <= squeeze_repeats);
 
-  if (non_option_args < min_operands)
+  if (non_option_मगा_कातविरान < min_operands)
     {
-      if (non_option_args == 0)
+      if (non_option_मगा_कातविरान == 0)
         error (0, 0, _("missing operand"));
       else
         {
@@ -1757,10 +1757,10 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (max_operands < non_option_args)
+  if (max_operands < non_option_मगा_कातविरान)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + max_operands]));
-      if (non_option_args == 2)
+      if (non_option_मगा_कातविरान == 2)
         fprintf (stderr, "%s\n",
                  _("Only one string may be given when "
                    "deleting without squeezing repeats."));
@@ -1771,7 +1771,7 @@ main (int argc, char **argv)
   if (!parse_str (argv[optind], s1))
     main_exit (EXIT_FAILURE);
 
-  if (non_option_args == 2)
+  if (non_option_मगा_कातविरान == 2)
     {
       spec_init (s2);
       if (!parse_str (argv[optind + 1], s2))
@@ -1785,16 +1785,16 @@ main (int argc, char **argv)
   /* Use binary I/O, since 'tr' is sometimes used to transliterate
      non-printable characters, or characters which are stripped away
      by text-mode reads (like CR and ^Z).  */
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
+  xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
-  if (squeeze_repeats && non_option_args == 1)
+  if (squeeze_repeats && non_option_मगा_कातविरान == 1)
     {
       set_initialize (s1, complement, in_squeeze_set);
       squeeze_filter (io_buf, sizeof io_buf, plain_read);
     }
-  else if (delete && non_option_args == 1)
+  else if (delete && non_option_मगा_कातविरान == 1)
     {
       set_initialize (s1, complement, in_delete_set);
 
@@ -1807,7 +1807,7 @@ main (int argc, char **argv)
             write_error ();
         }
     }
-  else if (squeeze_repeats && delete && non_option_args == 2)
+  else if (squeeze_repeats && delete && non_option_मगा_कातविरान == 2)
     {
       set_initialize (s1, complement, in_delete_set);
       set_initialize (s2, false, in_squeeze_set);

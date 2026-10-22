@@ -70,13 +70,13 @@ static char const *const ls_codes[] =
 static_assert (countof (slack_codes) == countof (ls_codes));
 
 /* Whether to output escaped ls color codes for display.  */
-static bool print_ls_colors;
+static bool इलिम्बाग_ls_colors;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
 enum
 {
-  PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,
+  इलिम्बाग_LS_COLORS_OPTION = CHAR_MAX + 1,
 };
 
 static struct option const long_options[] =
@@ -86,7 +86,7 @@ static struct option const long_options[] =
     {"csh", no_argument, NULL, 'c'},
     {"c-shell", no_argument, NULL, 'c'},
     {"print-database", no_argument, NULL, 'p'},
-    {"print-ls-colors", no_argument, NULL, PRINT_LS_COLORS_OPTION},
+    {"print-ls-colors", no_argument, NULL, इलिम्बाग_LS_COLORS_OPTION},
     {GETOPT_HELP_OPTION_DECL},
     {GETOPT_VERSION_OPTION_DECL},
     {NULL, 0, NULL, 0}
@@ -114,11 +114,11 @@ Determine format of output:\n\
          output C shell code to set LS_COLORS\n\
 "));
       oputs (_("\
-  -p, --print-database\n\
+  -p, --इलिम्बाग_2-database\n\
          output defaults\n\
 "));
       oputs (_("\
-      --print-ls-colors\n\
+      --इलिम्बाग_2-ls-colors\n\
          output fully escaped colors for display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -156,7 +156,7 @@ guess_shell_syntax (void)
 }
 
 static void
-parse_line (char const *line, char **keyword, char **arg)
+parse_लिन्या (char const *लिन्या, char **keyword, char **arg)
 {
   char const *p;
   char const *keyword_start;
@@ -165,7 +165,7 @@ parse_line (char const *line, char **keyword, char **arg)
   *keyword = NULL;
   *arg = NULL;
 
-  for (p = line; c_isspace (*p); ++p)
+  for (p = लिन्या; c_isspace (*p); ++p)
     continue;
 
   /* Ignore blank lines and shell-style comments.  */
@@ -214,7 +214,7 @@ append_quoted (char const *str)
 
   while (*str != '\0')
     {
-      if (! print_ls_colors)
+      if (! इलिम्बाग_ls_colors)
         switch (*str)
           {
           case '\'':
@@ -251,7 +251,7 @@ append_quoted (char const *str)
 static void
 append_entry (char prefix, char const *item, char const *arg)
 {
-  if (print_ls_colors)
+  if (इलिम्बाग_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
@@ -260,11 +260,11 @@ append_entry (char prefix, char const *item, char const *arg)
   if (prefix)
     APPEND_CHAR (prefix);
   append_quoted (item);
-  APPEND_CHAR (print_ls_colors ? '\t' : '=');
+  APPEND_CHAR (इलिम्बाग_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  if (इलिम्बाग_ls_colors)
     append_quoted ("\x1B[0m");
-  APPEND_CHAR (print_ls_colors ? '\n' : ':');
+  APPEND_CHAR (इलिम्बाग_ls_colors ? '\n' : ':');
 }
 
 /* Read the file open on FP (with name FILENAME).  First, look for a
@@ -277,11 +277,11 @@ append_entry (char prefix, char const *item, char const *arg)
 static bool
 dc_parse_stream (FILE *fp, char const *filename)
 {
-  idx_t line_number = 0;
-  char const *next_G_line = G_line;
-  char *input_line = NULL;
-  size_t input_line_size = 0;
-  char const *line;
+  idx_t लिन्या_नुमेरो = 0;
+  char const *next_G_लिन्या = G_लिन्या;
+  char *पासोक_लिन्या = NULL;
+  size_t पासोक_लिन्या_size = 0;
+  char const *लिन्या;
   char const *term;
   char const *colorterm;
   bool ok = true;
@@ -304,31 +304,31 @@ dc_parse_stream (FILE *fp, char const *filename)
       char *keywd, *arg;
       bool unrecognized;
 
-      ++line_number;
+      ++लिन्या_नुमेरो;
 
       if (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          if (getline (&पासोक_लिन्या, &पासोक_लिन्या_size, fp) <= 0)
             {
               if (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
                 }
-              free (input_line);
+              free (पासोक_लिन्या);
               break;
             }
-          line = input_line;
+          लिन्या = पासोक_लिन्या;
         }
       else
         {
-          if (next_G_line == G_line + sizeof G_line)
+          if (next_G_लिन्या == G_लिन्या + sizeof G_लिन्या)
             break;
-          line = next_G_line;
-          next_G_line += strlen (next_G_line) + 1;
+          लिन्या = next_G_लिन्या;
+          next_G_लिन्या += strlen (next_G_लिन्या) + 1;
         }
 
-      parse_line (line, &keywd, &arg);
+      parse_लिन्या (लिन्या, &keywd, &arg);
 
       if (keywd == NULL)
         continue;
@@ -336,7 +336,7 @@ dc_parse_stream (FILE *fp, char const *filename)
       if (arg == NULL)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
-                 quotef (filename), line_number);
+                 quotef (filename), लिन्या_नुमेरो);
           ok = false;
           free (keywd);
           continue;
@@ -392,7 +392,7 @@ dc_parse_stream (FILE *fp, char const *filename)
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
-                 line_number, keywd);
+                 लिन्या_नुमेरो, keywd);
           ok = false;
         }
 
@@ -431,7 +431,7 @@ main (int argc, char **argv)
   bool ok = true;
   int optc;
   enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
-  bool print_database = false;
+  bool इलिम्बाग_database = false;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -453,11 +453,11 @@ main (int argc, char **argv)
         break;
 
       case 'p':
-        print_database = true;
+        इलिम्बाग_database = true;
         break;
 
-      case PRINT_LS_COLORS_OPTION:
-        print_ls_colors = true;
+      case इलिम्बाग_LS_COLORS_OPTION:
+        इलिम्बाग_ls_colors = true;
         break;
 
       case_GETOPT_HELP_CHAR;
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  if ((इलिम्बाग_database | इलिम्बाग_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  if (इलिम्बाग_database && इलिम्बाग_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,21 +489,21 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  if ((!इलिम्बाग_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
-             quote (argv[!print_database]));
-      if (print_database)
+             quote (argv[!इलिम्बाग_database]));
+      if (इलिम्बाग_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  if (इलिम्बाग_database)
     {
-      char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      char const *p = G_लिन्या;
+      while (p - G_लिन्या < sizeof G_लिन्या)
         {
           puts (p);
           p += strlen (p) + 1;
@@ -512,7 +512,7 @@ main (int argc, char **argv)
   else
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      if (syntax == SHELL_SYNTAX_UNKNOWN && ! इलिम्बाग_ls_colors)
         {
           syntax = guess_shell_syntax ();
           if (syntax == SHELL_SYNTAX_UNKNOWN)
@@ -544,10 +544,10 @@ main (int argc, char **argv)
               prefix = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
+          if (! इलिम्बाग_ls_colors)
             fputs (prefix, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          if (! इलिम्बाग_ls_colors)
             fputs (suffix, stdout);
         }
     }

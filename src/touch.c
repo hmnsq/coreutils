@@ -92,7 +92,7 @@ static struct option const longopts[] =
 };
 
 /* Valid arguments to the '--time' option. */
-static char const *const time_args[] =
+static char const *const time_मगा_कातविरान[] =
 {
   "atime", "access", "use", "mtime", "modify", NULL
 };
@@ -332,7 +332,7 @@ main (int argc, char **argv)
 
         case TIME_OPTION:	/* --time */
           change_times |= XARGMATCH ("--time", optarg,
-                                     time_args, time_masks);
+                                     time_मगा_कातविरान, time_masks);
           break;
 
         case_GETOPT_HELP_CHAR;

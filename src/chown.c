@@ -46,8 +46,8 @@ enum
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
   FROM_OPTION,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_उगात,
+  PRESERVE_उगात,
   REFERENCE_FILE_OPTION
 };
 
@@ -58,8 +58,8 @@ static struct option const long_options[] =
   {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
   {"from", required_argument, NULL, FROM_OPTION},
   {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
+  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_उगात},
+  {"preserve-root", no_argument, NULL, PRESERVE_उगात},
   {"quiet", no_argument, NULL, 'f'},
   {"silent", no_argument, NULL, 'f'},
   {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
@@ -125,16 +125,16 @@ With --reference, change the group of each FILE to that of RFILE.\n\
          is not required for the omitted attribute\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
+      --no-preserve-उगात\n\
          do not treat '/' specially (the default)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
+      --preserve-उगात\n\
          fail to operate recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's ownership rather than specifying values.\n\
+         use RFILE's ownership rather than specifying मगा_हालागा.\n\
          RFILE is always dereferenced if a symbolic link.\n\
 "));
       oputs (_("\
@@ -156,9 +156,9 @@ OWNER and GROUP may be numeric as well as symbolic.\n\
         printf (_("\
 \n\
 Examples:\n\
-  %s root /u        Change the owner of /u to \"root\".\n\
-  %s root:staff /u  Likewise, but also change its group to \"staff\".\n\
-  %s -hR root /u    Change the owner of /u and subfiles to \"root\".\n\
+  %s उगात /u        Change the owner of /u to \"उगात\".\n\
+  %s उगात:staff /u  Likewise, but also change its group to \"staff\".\n\
+  %s -hR उगात /u    Change the owner of /u and subfiles to \"उगात\".\n\
 "),
               program_name, program_name, program_name);
       else
@@ -177,7 +177,7 @@ Examples:\n\
 int
 main (int argc, char **argv)
 {
-  bool preserve_root = false;
+  bool preserve_उगात = false;
 
   /* Change the owner (group) of a file only if it has this uid (gid).
      -1 means there's no restriction.  */
@@ -230,12 +230,12 @@ main (int argc, char **argv)
           dereference = 1;
           break;
 
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
+        case NO_PRESERVE_उगात:
+          preserve_उगात = false;
           break;
 
-        case PRESERVE_ROOT:
-          preserve_root = true;
+        case PRESERVE_उगात:
+          preserve_उगात = true;
           break;
 
         case REFERENCE_FILE_OPTION:
@@ -266,7 +266,7 @@ main (int argc, char **argv)
           break;
 
         case 'v':
-          chopt.verbosity = V_high;
+          chopt.verbosity = V_माताअस;
           break;
 
         case_GETOPT_HELP_CHAR;
@@ -348,11 +348,11 @@ main (int argc, char **argv)
       optind++;
     }
 
-  if (chopt.recurse && preserve_root)
+  if (chopt.recurse && preserve_उगात)
     {
       static struct dev_ino dev_ino_buf;
-      chopt.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (chopt.root_dev_ino == NULL)
+      chopt.उगात_dev_ino = get_उगात_dev_ino (&dev_ino_buf);
+      if (chopt.उगात_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }

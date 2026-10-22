@@ -113,7 +113,7 @@ static_assert (MAX_INTEGRAL_TYPE_WIDTH <= 3 * 99);
    line, BLANK is the number of fields to leave blank.  WIDTH is width
    of one field, excluding leading space, and PAD is total pad to
    divide among FIELDS.  PAD is at least as large as FIELDS.  */
-typedef void (*print_function_type)
+typedef void (*इलिम्बाग_function_type)
   (idx_t fields, idx_t blank, void const *data,
    char const *fmt, int width, idx_t pad);
 
@@ -123,7 +123,7 @@ struct tspec
   {
     enum output_format fmt;
     enum size_spec size; /* Type of input object.  */
-    print_function_type print_function;
+    इलिम्बाग_function_type इलिम्बाग_function;
     char fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
     bool hexl_mode_trailer;
     int field_width; /* Minimum width of a field, excluding leading space.  */
@@ -241,7 +241,7 @@ static idx_t bytes_per_block;
 
 /* Human-readable representation of *file_list (for error messages).
    It differs from file_list[-1] only when file_list[-1] is "-".  */
-static char const *input_filename;
+static char const *पासोक_filename;
 
 /* A null-terminated list of the file-arguments from the command line.  */
 static char const *const *file_list;
@@ -302,7 +302,7 @@ static enum size_spec const fp_type_size[] =
   };
 
 /* Use native endianness by default.  */
-static bool input_swap;
+static bool पासोक_swap;
 
 static char const short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
 
@@ -320,7 +320,7 @@ enum endian_type
   endian_big
 };
 
-static char const *const endian_args[] =
+static char const *const endian_मगा_कातविरान[] =
 {
   "little", "big", NULL
 };
@@ -363,7 +363,7 @@ Usage: %s [OPTION]... [FILE]...\n\
       fputs (_("\n\
 Write an unambiguous representation, octal bytes by default,\n\
 of FILE to standard output.  With more than one FILE argument,\n\
-concatenate them in the listed order to form the input.\n\
+concatenate them in the listed order to form the पासोक.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -387,15 +387,15 @@ suffixes may be . for octal and b for multiply by 512.\n\
 "));
       oputs (_("\
       --endian={big|little}\n\
-         swap input bytes according the specified order\n\
+         swap पासोक bytes according the specified order\n\
 "));
       oputs (_("\
   -j, --skip-bytes=BYTES\n\
-         skip BYTES input bytes first\n\
+         skip BYTES पासोक bytes first\n\
 "));
       oputs (_("\
   -N, --read-bytes=BYTES\n\
-         limit dump to BYTES input bytes\n\
+         limit dump to BYTES पासोक bytes\n\
 "));
       oputs (_("\
   -S BYTES, --strings[=BYTES]\n\
@@ -408,11 +408,11 @@ suffixes may be . for octal and b for multiply by 512.\n\
 "));
       oputs (_("\
   -v, --output-duplicates\n\
-         do not use * to mark line suppression\n\
+         do not use * to mark लिन्या suppression\n\
 "));
       oputs (_("\
   -w[BYTES], --width[=BYTES]\n\
-         output BYTES bytes per output line;\n\
+         output BYTES bytes per output लिन्या;\n\
          32 is implied when BYTES is not specified\n\
 "));
       oputs (_("\
@@ -427,7 +427,7 @@ suffixes may be . for octal and b for multiply by 512.\n\
 Traditional format specifications may be intermixed; they accumulate:\n\
 "), stdout);
       oputs (_("\
-  -a   same as -t a,  select named characters, ignoring high-order bit\n\
+  -a   same as -t a,  select named characters, ignoring माताअस-order bit\n\
 "));
       oputs (_("\
   -b   same as -t o1, select octal bytes\n\
@@ -460,7 +460,7 @@ Traditional format specifications may be intermixed; they accumulate:\n\
 \n\
 \n\
 TYPE is made up of one or more of these specifications:\n\
-  a          named character, ignoring high-order bit\n\
+  a          named character, ignoring माताअस-order bit\n\
   c          printable character or backslash escape\n\
 "), stdout);
       fputs (_("\
@@ -472,7 +472,7 @@ TYPE is made up of one or more of these specifications:\n\
 "), stdout);
       fputs (_("\
 \n\
-SIZE is a number.  For TYPE in [doux], SIZE may also be C for\n\
+SIZE is a नुमेरो_2.  For TYPE in [doux], SIZE may also be C for\n\
 sizeof(char), S for sizeof(short), I for sizeof(int) or L for\n\
 sizeof(long).  If TYPE is f, SIZE may also be B for Brain 16 bit,\n\
 H for Half precision float, F for sizeof(float), D for sizeof(double),\n\
@@ -481,7 +481,7 @@ or L for sizeof(long double).\n\
       fputs (_("\
 \n\
 Adding a z suffix to any type displays printable characters at the end of\n\
-each output line.\n\
+each output लिन्या.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -493,7 +493,7 @@ BYTES is hex with 0x or 0X prefix, and may have a multiplier suffix:\n\
   MB   1000*1000\n\
   M    1024*1024\n\
 and so on for G, T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+दालावाहान_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -505,7 +505,7 @@ Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 /* Print N spaces, where 0 <= N.
    Do not rely on printf ("%*s", N, "") as N may exceed INT_MAX.  */
 static void
-print_n_spaces (intmax_t n)
+इलिम्बाग_n_spaces (intmax_t n)
 {
   for (; 0 < n; n--)
     putchar (' ');
@@ -530,7 +530,7 @@ pad_at_overflow (idx_t fields)
   return ckd_mul (&product, fields - 1, fields - 1);
 }
 
-#define PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
+#define इलिम्बाग_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
 static void                                                             \
 N (idx_t fields, idx_t blank, void const *block,			\
    FMT_STRING_DECL, int width, idx_t pad)				\
@@ -542,7 +542,7 @@ N (idx_t fields, idx_t blank, void const *block,			\
       idx_t next_pad = pad_at (fields, i - 1, pad);			\
       int adjusted_width = pad_remaining - next_pad + width;            \
       T x;                                                              \
-      if (input_swap && sizeof (T) > 1)                                 \
+      if (पासोक_swap && sizeof (T) > 1)                                 \
         {                                                               \
           union {                                                       \
             T x;                                                        \
@@ -560,33 +560,33 @@ N (idx_t fields, idx_t blank, void const *block,			\
     }                                                                   \
 }
 
-#define PRINT_TYPE(N, T)                                                \
-  PRINT_FIELDS (N, T, char const *fmt_string,                           \
+#define इलिम्बाग_TYPE(N, T)                                                \
+  इलिम्बाग_FIELDS (N, T, char const *fmt_string,                           \
                 xprintf (fmt_string, adjusted_width, x))
 
-#define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-  PRINT_FIELDS (N, T, MAYBE_UNUSED char const *fmt_string,              \
+#define इलिम्बाग_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
+  इलिम्बाग_FIELDS (N, T, MAYBE_UNUSED char const *fmt_string,              \
                 char buf[BUFSIZE];                                      \
                 FTOASTR (buf, sizeof buf, 0, 0, x);                     \
                 xprintf ("%*s", adjusted_width, buf))
 
-PRINT_TYPE (print_s_char, signed char)
-PRINT_TYPE (print_char, unsigned char)
-PRINT_TYPE (print_s_short, short int)
-PRINT_TYPE (print_short, unsigned short int)
-PRINT_TYPE (print_int, unsigned int)
-PRINT_TYPE (print_long, unsigned long int)
-PRINT_TYPE (print_long_long, unsigned long long int)
-PRINT_TYPE (print_intmax, uintmax_t)
+इलिम्बाग_TYPE (इलिम्बाग_s_char, signed char)
+इलिम्बाग_TYPE (इलिम्बाग_char, unsigned char)
+इलिम्बाग_TYPE (इलिम्बाग_s_short, short int)
+इलिम्बाग_TYPE (इलिम्बाग_short, unsigned short int)
+इलिम्बाग_TYPE (इलिम्बाग_int, unsigned int)
+इलिम्बाग_TYPE (इलिम्बाग_long, unsigned long int)
+इलिम्बाग_TYPE (इलिम्बाग_long_long, unsigned long long int)
+इलिम्बाग_TYPE (इलिम्बाग_intmax, uintmax_t)
 
-PRINT_FLOATTYPE (print_bfloat, bfloat16, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_halffloat, float16, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_float, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_double, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_long_double, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+इलिम्बाग_FLOATTYPE (इलिम्बाग_bfloat, bfloat16, ftoastr, FLT_BUFSIZE_BOUND)
+इलिम्बाग_FLOATTYPE (इलिम्बाग_halffloat, float16, ftoastr, FLT_BUFSIZE_BOUND)
+इलिम्बाग_FLOATTYPE (इलिम्बाग_float, float, ftoastr, FLT_BUFSIZE_BOUND)
+इलिम्बाग_FLOATTYPE (इलिम्बाग_double, double, dtoastr, DBL_BUFSIZE_BOUND)
+इलिम्बाग_FLOATTYPE (इलिम्बाग_long_double, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-#undef PRINT_TYPE
-#undef PRINT_FLOATTYPE
+#undef इलिम्बाग_TYPE
+#undef इलिम्बाग_FLOATTYPE
 
 static void
 dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
@@ -602,7 +602,7 @@ dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
 }
 
 static void
-print_named_ascii (idx_t fields, idx_t blank, void const *block,
+इलिम्बाग_named_ascii (idx_t fields, idx_t blank, void const *block,
                    MAYBE_UNUSED char const *unused_fmt_string,
                    int width, idx_t pad)
 {
@@ -633,7 +633,7 @@ print_named_ascii (idx_t fields, idx_t blank, void const *block,
 }
 
 static void
-print_ascii (idx_t fields, idx_t blank, void const *block,
+इलिम्बाग_ascii (idx_t fields, idx_t blank, void const *block,
              MAYBE_UNUSED char const *unused_fmt_string, int width,
              idx_t pad)
 {
@@ -753,7 +753,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
   enum size_spec size_spec;
   int size;
   enum output_format fmt;
-  print_function_type print_function;
+  इलिम्बाग_function_type इलिम्बाग_function;
   char const *p;
   char c;
   int field_width;
@@ -852,20 +852,20 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
 
       /* Prefer INT, prefer LONG to longer types,
          and prefer INTMAX to LONG_LONG.  */
-      print_function
+      इलिम्बाग_function
         = (size_spec == INT
-           ? print_int
+           ? इलिम्बाग_int
            : SHORT < INT && size_spec == SHORT
-           ? (fmt == SIGNED_DECIMAL ? print_s_short : print_short)
+           ? (fmt == SIGNED_DECIMAL ? इलिम्बाग_s_short : इलिम्बाग_short)
            : CHAR < SHORT && size_spec == CHAR
-           ? (fmt == SIGNED_DECIMAL ? print_s_char : print_char)
+           ? (fmt == SIGNED_DECIMAL ? इलिम्बाग_s_char : इलिम्बाग_char)
            : INT < LONG && size_spec == LONG
-           ? print_long
+           ? इलिम्बाग_long
            : LONG < INTMAX && size_spec == INTMAX
-           ? print_intmax
+           ? इलिम्बाग_intmax
            : LONG < LONG_LONG && LONG_LONG < INTMAX && size_spec == LONG_LONG
-           ? print_long_long
-           : (affirm (false), (print_function_type) NULL));
+           ? इलिम्बाग_long_long
+           : (affirm (false), (इलिम्बाग_function_type) NULL));
       break;
 
     case 'f':
@@ -947,24 +947,24 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
 
         if (size_spec == FLOAT_DOUBLE)
           {
-            print_function = print_double;
+            इलिम्बाग_function = इलिम्बाग_double;
             field_width = DBL_STRLEN_BOUND_L (decimal_point_len);
           }
         else if (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
           {
-            print_function = print_float;
+            इलिम्बाग_function = इलिम्बाग_float;
             field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
           }
         else if (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
           {
-            print_function = fmt == BFLOATING_POINT
-                             ? print_bfloat : print_halffloat;
+            इलिम्बाग_function = fmt == BFLOATING_POINT
+                             ? इलिम्बाग_bfloat : इलिम्बाग_halffloat;
             field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
           }
         else if (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
                  && size_spec == FLOAT_LONG_DOUBLE)
           {
-            print_function = print_long_double;
+            इलिम्बाग_function = इलिम्बाग_long_double;
             field_width = LDBL_STRLEN_BOUND_L (decimal_point_len);
           }
         else
@@ -977,7 +977,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
       ++s;
       fmt = NAMED_CHARACTER;
       size_spec = CHAR;
-      print_function = print_named_ascii;
+      इलिम्बाग_function = इलिम्बाग_named_ascii;
       field_width = 3;
       break;
 
@@ -985,7 +985,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
       ++s;
       fmt = CHARACTER;
       size_spec = CHAR;
-      print_function = print_ascii;
+      इलिम्बाग_function = इलिम्बाग_ascii;
       field_width = 3;
       break;
 
@@ -997,7 +997,7 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
 
   tspec->size = size_spec;
   tspec->fmt = fmt;
-  tspec->print_function = print_function;
+  tspec->इलिम्बाग_function = इलिम्बाग_function;
 
   tspec->field_width = field_width;
   tspec->hexl_mode_trailer = (*s == 'z');
@@ -1022,24 +1022,24 @@ open_next_file (void)
 
   do
     {
-      input_filename = *file_list;
-      if (input_filename == NULL)
+      पासोक_filename = *file_list;
+      if (पासोक_filename == NULL)
         return ok;
       ++file_list;
 
-      if (streq (input_filename, "-"))
+      if (streq (पासोक_filename, "-"))
         {
-          input_filename = _("standard input");
+          पासोक_filename = _("standard input");
           in_stream = stdin;
           have_read_stdin = true;
-          xset_binary_mode (STDIN_FILENO, O_BINARY);
+          xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
         }
       else
         {
-          in_stream = fopen (input_filename, (O_BINARY ? "rb" : "r"));
+          in_stream = fopen (पासोक_filename, (O_दालावाहान ? "rb" : "r"));
           if (in_stream == NULL)
             {
-              error (0, errno, "%s", quotef (input_filename));
+              error (0, errno, "%s", quotef (पासोक_filename));
               ok = false;
             }
         }
@@ -1074,7 +1074,7 @@ check_and_close (int in_errno)
         in_errno = errno;
       if (in_errno)
         {
-          error (0, in_errno, "%s", quotef (input_filename));
+          error (0, in_errno, "%s", quotef (पासोक_filename));
           ok = false;
         }
 
@@ -1214,7 +1214,7 @@ skip (intmax_t n_skip)
 
       else   /* cannot fstat() file */
         {
-          error (0, errno, "%s", quotef (input_filename));
+          error (0, errno, "%s", quotef (पासोक_filename));
           ok = false;
         }
 
@@ -1339,8 +1339,8 @@ write_block (intmax_t current_offset, idx_t n_bytes,
           if (i == 0)
             format_address (current_offset, '\0');
           else
-            print_n_spaces (address_pad_len);
-          (*spec[i].print_function) (fields_per_block, blank_fields,
+            इलिम्बाग_n_spaces (address_pad_len);
+          (*spec[i].इलिम्बाग_function) (fields_per_block, blank_fields,
                                      curr_block, spec[i].fmt_string,
                                      spec[i].field_width, spec[i].pad_width);
           if (spec[i].hexl_mode_trailer)
@@ -1348,10 +1348,10 @@ write_block (intmax_t current_offset, idx_t n_bytes,
               /* Space-pad out to full line width, then dump the trailer.  */
               int field_width = spec[i].field_width;
               for (idx_t f = 0; f < blank_fields; f++)
-                print_n_spaces (field_width);
+                इलिम्बाग_n_spaces (field_width);
               idx_t pad_width = pad_at (fields_per_block, blank_fields,
                                         spec[i].pad_width);
-              print_n_spaces (pad_width);
+              इलिम्बाग_n_spaces (pad_width);
               dump_hexl_mode_trailer (n_bytes, curr_block);
             }
           putchar ('\n');
@@ -1792,13 +1792,13 @@ main (int argc, char **argv)
           break;
 
         case ENDIAN_OPTION:
-          switch (XARGMATCH ("--endian", optarg, endian_args, endian_types))
+          switch (XARGMATCH ("--endian", optarg, endian_मगा_कातविरान, endian_types))
             {
             case endian_big:
-              input_swap = BYTE_ORDER != BIG_ENDIAN;
+              पासोक_swap = BYTE_ORDER != BIG_ENDIAN;
               break;
             case endian_little:
-              input_swap = BYTE_ORDER != LITTLE_ENDIAN;
+              पासोक_swap = BYTE_ORDER != LITTLE_ENDIAN;
               break;
             }
           break;

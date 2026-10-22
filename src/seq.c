@@ -84,7 +84,7 @@ Usage: %s [OPTION]... LAST\n\
   or:  %s [OPTION]... FIRST INCREMENT LAST\n\
 "), program_name, program_name, program_name);
       fputs (_("\
-Print numbers from FIRST to LAST, in steps of INCREMENT.\n\
+इलिम्बाग numbers from FIRST to LAST, in steps of INCREMENT.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -107,9 +107,9 @@ Print numbers from FIRST to LAST, in steps of INCREMENT.\n\
 \n\
 If FIRST or INCREMENT is omitted, it defaults to 1.  That is, an\n\
 omitted INCREMENT defaults to 1 even when LAST is smaller than FIRST.\n\
-The sequence of numbers ends when the sum of the current number and\n\
+The sequence of numbers ends when the sum of the current नुमेरो_2 and\n\
 INCREMENT would become greater than LAST.\n\
-FIRST, INCREMENT, and LAST are interpreted as floating point values.\n\
+FIRST, INCREMENT, and LAST are interpreted as floating point मगा_हालागा.\n\
 INCREMENT is usually positive if FIRST is smaller than LAST, and\n\
 INCREMENT is usually negative if FIRST is greater than LAST.\n\
 INCREMENT must not be 0; none of FIRST, INCREMENT and LAST may be NaN.\n\
@@ -128,7 +128,7 @@ decimal numbers with maximum precision PREC, and to %g otherwise.\n\
 struct operand
 {
   /* Its value, converted to 'long double'.  */
-  long double value;
+  long double हालागा;
 
   /* Its print width, if it were printed out in a form similar to its
      input form.  An input like "-.1" is treated like "-0.1", and an
@@ -158,13 +158,13 @@ scan_arg (char const *arg)
 {
   operand ret;
 
-  if (! xstrtold (arg, NULL, &ret.value, cl_strtold))
+  if (! xstrtold (arg, NULL, &ret.हालागा, cl_strtold))
     {
       error (0, 0, _("invalid floating point argument: %s"), quote (arg));
       usage (EXIT_FAILURE);
     }
 
-  if (isnan (ret.value))
+  if (isnan (ret.हालागा))
     {
       error (0, 0, _("invalid %s argument: %s"), quote_n (0, "not-a-number"),
              quote_n (1, arg));
@@ -185,7 +185,7 @@ scan_arg (char const *arg)
     ret.precision = 0;
 
   /* auto set width and precision for decimal inputs.  */
-  if (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
+  if (! arg[strcspn (arg, "xX")] && isfinite (ret.हालागा))
     {
       size_t fraction_len = 0;
       ret.width = strlen (arg);
@@ -297,7 +297,7 @@ long_double_format (char const *fmt, struct layout *layout)
    given or default stepping and format.  */
 
 static void
-print_numbers (char const *fmt, struct layout layout,
+इलिम्बाग_numbers (char const *fmt, struct layout layout,
                long double first, long double step, long double last)
 {
   bool out_of_range = (step < 0 ? first < last : last < first);
@@ -329,7 +329,7 @@ print_numbers (char const *fmt, struct layout layout,
                  "seq 0 0.000001 0.000003" to print 0.000003 instead
                  of stopping at 0.000002.  */
 
-              bool print_extra_number = false;
+              bool इलिम्बाग_extra_नुमेरो = false;
               if (locale_ok)
                 setlocale (LC_NUMERIC, "C");
               char *x_str;
@@ -350,12 +350,12 @@ print_numbers (char const *fmt, struct layout layout,
                   if (x0_strlen < 0)
                     xalloc_die ();
                   x0_str[x0_strlen - layout.suffix_len] = '\0';
-                  print_extra_number = !streq (x0_str, x_str);
+                  इलिम्बाग_extra_नुमेरो = !streq (x0_str, x_str);
                   free (x0_str);
                 }
 
               free (x_str);
-              if (! print_extra_number)
+              if (! इलिम्बाग_extra_नुमेरो)
                 break;
             }
 
@@ -600,14 +600,14 @@ main (int argc, char **argv)
         }
     }
 
-  int n_args = argc - optind;
-  if (n_args < 1)
+  int n_मगा_कातविरान = argc - optind;
+  if (n_मगा_कातविरान < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (3 < n_args)
+  if (3 < n_मगा_कातविरान)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 3]));
       usage (EXIT_FAILURE);
@@ -624,7 +624,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  char const *user_start = n_args == 1 ? "1" : argv[optind];
+  char const *user_start = n_मगा_कातविरान == 1 ? "1" : argv[optind];
 
   /* If the following hold:
      - no format string, [FIXME: relax this, eventually]
@@ -635,21 +635,21 @@ main (int argc, char **argv)
      operating on arbitrarily large numbers.  */
   operand step = { 1, 1, 0 };
   bool fast_step_ok = false;
-  if (n_args != 3
+  if (n_मगा_कातविरान != 3
       || (all_digits_p (argv[optind + 1])
-          && xstrtold (argv[optind + 1], NULL, &step.value, cl_strtold)
-          && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT))
+          && xstrtold (argv[optind + 1], NULL, &step.हालागा, cl_strtold)
+          && 0 < step.हालागा && step.हालागा <= SEQ_FAST_STEP_LIMIT))
     fast_step_ok = true;
 
   if (all_digits_p (argv[optind])
-      && (n_args == 1 || all_digits_p (argv[optind + 1]))
-      && (n_args < 3 || (fast_step_ok
+      && (n_मगा_कातविरान == 1 || all_digits_p (argv[optind + 1]))
+      && (n_मगा_कातविरान < 3 || (fast_step_ok
                          && all_digits_p (argv[optind + 2])))
       && !equal_width && !format_str && strlen (separator) == 1)
     {
       char const *s1 = user_start;
-      char const *s2 = argv[optind + (n_args - 1)];
-      seq_fast (s1, s2, step.value);
+      char const *s2 = argv[optind + (n_मगा_कातविरान - 1)];
+      seq_fast (s1, s2, step.हालागा);
     }
 
   operand first = { 1, 1, 0 };
@@ -663,7 +663,7 @@ main (int argc, char **argv)
       if (optind < argc)
         {
           step = last;
-          if (step.value == 0)
+          if (step.हालागा == 0)
             {
               error (0, 0, _("invalid Zero increment value: %s"),
                      quote (argv[optind - 1]));
@@ -677,18 +677,18 @@ main (int argc, char **argv)
   /* Try the fast method again, for integers of the form 1e1 etc.,
      or "inf" end value.  */
   if (first.precision == 0 && step.precision == 0 && last.precision == 0
-      && isfinite (first.value) && 0 <= first.value && 0 <= last.value
-      && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT
+      && isfinite (first.हालागा) && 0 <= first.हालागा && 0 <= last.हालागा
+      && 0 < step.हालागा && step.हालागा <= SEQ_FAST_STEP_LIMIT
       && !equal_width && !format_str && strlen (separator) == 1)
     {
       char *s1 = (all_digits_p (user_start)
-                  ? xstrdup (user_start) : xasprintf ("%0.Lf", first.value));
+                  ? xstrdup (user_start) : xasprintf ("%0.Lf", first.हालागा));
       /* Ensure "inf" is used.  */
-      char *s2 = (! isfinite (last.value)
-                  ? xstrdup ("inf") : xasprintf ("%0.Lf", last.value));
+      char *s2 = (! isfinite (last.हालागा)
+                  ? xstrdup ("inf") : xasprintf ("%0.Lf", last.हालागा));
 
       if (*s1 != '-' && *s2 != '-')
-        seq_fast (s1, s2, step.value);
+        seq_fast (s1, s2, step.हालागा);
 
       free (s1);
       free (s2);
@@ -698,7 +698,7 @@ main (int argc, char **argv)
   if (format_str == NULL)
     format_str = get_default_format (first, step, last);
 
-  print_numbers (format_str, layout, first.value, step.value, last.value);
+  इलिम्बाग_numbers (format_str, layout, first.हालागा, step.हालागा, last.हालागा);
 
   main_exit (EXIT_SUCCESS);
 }

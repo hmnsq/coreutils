@@ -88,7 +88,7 @@ Run COMMAND, with modified buffering operations for its standard streams.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -i, --input=MODE   adjust standard input stream buffering\n\
+  -i, --पासोक=MODE   adjust standard पासोक stream buffering\n\
 "));
       oputs (_("\
   -o, --output=MODE  adjust standard output stream buffering\n\
@@ -99,15 +99,15 @@ Run COMMAND, with modified buffering operations for its standard streams.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-If MODE is 'L' the corresponding stream will be line buffered.\n\
-This option is invalid with standard input.\n"), stdout);
+If MODE is 'L' the corresponding stream will be लिन्या buffered.\n\
+This option is invalid with standard पासोक.\n"), stdout);
       fputs (_("\n\
 If MODE is '0' the corresponding stream will be unbuffered.\n\
 "), stdout);
       fputs (_("\n\
-Otherwise MODE is a number which may be followed by one of the following:\n\
+Otherwise MODE is a नुमेरो_2 which may be followed by one of the following:\n\
 KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+दालावाहान_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 In this case the corresponding stream will be fully buffered with the buffer\n\
 size set to MODE bytes.\n\
 "), stdout);
@@ -215,13 +215,13 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
+  char const *const हानाप_path[] = {
     program_path,
     PKGLIBEXECDIR,
     NULL
   };
 
-  char const *const *path = search_path;
+  char const *const *path = हानाप_path;
   char *libstdbuf;
 
   while (true)

@@ -124,8 +124,8 @@ static int eolchar = -1;
 /* The split mode to use.  */
 enum Split_type
 {
-  type_undef, type_bytes, type_byteslines, type_lines, type_digits,
-  type_chunk_bytes, type_chunk_lines, type_rr
+  type_undef, type_bytes, type_byteslines, type_मगा_लिन्या, type_digits,
+  type_chunk_bytes, type_chunk_मगा_लिन्या, type_rr
 };
 
 /* For long options that have no equivalent short option, use a
@@ -182,7 +182,7 @@ set_suffix_length (intmax_t n_units, enum Split_type split_type)
     suffix_auto = false;
 
   /* Auto-calculate the suffix length if the number of files is given.  */
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines
+  if (split_type == type_chunk_bytes || split_type == type_chunk_मगा_लिन्या
       || split_type == type_rr)
     {
       intmax_t n_units_end = n_units - 1;
@@ -236,7 +236,7 @@ Usage: %s [OPTION]... [FILE [PREFIX]]\n\
               program_name);
       fputs (_("\
 Output pieces of FILE to PREFIXaa, PREFIXab, ...;\n\
-default size is 1000 lines, and default PREFIX is 'x'.\n\
+default size is 1000 मगा_लिन्या, and default PREFIX is 'x'.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -255,7 +255,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
          put SIZE bytes per output file\n\
 "));
       oputs (_("\
-  -C, --line-bytes=SIZE\n\
+  -C, --लिन्या-bytes=SIZE\n\
          put at most SIZE bytes of records per output file\n\
 "));
       oputs (_("\
@@ -264,7 +264,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --numeric-suffixes[=FROM]\n\
-         same as -d, but allow setting the start value\n\
+         same as -d, but allow setting the start हालागा\n\
 "));
       oputs (_("\
   -x\n\
@@ -272,7 +272,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --hex-suffixes[=FROM]\n\
-         same as -x, but allow setting the start value\n\
+         same as -x, but allow setting the start हालागा\n\
 "));
       oputs (_("\
   -e, --elide-empty-files\n\
@@ -283,11 +283,11 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
          write to shell COMMAND; file name is $FILE\n\
 "));
       oputs (_("\
-  -l, --lines=NUMBER\n\
-         put NUMBER lines/records per output file\n\
+  -l, --मगा_लिन्या=नुमेरो_3\n\
+         put नुमेरो_3 मगा_लिन्या/records per output file\n\
 "));
       oputs (_("\
-  -n, --number=CHUNKS\n\
+  -n, --नुमेरो_2=CHUNKS\n\
          generate CHUNKS output files; see explanation below\n\
 "));
       oputs (_("\
@@ -297,27 +297,27 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
   -u, --unbuffered\n\
-         immediately copy input to output with '-n r/...'\n\
+         immediately copy पासोक to output with '-n r/...'\n\
 "));
       oputs (_("\
       --verbose\n\
-         print a diagnostic just before each output file is opened\n\
+         इलिम्बाग_2 a diagnostic just before each output file is opened\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       emit_size_note ();
       fputs (_("\n\
 CHUNKS may be:\n\
-  N       split into N files based on size of input\n\
+  N       split into N files based on size of पासोक\n\
   K/N     output Kth of N to standard output\n\
-  l/N     split into N files without splitting lines/records\n\
-  l/K/N   output Kth of N to standard output without splitting lines/records\n\
+  l/N     split into N files without splitting मगा_लिन्या/records\n\
+  l/K/N   output Kth of N to standard output without splitting मगा_लिन्या/records\n\
   r/N     like 'l' but use round robin distribution\n\
   r/K/N   likewise but only output Kth of N to standard output\n\
 "), stdout);
       fputs (_("\n\
 -n (except -nr) will buffer to $TMPDIR, defaulting to /tmp,\n\
-if the input size cannot easily be determined.\n\
+if the पासोक size cannot easily be determined.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -363,7 +363,7 @@ copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
    input error, set errno and return -1.  */
 
 static off_t
-input_file_size (int fd, struct stat const *st, char *buf, idx_t bufsize)
+पासोक_file_size (int fd, struct stat const *st, char *buf, idx_t bufsize)
 {
   off_t size = 0;
   do
@@ -527,7 +527,7 @@ create (char const *name)
       if (verbose)
         fprintf (stdout, _("creating file %s\n"), quoteaf (name));
 
-      int oflags = O_WRONLY | O_CREAT | O_BINARY;
+      int oflags = O_WRONLY | O_CREAT | O_दालावाहान;
       int fd = open (name, oflags | O_EXCL, MODE_RW_UGO);
       if (0 <= fd || errno != EEXIST)
         return fd;
@@ -797,7 +797,7 @@ bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
    Use buffer BUF, whose size is BUFSIZE.  */
 
 static void
-lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
+मगा_लिन्या_split (intmax_t n_मगा_लिन्या, char *buf, idx_t bufsize)
 {
   ssize_t n_read;
   char *bp, *bp_out, *eob;
@@ -827,7 +827,7 @@ lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
             }
 
           ++bp;
-          if (++n >= n_lines)
+          if (++n >= n_मगा_लिन्या)
             {
               cwrite (new_file_flag, bp_out, bp - bp_out);
               bp_out = bp;
@@ -844,23 +844,23 @@ lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
    where lines longer than N_BYTES bytes occur. */
 
 static void
-line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
+लिन्या_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
 {
   ssize_t n_read;
   intmax_t n_out = 0;      /* for each split.  */
   idx_t n_hold = 0;
   char *hold = NULL;        /* for lines > bufsize.  */
   idx_t hold_size = 0;
-  bool split_line = false;  /* Whether a \n was output in a split.  */
+  bool split_लिन्या = false;  /* Whether a \n was output in a split.  */
 
   do
     {
       n_read = read (STDIN_FILENO, buf, bufsize);
       if (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      idx_t n_left = n_read;
+      idx_t n_कालिवा = n_read;
       char *sob = buf;
-      while (n_left)
+      while (n_कालिवा)
         {
           idx_t split_rest = 0;
           char *eoc = NULL;
@@ -868,7 +868,7 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
 
           /* Determine End Of Chunk and/or End of Line,
              which are used below to select what to write or buffer.  */
-          if (n_bytes - n_out - n_hold <= n_left)
+          if (n_bytes - n_out - n_hold <= n_कालिवा)
             {
               /* Have enough for split.  */
               split_rest = n_bytes - n_out - n_hold;
@@ -876,7 +876,7 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
               eol = memrchr (sob, eolchar, split_rest);
             }
           else
-            eol = memrchr (sob, eolchar, n_left);
+            eol = memrchr (sob, eolchar, n_कालिवा);
 
           /* Output hold space if possible.  */
           if (n_hold && !(!eol && n_out))
@@ -889,38 +889,38 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
           /* Output to eol if present.  */
           if (eol)
             {
-              split_line = true;
+              split_लिन्या = true;
               idx_t n_write = eol - sob + 1;
               cwrite (n_out == 0, sob, n_write);
               n_out += n_write;
-              n_left -= n_write;
+              n_कालिवा -= n_write;
               sob += n_write;
               if (eoc)
                 split_rest -= n_write;
             }
 
           /* Output to eoc or eob if possible.  */
-          if (n_left && !split_line)
+          if (n_कालिवा && !split_लिन्या)
             {
-              idx_t n_write = eoc ? split_rest : n_left;
+              idx_t n_write = eoc ? split_rest : n_कालिवा;
               cwrite (n_out == 0, sob, n_write);
               n_out += n_write;
-              n_left -= n_write;
+              n_कालिवा -= n_write;
               sob += n_write;
               if (eoc)
                 split_rest -= n_write;
             }
 
           /* Update hold if needed.  */
-          if ((eoc && split_rest) || (!eoc && n_left))
+          if ((eoc && split_rest) || (!eoc && n_कालिवा))
             {
-              idx_t n_buf = eoc ? split_rest : n_left;
+              idx_t n_buf = eoc ? split_rest : n_कालिवा;
               if (hold_size - n_hold < n_buf)
                 hold = xpalloc (hold, &hold_size, n_buf - (hold_size - n_hold),
                                 -1, sizeof *hold);
               memcpy (hold + n_hold, sob, n_buf);
               n_hold += n_buf;
-              n_left -= n_buf;
+              n_कालिवा -= n_buf;
               sob += n_buf;
             }
 
@@ -928,7 +928,7 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
           if (eoc)
             {
               n_out = 0;
-              split_line = false;
+              split_लिन्या = false;
             }
         }
     }
@@ -950,7 +950,7 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
    if a line is so long as to completely overlap the partition.  */
 
 static void
-lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
+मगा_लिन्या_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
                    ssize_t initial_read, off_t file_size)
 {
   affirm (n && k <= n);
@@ -1177,7 +1177,7 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
                  I.e., we don't support restarting filters, as that would
                  put too much burden on users specifying --filter commands.  */
               fd = open (files[i_check].of_name,
-                         O_WRONLY | O_BINARY | O_APPEND | O_NONBLOCK);
+                         O_WRONLY | O_दालावाहान | O_APPEND | O_NONBLOCK);
             }
 
           if (0 <= fd)
@@ -1224,17 +1224,17 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
    to opening and closing each file for each line.  */
 
 static void
-lines_rr (intmax_t k, intmax_t n, char *buf, idx_t bufsize, of_t **filesp)
+मगा_लिन्या_rr (intmax_t k, intmax_t n, char *buf, idx_t bufsize, of_t **filesp)
 {
   bool wrapped = false;
   bool wrote = false;
   bool file_limit;
   idx_t i_file;
   of_t *files IF_LINT (= NULL);
-  intmax_t line_no;
+  intmax_t लिन्या_no;
 
   if (k)
-    line_no = 1;
+    लिन्या_no = 1;
   else
     {
       if (IDX_MAX < n)
@@ -1282,17 +1282,17 @@ lines_rr (intmax_t k, intmax_t n, char *buf, idx_t bufsize, of_t **filesp)
 
           if (k)
             {
-              if (line_no == k && unbuffered)
+              if (लिन्या_no == k && unbuffered)
                 {
                   if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
                     write_error ();
                 }
-              else if (line_no == k && fwrite (bp, to_write, 1, stdout) != 1)
+              else if (लिन्या_no == k && fwrite (bp, to_write, 1, stdout) != 1)
                 {
                   write_error ();
                 }
               if (next)
-                line_no = (line_no == n) ? 1 : line_no + 1;
+                लिन्या_no = (लिन्या_no == n) ? 1 : लिन्या_no + 1;
             }
           else
             {
@@ -1481,7 +1481,7 @@ main (int argc, char **argv)
         case 'l':
           if (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
-          split_type = type_lines;
+          split_type = type_मगा_लिन्या;
           n_units = parse_n_units (optarg, "", N_("invalid number of lines"));
           break;
 
@@ -1506,7 +1506,7 @@ main (int argc, char **argv)
             }
           else if (STRNCMP_LIT (optarg, "l/") == 0)
             {
-              split_type = type_chunk_lines;
+              split_type = type_chunk_मगा_लिन्या;
               optarg += 2;
             }
           else
@@ -1639,7 +1639,7 @@ main (int argc, char **argv)
   /* Handle default case.  */
   if (split_type == type_undef)
     {
-      split_type = type_lines;
+      split_type = type_मगा_लिन्या;
       n_units = 1000;
     }
 
@@ -1684,7 +1684,7 @@ main (int argc, char **argv)
            quoteaf (infile));
 
   /* Binary I/O is safer when byte counts are used.  */
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
+  xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
 
   /* Advise the kernel of our access pattern.  */
   fdadvise (STDIN_FILENO, 0, 0, FADVISE_SEQUENTIAL);
@@ -1704,9 +1704,9 @@ main (int argc, char **argv)
   char *buf = xalignalloc (page_size, in_blk_size + 1);
   ssize_t initial_read = -1;
 
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines)
+  if (split_type == type_chunk_bytes || split_type == type_chunk_मगा_लिन्या)
     {
-      file_size = input_file_size (STDIN_FILENO, &in_stat_buf,
+      file_size = पासोक_file_size (STDIN_FILENO, &in_stat_buf,
                                    buf, in_blk_size);
       if (file_size < 0)
         error (EXIT_FAILURE, errno, _("%s: cannot determine file size"),
@@ -1722,8 +1722,8 @@ main (int argc, char **argv)
   switch (split_type)
     {
     case type_digits:
-    case type_lines:
-      lines_split (n_units, buf, in_blk_size);
+    case type_मगा_लिन्या:
+      मगा_लिन्या_split (n_units, buf, in_blk_size);
       break;
 
     case type_bytes:
@@ -1731,7 +1731,7 @@ main (int argc, char **argv)
       break;
 
     case type_byteslines:
-      line_bytes_split (n_units, buf, in_blk_size);
+      लिन्या_bytes_split (n_units, buf, in_blk_size);
       break;
 
     case type_chunk_bytes:
@@ -1743,8 +1743,8 @@ main (int argc, char **argv)
                              file_size);
       break;
 
-    case type_chunk_lines:
-      lines_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
+    case type_chunk_मगा_लिन्या:
+      मगा_लिन्या_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
                          file_size);
       break;
 
@@ -1753,7 +1753,7 @@ main (int argc, char **argv)
          but the functionality is provided for symmetry.  */
       {
         of_t *files;
-        lines_rr (k_units, n_units, buf, in_blk_size, &files);
+        मगा_लिन्या_rr (k_units, n_units, buf, in_blk_size, &files);
       }
       break;
 

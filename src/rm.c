@@ -46,9 +46,9 @@ enum
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
   ONE_FILE_SYSTEM,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
-  PRESUME_INPUT_TTY_OPTION
+  NO_PRESERVE_उगात,
+  PRESERVE_उगात,
+  PRESUME_पासोक_TTY_OPTION
 };
 
 enum interactive_type
@@ -64,14 +64,14 @@ static struct option const long_opts[] =
   {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
 
   {"one-file-system", no_argument, NULL, ONE_FILE_SYSTEM},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", optional_argument, NULL, PRESERVE_ROOT},
+  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_उगात},
+  {"preserve-root", optional_argument, NULL, PRESERVE_उगात},
 
   /* This is solely for testing.  Do not document.  */
   /* It is relatively difficult to ensure that there is a tty on stdin.
      Since rm acts differently depending on that, without this option,
      it'd be harder to test the parts of rm that depend on that setting.  */
-  {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
+  {"-presume-input-tty", no_argument, NULL, PRESUME_पासोक_TTY_OPTION},
 
   {"recursive", no_argument, NULL, 'r'},
   {"dir", no_argument, NULL, 'd'},
@@ -81,7 +81,7 @@ static struct option const long_opts[] =
   {NULL, 0, NULL, 0}
 };
 
-static char const *const interactive_args[] =
+static char const *const interactive_मगा_कातविरान[] =
 {
   "never", "no", "none",
   "once",
@@ -93,7 +93,7 @@ static enum interactive_type const interactive_types[] =
   interactive_once,
   interactive_always, interactive_always
 };
-ARGMATCH_VERIFY (interactive_args, interactive_types);
+ARGMATCH_VERIFY (interactive_मगा_कातविरान, interactive_types);
 
 /* Advise the user about invalid usages like "rm -foo" if the file
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
@@ -156,16 +156,16 @@ Remove (unlink) the FILE(s).\n\
       --one-file-system\n\
          when removing a hierarchy recursively,\n\
          skip any directory that is on a file system different\n\
-         from that of the corresponding command line argument\n\
+         from that of the corresponding command लिन्या argument\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
+      --no-preserve-उगात\n\
          do not treat '/' specially\n\
 "));
       oputs (_("\
-      --preserve-root[=all]\n\
+      --preserve-उगात[=all]\n\
          do not remove '/' (default);\n\
-         with 'all', reject any command line argument\n\
+         with 'all', reject any command लिन्या argument\n\
          on a separate device from its parent\n\
 "));
       oputs (_("\
@@ -220,8 +220,8 @@ rm_option_init (struct rm_options *x)
   x->one_file_system = false;
   x->remove_empty_directories = false;
   x->recursive = false;
-  x->root_dev_ino = NULL;
-  x->preserve_all_root = false;
+  x->उगात_dev_ino = NULL;
+  x->preserve_all_उगात = false;
   x->stdin_tty = isatty (STDIN_FILENO);
   x->verbose = false;
 
@@ -233,7 +233,7 @@ rm_option_init (struct rm_options *x)
 int
 main (int argc, char **argv)
 {
-  bool preserve_root = true;
+  bool preserve_उगात = true;
   struct rm_options x;
   bool prompt_once = false;
   int c;
@@ -286,7 +286,7 @@ main (int argc, char **argv)
           {
             int i;
             if (optarg)
-              i = XARGMATCH ("--interactive", optarg, interactive_args,
+              i = XARGMATCH ("--interactive", optarg, interactive_मगा_कातविरान,
                              interactive_types);
             else
               i = interactive_always;
@@ -316,27 +316,27 @@ main (int argc, char **argv)
           x.one_file_system = true;
           break;
 
-        case NO_PRESERVE_ROOT:
+        case NO_PRESERVE_उगात:
           if (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
-          preserve_root = false;
+          preserve_उगात = false;
           break;
 
-        case PRESERVE_ROOT:
+        case PRESERVE_उगात:
           if (optarg)
             {
               if (streq (optarg, "all"))
-                x.preserve_all_root = true;
+                x.preserve_all_उगात = true;
               else
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
-          preserve_root = true;
+          preserve_उगात = true;
           break;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        case PRESUME_पासोक_TTY_OPTION:
           x.stdin_tty = true;
           break;
 
@@ -363,11 +363,11 @@ main (int argc, char **argv)
         }
     }
 
-  if (x.recursive && preserve_root)
+  if (x.recursive && preserve_उगात)
     {
       static struct dev_ino dev_ino_buf;
-      x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      x.उगात_dev_ino = get_उगात_dev_ino (&dev_ino_buf);
+      if (x.उगात_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }

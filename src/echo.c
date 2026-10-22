@@ -79,14 +79,14 @@ If -e is in effect, the following sequences are recognized:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
+  \\n      new लिन्या\n\
   \\r      carriage return\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
   fputs (_("\
-  \\0NNN   byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
+  \\0NNN   byte with octal हालागा NNN (1 to 3 digits)\n\
+  \\xHH    byte with hexadecimal हालागा HH (1 to 2 digits)\n\
 "), stdout);
   printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
   fputs (_("\n\

@@ -59,7 +59,7 @@ Run COMMAND, ignoring hangup signals.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       printf (_("\n\
-If standard input is a terminal, redirect it from an unreadable file.\n\
+If standard पासोक is a terminal, redirect it from an unreadable file.\n\
 If standard output is a terminal, append output to 'nohup.out' if possible,\n\
 '$HOME/nohup.out' otherwise.\n\
 If standard error is a terminal, redirect it to standard output.\n\
@@ -106,7 +106,7 @@ main (int argc, char **argv)
       usage (exit_internal_failure);
     }
 
-  bool ignoring_input = isatty (STDIN_FILENO);
+  bool ignoring_पासोक = isatty (STDIN_FILENO);
   bool redirecting_stdout = isatty (STDOUT_FILENO);
   bool stdout_is_closed = (!redirecting_stdout && errno == EBADF);
   bool redirecting_stderr = isatty (STDERR_FILENO);
@@ -114,7 +114,7 @@ main (int argc, char **argv)
   /* If standard input is a tty, replace it with /dev/null if possible.
      Note that it is deliberately opened for *writing*,
      to ensure any read evokes an error.  */
-  if (ignoring_input)
+  if (ignoring_पासोक)
     {
       if (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
         error (exit_internal_failure, errno,
@@ -134,7 +134,7 @@ main (int argc, char **argv)
       char const *file = "nohup.out";
       int flags = O_CREAT | O_WRONLY | O_APPEND;
       mode_t mode = S_IRUSR | S_IWUSR;
-      mode_t umask_value = umask (0);
+      mode_t umask_हालागा = umask (0);
       out_fd = (redirecting_stdout
                 ? fd_reopen (STDOUT_FILENO, file, flags, mode)
                 : open (file, flags, mode));
@@ -162,9 +162,9 @@ main (int argc, char **argv)
           file = in_home;
         }
 
-      umask (umask_value);
+      umask (umask_हालागा);
       error (0, 0,
-             _(ignoring_input
+             _(ignoring_पासोक
                ? N_("ignoring input and appending output to %s")
                : N_("appending output to %s")),
              quoteaf (file));
@@ -184,7 +184,7 @@ main (int argc, char **argv)
 
       if (!redirecting_stdout)
         error (0, 0,
-               _(ignoring_input
+               _(ignoring_पासोक
                  ? N_("ignoring input and redirecting standard error "
                       "to standard output")
                  : N_("redirecting standard error to standard output")));

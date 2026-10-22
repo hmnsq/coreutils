@@ -72,7 +72,7 @@ Create the DIRECTORY(ies), if they do not already exist.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print a message for each created directory\n\
+         इलिम्बाग_2 a message for each created directory\n\
 "));
       oputs (_("\
   -Z\n\
@@ -291,8 +291,8 @@ main (int argc, char **argv)
 
   if (options.make_ancestor_function || specified_mode)
     {
-      mode_t umask_value = umask (0);
-      options.umask_ancestor = umask_value & ~(S_IWUSR | S_IXUSR);
+      mode_t umask_हालागा = umask (0);
+      options.umask_ancestor = umask_हालागा & ~(S_IWUSR | S_IXUSR);
 
       if (specified_mode)
         {
@@ -300,15 +300,15 @@ main (int argc, char **argv)
           if (!change)
             error (EXIT_FAILURE, 0, _("invalid mode %s"),
                    quote (specified_mode));
-          options.mode = mode_adjust (S_IRWXUGO, true, umask_value, change,
+          options.mode = mode_adjust (S_IRWXUGO, true, umask_हालागा, change,
                                       &options.mode_bits);
-          options.umask_self = umask_value & ~options.mode;
+          options.umask_self = umask_हालागा & ~options.mode;
           free (change);
         }
       else
         {
           options.mode = S_IRWXUGO;
-          options.umask_self = umask_value;
+          options.umask_self = umask_हालागा;
         }
 
       umask (options.umask_self);

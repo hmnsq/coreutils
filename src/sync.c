@@ -200,17 +200,17 @@ main (int argc, char **argv)
         }
     }
 
-  bool args_specified = optind < argc;
+  bool मगा_कातविरान_specified = optind < argc;
 
   if (arg_data && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  if (!मगा_कातविरान_specified && arg_data)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
   enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  if (! मगा_कातविरान_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
   else if (arg_file_system)
     mode = MODE_FILE_SYSTEM;

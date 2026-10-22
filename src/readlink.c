@@ -102,7 +102,7 @@ usage (int status)
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -194,15 +194,15 @@ main (int argc, char **argv)
   for (; optind < argc; ++optind)
     {
       char const *fname = argv[optind];
-      char *value = (can_mode != -1
+      char *हालागा = (can_mode != -1
                      ? canonicalize_filename_mode (fname, can_mode)
                      : areadlink_with_size (fname, 63));
-      if (value)
+      if (हालागा)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
+          fputs (quote_output ? quoteN (हालागा) : हालागा, stdout);
           if (! no_newline)
             putchar (use_nuls ? '\0' : '\n');
-          free (value);
+          free (हालागा);
           if (ferror (stdout))
             write_error ();
         }

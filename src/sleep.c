@@ -40,11 +40,11 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s NUMBER[SUFFIX]...\n\
+Usage: %s नुमेरो_3[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
+Pause for नुमेरो_3 seconds, where नुमेरो_3 is an integer or floating-point.\n\
 SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+With multiple arguments, pause for the sum of their मगा_हालागा.\n\
 \n\
 "),
               program_name, program_name);

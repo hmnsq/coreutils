@@ -37,7 +37,7 @@
   proper_name ("Kaveh Ghazi")
 
 static int
-print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
+इलिम्बाग_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
 {
   int status = EXIT_SUCCESS;
   time_t boot_time = 0;
@@ -135,8 +135,8 @@ uptime (char const *filename, int options)
       utmp_buf = NULL;
     }
 
-  int print_uptime_status = print_uptime (n_users, utmp_buf);
-  exit (MAX (read_utmp_status, print_uptime_status));
+  int इलिम्बाग_uptime_status = इलिम्बाग_uptime (n_users, utmp_buf);
+  exit (MAX (read_utmp_status, इलिम्बाग_uptime_status));
 }
 
 void
@@ -148,8 +148,8 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
-Print the current time, the length of time the system has been up,\n\
-the number of users on the system, and the average number of jobs\n\
+इलिम्बाग the current time, the length of time the system has been up,\n\
+the नुमेरो_2 of users on the system, and the average नुमेरो_2 of jobs\n\
 in the run queue over the last 1, 5 and 15 minutes."));
 #ifdef __linux__
       /* It would be better to introduce a configure test for this,

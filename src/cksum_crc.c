@@ -356,9 +356,9 @@ crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *reslen)
    If ARGS is true, also print the FILE name.  */
 
 void
-output_crc (char const *file, MAYBE_UNUSED int binary_file,
+output_crc (char const *file, MAYBE_UNUSED int दालावाहान_file,
             void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-            unsigned char delim, bool args, intmax_t length)
+            unsigned char delim, bool मगा_कातविरान, intmax_t length)
 {
   if (raw)
     {
@@ -369,7 +369,7 @@ output_crc (char const *file, MAYBE_UNUSED int binary_file,
     }
 
   printf ("%u %jd", *(unsigned int *)digest, length);
-  if (args)
+  if (मगा_कातविरान)
     printf (" %s", file);
   putchar (delim);
 }

@@ -121,7 +121,7 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write each FILE to standard output, last line first.\n\
+Write each FILE to standard output, last लिन्या first.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -139,7 +139,7 @@ Write each FILE to standard output, last line first.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
+Non-seekable पासोक is buffered to $TMPDIR, defaulting to /tmp.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -187,7 +187,7 @@ output (char const *start, char const *past_end)
    Return true if successful.  */
 
 static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+tac_seekable (int पासोक_fd, char const *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
@@ -216,17 +216,17 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
   if (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      if (lseek (पासोक_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  while ((saved_record_size = read (पासोक_fd, G_buffer, read_size)) == 0
          && file_pos != 0)
     {
       off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      if (lseek (पासोक_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
       file_pos -= read_size;
     }
@@ -234,7 +234,7 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
   /* Now scan forward, looking for end of file.  */
   while (saved_record_size == read_size)
     {
-      ssize_t nread = read (input_fd, G_buffer, read_size);
+      ssize_t nread = read (पासोक_fd, G_buffer, read_size);
       if (nread == 0)
         break;
       saved_record_size = nread;
@@ -273,7 +273,7 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
             error (EXIT_FAILURE, 0, _("record too large"));
 
           if (range == 1
-              || ((ret = re_search (&compiled_separator, G_buffer,
+              || ((ret = re_हानाप (&compiled_separator, G_buffer,
                                     i, i - 1, range, &regs))
                   == -1))
             match_start = G_buffer - 1;
@@ -334,7 +334,7 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
               read_size = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          if (lseek (पासोक_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
@@ -347,7 +347,7 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
           else
             match_start = past_end;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          if (full_read (पासोक_fd, G_buffer, read_size) != read_size)
             {
               error (0, errno, _("%s: read error"), quotef (file));
               return false;
@@ -385,7 +385,7 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
 static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+copy_to_temp (FILE **g_tmp, char **g_tempfile, int पासोक_fd, char const *file)
 {
   FILE *fp;
   char *file_name;
@@ -395,7 +395,7 @@ copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
 
   while (true)
     {
-      ssize_t bytes_read = read (input_fd, G_buffer, read_size);
+      ssize_t bytes_read = read (पासोक_fd, G_buffer, read_size);
       if (bytes_read == 0)
         break;
       if (bytes_read < 0)
@@ -431,11 +431,11 @@ copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
    Return true if successful.  */
 
 static bool
-tac_nonseekable (int input_fd, char const *file)
+tac_nonseekable (int पासोक_fd, char const *file)
 {
   FILE *tmp_stream;
   char *tmp_file;
-  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
+  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, पासोक_fd, file);
   if (bytes_copied < 0)
     return false;
 
@@ -460,11 +460,11 @@ tac_file (char const *filename)
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
     }
   else
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
+      fd = open (filename, O_RDONLY | O_दालावाहान);
       if (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
@@ -571,7 +571,7 @@ main (int argc, char **argv)
           ? (char const *const *) &argv[optind]
           : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
 
   {
     ok = true;

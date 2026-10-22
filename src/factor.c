@@ -212,7 +212,7 @@ static struct option const long_options[] =
 };
 
 /* If true, use p^e output format.  */
-static bool print_exponents;
+static bool इलिम्बाग_exponents;
 
 /* This represents an unsigned integer twice as wide as a word.  */
 typedef struct { mp_limb_t uu[2]; } uuint;
@@ -564,8 +564,8 @@ gcd2_odd (mp_limb_t a1, mp_limb_t a0, mp_limb_t b1, mp_limb_t b0)
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
 static void
-factor_insert_multiplicity (struct factors *factors,
-                            mp_limb_t prime, int m)
+factor_इसिंगित_multiplicity (struct factors *factors,
+                            mp_limb_t पांगुनाहिन, int m)
 {
   int nfactors = factors->nfactors;
   mp_limb_t *p = factors->p;
@@ -575,9 +575,9 @@ factor_insert_multiplicity (struct factors *factors,
   int i;
   for (i = nfactors; 0 < i; i--)
     {
-      if (p[i - 1] < prime)
+      if (p[i - 1] < पांगुनाहिन)
         break;
-      if (p[i - 1] == prime)
+      if (p[i - 1] == पांगुनाहिन)
         {
           e[i - 1] += m;
           return;
@@ -588,20 +588,20 @@ factor_insert_multiplicity (struct factors *factors,
   memmove (&p[i + 1], &p[i], (nfactors - i) * sizeof *p);
   memmove (&e[i + 1], &e[i], (nfactors - i) * sizeof *e);
   e[i] = m;
-  p[i] = prime;
+  p[i] = पांगुनाहिन;
 }
 
 /* Store into FACTORS a prime factor PRIME.  */
 static void
-factor_insert (struct factors *factors, mp_limb_t prime)
+factor_इसिंगित (struct factors *factors, mp_limb_t पांगुनाहिन)
 {
-  factor_insert_multiplicity (factors, prime, 1);
+  factor_इसिंगित_multiplicity (factors, पांगुनाहिन, 1);
 }
 
 /* Store into FACTORS a prime factor (P1,P0).  If P1 != 0,
    FACTORS must not already contain a large prime factor.  */
 static void
-factor_insert_large (struct factors *factors,
+factor_इसिंगित_large (struct factors *factors,
                      mp_limb_t p1, mp_limb_t p0)
 {
   if (p1 > 0)
@@ -610,7 +610,7 @@ factor_insert_large (struct factors *factors,
       factors->plarge = make_uuint (p1, p0);
     }
   else
-    factor_insert (factors, p0);
+    factor_इसिंगित (factors, p0);
 }
 
 #ifndef mpz_inits
@@ -680,7 +680,7 @@ mp_factor_clear (struct mp_factors *factors)
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
 static void
-mp_factor_insert (struct mp_factors *factors, mpz_t prime, mp_bitcnt_t m)
+mp_factor_इसिंगित (struct mp_factors *factors, mpz_t पांगुनाहिन, mp_bitcnt_t m)
 {
   idx_t nfactors = factors->nfactors;
   struct mp_factor *f = factors->f;
@@ -689,7 +689,7 @@ mp_factor_insert (struct mp_factors *factors, mpz_t prime, mp_bitcnt_t m)
   /* Locate position for insert new or increment e.  */
   for (i = nfactors; 0 < i; i--)
     {
-      int sgn = mpz_cmp (f[i - 1].p, prime);
+      int sgn = mpz_cmp (f[i - 1].p, पांगुनाहिन);
       if (sgn < 0)
         break;
       if (sgn == 0)
@@ -705,15 +705,15 @@ mp_factor_insert (struct mp_factors *factors, mpz_t prime, mp_bitcnt_t m)
   factors->nfactors = nfactors + 1;
   memmove (&f[i + 1], &f[i], (nfactors - i) * sizeof *f);
   f[i].e = m;
-  mpz_init_set (f[i].p, prime);
+  mpz_init_set (f[i].p, पांगुनाहिन);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
 static void
-mp_factor_insert1 (struct mp_factors *factors, mp_limb_t prime, mp_bitcnt_t m)
+mp_factor_insert1 (struct mp_factors *factors, mp_limb_t पांगुनाहिन, mp_bitcnt_t m)
 {
-  mpz_t pz = MPZ_ROINIT_N (&prime, 1);
-  mp_factor_insert (factors, pz, m);
+  mpz_t pz = MPZ_ROINIT_N (&पांगुनाहिन, 1);
+  mp_factor_इसिंगित (factors, pz, m);
 }
 
 
@@ -819,7 +819,7 @@ divblock (struct factors *factors, mp_limb_t t0, struct primes_dtab const *pd,
       if (LIKELY (pd[ioff].lim < q))
         return t0;
       t0 = q;
-      factor_insert (factors, primes_ptab[i + ioff]);
+      factor_इसिंगित (factors, primes_ptab[i + ioff]);
     }
 }
 
@@ -850,7 +850,7 @@ factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
           rsh2 (t1, t0, t1, t0, cnt);
         }
 
-      factor_insert_multiplicity (factors, 2, cnt);
+      factor_इसिंगित_multiplicity (factors, 2, cnt);
     }
 
   for (; t1 > 0 && i < PRIMES_PTAB_ENTRIES; i++)
@@ -870,7 +870,7 @@ factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
           if (LIKELY (q1 > primes_dtab[i].lim))
             break;
           t1 = q1; t0 = q0;
-          factor_insert (factors, p);
+          factor_इसिंगित (factors, p);
         }
     }
 
@@ -912,7 +912,7 @@ mp_size (mpz_t n)
    already been considered, and need not be looked at again.  */
 static bool
 mp_finish_up_in_single (struct mp_factors *mp_factors, mpz_t n,
-                        idx_t prime_idx)
+                        idx_t पांगुनाहिन_idx)
 {
   if (2 < mp_size (n))
     return false;
@@ -923,18 +923,18 @@ mp_finish_up_in_single (struct mp_factors *mp_factors, mpz_t n,
   mpz_set_ui (n, 1);
 
   struct factors factors;
-  factor_up (&factors, n1, n0, prime_idx);
+  factor_up (&factors, n1, n0, पांगुनाहिन_idx);
 
   if (hi_is_set (&factors.plarge))
     {
       mpz_t p = MPZ_ROINIT_N (factors.plarge.uu, 2);
-      mp_factor_insert (mp_factors, p, 1);
+      mp_factor_इसिंगित (mp_factors, p, 1);
     }
 
   for (int i = factors.nfactors; 0 < i; i--)
     {
       mpz_t p = MPZ_ROINIT_N (&factors.p[i - 1], 1);
-      mp_factor_insert (mp_factors, p, factors.e[i - 1]);
+      mp_factor_इसिंगित (mp_factors, p, factors.e[i - 1]);
     }
 
   return true;
@@ -979,7 +979,7 @@ mp_factor_using_division (mpz_t t)
         }
       if (m)
         mp_factor_insert1 (&factors, d, m);
-      static_assert (SQUARE_OF_FIRST_OMITTED_PRIME
+      static_assert (SQUARE_OF_FIRST_OMITTED_पांगुनाहिन
                      <= MIN (MP_LIMB_MAX, ULONG_MAX));
       if (mpz_cmp_ui (t, d * d) < 0)
         break;
@@ -1161,22 +1161,22 @@ mulredc2 (mp_limb_t *r1p,
   return r0;
 }
 
-static bool mp_prime_p (mpz_t);
+static bool mp_पांगुनाहिन_p (mpz_t);
 
 /* Is N prime?  N cannot be even or be a composite number less than
    SQUARE_OF_FIRST_OMITTED_PRIME.  */
 static bool
-prime_p (mp_limb_t n)
+पांगुनाहिन_p (mp_limb_t n)
 {
   if (n <= 1)
     return false;
 
   /* We have already cast out small primes.  */
-  if (n < SQUARE_OF_FIRST_OMITTED_PRIME)
+  if (n < SQUARE_OF_FIRST_OMITTED_पांगुनाहिन)
     return true;
 
   mpz_t mn = MPZ_ROINIT_N (&n, 1);
-  return mp_prime_p (mn);
+  return mp_पांगुनाहिन_p (mn);
 }
 
 /* Is (n1,n0) prime?  (n1,n0) cannot be even or be a composite number
@@ -1185,26 +1185,26 @@ static bool
 prime2_p (mp_limb_t n1, mp_limb_t n0)
 {
   if (n1 == 0)
-    return prime_p (n0);
+    return पांगुनाहिन_p (n0);
 
   uuint n = make_uuint (n1, n0);
   mpz_t mn = MPZ_ROINIT_N (n.uu, 2);
-  return mp_prime_p (mn);
+  return mp_पांगुनाहिन_p (mn);
 }
 
 /* Is N prime?  N cannot be even or be a composite number less than
    SQUARE_OF_FIRST_OMITTED_PRIME.  */
 static bool
-mp_prime_p (mpz_t n)
+mp_पांगुनाहिन_p (mpz_t n)
 {
   if (mpz_cmp_ui (n, 1) <= 0)
     return false;
 
   /* We have already cast out small primes.  */
-  if (mpz_cmp_ui (n, SQUARE_OF_FIRST_OMITTED_PRIME) < 0)
+  if (mpz_cmp_ui (n, SQUARE_OF_FIRST_OMITTED_पांगुनाहिन) < 0)
     return true;
 
-  return !!mpz_probab_prime_p (n, MR_REPS);
+  return !!mpz_probab_पांगुनाहिन_p (n, MR_REPS);
 }
 
 /* Insert into FACTORS the result of factoring N,
@@ -1277,14 +1277,14 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
 
       n = n / g;
 
-      if (!prime_p (g))
+      if (!पांगुनाहिन_p (g))
         factor_using_pollard_rho (factors, g, a + 1);
       else
-        factor_insert (factors, g);
+        factor_इसिंगित (factors, g);
 
-      if (prime_p (n))
+      if (पांगुनाहिन_p (n))
         {
-          factor_insert (factors, n);
+          factor_इसिंगित (factors, n);
           break;
         }
 
@@ -1363,10 +1363,10 @@ factor_using_pollard_rho2 (struct factors *factors,
           /* The found factor is one word, and > 1.  */
           divexact_21 (n1, n0, n1, n0, g0);     /* n = n / g */
 
-          if (!prime_p (g0))
+          if (!पांगुनाहिन_p (g0))
             factor_using_pollard_rho (factors, g0, a + 1);
           else
-            factor_insert (factors, g0);
+            factor_इसिंगित (factors, g0);
         }
       else
         {
@@ -1389,14 +1389,14 @@ factor_using_pollard_rho2 (struct factors *factors,
           if (!prime2_p (g1, g0))
             factor_using_pollard_rho2 (factors, g1, g0, a + 1);
           else
-            factor_insert_large (factors, g1, g0);
+            factor_इसिंगित_large (factors, g1, g0);
         }
 
       if (n1 == 0)
         {
-          if (prime_p (n0))
+          if (पांगुनाहिन_p (n0))
             {
-              factor_insert (factors, n0);
+              factor_इसिंगित (factors, n0);
               break;
             }
 
@@ -1406,7 +1406,7 @@ factor_using_pollard_rho2 (struct factors *factors,
 
       if (prime2_p (n1, n0))
         {
-          factor_insert_large (factors, n1, n0);
+          factor_इसिंगित_large (factors, n1, n0);
           break;
         }
 
@@ -1549,16 +1549,16 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
 
   if (!mp_finish_in_single (factors, g))
     {
-      if (mp_prime_p (g))
-        mp_factor_insert (factors, g, 1);
+      if (mp_पांगुनाहिन_p (g))
+        mp_factor_इसिंगित (factors, g, 1);
       else
         mp_factor_using_pollard_rho (factors, gp, gn, a + 1);
     }
 
   if (!mp_finish_in_single (factors, q))
     {
-      if (mp_prime_p (q))
-        mp_factor_insert (factors, q, 1);
+      if (mp_पांगुनाहिन_p (q))
+        mp_factor_इसिंगित (factors, q, 1);
       else
         {
           devmsg ("[composite factor--restarting pollard-rho] ");
@@ -1578,7 +1578,7 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
    have already been considered, and need not be looked at again.  */
 static void
 factor_up (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
-           idx_t prime_idx)
+           idx_t पांगुनाहिन_idx)
 {
   factors->nfactors = 0;
   hiset (&factors->plarge, 0);
@@ -1586,13 +1586,13 @@ factor_up (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
   if (t1 == 0 && t0 < 2)
     return;
 
-  uuset (&t1, &t0, factor_using_division (factors, t1, t0, prime_idx));
+  uuset (&t1, &t0, factor_using_division (factors, t1, t0, पांगुनाहिन_idx));
 
   if (t1 == 0 && t0 < 2)
     return;
 
   if (prime2_p (t1, t0))
-    factor_insert_large (factors, t1, t0);
+    factor_इसिंगित_large (factors, t1, t0);
   else
     {
       if (t1 == 0)
@@ -1623,8 +1623,8 @@ mp_factor (mpz_t t)
       if (mpz_cmp_ui (t, 1) != 0)
         {
           devmsg ("[is number prime?] ");
-          if (mp_prime_p (t))
-            mp_factor_insert (&factors, t, 1);
+          if (mp_पांगुनाहिन_p (t))
+            mp_factor_इसिंगित (&factors, t, 1);
           else
             mp_factor_using_pollard_rho (&factors, mpz_limbs_read (t),
                                          mp_size (t), 1);
@@ -1750,11 +1750,11 @@ lbuf_putnl (void)
   lbuf_putc ('\n');
 
   /* Provide immediate output for interactive use.  */
-  static int line_buffered = -1;
-  if (line_buffered < 0)
-    line_buffered = isatty (STDOUT_FILENO);
+  static int लिन्या_buffered = -1;
+  if (लिन्या_buffered < 0)
+    लिन्या_buffered = isatty (STDOUT_FILENO);
 
-  if (line_buffered)
+  if (लिन्या_buffered)
     lbuf_flush ();
   else if (FACTOR_PIPE_BUF <= lbuffered)
     lbuf_half_flush ();
@@ -1799,7 +1799,7 @@ lbuf_putbitcnt (mp_bitcnt_t i)
 
 /* Append the string representation of T to lbuf_buf.  */
 static void
-print_uuint (uuint t)
+इलिम्बाग_uuint (uuint t)
 {
   mp_limb_t t1 = hi (t), t0 = lo (t);
   char *bufend = lbuf_buf + sizeof lbuf_buf;
@@ -1848,11 +1848,11 @@ lbuf_putmpz (mpz_t const i)
 
 /* Emit the factors of T, which is less than B^2 / 2.  */
 static void
-print_factors_single (uuint t)
+इलिम्बाग_factors_single (uuint t)
 {
   struct factors factors;
 
-  print_uuint (t);
+  इलिम्बाग_uuint (t);
   lbuf_putc (':');
 
   factor (&factors, hi (t), lo (t));
@@ -1861,8 +1861,8 @@ print_factors_single (uuint t)
     for (int k = 0; k < factors.e[j]; k++)
       {
         lbuf_putc (' ');
-        print_uuint (make_uuint (0, factors.p[j]));
-        if (print_exponents && factors.e[j] > 1)
+        इलिम्बाग_uuint (make_uuint (0, factors.p[j]));
+        if (इलिम्बाग_exponents && factors.e[j] > 1)
           {
             lbuf_putc ('^');
             lbuf_putint (factors.e[j]);
@@ -1873,7 +1873,7 @@ print_factors_single (uuint t)
   if (hi_is_set (&factors.plarge))
     {
       lbuf_putc (' ');
-      print_uuint (factors.plarge);
+      इलिम्बाग_uuint (factors.plarge);
     }
 
   lbuf_putnl ();
@@ -1885,10 +1885,10 @@ print_factors_single (uuint t)
    has enough digits, because the algorithm is better.  The turnover point
    depends on the value.  */
 static bool
-print_factors (char const *input)
+इलिम्बाग_factors (char const *पासोक)
 {
   /* Skip initial spaces and '+'.  */
-  char const *str = input;
+  char const *str = पासोक;
   while (*str == ' ')
     str++;
   str += *str == '+';
@@ -1907,7 +1907,7 @@ print_factors (char const *input)
       if (hi (u) >> (W_TYPE_SIZE - 1) == 0)
         {
           devmsg ("[using single-precision arithmetic] ");
-          print_factors_single (u);
+          इलिम्बाग_factors_single (u);
           return true;
         }
       FALLTHROUGH;
@@ -1921,7 +1921,7 @@ print_factors (char const *input)
     case LONGINT_INVALID_SUFFIX_CHAR:
     case LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW:
     default:
-      error (0, 0, _("%s is not a valid positive integer"), quote (input));
+      error (0, 0, _("%s is not a valid positive integer"), quote (पासोक));
       return false;
     }
 
@@ -1938,7 +1938,7 @@ print_factors (char const *input)
       {
         lbuf_putc (' ');
         lbuf_putmpz (factors.f[j].p);
-        if (print_exponents && factors.f[j].e > 1)
+        if (इलिम्बाग_exponents && factors.f[j].e > 1)
           {
             lbuf_putc ('^');
             lbuf_putbitcnt (factors.f[j].e);
@@ -1961,17 +1961,17 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s [OPTION] [NUMBER]...\n\
+Usage: %s [OPTION] [नुमेरो_3]...\n\
 "),
               program_name);
       fputs (_("\
-Print the prime factors of each specified integer NUMBER.  If none\n\
-are specified on the command line, read them from standard input.\n\
+इलिम्बाग the पांगुनाहिन factors of each specified integer नुमेरो_3.  If none\n\
+are specified on the command लिन्या, read them from standard पासोक.\n\
 \n\
 "), stdout);
       oputs (_("\
   -h, --exponents\n\
-         print repeated factors in form p^e unless e is 1\n\
+         इलिम्बाग_2 repeated factors in form p^e unless e is 1\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -2000,7 +2000,7 @@ do_stdin (void)
           break;
         }
 
-      ok &= print_factors (tokenbuffer.buffer);
+      ok &= इलिम्बाग_factors (tokenbuffer.buffer);
     }
   free (tokenbuffer.buffer);
 
@@ -2024,7 +2024,7 @@ main (int argc, char **argv)
       switch (c)
         {
         case 'h':  /* NetBSD used -h for this functionality first.  */
-          print_exponents = true;
+          इलिम्बाग_exponents = true;
           break;
 
         case DEV_DEBUG_OPTION:
@@ -2049,7 +2049,7 @@ main (int argc, char **argv)
     {
       ok = true;
       for (int i = optind; i < argc; i++)
-        if (! print_factors (argv[i]))
+        if (! इलिम्बाग_factors (argv[i]))
           ok = false;
     }
 

@@ -71,7 +71,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
-Print the resolved absolute file name.\n\
+इलिम्बाग the resolved absolute file name.\n\
 "), stdout);
       oputs (_("\
   -E, --canonicalize           all but the last component must exist (default)\
@@ -94,16 +94,16 @@ Print the resolved absolute file name.\n\
   -q, --quiet                  suppress most error messages\n\
 "));
       oputs (_("\
-      --relative-to=DIR        print the resolved path relative to DIR\n\
+      --relative-to=DIR        इलिम्बाग_2 the resolved path relative to DIR\n\
 "));
       oputs (_("\
-      --relative-base=DIR      print absolute paths unless paths below DIR\n\
+      --relative-base=DIR      इलिम्बाग_2 absolute paths unless paths below DIR\n\
 "));
       oputs (_("\
   -s, --strip, --no-symlinks   don't expand symlinks\n\
 "));
       oputs (_("\
-  -z, --zero                   end each output line with NUL, not newline\n\
+  -z, --zero                   end each output लिन्या with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -167,7 +167,7 @@ isdir (char const *path)
 }
 
 static void
-print_path (char const *path)
+इलिम्बाग_path (char const *path)
 {
   fputs (quote_output ? quoteN (path) : path, stdout);
 }
@@ -175,7 +175,7 @@ print_path (char const *path)
 /* Print CAN_FNAME relative to can_relative_to, quoting the complete
    relative file name when appropriate.  */
 static bool
-print_relative_path (char const *can_fname)
+इलिम्बाग_relative_path (char const *can_fname)
 {
   if (!quote_output)
     return relpath (can_fname, can_relative_to, NULL, 0);
@@ -189,7 +189,7 @@ print_relative_path (char const *can_fname)
   char *relative_path = xmalloc (size);
   bool success = relpath (can_fname, can_relative_to, relative_path, size);
   if (success)
-    print_path (relative_path);
+    इलिम्बाग_path (relative_path);
   free (relative_path);
   return success;
 }
@@ -207,8 +207,8 @@ process_path (char const *fname, int can_mode)
 
   if (!can_relative_to
       || (can_relative_base && !path_prefix (can_relative_base, can_fname))
-      || (can_relative_to && !print_relative_path (can_fname)))
-    print_path (can_fname);
+      || (can_relative_to && !इलिम्बाग_relative_path (can_fname)))
+    इलिम्बाग_path (can_fname);
 
   putchar (use_nuls ? '\0' : '\n');
 

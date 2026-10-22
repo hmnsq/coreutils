@@ -52,7 +52,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... [USERNAME]...\n"), program_name);
       fputs (_("\
-Print group memberships for each USERNAME or, if no USERNAME is specified, for\
+इलिम्बाग group memberships for each USERNAME or, if no USERNAME is specified, for\
 \n\
 the current process (which may differ if the groups database has changed).\n"),
              stdout);
@@ -110,7 +110,7 @@ main (int argc, char **argv)
       if (rgid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real GID"));
 
-      if (!print_group_list (NULL, ruid, rgid, egid, true, ' '))
+      if (!इलिम्बाग_group_list (NULL, ruid, rgid, egid, true, ' '))
         ok = false;
       putchar ('\n');
     }
@@ -131,7 +131,7 @@ main (int argc, char **argv)
           gid_t egid = rgid;
 
           printf ("%s : ", argv[optind]);
-          if (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
+          if (!इलिम्बाग_group_list (argv[optind], ruid, rgid, egid, true, ' '))
             ok = false;
           putchar ('\n');
 

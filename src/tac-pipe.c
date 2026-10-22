@@ -26,12 +26,12 @@
 
 #define ONE_PAST_END(X, I) ((X)->p[(I)].one_past_end)
 
-struct Line_ptr
+struct लिन्या_ptr
 {
   size_t i;
   char *ptr;
 };
-typedef struct Line_ptr Line_ptr;
+typedef struct लिन्या_ptr लिन्या_ptr;
 
 struct B_pair
 {
@@ -129,10 +129,10 @@ buf_free (Buf *x)
   obstack_free (OBS, NULL);
 }
 
-Line_ptr
-line_ptr_decrement (const Buf *x, const Line_ptr *lp)
+लिन्या_ptr
+लिन्या_ptr_decrement (const Buf *x, const लिन्या_ptr *lp)
 {
-  Line_ptr lp_new;
+  लिन्या_ptr lp_new;
 
   if (lp->ptr > x->p[lp->i].start)
     {
@@ -148,10 +148,10 @@ line_ptr_decrement (const Buf *x, const Line_ptr *lp)
   return lp_new;
 }
 
-Line_ptr
-line_ptr_increment (const Buf *x, const Line_ptr *lp)
+लिन्या_ptr
+लिन्या_ptr_increment (const Buf *x, const लिन्या_ptr *lp)
 {
-  Line_ptr lp_new;
+  लिन्या_ptr lp_new;
 
   affirm (lp->ptr <= ONE_PAST_END (x, lp->i) - 1);
   if (lp->ptr < ONE_PAST_END (x, lp->i) - 1)
@@ -170,16 +170,16 @@ line_ptr_increment (const Buf *x, const Line_ptr *lp)
 
 static bool
 find_bol (const Buf *x,
-          const Line_ptr *last_bol, Line_ptr *new_bol, char eol_byte)
+          const लिन्या_ptr *last_bol, लिन्या_ptr *new_bol, char eol_byte)
 {
   size_t i;
-  Line_ptr tmp;
+  लिन्या_ptr tmp;
   char *last_bol_ptr;
 
   if (last_bol->ptr == x->p[0].start)
     return false;
 
-  tmp = line_ptr_decrement (x, last_bol);
+  tmp = लिन्या_ptr_decrement (x, last_bol);
   last_bol_ptr = tmp.ptr;
   i = tmp.i;
   while (true)
@@ -187,10 +187,10 @@ find_bol (const Buf *x,
       char *nl = memrchr (x->p[i].start, last_bol_ptr, eol_byte);
       if (nl)
         {
-          Line_ptr nl_pos;
+          लिन्या_ptr nl_pos;
           nl_pos.i = i;
           nl_pos.ptr = nl;
-          *new_bol = line_ptr_increment (x, &nl_pos);
+          *new_bol = लिन्या_ptr_increment (x, &nl_pos);
           return true;
         }
 
@@ -215,8 +215,8 @@ find_bol (const Buf *x,
 }
 
 static void
-print_line (FILE *out_stream, const Buf *x,
-            const Line_ptr *bol, const Line_ptr *bol_next)
+इलिम्बाग_लिन्या (FILE *out_stream, const Buf *x,
+            const लिन्या_ptr *bol, const लिन्या_ptr *bol_next)
 {
   for (size_t i = bol->i; i <= bol_next->i; i++)
     {
@@ -230,7 +230,7 @@ static bool
 tac_mem ()
 {
   Buf x;
-  Line_ptr bol;
+  लिन्या_ptr bol;
   char eol_byte = '\n';
 
   if (! buf_init_from_stdin (&x, eol_byte))
@@ -249,10 +249,10 @@ tac_mem ()
 
   while (true)
     {
-      Line_ptr new_bol;
+      लिन्या_ptr new_bol;
       if (! find_bol (&x, &bol, &new_bol, eol_byte))
         break;
-      print_line (stdout, &x, &new_bol, &bol);
+      इलिम्बाग_लिन्या (stdout, &x, &new_bol, &bol);
       bol = new_bol;
     }
   return true;

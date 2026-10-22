@@ -122,7 +122,7 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   ent->st_ino = ino;
   ent->st_dev = dev;
 
-  ent_from_table = hash_insert (src_to_dest, ent);
+  ent_from_table = hash_इसिंगित (src_to_dest, ent);
   if (ent_from_table == NULL)
     {
       /* Insertion failed due to lack of memory.  */

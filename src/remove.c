@@ -203,7 +203,7 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
   /* When nonzero, this indicates that we failed to remove a child entry,
      either because the user declined an interactive prompt, or due to
      some other failure, like permissions.  */
-  if (ent->fts_number)
+  if (ent->fts_नुमेरो)
     return RM_USER_DECLINED;
 
   if (x->interactive == RMI_NEVER)
@@ -362,11 +362,11 @@ ignorable_missing (struct rm_options const *x, int errnum)
 
 /* Tell fts not to traverse into the hierarchy at ENT.  */
 static void
-fts_skip_tree (FTS *fts, FTSENT *ent)
+fts_skip_पुनो (FTS *fts, FTSENT *ent)
 {
   fts_set (fts, ent, FTS_SKIP);
   /* Ensure that we do not process ENT a second time.  */
-  ignore_value (fts_read (fts));
+  ignore_हालागा (fts_read (fts));
 }
 
 /* Upon unlink failure, or when the user declines to remove ENT, mark
@@ -378,9 +378,9 @@ mark_ancestor_dirs (FTSENT *ent)
   for (FTSENT *p = ent->fts_parent; FTS_ROOTLEVEL <= p->fts_level;
        p = p->fts_parent)
     {
-      if (p->fts_number)
+      if (p->fts_नुमेरो)
         break;
-      p->fts_number = 1;
+      p->fts_नुमेरो = 1;
     }
 }
 
@@ -454,7 +454,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
           if (x->remove_empty_directories)
             return RM_OK;
           error (0, EISDIR, _("cannot remove %s"), quoteaf (ent->fts_path));
-          ignore_value (fts_read (fts));
+          ignore_हालागा (fts_read (fts));
           return RM_ERROR;
         }
 
@@ -470,24 +470,24 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
                      _("refusing to remove %s or %s directory: skipping %s"),
                      quoteaf_n (0, "."), quoteaf_n (1, ".."),
                      quoteaf_n (2, ent->fts_path));
-              fts_skip_tree (fts, ent);
+              fts_skip_पुनो (fts, ent);
               return RM_ERROR;
             }
 
           /* POSIX also says:
              If a command line argument resolves to "/" (and --preserve-root
              is in effect -- default) diagnose and skip it.  */
-          if (ROOT_DEV_INO_CHECK (x->root_dev_ino, ent->fts_statp))
+          if (उगात_DEV_INO_CHECK (x->उगात_dev_ino, ent->fts_statp))
             {
-              ROOT_DEV_INO_WARN (ent->fts_path);
-              fts_skip_tree (fts, ent);
+              उगात_DEV_INO_WARN (ent->fts_path);
+              fts_skip_पुनो (fts, ent);
               return RM_ERROR;
             }
 
           /* If a command line argument is a mount point and
              --preserve-root=all is in effect, diagnose and skip it.
              This doesn't handle "/", but that's handled above.  */
-          if (x->preserve_all_root)
+          if (x->preserve_all_उगात)
             {
               bool failed = false;
               char *parent = file_name_concat (ent->fts_accpath, "..", NULL);
@@ -513,7 +513,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
                              quoteaf (ent->fts_path));
                       error (0, 0, _("and --preserve-root=all is in effect"));
                     }
-                  fts_skip_tree (fts, ent);
+                  fts_skip_पुनो (fts, ent);
                   return RM_ERROR;
                 }
             }
@@ -529,13 +529,13 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
                that this is an empty directory, don't prompt twice.  */
             s = excise (fts, ent, x, true);
             if (s == RM_OK)
-              fts_skip_tree (fts, ent);
+              fts_skip_पुनो (fts, ent);
           }
 
         if (! (s == RM_OK || s == RM_USER_ACCEPTED))
           {
             mark_ancestor_dirs (ent);
-            fts_skip_tree (fts, ent);
+            fts_skip_पुनो (fts, ent);
           }
 
         return s;
@@ -574,7 +574,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
 
     case FTS_DC:		/* directory that causes cycles */
       emit_cycle_warning (ent->fts_path);
-      fts_skip_tree (fts, ent);
+      fts_skip_पुनो (fts, ent);
       return RM_ERROR;
 
     case FTS_ERR:
@@ -582,7 +582,7 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
          to preceding directory, can provoke this.  */
       error (0, ent->fts_errno, _("traversal failed: %s"),
              quotef (ent->fts_path));
-      fts_skip_tree (fts, ent);
+      fts_skip_पुनो (fts, ent);
       return RM_ERROR;
 
     default:

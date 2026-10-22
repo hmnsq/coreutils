@@ -124,9 +124,9 @@ unexpand (void)
   if (!fp)
     return;
 
-  static char line_in[IO_BUFSIZE];
+  static char लिन्या_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, लिन्या_in, sizeof लिन्या_in, fp);
 
   /* The worst case is a non-blank character, then one blank, then a
      tab stop, then MAX_COLUMN_WIDTH - 1 blanks, then a non-blank; so
@@ -172,7 +172,7 @@ unexpand (void)
         {
           while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, लिन्या_in, sizeof लिन्या_in, fp);
 
           if (convert)
             {
@@ -253,7 +253,7 @@ unexpand (void)
                 }
 
               prev_blank = blank;
-              convert &= convert_entire_line || blank;
+              convert &= convert_entire_लिन्या || blank;
             }
 
           if (g.ch == MBBUF_EOF)
@@ -297,10 +297,10 @@ main (int argc, char **argv)
         case '?':
           usage (EXIT_FAILURE);
         case 'a':
-          convert_entire_line = true;
+          convert_entire_लिन्या = true;
           break;
         case 't':
-          convert_entire_line = true;
+          convert_entire_लिन्या = true;
           parse_tab_stops (optarg);
           break;
         case CONVERT_FIRST_ONLY_OPTION:
@@ -326,7 +326,7 @@ main (int argc, char **argv)
     }
 
   if (convert_first_only)
-    convert_entire_line = false;
+    convert_entire_लिन्या = false;
 
   if (have_tabval)
     add_tab_stop (tabval);

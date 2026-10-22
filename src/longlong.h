@@ -152,30 +152,30 @@ see https://www.gnu.org/licenses/.  */
    or want.  */
 
 #ifdef _LONG_LONG_LIMB
-#define count_leading_zeros_gcc_clz(count,x)	\
+#define बिलांग_leading_zeros_gcc_clz(बिलांग,x)	\
   do {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_clzll (x);		\
+    (बिलांग) = __builtin_clzll (x);		\
   } while (0)
 #else
-#define count_leading_zeros_gcc_clz(count,x)	\
+#define बिलांग_leading_zeros_gcc_clz(बिलांग,x)	\
   do {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_clzl (x);		\
+    (बिलांग) = __builtin_clzl (x);		\
   } while (0)
 #endif
 
 #ifdef _LONG_LONG_LIMB
-#define count_trailing_zeros_gcc_ctz(count,x)	\
+#define बिलांग_trailing_zeros_gcc_ctz(बिलांग,x)	\
   do {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_ctzll (x);		\
+    (बिलांग) = __builtin_ctzll (x);		\
   } while (0)
 #else
-#define count_trailing_zeros_gcc_ctz(count,x)	\
+#define बिलांग_trailing_zeros_gcc_ctz(बिलांग,x)	\
   do {						\
     ASSERT ((x) != 0);				\
-    (count) = __builtin_ctzl (x);		\
+    (बिलांग) = __builtin_ctzl (x);		\
   } while (0)
 #endif
 
@@ -225,16 +225,16 @@ see https://www.gnu.org/licenses/.  */
 
 /* clz_tab is required in all configurations, since mpn/alpha/cntlz.asm
    always goes into libgmp.so, even when not actually used.  */
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
+#define बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
 
 #if defined (__GNUC__) && HAVE_HOST_CPU_alpha_CIX
-#define count_leading_zeros(COUNT,X) \
-  __asm__("ctlz %1,%0" : "=r"(COUNT) : "r"(X))
-#define count_trailing_zeros(COUNT,X) \
-  __asm__("cttz %1,%0" : "=r"(COUNT) : "r"(X))
+#define बिलांग_leading_zeros(बिलांग_2,X) \
+  __asm__("ctlz %1,%0" : "=r"(बिलांग_2) : "r"(X))
+#define बिलांग_trailing_zeros(बिलांग_2,X) \
+  __asm__("cttz %1,%0" : "=r"(बिलांग_2) : "r"(X))
 #endif /* clz/ctz using cix */
 
-#if ! defined (count_leading_zeros)				\
+#if ! defined (बिलांग_leading_zeros)				\
   && defined (__GNUC__) && ! defined (LONGLONG_STANDALONE)
 /* ALPHA_CMPBGE_0 gives "cmpbge $31,src,dst", ie. test src bytes == 0.
    "$31" is written explicitly in the asm, since an "r" constraint won't
@@ -245,7 +245,7 @@ see https://www.gnu.org/licenses/.  */
 /* Zero bytes are turned into bits with cmpbge, a __clz_tab lookup counts
    them, locating the highest non-zero byte.  A second __clz_tab lookup
    counts the leading zero bits in that byte, giving the result.  */
-#define count_leading_zeros(count, x)					\
+#define बिलांग_leading_zeros(बिलांग, x)					\
   do {									\
     UWtype  __clz__b, __clz__c, __clz__x = (x);				\
     ALPHA_CMPBGE_0 (__clz__b,  __clz__x);	    /* zero bytes */	\
@@ -254,19 +254,19 @@ see https://www.gnu.org/licenses/.  */
     __clz__x >>= __clz__b;						\
     __clz__c = __clz_tab [__clz__x];		    /* 8 to 1 bit */	\
     __clz__b = 65 - __clz__b;						\
-    (count) = __clz__b - __clz__c;					\
+    (बिलांग) = __clz__b - __clz__c;					\
   } while (0)
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
+#define बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
 #endif /* clz using cmpbge */
 
-#if ! defined (count_leading_zeros) && ! defined (LONGLONG_STANDALONE)
+#if ! defined (बिलांग_leading_zeros) && ! defined (LONGLONG_STANDALONE)
 #if HAVE_ATTRIBUTE_CONST
-long __MPN(count_leading_zeros) (UDItype) __attribute__ ((const));
+long __MPN(बिलांग_leading_zeros) (UDItype) __attribute__ ((const));
 #else
-long __MPN(count_leading_zeros) (UDItype);
+long __MPN(बिलांग_leading_zeros) (UDItype);
 #endif
-#define count_leading_zeros(count, x) \
-  ((count) = __MPN(count_leading_zeros) (x))
+#define बिलांग_leading_zeros(बिलांग, x) \
+  ((बिलांग) = __MPN(बिलांग_leading_zeros) (x))
 #endif /* clz using mpn */
 #endif /* __alpha */
 
@@ -283,9 +283,9 @@ long __MPN(count_leading_zeros) (UDItype);
 #include <intrinsics.h>
 #define UDIV_PREINV_ALWAYS  1
 #define UDIV_NEEDS_NORMALIZATION 1
-long __MPN(count_leading_zeros) (UDItype);
-#define count_leading_zeros(count, x) \
-  ((count) = _leadz ((UWtype) (x)))
+long __MPN(बिलांग_leading_zeros) (UDItype);
+#define बिलांग_leading_zeros(बिलांग, x) \
+  ((बिलांग) = _leadz ((UWtype) (x)))
 #if defined (_CRAYIEEE)		/* I.e., Cray T90/ieee, T3D, and T3E */
 #define umul_ppmm(ph, pl, m0, m1) \
   do {									\
@@ -326,7 +326,7 @@ long __MPN(count_leading_zeros) (UDItype);
     __asm__ ("xma.hu %0 = %2, %3, f0\n\txma.l %1 = %2, %3, f0"		\
 	     : "=&f" (ph), "=f" (pl)					\
 	     : "f" (m0), "f" (m1))
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   do {									\
     UWtype _x = (x), _y, _a, _c;					\
     __asm__ ("mux1 %0 = %1, @rev" : "=r" (_y) : "r" (_x));		\
@@ -338,15 +338,15 @@ long __MPN(count_leading_zeros) (UDItype);
     if (_x >= 1 << 2)							\
       _x >>= 2, _c += 2;						\
     _c += _x >> 1;							\
-    (count) =  W_TYPE_SIZE - 1 - _c;					\
+    (बिलांग) =  W_TYPE_SIZE - 1 - _c;					\
   } while (0)
 /* similar to what gcc does for __builtin_ffs, but 0 based rather than 1
    based, and we don't need a special case for x==0 here */
-#define count_trailing_zeros(count, x)					\
+#define बिलांग_trailing_zeros(बिलांग, x)					\
   do {									\
     UWtype __ctz_x = (x);						\
     __asm__ ("popcnt %0 = %1"						\
-	     : "=r" (count)						\
+	     : "=r" (बिलांग)						\
 	     : "r" ((__ctz_x-1) & ~__ctz_x));				\
   } while (0)
 #endif
@@ -406,11 +406,11 @@ long __MPN(count_leading_zeros) (UDItype);
   __asm__ ("dividu %0,%3,%4"						\
 	   : "=r" (q), "=q" (r)						\
 	   : "1" (n1), "r" (n0), "r" (d))
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
     __asm__ ("clz %0,%1"						\
-	     : "=r" (count)						\
+	     : "=r" (बिलांग)						\
 	     : "r" (x))
-#define COUNT_LEADING_ZEROS_0 32
+#define बिलांग_LEADING_ZEROS_0 32
 #endif /* __a29k__ */
 
 #if defined (__arc__)
@@ -547,8 +547,8 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 #define UDIV_NEEDS_NORMALIZATION 1
 #endif /* LONGLONG_STANDALONE */
 #endif /* defined(__ARM_ARCH_2__) ... */
-#define count_leading_zeros(count, x)  count_leading_zeros_gcc_clz(count, x)
-#define count_trailing_zeros(count, x)  count_trailing_zeros_gcc_ctz(count, x)
+#define बिलांग_leading_zeros(बिलांग, x)  बिलांग_leading_zeros_gcc_clz(बिलांग, x)
+#define बिलांग_trailing_zeros(बिलांग, x)  बिलांग_trailing_zeros_gcc_ctz(बिलांग, x)
 #endif /* __arm__ */
 
 #if defined (__aarch64__) && W_TYPE_SIZE == 64
@@ -595,8 +595,8 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
     (pl) = __m0 * __m1;							\
   } while (0)
 #endif
-#define count_leading_zeros(count, x)  count_leading_zeros_gcc_clz(count, x)
-#define count_trailing_zeros(count, x)  count_trailing_zeros_gcc_ctz(count, x)
+#define बिलांग_leading_zeros(बिलांग, x)  बिलांग_leading_zeros_gcc_clz(बिलांग, x)
+#define बिलांग_trailing_zeros(बिलांग, x)  बिलांग_trailing_zeros_gcc_ctz(बिलांग, x)
 #endif /* __aarch64__ */
 
 #if defined (__clipper__) && W_TYPE_SIZE == 32
@@ -664,9 +664,9 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
   __asm__ ("divx %4,%0,%1"						\
 	   : "=g" (q), "=r" (r)						\
 	   : "1" ((USItype)(nh)), "0" ((USItype)(nl)), "g" ((USItype)(d)))
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   __asm__ ("bsch/1 %1,%0"						\
-	   : "=g" (count) : "g" ((USItype)(x)), "0" ((USItype)0))
+	   : "=g" (बिलांग) : "g" ((USItype)(x)), "0" ((USItype)0))
 #endif
 
 #if defined (__hppa) && W_TYPE_SIZE == 32
@@ -689,7 +689,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
     (wl) = __x.__i.__l;							\
   } while (0)
 #endif
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   do {									\
     USItype __tmp;							\
     __asm__ (								\
@@ -708,7 +708,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 "	ldo		2(%0),%0	; Yes.  Perform add.\n"		\
 "	extru		%1,30,1,%1	; Extract bit 1.\n"		\
 "	sub		%0,%1,%0	; Subtract it.\n"		\
-	: "=r" (count), "=r" (__tmp) : "1" (x));			\
+	: "=r" (बिलांग), "=r" (__tmp) : "1" (x));			\
   } while (0)
 #endif /* hppa */
 
@@ -884,7 +884,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
   } while (0)
 #endif
 #if 0 /* FIXME: Enable for z10 (?) */
-#define count_leading_zeros(cnt, x)					\
+#define बिलांग_leading_zeros(cnt, x)					\
   do {									\
     union {unsigned int __attribute__ ((mode(TI))) __ll;		\
 	   struct {UDItype __h, __l;} __i;				\
@@ -945,7 +945,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
    constant could be folded into __clz_tab[], but it doesn't seem worth
    making a different table just for that.  */
 
-#define count_leading_zeros(c,n)					\
+#define बिलांग_leading_zeros(c,n)					\
   do {									\
     USItype  __n = (n);							\
     USItype  __shift;							\
@@ -959,8 +959,8 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
     __shift = __shift*8 + 24 + 1;					\
     (c) = 32 + 1 - __shift - __clz_tab[__n >> __shift];			\
   } while (0)
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#define COUNT_LEADING_ZEROS_0   31   /* n==0 indistinguishable from n==1 */
+#define बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
+#define बिलांग_LEADING_ZEROS_0   31   /* n==0 indistinguishable from n==1 */
 
 #else /* ! pentiummmx || LONGLONG_STANDALONE */
 /* The following should be a fixed 14 cycles or so.  Some scheduling
@@ -969,7 +969,7 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
    apparently suggested by the Intel optimizing manual (don't know exactly
    where).  gcc 2.95 or up will be best for this, so the "double" is
    correctly aligned on the stack.  */
-#define count_leading_zeros(c,n)					\
+#define बिलांग_leading_zeros(c,n)					\
   do {									\
     union {								\
       double    d;							\
@@ -978,13 +978,13 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
     __u.d = (UWtype) (n);						\
     (c) = 0x3FF + 31 - (__u.a[1] >> 20);				\
   } while (0)
-#define COUNT_LEADING_ZEROS_0   (0x3FF + 31)
+#define बिलांग_LEADING_ZEROS_0   (0x3FF + 31)
 #endif /* pentiummx */
 
 #else /* ! pentium */
 
 #if __GMP_GNUC_PREREQ (3,4)  /* using bsrl */
-#define count_leading_zeros(count,x)  count_leading_zeros_gcc_clz(count,x)
+#define बिलांग_leading_zeros(बिलांग,x)  बिलांग_leading_zeros_gcc_clz(बिलांग,x)
 #endif /* gcc clz */
 
 /* On P6, gcc prior to 3.0 generates a partial register stall for
@@ -992,40 +992,40 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
    being 1 code byte smaller.  "31-__cbtmp" is a workaround, probably at the
    cost of one extra instruction.  Do this for "i386" too, since that means
    generic x86.  */
-#if ! defined (count_leading_zeros) && __GNUC__ < 3			\
+#if ! defined (बिलांग_leading_zeros) && __GNUC__ < 3			\
   && (HAVE_HOST_CPU_i386						\
       || HAVE_HOST_CPU_i686						\
       || HAVE_HOST_CPU_pentiumpro					\
       || HAVE_HOST_CPU_pentium2						\
       || HAVE_HOST_CPU_pentium3)
-#define count_leading_zeros(count, x)					\
+#define बिलांग_leading_zeros(बिलांग, x)					\
   do {									\
     USItype __cbtmp;							\
     ASSERT ((x) != 0);							\
     __asm__ ("bsrl %1,%0" : "=r" (__cbtmp) : "rm" ((USItype)(x)));	\
-    (count) = 31 - __cbtmp;						\
+    (बिलांग) = 31 - __cbtmp;						\
   } while (0)
 #endif /* gcc<3 asm bsrl */
 
-#ifndef count_leading_zeros
-#define count_leading_zeros(count, x)					\
+#ifndef बिलांग_leading_zeros
+#define बिलांग_leading_zeros(बिलांग, x)					\
   do {									\
     USItype __cbtmp;							\
     ASSERT ((x) != 0);							\
     __asm__ ("bsrl %1,%0" : "=r" (__cbtmp) : "rm" ((USItype)(x)));	\
-    (count) = __cbtmp ^ 31;						\
+    (बिलांग) = __cbtmp ^ 31;						\
   } while (0)
 #endif /* asm bsrl */
 
 #if __GMP_GNUC_PREREQ (3,4)  /* using bsfl */
-#define count_trailing_zeros(count,x)  count_trailing_zeros_gcc_ctz(count,x)
+#define बिलांग_trailing_zeros(बिलांग,x)  बिलांग_trailing_zeros_gcc_ctz(बिलांग,x)
 #endif /* gcc ctz */
 
-#ifndef count_trailing_zeros
-#define count_trailing_zeros(count, x)					\
+#ifndef बिलांग_trailing_zeros
+#define बिलांग_trailing_zeros(बिलांग, x)					\
   do {									\
     ASSERT ((x) != 0);							\
-    __asm__ ("bsfl %1,%k0" : "=r" (count) : "rm" ((USItype)(x)));	\
+    __asm__ ("bsfl %1,%k0" : "=r" (बिलांग) : "rm" ((USItype)(x)));	\
   } while (0)
 #endif /* asm bsfl */
 
@@ -1066,37 +1066,37 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
   || HAVE_HOST_CPU_k10 || HAVE_HOST_CPU_bd1 || HAVE_HOST_CPU_bd2	\
   || HAVE_HOST_CPU_bd3 || HAVE_HOST_CPU_bd4 || HAVE_HOST_CPU_zen	\
   || HAVE_HOST_CPU_bobcat || HAVE_HOST_CPU_jaguar
-#define count_leading_zeros(count, x)					\
+#define बिलांग_leading_zeros(बिलांग, x)					\
   do {									\
     /* This is lzcnt, spelled for older assemblers.  Destination and */	\
     /* source must be a 64-bit registers, hence cast and %q.         */	\
-    __asm__ ("rep;bsr\t%1, %q0" : "=r" (count) : "rm" ((UDItype)(x)));	\
+    __asm__ ("rep;bsr\t%1, %q0" : "=r" (बिलांग) : "rm" ((UDItype)(x)));	\
   } while (0)
-#define COUNT_LEADING_ZEROS_0 64
+#define बिलांग_LEADING_ZEROS_0 64
 #else
-#define count_leading_zeros(count, x)					\
+#define बिलांग_leading_zeros(बिलांग, x)					\
   do {									\
     UDItype __cbtmp;							\
     ASSERT ((x) != 0);							\
     __asm__ ("bsr\t%1,%0" : "=r" (__cbtmp) : "rm" ((UDItype)(x)));	\
-    (count) = __cbtmp ^ 63;						\
+    (बिलांग) = __cbtmp ^ 63;						\
   } while (0)
 #endif
 
 #if HAVE_HOST_CPU_bd2 || HAVE_HOST_CPU_bd3 || HAVE_HOST_CPU_bd4 \
   || HAVE_HOST_CPU_zen || HAVE_HOST_CPU_jaguar
-#define count_trailing_zeros(count, x)					\
+#define बिलांग_trailing_zeros(बिलांग, x)					\
   do {									\
     /* This is tzcnt, spelled for older assemblers.  Destination and */	\
     /* source must be a 64-bit registers, hence cast and %q.         */	\
-    __asm__ ("rep;bsf\t%1, %q0" : "=r" (count) : "rm" ((UDItype)(x)));	\
+    __asm__ ("rep;bsf\t%1, %q0" : "=r" (बिलांग) : "rm" ((UDItype)(x)));	\
   } while (0)
-#define COUNT_TRAILING_ZEROS_0 64
+#define बिलांग_TRAILING_ZEROS_0 64
 #else
-#define count_trailing_zeros(count, x)					\
+#define बिलांग_trailing_zeros(बिलांग, x)					\
   do {									\
     ASSERT ((x) != 0);							\
-    __asm__ ("bsf\t%1, %q0" : "=r" (count) : "rm" ((UDItype)(x)));	\
+    __asm__ ("bsf\t%1, %q0" : "=r" (बिलांग) : "rm" ((UDItype)(x)));	\
   } while (0)
 #endif
 #endif /* __amd64__ */
@@ -1137,13 +1137,13 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	   : "=d" (__rq.__ll) : "dI" (__nn.__ll), "dI" (d));		\
     (r) = __rq.__i.__l; (q) = __rq.__i.__h;				\
   } while (0)
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   do {									\
     USItype __cbtmp;							\
     __asm__ ("scanbit %1,%0" : "=r" (__cbtmp) : "r" (x));		\
-    (count) = __cbtmp ^ 31;						\
+    (बिलांग) = __cbtmp ^ 31;						\
   } while (0)
-#define COUNT_LEADING_ZEROS_0 (-32) /* sic */
+#define बिलांग_LEADING_ZEROS_0 (-32) /* sic */
 #if defined (__i960mx)		/* what is the proper symbol to test??? */
 #define rshift_rhlc(r,h,l,c) \
   do {									\
@@ -1237,11 +1237,11 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
      || defined (__mc68060__) || defined (mc68060) \
      || defined (__NeXT__))			   \
   && ! defined (__mcpu32__)
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   __asm__ ("bfffo %1{%b2:%b2},%0"					\
-	   : "=d" (count)						\
+	   : "=d" (बिलांग)						\
 	   : "od" ((USItype) (x)), "n" (0))
-#define COUNT_LEADING_ZEROS_0 32
+#define बिलांग_LEADING_ZEROS_0 32
 #endif
 #endif /* mc68000 */
 
@@ -1254,13 +1254,13 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
   __asm__ ("subu.co %1,%r4,%r5\n\tsubu.ci %0,%r2,%r3"			\
 	   : "=r" (sh), "=&r" (sl)					\
 	   : "rJ" (ah), "rJ" (bh), "rJ" (al), "rJ" (bl))
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   do {									\
     USItype __cbtmp;							\
     __asm__ ("ff1 %0,%1" : "=r" (__cbtmp) : "r" (x));			\
-    (count) = __cbtmp ^ 31;						\
+    (बिलांग) = __cbtmp ^ 31;						\
   } while (0)
-#define COUNT_LEADING_ZEROS_0 63 /* sic */
+#define बिलांग_LEADING_ZEROS_0 63 /* sic */
 #if defined (__m88110__)
 #define umul_ppmm(wh, wl, u, v) \
   do {									\
@@ -1363,10 +1363,10 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	   : "=g" (__x.__ll)						\
 	   : "0" (__x.__ll), "g" ((USItype)(d)));			\
   (r) = __x.__i.__l; (q) = __x.__i.__h; })
-#define count_trailing_zeros(count,x) \
+#define बिलांग_trailing_zeros(बिलांग,x) \
   do {									\
     __asm__ ("ffsd	%2,%0"						\
-	     : "=r" (count)						\
+	     : "=r" (बिलांग)						\
 	     : "0" ((USItype) 0), "r" ((USItype) (x)));			\
   } while (0)
 #endif /* __ns32000__ */
@@ -1432,9 +1432,9 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	       : "r" (ah), "r" (bh), "rI" (al), "r" (bl)		\
 		 __CLOBBER_CC);						\
   } while (0)
-#define count_leading_zeros(count, x) \
-  __asm__ ("cntlzw %0,%1" : "=r" (count) : "r" (x))
-#define COUNT_LEADING_ZEROS_0 32
+#define बिलांग_leading_zeros(बिलांग, x) \
+  __asm__ ("cntlzw %0,%1" : "=r" (बिलांग) : "r" (x))
+#define बिलांग_LEADING_ZEROS_0 32
 #if HAVE_HOST_CPU_FAMILY_powerpc
 #if __GMP_GNUC_PREREQ (4,4)
 #define umul_ppmm(w1, w0, u, v) \
@@ -1563,9 +1563,9 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
     }									\
   } while (0)
 #endif /* ! _LONG_LONG_LIMB */
-#define count_leading_zeros(count, x) \
-  __asm__ ("cntlzd %0,%1" : "=r" (count) : "r" (x))
-#define COUNT_LEADING_ZEROS_0 64
+#define बिलांग_leading_zeros(बिलांग, x) \
+  __asm__ ("cntlzd %0,%1" : "=r" (बिलांग) : "r" (x))
+#define बिलांग_LEADING_ZEROS_0 64
 #if __GMP_GNUC_PREREQ (4,8)
 #define umul_ppmm(w1, w0, u, v) \
   do {									\
@@ -1649,16 +1649,16 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	   : "=r" (ph), "=r" (pl)					\
 	   : "%r" ((USItype)(m0)), "r" ((USItype)(m1))			\
 	   : "r2")
-#define count_leading_zeros(count, x) \
+#define बिलांग_leading_zeros(बिलांग, x) \
   do {									\
     if ((x) >= 0x10000)							\
       __asm__ ("clz	%0,%1"						\
-	       : "=r" (count) : "r" ((USItype)(x) >> 16));		\
+	       : "=r" (बिलांग) : "r" ((USItype)(x) >> 16));		\
     else								\
       {									\
 	__asm__ ("clz	%0,%1"						\
-		 : "=r" (count) : "r" ((USItype)(x)));			\
-	(count) += 16;							\
+		 : "=r" (बिलांग) : "r" ((USItype)(x)));			\
+	(बिलांग) += 16;							\
       }									\
   } while (0)
 #endif /* RT/ROMP */
@@ -1786,8 +1786,8 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 "1:	! End of inline udiv_qrnnd"					\
 	   : "=r" (q), "=r" (r) : "r" (n1), "r" (n0), "rI" (d)		\
 	   : "%g1" __AND_CLOBBER_CC)
-#define count_leading_zeros(count, x) \
-  __asm__ ("scan %1,1,%0" : "=r" (count) : "r" (x))
+#define बिलांग_leading_zeros(बिलांग, x) \
+  __asm__ ("scan %1,1,%0" : "=r" (बिलांग) : "r" (x))
 /* Early sparclites return 63 for an argument of 0, but they warn that future
    implementations might change this.  Therefore, leave COUNT_LEADING_ZEROS_0
    undefined.  */
@@ -1890,10 +1890,10 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 	     : "=r" (ph)						\
 	     : "%r" (__m0), "r" (__m1));				\
   } while (0)
-#define count_leading_zeros(count, x) \
-  __asm__ ("lzd\t%1,%0" : "=r" (count) : "r" (x))
+#define बिलांग_leading_zeros(बिलांग, x) \
+  __asm__ ("lzd\t%1,%0" : "=r" (बिलांग) : "r" (x))
 /* Needed by count_leading_zeros_32 in sparc64.h.  */
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
+#define बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
 #endif
 #endif
 
@@ -1930,10 +1930,10 @@ extern UWtype __MPN(udiv_qrnnd) (UWtype *, UWtype, UWtype, UWtype);
 #if 0
 /* FIXME: This instruction appears to be unimplemented on some systems (vax
    8800 maybe). */
-#define count_trailing_zeros(count,x)					\
+#define बिलांग_trailing_zeros(बिलांग,x)					\
   do {									\
     __asm__ ("ffs 0, 31, %1, %0"					\
-	     : "=g" (count)						\
+	     : "=g" (बिलांग)						\
 	     : "g" ((USItype) (x)));					\
   } while (0)
 #endif
@@ -2203,8 +2203,8 @@ __GMP_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
 #define udiv_qrnnd __udiv_qrnnd_c
 #endif
 
-#if !defined (count_leading_zeros)
-#define count_leading_zeros(count, x) \
+#if !defined (बिलांग_leading_zeros)
+#define बिलांग_leading_zeros(बिलांग, x) \
   do {									\
     UWtype __xr = (x);							\
     UWtype __a;								\
@@ -2224,45 +2224,45 @@ __GMP_DECLSPEC UWtype __MPN(udiv_w_sdiv) (UWtype *, UWtype, UWtype, UWtype);
 	++__a;								\
       }									\
 									\
-    (count) = W_TYPE_SIZE + 1 - __a - __clz_tab[__xr >> __a];		\
+    (बिलांग) = W_TYPE_SIZE + 1 - __a - __clz_tab[__xr >> __a];		\
   } while (0)
 /* This version gives a well-defined value for zero. */
-#define COUNT_LEADING_ZEROS_0 (W_TYPE_SIZE - 1)
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
-#define COUNT_LEADING_ZEROS_SLOW
+#define बिलांग_LEADING_ZEROS_0 (W_TYPE_SIZE - 1)
+#define बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
+#define बिलांग_LEADING_ZEROS_SLOW
 #endif
 
 /* clz_tab needed by mpn/x86/pentium/mod_1.asm in a fat binary */
-#if HAVE_HOST_CPU_FAMILY_x86 && WANT_FAT_BINARY
-#define COUNT_LEADING_ZEROS_NEED_CLZ_TAB
+#if HAVE_HOST_CPU_FAMILY_x86 && WANT_FAT_दालावाहान
+#define बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
 #endif
 
-#ifdef COUNT_LEADING_ZEROS_NEED_CLZ_TAB
+#ifdef बिलांग_LEADING_ZEROS_NEED_CLZ_TAB
 extern const unsigned char __GMP_DECLSPEC __clz_tab[129];
 #endif
 
-#if !defined (count_trailing_zeros)
-#if !defined (COUNT_LEADING_ZEROS_SLOW)
+#if !defined (बिलांग_trailing_zeros)
+#if !defined (बिलांग_LEADING_ZEROS_SLOW)
 /* Define count_trailing_zeros using an asm count_leading_zeros.  */
-#define count_trailing_zeros(count, x)					\
+#define बिलांग_trailing_zeros(बिलांग, x)					\
   do {									\
     UWtype __ctz_x = (x);						\
     UWtype __ctz_c;							\
     ASSERT (__ctz_x != 0);						\
-    count_leading_zeros (__ctz_c, __ctz_x & -__ctz_x);			\
-    (count) = W_TYPE_SIZE - 1 - __ctz_c;				\
+    बिलांग_leading_zeros (__ctz_c, __ctz_x & -__ctz_x);			\
+    (बिलांग) = W_TYPE_SIZE - 1 - __ctz_c;				\
   } while (0)
 #else
 /* Define count_trailing_zeros in plain C, assuming small counts are common.
    We use clz_tab without ado, since the C count_leading_zeros above will have
    pulled it in.  */
-#define count_trailing_zeros(count, x)					\
+#define बिलांग_trailing_zeros(बिलांग, x)					\
   do {									\
     UWtype __ctz_x = (x);						\
     int __ctz_c;							\
 									\
     if (LIKELY ((__ctz_x & 0xff) != 0))					\
-      (count) = __clz_tab[__ctz_x & -__ctz_x] - 2;			\
+      (बिलांग) = __clz_tab[__ctz_x & -__ctz_x] - 2;			\
     else								\
       {									\
 	for (__ctz_c = 8 - 2; __ctz_c < W_TYPE_SIZE - 2; __ctz_c += 8)	\
@@ -2272,7 +2272,7 @@ extern const unsigned char __GMP_DECLSPEC __clz_tab[129];
 	      break;							\
 	  }								\
 									\
-	(count) = __ctz_c + __clz_tab[__ctz_x & -__ctz_x];		\
+	(बिलांग) = __ctz_c + __clz_tab[__ctz_x & -__ctz_x];		\
       }									\
   } while (0)
 #endif

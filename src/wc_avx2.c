@@ -23,10 +23,10 @@
 #include <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+extern struct wc_मगा_लिन्या
+wc_मगा_लिन्या_avx2 (int fd)
 {
-  intmax_t lines = 0;
+  intmax_t मगा_लिन्या = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
@@ -36,7 +36,7 @@ wc_lines_avx2 (int fd)
        __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
       ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
       if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+        return (struct wc_मगा_लिन्या) { bytes_read == 0 ? 0 : errno, मगा_लिन्या, bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
@@ -46,7 +46,7 @@ wc_lines_avx2 (int fd)
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
            int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           मगा_लिन्या += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
         }
@@ -54,6 +54,6 @@ wc_lines_avx2 (int fd)
       /* Finish up any left over bytes */
       char *end = (char *) datap + bytes_read;
       for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+        मगा_लिन्या += *p == '\n';
     }
 }

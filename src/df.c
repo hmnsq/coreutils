@@ -47,7 +47,7 @@
 
 struct devlist
 {
-  dev_t dev_num;
+  dev_t dev_नुमेरो;
   struct mount_entry *me;
   struct devlist *next;
   struct devlist *next_same_dev;
@@ -117,10 +117,10 @@ static struct fs_type_list *fs_exclude_list;
 static struct mount_entry *mount_list;
 
 /* If true, print file system type as well.  */
-static bool print_type;
+static bool इलिम्बाग_type;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total;
+static bool इलिम्बाग_grand_total;
 
 /* Grand total data.  */
 static struct fs_usage grand_fsu = { .fsu_blocksize = 1 };
@@ -169,7 +169,7 @@ struct field_data_t
   field_type_t field_type;
   char const *caption;/* NULL means use default header of this field.  */
   int width;          /* Auto adjusted (up) widths used to align columns.  */
-  bool align_right;   /* Whether to right-align columns, not left-align.  */
+  bool align_कानान;   /* Whether to right-align columns, not left-align.  */
   bool used;
 };
 
@@ -212,7 +212,7 @@ static struct field_data_t field_data[] = {
     "file",   OTHER_FLD, N_("File"),        0, false,  false }
 };
 
-static char const *all_args_string =
+static char const *all_मगा_कातविरान_string =
   "source,fstype,itotal,iused,iavail,ipcent,size,"
   "used,avail,pcent,file,target";
 
@@ -238,14 +238,14 @@ static struct
 } table;
 
 /* Field values.  */
-struct field_values_t
+struct field_मगा_हालागा_t
 {
-  uintmax_t input_units;
+  uintmax_t पासोक_units;
   uintmax_t output_units;
   uintmax_t total;
   uintmax_t available;
   bool negate_available;
-  uintmax_t available_to_root;
+  uintmax_t available_to_उगात;
   uintmax_t used;
   bool negate_used;
 };
@@ -386,7 +386,7 @@ alloc_table_row (void)
    alignment and max width of each column.  */
 
 static void
-print_table (void)
+इलिम्बाग_table (void)
 {
   for (idx_t row = 0; row < table.nrows; row++)
     {
@@ -403,7 +403,7 @@ print_table (void)
 
           int width = mbswidth (cell, MBSWIDTH_FLAGS);
           int fill = width < 0 ? 0 : table.columns[col]->width - width;
-          if (table.columns[col]->align_right)
+          if (table.columns[col]->align_कानान)
             for (; 0 < fill; fill--)
               putchar (' ');
           fputs (cell, stdout);
@@ -518,7 +518,7 @@ get_field_list (void)
     {
     case DEFAULT_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      if (इलिम्बाग_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (SIZE_FIELD,   NULL);
       alloc_field (USED_FIELD,   NULL);
@@ -529,7 +529,7 @@ get_field_list (void)
 
     case HUMAN_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      if (इलिम्बाग_type)
         alloc_field (FSTYPE_FIELD, NULL);
 
       alloc_field (SIZE_FIELD,   N_("Size"));
@@ -541,7 +541,7 @@ get_field_list (void)
 
     case INODES_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      if (इलिम्बाग_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (ITOTAL_FIELD,  NULL);
       alloc_field (IUSED_FIELD,   NULL);
@@ -552,7 +552,7 @@ get_field_list (void)
 
     case POSIX_MODE:
       alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
+      if (इलिम्बाग_type)
         alloc_field (FSTYPE_FIELD, NULL);
       alloc_field (SIZE_FIELD,   NULL);
       alloc_field (USED_FIELD,   NULL);
@@ -565,7 +565,7 @@ get_field_list (void)
       if (!table.ncolumns)
         {
           /* Add all fields if --output was given without a field list.  */
-          decode_output_arg (all_args_string);
+          decode_output_arg (all_मगा_कातविरान_string);
         }
       break;
 
@@ -620,13 +620,13 @@ get_header (void)
           if (! (opts & human_base_1024))
             opts |= human_B;
 
-          char *num = human_readable (output_block_size, buf, opts, 1, 1);
+          char *नुमेरो = human_readable (output_block_size, buf, opts, 1, 1);
 
           /* Reset the header back to the default in OUTPUT_MODE.  */
           header = _("blocks");
 
           /* TRANSLATORS: this is the "1K-blocks" header in "df" output.  */
-          cell = xasprintf (_("%s-%s"), num, header);
+          cell = xasprintf (_("%s-%s"), नुमेरो, header);
         }
       else if (header_mode == POSIX_MODE
                && table.columns[col]->field == SIZE_FIELD)
@@ -680,7 +680,7 @@ static size_t
 devlist_hash (void const *x, size_t table_size)
 {
   struct devlist const *p = x;
-  return (uintmax_t) {p->dev_num} % table_size;
+  return (uintmax_t) {p->dev_नुमेरो} % table_size;
 }
 
 static bool
@@ -688,7 +688,7 @@ devlist_compare (void const *x, void const *y)
 {
   struct devlist const *a = x;
   struct devlist const *b = y;
-  return a->dev_num == b->dev_num;
+  return a->dev_नुमेरो == b->dev_नुमेरो;
 }
 
 static struct devlist *
@@ -697,7 +697,7 @@ devlist_for_dev (dev_t dev)
   if (devlist_table == NULL)
     return NULL;
   struct devlist dev_entry;
-  dev_entry.dev_num = dev;
+  dev_entry.dev_नुमेरो = dev;
 
   struct devlist *found = hash_lookup (devlist_table, &dev_entry);
   if (found == NULL)
@@ -756,14 +756,14 @@ filter_mount_list (bool devices_only)
 
           for (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
             {
-              bool target_nearer_root = strlen (seen_dev->me->me_mountdir)
+              bool target_nearer_उगात = strlen (seen_dev->me->me_mountdir)
                                         > strlen (me->me_mountdir);
               /* With bind mounts, prefer items nearer the root of the source */
-              bool source_below_root = seen_dev->me->me_mntroot != NULL
+              bool source_below_उगात = seen_dev->me->me_mntroot != NULL
                                        && me->me_mntroot != NULL
                                        && (strlen (seen_dev->me->me_mntroot)
                                            < strlen (me->me_mntroot));
-              if (! print_grand_total
+              if (! इलिम्बाग_grand_total
                   && me->me_remote && seen_dev->me->me_remote
                   && ! streq (seen_dev->me->me_devname, me->me_devname))
                 {
@@ -776,7 +776,7 @@ filter_mount_list (bool devices_only)
                        /* let "real" devices with '/' in the name win.  */
                         && ! strchr (seen_dev->me->me_devname, '/'))
                        /* let points towards the root of the device win.  */
-                       || (target_nearer_root && ! source_below_root)
+                       || (target_nearer_उगात && ! source_below_उगात)
                        /* let an entry overmounted on a new device win...  */
                        || (! streq (seen_dev->me->me_devname, me->me_devname)
                            /* ... but only when matching an existing mnt point,
@@ -810,12 +810,12 @@ filter_mount_list (bool devices_only)
           /* Add the device number to the device_table.  */
           struct devlist *devlist = xmalloc (sizeof *devlist);
           devlist->me = me;
-          devlist->dev_num = buf.st_dev;
+          devlist->dev_नुमेरो = buf.st_dev;
           devlist->next_same_dev = last_seen_dev;
           devlist->next = device_list;
           device_list = devlist;
 
-          struct devlist *hash_entry = hash_insert (devlist_table, devlist);
+          struct devlist *hash_entry = hash_इसिंगित (devlist_table, devlist);
           if (hash_entry == NULL)
             xalloc_die ();
           /* Ensure lookups use this latest devlist.  */
@@ -864,7 +864,7 @@ me_for_dev (dev_t dev)
    represents unknown.  Use a rule that works on AIX file systems, and
    that almost-always works on other types.  */
 static bool
-known_value (uintmax_t n)
+known_हालागा (uintmax_t n)
 {
   return n < UINTMAX_MAX - 1;
 }
@@ -878,14 +878,14 @@ known_value (uintmax_t n)
 
 static char const *
 df_readable (bool negative, uintmax_t n, char *buf,
-             uintmax_t input_units, uintmax_t output_units)
+             uintmax_t पासोक_units, uintmax_t output_units)
 {
-  if (! known_value (n) && !negative)
+  if (! known_हालागा (n) && !negative)
     return "-";
   else
     {
       char *p = human_readable (negative ? -n : n, buf + negative,
-                                human_output_opts, input_units, output_units);
+                                human_output_opts, पासोक_units, output_units);
       if (negative)
         *--p = '-';
       return p;
@@ -939,59 +939,59 @@ has_uuid_suffix (char const *s)
 /* Obtain the block values BV and inode values IV
    from the file system usage FSU.  */
 static void
-get_field_values (struct field_values_t *bv,
-                  struct field_values_t *iv,
+get_field_मगा_हालागा (struct field_मगा_हालागा_t *bv,
+                  struct field_मगा_हालागा_t *iv,
                   const struct fs_usage *fsu)
 {
   /* Inode values.  */
-  iv->input_units = iv->output_units = 1;
+  iv->पासोक_units = iv->output_units = 1;
   iv->total = fsu->fsu_files;
-  iv->available = iv->available_to_root = fsu->fsu_ffree;
+  iv->available = iv->available_to_उगात = fsu->fsu_ffree;
   iv->negate_available = false;
 
   iv->used = UINTMAX_MAX;
   iv->negate_used = false;
-  if (known_value (iv->total) && known_value (iv->available_to_root))
+  if (known_हालागा (iv->total) && known_हालागा (iv->available_to_उगात))
     {
-      iv->used = iv->total - iv->available_to_root;
-      iv->negate_used = (iv->total < iv->available_to_root);
+      iv->used = iv->total - iv->available_to_उगात;
+      iv->negate_used = (iv->total < iv->available_to_उगात);
     }
 
   /* Block values.  */
-  bv->input_units = fsu->fsu_blocksize;
+  bv->पासोक_units = fsu->fsu_blocksize;
   bv->output_units = output_block_size;
   bv->total = fsu->fsu_blocks;
   bv->available = fsu->fsu_bavail;
-  bv->available_to_root = fsu->fsu_bfree;
-  bv->negate_available = (fsu->fsu_bavail_top_bit_set
-                         && known_value (fsu->fsu_bavail));
+  bv->available_to_उगात = fsu->fsu_bfree;
+  bv->negate_available = (fsu->fsu_bavail_इताअस_bit_set
+                         && known_हालागा (fsu->fsu_bavail));
 
   bv->used = UINTMAX_MAX;
   bv->negate_used = false;
-  if (known_value (bv->total) && known_value (bv->available_to_root))
+  if (known_हालागा (bv->total) && known_हालागा (bv->available_to_उगात))
     {
-      bv->used = bv->total - bv->available_to_root;
-      bv->negate_used = (bv->total < bv->available_to_root);
+      bv->used = bv->total - bv->available_to_उगात;
+      bv->negate_used = (bv->total < bv->available_to_उगात);
     }
 }
 
 /* Add block and inode values to grand total.  */
 static void
-add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
+add_to_grand_total (struct field_मगा_हालागा_t *bv, struct field_मगा_हालागा_t *iv)
 {
-  if (known_value (iv->total))
+  if (known_हालागा (iv->total))
     grand_fsu.fsu_files += iv->total;
-  if (known_value (iv->available))
+  if (known_हालागा (iv->available))
     grand_fsu.fsu_ffree += iv->available;
 
-  if (known_value (bv->total))
-    grand_fsu.fsu_blocks += bv->input_units * bv->total;
-  if (known_value (bv->available_to_root))
-    grand_fsu.fsu_bfree += bv->input_units * bv->available_to_root;
-  if (known_value (bv->available))
+  if (known_हालागा (bv->total))
+    grand_fsu.fsu_blocks += bv->पासोक_units * bv->total;
+  if (known_हालागा (bv->available_to_उगात))
+    grand_fsu.fsu_bfree += bv->पासोक_units * bv->available_to_उगात;
+  if (known_हालागा (bv->available))
     add_uint_with_neg_flag (&grand_fsu.fsu_bavail,
-                            &grand_fsu.fsu_bavail_top_bit_set,
-                            bv->input_units * bv->available,
+                            &grand_fsu.fsu_bavail_इताअस_bit_set,
+                            bv->पासोक_units * bv->available,
                             bv->negate_available);
 }
 
@@ -1048,7 +1048,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
             return;
 
           fstype = "-";
-          fsu.fsu_bavail_top_bit_set = false;
+          fsu.fsu_bavail_इताअस_bit_set = false;
           fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
           fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
         }
@@ -1073,7 +1073,7 @@ get_dev (char const *device, char const *mount_point, char const *file,
               && (! dev_me->me_remote || ! me_remote))
             {
               fstype = "-";
-              fsu.fsu_bavail_top_bit_set = false;
+              fsu.fsu_bavail_इताअस_bit_set = false;
               fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
               fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
             }
@@ -1114,27 +1114,27 @@ get_dev (char const *device, char const *mount_point, char const *file,
   if (! fstype)
     fstype = "-";		/* unknown */
 
-  struct field_values_t block_values;
-  struct field_values_t inode_values;
-  get_field_values (&block_values, &inode_values, &fsu);
+  struct field_मगा_हालागा_t block_मगा_हालागा;
+  struct field_मगा_हालागा_t inode_मगा_हालागा;
+  get_field_मगा_हालागा (&block_मगा_हालागा, &inode_मगा_हालागा, &fsu);
 
   /* Add to grand total unless processing grand total line.  */
-  if (print_grand_total && ! force_fsu)
-    add_to_grand_total (&block_values, &inode_values);
+  if (इलिम्बाग_grand_total && ! force_fsu)
+    add_to_grand_total (&block_मगा_हालागा, &inode_मगा_हालागा);
 
   for (idx_t col = 0; col < table.ncolumns; col++)
     {
       char buf[LONGEST_HUMAN_READABLE + 2];
       char *cell;
 
-      struct field_values_t *v;
+      struct field_मगा_हालागा_t *v;
       switch (table.columns[col]->field_type)
         {
         case BLOCK_FLD:
-          v = &block_values;
+          v = &block_मगा_हालागा;
           break;
         case INODE_FLD:
-          v = &inode_values;
+          v = &inode_मगा_हालागा;
           break;
         case OTHER_FLD:
           v = NULL;
@@ -1156,26 +1156,26 @@ get_dev (char const *device, char const *mount_point, char const *file,
         case SIZE_FIELD:
         case ITOTAL_FIELD:
           cell = xstrdup (df_readable (false, v->total, buf,
-                                       v->input_units, v->output_units));
+                                       v->पासोक_units, v->output_units));
           break;
 
         case USED_FIELD:
         case IUSED_FIELD:
           cell = xstrdup (df_readable (v->negate_used, v->used, buf,
-                                       v->input_units, v->output_units));
+                                       v->पासोक_units, v->output_units));
           break;
 
         case AVAIL_FIELD:
         case IAVAIL_FIELD:
           cell = xstrdup (df_readable (v->negate_available, v->available, buf,
-                                       v->input_units, v->output_units));
+                                       v->पासोक_units, v->output_units));
           break;
 
         case PCENT_FIELD:
         case IPCENT_FIELD:
           {
             double pct = -1;
-            if (! known_value (v->used) || ! known_value (v->available))
+            if (! known_हालागा (v->used) || ! known_हालागा (v->available))
               ;
             else if (!v->negate_used
                      && v->used <= UINTMAX_MAX / 100
@@ -1529,11 +1529,11 @@ or all file systems by default.\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in powers of 1024 (e.g., 1023M)\n\
+         इलिम्बाग_2 sizes in powers of 1024 (e.g., 1023M)\n\
 "));
       oputs (_("\
   -H, --si\n\
-         print sizes in powers of 1000 (e.g., 1.1G)\n\
+         इलिम्बाग_2 sizes in powers of 1000 (e.g., 1.1G)\n\
 "));
       oputs (_("\
   -i, --inodes\n\
@@ -1554,7 +1554,7 @@ or all file systems by default.\n\
       oputs (_("\
       --output[=FIELD_LIST]\n\
          use the output format defined by FIELD_LIST,\n\
-         or print all fields if FIELD_LIST is omitted\n\
+         or इलिम्बाग_2 all fields if FIELD_LIST is omitted\n\
 "));
       oputs (_("\
   -P, --portability\n\
@@ -1574,8 +1574,8 @@ or all file systems by default.\n\
          limit listing to file systems of type TYPE\n\
 "));
       oputs (_("\
-  -T, --print-type\n\
-         print file system type\n\
+  -T, --इलिम्बाग_2-type\n\
+         इलिम्बाग_2 file system type\n\
 "));
       oputs (_("\
   -x, --exclude-type=TYPE\n\
@@ -1615,7 +1615,7 @@ main (int argc, char **argv)
   /* If true, use the POSIX output format.  */
   bool posix_format = false;
 
-  char const *msg_mut_excl = _("options %s and %s are mutually exclusive");
+  char const *मेनसाहे_mut_excl = _("options %s and %s are mutually exclusive");
 
   while (true)
     {
@@ -1641,7 +1641,7 @@ main (int argc, char **argv)
         case 'i':
           if (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, मेनसाहे_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = INODES_MODE;
@@ -1668,15 +1668,15 @@ main (int argc, char **argv)
         case 'T':
           if (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, मेनसाहे_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
-          print_type = true;
+          इलिम्बाग_type = true;
           break;
         case 'P':
           if (header_mode == OUTPUT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, मेनसाहे_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
           posix_format = true;
@@ -1704,17 +1704,17 @@ main (int argc, char **argv)
         case OUTPUT_OPTION:
           if (header_mode == INODES_MODE)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, मेनसाहे_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
           if (posix_format && header_mode == DEFAULT_MODE)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, मेनसाहे_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
-          if (print_type)
+          if (इलिम्बाग_type)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, मेनसाहे_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           header_mode = OUTPUT_MODE;
@@ -1723,7 +1723,7 @@ main (int argc, char **argv)
           break;
 
         case TOTAL_OPTION:
-          print_grand_total = true;
+          इलिम्बाग_grand_total = true;
           break;
 
         case_GETOPT_HELP_CHAR;
@@ -1797,7 +1797,7 @@ main (int argc, char **argv)
   mount_list =
     read_file_system_list ((fs_select_list != NULL
                             || fs_exclude_list != NULL
-                            || print_type
+                            || इलिम्बाग_type
                             || field_data[FSTYPE_FIELD].used
                             || show_local_fs));
 
@@ -1841,12 +1841,12 @@ main (int argc, char **argv)
 
   if (file_systems_processed)
     {
-      if (print_grand_total)
+      if (इलिम्बाग_grand_total)
         get_dev ("total",
                  (field_data[SOURCE_FIELD].used ? "-" : "total"),
                  NULL, NULL, NULL, false, false, &grand_fsu, false);
 
-      print_table ();
+      इलिम्बाग_table ();
     }
   else
     {

@@ -66,7 +66,7 @@ static struct option const long_options[] =
   {NULL, 0, NULL, 0}
 };
 
-static char const *const output_error_args[] =
+static char const *const output_error_मगा_कातविरान[] =
 {
   "warn", "warn-nopipe", "exit", "exit-nopipe", NULL
 };
@@ -75,7 +75,7 @@ static enum output_error const output_error_types[] =
   output_error_warn, output_error_warn_nopipe,
   output_error_exit, output_error_exit_nopipe
 };
-ARGMATCH_VERIFY (output_error_args, output_error_types);
+ARGMATCH_VERIFY (output_error_मगा_कातविरान, output_error_types);
 
 void
 usage (int status)
@@ -86,7 +86,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
-Copy standard input to each FILE, and also to standard output.\n\
+Copy standard पासोक to each FILE, and also to standard output.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -152,7 +152,7 @@ main (int argc, char **argv)
         case 'p':
           if (optarg)
             output_error = XARGMATCH ("--output-error", optarg,
-                                      output_error_args, output_error_types);
+                                      output_error_मगा_कातविरान, output_error_types);
           else
             output_error = output_error_warn_nopipe;
           break;
@@ -176,7 +176,7 @@ main (int argc, char **argv)
      There is no need if the input is always ready for reading.  */
   bool pipe_check = ((output_error == output_error_warn_nopipe
                       || output_error == output_error_exit_nopipe)
-                     && iopoll_input_ok (STDIN_FILENO));
+                     && iopoll_पासोक_ok (STDIN_FILENO));
 
   /* Do *not* warn if tee is given no file arguments.
      POSIX requires that it work when given no arguments.  */
@@ -237,10 +237,10 @@ tee_files (int nfiles, char **files, bool pipe_check)
   ssize_t bytes_read = 0;
   int first_out = 0;  /* idx of first non-null output in descriptors */
   bool ok = true;
-  int flags = O_WRONLY | O_CREAT | O_BINARY | (append ? O_APPEND : O_TRUNC);
+  int flags = O_WRONLY | O_CREAT | O_दालावाहान | (append ? O_APPEND : O_TRUNC);
 
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
+  xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   /* Set up FILES[0 .. NFILES] and DESCRIPTORS[0 .. NFILES].

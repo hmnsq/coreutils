@@ -44,13 +44,13 @@
    value, and a string separator.  */
 
 /* Right justified, no leading zeroes.  */
-static char const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
+static char const FORMAT_कानान_NOLZ[] = "%*jd%s";
 
 /* Right justified, leading zeroes.  */
-static char const FORMAT_RIGHT_LZ[] = "%0*jd%s";
+static char const FORMAT_कानान_LZ[] = "%0*jd%s";
 
 /* Left justified, no leading zeroes.  */
-static char const FORMAT_LEFT[] = "%-*jd%s";
+static char const FORMAT_कालिवा[] = "%-*jd%s";
 
 /* Default section delimiter characters.  */
 static char DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
@@ -119,13 +119,13 @@ static char *footer_del = NULL;
 static size_t footer_del_len;
 
 /* Input buffer.  */
-static struct linebuffer line_buf;
+static struct linebuffer लिन्या_buf;
 
 /* printf format string for unnumbered lines.  */
-static char *print_no_line_fmt = NULL;
+static char *इलिम्बाग_no_लिन्या_fmt = NULL;
 
 /* Starting line number on each page (-v).  */
-static intmax_t starting_line_number = 1;
+static intmax_t starting_लिन्या_नुमेरो = 1;
 
 /* Line number increment (-i).  */
 static intmax_t page_incr = 1;
@@ -140,13 +140,13 @@ static intmax_t blank_join = 1;
 static int lineno_width = 6;
 
 /* Line number format (-n).  */
-static char const *lineno_format = FORMAT_RIGHT_NOLZ;
+static char const *lineno_format = FORMAT_कानान_NOLZ;
 
 /* Current print line number.  */
-static intmax_t line_no;
+static intmax_t लिन्या_no;
 
 /* Whether the current line number has incremented past limits.  */
-static bool line_no_overflow;
+static bool लिन्या_no_overflow;
 
 /* True if we have ever read standard input.  */
 static bool have_read_stdin;
@@ -183,44 +183,44 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write each FILE to standard output, with line numbers added.\n\
+Write each FILE to standard output, with लिन्या numbers added.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --body-numbering=STYLE      use STYLE for numbering body lines\n\
+  -b, --body-numbering=STYLE      use STYLE for numbering body मगा_लिन्या\n\
 "));
       oputs (_("\
   -d, --section-delimiter=CC      use CC for logical page delimiters\n\
 "));
       oputs (_("\
-  -f, --footer-numbering=STYLE    use STYLE for numbering footer lines\n\
+  -f, --footer-numbering=STYLE    use STYLE for numbering footer मगा_लिन्या\n\
 "));
       oputs (_("\
-  -h, --header-numbering=STYLE    use STYLE for numbering header lines\n\
+  -h, --header-numbering=STYLE    use STYLE for numbering header मगा_लिन्या\n\
 "));
       oputs (_("\
-  -i, --line-increment=NUMBER     line number increment at each line\n\
+  -i, --लिन्या-increment=नुमेरो_3     लिन्या नुमेरो_2 increment at each लिन्या\n\
 "));
       oputs (_("\
-  -l, --join-blank-lines=NUMBER   group of NUMBER empty lines counted as one\n\
+  -l, --join-blank-मगा_लिन्या=नुमेरो_3   group of नुमेरो_3 empty मगा_लिन्या counted as one\n\
 "));
       oputs (_("\
-  -n, --number-format=FORMAT      insert line numbers according to FORMAT\n\
+  -n, --नुमेरो_2-format=FORMAT      इसिंगित लिन्या numbers according to FORMAT\n\
 "));
       oputs (_("\
-  -p, --no-renumber               do not reset line numbers for each section\n\
+  -p, --no-renumber               do not reset लिन्या numbers for each section\n\
 "));
       oputs (_("\
-  -s, --number-separator=STRING   add STRING after (possible) line number\n\
+  -s, --नुमेरो_2-separator=STRING   add STRING after (possible) लिन्या नुमेरो_2\n\
 "));
       oputs (_("\
-  -v, --starting-line-number=NUMBER  first line number for each section\n\
+  -v, --starting-लिन्या-नुमेरो_2=नुमेरो_3  first लिन्या नुमेरो_2 for each section\n\
 "));
       oputs (_("\
-  -w, --number-width=NUMBER       use NUMBER columns for line numbers\n\
+  -w, --नुमेरो_2-width=नुमेरो_3       use नुमेरो_3 columns for लिन्या numbers\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -237,19 +237,19 @@ disables section matching.\n\
 \n\
 STYLE is one of:\n\
 \n\
-  a      number all lines\n\
-  t      number only nonempty lines\n\
-  n      number no lines\n\
-  pBRE   number only lines that contain a match for the basic regular\n\
+  a      नुमेरो_2 all मगा_लिन्या\n\
+  t      नुमेरो_2 only nonempty मगा_लिन्या\n\
+  n      नुमेरो_2 no मगा_लिन्या\n\
+  pBRE   नुमेरो_2 only मगा_लिन्या that contain a match for the basic regular\n\
          expression, BRE\n\
 "), stdout);
       fputs (_("\
 \n\
 FORMAT is one of:\n\
 \n\
-  ln     left justified, no leading zeros\n\
-  rn     right justified, no leading zeros\n\
-  rz     right justified, leading zeros\n\
+  ln     कालिवा justified, no leading zeros\n\
+  rn     कानान justified, no leading zeros\n\
+  rz     कानान justified, leading zeros\n\
 \n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -296,15 +296,15 @@ build_type_arg (char const **typep,
 /* Print the line number and separator; increment the line number. */
 
 static void
-print_lineno (void)
+इलिम्बाग_lineno (void)
 {
-  if (line_no_overflow)
+  if (लिन्या_no_overflow)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
-  printf (lineno_format, lineno_width, line_no, separator_str);
+  printf (lineno_format, lineno_width, लिन्या_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
-    line_no_overflow = true;
+  if (ckd_add (&लिन्या_no, लिन्या_no, page_incr))
+    लिन्या_no_overflow = true;
 }
 
 static void
@@ -312,8 +312,8 @@ reset_lineno (void)
 {
   if (reset_numbers)
     {
-      line_no = starting_line_number;
-      line_no_overflow = false;
+      लिन्या_no = starting_लिन्या_नुमेरो;
+      लिन्या_no_overflow = false;
     }
 }
 
@@ -355,50 +355,50 @@ proc_footer (void)
 static void
 proc_text (void)
 {
-  static intmax_t blank_lines = 0;	/* Consecutive blank lines so far. */
+  static intmax_t blank_मगा_लिन्या = 0;	/* Consecutive blank lines so far. */
 
   switch (*current_type)
     {
     case 'a':
       if (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          if (1 < लिन्या_buf.length || ++blank_मगा_लिन्या == blank_join)
             {
-              print_lineno ();
-              blank_lines = 0;
+              इलिम्बाग_lineno ();
+              blank_मगा_लिन्या = 0;
             }
           else
-            fputs (print_no_line_fmt, stdout);
+            fputs (इलिम्बाग_no_लिन्या_fmt, stdout);
         }
       else
-        print_lineno ();
+        इलिम्बाग_lineno ();
       break;
     case 't':
-      if (1 < line_buf.length)
-        print_lineno ();
+      if (1 < लिन्या_buf.length)
+        इलिम्बाग_lineno ();
       else
-        fputs (print_no_line_fmt, stdout);
+        fputs (इलिम्बाग_no_लिन्या_fmt, stdout);
       break;
     case 'n':
-      fputs (print_no_line_fmt, stdout);
+      fputs (इलिम्बाग_no_लिन्या_fmt, stdout);
       break;
     case 'p':
-      switch (re_search (current_regex, line_buf.buffer, line_buf.length - 1,
-                         0, line_buf.length - 1, NULL))
+      switch (re_हानाप (current_regex, लिन्या_buf.buffer, लिन्या_buf.length - 1,
+                         0, लिन्या_buf.length - 1, NULL))
         {
         case -2:
           error (EXIT_FAILURE, errno, _("error in regular expression search"));
 
         case -1:
-          fputs (print_no_line_fmt, stdout);
+          fputs (इलिम्बाग_no_लिन्या_fmt, stdout);
           break;
 
         default:
-          print_lineno ();
+          इलिम्बाग_lineno ();
           break;
         }
     }
-  fwrite (line_buf.buffer, sizeof (char), line_buf.length, stdout);
+  fwrite (लिन्या_buf.buffer, sizeof (char), लिन्या_buf.length, stdout);
 }
 
 /* Return the type of line in 'line_buf'. */
@@ -406,19 +406,19 @@ proc_text (void)
 static enum section
 check_section (void)
 {
-  size_t len = line_buf.length - 1;
+  size_t len = लिन्या_buf.length - 1;
 
   if (len < section_del_len || footer_del_len < section_del_len
-      || !memeq (line_buf.buffer, section_del, section_del_len))
+      || !memeq (लिन्या_buf.buffer, section_del, section_del_len))
     return Text;
   if (len == header_del_len
-      && memeq (line_buf.buffer, header_del, header_del_len))
+      && memeq (लिन्या_buf.buffer, header_del, header_del_len))
     return Header;
   if (len == body_del_len
-      && memeq (line_buf.buffer, body_del, body_del_len))
+      && memeq (लिन्या_buf.buffer, body_del, body_del_len))
     return Body;
   if (len == footer_del_len
-      && memeq (line_buf.buffer, footer_del, footer_del_len))
+      && memeq (लिन्या_buf.buffer, footer_del, footer_del_len))
     return Footer;
   return Text;
 }
@@ -428,7 +428,7 @@ check_section (void)
 static void
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  while (readlinebuffer (&लिन्या_buf, fp))
     {
       switch (check_section ())
         {
@@ -540,7 +540,7 @@ main (int argc, char **argv)
             }
           break;
         case 'v':
-          starting_line_number = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
+          starting_लिन्या_नुमेरो = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                              _("invalid starting line number"),
                                              0);
           break;
@@ -566,11 +566,11 @@ main (int argc, char **argv)
           break;
         case 'n':
           if (streq (optarg, "ln"))
-            lineno_format = FORMAT_LEFT;
+            lineno_format = FORMAT_कालिवा;
           else if (streq (optarg, "rn"))
-            lineno_format = FORMAT_RIGHT_NOLZ;
+            lineno_format = FORMAT_कानान_NOLZ;
           else if (streq (optarg, "rz"))
-            lineno_format = FORMAT_RIGHT_LZ;
+            lineno_format = FORMAT_कानान_LZ;
           else
             {
               error (0, 0, _("invalid line numbering format: %s"),
@@ -625,15 +625,15 @@ main (int argc, char **argv)
   footer_del = body_del + len;
 
   /* Initialize the input buffer.  */
-  initbuffer (&line_buf);
+  initbuffer (&लिन्या_buf);
 
   /* Initialize the printf format for unnumbered lines. */
   len = strlen (separator_str);
-  print_no_line_fmt = xmalloc (lineno_width + len + 1);
-  memset (print_no_line_fmt, ' ', lineno_width + len);
-  print_no_line_fmt[lineno_width + len] = '\0';
+  इलिम्बाग_no_लिन्या_fmt = xmalloc (lineno_width + len + 1);
+  memset (इलिम्बाग_no_लिन्या_fmt, ' ', lineno_width + len);
+  इलिम्बाग_no_लिन्या_fmt[lineno_width + len] = '\0';
 
-  line_no = starting_line_number;
+  लिन्या_no = starting_लिन्या_नुमेरो;
   current_type = body_type;
   current_regex = &body_regex;
 

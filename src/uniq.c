@@ -42,7 +42,7 @@
   proper_name ("David MacKenzie")
 
 static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+swap_मगा_लिन्या (struct linebuffer **a, struct linebuffer **b)
 {
   struct linebuffer *tmp = *a;
   *a = *b;
@@ -60,7 +60,7 @@ static idx_t check_chars = IDX_MAX;
 
 /* Whether to precede the output lines with a count of the number of
    times they occurred in the input. */
-static bool count_occurrences = false;
+static bool बिलांग_occurrences = false;
 
 /* Which lines to output: unique lines, the first of a group of
    repeated lines, and the second and subsequent of a group of
@@ -157,33 +157,33 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
+Usage: %s [OPTION]... [पासोक_2 [OUTPUT]]\n\
 "),
               program_name);
       fputs (_("\
-Filter adjacent matching lines from INPUT (or standard input),\n\
+Filter adjacent matching मगा_लिन्या from पासोक_2 (or standard पासोक),\n\
 writing to OUTPUT (or standard output).\n\
 \n\
-With no options, matching lines are merged to the first occurrence.\n\
+With no options, matching मगा_लिन्या are merged to the first occurrence.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --count\n\
-         prefix lines by the number of occurrences\n\
+  -c, --बिलांग\n\
+         prefix मगा_लिन्या by the नुमेरो_2 of occurrences\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only इलिम्बाग_2 duplicate मगा_लिन्या, one for each group\n\
 "));
      oputs (_("\
   -D\n\
-         print all duplicate lines\n\
+         इलिम्बाग_2 all duplicate मगा_लिन्या\n\
 "));
      oputs (_("\
       --all-repeated[=METHOD]\n\
-         like -D, but allow separating groups with an empty line;\n\
+         like -D, but allow separating groups with an empty लिन्या;\n\
          METHOD={none(default),prepend,separate}\n\
 "));
      oputs (_("\
@@ -192,7 +192,7 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
       --group[=METHOD]\n\
-         show all items, separating groups with an empty line;\n\
+         show all मगा_बागाय, separating groups with an empty लिन्या;\n\
          METHOD={separate(default),prepend,append,both}\n\
 "));
      oputs (_("\
@@ -205,15 +205,15 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
   -u, --unique\n\
-         only print unique lines\n\
+         only इलिम्बाग_2 unique मगा_लिन्या\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         लिन्या delimiter is NUL, not newline\n\
 "));
      oputs (_("\
   -w, --check-chars=N\n\
-         compare no more than N characters in lines\n\
+         compare no more than N characters in मगा_लिन्या\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
      oputs (VERSION_OPTION_DESCRIPTION);
@@ -224,8 +224,8 @@ characters.  Fields are skipped before chars.\n\
 "), stdout);
      fputs (_("\
 \n\
-'uniq' does not detect repeated lines unless they are adjacent.\n\
-You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
+'uniq' does not detect repeated मगा_लिन्या unless they are adjacent.\n\
+You may want to sort the पासोक first, or use 'sort -u' without 'uniq'.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -263,10 +263,10 @@ newline_or_blank (mcel_t g)
    Store into *PLEN the length in bytes of FIELD.  */
 
 static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+find_field (struct linebuffer const *लिन्या, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  char *lp = लिन्या->buffer;
+  char const *lim = lp + लिन्या->length - 1;
 
   for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
@@ -316,7 +316,7 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    LINECOUNT + 1 is the number of times that the line occurred. */
 
 static void
-writeline (struct linebuffer const *line,
+writeline (struct linebuffer const *लिन्या,
            bool match, intmax_t linecount)
 {
   if (! (linecount == 0 ? output_unique
@@ -324,7 +324,7 @@ writeline (struct linebuffer const *line,
          : output_later_repeated))
     return;
 
-  if (count_occurrences)
+  if (बिलांग_occurrences)
     {
       char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
       char *end = buf + sizeof buf;
@@ -343,8 +343,8 @@ writeline (struct linebuffer const *line,
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
-      != line->length)
+  if (fwrite (लिन्या->buffer, sizeof (char), लिन्या->length, stdout)
+      != लिन्या->length)
     write_error ();
 }
 
@@ -385,7 +385,7 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  if (output_unique && output_first_repeated && !बिलांग_occurrences)
     {
       char *prevfield = NULL;
       idx_t prevlen;
@@ -412,7 +412,7 @@ check_file (char const *infile, char const *outfile, char delimiter)
                   stdout) != thisline->length)
                 write_error ();
 
-              swap_lines (&prevline, &thisline);
+              swap_मगा_लिन्या (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
               first_group_printed = true;
@@ -428,7 +428,7 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
       idx_t prevlen;
       char *prevfield = find_field (prevline, &prevlen);
-      intmax_t match_count = 0;
+      intmax_t match_बिलांग = 0;
       bool first_delimiter = true;
 
       while (!feof (stdin))
@@ -442,23 +442,23 @@ check_file (char const *infile, char const *outfile, char delimiter)
           idx_t thislen;
           char *thisfield = find_field (thisline, &thislen);
           bool match = !different (thisfield, prevfield, thislen, prevlen);
-          match_count += match;
+          match_बिलांग += match;
 
-          if (match_count == INTMAX_MAX)
+          if (match_बिलांग == INTMAX_MAX)
             {
-              if (count_occurrences)
+              if (बिलांग_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
-              match_count--;
+              match_बिलांग--;
             }
 
           if (delimit_groups != DM_NONE)
             {
               if (!match)
                 {
-                  if (match_count) /* a previous match */
+                  if (match_बिलांग) /* a previous match */
                     first_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              else if (match_बिलांग == 1)
                 {
                   if ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
@@ -469,16 +469,16 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
           if (!match || output_later_repeated)
             {
-              writeline (prevline, match, match_count);
-              swap_lines (&prevline, &thisline);
+              writeline (prevline, match, match_बिलांग);
+              swap_मगा_लिन्या (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
               if (!match)
-                match_count = 0;
+                match_बिलांग = 0;
             }
         }
 
-      writeline (prevline, false, match_count);
+      writeline (prevline, false, match_बिलांग);
     }
 
  closefiles:
@@ -582,7 +582,7 @@ main (int argc, char **argv)
           break;
 
         case 'c':
-          count_occurrences = true;
+          बिलांग_occurrences = true;
           output_option_used = true;
           break;
 
@@ -660,14 +660,14 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  if (grouping != GM_NONE && बिलांग_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  if (बिलांग_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));

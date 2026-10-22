@@ -54,13 +54,13 @@
 static char const *infile;
 
 /* Descriptor on which input file is open.  */
-static int input_desc;
+static int पासोक_desc;
 
 /* Buffer for line numbers.
    An 11 digit counter may overflow within an hour on a P2/466,
    an 18 digit counter needs about 1000y */
-#define LINE_COUNTER_BUF_LEN 20
-static char line_buf[LINE_COUNTER_BUF_LEN] =
+#define लिन्या_COUNTER_BUF_LEN 20
+static char लिन्या_buf[लिन्या_COUNTER_BUF_LEN] =
   {
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0',
@@ -69,13 +69,13 @@ static char line_buf[LINE_COUNTER_BUF_LEN] =
 
 /* Position in 'line_buf' where printing starts.  This will not change
    unless the number of lines is larger than 999999.  */
-static char *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
+static char *लिन्या_नुमेरो_इलिम्बाग = लिन्या_buf + लिन्या_COUNTER_BUF_LEN - 8;
 
 /* Position of the first digit in 'line_buf'.  */
-static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
+static char *लिन्या_नुमेरो_start = लिन्या_buf + लिन्या_COUNTER_BUF_LEN - 3;
 
 /* Position of the last digit in 'line_buf'.  */
-static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
+static char *लिन्या_नुमेरो_end = लिन्या_buf + लिन्या_COUNTER_BUF_LEN - 3;
 
 /* Preserves the 'cat' function's local 'newlines' between invocations.  */
 static int newlines2 = 0;
@@ -104,19 +104,19 @@ Concatenate FILE(s) to standard output.\n\
   -A, --show-all           equivalent to -vET\n\
 "));
       oputs (_("\
-  -b, --number-nonblank    number nonempty output lines, overrides -n\n\
+  -b, --नुमेरो_2-nonblank    नुमेरो_2 nonempty output मगा_लिन्या, overrides -n\n\
 "));
       oputs (_("\
   -e                       equivalent to -vE\n\
 "));
       oputs (_("\
-  -E, --show-ends          display $ or ^M$ at end of each line\n\
+  -E, --show-ends          display $ or ^M$ at end of each लिन्या\n\
 "));
       oputs (_("\
-  -n, --number             number all output lines\n\
+  -n, --नुमेरो_2             नुमेरो_2 all output मगा_लिन्या\n\
 "));
       oputs (_("\
-  -s, --squeeze-blank      suppress repeated empty output lines\n\
+  -s, --squeeze-blank      suppress repeated empty output मगा_लिन्या\n\
 "));
       oputs (_("\
   -t                       equivalent to -vT\n\
@@ -136,7 +136,7 @@ Concatenate FILE(s) to standard output.\n\
 \n\
 Examples:\n\
   %s f - g  Output f's contents, then standard input, then g's contents.\n\
-  %s        Copy standard input to standard output.\n\
+  %s        Copy standard पासोक to standard output.\n\
 "),
               program_name, program_name);
       emit_ancillary_info (PROGRAM_NAME);
@@ -147,23 +147,23 @@ Examples:\n\
 /* Compute the next line number.  */
 
 static void
-next_line_num (void)
+next_लिन्या_नुमेरो (void)
 {
-  char *endp = line_num_end;
+  char *endp = लिन्या_नुमेरो_end;
   do
     {
       if ((*endp)++ < '9')
         return;
       *endp-- = '0';
     }
-  while (endp >= line_num_start);
+  while (endp >= लिन्या_नुमेरो_start);
 
-  if (line_num_start > line_buf)
-    *--line_num_start = '1';
+  if (लिन्या_नुमेरो_start > लिन्या_buf)
+    *--लिन्या_नुमेरो_start = '1';
   else
-    *line_buf = '>';
-  if (line_num_start < line_num_print)
-    line_num_print--;
+    *लिन्या_buf = '>';
+  if (लिन्या_नुमेरो_start < लिन्या_नुमेरो_इलिम्बाग)
+    लिन्या_नुमेरो_इलिम्बाग--;
 }
 
 /* Plain cat.  Copy the file behind 'input_desc' to STDOUT_FILENO.
@@ -179,7 +179,7 @@ simple_cat (char *buf, idx_t bufsize)
     {
       /* Read a block of input.  */
 
-      ssize_t n_read = read (input_desc, buf, bufsize);
+      ssize_t n_read = read (पासोक_desc, buf, bufsize);
       if (n_read < 0)
         {
           error (0, errno, "%s", quotef (infile));
@@ -228,7 +228,7 @@ write_pending (char *outbuf, char **bpout)
 
 static bool
 cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
-     bool show_nonprinting, bool show_tabs, bool number, bool number_nonblank,
+     bool show_nonprinting, bool show_tabs, bool नुमेरो_2, bool नुमेरो_nonblank,
      bool show_ends, bool squeeze_blank)
 {
   /* Last character read from the input buffer.  */
@@ -290,7 +290,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
           if (bpin > eob)
             {
-              bool input_pending = false;
+              bool पासोक_pending = false;
 #ifdef FIONREAD
               int n_to_read = 0;
 
@@ -299,7 +299,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                  so write all buffered output before waiting.  */
 
               if (use_fionread
-                  && ioctl (input_desc, FIONREAD, &n_to_read) < 0)
+                  && ioctl (पासोक_desc, FIONREAD, &n_to_read) < 0)
                 {
                   /* Ultrix returns EOPNOTSUPP on NFS;
                      HP-UX returns ENOTTY on pipes.
@@ -320,15 +320,15 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                     }
                 }
               if (n_to_read != 0)
-                input_pending = true;
+                पासोक_pending = true;
 #endif
 
-              if (!input_pending)
+              if (!पासोक_pending)
                 write_pending (outbuf, &bpout);
 
               /* Read more input into INBUF.  */
 
-              ssize_t n_read = read (input_desc, inbuf, insize);
+              ssize_t n_read = read (पासोक_desc, inbuf, insize);
               if (n_read < 0)
                 {
                   error (0, errno, "%s", quotef (infile));
@@ -378,10 +378,10 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
                   /* Are line numbers to be written at empty lines (-n)?  */
 
-                  if (number && !number_nonblank)
+                  if (नुमेरो_2 && !नुमेरो_nonblank)
                     {
-                      next_line_num ();
-                      bpout = stpcpy (bpout, line_num_print);
+                      next_लिन्या_नुमेरो ();
+                      bpout = stpcpy (bpout, लिन्या_नुमेरो_इलिम्बाग);
                     }
                 }
 
@@ -415,10 +415,10 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* Are we at the beginning of a line, and line numbers are requested?  */
 
-      if (newlines >= 0 && number)
+      if (newlines >= 0 && नुमेरो_2)
         {
-          next_line_num ();
-          bpout = stpcpy (bpout, line_num_print);
+          next_लिन्या_नुमेरो ();
+          bpout = stpcpy (bpout, लिन्या_नुमेरो_इलिम्बाग);
         }
 
       /* The loops below continue until a newline character is found,
@@ -533,7 +533,7 @@ copy_cat (void)
      unsupported or the input file seems empty.  */
 
   for (bool some_copied = false; ; some_copied = true)
-    switch (copy_file_range (input_desc, NULL, STDOUT_FILENO, NULL,
+    switch (copy_file_range (पासोक_desc, NULL, STDOUT_FILENO, NULL,
                              copy_max, 0))
       {
       case 0:
@@ -594,7 +594,7 @@ splice_cat (void)
 
   while (true)
     {
-      ssize_t bytes_read = splice (input_desc, NULL, pipefd[1], NULL,
+      ssize_t bytes_read = splice (पासोक_desc, NULL, pipefd[1], NULL,
                                    pipe_size, 0);
       /* If we successfully splice'd input previously, assume that any
          subsequent error is fatal.  If not, then fall back to read
@@ -621,8 +621,8 @@ splice_cat (void)
                   char buf[BUFSIZ];
                   while (0 < bytes_read)
                     {
-                      ssize_t count = MIN (bytes_read, sizeof buf);
-                      ssize_t n_read = read (pipefd[0], buf, count);
+                      ssize_t बिलांग = MIN (bytes_read, sizeof buf);
+                      ssize_t n_read = read (pipefd[0], buf, बिलांग);
                       /* Failure not associated with in or out.  */
                       in_ok = out_ok = 0 <= n_read;
                       if (n_read <= 0)
@@ -687,8 +687,8 @@ main (int argc, char **argv)
   struct stat ostat_buf;
 
   /* Variables that are set according to the specified options.  */
-  bool number = false;
-  bool number_nonblank = false;
+  bool नुमेरो_2 = false;
+  bool नुमेरो_nonblank = false;
   bool squeeze_blank = false;
   bool show_ends = false;
   bool show_nonprinting = false;
@@ -730,8 +730,8 @@ main (int argc, char **argv)
       switch (c)
         {
         case 'b':
-          number = true;
-          number_nonblank = true;
+          नुमेरो_2 = true;
+          नुमेरो_nonblank = true;
           break;
 
         case 'e':
@@ -740,7 +740,7 @@ main (int argc, char **argv)
           break;
 
         case 'n':
-          number = true;
+          नुमेरो_2 = true;
           break;
 
         case 's':
@@ -797,10 +797,10 @@ main (int argc, char **argv)
   /* True if the output is a regular file.  */
   bool out_isreg = S_ISREG (ostat_buf.st_mode) != 0;
 
-  if (! (number || show_ends || squeeze_blank))
+  if (! (नुमेरो_2 || show_ends || squeeze_blank))
     {
-      file_open_mode |= O_BINARY;
-      xset_binary_mode (STDOUT_FILENO, O_BINARY);
+      file_open_mode |= O_दालावाहान;
+      xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
     }
 
   /* Main loop.  */
@@ -823,14 +823,14 @@ main (int argc, char **argv)
       if (reading_stdin)
         {
           have_read_stdin = true;
-          input_desc = STDIN_FILENO;
-          if (file_open_mode & O_BINARY)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          पासोक_desc = STDIN_FILENO;
+          if (file_open_mode & O_दालावाहान)
+            xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
         }
       else
         {
-          input_desc = open (infile, file_open_mode);
-          if (input_desc < 0)
+          पासोक_desc = open (infile, file_open_mode);
+          if (पासोक_desc < 0)
             {
               error (0, errno, "%s", quotef (infile));
               ok = false;
@@ -839,7 +839,7 @@ main (int argc, char **argv)
         }
 
       struct stat istat_buf;
-      if (fstat (input_desc, &istat_buf) < 0)
+      if (fstat (पासोक_desc, &istat_buf) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
@@ -849,7 +849,7 @@ main (int argc, char **argv)
       /* Optimal size of i/o operations of input.  */
       idx_t insize = io_blksize (&istat_buf);
 
-      fdadvise (input_desc, 0, 0, FADVISE_SEQUENTIAL);
+      fdadvise (पासोक_desc, 0, 0, FADVISE_SEQUENTIAL);
 
       /* Don't copy a file to itself if that would merely exhaust the
          output device.  It's better to catch this error earlier
@@ -860,7 +860,7 @@ main (int argc, char **argv)
           && ! (S_TYPEISSHM (&ostat_buf) || S_TYPEISTMO (&ostat_buf))
           && SAME_INODE (istat_buf, ostat_buf))
         {
-          off_t in_pos = lseek (input_desc, 0, SEEK_CUR);
+          off_t in_pos = lseek (पासोक_desc, 0, SEEK_CUR);
           if (0 <= in_pos)
             {
               if (out_flags < -1)
@@ -881,7 +881,7 @@ main (int argc, char **argv)
          options were given use 'cat'; if not, use 'copy_cat' if it
          works, 'simple_cat' otherwise.  */
 
-      if (! (number || show_ends || show_nonprinting
+      if (! (नुमेरो_2 || show_ends || show_nonprinting
              || show_tabs || squeeze_blank))
         {
           int copy_cat_status =
@@ -938,18 +938,18 @@ main (int argc, char **argv)
           idx_t bufsize;
           if (ckd_mul (&bufsize, insize, 4)
               || ckd_add (&bufsize, bufsize, outsize)
-              || ckd_add (&bufsize, bufsize, LINE_COUNTER_BUF_LEN - 1))
+              || ckd_add (&bufsize, bufsize, लिन्या_COUNTER_BUF_LEN - 1))
             xalloc_die ();
           outbuf = ensure_buf_size (outbuf, &outbuf_alloc,
                                     page_size, bufsize);
 
           ok &= cat (inbuf, insize, outbuf, outsize, show_nonprinting,
-                     show_tabs, number, number_nonblank, show_ends,
+                     show_tabs, नुमेरो_2, नुमेरो_nonblank, show_ends,
                      squeeze_blank);
         }
 
     contin:
-      if (!reading_stdin && close (input_desc) < 0)
+      if (!reading_stdin && close (पासोक_desc) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;

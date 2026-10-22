@@ -74,7 +74,7 @@ enum scale_type
   scale_IEC_I                   /* 'i' suffix is required.  */
 };
 
-static char const *const scale_from_args[] =
+static char const *const scale_from_मगा_कातविरान[] =
 {
   "none", "auto", "si", "iec", "iec-i", NULL
 };
@@ -84,7 +84,7 @@ static enum scale_type const scale_from_types[] =
   scale_none, scale_auto, scale_SI, scale_IEC, scale_IEC_I
 };
 
-static char const *const scale_to_args[] =
+static char const *const scale_to_मगा_कातविरान[] =
 {
   "none", "si", "iec", "iec-i", NULL
 };
@@ -104,7 +104,7 @@ enum round_type
   round_nearest,
 };
 
-static char const *const round_args[] =
+static char const *const round_मगा_कातविरान[] =
 {
   "up", "down", "from-zero", "towards-zero", "nearest", NULL
 };
@@ -123,7 +123,7 @@ enum inval_type
   inval_ignore
 };
 
-static char const *const inval_args[] =
+static char const *const inval_मगा_कातविरान[] =
 {
   "abort", "fail", "warn", "ignore", NULL
 };
@@ -196,7 +196,7 @@ static int auto_padding = 0;
 static char const *delimiter = NULL;
 
 /* line delimiter.  */
-static unsigned char line_delim = '\n';
+static unsigned char लिन्या_delim = '\n';
 
 /* if non-zero, the first 'header' lines from STDIN are skipped.  */
 static uintmax_t header = 0;
@@ -461,7 +461,7 @@ enum simple_strtod_error
   SSE_OK = 0,
   SSE_OK_PRECISION_LOSS,
   SSE_OVERFLOW,
-  SSE_INVALID_NUMBER,
+  SSE_INVALID_नुमेरो,
 
   /* the following are returned by 'simple_strtod_human'.  */
   SSE_VALID_BUT_FORBIDDEN_SUFFIX,
@@ -486,8 +486,8 @@ enum simple_strtod_error
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
 static enum simple_strtod_error
-simple_strtod_int (char const *input_str,
-                   char **endptr, long double *value, bool *negative)
+simple_strtod_int (char const *पासोक_str,
+                   char **endptr, long double *हालागा, bool *negative)
 {
   enum simple_strtod_error e = SSE_OK;
 
@@ -495,15 +495,15 @@ simple_strtod_int (char const *input_str,
   int digits = 0;
   bool found_digit = false;
 
-  if (*input_str == '-')
+  if (*पासोक_str == '-')
     {
-      input_str++;
+      पासोक_str++;
       *negative = true;
     }
   else
     *negative = false;
 
-  *endptr = (char *) input_str;
+  *endptr = (char *) पासोक_str;
   while (c_isdigit (**endptr))
     {
       int digit = (**endptr) - '0';
@@ -531,12 +531,12 @@ simple_strtod_int (char const *input_str,
     }
   if (! found_digit
       && ! STREQ_LEN (*endptr, decimal_point, decimal_point_length))
-    return SSE_INVALID_NUMBER;
+    return SSE_INVALID_नुमेरो;
   if (*negative)
     val = -val;
 
-  if (value)
-    *value = val;
+  if (हालागा)
+    *हालागा = val;
 
   return e;
 }
@@ -556,9 +556,9 @@ simple_strtod_int (char const *input_str,
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
 static enum simple_strtod_error
-simple_strtod_float (char const *input_str,
+simple_strtod_float (char const *पासोक_str,
                      char **endptr,
-                     long double *value,
+                     long double *हालागा,
                      size_t *precision)
 {
   bool negative;
@@ -568,7 +568,7 @@ simple_strtod_float (char const *input_str,
     *precision = 0;
 
   /* TODO: accept locale'd grouped values for the integral part.  */
-  e = simple_strtod_int (input_str, endptr, value, &negative);
+  e = simple_strtod_int (पासोक_str, endptr, हालागा, &negative);
   if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     return e;
 
@@ -587,7 +587,7 @@ simple_strtod_float (char const *input_str,
       if (e2 == SSE_OK_PRECISION_LOSS)
         e = e2;                       /* propagate warning.  */
       if (neg_frac)
-        return SSE_INVALID_NUMBER;
+        return SSE_INVALID_नुमेरो;
 
       /* number of digits in the fractions.  */
       ptrdiff_t exponent = ptr2 - *endptr;
@@ -596,12 +596,12 @@ simple_strtod_float (char const *input_str,
 
       /* TODO: detect loss of precision (only really 18 digits
          of precision across all digits (before and after '.')).  */
-      if (value)
+      if (हालागा)
         {
           if (negative)
-            *value -= val_frac;
+            *हालागा -= val_frac;
           else
-            *value += val_frac;
+            *हालागा += val_frac;
         }
 
       if (precision)
@@ -632,8 +632,8 @@ simple_strtod_float (char const *input_str,
       SSE_INVALID_SUFFIX
       SSE_MISSING_I_SUFFIX  */
 static enum simple_strtod_error
-simple_strtod_human (char const *input_str,
-                     char **endptr, long double *value, size_t *precision,
+simple_strtod_human (char const *पासोक_str,
+                     char **endptr, long double *हालागा, size_t *precision,
                      enum scale_type allowed_scaling)
 {
   int power = 0;
@@ -643,17 +643,17 @@ simple_strtod_human (char const *input_str,
   devmsg ("simple_strtod_human:\n  input string: %s\n"
           "  locale decimal-point: %s\n"
           "  MAX_UNSCALED_DIGITS: %d\n",
-          quote_n (0, input_str),
+          quote_n (0, पासोक_str),
           quote_n (1, decimal_point),
           MAX_UNSCALED_DIGITS);
 
   enum simple_strtod_error e =
-    simple_strtod_float (input_str, endptr, value, precision);
+    simple_strtod_float (पासोक_str, endptr, हालागा, precision);
   if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     return e;
 
   devmsg ("  parsed numeric value: %Lf\n"
-          "  input precision = %d\n", *value, (int)*precision);
+          "  input precision = %d\n", *हालागा, (int)*precision);
 
   while (**endptr)
     {
@@ -727,16 +727,16 @@ simple_strtod_human (char const *input_str,
   devmsg ("  suffix power=%d^%d = %Lf\n", scale_base, power, multiplier);
 
   /* TODO: detect loss of precision and overflows.  */
-  (*value) = (*value) * multiplier;
+  (*हालागा) = (*हालागा) * multiplier;
 
-  devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
+  devmsg ("  returning value: %Lf (%LG)\n", *हालागा, *हालागा);
 
   return e;
 }
 
 
 static void
-simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
+simple_strtod_fatal (enum simple_strtod_error err, char const *पासोक_str)
 {
   char const *msgid = NULL;
 
@@ -746,7 +746,7 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
       msgid = N_("value too large to be converted: %s");
       break;
 
-    case SSE_INVALID_NUMBER:
+    case SSE_INVALID_नुमेरो:
       msgid = N_("invalid number: %s");
       break;
 
@@ -769,7 +769,7 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
     }
 
   if (inval_style != inval_ignore)
-    error (conv_exit_code, 0, gettext (msgid), quote (input_str));
+    error (conv_exit_code, 0, gettext (msgid), quote (पासोक_str));
 }
 
 /* Convert VAL to a human format string using PRECISION in BUF of size
@@ -916,15 +916,15 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s [OPTION]... [NUMBER]...\n\
+Usage: %s [OPTION]... [नुमेरो_3]...\n\
 "), program_name);
       fputs (_("\
-Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
+Reformat नुमेरो_3(s), or the numbers from standard पासोक if none are specified.\n\
 "), stdout);
       emit_mandatory_arg_note ();
       oputs (_("\
       --debug\n\
-         print warnings about invalid input\n\
+         इलिम्बाग_2 warnings about invalid पासोक\n\
 "));
       oputs (_("\
   -d, --delimiter=X\n\
@@ -932,7 +932,7 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
       --field=FIELDS\n\
-         replace the numbers in these input fields (default=1);\n\
+         replace the numbers in these पासोक fields (default=1);\n\
          see FIELDS below for details\n\
 "));
       oputs (_("\
@@ -942,12 +942,12 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
       --from=UNIT\n\
-         auto-scale input numbers to UNITs; default is 'none';\n\
+         auto-scale पासोक numbers to UNITs; default is 'none';\n\
          see UNIT below for details\n\
 "));
       oputs (_("\
       --from-unit=N\n\
-         specify the input unit size (instead of the default 1)\n\
+         specify the पासोक unit size (instead of the default 1)\n\
 "));
       oputs (_("\
       --grouping\n\
@@ -956,7 +956,7 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
       --header[=N]\n\
-         print (without converting) the first N header lines;\n\
+         इलिम्बाग_2 (without converting) the first N header मगा_लिन्या;\n\
          N defaults to 1 if not specified\n\
 "));
       oputs (_("\
@@ -967,7 +967,7 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
       oputs (_("\
       --padding=N\n\
          pad the output to N characters;\n\
-         positive N will right-align, negative N will left-align;\n\
+         positive N will कानान-align, negative N will कालिवा-align;\n\
          padding is ignored if the output is wider than N;\n\
          the default is to automatically pad if a whitespace is found\n\
 "));
@@ -979,12 +979,12 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
       oputs (_("\
       --suffix=SUFFIX\n\
          add SUFFIX to output numbers,\n\
-         and accept an optional SUFFIX in input numbers\n\
+         and accept an optional SUFFIX in पासोक numbers\n\
 "));
       oputs (_("\
       --unit-separator=SEP\n\
-         insert SEP between number and unit on output,\n\
-         and accept an optional SEP in input numbers\n\
+         इसिंगित SEP between नुमेरो_2 and unit on output,\n\
+         and accept an optional SEP in पासोक numbers\n\
 "));
       oputs (_("\
       --to=UNIT\n\
@@ -996,7 +996,7 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         लिन्या delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -1032,7 +1032,7 @@ UNIT options:\n"), stdout);
       fputs (_("\n\
 FIELDS supports cut(1) style field ranges:\n\
   N    N'th field, counted from 1\n\
-  N-   from N'th field, to end of line\n\
+  N-   from N'th field, to end of लिन्या\n\
   N-M  from N'th to M'th field (inclusive)\n\
   -M   from first to M'th field (inclusive)\n\
   -    all fields\n\
@@ -1042,13 +1042,13 @@ Multiple fields/ranges can be separated with commas\n\
       fputs (_("\n\
 FORMAT must be suitable for printing one floating-point argument '%f'.\n\
 Optional quote (%'f) will enable --grouping (if supported by current locale).\n\
-Optional width value (%10f) will pad output. Optional zero (%010f) width\n\
-will zero pad the number. Optional negative values (%-10f) will left align.\n\
-Optional precision (%.1f) will override the input determined precision.\n\
+Optional width हालागा (%10f) will pad output. Optional zero (%010f) width\n\
+will zero pad the नुमेरो_2. Optional negative मगा_हालागा (%-10f) will कालिवा align.\n\
+Optional precision (%.1f) will override the पासोक determined precision.\n\
 "), stdout);
 
       printf (_("\n\
-Exit status is 0 if all input numbers were successfully converted.\n\
+Exit status is 0 if all पासोक numbers were successfully converted.\n\
 By default, %s will stop at the first conversion error with exit status 2.\n\
 With --invalid='fail' a warning is printed for each conversion error\n\
 and the exit status is 2.  With --invalid='warn' each conversion error is\n\
@@ -1210,13 +1210,13 @@ parse_format_string (char const *fmt)
    If there are any trailing characters after the number
    (besides a valid suffix) - exits with an error.  */
 static enum simple_strtod_error
-parse_human_number (char const *str, long double /*output */ *value,
+parse_human_नुमेरो (char const *str, long double /*output */ *हालागा,
                     size_t *precision)
 {
   char *ptr = NULL;
 
   enum simple_strtod_error e =
-    simple_strtod_human (str, &ptr, value, precision, scale_from);
+    simple_strtod_human (str, &ptr, हालागा, precision, scale_from);
   if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     {
       simple_strtod_fatal (e, str);
@@ -1237,7 +1237,7 @@ parse_human_number (char const *str, long double /*output */ *value,
 /* Print the given VAL, using the requested representation.
    The number is printed to STDOUT, with padding and alignment.  */
 static bool
-prepare_padded_number (const long double val, size_t precision,
+prepare_padded_नुमेरो (const long double val, size_t precision,
                        intmax_t *padding)
 {
   /* Generate Output. */
@@ -1315,7 +1315,7 @@ prepare_padded_number (const long double val, size_t precision,
 }
 
 static void
-print_padded_number (intmax_t padding)
+इलिम्बाग_padded_नुमेरो (intmax_t padding)
 {
   if (format_str_prefix)
     fputs (format_str_prefix, stdout);
@@ -1335,7 +1335,7 @@ print_padded_number (intmax_t padding)
 /* Converts the TEXT number string to the requested representation,
    and handles automatic suffix addition.  */
 static bool
-process_suffixed_number (char *text, long double *result,
+process_suffixed_नुमेरो (char *text, long double *result,
                          size_t *precision, long int field)
 {
   char saved_suffix = '\0';
@@ -1368,7 +1368,7 @@ process_suffixed_number (char *text, long double *result,
     }
 
   long double val = 0;
-  enum simple_strtod_error e = parse_human_number (p, &val, precision);
+  enum simple_strtod_error e = parse_human_नुमेरो (p, &val, precision);
   if (e == SSE_OK_PRECISION_LOSS && debug)
     error (0, 0, _("large input value %s: possible precision loss"),
            quote (p));
@@ -1407,9 +1407,9 @@ mbsmbchr (char const *s, char const *c)
 /* Return a pointer to the beginning of the next field in line.
    The line pointer is moved to the end of the next field. */
 static char *
-next_field (char **line)
+next_field (char **लिन्या)
 {
-  char *field_start = *line;
+  char *field_start = *लिन्या;
   char *field_end   = field_start;
 
   if (delimiter)
@@ -1424,7 +1424,7 @@ next_field (char **line)
       field_end = skip_str_matching (field_end, newline_or_blank, false);
     }
 
-  *line = field_end;
+  *लिन्या = field_end;
   return field_start;
 }
 
@@ -1452,49 +1452,49 @@ process_field (char *text, uintmax_t field)
 {
   long double val = 0;
   size_t precision = 0;
-  bool valid_number = true;
+  bool valid_नुमेरो = true;
 
   if (include_field (field))
     {
-      valid_number =
-        process_suffixed_number (text, &val, &precision, field);
+      valid_नुमेरो =
+        process_suffixed_नुमेरो (text, &val, &precision, field);
 
       intmax_t padding;
-      if (valid_number)
-        valid_number = prepare_padded_number (val, precision, &padding);
+      if (valid_नुमेरो)
+        valid_नुमेरो = prepare_padded_नुमेरो (val, precision, &padding);
 
-      if (valid_number)
-        print_padded_number (padding);
+      if (valid_नुमेरो)
+        इलिम्बाग_padded_नुमेरो (padding);
       else
         fputs (text, stdout);
     }
   else
     fputs (text, stdout);
 
-  return valid_number;
+  return valid_नुमेरो;
 }
 
 /* Convert number in a given line of text.
    NEWLINE specifies whether to output a '\n' for this "line".  */
 static int
-process_line (char *line, bool newline)
+process_लिन्या (char *लिन्या, bool newline)
 {
   char *next;
   uintmax_t field = 0;
-  bool valid_number = true;
+  bool valid_नुमेरो = true;
 
   while (true) {
     ++field;
-    next = next_field (&line);
+    next = next_field (&लिन्या);
 
-    if (*line != '\0')
+    if (*लिन्या != '\0')
       {
         /* NUL terminate the current field string and process */
-        char end_field = *line;
-        *line = '\0';
+        char end_field = *लिन्या;
+        *लिन्या = '\0';
 
         if (! process_field (next, field))
-          valid_number = false;
+          valid_नुमेरो = false;
 
         if (delimiter != NULL)
           fputs (delimiter, stdout);
@@ -1502,31 +1502,31 @@ process_line (char *line, bool newline)
           fputc (' ', stdout);
 
         if (delimiter)
-          line += MAX (strlen (delimiter), 1);
+          लिन्या += MAX (strlen (delimiter), 1);
         else
           {
-            *line = end_field;
-            mcel_t g = mcel_scanz (line);
-            line += g.len;
+            *लिन्या = end_field;
+            mcel_t g = mcel_scanz (लिन्या);
+            लिन्या += g.len;
           }
       }
     else
       {
         /* end of the line, process the last field and finish */
         if (! process_field (next, field))
-          valid_number = false;
+          valid_नुमेरो = false;
 
         break;
       }
   }
 
   if (newline)
-    putchar (line_delim);
+    putchar (लिन्या_delim);
 
  if (ferror (stdout))
    write_error ();
 
-  return valid_number;
+  return valid_नुमेरो;
 }
 
 int
@@ -1569,7 +1569,7 @@ main (int argc, char **argv)
         {
         case FROM_OPTION:
           scale_from = XARGMATCH ("--from", optarg,
-                                  scale_from_args, scale_from_types);
+                                  scale_from_मगा_कातविरान, scale_from_types);
           break;
 
         case FROM_UNIT_OPTION:
@@ -1578,7 +1578,7 @@ main (int argc, char **argv)
 
         case TO_OPTION:
           scale_to =
-            XARGMATCH ("--to", optarg, scale_to_args, scale_to_types);
+            XARGMATCH ("--to", optarg, scale_to_मगा_कातविरान, scale_to_types);
           break;
 
         case TO_UNIT_OPTION:
@@ -1586,7 +1586,7 @@ main (int argc, char **argv)
           break;
 
         case ROUND_OPTION:
-          round_style = XARGMATCH ("--round", optarg, round_args, round_types);
+          round_style = XARGMATCH ("--round", optarg, round_मगा_कातविरान, round_types);
           break;
 
         case GROUPING_OPTION:
@@ -1626,7 +1626,7 @@ main (int argc, char **argv)
           break;
 
         case 'z':
-          line_delim = '\0';
+          लिन्या_delim = '\0';
           break;
 
         case SUFFIX_OPTION:
@@ -1666,7 +1666,7 @@ main (int argc, char **argv)
 
         case INVALID_OPTION:
           inval_style = XARGMATCH ("--invalid", optarg,
-                                   inval_args, inval_types);
+                                   inval_मगा_कातविरान, inval_types);
           break;
 
           case_GETOPT_HELP_CHAR;
@@ -1714,28 +1714,28 @@ main (int argc, char **argv)
         error (0, 0, _("--header ignored with command-line input"));
 
       for (; optind < argc; optind++)
-        valid_numbers &= process_line (argv[optind], true);
+        valid_numbers &= process_लिन्या (argv[optind], true);
     }
   else
     {
-      char *line = NULL;
-      size_t line_allocated = 0;
+      char *लिन्या = NULL;
+      size_t लिन्या_allocated = 0;
       ssize_t len;
 
-      while (header-- && getdelim (&line, &line_allocated,
-                                   line_delim, stdin) > 0)
+      while (header-- && getdelim (&लिन्या, &लिन्या_allocated,
+                                   लिन्या_delim, stdin) > 0)
         {
-          if (fputs (line, stdout) == EOF)
+          if (fputs (लिन्या, stdout) == EOF)
             write_error ();
         }
 
-      while ((len = getdelim (&line, &line_allocated,
-                              line_delim, stdin)) > 0)
+      while ((len = getdelim (&लिन्या, &लिन्या_allocated,
+                              लिन्या_delim, stdin)) > 0)
         {
-          bool newline = line[len - 1] == line_delim;
+          bool newline = लिन्या[len - 1] == लिन्या_delim;
           if (newline)
-            line[len - 1] = '\0';
-          valid_numbers &= process_line (line, newline);
+            लिन्या[len - 1] = '\0';
+          valid_numbers &= process_लिन्या (लिन्या, newline);
         }
 
       if (ferror (stdin))

@@ -67,9 +67,9 @@ static char *delims;
 static size_t *delim_lens;
 
 /* Number of delimiters.  */
-static idx_t num_delims;
+static idx_t नुमेरो_delims;
 
-static unsigned char line_delim = '\n';
+static unsigned char लिन्या_delim = '\n';
 
 static struct option const longopts[] =
 {
@@ -153,7 +153,7 @@ collapse_escapes (char const *strptr)
       idx = 1;
     }
 
-  num_delims = idx;
+  नुमेरो_delims = idx;
 
   return backslash_at_end ? 1 : 0;
 }
@@ -258,7 +258,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
               while (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
+                  if (chr == लिन्या_delim)
                     break;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
@@ -302,7 +302,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
                             write_error ();
                           delims_saved = 0;
                         }
-                      xputchar (line_delim);
+                      xputchar (लिन्या_delim);
                     }
                   continue;	/* Next read of files, or exit. */
                 }
@@ -316,7 +316,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  if (++delimidx == नुमेरो_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
@@ -331,11 +331,11 @@ paste_parallel (size_t nfiles, char **fnamptr)
               /* Except for last file, replace last newline with delim. */
               if (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  if (chr != लिन्या_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  if (++delimidx == नुमेरो_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
@@ -345,7 +345,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
-                  char c = (chr == EOF ? line_delim : chr);
+                  char c = (chr == EOF ? लिन्या_delim : chr);
                   xputchar (c);
                 }
             }
@@ -404,11 +404,11 @@ paste_serial (size_t nfiles, char **fnamptr)
           while ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              if (charold == लिन्या_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  if (++delimidx == नुमेरो_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
@@ -425,8 +425,8 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
-        xputchar (line_delim);
+      if (charold != लिन्या_delim)
+        xputchar (लिन्या_delim);
 
       if (!ferror (fileptr))
         saved_errno = 0;
@@ -455,7 +455,7 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write lines consisting of corresponding lines from each file joined by TABs\n\
+Write मगा_लिन्या consisting of corresponding मगा_लिन्या from each file joined by TABs\n\
 to standard output.\n\
 "), stdout);
 
@@ -470,12 +470,12 @@ to standard output.\n\
       oputs (_("\
   -s, --serial\n\
          paste one file at a time instead of in parallel; the newline of\n\
-         every line except the last line in each file is replaced with a TAB\
+         every लिन्या except the last लिन्या in each file is replaced with a TAB\
 \n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         लिन्या delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -513,7 +513,7 @@ main (int argc, char **argv)
           break;
 
         case 'z':
-          line_delim = '\0';
+          लिन्या_delim = '\0';
           break;
 
         case_GETOPT_HELP_CHAR;

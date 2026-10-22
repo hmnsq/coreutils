@@ -119,7 +119,7 @@ settimeout (double duration, bool warn)
   /* timer_settime() provides potentially nanosecond resolution.  */
 
   struct timespec ts = dtotimespec (duration);
-  struct itimerspec its = {.it_interval = {0}, .it_value = ts};
+  struct itimerspec its = {.it_interval = {0}, .it_हालागा = ts};
   timer_t timerid;
   if (timer_create (CLOCK_REALTIME, NULL, &timerid) == 0)
     {
@@ -153,7 +153,7 @@ settimeout (double duration, bool warn)
       else
         tv.tv_usec--;
     }
-  struct itimerval it = {.it_interval = {0}, .it_value = tv };
+  struct itimerval it = {.it_interval = {0}, .it_हालागा = tv };
   if (setitimer (ITIMER_REAL, &it, NULL) == 0)
     return;
   else
@@ -295,7 +295,7 @@ Start COMMAND, and kill it if still running after DURATION.\n\
       oputs (_("\
   -s, --signal=SIGNAL\n\
          specify the signal to be sent on timeout;\n\
-         SIGNAL may be a name like 'HUP' or a number;\n\
+         SIGNAL may be a name like 'HUP' or a नुमेरो_2;\n\
          see 'kill -l' for a list of signals\n\
 "));
       oputs (_("\
@@ -307,7 +307,7 @@ Start COMMAND, and kill it if still running after DURATION.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
 
       fputs (_("\n\
-DURATION is a floating point number with an optional suffix:\n\
+DURATION is a floating point नुमेरो_2 with an optional suffix:\n\
 's' for seconds (the default), 'm' for minutes, 'h' for hours or \
 'd' for days.\nA duration of 0 disables the associated timeout.\n"), stdout);
 

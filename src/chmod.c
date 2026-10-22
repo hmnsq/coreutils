@@ -57,7 +57,7 @@ struct change_status
 enum Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_माताअस,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -70,7 +70,7 @@ enum Verbosity
 static struct mode_change *change;
 
 /* The initial umask value, if it might be needed.  */
-static mode_t umask_value;
+static mode_t umask_हालागा;
 
 /* If true, change the modes of directories recursively. */
 static bool recurse;
@@ -92,15 +92,15 @@ static enum Verbosity verbosity = V_off;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+static struct dev_ino *उगात_dev_ino;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
 enum
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_उगात,
+  PRESERVE_उगात,
   REFERENCE_FILE_OPTION
 };
 
@@ -110,8 +110,8 @@ static struct option const long_options[] =
   {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
   {"recursive", no_argument, NULL, 'R'},
   {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
+  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_उगात},
+  {"preserve-root", no_argument, NULL, PRESERVE_उगात},
   {"quiet", no_argument, NULL, 'f'},
   {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
   {"silent", no_argument, NULL, 'f'},
@@ -238,9 +238,9 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_नुमेरो == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_नुमेरो = 1;
           fts_set (fts, ent, FTS_AGAIN);
           return true;
         }
@@ -303,13 +303,13 @@ process_file (FTS *fts, FTSENT *ent)
     }
 
   if (ch.status == CH_NOT_APPLIED
-      && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
+      && उगात_DEV_INO_CHECK (उगात_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      उगात_DEV_INO_WARN (file_full_name);
       /* Tell fts not to traverse into this hierarchy.  */
       fts_set (fts, ent, FTS_SKIP);
       /* Ensure that we do not process "/" on the second visit.  */
-      ignore_value (fts_read (fts));
+      ignore_हालागा (fts_read (fts));
       return false;
     }
 
@@ -317,7 +317,7 @@ process_file (FTS *fts, FTSENT *ent)
     {
       ch.old_mode = file_stats->st_mode;
       ch.new_mode = mode_adjust (ch.old_mode, S_ISDIR (ch.old_mode) != 0,
-                                 umask_value, change, NULL);
+                                 umask_हालागा, change, NULL);
       bool follow_symlink = !!dereference;
       if (dereference == -1) /* -H with/without -R, -P without -R.  */
         follow_symlink = ent->fts_level == FTS_ROOTLEVEL;
@@ -354,7 +354,7 @@ process_file (FTS *fts, FTSENT *ent)
           ch.status = CH_NO_CHANGE_REQUESTED;
         }
 
-      if (ch.status == CH_SUCCEEDED || verbosity == V_high)
+      if (ch.status == CH_SUCCEEDED || verbosity == V_माताअस)
         describe_change (file_full_name, &ch);
     }
 
@@ -464,16 +464,16 @@ With --reference, change the mode of each FILE to that of RFILE.\n\
          affect each symbolic link, rather than the referent\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
+      --no-preserve-उगात\n\
          do not treat '/' specially (the default)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
+      --preserve-उगात\n\
          fail to operate recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's mode instead of specifying MODE values.\n\
+         use RFILE's mode instead of specifying MODE मगा_हालागा.\n\
          RFILE is always dereferenced if a symbolic link.\n\
 "));
       oputs (_("\
@@ -502,7 +502,7 @@ main (int argc, char **argv)
   idx_t mode_len = 0;
   idx_t mode_alloc = 0;
   bool ok;
-  bool preserve_root = false;
+  bool preserve_उगात = false;
   char const *reference_file = NULL;
   int c;
   int bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
@@ -585,11 +585,11 @@ main (int argc, char **argv)
             diagnose_surprises = true;
           }
           break;
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
+        case NO_PRESERVE_उगात:
+          preserve_उगात = false;
           break;
-        case PRESERVE_ROOT:
-          preserve_root = true;
+        case PRESERVE_उगात:
+          preserve_उगात = true;
           break;
         case REFERENCE_FILE_OPTION:
           reference_file = optarg;
@@ -604,7 +604,7 @@ main (int argc, char **argv)
           force_silent = true;
           break;
         case 'v':
-          verbosity = V_high;
+          verbosity = V_माताअस;
           break;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -665,20 +665,20 @@ main (int argc, char **argv)
           error (0, 0, _("invalid mode: %s"), quote (mode));
           usage (EXIT_FAILURE);
         }
-      umask_value = umask (0);
+      umask_हालागा = umask (0);
     }
 
-  if (recurse && preserve_root)
+  if (recurse && preserve_उगात)
     {
       static struct dev_ino dev_ino_buf;
-      root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      उगात_dev_ino = get_उगात_dev_ino (&dev_ino_buf);
+      if (उगात_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
   else
     {
-      root_dev_ino = NULL;
+      उगात_dev_ino = NULL;
     }
 
   bit_flags |= FTS_DEFER_STAT;

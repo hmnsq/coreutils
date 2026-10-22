@@ -58,11 +58,11 @@ enum
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
        POSIX grammar.  */
-    EXPR_INVALID = 2,
+    पाहायाग_INVALID = 2,
 
     /* An internal error occurred, e.g., arithmetic overflow, storage
        exhaustion.  */
-    EXPR_FAILURE
+    पाहायाग_FAILURE
   };
 
 /* The kinds of value we can have.  */
@@ -83,15 +83,15 @@ struct valinfo
     char *s;
   } u;
 };
-typedef struct valinfo VALUE;
+typedef struct valinfo हालागा_2;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+static char **मगा_कातविरान;
 
-static VALUE *eval (bool);
+static हालागा_2 *eval (bool);
 static bool nomoreargs (void);
-static bool null (VALUE *v);
-static void printv (VALUE *v);
+static bool null (हालागा_2 *v);
+static void printv (हालागा_2 *v);
 
 
 /*
@@ -239,7 +239,7 @@ Usage: %s EXPRESSION\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Print the value of EXPRESSION to standard output.  A blank line below\n\
+इलिम्बाग the हालागा of EXPRESSION to standard output.  A blank लिन्या below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
   ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
@@ -281,14 +281,14 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   + TOKEN                    interpret TOKEN as a string, even if it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
-  ( EXPRESSION )             value of EXPRESSION\n\
+  ( EXPRESSION )             हालागा of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
 Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
+Comparisons are arithmetic if both मगा_कातविरान_2 are numbers, else lexicographical.\n\
 Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+\\( and \\) are not used, they return the नुमेरो_2 of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -310,7 +310,7 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-  initialize_exit_failure (EXPR_FAILURE);
+  initialize_exit_failure (पाहायाग_FAILURE);
   atexit (close_stdout);
 
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
@@ -327,15 +327,15 @@ main (int argc, char **argv)
   if (argc <= 1)
     {
       error (0, 0, _("missing operand"));
-      usage (EXPR_INVALID);
+      usage (पाहायाग_INVALID);
     }
 
-  args = argv + 1;
+  मगा_कातविरान = argv + 1;
 
-  VALUE *v = eval (true);
+  हालागा_2 *v = eval (true);
   if (!nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
-           quotearg_n_style (0, locale_quoting_style, *args));
+    error (पाहायाग_INVALID, 0, _("syntax error: unexpected argument %s"),
+           quotearg_n_style (0, locale_quoting_style, *मगा_कातविरान));
 
   printv (v);
 
@@ -344,10 +344,10 @@ main (int argc, char **argv)
 
 /* Return a VALUE for I.  */
 
-static VALUE *
-int_value (unsigned long int i)
+static हालागा_2 *
+int_हालागा (unsigned long int i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  हालागा_2 *v = xmalloc (sizeof *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
   return v;
@@ -355,10 +355,10 @@ int_value (unsigned long int i)
 
 /* Return a VALUE for S.  */
 
-static VALUE *
-str_value (char const *s)
+static हालागा_2 *
+str_हालागा (char const *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  हालागा_2 *v = xmalloc (sizeof *v);
   v->type = string;
   v->u.s = xstrdup (s);
   return v;
@@ -367,7 +367,7 @@ str_value (char const *s)
 /* Free VALUE V, including structure components.  */
 
 static void
-freev (VALUE *v)
+freev (हालागा_2 *v)
 {
   if (v->type == string)
     free (v->u.s);
@@ -379,7 +379,7 @@ freev (VALUE *v)
 /* Print VALUE V.  */
 
 static void
-printv (VALUE *v)
+printv (हालागा_2 *v)
 {
   switch (v->type)
     {
@@ -399,7 +399,7 @@ printv (VALUE *v)
 
 ATTRIBUTE_PURE
 static bool
-null (VALUE *v)
+null (हालागा_2 *v)
 {
   switch (v->type)
     {
@@ -446,7 +446,7 @@ looks_like_integer (char const *cp)
 /* Coerce V to a string value (can't fail).  */
 
 static void
-tostring (VALUE *v)
+tostring (हालागा_2 *v)
 {
   switch (v->type)
     {
@@ -468,7 +468,7 @@ tostring (VALUE *v)
 /* Coerce V to an integer value.  Return true on success, false on failure.  */
 
 static bool
-toarith (VALUE *v)
+toarith (हालागा_2 *v)
 {
   switch (v->type)
     {
@@ -481,7 +481,7 @@ toarith (VALUE *v)
         if (! looks_like_integer (s))
           return false;
         if (mpz_init_set_str (v->u.i, s, 10) != 0)
-          error (EXPR_FAILURE, ERANGE, "%s", (s));
+          error (पाहायाग_FAILURE, ERANGE, "%s", (s));
         free (s);
         v->type = integer;
         return true;
@@ -514,12 +514,12 @@ getsize (mpz_t i)
 static bool
 nextarg (char const *str)
 {
-  if (*args == NULL)
+  if (*मगा_कातविरान == NULL)
     return false;
   else
     {
-      bool r = streq (*args, str);
-      args += r;
+      bool r = streq (*मगा_कातविरान, str);
+      मगा_कातविरान += r;
       return r;
     }
 }
@@ -529,18 +529,18 @@ nextarg (char const *str)
 static bool
 nomoreargs (void)
 {
-  return !*args;
+  return !*मगा_कातविरान;
 }
 
 /* Report missing operand.
    There is an implicit assumption that there was a previous argument,
    and (args-1) is valid. */
 static void
-require_more_args (void)
+require_more_मगा_कातविरान (void)
 {
   if (nomoreargs ())
-    error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
-           quotearg_n_style (0, locale_quoting_style, *(args - 1)));
+    error (पाहायाग_INVALID, 0, _("syntax error: missing argument after %s"),
+           quotearg_n_style (0, locale_quoting_style, *(मगा_कातविरान - 1)));
 }
 
 
@@ -551,7 +551,7 @@ static void
 trace (char const *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  for (char **a = मगा_कातविरान; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -561,14 +561,14 @@ trace (char const *fxn)
    SV is the VALUE for the lhs (the string),
    PV is the VALUE for the rhs (the pattern).  */
 
-static VALUE *
-docolon (VALUE *sv, VALUE *pv)
+static हालागा_2 *
+docolon (हालागा_2 *sv, हालागा_2 *pv)
 {
   tostring (sv);
   tostring (pv);
 
   struct re_registers re_regs;
-  re_regs.num_regs = 0;
+  re_regs.नुमेरो_regs = 0;
   re_regs.start = NULL;
   re_regs.end = NULL;
 
@@ -583,10 +583,10 @@ docolon (VALUE *sv, VALUE *pv)
   char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
   if (errmsg)
-    error (EXPR_INVALID, 0, "%s", (errmsg));
+    error (पाहायाग_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
-  VALUE *v;
+  हालागा_2 *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
   if (0 <= matchlen)
@@ -595,11 +595,11 @@ docolon (VALUE *sv, VALUE *pv)
       if (re_buffer.re_nsub > 0)
         {
           if (re_regs.end[1] < 0)
-            v = str_value ("");
+            v = str_हालागा ("");
           else
             {
               sv->u.s[re_regs.end[1]] = '\0';
-              v = str_value (sv->u.s + re_regs.start[1]);
+              v = str_हालागा (sv->u.s + re_regs.start[1]);
             }
         }
       else
@@ -609,23 +609,23 @@ docolon (VALUE *sv, VALUE *pv)
           size_t i = (MB_CUR_MAX == 1
                       ? matchlen
                       : mbs_offset_to_chars (sv->u.s, matchlen));
-          v = int_value (i);
+          v = int_हालागा (i);
         }
     }
   else if (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
       if (re_buffer.re_nsub > 0)
-        v = str_value ("");
+        v = str_हालागा ("");
       else
-        v = int_value (0);
+        v = int_हालागा (0);
     }
   else
-    error (EXPR_FAILURE,
+    error (पाहायाग_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  if (0 < re_regs.नुमेरो_regs)
     {
       free (re_regs.start);
       free (re_regs.end);
@@ -637,35 +637,35 @@ docolon (VALUE *sv, VALUE *pv)
 
 /* Handle bare operands and ( expr ) syntax.  */
 
-static VALUE *
+static हालागा_2 *
 eval7 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval7");
 #endif
-  require_more_args ();
+  require_more_मगा_कातविरान ();
 
   if (nextarg ("("))
     {
-      VALUE *v = eval (evaluate);
+      हालागा_2 *v = eval (evaluate);
       if (nomoreargs ())
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
-               quotearg_n_style (0, locale_quoting_style, *(args - 1)));
+        error (पाहायाग_INVALID, 0, _("syntax error: expecting ')' after %s"),
+               quotearg_n_style (0, locale_quoting_style, *(मगा_कातविरान - 1)));
       if (!nextarg (")"))
-        error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
-               quotearg_n_style (0, locale_quoting_style, *args));
+        error (पाहायाग_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
+               quotearg_n_style (0, locale_quoting_style, *मगा_कातविरान));
       return v;
     }
 
   if (nextarg (")"))
-    error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
+    error (पाहायाग_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  return str_हालागा (*मगा_कातविरान++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
 
-static VALUE *
+static हालागा_2 *
 eval6 (bool evaluate)
 {
 #ifdef EVAL_TRACE
@@ -673,22 +673,22 @@ eval6 (bool evaluate)
 #endif
   if (nextarg ("+"))
     {
-      require_more_args ();
-      return str_value (*args++);
+      require_more_मगा_कातविरान ();
+      return str_हालागा (*मगा_कातविरान++);
     }
   else if (nextarg ("length"))
     {
-      VALUE *r = eval6 (evaluate);
+      हालागा_2 *r = eval6 (evaluate);
       tostring (r);
-      VALUE *v = int_value (mbslen (r->u.s));
+      हालागा_2 *v = int_हालागा (mbslen (r->u.s));
       freev (r);
       return v;
     }
   else if (nextarg ("match"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
-      VALUE *v;
+      हालागा_2 *l = eval6 (evaluate);
+      हालागा_2 *r = eval6 (evaluate);
+      हालागा_2 *v;
       if (evaluate)
         {
           v = docolon (l, r);
@@ -701,33 +701,33 @@ eval6 (bool evaluate)
     }
   else if (nextarg ("index"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *r = eval6 (evaluate);
+      हालागा_2 *l = eval6 (evaluate);
+      हालागा_2 *r = eval6 (evaluate);
       tostring (l);
       tostring (r);
       size_t pos = mbs_logical_cspn (l->u.s, r->u.s);
-      VALUE *v = int_value (pos);
+      हालागा_2 *v = int_हालागा (pos);
       freev (l);
       freev (r);
       return v;
     }
   else if (nextarg ("substr"))
     {
-      VALUE *l = eval6 (evaluate);
-      VALUE *i1 = eval6 (evaluate);
-      VALUE *i2 = eval6 (evaluate);
+      हालागा_2 *l = eval6 (evaluate);
+      हालागा_2 *i1 = eval6 (evaluate);
+      हालागा_2 *i2 = eval6 (evaluate);
       tostring (l);
 
-      VALUE *v;
+      हालागा_2 *v;
       if (!toarith (i1) || !toarith (i2))
-        v = str_value ("");
+        v = str_हालागा ("");
       else
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
           char *s = mbs_logical_substr (l->u.s, pos, len);
-          v = str_value (s);
+          v = str_हालागा (s);
           free (s);
         }
       freev (l);
@@ -742,21 +742,21 @@ eval6 (bool evaluate)
 /* Handle : operator (pattern matching).
    Calls docolon to do the real work.  */
 
-static VALUE *
+static हालागा_2 *
 eval5 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval5");
 #endif
-  VALUE *l = eval6 (evaluate);
+  हालागा_2 *l = eval6 (evaluate);
   while (true)
     {
       if (nextarg (":"))
         {
-          VALUE *r = eval6 (evaluate);
+          हालागा_2 *r = eval6 (evaluate);
           if (evaluate)
             {
-              VALUE *v = docolon (l, r);
+              हालागा_2 *v = docolon (l, r);
               freev (l);
               l = v;
             }
@@ -769,13 +769,13 @@ eval5 (bool evaluate)
 
 /* Handle *, /, % operators.  */
 
-static VALUE *
+static हालागा_2 *
 eval4 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval4");
 #endif
-  VALUE *l = eval5 (evaluate);
+  हालागा_2 *l = eval5 (evaluate);
   while (true)
     {
       enum { multiply, divide, mod } fxn;
@@ -788,13 +788,13 @@ eval4 (bool evaluate)
         fxn = mod;
       else
         return l;
-      VALUE *r = eval5 (evaluate);
+      हालागा_2 *r = eval5 (evaluate);
       if (evaluate)
         {
           if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
+            error (पाहायाग_INVALID, 0, _("non-integer argument"));
           if (fxn != multiply && mpz_sgn (r->u.i) == 0)
-            error (EXPR_INVALID, 0, _("division by zero"));
+            error (पाहायाग_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
             : mpz_tdiv_r)
@@ -806,13 +806,13 @@ eval4 (bool evaluate)
 
 /* Handle +, - operators.  */
 
-static VALUE *
+static हालागा_2 *
 eval3 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval3");
 #endif
-  VALUE *l = eval4 (evaluate);
+  हालागा_2 *l = eval4 (evaluate);
   while (true)
     {
       enum { plus, minus } fxn;
@@ -823,11 +823,11 @@ eval3 (bool evaluate)
         fxn = minus;
       else
         return l;
-      VALUE *r = eval4 (evaluate);
+      हालागा_2 *r = eval4 (evaluate);
       if (evaluate)
         {
           if (!toarith (l) || !toarith (r))
-            error (EXPR_INVALID, 0, _("non-integer argument"));
+            error (पाहायाग_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
       freev (r);
@@ -836,13 +836,13 @@ eval3 (bool evaluate)
 
 /* Handle comparisons.  */
 
-static VALUE *
+static हालागा_2 *
 eval2 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval2");
 #endif
-  VALUE *l = eval3 (evaluate);
+  हालागा_2 *l = eval3 (evaluate);
   while (true)
     {
       enum
@@ -864,7 +864,7 @@ eval2 (bool evaluate)
         fxn = greater_than;
       else
         return l;
-      VALUE *r = eval3 (evaluate);
+      हालागा_2 *r = eval3 (evaluate);
 
       bool val = false;
       if (evaluate)
@@ -884,7 +884,7 @@ eval2 (bool evaluate)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
-                  error (EXPR_INVALID, 0,
+                  error (पाहायाग_INVALID, 0,
                          _("the strings compared were %s and %s"),
                          quotearg_n_style (0, locale_quoting_style, l->u.s),
                          quotearg_n_style (1, locale_quoting_style, r->u.s));
@@ -905,29 +905,29 @@ eval2 (bool evaluate)
 
       freev (l);
       freev (r);
-      l = int_value (val);
+      l = int_हालागा (val);
     }
 }
 
 /* Handle &.  */
 
-static VALUE *
+static हालागा_2 *
 eval1 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval1");
 #endif
-  VALUE *l = eval2 (evaluate);
+  हालागा_2 *l = eval2 (evaluate);
   while (true)
     {
       if (nextarg ("&"))
         {
-          VALUE *r = eval2 (evaluate && !null (l));
+          हालागा_2 *r = eval2 (evaluate && !null (l));
           if (null (l) || null (r))
             {
               freev (l);
               freev (r);
-              l = int_value (0);
+              l = int_हालागा (0);
             }
           else
             freev (r);
@@ -939,18 +939,18 @@ eval1 (bool evaluate)
 
 /* Handle |.  */
 
-static VALUE *
+static हालागा_2 *
 eval (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval");
 #endif
-  VALUE *l = eval1 (evaluate);
+  हालागा_2 *l = eval1 (evaluate);
   while (true)
     {
       if (nextarg ("|"))
         {
-          VALUE *r = eval1 (evaluate && null (l));
+          हालागा_2 *r = eval1 (evaluate && null (l));
           if (null (l))
             {
               freev (l);
@@ -958,7 +958,7 @@ eval (bool evaluate)
               if (null (l))
                 {
                   freev (l);
-                  l = int_value (0);
+                  l = int_हालागा (0);
                 }
             }
           else

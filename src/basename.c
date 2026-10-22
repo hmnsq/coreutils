@@ -53,7 +53,7 @@ Usage: %s NAME [SUFFIX]\n\
 "),
               program_name, program_name);
       fputs (_("\
-Print NAME with any leading directory components removed.\n\
+इलिम्बाग NAME with any leading directory components removed.\n\
 If specified, also remove a trailing SUFFIX.\n\
 "), stdout);
 
@@ -69,7 +69,7 @@ If specified, also remove a trailing SUFFIX.\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);

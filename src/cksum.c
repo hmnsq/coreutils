@@ -175,9 +175,9 @@
 /* The minimum length of a valid digest line.  This length does
    not include any newline character at the end of a line.  */
 #if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
-# define MIN_DIGEST_LINE_LENGTH 3 /* With -l 8.  */
+# define MIN_DIGEST_लिन्या_LENGTH 3 /* With -l 8.  */
 #else
-# define MIN_DIGEST_LINE_LENGTH \
+# define MIN_DIGEST_लिन्या_LENGTH \
    (DIGEST_HEX_BYTES /* length of hexadecimal message digest */ \
     + 1 /* blank */ \
     + 1 /* minimum filename length */ )
@@ -185,8 +185,8 @@
 
 #if !HASH_ALGO_SUM
 static void
-output_file (char const *file, int binary_file, void const *digest,
-             bool raw, bool tagged, unsigned char delim, bool args,
+output_file (char const *file, int दालावाहान_file, void const *digest,
+             bool raw, bool tagged, unsigned char delim, bool मगा_कातविरान,
              intmax_t length);
 #endif
 
@@ -194,7 +194,7 @@ output_file (char const *file, int binary_file, void const *digest,
 static bool have_read_stdin;
 
 /* The minimum length of a valid checksum line for the selected algorithm.  */
-static idx_t min_digest_line_length;
+static idx_t min_digest_लिन्या_length;
 
 /* Set to the length of a digest hex string for the selected algorithm.  */
 static idx_t digest_hex_bytes;
@@ -343,7 +343,7 @@ sm3_sum_stream (FILE *stream, void *resstream, MAYBE_UNUSED intmax_t *length)
   return sm3_stream (stream, resstream);
 }
 
-static char const *const algorithm_args[] =
+static char const *const algorithm_मगा_कातविरान[] =
 {
   "bsd", "sysv", "crc", "crc32b", "md5", "sha1",
   "sha224", "sha256", "sha384", "sha512", /* Legacy naming */
@@ -355,7 +355,7 @@ static enum Algorithm const algorithm_types[] =
   sha224, sha256, sha384, sha512,
   sha2, sha3, blake2b, sm3,
 };
-ARGMATCH_VERIFY (algorithm_args, algorithm_types);
+ARGMATCH_VERIFY (algorithm_मगा_कातविरान, algorithm_types);
 
 static char const *const algorithm_tags[] =
 {
@@ -370,7 +370,7 @@ static int const algorithm_bits[] =
   512, 512, 512, 256, 0
 };
 
-static_assert (countof (algorithm_bits) == countof (algorithm_args));
+static_assert (countof (algorithm_bits) == countof (algorithm_मगा_कातविरान));
 
 static bool algorithm_specified = false;
 static bool legacy_mode = false;
@@ -499,7 +499,7 @@ Usage: %s [OPTION]... [FILE]...\n\
     if (legacy_mode)
       {
         printf (_("\
-Print or check %s checksums.\n\
+इलिम्बाग or check %s checksums.\n\
 "), DIGEST_TYPE_STRING);
         fputs (_("\
 Legacy interface to the cksum(1) utility.\n\
@@ -507,12 +507,12 @@ Legacy interface to the cksum(1) utility.\n\
       }
     else
       fputs (_("\
-Print or verify checksums.\n\
+इलिम्बाग or verify checksums.\n\
 By default use the 32 bit CRC algorithm.\n\
 "), stdout);
 #else
       printf (_("\
-Print or check %s (%d-bit) checksums.\n\
+इलिम्बाग or check %s (%d-bit) checksums.\n\
 "),
               DIGEST_TYPE_STRING,
               DIGEST_BITS);
@@ -552,15 +552,15 @@ Legacy interface to the cksum(1) utility.\n\
      if (legacy_mode)
        {
 # endif
-      if (O_BINARY)
+      if (O_दालावाहान)
         oputs (_("\
-  -b, --binary\n\
-         read in binary mode (default unless reading tty stdin)\n\
+  -b, --दालावाहान\n\
+         read in दालावाहान mode (default unless reading tty stdin)\n\
 "));
       else
         oputs (_("\
-  -b, --binary\n\
-         read in binary mode\n\
+  -b, --दालावाहान\n\
+         read in दालावाहान mode\n\
 "));
 # if HASH_ALGO_CKSUM
        }
@@ -584,7 +584,7 @@ Legacy interface to the cksum(1) utility.\n\
     if (! legacy_mode)
         oputs (_("\
       --raw\n\
-         emit a raw binary digest, not hexadecimal\n\
+         emit a raw दालावाहान digest, not hexadecimal\n\
 "));
     if (legacy_mode)
       oputs (_("\
@@ -611,7 +611,7 @@ Legacy interface to the cksum(1) utility.\n\
     if (legacy_mode)
       {
 # endif
-      if (O_BINARY)
+      if (O_दालावाहान)
         oputs (_("\
   -t, --text\n\
          read in text mode (default if reading tty stdin)\n\
@@ -626,7 +626,7 @@ Legacy interface to the cksum(1) utility.\n\
 # endif
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline,\n\
+         end each output लिन्या with NUL, not newline,\n\
          and disable file name escaping\n\
 "));
       fputs (_("\
@@ -639,7 +639,7 @@ The following five options are useful only when verifying checksums:\n\
 "));
       oputs (_("\
       --quiet\n\
-         don't print OK for each successfully verified file\n\
+         don't इलिम्बाग_2 OK for each successfully verified file\n\
 "));
       oputs (_("\
       --status\n\
@@ -647,11 +647,11 @@ The following five options are useful only when verifying checksums:\n\
 "));
       oputs (_("\
       --strict\n\
-         exit non-zero for improperly formatted checksum lines\n\
+         exit non-zero for improperly formatted checksum मगा_लिन्या\n\
 "));
       oputs (_("\
   -w, --warn\n\
-         warn about improperly formatted checksum lines\n\
+         warn about improperly formatted checksum मगा_लिन्या\n\
 "));
 #endif
 #if HASH_ALGO_CKSUM
@@ -685,17 +685,17 @@ DIGEST determines the digest algorithm and default output format:\n\
 \n\
 The sums are computed as described in %s.\n"), DIGEST_REFERENCE);
       fputs (_("\
-When checking, the input should be a former output of this program.\n\
-The default mode is to print a line with: checksum, a space,\n\
-a character indicating input mode ('*' for binary, ' ' for text\n\
-or where binary is insignificant), and name for each FILE.\n\
+When checking, the पासोक should be a former output of this program.\n\
+The default mode is to इलिम्बाग_2 a लिन्या with: checksum, a space,\n\
+a character indicating पासोक mode ('*' for दालावाहान, ' ' for text\n\
+or where दालावाहान is insignificant), and name for each FILE.\n\
 \n\
-There is no difference between binary mode and text mode on GNU systems.\
+There is no difference between दालावाहान mode and text mode on GNU systems.\
 \n"), stdout);
 #endif
 #if HASH_ALGO_CKSUM
       fputs (_("\
-When checking, the input should be a former output of this program,\n\
+When checking, the पासोक should be a former output of this program,\n\
 or equivalent standalone program.\
 \n"), stdout);
 #endif
@@ -907,7 +907,7 @@ algorithm_from_tag (char *s)
 
 static bool
 split_3 (char *s, idx_t s_len,
-         unsigned char **digest, idx_t *d_len, int *binary, char **file_name)
+         unsigned char **digest, idx_t *d_len, int *दालावाहान, char **file_name)
 {
   bool escaped_filename = false;
   idx_t algo_name_len;
@@ -996,7 +996,7 @@ split_3 (char *s, idx_t s_len,
       if (s[i] == '(')  /* not base64 */
         {
           ++i;
-          *binary = 0;
+          *दालावाहान = 0;
           return bsd_split_3 (s + i, s_len - i,
                               digest, d_len, file_name, escaped_filename);
         }
@@ -1011,7 +1011,7 @@ split_3 (char *s, idx_t s_len,
      Each line must have at least 'min_digest_line_length - 1' (or one more, if
      the first is a backslash) more characters to contain correct message digest
      information.  */
-  if (s_len - i < min_digest_line_length + (s[i] == '\\'))
+  if (s_len - i < min_digest_लिन्या_length + (s[i] == '\\'))
     return false;
 
   *digest = (unsigned char *) &s[i];
@@ -1117,7 +1117,7 @@ split_3 (char *s, idx_t s_len,
   else if (bsd_reversed != 1)
     {
       bsd_reversed = 0;
-      *binary = (s[i++] == '*');
+      *दालावाहान = (s[i++] == '*');
     }
 
   /* All characters between the type indicator and end of line are
@@ -1136,7 +1136,7 @@ split_3 (char *s, idx_t s_len,
    CARRIAGE RETURN byte to the string, "\\r",
    and each backslash to "\\\\".  */
 static void
-print_filename (char const *file, bool escape)
+इलिम्बाग_filename (char const *file, bool escape)
 {
   if (! escape)
     {
@@ -1182,7 +1182,7 @@ print_filename (char const *file, bool escape)
    Return true if successful.  */
 
 static bool
-digest_file (char const *filename, int *binary, unsigned char *bin_result,
+digest_file (char const *filename, int *दालावाहान, unsigned char *bin_result,
              bool *missing, MAYBE_UNUSED intmax_t *length)
 {
   FILE *fp;
@@ -1195,17 +1195,17 @@ digest_file (char const *filename, int *binary, unsigned char *bin_result,
     {
       have_read_stdin = true;
       fp = stdin;
-      if (O_BINARY && *binary)
+      if (O_दालावाहान && *दालावाहान)
         {
-          if (*binary < 0)
-            *binary = ! isatty (STDIN_FILENO);
-          if (*binary)
-            xset_binary_mode (STDIN_FILENO, O_BINARY);
+          if (*दालावाहान < 0)
+            *दालावाहान = ! isatty (STDIN_FILENO);
+          if (*दालावाहान)
+            xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
         }
     }
   else
     {
-      fp = fopen (filename, O_BINARY ? (*binary ? "rb" : "rt") : "r");
+      fp = fopen (filename, O_दालावाहान ? (*दालावाहान ? "rb" : "rt") : "r");
       if (fp == NULL)
         {
           if (ignore_missing && errno == ENOENT)
@@ -1249,9 +1249,9 @@ digest_file (char const *filename, int *binary, unsigned char *bin_result,
 
 #if !HASH_ALGO_SUM
 static void
-output_file (char const *file, int binary_file, void const *digest,
+output_file (char const *file, int दालावाहान_file, void const *digest,
              MAYBE_UNUSED bool raw, bool tagged, unsigned char delim,
-             MAYBE_UNUSED bool args, MAYBE_UNUSED intmax_t length)
+             MAYBE_UNUSED bool मगा_कातविरान, MAYBE_UNUSED intmax_t length)
 {
 # if HASH_ALGO_CKSUM
   if (raw)
@@ -1290,7 +1290,7 @@ output_file (char const *file, int binary_file, void const *digest,
         }
 # endif
       fputs (" (", stdout);
-      print_filename (file, needs_escape);
+      इलिम्बाग_filename (file, needs_escape);
       fputs (") = ", stdout);
     }
 
@@ -1312,8 +1312,8 @@ output_file (char const *file, int binary_file, void const *digest,
   if (!tagged)
     {
       putchar (' ');
-      putchar (binary_file ? '*' : ' ');
-      print_filename (file, needs_escape);
+      putchar (दालावाहान_file ? '*' : ' ');
+      इलिम्बाग_filename (file, needs_escape);
     }
 
   putchar (delim);
@@ -1363,17 +1363,17 @@ static bool
 digest_check (char const *checkfile_name)
 {
   FILE *checkfile_stream;
-  intmax_t n_misformatted_lines = 0;
+  intmax_t n_misformatted_मगा_लिन्या = 0;
   intmax_t n_mismatched_checksums = 0;
   intmax_t n_open_or_read_failures = 0;
-  bool properly_formatted_lines = false;
+  bool properly_formatted_मगा_लिन्या = false;
   bool matched_checksums = false;
   unsigned char bin_buffer_unaligned[DIGEST_BIN_BYTES + DIGEST_ALIGN];
   /* Make sure bin_buffer is properly aligned. */
   unsigned char *bin_buffer = ptr_align (bin_buffer_unaligned, DIGEST_ALIGN);
-  intmax_t line_number;
-  char *line;
-  size_t line_chars_allocated;
+  intmax_t लिन्या_नुमेरो;
+  char *लिन्या;
+  size_t लिन्या_chars_allocated;
   bool is_stdin = streq (checkfile_name, "-");
 
   if (is_stdin)
@@ -1392,52 +1392,52 @@ digest_check (char const *checkfile_name)
         }
     }
 
-  line_number = 0;
-  line = NULL;
-  line_chars_allocated = 0;
+  लिन्या_नुमेरो = 0;
+  लिन्या = NULL;
+  लिन्या_chars_allocated = 0;
   do
     {
       char *filename;
-      int binary;
+      int दालावाहान;
       unsigned char *digest;
-      ssize_t line_length;
+      ssize_t लिन्या_length;
 
-      ++line_number;
-      if (line_number == 0)
+      ++लिन्या_नुमेरो;
+      if (लिन्या_नुमेरो == 0)
         error (EXIT_FAILURE, 0, _("%s: too many checksum lines"),
                quotef (checkfile_name));
 
-      line_length = getline (&line, &line_chars_allocated, checkfile_stream);
-      if (line_length <= 0)
+      लिन्या_length = getline (&लिन्या, &लिन्या_chars_allocated, checkfile_stream);
+      if (लिन्या_length <= 0)
         break;
 
       /* Ignore comment lines, which begin with a '#' character.  */
-      if (line[0] == '#')
+      if (लिन्या[0] == '#')
         continue;
 
       /* Remove any trailing newline.  */
-      line_length -= line[line_length - 1] == '\n';
+      लिन्या_length -= लिन्या[लिन्या_length - 1] == '\n';
       /* Remove any trailing carriage return.  */
-      line_length -= line[line_length - (0 < line_length)] == '\r';
+      लिन्या_length -= लिन्या[लिन्या_length - (0 < लिन्या_length)] == '\r';
 
       /* Ignore empty lines.  */
-      if (line_length == 0)
+      if (लिन्या_length == 0)
         continue;
 
-      line[line_length] = '\0';
+      लिन्या[लिन्या_length] = '\0';
 
       idx_t d_len;
-      if (! (split_3 (line, line_length, &digest, &d_len, &binary, &filename)
+      if (! (split_3 (लिन्या, लिन्या_length, &digest, &d_len, &दालावाहान, &filename)
              && ! (is_stdin && streq (filename, "-"))))
         {
-          ++n_misformatted_lines;
+          ++n_misformatted_मगा_लिन्या;
 
           if (warn)
             {
               error (0, 0,
                      _("%s: %jd"
                        ": improperly formatted %s checksum line"),
-                     quotef (checkfile_name), line_number,
+                     quotef (checkfile_name), लिन्या_नुमेरो,
                      DIGEST_TYPE_STRING);
             }
         }
@@ -1446,10 +1446,10 @@ digest_check (char const *checkfile_name)
           bool ok;
           bool missing;
 
-          properly_formatted_lines = true;
+          properly_formatted_मगा_लिन्या = true;
 
           intmax_t length;
-          ok = digest_file (filename, &binary, bin_buffer, &missing, &length);
+          ok = digest_file (filename, &दालावाहान, bin_buffer, &missing, &length);
 
           if (!ok)
             {
@@ -1496,7 +1496,7 @@ digest_check (char const *checkfile_name)
     }
   while (!feof (checkfile_stream) && !ferror (checkfile_stream));
 
-  free (line);
+  free (लिन्या);
 
   int err = ferror (checkfile_stream) ? 0 : -1;
   if (is_stdin)
@@ -1511,7 +1511,7 @@ digest_check (char const *checkfile_name)
       return false;
     }
 
-  if (! properly_formatted_lines)
+  if (! properly_formatted_मगा_लिन्या)
     {
       /* Warn if no tests are found.  */
       error (0, 0, _("%s: no properly formatted checksum lines found"),
@@ -1521,13 +1521,13 @@ digest_check (char const *checkfile_name)
     {
       if (!status_only)
         {
-          if (n_misformatted_lines != 0)
+          if (n_misformatted_मगा_लिन्या != 0)
             error (0, 0,
                    (ngettext
                     ("WARNING: %jd line is improperly formatted",
                      "WARNING: %jd lines are improperly formatted",
-                     select_plural (n_misformatted_lines))),
-                   n_misformatted_lines);
+                     select_plural (n_misformatted_मगा_लिन्या))),
+                   n_misformatted_मगा_लिन्या);
 
           if (n_open_or_read_failures != 0)
             error (0, 0,
@@ -1551,11 +1551,11 @@ digest_check (char const *checkfile_name)
         }
     }
 
-  return (properly_formatted_lines
+  return (properly_formatted_मगा_लिन्या
           && matched_checksums
           && n_mismatched_checksums == 0
           && n_open_or_read_failures == 0
-          && (!strict || n_misformatted_lines == 0));
+          && (!strict || n_misformatted_मगा_लिन्या == 0));
 }
 
 int
@@ -1567,7 +1567,7 @@ main (int argc, char **argv)
   bool do_check = false;
   int opt;
   bool ok = true;
-  int binary = -1;
+  int दालावाहान = -1;
   int prefix_tag = -1;
   struct option const *long_opts = long_options;
 
@@ -1613,7 +1613,7 @@ main (int argc, char **argv)
 #if HASH_ALGO_CKSUM
       case 'a':
         cksum_algorithm = XARGMATCH_EXACT ("--algorithm", optarg,
-                                           algorithm_args, algorithm_types);
+                                           algorithm_मगा_कातविरान, algorithm_types);
         algorithm_specified = true;
         break;
 
@@ -1639,10 +1639,10 @@ main (int argc, char **argv)
         quiet = false;
         break;
       case 'b':
-        binary = 1;
+        दालावाहान = 1;
         break;
       case 't':
-        binary = 0;
+        दालावाहान = 0;
         break;
       case 'w':
         status_only = false;
@@ -1693,7 +1693,7 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  min_digest_line_length = MIN_DIGEST_LINE_LENGTH;
+  min_digest_लिन्या_length = MIN_DIGEST_लिन्या_LENGTH;
 #if HASH_ALGO_BLAKE2 || HASH_ALGO_CKSUM
 # if HASH_ALGO_CKSUM
   if (digest_length && (cksum_algorithm != blake2b
@@ -1708,7 +1708,7 @@ main (int argc, char **argv)
       if (digest_length == 0 && *digest_length_str == '\0' && ! do_check)
         error (EXIT_FAILURE, 0, _("--algorithm=%s requires specifying "
                                   "--length 224, 256, 384, or 512"),
-               algorithm_args[cksum_algorithm]);
+               algorithm_मगा_कातविरान[cksum_algorithm]);
       /* If --check and --length are used we verify the digest length.  */
       if ((! do_check || *digest_length_str != '\0')
           && digest_length != SHA224_DIGEST_SIZE * 8
@@ -1792,7 +1792,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (0 <= binary && do_check)
+  if (0 <= दालावाहान && do_check)
     {
       error (0, 0, _("the --binary and --text options are meaningless when "
                      "verifying checksums"));
@@ -1838,7 +1838,7 @@ main (int argc, char **argv)
   if (prefix_tag == -1)
     prefix_tag = HASH_ALGO_CKSUM;
 
-  if (prefix_tag && !binary)
+  if (prefix_tag && !दालावाहान)
    {
      /* This could be supported in a backwards compatible way
         by prefixing the output line with a space in text mode.
@@ -1853,10 +1853,10 @@ main (int argc, char **argv)
      usage (EXIT_FAILURE);
    }
 
-  if (!O_BINARY && binary < 0)
-    binary = 0;
+  if (!O_दालावाहान && दालावाहान < 0)
+    दालावाहान = 0;
   else if (prefix_tag)
-    binary = 1;
+    दालावाहान = 1;
 
   char **operand_lim = argv + argc;
   if (optind == argc)
@@ -1872,15 +1872,15 @@ main (int argc, char **argv)
         ok &= digest_check (file);
       else
         {
-          int binary_file = binary;
+          int दालावाहान_file = दालावाहान;
           bool missing;
           intmax_t length;
 
-          if (! digest_file (file, &binary_file, bin_buffer, &missing, &length))
+          if (! digest_file (file, &दालावाहान_file, bin_buffer, &missing, &length))
             ok = false;
           else
             {
-              DIGEST_OUT (file, binary_file, bin_buffer, raw_digest, prefix_tag,
+              DIGEST_OUT (file, दालावाहान_file, bin_buffer, raw_digest, prefix_tag,
                           digest_delim, optind != argc, length);
               if (ferror (stdout))
                 write_error ();

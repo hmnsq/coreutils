@@ -66,7 +66,7 @@ static enum
     CHECK_ORDER_DEFAULT,
     CHECK_ORDER_ENABLED,
     CHECK_ORDER_DISABLED
-  } check_input_order;
+  } check_पासोक_order;
 
 /* Output columns will be delimited with this string, which may be set
    on the command-line with --output-delimiter=STR.  */
@@ -108,35 +108,35 @@ Usage: %s [OPTION]... FILE1 FILE2\n\
 "),
               program_name);
       fputs (_("\
-Compare sorted files FILE1 and FILE2 line by line.\n\
+Compare sorted files FILE1 and FILE2 लिन्या by लिन्या.\n\
 "), stdout);
       fputs (_("\
 \n\
-When FILE1 or FILE2 is -, read standard input.\n\
+When FILE1 or FILE2 is -, read standard पासोक.\n\
 "), stdout);
       fputs (_("\
 \n\
 With no options, produce three-column output.  Column one contains\n\
-lines unique to FILE1, column two contains lines unique to FILE2,\n\
-and column three contains lines common to both files.\n\
+मगा_लिन्या unique to FILE1, column two contains मगा_लिन्या unique to FILE2,\n\
+and column three contains मगा_लिन्या common to both files.\n\
 "), stdout);
       oputs (_("\
-  -1     suppress column 1 (lines unique to FILE1)\n\
+  -1     suppress column 1 (मगा_लिन्या unique to FILE1)\n\
 "));
       oputs (_("\
-  -2     suppress column 2 (lines unique to FILE2)\n\
+  -2     suppress column 2 (मगा_लिन्या unique to FILE2)\n\
 "));
       oputs (_("\
-  -3     suppress column 3 (lines that appear in both files)\n\
+  -3     suppress column 3 (मगा_लिन्या that appear in both files)\n\
 "));
       oputs (_("\
       --check-order\n\
-         check that the input is correctly sorted,\n\
-         even if all input lines are pairable\n\
+         check that the पासोक is correctly sorted,\n\
+         even if all पासोक मगा_लिन्या are pairable\n\
 "));
       oputs (_("\
       --nocheck-order\n\
-         do not check that the input is correctly sorted\n\
+         do not check that the पासोक is correctly sorted\n\
 "));
       oputs (_("\
       --output-delimiter=STR\n\
@@ -148,7 +148,7 @@ and column three contains lines common to both files.\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         लिन्या delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -159,8 +159,8 @@ Comparisons honor the rules specified by 'LC_COLLATE'.\n\
       printf (_("\
 \n\
 Examples:\n\
-  %s -12 file1 file2  Print only lines present in both file1 and file2.\n\
-  %s -3 file1 file2  Print lines in file1 not in file2, and vice versa.\n\
+  %s -12 file1 file2  इलिम्बाग only मगा_लिन्या present in both file1 and file2.\n\
+  %s -3 file1 file2  इलिम्बाग मगा_लिन्या in file1 not in file2, and vice versa.\n\
 "),
               program_name, program_name);
       emit_ancillary_info (PROGRAM_NAME);
@@ -174,7 +174,7 @@ Examples:\n\
    2 for a line only in file 2, 3 for a line in both. */
 
 static void
-writeline (struct linebuffer const *line, int class)
+writeline (struct linebuffer const *लिन्या, int class)
 {
   switch (class)
     {
@@ -200,7 +200,7 @@ writeline (struct linebuffer const *line, int class)
       break;
     }
 
-  fwrite (line->buffer, sizeof (char), line->length, stdout);
+  fwrite (लिन्या->buffer, sizeof (char), लिन्या->length, stdout);
 
   if (ferror (stdout))
     write_error ();
@@ -223,8 +223,8 @@ check_order (struct linebuffer const *prev,
              int whatfile)
 {
 
-  if (check_input_order != CHECK_ORDER_DISABLED
-      && ((check_input_order == CHECK_ORDER_ENABLED) || seen_unpairable))
+  if (check_पासोक_order != CHECK_ORDER_DISABLED
+      && ((check_पासोक_order == CHECK_ORDER_ENABLED) || seen_unpairable))
     {
       if (!issued_disorder_warning[whatfile - 1])
         {
@@ -239,7 +239,7 @@ check_order (struct linebuffer const *prev,
 
           if (0 < order)
             {
-              error ((check_input_order == CHECK_ORDER_ENABLED
+              error ((check_पासोक_order == CHECK_ORDER_ENABLED
                       ? EXIT_FAILURE : 0),
                      0, _("file %d is not in sorted order"), whatfile);
 
@@ -270,7 +270,7 @@ compare_files (char **infiles)
   /* all_line[i][alt[i][0]] also points to the linebuffer holding the
      current line in file i. We keep two buffers of history around so we
      can look two lines back when we get to the end of a file. */
-  struct linebuffer *all_line[2][4];
+  struct linebuffer *all_लिन्या[2][4];
 
   /* This is used to rotate through the buffers for each input file. */
   int alt[2][3];
@@ -287,7 +287,7 @@ compare_files (char **infiles)
       for (int j = 0; j < 4; j++)
         {
           initbuffer (&lba[i][j]);
-          all_line[i][j] = &lba[i][j];
+          all_लिन्या[i][j] = &lba[i][j];
         }
       alt[i][0] = 0;
       alt[i][1] = 0;
@@ -298,7 +298,7 @@ compare_files (char **infiles)
 
       fadvise (streams[i], FADVISE_SEQUENTIAL);
 
-      thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]], streams[i],
+      thisline[i] = readlinebuffer_delim (all_लिन्या[i][alt[i][0]], streams[i],
                                           delim);
       if (ferror (streams[i]))
         error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
@@ -368,18 +368,18 @@ compare_files (char **infiles)
             alt[i][1] = alt[i][0];
             alt[i][0] = (alt[i][0] + 1) & 0x03;
 
-            thisline[i] = readlinebuffer_delim (all_line[i][alt[i][0]],
+            thisline[i] = readlinebuffer_delim (all_लिन्या[i][alt[i][0]],
                                                 streams[i], delim);
 
             if (thisline[i])
-              check_order (all_line[i][alt[i][1]], thisline[i], i + 1);
+              check_order (all_लिन्या[i][alt[i][1]], thisline[i], i + 1);
 
             /* If this is the end of the file we may need to re-check
                the order of the previous two lines, since we might have
                discovered an unpairable match since we checked before. */
-            else if (all_line[i][alt[i][2]]->buffer)
-              check_order (all_line[i][alt[i][2]],
-                           all_line[i][alt[i][1]], i + 1);
+            else if (all_लिन्या[i][alt[i][2]]->buffer)
+              check_order (all_लिन्या[i][alt[i][2]],
+                           all_लिन्या[i][alt[i][1]], i + 1);
 
             if (ferror (streams[i]))
               error (EXIT_FAILURE, errno, "%s", quotef (infiles[i]));
@@ -456,11 +456,11 @@ main (int argc, char **argv)
         break;
 
       case NOCHECK_ORDER_OPTION:
-        check_input_order = CHECK_ORDER_DISABLED;
+        check_पासोक_order = CHECK_ORDER_DISABLED;
         break;
 
       case CHECK_ORDER_OPTION:
-        check_input_order = CHECK_ORDER_ENABLED;
+        check_पासोक_order = CHECK_ORDER_ENABLED;
         break;
 
       case OUTPUT_DELIMITER_OPTION:

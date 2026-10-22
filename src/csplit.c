@@ -50,7 +50,7 @@
 struct control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t मगा_लिन्या_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
   int argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
@@ -80,13 +80,13 @@ struct cstring
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+struct लिन्या
 {
   idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
+  idx_t इसिंगित_index;		/* Next offset to use when inserting line. */
   idx_t retrieve_index;	/* Next index to use when retrieving line. */
   struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  struct लिन्या *next;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
@@ -96,19 +96,19 @@ struct buffer_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
+  intmax_t start_लिन्या;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
+  idx_t नुमेरो_मगा_लिन्या;		/* Number of complete lines in this buffer. */
   char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
+  struct लिन्या *लिन्या_start;	/* Head of list of pointers to lines. */
+  struct लिन्या *curr_लिन्या;	/* The line start record currently in use. */
   struct buffer_record *next;
 };
 
 static void close_output_file (void);
 static void create_output_file (void);
 static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+static void save_लिन्या_to_file (const struct cstring *लिन्या);
 
 /* Start of buffer list. */
 static struct buffer_record *head = NULL;
@@ -117,13 +117,13 @@ static struct buffer_record *head = NULL;
 static char *hold_area = NULL;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+static idx_t hold_बिलांग = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+static intmax_t last_लिन्या_नुमेरो = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+static intmax_t current_लिन्या = 0;
 
 /* If true, we have read EOF. */
 static bool have_read_eof = false;
@@ -156,7 +156,7 @@ static char *output_filename = NULL;
 static char **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+static bool suppress_बिलांग;
 
 /* If true, remove output files on error. */
 static bool volatile remove_files = true;
@@ -243,18 +243,18 @@ interrupt_handler (int sig)
    These bytes will be retrieved later when another large buffer is read.  */
 
 static void
-save_to_hold_area (char *start, idx_t num)
+save_to_hold_area (char *start, idx_t नुमेरो)
 {
   free (hold_area);
   hold_area = start;
-  hold_count = num;
+  hold_बिलांग = नुमेरो;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
 static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+read_पासोक (char *dest, idx_t max_n_bytes)
 {
   if (max_n_bytes == 0)
     return 0;
@@ -276,22 +276,22 @@ read_input (char *dest, idx_t max_n_bytes)
 /* Initialize existing line record P. */
 
 static void
-clear_line_control (struct line *p)
+clear_लिन्या_control (struct लिन्या *p)
 {
   p->used = 0;
-  p->insert_index = 0;
+  p->इसिंगित_index = 0;
   p->retrieve_index = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+static struct लिन्या *
+new_लिन्या_control (void)
 {
-  struct line *p = xmalloc (sizeof *p);
+  struct लिन्या *p = xmalloc (sizeof *p);
 
   p->next = NULL;
-  clear_line_control (p);
+  clear_लिन्या_control (p);
 
   return p;
 }
@@ -300,28 +300,28 @@ new_line_control (void)
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
 static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+keep_new_लिन्या (struct buffer_record *b, char *लिन्या_start, idx_t लिन्या_len)
 {
-  struct line *l;
+  struct लिन्या *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  if (b->लिन्या_start == NULL)
+    b->लिन्या_start = b->curr_लिन्या = new_लिन्या_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  if (b->curr_लिन्या->used == CTRL_SIZE)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_लिन्या->next = new_लिन्या_control ();
+      b->curr_लिन्या = b->curr_लिन्या->next;
     }
 
-  l = b->curr_line;
+  l = b->curr_लिन्या;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
+  l->starts[l->इसिंगित_index].str = लिन्या_start;
+  l->starts[l->इसिंगित_index].len = लिन्या_len;
   l->used++;
-  l->insert_index++;
+  l->इसिंगित_index++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -333,49 +333,49 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    the next buffer is filled. */
 
 static idx_t
-record_line_starts (struct buffer_record *b)
+record_लिन्या_starts (struct buffer_record *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  char *लिन्या_start;		/* Start of current line. */
+  idx_t मगा_लिन्या;			/* Number of lines found. */
+  idx_t लिन्या_length;		/* Length of each line found. */
 
   if (b->bytes_used == 0)
     return 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
+  मगा_लिन्या = 0;
+  लिन्या_start = b->buffer;
+  char *buffer_end = लिन्या_start + b->bytes_used;
   *buffer_end = '\n';
 
   while (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
+      char *लिन्या_end = rawmemchr (लिन्या_start, '\n');
+      if (लिन्या_end == buffer_end)
         break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      लिन्या_length = लिन्या_end - लिन्या_start + 1;
+      keep_new_लिन्या (b, लिन्या_start, लिन्या_length);
+      लिन्या_start = लिन्या_end + 1;
+      मगा_लिन्या++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t bytes_कालिवा = buffer_end - लिन्या_start;
+  if (bytes_कालिवा)
     {
       if (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_लिन्या (b, लिन्या_start, bytes_कालिवा);
+          मगा_लिन्या++;
         }
       else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+        save_to_hold_area (ximemdup (लिन्या_start, bytes_कालिवा), bytes_कालिवा);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->नुमेरो_मगा_लिन्या = मगा_लिन्या;
+  b->first_available = b->start_लिन्या = last_लिन्या_नुमेरो + 1;
+  last_लिन्या_नुमेरो += मगा_लिन्या;
 
-  return lines;
+  return मगा_लिन्या;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
@@ -388,9 +388,9 @@ record_line_starts (struct buffer_record *b)
 static void
 free_buffer (struct buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  for (struct लिन्या *l = buf->लिन्या_start; l;)
     {
-      struct line *n = l->next;
+      struct लिन्या *n = l->next;
       free (l);
       l = n;
     }
@@ -409,9 +409,9 @@ get_new_buffer (idx_t min_size)
   new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
                                 -1, 1);
   new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
+  new_buffer->start_लिन्या = new_buffer->first_available = last_लिन्या_नुमेरो + 1;
+  new_buffer->नुमेरो_मगा_लिन्या = 0;
+  new_buffer->लिन्या_start = new_buffer->curr_लिन्या = NULL;
   new_buffer->next = NULL;
 
   return new_buffer;
@@ -424,7 +424,7 @@ static void
 save_buffer (struct buffer_record *buf)
 {
   buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->curr_लिन्या = buf->लिन्या_start;
 
   if (head == NULL)
     head = buf;
@@ -459,7 +459,7 @@ load_buffer (void)
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t bytes_wanted = MAX (START_SIZE, hold_बिलांग + 1);
 
   while (true)
     {
@@ -469,17 +469,17 @@ load_buffer (void)
       char *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      if (hold_बिलांग)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_बिलांग);
+          b->bytes_used += hold_बिलांग;
+          bytes_avail -= hold_बिलांग;
+          hold_बिलांग = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->bytes_used += read_पासोक (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      if (record_लिन्या_starts (b) != 0)
         {
           save_buffer (b);
           return true;
@@ -497,7 +497,7 @@ load_buffer (void)
    Return 0 if no lines available.  */
 
 static intmax_t
-get_first_line_in_buffer (void)
+get_first_लिन्या_in_buffer (void)
 {
   if (head == NULL && !load_buffer ())
     return 0;
@@ -510,15 +510,15 @@ get_first_line_in_buffer (void)
    Return NULL if there is no more input. */
 
 static struct cstring *
-remove_line (void)
+remove_लिन्या (void)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
   static struct buffer_record *prev_buf = NULL;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  struct cstring *लिन्या;		/* Return value. */
+  struct लिन्या *l;		/* For convenience. */
 
   if (prev_buf)
     {
@@ -529,21 +529,21 @@ remove_line (void)
   if (head == NULL && !load_buffer ())
     return NULL;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  if (current_लिन्या < head->first_available)
+    current_लिन्या = head->first_available;
 
   ++(head->first_available);
 
-  l = head->curr_line;
+  l = head->curr_लिन्या;
 
-  line = &l->starts[l->retrieve_index];
+  लिन्या = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
   if (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      head->curr_लिन्या = l->next;
+      if (head->curr_लिन्या == NULL || head->curr_लिन्या->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,31 +553,31 @@ remove_line (void)
         }
     }
 
-  return line;
+  return लिन्या;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
 static struct cstring *
-find_line (intmax_t linenum)
+find_लिन्या (intmax_t linenum)
 {
   if (head == NULL && !load_buffer ())
     return NULL;
 
-  if (linenum < head->start_line)
+  if (linenum < head->start_लिन्या)
     return NULL;
 
   for (struct buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      if (linenum < b->start_लिन्या + b->नुमेरो_मगा_लिन्या)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          struct लिन्या *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->लिन्या_start;
+          offset = linenum - b->start_लिन्या;
           /* Find the control record. */
           while (offset >= CTRL_SIZE)
             {
@@ -595,15 +595,15 @@ find_line (intmax_t linenum)
 /* Return true if at least one more line is available for input. */
 
 static bool
-no_more_lines (void)
+no_more_मगा_लिन्या (void)
 {
-  return find_line (current_line + 1) == NULL;
+  return find_लिन्या (current_लिन्या + 1) == NULL;
 }
 
 /* Open NAME as standard input.  */
 
 static void
-set_input_file (char const *name)
+set_पासोक_file (char const *name)
 {
   if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
@@ -616,34 +616,34 @@ set_input_file (char const *name)
    ARGNUM is the index in ARGV of the current pattern. */
 
 static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+write_to_file (intmax_t last_लिन्या, bool ignore, int argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  struct cstring *लिन्या;
+  intmax_t first_लिन्या;		/* First available input line. */
+  intmax_t मगा_लिन्या;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  first_लिन्या = get_first_लिन्या_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  if (! first_लिन्या || first_लिन्या > last_लिन्या)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  मगा_लिन्या = last_लिन्या - first_लिन्या;
 
-  for (intmax_t i = 0; i < lines; i++)
+  for (intmax_t i = 0; i < मगा_लिन्या; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      लिन्या = remove_लिन्या ();
+      if (लिन्या == NULL)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
       if (!ignore)
-        save_line_to_file (line);
+        save_लिन्या_to_file (लिन्या);
     }
 }
 
@@ -652,22 +652,22 @@ write_to_file (intmax_t last_line, bool ignore, int argnum)
 static void
 dump_rest_of_file (void)
 {
-  struct cstring *line;
+  struct cstring *लिन्या;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  while ((लिन्या = remove_लिन्या ()) != NULL)
+    save_लिन्या_to_file (लिन्या);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
 static void
-handle_line_error (const struct control *p, intmax_t repetition)
+handle_लिन्या_error (const struct control *p, intmax_t repetition)
 {
   char buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
+           program_name, quote (imaxtostr (p->मगा_लिन्या_required, buf)));
   if (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
   else
@@ -682,39 +682,39 @@ handle_line_error (const struct control *p, intmax_t repetition)
    REPETITION is the repetition number. */
 
 static void
-process_line_count (const struct control *p, intmax_t repetition)
+process_लिन्या_बिलांग (const struct control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t last_लिन्या_to_save = p->मगा_लिन्या_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  if (no_more_मगा_लिन्या () && suppress_matched)
+    handle_लिन्या_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  if (!(linenum = get_first_लिन्या_in_buffer ()))
+    handle_लिन्या_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  while (linenum++ < last_लिन्या_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      struct cstring *लिन्या = remove_लिन्या ();
+      if (लिन्या == NULL)
+        handle_लिन्या_error (p, repetition);
+      save_लिन्या_to_file (लिन्या);
     }
 
   close_output_file ();
 
   if (suppress_matched)
-    remove_line ();
+    remove_लिन्या ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  if (no_more_मगा_लिन्या () && !suppress_matched)
+    handle_लिन्या_error (p, repetition);
 }
 
 static void
@@ -743,9 +743,9 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
 static void
 process_regexp (struct control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  struct cstring *लिन्या;		/* From input file. */
+  idx_t लिन्या_len;		/* To make "$" in regexps work. */
+  intmax_t break_लिन्या;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
@@ -759,8 +759,8 @@ process_regexp (struct control *p, intmax_t repetition)
     {
       while (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          लिन्या = find_लिन्या (++current_लिन्या);
+          if (लिन्या == NULL)
             {
               if (p->repeat_forever)
                 {
@@ -774,11 +774,11 @@ process_regexp (struct control *p, intmax_t repetition)
               else
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
+          लिन्या_len = लिन्या->len;
+          if (लिन्या->str[लिन्या_len - 1] == '\n')
+            लिन्या_len--;
+          ret = re_हानाप (&p->re_compiled, लिन्या->str, लिन्या_len,
+                           0, लिन्या_len, NULL);
           if (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
@@ -786,9 +786,9 @@ process_regexp (struct control *p, intmax_t repetition)
             }
           if (ret == -1)
             {
-              line = remove_line ();
+              लिन्या = remove_लिन्या ();
               if (!ignore)
-                save_line_to_file (line);
+                save_लिन्या_to_file (लिन्या);
             }
           else
             break;
@@ -799,8 +799,8 @@ process_regexp (struct control *p, intmax_t repetition)
       /* Buffer the lines. */
       while (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          लिन्या = find_लिन्या (++current_लिन्या);
+          if (लिन्या == NULL)
             {
               if (p->repeat_forever)
                 {
@@ -814,11 +814,11 @@ process_regexp (struct control *p, intmax_t repetition)
               else
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
+          लिन्या_len = लिन्या->len;
+          if (लिन्या->str[लिन्या_len - 1] == '\n')
+            लिन्या_len--;
+          ret = re_हानाप (&p->re_compiled, लिन्या->str, लिन्या_len,
+                           0, लिन्या_len, NULL);
           if (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
@@ -830,18 +830,18 @@ process_regexp (struct control *p, intmax_t repetition)
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_लिन्या = current_लिन्या + p->offset;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_to_file (break_लिन्या, ignore, p->argnum);
 
   if (!ignore)
     close_output_file ();
 
   if (p->offset > 0)
-    current_line = break_line;
+    current_लिन्या = break_लिन्या;
 
   if (suppress_matched)
-    remove_line ();
+    remove_लिन्या ();
 }
 
 /* Split the input file according to the control records we have built. */
@@ -861,7 +861,7 @@ split_file (void)
         {
           for (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_लिन्या_बिलांग (&controls[i], j);
         }
     }
 
@@ -878,13 +878,13 @@ split_file (void)
    know of any hosts where this implementation isn't safe.  */
 
 static char *
-make_filename (int num)
+make_filename (int नुमेरो)
 {
   strcpy (filename_space, prefix);
   if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
+    sprintf (filename_space + strlen (prefix), suffix, नुमेरो);
   else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
+    sprintf (filename_space + strlen (prefix), "%0*d", digits, नुमेरो);
   return filename_space;
 }
 
@@ -981,7 +981,7 @@ close_output_file (void)
         }
       else
         {
-          if (!suppress_count)
+          if (!suppress_बिलांग)
             fprintf (stdout, "%jd\n", bytes_written);
         }
       output_stream = NULL;
@@ -992,16 +992,16 @@ close_output_file (void)
    increment the character count for the current file. */
 
 static void
-save_line_to_file (const struct cstring *line)
+save_लिन्या_to_file (const struct cstring *लिन्या)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (लिन्या->str, sizeof (char), लिन्या->len, output_stream);
+  if (l != लिन्या->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
       output_stream = NULL;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  bytes_written += लिन्या->len;
 }
 
 /* Return a new, initialized control record. */
@@ -1018,7 +1018,7 @@ new_control_record (void)
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
+  p->मगा_लिन्या_required = 0;
   p->offset = 0;
   return p;
 }
@@ -1029,9 +1029,9 @@ new_control_record (void)
    NUM is the numeric part of STR. */
 
 static void
-check_for_offset (struct control *p, char const *str, char const *num)
+check_for_offset (struct control *p, char const *str, char const *नुमेरो)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  if (xstrtoimax (नुमेरो, NULL, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1042,7 +1042,7 @@ check_for_offset (struct control *p, char const *str, char const *num)
    ARGNUM is the ARGV index of STR. */
 
 static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+parse_repeat_बिलांग (int argnum, struct control *p, char *str)
 {
   char *end;
 
@@ -1153,14 +1153,14 @@ parse_patterns (int argc, int start, char **argv)
 
           last_val = val;
 
-          p->lines_required = val;
+          p->मगा_लिन्या_required = val;
         }
 
       if (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_बिलांग (i, p, argv[i]);
         }
     }
 }
@@ -1177,9 +1177,9 @@ get_format_flags (char const *format, int *flags_ptr)
 {
   int flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  for (idx_t बिलांग = 0; ; बिलांग++)
     {
-      switch (format[count])
+      switch (format[बिलांग])
         {
         case '-':
         case '0':
@@ -1195,7 +1195,7 @@ get_format_flags (char const *format, int *flags_ptr)
 
         default:
           *flags_ptr = flags;
-          return count;
+          return बिलांग;
         }
     }
 }
@@ -1316,7 +1316,7 @@ main (int argc, char **argv)
 
       case 's':
       case 'q':
-        suppress_count = true;
+        suppress_बिलांग = true;
         break;
 
       case 'z':
@@ -1354,7 +1354,7 @@ main (int argc, char **argv)
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
-  set_input_file (argv[optind++]);
+  set_पासोक_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard पासोक if FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1427,15 +1427,15 @@ Read standard input if FILE is -\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the मगा_लिन्या matching PATTERN\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified नुमेरो_2 of digits instead of 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         do not इलिम्बाग_2 counts of output file sizes\n\
 "));
       oputs (_("\
   -z, --elide-empty-files\n\
@@ -1446,13 +1446,13 @@ Read standard input if FILE is -\n\
       fputs (_("\
 \n\
 Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
+  INTEGER            copy up to but not including specified लिन्या नुमेरो_2\n\
+  /REGEXP/[OFFSET]   copy up to but not including a matching लिन्या\n\
+  %REGEXP%[OFFSET]   skip to, but not including a matching लिन्या\n\
+  {INTEGER}          repeat the previous pattern specified नुमेरो_2 of times\n\
   {*}                repeat the previous pattern as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A लिन्या OFFSET is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

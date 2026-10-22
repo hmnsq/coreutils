@@ -56,28 +56,28 @@
 
 /* Values that are bitwise or'd into 'toprint'. */
 /* Kernel name. */
-#define PRINT_KERNEL_NAME 1
+#define इलिम्बाग_KERNEL_NAME 1
 
 /* Node name on a communications network. */
-#define PRINT_NODENAME 2
+#define इलिम्बाग_NODENAME 2
 
 /* Kernel release. */
-#define PRINT_KERNEL_RELEASE 4
+#define इलिम्बाग_KERNEL_RELEASE 4
 
 /* Kernel version. */
-#define PRINT_KERNEL_VERSION 8
+#define इलिम्बाग_KERNEL_VERSION 8
 
 /* Machine hardware name. */
-#define PRINT_MACHINE 16
+#define इलिम्बाग_MACHINE 16
 
 /* Processor type. */
-#define PRINT_PROCESSOR 32
+#define इलिम्बाग_PROCESSOR 32
 
 /* Hardware platform.  */
-#define PRINT_HARDWARE_PLATFORM 64
+#define इलिम्बाग_HARDWARE_PLATFORM 64
 
 /* Operating system.  */
-#define PRINT_OPERATING_SYSTEM 128
+#define इलिम्बाग_OPERATING_SYSTEM 128
 
 static bool labeled = false;
 
@@ -119,46 +119,46 @@ usage (int status)
       if (uname_mode == UNAME_UNAME)
         {
           fputs (_("\
-Print certain system information.  With no OPTION, same as -s.\n\
+इलिम्बाग certain system information.  With no OPTION, same as -s.\n\
 \n\
 "), stdout);
           oputs (_("\
-  -a, --all                print all information, in the following order,\n\
+  -a, --all                इलिम्बाग_2 all information, in the following order,\n\
                              except omit -p and -i if unknown\n\
 "));
           oputs (_("\
-  -A, --all-labeled        print all information, one labeled field per line,\n\
+  -A, --all-labeled        इलिम्बाग_2 all information, one labeled field per लिन्या,\n\
                              except omit -p and -i if unknown\n\
 "));
           oputs (_("\
-  -s, --kernel-name        print the kernel name\n\
+  -s, --kernel-name        इलिम्बाग_2 the kernel name\n\
 "));
           oputs (_("\
-  -n, --nodename           print the network node hostname\n\
+  -n, --nodename           इलिम्बाग_2 the network बुहोल hostname\n\
 "));
           oputs (_("\
-  -r, --kernel-release     print the kernel release\n\
+  -r, --kernel-release     इलिम्बाग_2 the kernel release\n\
 "));
           oputs (_("\
-  -v, --kernel-version     print the kernel version\n\
+  -v, --kernel-version     इलिम्बाग_2 the kernel version\n\
 "));
           oputs (_("\
-  -m, --machine            print the machine hardware name\n\
+  -m, --machine            इलिम्बाग_2 the machine hardware name\n\
 "));
           oputs (_("\
-  -p, --processor          print the processor type (non-portable)\n\
+  -p, --processor          इलिम्बाग_2 the processor type (non-portable)\n\
 "));
           oputs (_("\
-  -i, --hardware-platform  print the hardware platform (non-portable)\n\
+  -i, --hardware-platform  इलिम्बाग_2 the hardware platform (non-portable)\n\
 "));
           oputs (_("\
-  -o, --operating-system   print the operating system\n\
+  -o, --operating-system   इलिम्बाग_2 the operating system\n\
 "));
         }
       else
         {
           fputs (_("\
-Print machine architecture.\n\
+इलिम्बाग machine architecture.\n\
 \n\
 "), stdout);
         }
@@ -174,7 +174,7 @@ Print machine architecture.\n\
    printed.  */
 
 static void
-print_element (char const *element, char const *label)
+इलिम्बाग_element (char const *element, char const *label)
 {
   if (labeled)
     {
@@ -195,7 +195,7 @@ print_element (char const *element, char const *label)
    value instead of ELEMENT.  */
 
 static void
-print_element_env (char const *element,
+इलिम्बाग_element_env (char const *element,
                    MAYBE_UNUSED char const *envvar,
                    char const *label)
 {
@@ -207,7 +207,7 @@ print_element_env (char const *element,
         element = val;
     }
 #endif
-  print_element (element, label);
+  इलिम्बाग_element (element, label);
 }
 
 
@@ -236,7 +236,7 @@ decode_switches (int argc, char **argv)
               usage (EXIT_FAILURE);
             }
         }
-      toprint = PRINT_MACHINE;
+      toprint = इलिम्बाग_MACHINE;
     }
   else
     {
@@ -257,35 +257,35 @@ decode_switches (int argc, char **argv)
               break;
 
             case 's':
-              toprint |= PRINT_KERNEL_NAME;
+              toprint |= इलिम्बाग_KERNEL_NAME;
               break;
 
             case 'n':
-              toprint |= PRINT_NODENAME;
+              toprint |= इलिम्बाग_NODENAME;
               break;
 
             case 'r':
-              toprint |= PRINT_KERNEL_RELEASE;
+              toprint |= इलिम्बाग_KERNEL_RELEASE;
               break;
 
             case 'v':
-              toprint |= PRINT_KERNEL_VERSION;
+              toprint |= इलिम्बाग_KERNEL_VERSION;
               break;
 
             case 'm':
-              toprint |= PRINT_MACHINE;
+              toprint |= इलिम्बाग_MACHINE;
               break;
 
             case 'p':
-              toprint |= PRINT_PROCESSOR;
+              toprint |= इलिम्बाग_PROCESSOR;
               break;
 
             case 'i':
-              toprint |= PRINT_HARDWARE_PLATFORM;
+              toprint |= इलिम्बाग_HARDWARE_PLATFORM;
               break;
 
             case 'o':
-              toprint |= PRINT_OPERATING_SYSTEM;
+              toprint |= इलिम्बाग_OPERATING_SYSTEM;
               break;
 
             case_GETOPT_HELP_CHAR;
@@ -326,30 +326,30 @@ main (int argc, char **argv)
   toprint = decode_switches (argc, argv);
 
   if (toprint == 0)
-    toprint = PRINT_KERNEL_NAME;
+    toprint = इलिम्बाग_KERNEL_NAME;
 
   if (toprint
-       & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
-          | PRINT_KERNEL_VERSION | PRINT_MACHINE))
+       & (इलिम्बाग_KERNEL_NAME | इलिम्बाग_NODENAME | इलिम्बाग_KERNEL_RELEASE
+          | इलिम्बाग_KERNEL_VERSION | इलिम्बाग_MACHINE))
     {
       struct utsname name;
 
       if (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
-        print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
-        print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
-        print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
-        print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
-        print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
+      if (toprint & इलिम्बाग_KERNEL_NAME)
+        इलिम्बाग_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
+      if (toprint & इलिम्बाग_NODENAME)
+        इलिम्बाग_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
+      if (toprint & इलिम्बाग_KERNEL_RELEASE)
+        इलिम्बाग_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
+      if (toprint & इलिम्बाग_KERNEL_VERSION)
+        इलिम्बाग_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
+      if (toprint & इलिम्बाग_MACHINE)
+        इलिम्बाग_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  if (toprint & इलिम्बाग_PROCESSOR)
     {
       char const *element = unknown;
 #ifdef __APPLE__
@@ -380,10 +380,10 @@ main (int argc, char **argv)
         }
 #endif
       if (! (toprint == UINT_MAX && element == unknown))
-        print_element (element, _("Processor"));
+        इलिम्बाग_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  if (toprint & इलिम्बाग_HARDWARE_PLATFORM)
     {
       char const *element = unknown;
 #if HAVE_SYSINFO && defined SI_PLATFORM
@@ -405,11 +405,11 @@ main (int argc, char **argv)
         }
 #endif
       if (! (toprint == UINT_MAX && element == unknown))
-        print_element (element, _("Hardware platform"));
+        इलिम्बाग_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
-    print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
+  if (toprint & इलिम्बाग_OPERATING_SYSTEM)
+    इलिम्बाग_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
   if (!labeled)
     putchar ('\n');

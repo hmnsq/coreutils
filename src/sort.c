@@ -99,8 +99,8 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+enum { SUBTHREAD_मगा_लिन्या_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_मगा_लिन्या_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
@@ -138,7 +138,7 @@ enum
     MERGE_END = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    MERGE_उगात = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
@@ -164,7 +164,7 @@ enum blanktype { bl_start, bl_end, bl_both };
 static char eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+struct लिन्या
 {
   char *text;			/* Text of the line. */
   size_t length;		/* Length including final newline. */
@@ -183,8 +183,8 @@ struct buffer
   size_t used;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t कालिवा;			/* Number of bytes left from previous reads. */
+  size_t लिन्या_bytes;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
@@ -231,25 +231,25 @@ struct month
 };
 
 /* Binary merge tree node. */
-struct merge_node
+struct merge_बुहोल
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  struct लिन्या *lo;              /* Lines to merge from LO child node. */
+  struct लिन्या *hi;              /* Lines to merge from HI child node. */
+  struct लिन्या *end_lo;          /* End of available lines from LO. */
+  struct लिन्या *end_hi;          /* End of available lines from HI. */
+  struct लिन्या **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
+  struct merge_बुहोल *parent;    /* Parent node. */
+  struct merge_बुहोल *lo_child;  /* LO child node. */
+  struct merge_बुहोल *hi_child;  /* HI child node. */
   unsigned int level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
   pthread_mutex_t lock;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+struct merge_बुहोल_queue
 {
   struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
@@ -258,7 +258,7 @@ struct merge_node_queue
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+static struct लिन्या saved_लिन्या;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -302,7 +302,7 @@ static struct month monthtab[] =
 #define NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct लिन्या))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
 #define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
@@ -321,7 +321,7 @@ static size_t sort_size;
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#define पासोक_FILE_SIZE_GUESS (128 * 1024)
 
 static struct
 {
@@ -396,8 +396,8 @@ static struct tempnode *volatile *temptail = &temphead;
 static void
 cleanup (void)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
+  for (struct tempnode const *बुहोल = temphead; बुहोल; बुहोल = बुहोल->next)
+    unlink (बुहोल->name);
   temphead = NULL;
 }
 
@@ -452,7 +452,7 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding sort मगा_सुसि in each लिन्या\n\
 "));
       oputs (_("\
   -d, --dictionary-order\n\
@@ -464,7 +464,7 @@ Ordering options:\n\
 "));
       oputs (_("\
   -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+         compare according to general numerical हालागा\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
@@ -480,12 +480,12 @@ Ordering options:\n\
 "));
       oputs (_("\
   -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
+         compare according to string numerical हालागा;\n\
          see full documentation for supported strings\n\
 "));
       oputs (_("\
   -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+         shuffle, but group identical मगा_सुसि.  See also shuf(1)\n\
 "));
       oputs (_("\
       --random-source=FILE\n\
@@ -516,11 +516,11 @@ Other options:\n\
 "));
       oputs (_("\
   -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+         check for sorted पासोक; do not sort\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but do not report first bad लिन्या\n\
 "));
       oputs (_("\
       --compress-program=PROG\n\
@@ -528,18 +528,18 @@ Other options:\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
+         annotate the part of the लिन्या used to sort,\n\
          and warn about questionable usage to standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         read पासोक from the files specified by NUL-terminated names in file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, read names from standard पासोक\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --सुसि=KEYDEF\n\
+         sort via a सुसि; KEYDEF gives location and type\n\
 "));
       oputs (_("\
   -m, --merge\n\
@@ -568,29 +568,29 @@ Other options:\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the नुमेरो_2 of sorts run concurrently to N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
+         output only the first of मगा_लिन्या with equal मगा_सुसि;\n\
          with -c, check for strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         लिन्या delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
+field नुमेरो_2 and C a character position in the field; both are origin 1, and\n\
+the stop position defaults to the लिन्या's end.  If neither -t nor -b is in\n\
 effect, characters in a field are counted from the beginning of the preceding\n\
 whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options for that सुसि.  If no सुसि is given, use\n\
+the entire लिन्या as the सुसि.  Use --debug to diagnose incorrect सुसि usage.\n\
 \n\
 SIZE may be followed by the following multiplicative suffixes:\n\
 "), stdout);
@@ -600,7 +600,7 @@ SIZE may be followed by the following multiplicative suffixes:\n\
 *** WARNING ***\n\
 The locale specified by the environment affects sort order.\n\
 Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+native byte मगा_हालागा.\n\
 "), stdout );
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -664,7 +664,7 @@ static struct option const long_options[] =
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+static char const *const check_मगा_कातविरान[] =
 {
 #define _ct_(_s, _c) _s,
   CHECK_TABLE NULL
@@ -685,7 +685,7 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+static char const *const sort_मगा_कातविरान[] =
 {
 #define _st_(_s, _c) _s,
   SORT_TABLE NULL
@@ -750,8 +750,8 @@ enum { INIT_PROCTAB_SIZE = 47 };
 static size_t
 proctab_hasher (void const *entry, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  struct tempnode const *बुहोल = entry;
+  return बुहोल->pid % tabsize;
 }
 
 static bool
@@ -812,7 +812,7 @@ register_proc (struct tempnode *temp)
 
   temp->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  if (! hash_इसिंगित (proctab, temp))
     xalloc_die ();
 }
 
@@ -825,10 +825,10 @@ delete_proc (pid_t pid)
   struct tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
+  struct tempnode *बुहोल = hash_remove (proctab, &test);
+  if (! बुहोल)
     return false;
-  node->state = REAPED;
+  बुहोल->state = REAPED;
   return true;
 }
 
@@ -903,14 +903,14 @@ create_temp_file (int *pfd, bool survive_fd_exhaustion)
   int saved_errno;
   char const *temp_dir = temp_dirs.dirs[temp_dir_index];
   size_t len = strlen (temp_dir);
-  struct tempnode *node =
+  struct tempnode *बुहोल =
     xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
+  char *file = बुहोल->name;
   struct cs_status cs;
 
   memcpy (file, temp_dir, len);
   memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
+  बुहोल->next = NULL;
   if (++temp_dir_index == temp_dirs.n_dirs)
     temp_dir_index = 0;
 
@@ -919,8 +919,8 @@ create_temp_file (int *pfd, bool survive_fd_exhaustion)
   fd = mkostemp (file, O_CLOEXEC);
   if (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = बुहोल;
+      temptail = &बुहोल->next;
     }
   saved_errno = errno;
   cs_leave (&cs);
@@ -931,12 +931,12 @@ create_temp_file (int *pfd, bool survive_fd_exhaustion)
       if (! (survive_fd_exhaustion && errno == EMFILE))
         error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
                quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+      free (बुहोल);
+      बुहोल = NULL;
     }
 
   *pfd = fd;
-  return node;
+  return बुहोल;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
@@ -1081,8 +1081,8 @@ move_fd (int oldfd, int newfd)
   if (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_हालागा (dup2 (oldfd, newfd));
+      ignore_हालागा (close (oldfd));
     }
 }
 
@@ -1257,18 +1257,18 @@ static struct tempnode *
 maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
 {
   int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
+  struct tempnode *बुहोल = create_temp_file (&tempfd, survive_fd_exhaustion);
+  if (! बुहोल)
     return NULL;
 
-  node->state = UNCOMPRESSED;
+  बुहोल->state = UNCOMPRESSED;
 
   if (compress_program)
     {
       int pipefds[2];
       static int last_result = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      int result = pipe_child (&बुहोल->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
       if (result)
@@ -1283,7 +1283,7 @@ maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          register_proc (बुहोल);
         }
 
       last_result = result;
@@ -1291,9 +1291,9 @@ maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
 
   *pfp = fdopen (tempfd, "w");
   if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+    sort_die (_("couldn't create temporary file"), बुहोल->name);
 
-  return node;
+  return बुहोल;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1373,20 +1373,20 @@ static void
 zaptemp (char const *name)
 {
   struct tempnode *volatile *pnode;
-  struct tempnode *node;
+  struct tempnode *बुहोल;
   struct tempnode *next;
   int unlink_status;
   int unlink_errno = 0;
   struct cs_status cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
+  for (pnode = &temphead; (बुहोल = *pnode)->name != name; pnode = &बुहोल->next)
     continue;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  if (बुहोल->state == UNREAPED)
+    wait_proc (बुहोल->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  next = बुहोल->next;
   cs_enter (&cs);
   unlink_status = unlink (name);
   unlink_errno = errno;
@@ -1397,7 +1397,7 @@ zaptemp (char const *name)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
   if (! next)
     temptail = pnode;
-  free (node);
+  free (बुहोल);
 }
 
 #if HAVE_NL_LANGINFO
@@ -1629,10 +1629,10 @@ default_sort_size (void)
    buffer.  */
 
 static bool
-line_aligned_size (size_t *alloc)
+लिन्या_aligned_size (size_t *alloc)
 {
   size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
+  size_t alignment = sizeof (struct लिन्या);
   size_t padding = alignment - size % alignment;
   size_t aligned;
 
@@ -1646,13 +1646,13 @@ line_aligned_size (size_t *alloc)
 /* Return the default initial allocation for a growable sort buffer.  */
 
 static size_t
-default_initial_sort_size (size_t line_bytes)
+default_initial_sort_size (size_t लिन्या_bytes)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t size = लिन्या_bytes + 2;
+  size_t पासोक_size;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
+  if (ckd_mul (&पासोक_size, पासोक_FILE_SIZE_GUESS, लिन्या_bytes + 1)
+      || ckd_add (&size, size, पासोक_size))
     return SIZE_MAX;
 
   return MAX (size, MIN_SORT_SIZE);
@@ -1663,15 +1663,15 @@ default_initial_sort_size (size_t line_bytes)
    for a final non-delimiter byte.  Return false on overflow.  */
 
 static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+पासोक_size_buffer_bytes (uintmax_t file_size, size_t लिन्या_bytes,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_पासोक_byte = लिन्या_bytes + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
+  if (SIZE_MAX / worst_case_per_पासोक_byte < file_size)
     return false;
 
-  size_t size = file_size * worst_case_per_input_byte;
+  size_t size = file_size * worst_case_per_पासोक_byte;
   if (SIZE_MAX - size < 1)
     return false;
 
@@ -1689,19 +1689,19 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
 static void
 sort_buffer_policy (FILE *const *fps, size_t nfps,
                     char *const *files, size_t nfiles,
-                    size_t line_bytes,
+                    size_t लिन्या_bytes,
                     struct sort_buffer_policy *policy)
 {
   size_t size_bound = sort_size ? sort_size : default_sort_size ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    sort_size ? size_bound : default_initial_sort_size (लिन्या_bytes);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_पासोक_byte = लिन्या_bytes + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t size = worst_case_per_पासोक_byte + 1;
 
   initial_bound = MIN (initial_bound, size_bound);
   policy->limit = size_bound;
@@ -1738,13 +1738,13 @@ sort_buffer_policy (FILE *const *fps, size_t nfps,
               policy->initial = size_bound;
               return;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_size = पासोक_FILE_SIZE_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
+      if (! पासोक_size_buffer_bytes (file_size, लिन्या_bytes, &worst_case)
           || size_bound - size <= worst_case)
         {
           policy->initial = size_bound;
@@ -1769,7 +1769,7 @@ sort_buffer_policy (FILE *const *fps, size_t nfps,
    initially.  */
 
 static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+initbuf (struct buffer *buf, size_t लिन्या_bytes, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
@@ -1777,26 +1777,26 @@ initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
      but that's better than failing.  */
   while (true)
     {
-      if (! line_aligned_size (&alloc))
+      if (! लिन्या_aligned_size (&alloc))
         buf->buf = NULL;
       else
         buf->buf = malloc (alloc);
       if (buf->buf)
         break;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      if (alloc <= लिन्या_bytes + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->लिन्या_bytes = लिन्या_bytes;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->used = buf->कालिवा = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
+static inline struct लिन्या *
 buffer_linelim (struct buffer const *buf)
 {
   void *linelim = buf->buf + buf->alloc;
@@ -1810,7 +1810,7 @@ buffer_linelim (struct buffer const *buf)
 static bool
 try_growbuf (struct buffer *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
+  if (! लिन्या_aligned_size (&alloc) || alloc <= buf->alloc)
     return false;
 
   char *newbuf = malloc (alloc);
@@ -1818,22 +1818,22 @@ try_growbuf (struct buffer *buf, size_t alloc)
     return false;
 
   char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  struct लिन्या *old_linelim = buffer_linelim (buf);
+  struct लिन्या *old_लिन्या = old_linelim - buf->nlines;
 
   memcpy (newbuf, oldbuf, buf->used);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  struct लिन्या *new_linelim = (void *) (newbuf + alloc);
+  struct लिन्या *new_लिन्या = new_linelim - buf->nlines;
+  memcpy (new_लिन्या, old_लिन्या, buf->nlines * sizeof *new_लिन्या);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  for (struct लिन्या *लिन्या = new_लिन्या; लिन्या < new_linelim; लिन्या++)
     {
-      line->text = newbuf + (line->text - oldbuf);
+      लिन्या->text = newbuf + (लिन्या->text - oldbuf);
       if (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          लिन्या->keybeg = newbuf + (लिन्या->keybeg - oldbuf);
+          लिन्या->keylim = newbuf + (लिन्या->keylim - oldbuf);
         }
     }
 
@@ -1868,11 +1868,11 @@ maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
    by KEY in LINE. */
 
 static char *
-begfield (struct line const *line, struct keyfield const *key)
+begfield (struct लिन्या const *लिन्या, struct keyfield const *सुसि)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  char *ptr = लिन्या->text, *lim = ptr + लिन्या->length - 1;
+  size_t sword = सुसि->sword;
+  size_t schar = सुसि->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
@@ -1896,7 +1896,7 @@ begfield (struct line const *line, struct keyfield const *key)
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
+  if (सुसि->skipsblanks)
     while (ptr < lim && blanks[to_uchar (*ptr)])
       ++ptr;
 
@@ -1915,10 +1915,10 @@ begfield (struct line const *line, struct keyfield const *key)
 
 ATTRIBUTE_PURE
 static char *
-limfield (struct line const *line, struct keyfield const *key)
+limfield (struct लिन्या const *लिन्या, struct keyfield const *सुसि)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  char *ptr = लिन्या->text, *lim = ptr + लिन्या->length - 1;
+  size_t eword = सुसि->eword, echar = सुसि->echar;
 
   if (echar == 0)
     eword++; /* Skip all of end field.  */
@@ -2002,7 +2002,7 @@ limfield (struct line const *line, struct keyfield const *key)
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
+      if (सुसि->skipeblanks)
         while (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
 
@@ -2027,37 +2027,37 @@ static bool
 fillbuf (struct buffer *buf, FILE *fp, char const *file,
          struct sort_buffer_policy *policy)
 {
-  struct keyfield const *key = keylist;
+  struct keyfield const *सुसि = keylist;
   char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
+  size_t लिन्या_bytes = buf->लिन्या_bytes;
   size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
 
   if (buf->eof)
     return false;
 
-  if (buf->used != buf->left)
+  if (buf->used != buf->कालिवा)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->used - buf->कालिवा, buf->कालिवा);
+      buf->used = buf->कालिवा;
       buf->nlines = 0;
     }
 
   while (true)
     {
       char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      struct लिन्या *linelim = buffer_linelim (buf);
+      struct लिन्या *लिन्या = linelim - buf->nlines;
+      size_t avail = (char *) linelim - buf->nlines * लिन्या_bytes - ptr;
+      char *लिन्या_start = buf->nlines ? लिन्या->text + लिन्या->length : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      while (लिन्या_bytes + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
+          size_t readsize = (avail - 1) / (लिन्या_bytes + 1);
           size_t bytes_read = fread (ptr, 1, readsize, fp);
           char *ptrlim = ptr + bytes_read;
           char *p;
@@ -2072,7 +2072,7 @@ fillbuf (struct buffer *buf, FILE *fp, char const *file,
                   buf->eof = true;
                   if (buf->buf == ptrlim)
                     return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  if (लिन्या_start != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
@@ -2085,32 +2085,32 @@ fillbuf (struct buffer *buf, FILE *fp, char const *file,
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              लिन्या--;
+              लिन्या->text = लिन्या_start;
+              लिन्या->length = ptr - लिन्या_start;
+              mergesize = MAX (mergesize, लिन्या->length);
+              avail -= लिन्या_bytes;
 
-              if (key)
+              if (सुसि)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  लिन्या->keylim = (सुसि->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (लिन्या, सुसि));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
+                  if (सुसि->sword != SIZE_MAX)
+                    लिन्या->keybeg = begfield (लिन्या, सुसि);
                   else
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      if (सुसि->skipsblanks)
+                        while (blanks[to_uchar (*लिन्या_start)])
+                          लिन्या_start++;
+                      लिन्या->keybeg = लिन्या_start;
                     }
                 }
 
-              line_start = ptr;
+              लिन्या_start = ptr;
             }
 
           ptr = ptrlim;
@@ -2119,12 +2119,12 @@ fillbuf (struct buffer *buf, FILE *fp, char const *file,
         }
 
       buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
+      buf->nlines = buffer_linelim (buf) - लिन्या;
       if (buf->nlines != 0)
         {
           if (! buf->eof && maybe_growbuf (buf, policy))
             continue;
-          buf->left = ptr - line_start;
+          buf->कालिवा = ptr - लिन्या_start;
           merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
           return true;
         }
@@ -2133,9 +2133,9 @@ fillbuf (struct buffer *buf, FILE *fp, char const *file,
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t लिन्या_alloc = buf->alloc / sizeof (struct लिन्या);
+        buf->buf = xpalloc (buf->buf, &लिन्या_alloc, 1, -1, sizeof (struct लिन्या));
+        buf->alloc = लिन्या_alloc * sizeof (struct लिन्या);
       }
     }
 }
@@ -2176,9 +2176,9 @@ static char const unit_order[UCHAR_LIM] =
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
 static char
-traverse_raw_number (char const **number)
+traverse_raw_नुमेरो (char const **नुमेरो_2)
 {
-  char const *p = *number;
+  char const *p = *नुमेरो_2;
   char ch;
   char max_digit = '\0';
   bool ends_with_thousands_sep = false;
@@ -2205,7 +2205,7 @@ traverse_raw_number (char const **number)
   if (ends_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
+      *नुमेरो_2 = p - 2;
       return max_digit;
     }
 
@@ -2214,7 +2214,7 @@ traverse_raw_number (char const **number)
       if (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
+  *नुमेरो_2 = p - 1;
   return max_digit;
 }
 
@@ -2225,11 +2225,11 @@ traverse_raw_number (char const **number)
 
 ATTRIBUTE_PURE
 static int
-find_unit_order (char const *number)
+find_unit_order (char const *नुमेरो_2)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
+  bool minus_sign = (*नुमेरो_2 == '-');
+  char const *p = नुमेरो_2 + minus_sign;
+  char max_digit = traverse_raw_नुमेरो (&p);
   if ('0' < max_digit)
     {
       unsigned char ch = *p;
@@ -2362,7 +2362,7 @@ getmonth (char const *month, char **ea)
    as sort.o no longer uses any crypto symbols statically.  */
 
 # if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+#  pragma GCC diagnostic इतुलाक
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
@@ -2374,7 +2374,7 @@ getmonth (char const *month, char **ea)
 
 #if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 # if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#  pragma GCC diagnostic आलिसिन
 # endif
 # include <dlfcn.h>
 
@@ -2395,9 +2395,9 @@ link_failure (void)
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
 static void *
-symbol_address (void *handle, char const *symbol)
+सिम्बोलो_address (void *handle, char const *सिम्बोलो)
 {
-  void *address = dlsym (handle, symbol);
+  void *address = dlsym (handle, सिम्बोलो);
   if (!address)
     link_failure ();
   return address;
@@ -2412,9 +2412,9 @@ link_libcrypto (void)
   void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
   if (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
+  ptr_MD5_Init = सिम्बोलो_address (handle, "MD5_Init");
+  ptr_MD5_Update = सिम्बोलो_address (handle, "MD5_Update");
+  ptr_MD5_Final = सिम्बोलो_address (handle, "MD5_Final");
 #endif
 }
 
@@ -2608,7 +2608,7 @@ debug_width (char const *text, char const *lim)
    specified offset and screen width.  */
 
 static void
-mark_key (size_t offset, size_t width)
+mark_सुसि (size_t offset, size_t width)
 {
   while (offset--)
     putchar (' ');
@@ -2628,34 +2628,34 @@ mark_key (size_t offset, size_t width)
 /* Return true if KEY is a numeric key.  */
 
 static inline bool
-key_numeric (struct keyfield const *key)
+सुसि_numeric (struct keyfield const *सुसि)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  return सुसि->numeric || सुसि->general_numeric || सुसि->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
 static void
-debug_key (struct line const *line, struct keyfield const *key)
+debug_सुसि (struct लिन्या const *लिन्या, struct keyfield const *सुसि)
 {
-  char *text = line->text;
+  char *text = लिन्या->text;
   char *beg = text;
-  char *lim = text + line->length - 1;
+  char *lim = text + लिन्या->length - 1;
 
-  if (key)
+  if (सुसि)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      if (सुसि->sword != SIZE_MAX)
+        beg = begfield (लिन्या, सुसि);
+      if (सुसि->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (लिन्या, सुसि);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      if ((सुसि->skipsblanks && सुसि->sword == SIZE_MAX)
+          || सुसि->month || सुसि_numeric (सुसि))
         {
           char saved = *lim;
           *lim = '\0';
@@ -2667,19 +2667,19 @@ debug_key (struct line const *line, struct keyfield const *key)
 
           if (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          else if (सुसि->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          else if (सुसि->general_numeric)
+            ignore_हालागा (strtold (beg, &tighter_lim));
+          else if (सुसि->numeric || सुसि->human_numeric)
             {
               char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
+              char max_digit = traverse_raw_नुमेरो (&p);
               if ('0' <= max_digit)
                 {
                   unsigned char ch = *p;
                   tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                    + (सुसि->human_numeric && unit_order[ch]);
                 }
             }
           else
@@ -2692,34 +2692,34 @@ debug_key (struct line const *line, struct keyfield const *key)
 
   size_t offset = debug_width (text, beg);
   size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  mark_सुसि (offset, width);
 }
 
 /* Debug LINE by underlining its keys.  */
 
 static void
-debug_line (struct line const *line)
+debug_लिन्या (struct लिन्या const *लिन्या)
 {
-  struct keyfield const *key = keylist;
+  struct keyfield const *सुसि = keylist;
 
   do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+    debug_सुसि (लिन्या, सुसि);
+  while (सुसि && ((सुसि = सुसि->next) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
 static bool
-default_key_compare (struct keyfield const *key)
+default_सुसि_compare (struct keyfield const *सुसि)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  return ! (सुसि->ignore
+            || सुसि->translate
+            || सुसि->skipsblanks
+            || सुसि->skipeblanks
+            || सुसि_numeric (सुसि)
+            || सुसि->month
+            || सुसि->version
+            || सुसि->random
             /* || key->reverse */
            );
 }
@@ -2727,29 +2727,29 @@ default_key_compare (struct keyfield const *key)
 /* Convert a key to the short options used to specify it.  */
 
 static void
-key_to_opts (struct keyfield const *key, char *opts)
+सुसि_to_opts (struct keyfield const *सुसि, char *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  if (सुसि->skipsblanks || सुसि->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  if (सुसि->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  if (सुसि->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  if (सुसि->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  if (सुसि->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  if (सुसि->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  if (सुसि->month)
     *opts++ = 'M';
-  if (key->numeric)
+  if (सुसि->numeric)
     *opts++ = 'n';
-  if (key->random)
+  if (सुसि->random)
     *opts++ = 'R';
-  if (key->reverse)
+  if (सुसि->reverse)
     *opts++ = 'r';
-  if (key->version)
+  if (सुसि->version)
     *opts++ = 'V';
   *opts = '\0';
 }
@@ -2757,7 +2757,7 @@ key_to_opts (struct keyfield const *key, char *opts)
 /* Output data independent key warnings to stderr.  */
 
 static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+सुसि_warnings (struct keyfield const *gkey, bool gkey_only)
 {
   struct keyfield ugkey = *gkey;
   unsigned long keynum = 1;
@@ -2766,20 +2766,20 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
   bool basic_numeric_field_span = false;
   bool general_numeric_field_span = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  for (struct keyfield *सुसि = keylist; सुसि; सुसि = सुसि->next, keynum++)
     {
-      if (key_numeric (key))
+      if (सुसि_numeric (सुसि))
         {
-          if (key->general_numeric)
+          if (सुसि->general_numeric)
             general_numeric_field = true;
           else
             basic_numeric_field = true;
         }
 
-      if (key->traditional_used)
+      if (सुसि->traditional_used)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
+          size_t sword = सुसि->sword;
+          size_t eword = सुसि->eword;
           char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
@@ -2794,46 +2794,46 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          if (सुसि->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (सुसि->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
+      bool zero_width = सुसि->sword != SIZE_MAX && सुसि->eword < सुसि->sword;
       if (zero_width)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = सुसि_numeric (सुसि) || सुसि->month;
+      bool लिन्या_offset = सुसि->eword == 0 && सुसि->echar != 0; /* -k1.x,1.y  */
+      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !लिन्या_offset
+          && ((!सुसि->skipsblanks && !implicit_skip)
+              || (!सुसि->skipsblanks && सुसि->schar)
+              || (!सुसि->skipeblanks && सुसि->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      if (!gkey_only && सुसि_numeric (सुसि))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
+          size_t sword = सुसि->sword + 1;
+          size_t eword = सुसि->eword + 1;
           if (!sword)
             sword++;
           if (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
+              if (सुसि->general_numeric)
                 general_numeric_field_span = true;
               else
                 basic_numeric_field_span = true;
@@ -2841,24 +2841,24 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
+      if (ugkey.ignore && (ugkey.ignore == सुसि->ignore))
         ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
+      if (ugkey.translate && (ugkey.translate == सुसि->translate))
         ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      ugkey.skipsblanks &= !सुसि->skipsblanks;
+      ugkey.skipeblanks &= !सुसि->skipeblanks;
+      ugkey.month &= !सुसि->month;
+      ugkey.numeric &= !सुसि->numeric;
+      ugkey.general_numeric &= !सुसि->general_numeric;
+      ugkey.human_numeric &= !सुसि->human_numeric;
+      ugkey.random &= !सुसि->random;
+      ugkey.version &= !सुसि->version;
+      ugkey.reverse &= !सुसि->reverse;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
+  bool नुमेरो_locale_warned = false;
   if (basic_numeric_field_span)
     {
       if (tab == TAB_DEFAULT
@@ -2869,7 +2869,7 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
                  quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+          नुमेरो_locale_warned = true;
         }
     }
   if (basic_numeric_field_span || general_numeric_field_span)
@@ -2882,7 +2882,7 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
                  quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+          नुमेरो_locale_warned = true;
         }
       else if (tab == '-')
         {
@@ -2903,7 +2903,7 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  if ((basic_numeric_field || general_numeric_field) && ! नुमेरो_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
@@ -2920,7 +2920,7 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
+  if (!default_सुसि_compare (&ugkey)
       || (ugkey.reverse && (stable || unique) && keylist))
     {
       bool ugkey_reverse = ugkey.reverse;
@@ -2928,7 +2928,7 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
         ugkey.reverse = false;
       /* The following is too big, but guaranteed to be "big enough".  */
       char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      सुसि_to_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
@@ -2952,9 +2952,9 @@ diff_reversed (int diff, bool reversed)
    are no more keys or a difference is found. */
 
 static int
-keycompare (struct line const *a, struct line const *b)
+keycompare (struct लिन्या const *a, struct लिन्या const *b)
 {
-  struct keyfield *key = keylist;
+  struct keyfield *सुसि = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
@@ -2967,8 +2967,8 @@ keycompare (struct line const *a, struct line const *b)
 
   while (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      char const *translate = सुसि->translate;
+      bool const *ignore = सुसि->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,8 +2978,8 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      if (hard_LC_COLLATE || सुसि_numeric (सुसि)
+          || सुसि->month || सुसि->random || सुसि->version)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
           char *ta = texta;
@@ -3026,17 +3026,17 @@ keycompare (struct line const *a, struct line const *b)
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          if (सुसि->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          else if (सुसि->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          else if (सुसि->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
+          else if (सुसि->month)
             diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          else if (सुसि->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          else if (सुसि->version)
             diff = filenvercmp (ta, tlena, tb, tlenb);
           else
             {
@@ -3115,22 +3115,22 @@ keycompare (struct line const *a, struct line const *b)
       if (diff)
         break;
 
-      key = key->next;
-      if (! key)
+      सुसि = सुसि->next;
+      if (! सुसि)
         return 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
+      if (सुसि->eword != SIZE_MAX)
+        lima = limfield (a, सुसि), limb = limfield (b, सुसि);
       else
         lima = a->text + a->length - 1, limb = b->text + b->length - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
+      if (सुसि->sword != SIZE_MAX)
+        texta = begfield (a, सुसि), textb = begfield (b, सुसि);
       else
         {
           texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          if (सुसि->skipsblanks)
             {
               while (texta < lima && blanks[to_uchar (*texta)])
                 ++texta;
@@ -3140,14 +3140,14 @@ keycompare (struct line const *a, struct line const *b)
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  return diff_reversed (diff, सुसि->reverse);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
 static int
-compare (struct line const *a, struct line const *b)
+compare (struct लिन्या const *a, struct लिन्या const *b)
 {
   int diff;
   size_t alen, blen;
@@ -3194,10 +3194,10 @@ compare (struct line const *a, struct line const *b)
    append some debugging information.  */
 
 static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+write_लिन्या (struct लिन्या const *लिन्या, FILE *fp, char const *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
+  char *buf = लिन्या->text;
+  size_t n_bytes = लिन्या->length;
   char *ebuf = buf + n_bytes;
 
   if (!output_file && debug)
@@ -3216,7 +3216,7 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
             sort_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_लिन्या (लिन्या);
     }
   else
     {
@@ -3237,36 +3237,36 @@ check (char const *file_name, char checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
   struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  struct लिन्या temp;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t लिन्या_नुमेरो = 0;
+  struct keyfield const *सुसि = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
+  initbuf (&buf, sizeof (struct लिन्या),
            MAX (merge_buffer_size, sort_size));
   temp.text = NULL;
 
   while (fillbuf (&buf, fp, file_name, NULL))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      struct लिन्या const *लिन्या = buffer_linelim (&buf);
+      struct लिन्या const *linebase = लिन्या - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      if (alloc && nonunique <= compare (&temp, लिन्या - 1))
         {
         found_disorder:
           {
             if (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                struct लिन्या const *disorder_लिन्या = लिन्या - 1;
+                uintmax_t disorder_लिन्या_नुमेरो =
+                  buffer_linelim (&buf) - disorder_लिन्या + लिन्या_नुमेरो;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         program_name, file_name, disorder_लिन्या_नुमेरो);
+                write_लिन्या (disorder_लिन्या, stderr, _("standard error"));
               }
 
             ordered = false;
@@ -3275,35 +3275,35 @@ check (char const *file_name, char checkonly)
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
+      while (linebase < --लिन्या)
+        if (nonunique <= compare (लिन्या, लिन्या - 1))
           goto found_disorder;
 
-      line_number += buf.nlines;
+      लिन्या_नुमेरो += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      if (alloc < लिन्या->length)
         {
           do
             {
               alloc *= 2;
               if (! alloc)
                 {
-                  alloc = line->length;
+                  alloc = लिन्या->length;
                   break;
                 }
             }
-          while (alloc < line->length);
+          while (alloc < लिन्या->length);
 
           free (temp.text);
           temp.text = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      memcpy (temp.text, लिन्या->text, लिन्या->length);
+      temp.length = लिन्या->length;
+      if (सुसि)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          temp.keybeg = temp.text + (लिन्या->keybeg - लिन्या->text);
+          temp.keylim = temp.text + (लिन्या->keylim - लिन्या->text);
         }
     }
 
@@ -3319,7 +3319,7 @@ check (char const *file_name, char checkonly)
    less than NFILES.  */
 
 static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+open_पासोक_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
 {
   FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
   int i;
@@ -3351,30 +3351,30 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
 {
   struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  struct लिन्या saved;		/* Saved line storage for unique check. */
+  struct लिन्या const *savedline = NULL;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  struct लिन्या const **cur = xnmalloc (nfiles, sizeof *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  struct लिन्या const **base = xnmalloc (nfiles, sizeof *base);
                                 /* Base of each line table.  */
   size_t *ord = xnmalloc (nfiles, sizeof *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
+  struct keyfield const *सुसि = keylist;
   saved.text = NULL;
 
   /* Read initial lines from each input file. */
   for (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
+      initbuf (&buffer[i], sizeof (struct लिन्या),
                MAX (merge_buffer_size, sort_size / nfiles));
       if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          struct लिन्या const *linelim = buffer_linelim (&buffer[i]);
           cur[i] = linelim - 1;
           base[i] = linelim - buffer[i].nlines;
           i++;
@@ -3410,7 +3410,7 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Repeatedly output the smallest line until no input remains. */
   while (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      struct लिन्या const *smallest = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
@@ -3419,7 +3419,7 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
           if (savedline && compare (savedline, smallest))
             {
               savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              write_लिन्या (&saved, ofp, output_file);
             }
           if (!savedline)
             {
@@ -3439,7 +3439,7 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                 }
               saved.length = smallest->length;
               memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              if (सुसि)
                 {
                   saved.keybeg =
                     saved.text + (smallest->keybeg - smallest->text);
@@ -3449,7 +3449,7 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
             }
         }
       else
-        write_line (smallest, ofp, output_file);
+        write_लिन्या (smallest, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
       if (base[ord[0]] < smallest)
@@ -3459,7 +3459,7 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
           if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
                        NULL))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              struct लिन्या const *linelim = buffer_linelim (&buffer[ord[0]]);
               cur[ord[0]] = linelim - 1;
               base[ord[0]] = linelim - buffer[ord[0]].nlines;
             }
@@ -3500,7 +3500,7 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t बिलांग_of_smaller_मगा_लिन्या;
 
         while (lo < hi)
           {
@@ -3512,16 +3512,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        बिलांग_of_smaller_मगा_लिन्या = lo - 1;
+        for (size_t j = 0; j < बिलांग_of_smaller_मगा_लिन्या; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[बिलांग_of_smaller_मगा_लिन्या] = ord0;
       }
     }
 
   if (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
+      write_लिन्या (&saved, ofp, output_file);
       free (saved.text);
     }
 
@@ -3548,7 +3548,7 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
             FILE *ofp, char const *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
+  size_t nopened = open_पासोक_files (files, nfiles, &fps);
   if (nopened < nfiles && nopened < 2)
     sort_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
@@ -3562,12 +3562,12 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    are in reverse order.  NLINES must be at least 2.  */
 
 static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+mergelines (struct लिन्या *restrict t, size_t nlines,
+            struct लिन्या const *restrict lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  struct लिन्या *hi = t - nlo;
 
   while (true)
     if (compare (lo - 1, hi - 1) <= 0)
@@ -3609,33 +3609,33 @@ mergelines (struct line *restrict t, size_t nlines,
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
 static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+sequential_sort (struct लिन्या *restrict मगा_लिन्या, size_t nlines,
+                 struct लिन्या *restrict temp, bool to_temp)
 {
   if (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
+      int swap = (0 < compare (&मगा_लिन्या[-1], &मगा_लिन्या[-2]));
       if (to_temp)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          temp[-1] = मगा_लिन्या[-1 - swap];
+          temp[-2] = मगा_लिन्या[-2 + swap];
         }
       else if (swap)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          temp[-1] = मगा_लिन्या[-1];
+          मगा_लिन्या[-1] = मगा_लिन्या[-2];
+          मगा_लिन्या[-2] = temp[-1];
         }
     }
   else
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      struct लिन्या *lo = मगा_लिन्या;
+      struct लिन्या *hi = मगा_लिन्या - nlo;
 
       sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
       if (1 < nlo)
@@ -3643,61 +3643,61 @@ sequential_sort (struct line *restrict lines, size_t nlines,
       else if (!to_temp)
         temp[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
+      struct लिन्या *dest;
+      struct लिन्या const *sorted_lo;
       if (to_temp)
         {
           dest = temp;
-          sorted_lo = lines;
+          sorted_lo = मगा_लिन्या;
         }
       else
         {
-          dest = lines;
+          dest = मगा_लिन्या;
           sorted_lo = temp;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+static struct merge_बुहोल *init_बुहोल (struct merge_बुहोल *restrict,
+                                     struct merge_बुहोल *restrict,
+                                     struct लिन्या *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+static struct merge_बुहोल *
+merge_पुनो_init (size_t nthreads, size_t nlines, struct लिन्या *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  struct merge_बुहोल *merge_पुनो = xmalloc (2 * sizeof *merge_पुनो * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  struct merge_बुहोल *उगात = merge_पुनो;
+  उगात->lo = उगात->hi = उगात->end_lo = उगात->end_hi = NULL;
+  उगात->dest = NULL;
+  उगात->nlo = उगात->nhi = nlines;
+  उगात->parent = NULL;
+  उगात->level = MERGE_END;
+  उगात->queued = false;
+  pthread_mutex_init (&उगात->lock, NULL);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_बुहोल (उगात, उगात + 1, dest, nthreads, nlines, false);
+  return merge_पुनो;
 }
 
 /* Destroy the merge tree. */
 static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+merge_पुनो_destroy (size_t nthreads, struct merge_बुहोल *merge_पुनो)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  struct merge_बुहोल *बुहोल = merge_पुनो;
 
   while (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&बुहोल->lock);
+      बुहोल++;
     }
 
-  free (merge_tree);
+  free (merge_पुनो);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,47 +3707,47 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+static struct merge_बुहोल *
+init_बुहोल (struct merge_बुहोल *restrict parent,
+           struct merge_बुहोल *restrict बुहोल_pool,
+           struct लिन्या *dest, size_t nthreads,
+           size_t total_मगा_लिन्या, bool is_lo_child)
 {
   size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  struct लिन्या *lo = dest - total_मगा_लिन्या;
+  struct लिन्या *hi = lo - nlo;
+  struct लिन्या **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  struct merge_बुहोल *बुहोल = बुहोल_pool++;
+  बुहोल->lo = बुहोल->end_lo = lo;
+  बुहोल->hi = बुहोल->end_hi = hi;
+  बुहोल->dest = parent_end;
+  बुहोल->nlo = nlo;
+  बुहोल->nhi = nhi;
+  बुहोल->parent = parent;
+  बुहोल->level = parent->level + 1;
+  बुहोल->queued = false;
+  pthread_mutex_init (&बुहोल->lock, NULL);
 
   if (nthreads > 1)
     {
       size_t lo_threads = nthreads / 2;
       size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      बुहोल->lo_child = बुहोल_pool;
+      बुहोल_pool = init_बुहोल (बुहोल, बुहोल_pool, lo, lo_threads,
+                             total_मगा_लिन्या, true);
+      बुहोल->hi_child = बुहोल_pool;
+      बुहोल_pool = init_बुहोल (बुहोल, बुहोल_pool, hi, hi_threads,
+                             total_मगा_लिन्या, false);
     }
   else
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      बुहोल->lo_child = NULL;
+      बुहोल->hi_child = NULL;
     }
-  return node_pool;
+  return बुहोल_pool;
 }
 
 
@@ -3756,8 +3756,8 @@ init_node (struct merge_node *restrict parent,
 static int
 compare_nodes (void const *a, void const *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
+  struct merge_बुहोल const *nodea = a;
+  struct merge_बुहोल const *nodeb = b;
   if (nodea->level == nodeb->level)
       return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
   return nodea->level < nodeb->level;
@@ -3766,23 +3766,23 @@ compare_nodes (void const *a, void const *b)
 /* Lock a merge tree NODE.  */
 
 static inline void
-lock_node (struct merge_node *node)
+lock_बुहोल (struct merge_बुहोल *बुहोल)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_lock (&बुहोल->lock);
 }
 
 /* Unlock a merge tree NODE. */
 
 static inline void
-unlock_node (struct merge_node *node)
+unlock_बुहोल (struct merge_बुहोल *बुहोल)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&बुहोल->lock);
 }
 
 /* Destroy merge QUEUE. */
 
 static void
-queue_destroy (struct merge_node_queue *queue)
+queue_destroy (struct merge_बुहोल_queue *queue)
 {
   heap_free (queue->priority_queue);
   pthread_cond_destroy (&queue->cond);
@@ -3793,7 +3793,7 @@ queue_destroy (struct merge_node_queue *queue)
    NTHREADS threads.  */
 
 static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+queue_init (struct merge_बुहोल_queue *queue, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
@@ -3807,28 +3807,28 @@ queue_init (struct merge_node_queue *queue, size_t nthreads)
    does not need to lock NODE.  */
 
 static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+queue_इसिंगित (struct merge_बुहोल_queue *queue, struct merge_बुहोल *बुहोल)
 {
   pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
+  heap_इसिंगित (queue->priority_queue, बुहोल);
+  बुहोल->queued = true;
   pthread_cond_signal (&queue->cond);
   pthread_mutex_unlock (&queue->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+static struct merge_बुहोल *
+queue_आलिसिन (struct merge_बुहोल_queue *queue)
 {
-  struct merge_node *node;
+  struct merge_बुहोल *बुहोल;
   pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
+  while (! (बुहोल = heap_remove_इताअस (queue->priority_queue)))
     pthread_cond_wait (&queue->cond, &queue->mutex);
   pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  lock_बुहोल (बुहोल);
+  बुहोल->queued = false;
+  return बुहोल;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3839,16 +3839,16 @@ queue_pop (struct merge_node_queue *queue)
    appropriate only for internal sort.  */
 
 static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+write_unique (struct लिन्या const *लिन्या, FILE *tfp, char const *temp_output)
 {
   if (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
+      if (saved_लिन्या.text && ! compare (लिन्या, &saved_लिन्या))
         return;
-      saved_line = *line;
+      saved_लिन्या = *लिन्या;
     }
 
-  write_line (line, tfp, temp_output);
+  write_लिन्या (लिन्या, tfp, temp_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3859,67 +3859,67 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    the name of TFP, or is null if TFP is standard output.  */
 
 static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
+mergelines_बुहोल (struct merge_बुहोल *restrict बुहोल, size_t total_मगा_लिन्या,
                  FILE *tfp, char const *temp_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  struct लिन्या *lo_orig = बुहोल->lo;
+  struct लिन्या *hi_orig = बुहोल->hi;
+  size_t to_merge = MAX_MERGE (total_मगा_लिन्या, बुहोल->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  if (बुहोल->level > MERGE_उगात)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
+      struct लिन्या *dest = *बुहोल->dest;
+      while (बुहोल->lo != बुहोल->end_lo && बुहोल->hi != बुहोल->end_hi && to_merge--)
+        if (compare (बुहोल->lo - 1, बुहोल->hi - 1) <= 0)
+          *--dest = *--बुहोल->lo;
         else
-          *--dest = *--node->hi;
+          *--dest = *--बुहोल->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - बुहोल->lo;
+      merged_hi = hi_orig - बुहोल->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      if (बुहोल->nhi == merged_hi)
+        while (बुहोल->lo != बुहोल->end_lo && to_merge--)
+          *--dest = *--बुहोल->lo;
+      else if (बुहोल->nlo == merged_lo)
+        while (बुहोल->hi != बुहोल->end_hi && to_merge--)
+          *--dest = *--बुहोल->hi;
+      *बुहोल->dest = dest;
     }
   else
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      while (बुहोल->lo != बुहोल->end_lo && बुहोल->hi != बुहोल->end_hi && to_merge--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
+          if (compare (बुहोल->lo - 1, बुहोल->hi - 1) <= 0)
+            write_unique (--बुहोल->lo, tfp, temp_output);
           else
-            write_unique (--node->hi, tfp, temp_output);
+            write_unique (--बुहोल->hi, tfp, temp_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - बुहोल->lo;
+      merged_hi = hi_orig - बुहोल->hi;
 
-      if (node->nhi == merged_hi)
+      if (बुहोल->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          while (बुहोल->lo != बुहोल->end_lo && to_merge--)
+            write_unique (--बुहोल->lo, tfp, temp_output);
         }
-      else if (node->nlo == merged_lo)
+      else if (बुहोल->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          while (बुहोल->hi != बुहोल->end_hi && to_merge--)
+            write_unique (--बुहोल->hi, tfp, temp_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - बुहोल->lo;
+  merged_hi = hi_orig - बुहोल->hi;
+  बुहोल->nlo -= merged_lo;
+  बुहोल->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
@@ -3927,34 +3927,34 @@ mergelines_node (struct merge_node *restrict node, size_t total_lines,
    available lines or has exhausted its lines.  */
 
 static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+queue_check_इसिंगित (struct merge_बुहोल_queue *queue, struct merge_बुहोल *बुहोल)
 {
-  if (! node->queued)
+  if (! बुहोल->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (बुहोल->lo - बुहोल->end_lo) != 0;
+      bool hi_avail = (बुहोल->hi - बुहोल->end_hi) != 0;
+      if (lo_avail ? hi_avail || ! बुहोल->nhi : hi_avail && ! बुहोल->nlo)
+        queue_इसिंगित (queue, बुहोल);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
 static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+queue_check_इसिंगित_parent (struct merge_बुहोल_queue *queue,
+                           struct merge_बुहोल *बुहोल)
 {
-  if (node->level > MERGE_ROOT)
+  if (बुहोल->level > MERGE_उगात)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      lock_बुहोल (बुहोल->parent);
+      queue_check_इसिंगित (queue, बुहोल->parent);
+      unlock_बुहोल (बुहोल->parent);
     }
-  else if (node->nlo + node->nhi == 0)
+  else if (बुहोल->nlo + बुहोल->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      queue_इसिंगित (queue, बुहोल->parent);
     }
 }
 
@@ -3965,54 +3965,54 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    null if TFP is standard output.  */
 
 static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+merge_loop (struct merge_बुहोल_queue *queue,
+            size_t total_मगा_लिन्या, FILE *tfp, char const *temp_output)
 {
   while (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      struct merge_बुहोल *बुहोल = queue_आलिसिन (queue);
 
-      if (node->level == MERGE_END)
+      if (बुहोल->level == MERGE_END)
         {
-          unlock_node (node);
+          unlock_बुहोल (बुहोल);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
+          queue_इसिंगित (queue, बुहोल);
           break;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_बुहोल (बुहोल, total_मगा_लिन्या, tfp, temp_output);
+      queue_check_इसिंगित (queue, बुहोल);
+      queue_check_इसिंगित_parent (queue, बुहोल);
 
-      unlock_node (node);
+      unlock_बुहोल (बुहोल);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
+static void sortlines (struct लिन्या *restrict, size_t, size_t,
+                       struct merge_बुहोल *, struct merge_बुहोल_queue *,
                        FILE *, char const *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+struct thread_मगा_कातविरान
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  struct लिन्या *मगा_लिन्या;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t const total_मगा_लिन्या;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  struct merge_बुहोल *const बुहोल;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  struct merge_बुहोल_queue *const queue;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
@@ -4025,10 +4025,10 @@ struct thread_args
 static void *
 sortlines_thread (void *data)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
-             args->output_temp);
+  struct thread_मगा_कातविरान const *मगा_कातविरान = data;
+  sortlines (मगा_कातविरान->मगा_लिन्या, मगा_कातविरान->nthreads, मगा_कातविरान->total_मगा_लिन्या,
+             मगा_कातविरान->बुहोल, मगा_कातविरान->queue, मगा_कातविरान->tfp,
+             मगा_कातविरान->output_temp);
   return NULL;
 }
 
@@ -4057,46 +4057,46 @@ sortlines_thread (void *data)
    have been merged. */
 
 static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+sortlines (struct लिन्या *restrict मगा_लिन्या, size_t nthreads,
+           size_t total_मगा_लिन्या, struct merge_बुहोल *बुहोल,
+           struct merge_बुहोल_queue *queue, FILE *tfp, char const *temp_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = बुहोल->nlo + बुहोल->nhi;
 
   /* Calculate thread arguments. */
   size_t lo_threads = nthreads / 2;
   size_t hi_threads = nthreads - lo_threads;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  struct thread_मगा_कातविरान मगा_कातविरान = {मगा_लिन्या, lo_threads, total_मगा_लिन्या,
+                             बुहोल->lo_child, queue, tfp, temp_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  if (nthreads > 1 && SUBTHREAD_मगा_लिन्या_HEURISTIC <= nlines
+      && pthread_create (&thread, NULL, sortlines_thread, &मगा_कातविरान) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
+      sortlines (मगा_लिन्या - बुहोल->nlo, hi_threads, total_मगा_लिन्या,
+                 बुहोल->hi_child, queue, tfp, temp_output);
       pthread_join (thread, NULL);
     }
   else
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
+      size_t nlo = बुहोल->nlo;
+      size_t nhi = बुहोल->nhi;
+      struct लिन्या *temp = मगा_लिन्या - total_मगा_लिन्या;
       if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
+        sequential_sort (मगा_लिन्या - nlo, nhi, temp - nlo / 2, false);
       if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+        sequential_sort (मगा_लिन्या, nlo, temp, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      बुहोल->lo = मगा_लिन्या;
+      बुहोल->hi = मगा_लिन्या - nlo;
+      बुहोल->end_lo = मगा_लिन्या - nlo;
+      बुहोल->end_hi = मगा_लिन्या - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      queue_इसिंगित (queue, बुहोल);
+      merge_loop (queue, total_मगा_लिन्या, tfp, temp_output);
     }
 }
 
@@ -4118,7 +4118,7 @@ sortlines (struct line *restrict lines, size_t nthreads,
    common cases.  */
 
 static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
+avoid_trashing_पासोक (struct sortfile *files, size_t ntemps,
                       size_t nfiles, char const *outfile)
 {
   struct tempnode *tempcopy = NULL;
@@ -4190,7 +4190,7 @@ check_output (char const *outfile)
 {
   if (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
+      int oflags = O_WRONLY | O_दालावाहान | O_CLOEXEC | O_CREAT;
       int outfd = open (outfile, oflags, MODE_RW_UGO);
       if (outfd < 0)
         sort_die (_("open failed"), outfile);
@@ -4229,12 +4229,12 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
         {
           FILE *tfp;
           struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
+          size_t नुमेरो_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
                                           nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, नुमेरो_merged);
           files[out].name = temp->name;
           files[out].temp = temp;
-          in += num_merged;
+          in += नुमेरो_merged;
         }
 
       remainder = nfiles - in;
@@ -4248,12 +4248,12 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
           struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
+          size_t नुमेरो_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
                                           nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, नुमेरो_merged);
           files[out].name = temp->name;
           files[out++].temp = temp;
-          in += num_merged;
+          in += नुमेरो_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
@@ -4263,7 +4263,7 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       nfiles -= in - out;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_पासोक (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
@@ -4273,7 +4273,7 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_पासोक_files (files, nfiles, &fps);
 
       if (nopened == nfiles)
         {
@@ -4339,7 +4339,7 @@ sort (char *const *files, size_t nfiles, char const *output_file,
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
+      size_t bytes_per_लिन्या;
       if (nthreads > 1)
         {
           /* Get log P. */
@@ -4350,16 +4350,16 @@ sort (char *const *files, size_t nfiles, char const *output_file,
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          bytes_per_लिन्या = (mult * sizeof (struct लिन्या));
         }
       else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+        bytes_per_लिन्या = sizeof (struct लिन्या) * 3 / 2;
 
       if (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_लिन्या,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, bytes_per_लिन्या, policy.initial);
         }
       buf.eof = false;
       files++;
@@ -4367,22 +4367,22 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
       while (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          struct लिन्या *लिन्या;
 
           if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+              && (bytes_per_लिन्या + 1
+                  < (buf.alloc - buf.used - bytes_per_लिन्या * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
+              buf.कालिवा = buf.used;
               break;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_लिन्या.text = NULL;
+          लिन्या = buffer_linelim (&buf);
+          if (buf.eof && !nfiles && !ntemps && !buf.कालिवा)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
@@ -4398,27 +4398,27 @@ sort (char *const *files, size_t nfiles, char const *output_file,
             {
               if (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
+                  struct merge_बुहोल_queue queue;
                   queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  struct merge_बुहोल *merge_पुनो =
+                    merge_पुनो_init (nthreads, buf.nlines, लिन्या);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
+                  sortlines (लिन्या, nthreads, buf.nlines, merge_पुनो + 1,
                              &queue, tfp, temp_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
+                  merge_पुनो_destroy (nthreads, merge_पुनो);
                   queue_destroy (&queue);
                 }
               else
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
+                  sequential_sort (लिन्या, buf.nlines,
+                                   लिन्या - buf.nlines, false);
                   for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                    write_unique (लिन्या - i - 1, tfp, temp_output);
                 }
             }
           else
-            write_unique (line - 1, tfp, temp_output);
+            write_unique (लिन्या - 1, tfp, temp_output);
 
           xfclose (tfp, temp_output);
 
@@ -4433,13 +4433,13 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
   if (! output_file_created)
     {
-      struct tempnode *node = temphead;
+      struct tempnode *बुहोल = temphead;
       struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      for (size_t i = 0; बुहोल; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = बुहोल->name;
+          tempfiles[i].temp = बुहोल;
+          बुहोल = बुहोल->next;
         }
       merge (tempfiles, ntemps, ntemps, output_file);
       free (tempfiles);
@@ -4451,15 +4451,15 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
 static void
-insertkey (struct keyfield *key_arg)
+insertkey (struct keyfield *सुसि_arg)
 {
   struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  struct keyfield *सुसि = xmemdup (सुसि_arg, sizeof *सुसि);
 
   for (p = &keylist; *p; p = &(*p)->next)
     continue;
-  *p = key;
-  key->next = NULL;
+  *p = सुसि;
+  सुसि->next = NULL;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
@@ -4484,15 +4484,15 @@ incompatible_options (char const *opts)
 static void
 check_ordering_compatibility (void)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  for (struct keyfield *सुसि = keylist; सुसि; सुसि = सुसि->next)
+    if (1 < (सुसि->numeric + सुसि->general_numeric + सुसि->human_numeric
+             + सुसि->month + (सुसि->version | सुसि->random | !!सुसि->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
         char opts[sizeof short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        सुसि->skipsblanks = सुसि->skipeblanks = सुसि->reverse = false;
+        सुसि_to_opts (सुसि, opts);
         incompatible_options (opts);
       }
 }
@@ -4504,7 +4504,7 @@ check_ordering_compatibility (void)
    failure; otherwise, report MSGID and exit on failure.  */
 
 static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+parse_field_बिलांग (char const *string, size_t *val, char const *msgid)
 {
   char *suffix;
   uintmax_t n;
@@ -4538,7 +4538,7 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
 static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+set_ordering (char const *s, struct keyfield *सुसि, enum blanktype blanktype)
 {
   while (*s)
     {
@@ -4546,42 +4546,42 @@ set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
         {
         case 'b':
           if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
+            सुसि->skipsblanks = true;
           if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
+            सुसि->skipeblanks = true;
           break;
         case 'd':
-          key->ignore = nondictionary;
+          सुसि->ignore = nondictionary;
           break;
         case 'f':
-          key->translate = fold_toupper;
+          सुसि->translate = fold_toupper;
           break;
         case 'g':
-          key->general_numeric = true;
+          सुसि->general_numeric = true;
           break;
         case 'h':
-          key->human_numeric = true;
+          सुसि->human_numeric = true;
           break;
         case 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
+          if (! सुसि->ignore)
+            सुसि->ignore = nonprinting;
           break;
         case 'M':
-          key->month = true;
+          सुसि->month = true;
           break;
         case 'n':
-          key->numeric = true;
+          सुसि->numeric = true;
           break;
         case 'R':
-          key->random = true;
+          सुसि->random = true;
           break;
         case 'r':
-          key->reverse = true;
+          सुसि->reverse = true;
           break;
         case 'V':
-          key->version = true;
+          सुसि->version = true;
           break;
         default:
           return (char *) s;
@@ -4594,18 +4594,18 @@ set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
 /* Initialize KEY.  */
 
 static struct keyfield *
-key_init (struct keyfield *key)
+सुसि_init (struct keyfield *सुसि)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (सुसि, 0, sizeof *सुसि);
+  सुसि->eword = SIZE_MAX;
+  return सुसि;
 }
 
 int
 main (int argc, char **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
+  struct keyfield *सुसि;
+  struct keyfield सुसि_buf;
   struct keyfield gkey;
   bool gkey_only = false;
   char const *s;
@@ -4691,7 +4691,7 @@ main (int argc, char **argv)
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  सुसि_init (&gkey);
   gkey.sword = SIZE_MAX;
 
   files = xnmalloc (argc, sizeof *files);
@@ -4722,7 +4722,7 @@ main (int argc, char **argv)
       else switch (c)
         {
         case 1:
-          key = NULL;
+          सुसि = NULL;
           if (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
@@ -4732,25 +4732,25 @@ main (int argc, char **argv)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
+                  सुसि = सुसि_init (&सुसि_buf);
+                  s = parse_field_बिलांग (optarg + 1, &सुसि->sword, NULL);
                   if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
+                    s = parse_field_बिलांग (s + 1, &सुसि->schar, NULL);
+                  if (! (सुसि->sword || सुसि->schar))
+                    सुसि->sword = SIZE_MAX;
+                  if (! s || *set_ordering (s, सुसि, bl_start))
+                    सुसि = NULL;
                   else
                     {
                       if (minus_pos_usage)
                         {
                           char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          s = parse_field_बिलांग (optarg1 + 1, &सुसि->eword,
                                              N_("invalid number after '-'"));
                           if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                            s = parse_field_बिलांग (s + 1, &सुसि->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          if (!सुसि->echar && सुसि->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,23 +4758,23 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              सुसि->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          if (*set_ordering (s, सुसि, bl_end))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      सुसि->traditional_used = true;
+                      insertkey (सुसि);
                     }
                 }
             }
-          if (! key)
+          if (! सुसि)
             files[nfiles++] = optarg;
           break;
 
         case SORT_OPTION:
-          c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
+          c = XARGMATCH ("--sort", optarg, sort_मगा_कातविरान, sort_types);
           FALLTHROUGH;
         case 'b':
         case 'd':
@@ -4797,7 +4797,7 @@ main (int argc, char **argv)
 
         case CHECK_OPTION:
           c = (optarg
-               ? XARGMATCH ("--check", optarg, check_args, check_types)
+               ? XARGMATCH ("--check", optarg, check_मगा_कातविरान, check_types)
                : 'c');
           FALLTHROUGH;
         case 'c':
@@ -4822,54 +4822,54 @@ main (int argc, char **argv)
           break;
 
         case 'k':
-          key = key_init (&key_buf);
+          सुसि = सुसि_init (&सुसि_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_field_बिलांग (optarg, &सुसि->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          if (! सुसि->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
           if (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_field_बिलांग (s + 1, &सुसि->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              if (! सुसि->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
+          if (! (सुसि->sword || सुसि->schar))
+            सुसि->sword = SIZE_MAX;
+          s = set_ordering (s, सुसि, bl_start);
           if (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              सुसि->eword = SIZE_MAX;
+              सुसि->echar = 0;
             }
           else
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_field_बिलांग (s + 1, &सुसि->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              if (! सुसि->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
               if (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_field_बिलांग (s + 1, &सुसि->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = set_ordering (s, सुसि, bl_end);
             }
           if (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
+          insertkey (सुसि);
           break;
 
         case 'm':
@@ -5013,10 +5013,10 @@ main (int argc, char **argv)
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
+                  unsigned long int file_नुमेरो = i + 1;
                   error (SORT_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_नुमेरो);
                 }
             }
         }
@@ -5026,27 +5026,27 @@ main (int argc, char **argv)
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  for (सुसि = keylist; सुसि; सुसि = सुसि->next)
     {
-      if (default_key_compare (key) && !key->reverse)
+      if (default_सुसि_compare (सुसि) && !सुसि->reverse)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          सुसि->ignore = gkey.ignore;
+          सुसि->translate = gkey.translate;
+          सुसि->skipsblanks = gkey.skipsblanks;
+          सुसि->skipeblanks = gkey.skipeblanks;
+          सुसि->month = gkey.month;
+          सुसि->numeric = gkey.numeric;
+          सुसि->general_numeric = gkey.general_numeric;
+          सुसि->human_numeric = gkey.human_numeric;
+          सुसि->version = gkey.version;
+          सुसि->random = gkey.random;
+          सुसि->reverse = gkey.reverse;
         }
 
-      need_random |= key->random;
+      need_random |= सुसि->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  if (!keylist && !default_सुसि_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5080,7 +5080,7 @@ main (int argc, char **argv)
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      सुसि_warnings (&gkey, gkey_only);
     }
 
   reverse = gkey.reverse;
@@ -5144,12 +5144,12 @@ main (int argc, char **argv)
     {
       if (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
+          unsigned long int np = नुमेरो_processors (NPROC_CURRENT_OVERRIDABLE);
           nthreads = MIN (np, DEFAULT_MAX_THREADS);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_बुहोल));
       nthreads = MIN (nthreads, nthreads_max);
 
       sort (files, nfiles, outfile, nthreads);

@@ -82,7 +82,7 @@ reads as zero bytes.\n\
   -c, --no-create        do not create any files\n\
 "));
       oputs (_("\
-  -o, --io-blocks        treat SIZE as number of IO blocks instead of bytes\n\
+  -o, --io-blocks        treat SIZE as नुमेरो_2 of IO blocks instead of bytes\n\
 "));
       oputs (_("\
   -r, --reference=RFILE  base size on RFILE\n\

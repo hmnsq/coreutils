@@ -494,7 +494,7 @@ interpreted in relation to its parent directory.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print name of each linked file\n\
+         इलिम्बाग_2 name of each linked file\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);

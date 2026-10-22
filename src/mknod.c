@@ -153,9 +153,9 @@ main (int argc, char **argv)
       struct mode_change *change = mode_compile (specified_mode);
       if (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
+      mode_t umask_हालागा = umask (0);
+      umask (umask_हालागा);
+      newmode = mode_adjust (newmode, false, umask_हालागा, change, NULL);
       free (change);
       if (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
@@ -208,14 +208,14 @@ main (int argc, char **argv)
   /* Only check the first character, to allow mnemonic usage like
      'mknod /dev/rst0 character 18 0'. */
 
-  mode_t node_type;
+  mode_t बुहोल_type;
   switch (argv[optind + 1][0])
     {
     case 'b':			/* 'block' or 'buffered' */
 #ifndef S_IFBLK
       error (EXIT_FAILURE, 0, _("block special files not supported"));
 #else
-      node_type = S_IFBLK;
+      बुहोल_type = S_IFBLK;
 #endif
       goto block_or_character;
 
@@ -224,7 +224,7 @@ main (int argc, char **argv)
 #ifndef S_IFCHR
       error (EXIT_FAILURE, 0, _("character special files not supported"));
 #else
-      node_type = S_IFCHR;
+      बुहोल_type = S_IFCHR;
 #endif
       goto block_or_character;
 
@@ -252,9 +252,9 @@ main (int argc, char **argv)
 #endif
 
         if (set_security_context)
-          defaultcon (set_security_context, argv[optind], node_type);
+          defaultcon (set_security_context, argv[optind], बुहोल_type);
 
-        if (mknod (argv[optind], newmode | node_type, device) != 0)
+        if (mknod (argv[optind], newmode | बुहोल_type, device) != 0)
           error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       }
       break;

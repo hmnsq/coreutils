@@ -107,9 +107,9 @@ expand (void)
   if (!fp)
     return;
 
-  static char line_in[IO_BUFSIZE];
+  static char लिन्या_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, लिन्या_in, sizeof लिन्या_in, fp);
 
   while (true)
     {
@@ -136,11 +136,11 @@ expand (void)
         {
           while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, लिन्या_in, sizeof लिन्या_in, fp);
 
           if (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_लिन्या || c32issep (g.ch);
 
               if (g.ch == '\t')
                 {
@@ -197,14 +197,14 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_लिन्या = true;
 
   while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       switch (c)
         {
         case 'i':
-          convert_entire_line = false;
+          convert_entire_लिन्या = false;
           break;
 
         case 't':

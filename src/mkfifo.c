@@ -157,9 +157,9 @@ main (int argc, char **argv)
       struct mode_change *change = mode_compile (specified_mode);
       if (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
+      mode_t umask_हालागा = umask (0);
+      umask (umask_हालागा);
+      newmode = mode_adjust (newmode, false, umask_हालागा, change, NULL);
       free (change);
       if (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,

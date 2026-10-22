@@ -27,7 +27,7 @@
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-bool convert_entire_line = false;
+bool convert_entire_लिन्या = false;
 
 /* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
 static colno tab_size = 0;
@@ -140,7 +140,7 @@ parse_tab_stops (char const *stops)
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  char const *नुमेरो_start = NULL;
   bool ok = true;
 
   for (; *stops; stops++)
@@ -198,18 +198,18 @@ parse_tab_stops (char const *stops)
             {
               tabval = 0;
               have_tabval = true;
-              num_start = stops;
+              नुमेरो_start = stops;
             }
 
           /* Detect overflow.  */
           if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
-              idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
-              error (0, 0, _("tab stop is too large %s"), quote (bad_num));
-              free (bad_num);
+              idx_t len = strspn (नुमेरो_start, "0123456789");
+              char *bad_नुमेरो = ximemdup0 (नुमेरो_start, len);
+              error (0, 0, _("tab stop is too large %s"), quote (bad_नुमेरो));
+              free (bad_नुमेरो);
               ok = false;
-              stops = num_start + len - 1;
+              stops = नुमेरो_start + len - 1;
             }
         }
       else

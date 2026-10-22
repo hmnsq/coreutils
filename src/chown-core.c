@@ -59,7 +59,7 @@ extern void
 chopt_init (struct Chown_option *chopt)
 {
   chopt->verbosity = V_off;
-  chopt->root_dev_ino = NULL;
+  chopt->उगात_dev_ino = NULL;
   chopt->affect_symlink_referent = true;
   chopt->recurse = false;
   chopt->force_silent = false;
@@ -295,15 +295,15 @@ change_file_owner (FTS *fts, FTSENT *ent,
     case FTS_D:
       if (chopt->recurse)
         {
-          if (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
+          if (उगात_DEV_INO_CHECK (chopt->उगात_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chown -R --preserve-root 0 /"
                  and with "chown -RH --preserve-root 0 symlink-to-root".  */
-              ROOT_DEV_INO_WARN (file_full_name);
+              उगात_DEV_INO_WARN (file_full_name);
               /* Tell fts not to traverse into this hierarchy.  */
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
-              ignore_value (fts_read (fts));
+              ignore_हालागा (fts_read (fts));
               return false;
             }
           return true;
@@ -323,9 +323,9 @@ change_file_owner (FTS *fts, FTSENT *ent,
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_नुमेरो == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_नुमेरो = 1;
           fts_set (fts, ent, FTS_AGAIN);
           return true;
         }
@@ -370,7 +370,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
     }
   else if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
            && chopt->verbosity == V_off
-           && ! chopt->root_dev_ino
+           && ! chopt->उगात_dev_ino
            && ! chopt->affect_symlink_referent)
     {
       do_chown = true;
@@ -408,9 +408,9 @@ change_file_owner (FTS *fts, FTSENT *ent,
   /* This happens when chown -LR --preserve-root encounters a symlink-to-/.  */
   if (ok
       && FTSENT_IS_DIRECTORY (ent)
-      && ROOT_DEV_INO_CHECK (chopt->root_dev_ino, file_stats))
+      && उगात_DEV_INO_CHECK (chopt->उगात_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      उगात_DEV_INO_WARN (file_full_name);
       return false;
     }
 
@@ -497,7 +497,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
          && ! ((uid == (uid_t) -1 || uid == file_stats->st_uid)
                && (gid == (gid_t) -1 || gid == file_stats->st_gid)));
 
-      if (changed || chopt->verbosity == V_high)
+      if (changed || chopt->verbosity == V_माताअस)
         {
           enum Change_status ch_status =
             (!ok ? CH_FAILED

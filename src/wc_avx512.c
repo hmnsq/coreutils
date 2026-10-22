@@ -23,10 +23,10 @@
 #include <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx512 (int fd)
+extern struct wc_मगा_लिन्या
+wc_मगा_लिन्या_avx512 (int fd)
 {
-  intmax_t lines = 0;
+  intmax_t मगा_लिन्या = 0;
   intmax_t bytes = 0;
 
   __m512i endlines = _mm512_set1_epi8 ('\n');
@@ -36,7 +36,7 @@ wc_lines_avx512 (int fd)
        __m512i avx_buf[IO_BUFSIZE / sizeof (__m512i)];
       ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
       if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+        return (struct wc_मगा_लिन्या) { bytes_read == 0 ? 0 : errno, मगा_लिन्या, bytes };
 
       bytes += bytes_read;
       __m512i *datap = avx_buf;
@@ -45,7 +45,7 @@ wc_lines_avx512 (int fd)
         {
            __m512i to_match = _mm512_load_si512 (datap);
            long long matches = _mm512_cmpeq_epi8_mask (to_match, endlines);
-           lines += __builtin_popcountll (matches);
+           मगा_लिन्या += __builtin_popcountll (matches);
            datap += 1;
            bytes_read -= 64;
         }
@@ -53,6 +53,6 @@ wc_lines_avx512 (int fd)
       /* Finish up any left over bytes */
       char *end = (char *) datap + bytes_read;
       for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+        मगा_लिन्या += *p == '\n';
     }
 }

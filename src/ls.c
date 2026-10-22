@@ -145,7 +145,7 @@
 #endif
 
 #if READDIR_LIES_ABOUT_MOUNTPOINT_D_INO
-# define RELIABLE_D_INO(dp) NOT_AN_INODE_NUMBER
+# define RELIABLE_D_INO(dp) NOT_AN_INODE_नुमेरो
 #else
 # define RELIABLE_D_INO(dp) D_INO (dp)
 #endif
@@ -259,7 +259,7 @@ static size_t quote_name (char const *name,
                           struct quoting_options const *options,
                           int needs_general_quoting,
                           const struct bin_str *color,
-                          bool allow_pad, struct obstack *stack,
+                          bool allow_pad, struct obstack *सालानसान,
                           char const *absolute_name);
 static size_t quote_name_buf (char **inbuf, size_t bufsize, char *name,
                               struct quoting_options const *options,
@@ -268,41 +268,41 @@ static size_t quote_name_buf (char **inbuf, size_t bufsize, char *name,
 static int decode_switches (int argc, char **argv);
 static bool file_ignored (char const *name);
 static uintmax_t gobble_file (char const *name, enum filetype type,
-                              ino_t inode, bool command_line_arg,
+                              ino_t inode, bool command_लिन्या_arg,
                               char const *dirname);
 static const struct bin_str * get_color_indicator (const struct fileinfo *f,
                                                    bool symlink_target);
-static bool print_color_indicator (const struct bin_str *ind);
+static bool इलिम्बाग_color_indicator (const struct bin_str *ind);
 static void put_indicator (const struct bin_str *ind);
 static void add_ignore_pattern (char const *pattern);
 static void attach (char *dest, char const *dirname, char const *name);
 static void clear_files (void);
 static void extract_dirs_from_files (char const *dirname,
-                                     bool command_line_arg);
+                                     bool command_लिन्या_arg);
 static bool get_link_name (char const *filename, struct fileinfo *f,
-                           bool command_line_arg);
+                           bool command_लिन्या_arg);
 static void indent (size_t from, size_t to);
 static idx_t calculate_columns (bool by_columns);
-static void print_current_files (void);
-static void print_dir (char const *name, char const *realname,
-                       bool command_line_arg);
-static size_t print_file_name_and_frills (const struct fileinfo *f,
+static void इलिम्बाग_current_files (void);
+static void इलिम्बाग_dir (char const *name, char const *realname,
+                       bool command_लिन्या_arg);
+static size_t इलिम्बाग_file_name_and_frills (const struct fileinfo *f,
                                           size_t start_col);
-static void print_horizontal (void);
+static void इलिम्बाग_horizontal (void);
 static int format_user_width (uid_t u);
 static int format_group_width (gid_t g);
-static void print_long_format (const struct fileinfo *f);
-static void print_many_per_line (void);
-static size_t print_name_with_quoting (const struct fileinfo *f,
+static void इलिम्बाग_long_format (const struct fileinfo *f);
+static void इलिम्बाग_many_per_लिन्या (void);
+static size_t इलिम्बाग_name_with_quoting (const struct fileinfo *f,
                                        bool symlink_target,
-                                       struct obstack *stack,
+                                       struct obstack *सालानसान,
                                        size_t start_col);
 static void prep_non_filename_text (void);
-static bool print_type_indicator (bool stat_ok, mode_t mode,
+static bool इलिम्बाग_type_indicator (bool stat_ok, mode_t mode,
                                   enum filetype type);
-static void print_with_separator (char sep);
+static void इलिम्बाग_with_separator (char sep);
 static void queue_directory (char const *name, char const *realname,
-                             bool command_line_arg);
+                             bool command_लिन्या_arg);
 static void sort_files (void);
 static void parse_ls_color (void);
 
@@ -379,7 +379,7 @@ struct pending
        were told to list, 'realname' will contain the name of the symbolic
        link, otherwise zero.  */
     char *realname;
-    bool command_line_arg;
+    bool command_लिन्या_arg;
     struct pending *next;
   };
 
@@ -390,7 +390,7 @@ static struct pending *pending_dirs;
 
 static struct timespec current_time;
 
-static bool print_scontext;
+static bool इलिम्बाग_scontext;
 static char UNKNOWN_SECURITY_CONTEXT[] = "?";
 
 /* Whether any of the files has an ACL.  This affects the width of the
@@ -402,15 +402,15 @@ static bool any_has_acl;
    block sizes, link counts, owners, groups, authors, major device
    numbers, minor device numbers, and file sizes, respectively.  */
 
-static int inode_number_width;
+static int inode_नुमेरो_width;
 static int block_size_width;
 static int nlink_width;
 static int scontext_width;
 static int owner_width;
 static int group_width;
 static int author_width;
-static int major_device_number_width;
-static int minor_device_number_width;
+static int major_device_नुमेरो_width;
+static int minor_device_नुमेरो_width;
 static int file_size_width;
 
 /* Option flags */
@@ -427,8 +427,8 @@ static int file_size_width;
 enum format
   {
     long_format,		/* -l and other options that imply -l */
-    one_per_line,		/* -1 */
-    many_per_line,		/* -C */
+    one_per_लिन्या,		/* -1 */
+    many_per_लिन्या,		/* -C */
     horizontal,			/* -x */
     with_commas			/* -m */
   };
@@ -446,7 +446,7 @@ enum time_style
     locale_time_style		/* --time-style=locale */
   };
 
-static char const *const time_style_args[] =
+static char const *const time_style_मगा_कातविरान[] =
 {
   "full-iso", "long-iso", "iso", "locale", NULL
 };
@@ -455,7 +455,7 @@ static enum time_style const time_style_types[] =
   full_iso_time_style, long_iso_time_style, iso_time_style,
   locale_time_style
 };
-ARGMATCH_VERIFY (time_style_args, time_style_types);
+ARGMATCH_VERIFY (time_style_मगा_कातविरान, time_style_types);
 
 /* Type of time to print or sort by.  Controlled by -c and -u.
    The values of each item of this enum are important since they are
@@ -501,15 +501,15 @@ static bool sort_reverse;
 
 /* True means to display owner information.  -g turns this off.  */
 
-static bool print_owner = true;
+static bool इलिम्बाग_owner = true;
 
 /* True means to display author information.  */
 
-static bool print_author;
+static bool इलिम्बाग_author;
 
 /* True means to display group information.  -G and -o turn this off.  */
 
-static bool print_group = true;
+static bool इलिम्बाग_group = true;
 
 /* True means print the user and group id's as numbers rather
    than as names.  -n  */
@@ -518,7 +518,7 @@ static bool numeric_ids;
 
 /* True means mention the size in blocks of each file.  -s  */
 
-static bool print_block_size;
+static bool इलिम्बाग_block_size;
 
 /* Human-readable options for output, when printing block counts.  */
 static int human_output_opts;
@@ -553,7 +553,7 @@ enum indicator_style
 static enum indicator_style indicator_style;
 
 /* Names of indicator styles.  */
-static char const *const indicator_style_args[] =
+static char const *const indicator_style_मगा_कातविरान[] =
 {
   "none", "slash", "file-type", "classify", NULL
 };
@@ -561,15 +561,15 @@ static enum indicator_style const indicator_style_types[] =
 {
   none, slash, file_type, classify
 };
-ARGMATCH_VERIFY (indicator_style_args, indicator_style_types);
+ARGMATCH_VERIFY (indicator_style_मगा_कातविरान, indicator_style_types);
 
 /* True means use colors to mark types.  Also define the different
    colors as well as the stuff for the LS_COLORS environment variable.
    The LS_COLORS variable is now in a termcap-like format.  */
 
-static bool print_with_color;
+static bool इलिम्बाग_with_color;
 
-static bool print_hyperlink;
+static bool इलिम्बाग_hyperlink;
 
 /* Whether we used any colors in the output so far.  If so, we will
    need to restore the default color later.  If not, we will need to
@@ -588,14 +588,14 @@ enum Dereference_symlink
   {
     DEREF_UNDEFINED = 0,		/* default */
     DEREF_NEVER,
-    DEREF_COMMAND_LINE_ARGUMENTS,	/* -H */
-    DEREF_COMMAND_LINE_SYMLINK_TO_DIR,	/* the default, in certain cases */
+    DEREF_COMMAND_लिन्या_ARGUMENTS,	/* -H */
+    DEREF_COMMAND_लिन्या_SYMLINK_TO_DIR,	/* the default, in certain cases */
     DEREF_ALWAYS			/* -L */
   };
 
 enum indicator_no
   {
-    C_LEFT, C_RIGHT, C_END, C_RESET, C_NORM, C_FILE, C_DIR, C_LINK,
+    C_कालिवा, C_कानान, C_END, C_RESET, C_NORM, C_FILE, C_DIR, C_LINK,
     C_FIFO, C_SOCK,
     C_BLK, C_CHR, C_MISSING, C_ORPHAN, C_EXEC, C_DOOR, C_SETUID, C_SETGID,
     C_STICKY, C_OTHER_WRITABLE, C_STICKY_OTHER_WRITABLE, C_CAP, C_MULTIHARDLINK,
@@ -675,7 +675,7 @@ static bool check_symlink_mode;
 
 /* True means mention the inode number of each file.  -i  */
 
-static bool print_inode;
+static bool इलिम्बाग_inode;
 
 /* What to do with symbolic links.  Affected by -d, -F, -H, -l (and
    other options that imply -l), and -L.  */
@@ -755,12 +755,12 @@ static size_t tabsize;
 
 /* True means print each directory name before listing it.  */
 
-static bool print_dir_name;
+static bool इलिम्बाग_dir_name;
 
 /* The line length to use for breaking lines in many-per-line format.
    Can be set with -w.  If zero, there is no limit.  */
 
-static size_t line_length;
+static size_t लिन्या_length;
 
 /* The local time zone rules, as per the TZ environment variable.  */
 
@@ -831,7 +831,7 @@ static sig_atomic_t volatile interrupt_signal;
 
 /* A count of the number of pending stop signals that have been received.  */
 
-static sig_atomic_t volatile stop_signal_count;
+static sig_atomic_t volatile stop_signal_बिलांग;
 
 /* Desired exit status.  */
 
@@ -858,7 +858,7 @@ enum
   AUTHOR_OPTION = CHAR_MAX + 1,
   BLOCK_SIZE_OPTION,
   COLOR_OPTION,
-  DEREFERENCE_COMMAND_LINE_SYMLINK_TO_DIR_OPTION,
+  DEREFERENCE_COMMAND_लिन्या_SYMLINK_TO_DIR_OPTION,
   FILE_TYPE_INDICATOR_OPTION,
   FORMAT_OPTION,
   FULL_TIME_OPTION,
@@ -900,7 +900,7 @@ static struct option const long_options[] =
   {"si", no_argument, NULL, SI_OPTION},
   {"dereference-command-line", no_argument, NULL, 'H'},
   {"dereference-command-line-symlink-to-dir", no_argument, NULL,
-   DEREFERENCE_COMMAND_LINE_SYMLINK_TO_DIR_OPTION},
+   DEREFERENCE_COMMAND_लिन्या_SYMLINK_TO_DIR_OPTION},
   {"hide", required_argument, NULL, HIDE_OPTION},
   {"ignore", required_argument, NULL, 'I'},
   {"indicator-style", required_argument, NULL, INDICATOR_STYLE_OPTION},
@@ -926,7 +926,7 @@ static struct option const long_options[] =
   {NULL, 0, NULL, 0}
 };
 
-static char const *const format_args[] =
+static char const *const format_मगा_कातविरान[] =
 {
   "verbose", "long", "commas", "horizontal", "across",
   "vertical", "single-column", NULL
@@ -934,11 +934,11 @@ static char const *const format_args[] =
 static enum format const format_types[] =
 {
   long_format, long_format, with_commas, horizontal, horizontal,
-  many_per_line, one_per_line
+  many_per_लिन्या, one_per_लिन्या
 };
-ARGMATCH_VERIFY (format_args, format_types);
+ARGMATCH_VERIFY (format_मगा_कातविरान, format_types);
 
-static char const *const sort_args[] =
+static char const *const sort_मगा_कातविरान[] =
 {
   "none", "size", "time", "version", "extension",
   "name", "width", NULL
@@ -948,9 +948,9 @@ static enum sort_type const sort_types[] =
   sort_none, sort_size, sort_time, sort_version, sort_extension,
   sort_name, sort_width
 };
-ARGMATCH_VERIFY (sort_args, sort_types);
+ARGMATCH_VERIFY (sort_मगा_कातविरान, sort_types);
 
-static char const *const time_args[] =
+static char const *const time_मगा_कातविरान[] =
 {
   "atime", "access", "use",
   "ctime", "status",
@@ -965,9 +965,9 @@ static enum time_type const time_types[] =
   time_mtime, time_mtime,
   time_btime, time_btime,
 };
-ARGMATCH_VERIFY (time_args, time_types);
+ARGMATCH_VERIFY (time_मगा_कातविरान, time_types);
 
-static char const *const when_args[] =
+static char const *const when_मगा_कातविरान[] =
 {
   /* force and none are for compatibility with another color-ls version */
   "always", "yes", "force",
@@ -980,13 +980,13 @@ static enum when_type const when_types[] =
   when_never, when_never, when_never,
   when_if_tty, when_if_tty, when_if_tty
 };
-ARGMATCH_VERIFY (when_args, when_types);
+ARGMATCH_VERIFY (when_मगा_कातविरान, when_types);
 
 /* Information about filling a column.  */
 struct column_info
 {
   bool valid_len;
-  size_t line_len;
+  size_t लिन्या_len;
   size_t *col_arr;
 };
 
@@ -1048,7 +1048,7 @@ static struct obstack subdired_obstack;
 
 /* Save the current index on the specified obstack, OBS.  */
 static void
-push_current_dired_pos (struct obstack *obs)
+इतुलाक_current_dired_pos (struct obstack *obs)
 {
   if (dired)
     obstack_grow (obs, &dired_pos, sizeof dired_pos);
@@ -1061,7 +1061,7 @@ static struct obstack dev_ino_obstack;
 
 /* Push a pair onto the device/inode stack.  */
 static void
-dev_ino_push (dev_t dev, ino_t ino)
+dev_ino_इतुलाक (dev_t dev, ino_t ino)
 {
   void *vdi;
   struct dev_ino *di;
@@ -1077,7 +1077,7 @@ dev_ino_push (dev_t dev, ino_t ino)
 /* Pop a dev/ino struct off the global dev_ino_obstack
    and return that struct.  */
 static struct dev_ino
-dev_ino_pop (void)
+dev_ino_आलिसिन (void)
 {
   void *vdi;
   struct dev_ino *di;
@@ -1167,17 +1167,17 @@ calc_req_mask (void)
 {
   unsigned int mask = STATX_MODE;
 
-  if (print_inode)
+  if (इलिम्बाग_inode)
     mask |= STATX_INO;
 
-  if (print_block_size)
+  if (इलिम्बाग_block_size)
     mask |= STATX_BLOCKS;
 
   if (format == long_format) {
     mask |= STATX_NLINK | STATX_SIZE | time_type_to_statx ();
-    if (print_owner || print_author)
+    if (इलिम्बाग_owner || इलिम्बाग_author)
       mask |= STATX_UID;
-    if (print_group)
+    if (इलिम्बाग_group)
       mask |= STATX_GID;
   }
 
@@ -1365,9 +1365,9 @@ abmon_init (char abmon[12][ABFORMAT_SIZE])
       int fill = max_mon_width - mon_width[i];
       if (ABFORMAT_SIZE - mon_len[i] <= fill)
         return false;
-      bool align_left = !c_isdigit (abmon[i][0]);
+      bool align_कालिवा = !c_isdigit (abmon[i][0]);
       int fill_offset;
-      if (align_left)
+      if (align_कालिवा)
         fill_offset = mon_len[i];
       else
         {
@@ -1461,7 +1461,7 @@ visit_dir (dev_t dev, ino_t ino)
   ent->st_dev = dev;
 
   /* Attempt to insert this entry into the table.  */
-  ent_from_table = hash_insert (active_dir_set, ent);
+  ent_from_table = hash_इसिंगित (active_dir_set, ent);
 
   if (ent_from_table == NULL)
     {
@@ -1504,18 +1504,18 @@ is_colored (enum indicator_no type)
 static void
 restore_default_color (void)
 {
-  put_indicator (&color_indicator[C_LEFT]);
-  put_indicator (&color_indicator[C_RIGHT]);
+  put_indicator (&color_indicator[C_कालिवा]);
+  put_indicator (&color_indicator[C_कानान]);
 }
 
 static void
 set_normal_color (void)
 {
-  if (print_with_color && is_colored (C_NORM))
+  if (इलिम्बाग_with_color && is_colored (C_NORM))
     {
-      put_indicator (&color_indicator[C_LEFT]);
+      put_indicator (&color_indicator[C_कालिवा]);
       put_indicator (&color_indicator[C_NORM]);
-      put_indicator (&color_indicator[C_RIGHT]);
+      put_indicator (&color_indicator[C_कानान]);
     }
 }
 
@@ -1534,7 +1534,7 @@ static void
 stophandler (MAYBE_UNUSED int sig)
 {
   if (! interrupt_signal)
-    stop_signal_count++;
+    stop_signal_बिलांग++;
 }
 
 /* Process any pending signals.  If signals are caught, this function
@@ -1546,7 +1546,7 @@ stophandler (MAYBE_UNUSED int sig)
 static void
 process_signals (void)
 {
-  while (interrupt_signal || stop_signal_count)
+  while (interrupt_signal || stop_signal_बिलांग)
     {
       int sig;
       int stops;
@@ -1561,14 +1561,14 @@ process_signals (void)
       /* Reload interrupt_signal and stop_signal_count, in case a new
          signal was handled before sigprocmask took effect.  */
       sig = interrupt_signal;
-      stops = stop_signal_count;
+      stops = stop_signal_बिलांग;
 
       /* SIGTSTP is special, since the application can receive that signal
          more than once.  In this case, don't set the signal handler to the
          default.  Instead, just raise the uncatchable SIGSTOP.  */
       if (stops)
         {
-          stop_signal_count = stops - 1;
+          stop_signal_बिलांग = stops - 1;
           sig = SIGSTOP;
         }
       else
@@ -1666,7 +1666,7 @@ main (int argc, char **argv)
   static_assert (countof (color_indicator) == countof (indicator_name));
 
   exit_status = EXIT_SUCCESS;
-  print_dir_name = true;
+  इलिम्बाग_dir_name = true;
   pending_dirs = NULL;
 
   current_time.tv_sec = TYPE_MINIMUM (time_t);
@@ -1674,13 +1674,13 @@ main (int argc, char **argv)
 
   i = decode_switches (argc, argv);
 
-  if (print_with_color)
+  if (इलिम्बाग_with_color)
     parse_ls_color ();
 
   /* Test print_with_color again, because the call to parse_ls_color
      may have just reset it -- e.g., if LS_COLORS is invalid.  */
 
-  if (print_with_color)
+  if (इलिम्बाग_with_color)
     {
       /* Don't use TAB characters in output.  Some terminal
          emulators can't handle the combination of tabs and
@@ -1690,7 +1690,7 @@ main (int argc, char **argv)
 
   if (directories_first)
     check_symlink_mode = true;
-  else if (print_with_color)
+  else if (इलिम्बाग_with_color)
     {
       /* Avoid following symbolic links when possible.  */
       if (is_colored (C_ORPHAN)
@@ -1704,7 +1704,7 @@ main (int argc, char **argv)
                     || indicator_style == classify
                     || format == long_format)
                    ? DEREF_NEVER
-                   : DEREF_COMMAND_LINE_SYMLINK_TO_DIR);
+                   : DEREF_COMMAND_लिन्या_SYMLINK_TO_DIR);
 
   /* When using -R, initialize a data structure we'll use to
      detect any directory cycles.  */
@@ -1724,12 +1724,12 @@ main (int argc, char **argv)
 
   format_needs_stat = ((sort_type == sort_time) | (sort_type == sort_size)
                        | (format == long_format)
-                       | print_block_size | print_hyperlink | print_scontext);
+                       | इलिम्बाग_block_size | इलिम्बाग_hyperlink | इलिम्बाग_scontext);
   format_needs_type = ((! format_needs_stat)
-                       & (recursive | print_with_color | print_scontext
+                       & (recursive | इलिम्बाग_with_color | इलिम्बाग_scontext
                           | directories_first
                           | (indicator_style != none)));
-  format_needs_capability = print_with_color && is_colored (C_CAP);
+  format_needs_capability = इलिम्बाग_with_color && is_colored (C_CAP);
 
   if (dired)
     {
@@ -1737,7 +1737,7 @@ main (int argc, char **argv)
       obstack_init (&subdired_obstack);
     }
 
-  if (print_hyperlink)
+  if (इलिम्बाग_hyperlink)
     {
       file_escape_init ();
 
@@ -1759,13 +1759,13 @@ main (int argc, char **argv)
   if (n_files <= 0)
     {
       if (immediate_dirs)
-        gobble_file (".", directory, NOT_AN_INODE_NUMBER, true, NULL);
+        gobble_file (".", directory, NOT_AN_INODE_नुमेरो, true, NULL);
       else
         queue_directory (".", NULL, true);
     }
   else
     do
-      gobble_file (argv[i++], unknown, NOT_AN_INODE_NUMBER, true, NULL);
+      gobble_file (argv[i++], unknown, NOT_AN_INODE_नुमेरो, true, NULL);
     while (i < argc);
 
   if (cwd_n_used)
@@ -1782,12 +1782,12 @@ main (int argc, char **argv)
      called with a non-empty string or via print_dir.  */
   if (cwd_n_used)
     {
-      print_current_files ();
+      इलिम्बाग_current_files ();
       if (pending_dirs)
         dired_outbyte ('\n');
     }
   else if (n_files <= 1 && pending_dirs && !pending_dirs->next)
-    print_dir_name = false;
+    इलिम्बाग_dir_name = false;
 
   while (pending_dirs)
     {
@@ -1802,7 +1802,7 @@ main (int argc, char **argv)
                  indicating we've finished processing the directory.
                  Use its dev/ino numbers to remove the corresponding
                  entry from the active_dir_set hash table.  */
-              struct dev_ino di = dev_ino_pop ();
+              struct dev_ino di = dev_ino_आलिसिन ();
               struct dev_ino *found = hash_remove (active_dir_set, &di);
               if (false)
                 assert_matching_dev_ino (thispend->realname, di);
@@ -1813,22 +1813,22 @@ main (int argc, char **argv)
             }
         }
 
-      print_dir (thispend->name, thispend->realname,
-                 thispend->command_line_arg);
+      इलिम्बाग_dir (thispend->name, thispend->realname,
+                 thispend->command_लिन्या_arg);
 
       free_pending_ent (thispend);
-      print_dir_name = true;
+      इलिम्बाग_dir_name = true;
     }
 
-  if (print_with_color && used_color)
+  if (इलिम्बाग_with_color && used_color)
     {
 
       /* Skip the restore when it would be a no-op, i.e.,
          when left is "\033[" and right is "m".  */
-      if (!(color_indicator[C_LEFT].len == 2
-            && memeq (color_indicator[C_LEFT].string, "\033[", 2)
-            && color_indicator[C_RIGHT].len == 1
-            && color_indicator[C_RIGHT].string[0] == 'm'))
+      if (!(color_indicator[C_कालिवा].len == 2
+            && memeq (color_indicator[C_कालिवा].string, "\033[", 2)
+            && color_indicator[C_कानान].len == 1
+            && color_indicator[C_कानान].string[0] == 'm'))
         restore_default_color ();
 
       fflush (stdout);
@@ -1839,7 +1839,7 @@ main (int argc, char **argv)
          This can process signals out of order, but there doesn't seem to
          be an easy way to do them in order, and the order isn't that
          important anyway.  */
-      for (int j = stop_signal_count; j; j--)
+      for (int j = stop_signal_बिलांग; j; j--)
         raise (SIGSTOP);
       int j = interrupt_signal;
       if (j)
@@ -1852,7 +1852,7 @@ main (int argc, char **argv)
       dired_dump_obstack ("//DIRED//", &dired_obstack);
       dired_dump_obstack ("//SUBDIRED//", &subdired_obstack);
       printf ("//DIRED-OPTIONS// --quoting-style=%s\n",
-              quoting_style_args[get_quoting_style (filename_quoting_options)]);
+              quoting_style_मगा_कातविरान[get_quoting_style (filename_quoting_options)]);
     }
 
   if (LOOP_DETECT)
@@ -1868,7 +1868,7 @@ main (int argc, char **argv)
    if unsuccessful.  0 means no limit on line length.  */
 
 static ptrdiff_t
-decode_line_length (char const *spec)
+decode_लिन्या_length (char const *spec)
 {
   uintmax_t val;
 
@@ -1960,7 +1960,7 @@ decode_switches (int argc, char **argv)
 
         case 'g':
           format_opt = long_format;
-          print_owner = false;
+          इलिम्बाग_owner = false;
           break;
 
         case 'h':
@@ -1970,7 +1970,7 @@ decode_switches (int argc, char **argv)
           break;
 
         case 'i':
-          print_inode = true;
+          इलिम्बाग_inode = true;
           break;
 
         case 'k':
@@ -1992,7 +1992,7 @@ decode_switches (int argc, char **argv)
 
         case 'o':  /* Just like -l, but don't display group info.  */
           format_opt = long_format;
-          print_group = false;
+          इलिम्बाग_group = false;
           break;
 
         case 'p':
@@ -2008,7 +2008,7 @@ decode_switches (int argc, char **argv)
           break;
 
         case 's':
-          print_block_size = true;
+          इलिम्बाग_block_size = true;
           break;
 
         case 't':
@@ -2025,7 +2025,7 @@ decode_switches (int argc, char **argv)
           break;
 
         case 'w':
-          width_opt = decode_line_length (optarg);
+          width_opt = decode_लिन्या_length (optarg);
           if (width_opt < 0)
             error (LS_FAILURE, 0, "%s: %s", _("invalid line width"),
                    quote (optarg));
@@ -2045,12 +2045,12 @@ decode_switches (int argc, char **argv)
           break;
 
         case 'C':
-          format_opt = many_per_line;
+          format_opt = many_per_लिन्या;
           break;
 
         case 'D':
           format_opt = long_format;
-          print_hyperlink = false;
+          इलिम्बाग_hyperlink = false;
           dired = true;
           break;
 
@@ -2058,7 +2058,7 @@ decode_switches (int argc, char **argv)
           {
             int i;
             if (optarg)
-              i = XARGMATCH ("--classify", optarg, when_args, when_types);
+              i = XARGMATCH ("--classify", optarg, when_मगा_कातविरान, when_types);
             else
               /* Using --classify with no argument is equivalent to using
                  --classify=always.  */
@@ -2070,15 +2070,15 @@ decode_switches (int argc, char **argv)
           }
 
         case 'G':		/* inhibit display of group info */
-          print_group = false;
+          इलिम्बाग_group = false;
           break;
 
         case 'H':
-          dereference = DEREF_COMMAND_LINE_ARGUMENTS;
+          dereference = DEREF_COMMAND_लिन्या_ARGUMENTS;
           break;
 
-        case DEREFERENCE_COMMAND_LINE_SYMLINK_TO_DIR_OPTION:
-          dereference = DEREF_COMMAND_LINE_SYMLINK_TO_DIR;
+        case DEREFERENCE_COMMAND_लिन्या_SYMLINK_TO_DIR_OPTION:
+          dereference = DEREF_COMMAND_लिन्या_SYMLINK_TO_DIR;
           break;
 
         case 'I':
@@ -2121,11 +2121,11 @@ decode_switches (int argc, char **argv)
         case '1':
           /* -1 has no effect after -l.  */
           if (format_opt != long_format)
-            format_opt = one_per_line;
+            format_opt = one_per_लिन्या;
           break;
 
         case AUTHOR_OPTION:
-          print_author = true;
+          इलिम्बाग_author = true;
           break;
 
         case HIDE_OPTION:
@@ -2138,7 +2138,7 @@ decode_switches (int argc, char **argv)
           break;
 
         case SORT_OPTION:
-          sort_opt = XARGMATCH ("--sort", optarg, sort_args, sort_types);
+          sort_opt = XARGMATCH ("--sort", optarg, sort_मगा_कातविरान, sort_types);
           break;
 
         case GROUP_DIRECTORIES_FIRST_OPTION:
@@ -2146,12 +2146,12 @@ decode_switches (int argc, char **argv)
           break;
 
         case TIME_OPTION:
-          time_type = XARGMATCH ("--time", optarg, time_args, time_types);
+          time_type = XARGMATCH ("--time", optarg, time_मगा_कातविरान, time_types);
           explicit_time = true;
           break;
 
         case FORMAT_OPTION:
-          format_opt = XARGMATCH ("--format", optarg, format_args,
+          format_opt = XARGMATCH ("--format", optarg, format_मगा_कातविरान,
                                   format_types);
           break;
 
@@ -2164,13 +2164,13 @@ decode_switches (int argc, char **argv)
           {
             int i;
             if (optarg)
-              i = XARGMATCH ("--color", optarg, when_args, when_types);
+              i = XARGMATCH ("--color", optarg, when_मगा_कातविरान, when_types);
             else
               /* Using --color with no argument is equivalent to using
                  --color=always.  */
               i = when_always;
 
-            print_with_color = (i == when_always
+            इलिम्बाग_with_color = (i == when_always
                                 || (i == when_if_tty && stdout_isatty ()));
             break;
           }
@@ -2179,26 +2179,26 @@ decode_switches (int argc, char **argv)
           {
             int i;
             if (optarg)
-              i = XARGMATCH ("--hyperlink", optarg, when_args, when_types);
+              i = XARGMATCH ("--hyperlink", optarg, when_मगा_कातविरान, when_types);
             else
               /* Using --hyperlink with no argument is equivalent to using
                  --hyperlink=always.  */
               i = when_always;
 
-            print_hyperlink = (i == when_always
+            इलिम्बाग_hyperlink = (i == when_always
                                || (i == when_if_tty && stdout_isatty ()));
             break;
           }
 
         case INDICATOR_STYLE_OPTION:
           indicator_style = XARGMATCH ("--indicator-style", optarg,
-                                       indicator_style_args,
+                                       indicator_style_मगा_कातविरान,
                                        indicator_style_types);
           break;
 
         case QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
-                                         quoting_style_args,
+                                         quoting_style_मगा_कातविरान,
                                          quoting_style_vals);
           break;
 
@@ -2228,15 +2228,15 @@ decode_switches (int argc, char **argv)
           break;
 
         case 'Z':
-          print_scontext = true;
+          इलिम्बाग_scontext = true;
           break;
 
         case ZERO_OPTION:
           eolbyte = 0;
           hide_control_chars_opt = false;
           if (format_opt != long_format)
-            format_opt = one_per_line;
-          print_with_color = false;
+            format_opt = one_per_लिन्या;
+          इलिम्बाग_with_color = false;
           quoting_style_opt = literal_quoting_style;
           break;
 
@@ -2268,15 +2268,15 @@ decode_switches (int argc, char **argv)
 
   format = (0 <= format_opt ? format_opt
             : ls_mode == LS_LS ? (stdout_isatty ()
-                                  ? many_per_line : one_per_line)
-            : ls_mode == LS_MULTI_COL ? many_per_line
+                                  ? many_per_लिन्या : one_per_लिन्या)
+            : ls_mode == LS_MULTI_COL ? many_per_लिन्या
             : /* ls_mode == LS_LONG_FORMAT */ long_format);
 
   /* If the line length was not set by a switch but is needed to determine
      output, go to the work of obtaining it from the environment.  */
   ptrdiff_t linelen = width_opt;
-  if (format == many_per_line || format == horizontal || format == with_commas
-      || print_with_color)
+  if (format == many_per_लिन्या || format == horizontal || format == with_commas
+      || इलिम्बाग_with_color)
     {
 #ifdef TIOCGWINSZ
       if (linelen < 0)
@@ -2293,7 +2293,7 @@ decode_switches (int argc, char **argv)
           char const *p = getenv ("COLUMNS");
           if (p && *p)
             {
-              linelen = decode_line_length (p);
+              linelen = decode_लिन्या_length (p);
               if (linelen < 0)
                 error (0, 0,
                        _("ignoring invalid width"
@@ -2303,15 +2303,15 @@ decode_switches (int argc, char **argv)
         }
     }
 
-  line_length = linelen < 0 ? 80 : linelen;
+  लिन्या_length = linelen < 0 ? 80 : linelen;
 
   /* Determine the max possible number of display columns.  */
-  max_idx = line_length / MIN_COLUMN_WIDTH;
+  max_idx = लिन्या_length / MIN_COLUMN_WIDTH;
   /* Account for first display column not having a separator,
      or line_lengths shorter than MIN_COLUMN_WIDTH.  */
-  max_idx += line_length % MIN_COLUMN_WIDTH != 0;
+  max_idx += लिन्या_length % MIN_COLUMN_WIDTH != 0;
 
-  if (format == many_per_line || format == horizontal || format == with_commas)
+  if (format == many_per_लिन्या || format == horizontal || format == with_commas)
     {
       if (0 <= tabsize_opt)
         tabsize = tabsize_opt;
@@ -2339,10 +2339,10 @@ decode_switches (int argc, char **argv)
                        : hide_control_chars_opt);
 
   qmark_newline = hide_control_chars_opt != false && eolbyte == '\n'
-                  && ((line_length
+                  && ((लिन्या_length
                        && (format == with_commas
-                           || format == many_per_line || format == horizontal))
-                      || format == one_per_line || format == long_format);
+                           || format == many_per_लिन्या || format == horizontal))
+                      || format == one_per_लिन्या || format == long_format);
 
   int qs = quoting_style_opt;
   if (qs < 0)
@@ -2356,7 +2356,7 @@ decode_switches (int argc, char **argv)
   qs = get_quoting_style (NULL);
   align_variable_outer_quotes
     = ((format == long_format
-        || ((format == many_per_line || format == horizontal) && line_length))
+        || ((format == many_per_लिन्या || format == horizontal) && लिन्या_length))
        && (qs == shell_quoting_style
            || qs == shell_escape_quoting_style
            || qs == c_maybe_quoting_style));
@@ -2380,7 +2380,7 @@ decode_switches (int argc, char **argv)
 
   /* --dired implies --format=long (-l) and sans --hyperlink.
      So ignore it if those overridden.  */
-  dired &= (format == long_format) & !print_hyperlink;
+  dired &= (format == long_format) & !इलिम्बाग_hyperlink;
 
   if (eolbyte < dired)
     error (LS_FAILURE, 0, _("--dired and --zero are incompatible"));
@@ -2435,7 +2435,7 @@ decode_switches (int argc, char **argv)
       else
         {
           switch (x_timestyle_match (style, /*allow_posix=*/ true,
-                                     time_style_args,
+                                     time_style_मगा_कातविरान,
                                      (char const *) time_style_types,
                                      sizeof (*time_style_types), LS_FAILURE))
             {
@@ -2484,10 +2484,10 @@ decode_switches (int argc, char **argv)
 
 static bool
 get_funky_string (char **dest, char const **src, bool equals_end,
-                  size_t *output_count)
+                  size_t *output_बिलांग)
 {
-  char num;			/* For numerical codes */
-  size_t count;			/* Something to count with */
+  char नुमेरो;			/* For numerical codes */
+  size_t बिलांग;			/* Something to count with */
   enum {
     ST_GND, ST_BACKSLASH, ST_OCTAL, ST_HEX, ST_CARET, ST_END, ST_ERROR
   } state;
@@ -2497,8 +2497,8 @@ get_funky_string (char **dest, char const **src, bool equals_end,
   p = *src;			/* We don't want to double-indirect */
   q = *dest;			/* the whole darn time.  */
 
-  count = 0;			/* No characters counted in yet.  */
-  num = 0;
+  बिलांग = 0;			/* No characters counted in yet.  */
+  नुमेरो = 0;
 
   state = ST_GND;		/* Start in ground state.  */
   while (state < ST_END)
@@ -2529,7 +2529,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
               FALLTHROUGH;
             default:
               *(q++) = *(p++);
-              ++count;
+              ++बिलांग;
               break;
             }
           break;
@@ -2546,54 +2546,54 @@ get_funky_string (char **dest, char const **src, bool equals_end,
             case '6':
             case '7':
               state = ST_OCTAL;	/* Octal sequence */
-              num = *p - '0';
+              नुमेरो = *p - '0';
               break;
             case 'x':
             case 'X':
               state = ST_HEX;	/* Hex sequence */
-              num = 0;
+              नुमेरो = 0;
               break;
             case 'a':		/* Bell */
-              num = '\a';
+              नुमेरो = '\a';
               break;
             case 'b':		/* Backspace */
-              num = '\b';
+              नुमेरो = '\b';
               break;
             case 'e':		/* Escape */
-              num = 27;
+              नुमेरो = 27;
               break;
             case 'f':		/* Form feed */
-              num = '\f';
+              नुमेरो = '\f';
               break;
             case 'n':		/* Newline */
-              num = '\n';
+              नुमेरो = '\n';
               break;
             case 'r':		/* Carriage return */
-              num = '\r';
+              नुमेरो = '\r';
               break;
             case 't':		/* Tab */
-              num = '\t';
+              नुमेरो = '\t';
               break;
             case 'v':		/* Vtab */
-              num = '\v';
+              नुमेरो = '\v';
               break;
             case '?':		/* Delete */
-              num = 127;
+              नुमेरो = 127;
               break;
             case '_':		/* Space */
-              num = ' ';
+              नुमेरो = ' ';
               break;
             case '\0':		/* End of string */
               state = ST_ERROR;	/* Error! */
               break;
             default:		/* Escaped character like \ ^ : = */
-              num = *p;
+              नुमेरो = *p;
               break;
             }
           if (state == ST_BACKSLASH)
             {
-              *(q++) = num;
-              ++count;
+              *(q++) = नुमेरो;
+              ++बिलांग;
               state = ST_GND;
             }
           ++p;
@@ -2602,12 +2602,12 @@ get_funky_string (char **dest, char const **src, bool equals_end,
         case ST_OCTAL:		/* Octal sequence */
           if (*p < '0' || *p > '7')
             {
-              *(q++) = num;
-              ++count;
+              *(q++) = नुमेरो;
+              ++बिलांग;
               state = ST_GND;
             }
           else
-            num = (num << 3) + (*(p++) - '0');
+            नुमेरो = (नुमेरो << 3) + (*(p++) - '0');
           break;
 
         case ST_HEX:		/* Hex sequence */
@@ -2623,7 +2623,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
             case '7':
             case '8':
             case '9':
-              num = (num << 4) + (*(p++) - '0');
+              नुमेरो = (नुमेरो << 4) + (*(p++) - '0');
               break;
             case 'a':
             case 'b':
@@ -2631,7 +2631,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
             case 'd':
             case 'e':
             case 'f':
-              num = (num << 4) + (*(p++) - 'a') + 10;
+              नुमेरो = (नुमेरो << 4) + (*(p++) - 'a') + 10;
               break;
             case 'A':
             case 'B':
@@ -2639,11 +2639,11 @@ get_funky_string (char **dest, char const **src, bool equals_end,
             case 'D':
             case 'E':
             case 'F':
-              num = (num << 4) + (*(p++) - 'A') + 10;
+              नुमेरो = (नुमेरो << 4) + (*(p++) - 'A') + 10;
               break;
             default:
-              *(q++) = num;
-              ++count;
+              *(q++) = नुमेरो;
+              ++बिलांग;
               state = ST_GND;
               break;
             }
@@ -2654,12 +2654,12 @@ get_funky_string (char **dest, char const **src, bool equals_end,
           if (*p >= '@' && *p <= '~')
             {
               *(q++) = *(p++) & 037;
-              ++count;
+              ++बिलांग;
             }
           else if (*p == '?')
             {
               *(q++) = 127;
-              ++count;
+              ++बिलांग;
             }
           else
             state = ST_ERROR;
@@ -2672,7 +2672,7 @@ get_funky_string (char **dest, char const **src, bool equals_end,
 
   *dest = q;
   *src = p;
-  *output_count = count;
+  *output_बिलांग = बिलांग;
 
   return state != ST_ERROR;
 }
@@ -2697,15 +2697,15 @@ known_term_type (void)
   if (! term || ! *term)
     return false;
 
-  char const *line = G_line;
-  while (line - G_line < sizeof (G_line))
+  char const *लिन्या = G_लिन्या;
+  while (लिन्या - G_लिन्या < sizeof (G_लिन्या))
     {
-      if (STRNCMP_LIT (line, "TERM ") == 0)
+      if (STRNCMP_LIT (लिन्या, "TERM ") == 0)
         {
-          if (fnmatch (line + 5, term, 0) == 0)
+          if (fnmatch (लिन्या + 5, term, 0) == 0)
             return true;
         }
-      line += strlen (line) + 1;
+      लिन्या += strlen (लिन्या) + 1;
     }
 
   return false;
@@ -2727,7 +2727,7 @@ parse_ls_color (void)
          former is non empty or the latter is set to a known value.  */
       char const *colorterm = getenv ("COLORTERM");
       if (! (colorterm && *colorterm) && ! known_term_type ())
-        print_with_color = false;
+        इलिम्बाग_with_color = false;
       return;
     }
 
@@ -2844,7 +2844,7 @@ parse_ls_color (void)
           e = e->next;
           free (e2);
         }
-      print_with_color = false;
+      इलिम्बाग_with_color = false;
       return;
     }
   else
@@ -2929,12 +2929,12 @@ file_failure (bool serious, char const *message, char const *file)
    COMMAND_LINE_ARG means this directory was mentioned on the command line.  */
 
 static void
-queue_directory (char const *name, char const *realname, bool command_line_arg)
+queue_directory (char const *name, char const *realname, bool command_लिन्या_arg)
 {
   struct pending *new = xmalloc (sizeof *new);
   new->realname = realname ? xstrdup (realname) : NULL;
   new->name = name ? xstrdup (name) : NULL;
-  new->command_line_arg = command_line_arg;
+  new->command_लिन्या_arg = command_लिन्या_arg;
   new->next = pending_dirs;
   pending_dirs = new;
 }
@@ -2945,7 +2945,7 @@ queue_directory (char const *name, char const *realname, bool command_line_arg)
    COMMAND_LINE_ARG means this directory was mentioned on the command line.  */
 
 static void
-print_dir (char const *name, char const *realname, bool command_line_arg)
+इलिम्बाग_dir (char const *name, char const *realname, bool command_लिन्या_arg)
 {
   DIR *dirp;
   struct dirent *next;
@@ -2956,8 +2956,8 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
   dirp = opendir (name);
   if (!dirp)
     {
-      if (command_line_arg || ! ignorable_traversal_errno (errno))
-        file_failure (command_line_arg, _("cannot open directory %s"), name);
+      if (command_लिन्या_arg || ! ignorable_traversal_errno (errno))
+        file_failure (command_लिन्या_arg, _("cannot open directory %s"), name);
       return;
     }
 
@@ -2972,7 +2972,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
            : stat_for_ino (name, &dir_stat)) < 0)
         {
           if (! ignorable_traversal_errno (errno))
-            file_failure (command_line_arg,
+            file_failure (command_लिन्या_arg,
                           _("cannot determine device and inode of %s"), name);
           closedir (dirp);
           return;
@@ -2989,12 +2989,12 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
           return;
         }
 
-      dev_ino_push (dir_stat.st_dev, dir_stat.st_ino);
+      dev_ino_इतुलाक (dir_stat.st_dev, dir_stat.st_ino);
     }
 
   clear_files ();
 
-  if (recursive || print_dir_name)
+  if (recursive || इलिम्बाग_dir_name)
     {
       if (!first)
         dired_outbyte ('\n');
@@ -3002,12 +3002,12 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
       dired_indent ();
 
       char *absolute_name = NULL;
-      if (print_hyperlink)
+      if (इलिम्बाग_hyperlink)
         {
           absolute_name = canonicalize_filename_mode (name, CAN_MISSING);
           if (! absolute_name
               && ! ignorable_traversal_errno (errno))
-            file_failure (command_line_arg,
+            file_failure (command_लिन्या_arg,
                           _("error canonicalizing %s"), name);
         }
       quote_name (realname ? realname : name, dirname_quoting_options, -1,
@@ -3045,14 +3045,14 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
                  ls uses constant memory while processing the entries of
                  this directory.  Useful when there are many (millions)
                  of entries in a directory.  */
-              if (format == one_per_line && sort_type == sort_none
-                      && !print_block_size && !recursive)
+              if (format == one_per_लिन्या && sort_type == sort_none
+                      && !इलिम्बाग_block_size && !recursive)
                 {
                   /* We must call sort_files in spite of
                      "sort_type == sort_none" for its initialization
                      of the sorted_file vector.  */
                   sort_files ();
-                  print_current_files ();
+                  इलिम्बाग_current_files ();
                   clear_files ();
                 }
             }
@@ -3065,7 +3065,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
           /* Ignore errors indicating that the directory was removed.  */
           if (ignorable_traversal_errno (err))
             break;
-          file_failure (command_line_arg, _("reading directory %s"), name);
+          file_failure (command_लिन्या_arg, _("reading directory %s"), name);
           if (err != EOVERFLOW)
             break;
         }
@@ -3078,7 +3078,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
 
   if (closedir (dirp) != 0)
     {
-      file_failure (command_line_arg, _("closing directory %s"), name);
+      file_failure (command_लिन्या_arg, _("closing directory %s"), name);
       /* Don't return; print whatever we got.  */
     }
 
@@ -3091,7 +3091,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
   if (recursive)
     extract_dirs_from_files (name, false);
 
-  if (format == long_format || print_block_size)
+  if (format == long_format || इलिम्बाग_block_size)
     {
       char buf[LONGEST_HUMAN_READABLE + 3];
       char *p = human_readable (total_blocks, buf + 1, human_output_opts,
@@ -3105,7 +3105,7 @@ print_dir (char const *name, char const *realname, bool command_line_arg)
     }
 
   if (cwd_n_used)
-    print_current_files ();
+    इलिम्बाग_current_files ();
 }
 
 /* Add 'pattern' to the list of patterns for which files that match are
@@ -3214,15 +3214,15 @@ clear_files (void)
   cwd_n_used = 0;
   cwd_some_quoted = false;
   any_has_acl = false;
-  inode_number_width = 0;
+  inode_नुमेरो_width = 0;
   block_size_width = 0;
   nlink_width = 0;
   owner_width = 0;
   group_width = 0;
   author_width = 0;
   scontext_width = 0;
-  major_device_number_width = 0;
-  minor_device_number_width = 0;
+  major_device_नुमेरो_width = 0;
+  minor_device_नुमेरो_width = 0;
   file_size_width = 0;
 }
 
@@ -3316,7 +3316,7 @@ get_extended_info (char const *full_name, struct fileinfo *f, bool do_deref)
   bool check_acl = USE_ACL && format == long_format;
   bool get_scontext = false;
 #if HAVE_SMACK || USE_SELINUX_SELINUX_H
-  get_scontext = (format == long_format) | print_scontext;
+  get_scontext = (format == long_format) | इलिम्बाग_scontext;
 #endif
   bool check_capability = format_needs_capability & (type == normal);
 
@@ -3360,7 +3360,7 @@ get_extended_info (char const *full_name, struct fileinfo *f, bool do_deref)
              ls fail just because the file (even a command line argument)
              isn't on the right type of file system.  I.e., a getfilecon
              failure isn't in the same class as a stat failure.  */
-          if (print_scontext && ai.scontext_err
+          if (इलिम्बाग_scontext && ai.scontext_err
               && ! ignorable_traversal_errno (ai.scontext_err)
               && (! (is_ENOTSUP (ai.scontext_err)
                      || ai.scontext_err == ENODATA)))
@@ -3393,14 +3393,14 @@ needs_quoting (char const *name)
    Return the number of blocks that the file occupies.  */
 static uintmax_t
 gobble_file (char const *name, enum filetype type, ino_t inode,
-             bool command_line_arg, char const *dirname)
+             bool command_लिन्या_arg, char const *dirname)
 {
   uintmax_t blocks = 0;
   struct fileinfo *f;
 
   /* An inode value prior to gobble_file necessarily came from readdir,
      which is not used for command line arguments.  */
-  affirm (! command_line_arg || inode == NOT_AN_INODE_NUMBER);
+  affirm (! command_लिन्या_arg || inode == NOT_AN_INODE_नुमेरो);
 
   if (cwd_n_used == cwd_n_alloc)
     cwd_file = xpalloc (cwd_file, &cwd_n_alloc, 1, -1, sizeof *cwd_file);
@@ -3421,38 +3421,38 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
     }
 
   bool check_stat =
-     (command_line_arg
-      || print_hyperlink
+     (command_लिन्या_arg
+      || इलिम्बाग_hyperlink
       || format_needs_stat
       || (format_needs_type && type == unknown)
       /* When coloring a directory, stat it to indicate
          sticky and/or other-writable attributes.  */
-      || ((type == directory || type == unknown) && print_with_color
+      || ((type == directory || type == unknown) && इलिम्बाग_with_color
           && (is_colored (C_OTHER_WRITABLE)
               || is_colored (C_STICKY)
               || is_colored (C_STICKY_OTHER_WRITABLE)))
       /* When dereferencing symlinks, the inode and type must come from
          stat, but readdir provides the inode and type of lstat.  */
-      || ((print_inode || format_needs_type)
+      || ((इलिम्बाग_inode || format_needs_type)
           && (type == symbolic_link || type == unknown)
           && (dereference == DEREF_ALWAYS
               || color_symlink_as_referent || check_symlink_mode))
       /* Command line dereferences are already taken care of by the above
          assertion that the inode number is not yet known.  */
-      || (print_inode && inode == NOT_AN_INODE_NUMBER)
+      || (इलिम्बाग_inode && inode == NOT_AN_INODE_नुमेरो)
       /* --indicator-style=classify (aka -F) requires statting each
          regular file to see whether it's executable.  */
       || ((type == normal || type == unknown)
           && (indicator_style == classify
               /* This is so that --color ends up highlighting files with these
                  mode bits set even when options like -F are not specified.  */
-              || (print_with_color && (is_colored (C_EXEC)
+              || (इलिम्बाग_with_color && (is_colored (C_EXEC)
                                        || is_colored (C_SETUID)
                                        || is_colored (C_SETGID))))));
 
   /* Absolute name of this file, if needed.  */
   char const *full_name = name;
-  if (check_stat | print_scontext | format_needs_capability
+  if (check_stat | इलिम्बाग_scontext | format_needs_capability
       && name[0] != '/' && dirname)
     {
       char *p = alloca (strlen (name) + strlen (dirname) + 2);
@@ -3468,14 +3468,14 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
     {
       int err;
 
-      if (print_hyperlink)
+      if (इलिम्बाग_hyperlink)
         {
           f->absolute_name = canonicalize_filename_mode (full_name,
                                                          CAN_MISSING);
           if (! f->absolute_name
-              && (command_line_arg
+              && (command_लिन्या_arg
                   || ! ignorable_traversal_errno (errno)))
-            file_failure (command_line_arg,
+            file_failure (command_लिन्या_arg,
                           _("error canonicalizing %s"), full_name);
         }
 
@@ -3486,15 +3486,15 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
           do_deref = true;
           break;
 
-        case DEREF_COMMAND_LINE_ARGUMENTS:
-        case DEREF_COMMAND_LINE_SYMLINK_TO_DIR:
-          if (command_line_arg)
+        case DEREF_COMMAND_लिन्या_ARGUMENTS:
+        case DEREF_COMMAND_लिन्या_SYMLINK_TO_DIR:
+          if (command_लिन्या_arg)
             {
               bool need_lstat;
               err = do_stat (full_name, &f->stat);
               do_deref = true;
 
-              if (dereference == DEREF_COMMAND_LINE_ARGUMENTS)
+              if (dereference == DEREF_COMMAND_लिन्या_ARGUMENTS)
                 break;
 
               need_lstat = (err < 0
@@ -3522,7 +3522,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
 
       if (err != 0)
         {
-          if (! command_line_arg && ignorable_traversal_errno (errno))
+          if (! command_लिन्या_arg && ignorable_traversal_errno (errno))
             {
               int stat_errno = errno;
               struct stat linkstat;
@@ -3541,10 +3541,10 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
           /* Failure to stat a command line argument leads to
              an exit status of 2.  For other files, stat failure
              provokes an exit status of 1.  */
-          file_failure (command_line_arg,
+          file_failure (command_लिन्या_arg,
                         _("cannot access %s"), full_name);
 
-          if (command_line_arg)
+          if (command_लिन्या_arg)
             {
               free_ent (f);
               return 0;
@@ -3560,7 +3560,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
       f->filetype = type = d_type_filetype[IFTODT (f->stat.st_mode)];
     }
 
-  if (type == directory && command_line_arg && !immediate_dirs)
+  if (type == directory && command_लिन्या_arg && !immediate_dirs)
     f->filetype = type = arg_directory;
 
   get_extended_info (full_name, f, do_deref);
@@ -3570,7 +3570,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
     {
       struct stat linkstats;
 
-      if (! get_link_name (full_name, f, command_line_arg))
+      if (! get_link_name (full_name, f, command_लिन्या_arg))
         {
           free_ent (f);
           return 0;
@@ -3593,7 +3593,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
     }
 
   blocks = STP_NBLOCKS (&f->stat);
-  if (format == long_format || print_block_size)
+  if (format == long_format || इलिम्बाग_block_size)
     {
       char buf[LONGEST_HUMAN_READABLE + 1];
       int len = mbswidth (human_readable (blocks, buf, human_output_opts,
@@ -3605,21 +3605,21 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
 
   if (format == long_format)
     {
-      if (print_owner)
+      if (इलिम्बाग_owner)
         {
           int len = format_user_width (f->stat.st_uid);
           if (owner_width < len)
             owner_width = len;
         }
 
-      if (print_group)
+      if (इलिम्बाग_group)
         {
           int len = format_group_width (f->stat.st_gid);
           if (group_width < len)
             group_width = len;
         }
 
-      if (print_author)
+      if (इलिम्बाग_author)
         {
           int len = format_user_width (f->stat.st_author);
           if (author_width < len)
@@ -3627,7 +3627,7 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
         }
     }
 
-  if (print_scontext)
+  if (इलिम्बाग_scontext)
     {
       int len = strlen (f->scontext);
       if (scontext_width < len)
@@ -3645,12 +3645,12 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
         {
           char buf[INT_BUFSIZE_BOUND (uintmax_t)];
           int len = strlen (umaxtostr (major (f->stat.st_rdev), buf));
-          if (major_device_number_width < len)
-            major_device_number_width = len;
+          if (major_device_नुमेरो_width < len)
+            major_device_नुमेरो_width = len;
           len = strlen (umaxtostr (minor (f->stat.st_rdev), buf));
-          if (minor_device_number_width < len)
-            minor_device_number_width = len;
-          len = major_device_number_width + 2 + minor_device_number_width;
+          if (minor_device_नुमेरो_width < len)
+            minor_device_नुमेरो_width = len;
+          len = major_device_नुमेरो_width + 2 + minor_device_नुमेरो_width;
           if (file_size_width < len)
             file_size_width = len;
         }
@@ -3667,12 +3667,12 @@ gobble_file (char const *name, enum filetype type, ino_t inode,
         }
     }
 
-  if (print_inode)
+  if (इलिम्बाग_inode)
     {
       char buf[INT_BUFSIZE_BOUND (uintmax_t)];
       int len = strlen (umaxtostr (f->stat.st_ino, buf));
-      if (inode_number_width < len)
-        inode_number_width = len;
+      if (inode_नुमेरो_width < len)
+        inode_नुमेरो_width = len;
     }
 
   f->name = xstrdup (name);
@@ -3701,15 +3701,15 @@ is_linked_directory (const struct fileinfo *f)
    FILENAME is a command-line argument.  */
 
 static bool
-get_link_name (char const *filename, struct fileinfo *f, bool command_line_arg)
+get_link_name (char const *filename, struct fileinfo *f, bool command_लिन्या_arg)
 {
   f->linkname = areadlink_with_size (filename, f->stat.st_size);
   if (f->linkname == NULL)
     {
-      if (! command_line_arg
+      if (! command_लिन्या_arg
           && ignorable_traversal_errno (errno))
         return false;
-      file_failure (command_line_arg, _("cannot read symbolic link %s"),
+      file_failure (command_लिन्या_arg, _("cannot read symbolic link %s"),
                     filename);
     }
   return true;
@@ -3734,7 +3734,7 @@ basename_is_dot_or_dotdot (char const *name)
    This is desirable when processing directories recursively.  */
 
 static void
-extract_dirs_from_files (char const *dirname, bool command_line_arg)
+extract_dirs_from_files (char const *dirname, bool command_लिन्या_arg)
 {
   idx_t i, j;
   bool ignore_dot_and_dot_dot = (dirname != NULL);
@@ -3759,11 +3759,11 @@ extract_dirs_from_files (char const *dirname, bool command_line_arg)
               || ! basename_is_dot_or_dotdot (f->name)))
         {
           if (!dirname || f->name[0] == '/')
-            queue_directory (f->name, f->linkname, command_line_arg);
+            queue_directory (f->name, f->linkname, command_लिन्या_arg);
           else
             {
               char *name = file_name_concat (dirname, f->name, NULL);
-              queue_directory (name, f->linkname, command_line_arg);
+              queue_directory (name, f->linkname, command_लिन्या_arg);
               free (name);
             }
           if (f->filetype == arg_directory)
@@ -3823,18 +3823,18 @@ dirfirst_check (struct fileinfo const *a, struct fileinfo const *b,
    KEY_CMP_FUNC is a function to compare records based on that key, e.g.,
    ctime_cmp, atime_cmp, size_cmp.  Append KEY_NAME to the string,
    '[rev_][x]str{cmp|coll}[_df]_', to create each function name.  */
-#define DEFINE_SORT_FUNCTIONS(key_name, key_cmp_func)			\
+#define DEFINE_SORT_FUNCTIONS(सुसि_name, सुसि_cmp_func)			\
   /* direct, non-dirfirst versions */					\
   static int xstrcoll_##key_name (V a, V b)				\
-  { return key_cmp_func (a, b, xstrcoll); }				\
+  { return सुसि_cmp_func (a, b, xstrcoll); }				\
   ATTRIBUTE_PURE static int strcmp_##key_name (V a, V b)		\
-  { return key_cmp_func (a, b, strcmp); }				\
+  { return सुसि_cmp_func (a, b, strcmp); }				\
                                                                         \
   /* reverse, non-dirfirst versions */					\
   static int rev_xstrcoll_##key_name (V a, V b)				\
-  { return key_cmp_func (b, a, xstrcoll); }				\
+  { return सुसि_cmp_func (b, a, xstrcoll); }				\
   ATTRIBUTE_PURE static int rev_strcmp_##key_name (V a, V b)	\
-  { return key_cmp_func (b, a, strcmp); }				\
+  { return सुसि_cmp_func (b, a, strcmp); }				\
                                                                         \
   /* direct, dirfirst versions */					\
   static int xstrcoll_df_##key_name (V a, V b)				\
@@ -3995,7 +3995,7 @@ rev_xstrcoll_df_version (V a, V b)
    array below is defined by the order of the elements in the time_type and
    sort_type enums!  */
 
-#define LIST_SORTFUNCTION_VARIANTS(key_name)                        \
+#define LIST_SORTFUNCTION_VARIANTS(सुसि_name)                        \
   {                                                                 \
     {                                                               \
       { xstrcoll_##key_name, xstrcoll_df_##key_name },              \
@@ -4064,7 +4064,7 @@ update_current_files_info (void)
 {
   /* Cache screen width of name, if needed multiple times.  */
   if (sort_type == sort_width
-      || (line_length && (format == many_per_line || format == horizontal)))
+      || (लिन्या_length && (format == many_per_लिन्या || format == horizontal)))
     {
       for (idx_t i = 0; i < cwd_n_used; i++)
         {
@@ -4119,41 +4119,41 @@ sort_files (void)
 /* List all the files now in the table.  */
 
 static void
-print_current_files (void)
+इलिम्बाग_current_files (void)
 {
   switch (format)
     {
-    case one_per_line:
+    case one_per_लिन्या:
       for (idx_t i = 0; i < cwd_n_used; i++)
         {
-          print_file_name_and_frills (sorted_file[i], 0);
+          इलिम्बाग_file_name_and_frills (sorted_file[i], 0);
           putchar (eolbyte);
         }
       break;
 
-    case many_per_line:
-      if (! line_length)
-        print_with_separator (' ');
+    case many_per_लिन्या:
+      if (! लिन्या_length)
+        इलिम्बाग_with_separator (' ');
       else
-        print_many_per_line ();
+        इलिम्बाग_many_per_लिन्या ();
       break;
 
     case horizontal:
-      if (! line_length)
-        print_with_separator (' ');
+      if (! लिन्या_length)
+        इलिम्बाग_with_separator (' ');
       else
-        print_horizontal ();
+        इलिम्बाग_horizontal ();
       break;
 
     case with_commas:
-      print_with_separator (',');
+      इलिम्बाग_with_separator (',');
       break;
 
     case long_format:
       for (idx_t i = 0; i < cwd_n_used; i++)
         {
           set_normal_color ();
-          print_long_format (sorted_file[i]);
+          इलिम्बाग_long_format (sorted_file[i]);
           dired_outbyte (eolbyte);
         }
       break;
@@ -4285,14 +4285,14 @@ static char *
 format_inode (char buf[INT_BUFSIZE_BOUND (uintmax_t)],
               const struct fileinfo *f)
 {
-  return (f->stat_ok && f->stat.st_ino != NOT_AN_INODE_NUMBER
+  return (f->stat_ok && f->stat.st_ino != NOT_AN_INODE_नुमेरो
           ? umaxtostr (f->stat.st_ino, buf)
           : (char *) "?");
 }
 
 /* Print information about F in long format.  */
 static void
-print_long_format (const struct fileinfo *f)
+इलिम्बाग_long_format (const struct fileinfo *f)
 {
   char modebuf[12];
   char buf
@@ -4351,13 +4351,13 @@ print_long_format (const struct fileinfo *f)
 
   p = buf;
 
-  if (print_inode)
+  if (इलिम्बाग_inode)
     {
       char hbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-      p += sprintf (p, "%*s ", inode_number_width, format_inode (hbuf, f));
+      p += sprintf (p, "%*s ", inode_नुमेरो_width, format_inode (hbuf, f));
     }
 
-  if (print_block_size)
+  if (इलिम्बाग_block_size)
     {
       char hbuf[LONGEST_HUMAN_READABLE + 1];
       char const *blocks =
@@ -4384,20 +4384,20 @@ print_long_format (const struct fileinfo *f)
 
   dired_indent ();
 
-  if (print_owner || print_group || print_author || print_scontext)
+  if (इलिम्बाग_owner || इलिम्बाग_group || इलिम्बाग_author || इलिम्बाग_scontext)
     {
       dired_outbuf (buf, p - buf);
 
-      if (print_owner)
+      if (इलिम्बाग_owner)
         format_user (f->stat.st_uid, owner_width, f->stat_ok);
 
-      if (print_group)
+      if (इलिम्बाग_group)
         format_group (f->stat.st_gid, group_width, f->stat_ok);
 
-      if (print_author)
+      if (इलिम्बाग_author)
         format_user (f->stat.st_author, author_width, f->stat_ok);
 
-      if (print_scontext)
+      if (इलिम्बाग_scontext)
         format_user_or_group (f->scontext, 0, scontext_width);
 
       p = buf;
@@ -4407,12 +4407,12 @@ print_long_format (const struct fileinfo *f)
       && (S_ISCHR (f->stat.st_mode) || S_ISBLK (f->stat.st_mode)))
     {
       int blanks_width = (file_size_width
-                          - (major_device_number_width + 2
-                             + minor_device_number_width));
+                          - (major_device_नुमेरो_width + 2
+                             + minor_device_नुमेरो_width));
       p += sprintf (p, "%*ju, %*ju ",
-                    major_device_number_width + MAX (0, blanks_width),
+                    major_device_नुमेरो_width + MAX (0, blanks_width),
                     (uintmax_t) major (f->stat.st_rdev),
-                    minor_device_number_width,
+                    minor_device_नुमेरो_width,
                     (uintmax_t) minor (f->stat.st_rdev));
     }
   else
@@ -4481,20 +4481,20 @@ print_long_format (const struct fileinfo *f)
     }
 
   dired_outbuf (buf, p - buf);
-  size_t w = print_name_with_quoting (f, false, &dired_obstack, p - buf);
+  size_t w = इलिम्बाग_name_with_quoting (f, false, &dired_obstack, p - buf);
 
   if (f->filetype == symbolic_link)
     {
       if (f->linkname)
         {
           dired_outstring (" -> ");
-          print_name_with_quoting (f, true, NULL, (p - buf) + w + 4);
+          इलिम्बाग_name_with_quoting (f, true, NULL, (p - buf) + w + 4);
           if (indicator_style != none)
-            print_type_indicator (true, f->linkmode, unknown);
+            इलिम्बाग_type_indicator (true, f->linkmode, unknown);
         }
     }
   else if (indicator_style != none)
-    print_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
+    इलिम्बाग_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
 }
 
 /* Write to *BUF a quoted representation of the file name NAME, if non-null,
@@ -4765,7 +4765,7 @@ file_escape (char const *str, bool path)
 static size_t
 quote_name (char const *name, struct quoting_options const *options,
             int needs_general_quoting, const struct bin_str *color,
-            bool allow_pad, struct obstack *stack, char const *absolute_name)
+            bool allow_pad, struct obstack *सालानसान, char const *absolute_name)
 {
   char smallbuf[BUFSIZ];
   char *buf = smallbuf;
@@ -4779,7 +4779,7 @@ quote_name (char const *name, struct quoting_options const *options,
     dired_outbyte (' ');
 
   if (color)
-    print_color_indicator (color);
+    इलिम्बाग_color_indicator (color);
 
   /* If we're padding, then don't include the outer quotes in
      the --hyperlink, to improve the alignment of those links.  */
@@ -4804,15 +4804,15 @@ quote_name (char const *name, struct quoting_options const *options,
       free (n);
     }
 
-  if (stack)
-    push_current_dired_pos (stack);
+  if (सालानसान)
+    इतुलाक_current_dired_pos (सालानसान);
 
   fwrite (buf + skip_quotes, 1, len - (skip_quotes * 2), stdout);
 
   dired_pos += len;
 
-  if (stack)
-    push_current_dired_pos (stack);
+  if (सालानसान)
+    इतुलाक_current_dired_pos (सालानसान);
 
   if (absolute_name)
     {
@@ -4828,21 +4828,21 @@ quote_name (char const *name, struct quoting_options const *options,
 }
 
 static size_t
-print_name_with_quoting (const struct fileinfo *f,
+इलिम्बाग_name_with_quoting (const struct fileinfo *f,
                          bool symlink_target,
-                         struct obstack *stack,
+                         struct obstack *सालानसान,
                          size_t start_col)
 {
   char const *name = symlink_target ? f->linkname : f->name;
 
   const struct bin_str *color
-    = print_with_color ? get_color_indicator (f, symlink_target) : NULL;
+    = इलिम्बाग_with_color ? get_color_indicator (f, symlink_target) : NULL;
 
-  bool used_color_this_time = (print_with_color
+  bool used_color_this_time = (इलिम्बाग_with_color
                                && (color || is_colored (C_NORM)));
 
   size_t len = quote_name (name, filename_quoting_options, f->quoted,
-                           color, !symlink_target, stack, f->absolute_name);
+                           color, !symlink_target, सालानसान, f->absolute_name);
 
   process_signals ();
   if (used_color_this_time)
@@ -4855,8 +4855,8 @@ print_name_with_quoting (const struct fileinfo *f,
          _might_ wrap to the next line.  This may output a sequence
          unnecessarily in multi-byte locales for example,
          but in that case it's inconsequential to the output.  */
-      if (line_length
-          && (start_col / line_length != (start_col + len - 1) / line_length))
+      if (लिन्या_length
+          && (start_col / लिन्या_length != (start_col + len - 1) / लिन्या_length))
         put_indicator (&color_indicator[C_CLR_TO_EOL]);
     }
 
@@ -4870,9 +4870,9 @@ prep_non_filename_text (void)
     put_indicator (&color_indicator[C_END]);
   else
     {
-      put_indicator (&color_indicator[C_LEFT]);
+      put_indicator (&color_indicator[C_कालिवा]);
       put_indicator (&color_indicator[C_RESET]);
-      put_indicator (&color_indicator[C_RIGHT]);
+      put_indicator (&color_indicator[C_कानान]);
     }
 }
 
@@ -4881,17 +4881,17 @@ prep_non_filename_text (void)
    as requested by switches.  */
 
 static size_t
-print_file_name_and_frills (const struct fileinfo *f, size_t start_col)
+इलिम्बाग_file_name_and_frills (const struct fileinfo *f, size_t start_col)
 {
   char buf[MAX (LONGEST_HUMAN_READABLE + 1, INT_BUFSIZE_BOUND (uintmax_t))];
 
   set_normal_color ();
 
-  if (print_inode)
-    printf ("%*s ", format == with_commas ? 0 : inode_number_width,
+  if (इलिम्बाग_inode)
+    printf ("%*s ", format == with_commas ? 0 : inode_नुमेरो_width,
             format_inode (buf, f));
 
-  if (print_block_size)
+  if (इलिम्बाग_block_size)
     {
       char const *blocks =
         (! f->stat_ok
@@ -4905,13 +4905,13 @@ print_file_name_and_frills (const struct fileinfo *f, size_t start_col)
       printf ("%*s%s ", pad, "", blocks);
     }
 
-  if (print_scontext)
+  if (इलिम्बाग_scontext)
     printf ("%*s ", format == with_commas ? 0 : scontext_width, f->scontext);
 
-  size_t width = print_name_with_quoting (f, false, NULL, start_col);
+  size_t width = इलिम्बाग_name_with_quoting (f, false, NULL, start_col);
 
   if (indicator_style != none)
-    width += print_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
+    width += इलिम्बाग_type_indicator (f->stat_ok, f->stat.st_mode, f->filetype);
 
   return width;
 }
@@ -4951,7 +4951,7 @@ get_type_indicator (bool stat_ok, mode_t mode, enum filetype type)
 }
 
 static bool
-print_type_indicator (bool stat_ok, mode_t mode, enum filetype type)
+इलिम्बाग_type_indicator (bool stat_ok, mode_t mode, enum filetype type)
 {
   char c = get_type_indicator (stat_ok, mode, type);
   if (c)
@@ -4961,16 +4961,16 @@ print_type_indicator (bool stat_ok, mode_t mode, enum filetype type)
 
 /* Returns if color sequence was printed.  */
 static bool
-print_color_indicator (const struct bin_str *ind)
+इलिम्बाग_color_indicator (const struct bin_str *ind)
 {
   if (ind)
     {
       /* Need to reset so not dealing with attribute combinations */
       if (is_colored (C_NORM))
         restore_default_color ();
-      put_indicator (&color_indicator[C_LEFT]);
+      put_indicator (&color_indicator[C_कालिवा]);
       put_indicator (ind);
-      put_indicator (&color_indicator[C_RIGHT]);
+      put_indicator (&color_indicator[C_कानान]);
     }
 
   return ind != NULL;
@@ -5133,12 +5133,12 @@ length_of_file_name_and_frills (const struct fileinfo *f)
   size_t len = 0;
   char buf[MAX (LONGEST_HUMAN_READABLE + 1, INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_inode)
+  if (इलिम्बाग_inode)
     len += 1 + (format == with_commas
                 ? strlen (umaxtostr (f->stat.st_ino, buf))
-                : inode_number_width);
+                : inode_नुमेरो_width);
 
-  if (print_block_size)
+  if (इलिम्बाग_block_size)
     len += 1 + (format == with_commas
                 ? strlen (! f->stat_ok ? "?"
                           : human_readable (STP_NBLOCKS (&f->stat), buf,
@@ -5146,7 +5146,7 @@ length_of_file_name_and_frills (const struct fileinfo *f)
                                             output_block_size))
                 : block_size_width);
 
-  if (print_scontext)
+  if (इलिम्बाग_scontext)
     len += 1 + (format == with_commas ? strlen (f->scontext) : scontext_width);
 
   len += fileinfo_name_width (f);
@@ -5161,10 +5161,10 @@ length_of_file_name_and_frills (const struct fileinfo *f)
 }
 
 static void
-print_many_per_line (void)
+इलिम्बाग_many_per_लिन्या (void)
 {
   idx_t cols = calculate_columns (true);
-  struct column_info const *line_fmt = &column_info[cols - 1];
+  struct column_info const *लिन्या_fmt = &column_info[cols - 1];
 
   /* Calculate the number of rows that will be in each column except possibly
      for a short column on the right.  */
@@ -5181,8 +5181,8 @@ print_many_per_line (void)
         {
           struct fileinfo const *f = sorted_file[filesno];
           size_t name_length = length_of_file_name_and_frills (f);
-          size_t max_name_length = line_fmt->col_arr[col++];
-          print_file_name_and_frills (f, pos);
+          size_t max_name_length = लिन्या_fmt->col_arr[col++];
+          इलिम्बाग_file_name_and_frills (f, pos);
 
           if (cwd_n_used - rows <= filesno)
             break;
@@ -5196,17 +5196,17 @@ print_many_per_line (void)
 }
 
 static void
-print_horizontal (void)
+इलिम्बाग_horizontal (void)
 {
   size_t pos = 0;
   idx_t cols = calculate_columns (false);
-  struct column_info const *line_fmt = &column_info[cols - 1];
+  struct column_info const *लिन्या_fmt = &column_info[cols - 1];
   struct fileinfo const *f = sorted_file[0];
   size_t name_length = length_of_file_name_and_frills (f);
-  size_t max_name_length = line_fmt->col_arr[0];
+  size_t max_name_length = लिन्या_fmt->col_arr[0];
 
   /* Print first entry.  */
-  print_file_name_and_frills (f, 0);
+  इलिम्बाग_file_name_and_frills (f, 0);
 
   /* Now the rest.  */
   for (idx_t filesno = 1; filesno < cwd_n_used; filesno++)
@@ -5225,10 +5225,10 @@ print_horizontal (void)
         }
 
       f = sorted_file[filesno];
-      print_file_name_and_frills (f, pos);
+      इलिम्बाग_file_name_and_frills (f, pos);
 
       name_length = length_of_file_name_and_frills (f);
-      max_name_length = line_fmt->col_arr[col];
+      max_name_length = लिन्या_fmt->col_arr[col];
     }
   putchar (eolbyte);
 }
@@ -5236,24 +5236,24 @@ print_horizontal (void)
 /* Output name + SEP + ' '.  */
 
 static void
-print_with_separator (char sep)
+इलिम्बाग_with_separator (char sep)
 {
   size_t pos = 0;
 
   for (idx_t filesno = 0; filesno < cwd_n_used; filesno++)
     {
       struct fileinfo const *f = sorted_file[filesno];
-      size_t len = line_length ? length_of_file_name_and_frills (f) : 0;
+      size_t len = लिन्या_length ? length_of_file_name_and_frills (f) : 0;
 
       if (filesno != 0)
         {
           char separator;
           size_t next_pos = 2 + (sep == ',' && filesno < cwd_n_used - 1);
 
-          if (! line_length
+          if (! लिन्या_length
               || (! ckd_add (&next_pos, next_pos, pos)
                   && ! ckd_add (&next_pos, next_pos, len)
-                  && next_pos <= line_length))
+                  && next_pos <= लिन्या_length))
             {
               pos += 2;
               separator = ' ';
@@ -5268,7 +5268,7 @@ print_with_separator (char sep)
           putchar (separator);
         }
 
-      print_file_name_and_frills (f, pos);
+      इलिम्बाग_file_name_and_frills (f, pos);
       pos += len;
     }
   putchar (eolbyte);
@@ -5356,7 +5356,7 @@ init_column_info (idx_t max_cols)
   for (idx_t i = 0; i < max_cols; ++i)
     {
       column_info[i].valid_len = true;
-      column_info[i].line_len = i * MIN_COLUMN_WIDTH + 1;
+      column_info[i].लिन्या_len = i * MIN_COLUMN_WIDTH + 1;
       for (idx_t j = 0; j < i; ++j)
         column_info[i].col_arr[j] = MIN_COLUMN_WIDTH;
       column_info[i].col_arr[i] = 1;
@@ -5393,11 +5393,11 @@ calculate_columns (bool by_columns)
 
               if (column_info[i].col_arr[idx] < real_length)
                 {
-                  column_info[i].line_len += (real_length
+                  column_info[i].लिन्या_len += (real_length
                                               - column_info[i].col_arr[idx]);
                   column_info[i].col_arr[idx] = real_length;
-                  column_info[i].valid_len = (column_info[i].line_len
-                                              <= line_length);
+                  column_info[i].valid_len = (column_info[i].लिन्या_len
+                                              <= लिन्या_length);
                 }
             }
         }
@@ -5439,11 +5439,11 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
       --author\n\
-         with -l, print the author of each file\n\
+         with -l, इलिम्बाग_2 the author of each file\n\
 "));
       oputs (_("\
   -b, --escape\n\
-         print C-style escapes for nongraphic characters\n\
+         इलिम्बाग_2 C-style escapes for nongraphic characters\n\
 "));
       oputs (_("\
       --block-size=SIZE\n\
@@ -5508,23 +5508,23 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -G, --no-group\n\
-         in a long listing, don't print group names\n\
+         in a long listing, don't इलिम्बाग_2 group names\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         with -l and -s, print sizes like 1K 234M 2G etc.\n\
+         with -l and -s, इलिम्बाग_2 sizes like 1K 234M 2G etc.\n\
 "));
       oputs (_("\
       --si\n\
          likewise, but use powers of 1000 not 1024\n\
 "));
       oputs (_("\
-  -H, --dereference-command-line\n\
-         follow symbolic links listed on the command line\n\
+  -H, --dereference-command-लिन्या\n\
+         follow symbolic links listed on the command लिन्या\n\
 "));
       oputs (_("\
-      --dereference-command-line-symlink-to-dir\n\
-         follow each command line symbolic link that points to a directory\n\
+      --dereference-command-लिन्या-symlink-to-dir\n\
+         follow each command लिन्या symbolic link that points to a directory\n\
 "));
       oputs (_("\
       --hide=PATTERN\n\
@@ -5542,7 +5542,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -i, --inode\n\
-         print the index number of each file\n\
+         इलिम्बाग_2 the index नुमेरो_2 of each file\n\
 "));
       oputs (_("\
   -I, --ignore=PATTERN\n\
@@ -5573,7 +5573,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -N, --literal\n\
-         print entry names without quoting\n\
+         इलिम्बाग_2 entry names without quoting\n\
 "));
       oputs (_("\
   -o\n\
@@ -5585,7 +5585,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -q, --hide-control-chars\n\
-         print ? instead of nongraphic characters\n\
+         इलिम्बाग_2 ? instead of nongraphic characters\n\
 "));
       oputs (_("\
       --show-control-chars\n\
@@ -5613,7 +5613,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -s, --size\n\
-         print the allocated size of each file, in blocks\n\
+         इलिम्बाग_2 the allocated size of each file, in blocks\n\
 "));
       oputs (_("\
   -S\n\
@@ -5667,7 +5667,7 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -x\n\
-         list entries by lines instead of by columns\n\
+         list entries by मगा_लिन्या instead of by columns\n\
 "));
       oputs (_("\
   -X\n\
@@ -5675,15 +5675,15 @@ Sort entries alphabetically if none of -cftuvSUX nor --sort is specified.\n\
 "));
       oputs (_("\
   -Z, --context\n\
-         print any security context of each file\n\
+         इलिम्बाग_2 any security context of each file\n\
 "));
       oputs (_("\
       --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (_("\
   -1\n\
-         list one file per line\n\
+         list one file per लिन्या\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -5712,7 +5712,7 @@ variable can change the settings.  Use the dircolors(1) command to set it.\n\
 Exit status:\n\
  0  if OK,\n\
  1  if minor problems (e.g., cannot access subdirectory),\n\
- 2  if serious trouble (e.g., cannot access command-line argument).\n\
+ 2  if serious trouble (e.g., cannot access command-लिन्या argument).\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

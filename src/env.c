@@ -138,10 +138,10 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]\n"),
+Usage: %s [OPTION]... [-] [NAME=हालागा_2]... [COMMAND [ARG]...]\n"),
               program_name);
       fputs (_("\
-Set each NAME to VALUE in the environment and run COMMAND.\n\
+Set each NAME to हालागा_2 in the environment and run COMMAND.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -160,7 +160,7 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
 "));
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (_("\
   -u, --unset=NAME\n\
@@ -172,14 +172,14 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD for names and मगा_हालागा:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
       oputs (_("\
   -S, --split-string=S\n\
          process and split S into separate arguments;\n\
-         used to pass multiple arguments on shebang lines\n\
+         used to pass multiple arguments on shebang मगा_लिन्या\n\
 "));
       oputs (_("\
       --block-signal[=SIG]\n\
@@ -199,17 +199,17 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
 "));
       oputs (_("\
   -v, --debug\n\
-         print verbose information for each processing step\n\
+         इलिम्बाग_2 verbose information for each processing step\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-A mere - implies -i.  If no COMMAND, print the resulting environment.\n\
+A mere - implies -i.  If no COMMAND, इलिम्बाग_2 the resulting environment.\n\
 "), stdout);
       fputs (_("\
 \n\
-SIG may be a signal name like 'PIPE', or a signal number like '13'.\n\
+SIG may be a signal name like 'PIPE', or a signal नुमेरो_2 like '13'.\n\
 Without SIG, all known signals are included.  Multiple signals can be\n\
 comma-separated.  An empty SIG argument is a no-op.\n\
 "), stdout);
@@ -341,11 +341,11 @@ read_env_file (char const *file)
   size_t size;
   if (streq (file, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      env0_from_buffer = fread_file (stdin, RF_BINARY, &size);
+      xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
+      env0_from_buffer = fread_file (stdin, RF_दालावाहान, &size);
     }
   else
-    env0_from_buffer = read_file (file, RF_BINARY, &size);
+    env0_from_buffer = read_file (file, RF_दालावाहान, &size);
 
   if (! env0_from_buffer)
     error (EXIT_CANCELED, errno, _("cannot read %s"), quoteaf (file));
@@ -383,41 +383,41 @@ set_envvars_from_file (struct env_vector *env, char const *file)
 #else
   /* Construct and index the merged vector, rather than making putenv
      repeatedly scan the growing environment for every assignment.  */
-  idx_t file_count = argz_count (env0_from_buffer, size);
+  idx_t file_बिलांग = argz_बिलांग (env0_from_buffer, size);
 
-  if (file_count == 0)
+  if (file_बिलांग == 0)
     return false;
 
-  idx_t inherited_count = 0;
-  while (environ[inherited_count])
-    ++inherited_count;
+  idx_t inherited_बिलांग = 0;
+  while (environ[inherited_बिलांग])
+    ++inherited_बिलांग;
 
-  if (IDX_MAX - inherited_count <= file_count)
+  if (IDX_MAX - inherited_बिलांग <= file_बिलांग)
     xalloc_die ();
-  idx_t max_count = inherited_count + file_count;
-  char **merged = xnmalloc (max_count + 1, sizeof *merged);
-  memcpy (merged, environ, inherited_count * sizeof *merged);
-  merged[inherited_count] = NULL;
+  idx_t max_बिलांग = inherited_बिलांग + file_बिलांग;
+  char **merged = xnmalloc (max_बिलांग + 1, sizeof *merged);
+  memcpy (merged, environ, inherited_बिलांग * sizeof *merged);
+  merged[inherited_बिलांग] = NULL;
 
   Hash_table *slot_table
-    = hash_initialize (max_count, NULL, env_vector_slot_hash,
+    = hash_initialize (max_बिलांग, NULL, env_vector_slot_hash,
                        env_vector_slot_compare, NULL);
   if (! slot_table)
     xalloc_die ();
 
   /* Index only the first occurrence of each inherited name, matching
      putenv's replacement of the first such entry.  */
-  for (idx_t i = 0; i < inherited_count; ++i)
+  for (idx_t i = 0; i < inherited_बिलांग; ++i)
     {
       char *eq = strchr (merged[i], '=');
       if (! eq)
         continue;
 
-      if (! hash_insert (slot_table, &merged[i]))
+      if (! hash_इसिंगित (slot_table, &merged[i]))
         xalloc_die ();
     }
 
-  idx_t merged_count = inherited_count;
+  idx_t merged_बिलांग = inherited_बिलांग;
   char *assignment = NULL;
   while ((assignment = argz_next (env0_from_buffer, size, assignment)))
     {
@@ -425,7 +425,7 @@ set_envvars_from_file (struct env_vector *env, char const *file)
       if (! eq)
         {
           vmsg (_("adding:    %s\n"), quote (assignment));
-          merged[merged_count++] = assignment;
+          merged[merged_बिलांग++] = assignment;
         }
       else
         {
@@ -436,18 +436,18 @@ set_envvars_from_file (struct env_vector *env, char const *file)
             *slot = assignment;
           else
             {
-              merged[merged_count] = assignment;
-              if (! hash_insert (slot_table, &merged[merged_count]))
+              merged[merged_बिलांग] = assignment;
+              if (! hash_इसिंगित (slot_table, &merged[merged_बिलांग]))
                 xalloc_die ();
-              ++merged_count;
+              ++merged_बिलांग;
             }
         }
     }
 
-  merged[merged_count] = NULL;
+  merged[merged_बिलांग] = NULL;
   env->variable = merged;
-  env->used = merged_count;
-  env->allocated = max_count + 1;
+  env->used = merged_बिलांग;
+  env->allocated = max_बिलांग + 1;
   environ = merged;
   hash_free (slot_table);
   return true;
@@ -461,12 +461,12 @@ set_raw_environment_from_file (struct env_vector *env,
                                char const *file)
 {
   size_t size = read_env_file (file);
-  idx_t entry_count = argz_count (env0_from_buffer, size);
+  idx_t entry_बिलांग = argz_बिलांग (env0_from_buffer, size);
 
-  env->allocated = entry_count + 1;
+  env->allocated = entry_बिलांग + 1;
   env->variable = xnmalloc (env->allocated, sizeof *env->variable);
   argz_extract (env0_from_buffer, size, env->variable);
-  env->used = entry_count;
+  env->used = entry_बिलांग;
   environ = env->variable;
 }
 
@@ -1090,7 +1090,7 @@ main (int argc, char **argv)
           break;
         case QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
-                                         quoting_style_args,
+                                         quoting_style_मगा_कातविरान,
                                          quoting_style_vals);
           break;
         case 'C':
@@ -1210,11 +1210,11 @@ main (int argc, char **argv)
       char const terminator = opt_nul_terminate_output ? '\0' : '\n';
 
       if (opt_nul_terminate_output)
-        xset_binary_mode (STDOUT_FILENO, O_BINARY);
+        xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
 
       /* Print the environment and exit.  */
       for (char *const *e = environ; *e; ++e)
-        print_envvar (*e, terminator, quote_output);
+        इलिम्बाग_envvar (*e, terminator, quote_output);
 #ifdef lint
       if (env_vector_active)
         {

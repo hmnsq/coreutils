@@ -74,7 +74,7 @@ typedef long int COST;
 #define RAGGED_COST(n)	(SHORT_COST (n) / 2)
 
 /* Basic cost per line.  */
-#define LINE_COST	EQUIV (70)
+#define लिन्या_COST	EQUIV (70)
 
 /* Cost of breaking a line after the first word of a sentence, where
    the length of the word is N.  */
@@ -101,7 +101,7 @@ typedef long int COST;
 #define PUNCT_BONUS	EQUIV(40)
 
 /* Credit for breaking a long paragraph one line later.  */
-#define LINE_CREDIT	EQUIV(3)
+#define लिन्या_CREDIT	EQUIV(3)
 
 /* Size of paragraph buffer, in words and characters.  Longer paragraphs
    are handled neatly (cf. flush_paragraph()), so long as these values
@@ -142,7 +142,7 @@ struct Word
 
     /* The remaining fields are computed during the optimization.  */
 
-    int line_length;		/* length of the best line starting here */
+    int लिन्या_length;		/* length of the best line starting here */
     COST best_cost;		/* cost of best paragraph starting here */
     WORD *next_break;		/* break which achieves best_cost */
   };
@@ -152,7 +152,7 @@ struct Word
 static void set_prefix (char *p);
 static bool fmt (FILE *f, char const *);
 static bool get_paragraph (FILE *f);
-static int get_line (FILE *f, int c);
+static int get_लिन्या (FILE *f, int c);
 static int get_prefix (FILE *f);
 static int get_space (FILE *f, int c);
 static int copy_rest (FILE *f, int c);
@@ -161,9 +161,9 @@ static void flush_paragraph (void);
 static void fmt_paragraph (void);
 static void check_punctuation (WORD *w);
 static COST base_cost (WORD *this);
-static COST line_cost (WORD *next, int len);
+static COST लिन्या_cost (WORD *next, int len);
 static void put_paragraph (WORD *finish);
-static void put_line (WORD *w, int indent);
+static void put_लिन्या (WORD *w, int indent);
 static void put_word (WORD *w);
 static void put_space (int space);
 
@@ -256,7 +256,7 @@ static int next_prefix_indent;
 /* If nonzero, the length of the last line output in the current
    paragraph, used to charge for raggedness at the split point for long
    paragraphs chosen by fmt_paragraph().  */
-static int last_line_length;
+static int last_लिन्या_length;
 
 void
 usage (int status)
@@ -276,28 +276,28 @@ The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
 
       oputs (_("\
   -c, --crown-margin\n\
-         preserve indentation of first two lines\n\
+         preserve indentation of first two मगा_लिन्या\n\
 "));
       oputs (_("\
   -p, --prefix=STRING\n\
-         reformat only lines beginning with STRING,\n\
-         reattaching the prefix to reformatted lines\n\
+         reformat only मगा_लिन्या beginning with STRING,\n\
+         reattaching the prefix to reformatted मगा_लिन्या\n\
 "));
       oputs (_("\
   -s, --split-only\n\
-         split long lines, but do not refill\n\
+         split long मगा_लिन्या, but do not refill\n\
 "));
       oputs (_("\
   -t, --tagged-paragraph\n\
-         indentation of first line different from second\n\
+         indentation of first लिन्या different from second\n\
 "));
       oputs (_("\
   -u, --uniform-spacing\n\
-         one space between words, two after sentences\n\
+         one space between मगा_सालिता, two after sentences\n\
 "));
       oputs (_("\
   -w, --width=WIDTH\n\
-         maximum line width (default of 75 columns)\n\
+         maximum लिन्या width (default of 75 columns)\n\
 "));
       /* Tell xgettext that the "% o" below is not a printf-style
          format string:  xgettext:no-c-format */
@@ -571,7 +571,7 @@ get_paragraph (FILE *f)
 {
   int c;
 
-  last_line_length = 0;
+  last_लिन्या_length = 0;
   c = next_char;
 
   /* Scan (and copy) blank lines, and lines not introduced by the prefix.  */
@@ -596,7 +596,7 @@ get_paragraph (FILE *f)
   first_indent = in_column;
   wptr = parabuf;
   word_limit = word;
-  c = get_line (f, c);
+  c = get_लिन्या (f, c);
   set_other_indent (same_para (c));
 
   /* Read rest of paragraph (unless split is specified).  */
@@ -611,7 +611,7 @@ get_paragraph (FILE *f)
         {
           do
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_लिन्या (f, c);
             }
           while (same_para (c) && in_column == other_indent);
         }
@@ -622,7 +622,7 @@ get_paragraph (FILE *f)
         {
           do
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_लिन्या (f, c);
             }
           while (same_para (c) && in_column == other_indent);
         }
@@ -630,7 +630,7 @@ get_paragraph (FILE *f)
   else
     {
       while (same_para (c) && in_column == other_indent)
-        c = get_line (f, c);
+        c = get_लिन्या (f, c);
     }
 
   (word_limit - 1)->period = (word_limit - 1)->final = true;
@@ -686,7 +686,7 @@ same_para (int c)
    Return the first non-blank character of the next line.  */
 
 static int
-get_line (FILE *f, int c)
+get_लिन्या (FILE *f, int c)
 {
   int start;
   char *end_of_parabuf;
@@ -844,8 +844,8 @@ flush_paragraph (void)
           split_point = w;
           best_break = w->best_cost - w->next_break->best_cost;
         }
-      if (best_break <= MAXCOST - LINE_CREDIT)
-        best_break += LINE_CREDIT;
+      if (best_break <= MAXCOST - लिन्या_CREDIT)
+        best_break += लिन्या_CREDIT;
     }
   put_paragraph (split_point);
 
@@ -899,14 +899,14 @@ fmt_paragraph (void)
 
           /* Consider breaking before w.  */
 
-          wcost = line_cost (w, len) + w->best_cost;
-          if (start == word && last_line_length > 0)
-            wcost += RAGGED_COST (len - last_line_length);
+          wcost = लिन्या_cost (w, len) + w->best_cost;
+          if (start == word && last_लिन्या_length > 0)
+            wcost += RAGGED_COST (len - last_लिन्या_length);
           if (wcost < best)
             {
               best = wcost;
               start->next_break = w;
-              start->line_length = len;
+              start->लिन्या_length = len;
             }
 
           /* This is a kludge to keep us from computing 'len' as the
@@ -938,7 +938,7 @@ base_cost (WORD *this)
 {
   COST cost;
 
-  cost = LINE_COST;
+  cost = लिन्या_COST;
 
   if (this > word)
     {
@@ -967,7 +967,7 @@ base_cost (WORD *this)
    depends on LEN, the length of the line beginning there.  */
 
 static COST
-line_cost (WORD *next, int len)
+लिन्या_cost (WORD *next, int len)
 {
   int n;
   COST cost;
@@ -978,7 +978,7 @@ line_cost (WORD *next, int len)
   cost = SHORT_COST (n);
   if (next->next_break != word_limit)
     {
-      n = len - next->line_length;
+      n = len - next->लिन्या_length;
       cost += RAGGED_COST (n);
     }
   return cost;
@@ -990,16 +990,16 @@ line_cost (WORD *next, int len)
 static void
 put_paragraph (WORD *finish)
 {
-  put_line (word, first_indent);
+  put_लिन्या (word, first_indent);
   for (WORD *w = word->next_break; w != finish; w = w->next_break)
-    put_line (w, other_indent);
+    put_लिन्या (w, other_indent);
 }
 
 /* Output to stdout the line beginning with word W, beginning in column
    INDENT, including the prefix (if any).  */
 
 static void
-put_line (WORD *w, int indent)
+put_लिन्या (WORD *w, int indent)
 {
   WORD *endline;
 
@@ -1016,7 +1016,7 @@ put_line (WORD *w, int indent)
       put_space (w->space);
     }
   put_word (w);
-  last_line_length = out_column;
+  last_लिन्या_length = out_column;
   putchar ('\n');
 
   if (ferror (stdout))

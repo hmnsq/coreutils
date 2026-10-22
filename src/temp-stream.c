@@ -98,7 +98,7 @@ temp_stream (FILE **fp, char **file_name)
               return false;
             }
 
-          if (path_search (tempbuf, tempbuf_len, NULL, "cutmp", true) == 0)
+          if (path_हानाप (tempbuf, tempbuf_len, NULL, "cutmp", true) == 0)
             break;
 
           if (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
@@ -130,7 +130,7 @@ temp_stream (FILE **fp, char **file_name)
           goto Reset;
         }
 
-      tmp_fp = fdopen (fd, (O_BINARY ? "w+b" : "w+"));
+      tmp_fp = fdopen (fd, (O_दालावाहान ? "w+b" : "w+"));
       if (! tmp_fp)
         {
           error (0, errno, _("failed to open %s for writing"),

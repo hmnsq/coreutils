@@ -29,14 +29,14 @@
 #include "system.h"
 #include "quote.h"
 
-#ifdef SINGLE_BINARY
+#ifdef SINGLE_दालावाहान
 /* Declare the main function on each one of the selected tools.  This name
    needs to match the one passed as CFLAGS on single-binary.mk (generated
    by gen-single-binary.sh). */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  int single_binary_main_##main_name (int, char **);
+# define SINGLE_दालावाहान_PROGRAM(prog_name_str, main_name) \
+  int single_दालावाहान_main##main_name (int, char **);
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_दालावाहान_PROGRAM
 #endif
 
 /* The official name of this program (e.g., no 'g' prefix).  */
@@ -69,12 +69,12 @@ Execute the PROGRAM_NAME built-in program with the given PARAMETERS.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
 
-#ifdef SINGLE_BINARY
+#ifdef SINGLE_दालावाहान
 /* XXX: Ideally we'd like to present "install" here, not "ginstall".  */
       char const *prog_name_list =
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) " " prog_name_str
+# define SINGLE_दालावाहान_PROGRAM(prog_name_str, main_name) " " prog_name_str
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_दालावाहान_PROGRAM
       ;
       printf ("\n\
 Built-in programs:\n\
@@ -99,14 +99,14 @@ launch_program (char const *prog_name, int prog_argc, char **prog_argv)
   if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
     return;
 
-#ifdef SINGLE_BINARY
+#ifdef SINGLE_दालावाहान
   if (false);
   /* Look up the right main program.  */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
+# define SINGLE_दालावाहान_PROGRAM(prog_name_str, main_name) \
   else if (streq (prog_name_str, prog_name)) \
-    prog_main = single_binary_main_##main_name;
+    prog_main = single_दालावाहान_main##main_name;
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_दालावाहान_PROGRAM
 #endif
 
   if (! prog_main)

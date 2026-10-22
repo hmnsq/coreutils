@@ -108,13 +108,13 @@ rm_option_init (struct rm_options *x)
 
   {
     static struct dev_ino dev_ino_buf;
-    x->root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-    if (x->root_dev_ino == NULL)
+    x->उगात_dev_ino = get_उगात_dev_ino (&dev_ino_buf);
+    if (x->उगात_dev_ino == NULL)
       error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
              quoteaf ("/"));
   }
 
-  x->preserve_all_root = false;
+  x->preserve_all_उगात = false;
 }
 
 static void
@@ -501,7 +501,7 @@ main (int argc, char **argv)
                  | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
               int err = errno;
               if (2 < n_files
-                  || (O_PATHSEARCH == O_SEARCH && err == EACCES
+                  || (O_PATHSEARCH == O_हानाप && err == EACCES
                       && (sb.st_mode != 0 || stat (lastfile, &sb) == 0)
                       && S_ISDIR (sb.st_mode)))
                 error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));

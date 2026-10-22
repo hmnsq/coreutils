@@ -138,7 +138,7 @@ static bool need_runlevel;
 static bool need_users;
 
 /* If true, display info only for the controlling tty.  */
-static bool my_line_only;
+static bool my_लिन्या_only;
 
 /* The strftime format to use for login times, and its expected
    output width.  */
@@ -224,8 +224,8 @@ time_string (STRUCT_UTMP const *utmp_ent)
    will need tweaking if any of the localization stuff is done, or for 64 bit
    pids, etc. */
 static void
-print_line (char const *user, const char state,
-            char const *line,
+इलिम्बाग_लिन्या (char const *user, const char state,
+            char const *लिन्या,
             char const *time_str, char const *idle, char const *pid,
             char const *comment, char const *exitstr)
 {
@@ -264,7 +264,7 @@ print_line (char const *user, const char state,
                    ,
                    user ? user : "   .",
                    include_mesg ? mesg : "",
-                   line,
+                   लिन्या,
                    time_format_width,
                    time_str,
                    x_idle,
@@ -309,7 +309,7 @@ is_tty_writable (struct stat const *pstat)
 /* Send properly parsed USER_PROCESS info to print_line.  The most
    recent boot time is BOOTTIME. */
 static void
-print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
+इलिम्बाग_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
 {
   struct stat stats;
   time_t last_change;
@@ -322,12 +322,12 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
 #endif
 
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  char *लिन्या = utmp_ent->ut_लिन्या;
+  char *space = strchr (लिन्या, ' ');
+  लिन्या = space ? space + 1 : लिन्या;
 
   int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  if (IS_ABSOLUTE_FILE_NAME (लिन्या))
     dirfd = AT_FDCWD;
   else
     {
@@ -341,7 +341,7 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  if (AT_FDCWD <= dirfd && fstatat (dirfd, लिन्या, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
       last_change = stats.st_atime;
@@ -416,16 +416,16 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
     }
 #endif
 
-  print_line (utmp_ent->ut_user, mesg,
-              utmp_ent->ut_line,
+  इलिम्बाग_लिन्या (utmp_ent->ut_user, mesg,
+              utmp_ent->ut_लिन्या,
               time_string (utmp_ent), idlestr, pidstr,
               hoststr ? hoststr : "", "");
 }
 
 static void
-print_boottime (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_boottime (STRUCT_UTMP const *utmp_ent)
 {
-  print_line ("", ' ', _("system boot"),
+  इलिम्बाग_लिन्या ("", ' ', _("system boot"),
               time_string (utmp_ent), "", "", "", "");
 }
 
@@ -444,7 +444,7 @@ make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
 }
 
 static void
-print_deadprocs (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_deadprocs (STRUCT_UTMP const *utmp_ent)
 {
   static char *exitstr;
   char *comment = make_id_equals_comment (utmp_ent);
@@ -461,45 +461,45 @@ print_deadprocs (STRUCT_UTMP const *utmp_ent)
 
   /* FIXME: add idle time? */
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  इलिम्बाग_लिन्या ("", ' ', utmp_ent->ut_लिन्या,
               time_string (utmp_ent), "", pidstr, comment, exitstr);
   free (comment);
 }
 
 static void
-print_login (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_login (STRUCT_UTMP const *utmp_ent)
 {
   char *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   /* FIXME: add idle time? */
 
-  print_line (_("LOGIN"), ' ', utmp_ent->ut_line,
+  इलिम्बाग_लिन्या (_("LOGIN"), ' ', utmp_ent->ut_लिन्या,
               time_string (utmp_ent), "", pidstr, comment, "");
   free (comment);
 }
 
 static void
-print_initspawn (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_initspawn (STRUCT_UTMP const *utmp_ent)
 {
   char *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  इलिम्बाग_लिन्या ("", ' ', utmp_ent->ut_लिन्या,
               time_string (utmp_ent), "", pidstr, comment, "");
   free (comment);
 }
 
 static void
-print_clockchange (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_clockchange (STRUCT_UTMP const *utmp_ent)
 {
   /* FIXME: handle NEW_TIME & OLD_TIME both */
-  print_line ("", ' ', _("clock change"),
+  इलिम्बाग_लिन्या ("", ' ', _("clock change"),
               time_string (utmp_ent), "", "", "", "");
 }
 
 static void
-print_runlevel (STRUCT_UTMP const *utmp_ent)
+इलिम्बाग_runlevel (STRUCT_UTMP const *utmp_ent)
 {
   static char *runlevline, *comment;
   unsigned char last = utmp_ent->ut_pid / 256;
@@ -513,7 +513,7 @@ print_runlevel (STRUCT_UTMP const *utmp_ent)
     comment = xmalloc (strlen (_("last=")) + 2);
   sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
 
-  print_line ("", ' ', runlevline, time_string (utmp_ent),
+  इलिम्बाग_लिन्या ("", ' ', runlevline, time_string (utmp_ent),
               "", "", c_isprint (last) ? comment : "", "");
 }
 
@@ -544,9 +544,9 @@ list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
 }
 
 static void
-print_heading (void)
+इलिम्बाग_heading (void)
 {
-  print_line (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
+  इलिम्बाग_लिन्या (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
               _("PID"), _("COMMENT"), _("EXIT"));
 }
 
@@ -558,9 +558,9 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
   time_t boottime = TYPE_MINIMUM (time_t);
 
   if (include_heading)
-    print_heading ();
+    इलिम्बाग_heading ();
 
-  if (my_line_only)
+  if (my_लिन्या_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
       if (!ttyname_b)
@@ -571,26 +571,26 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 
   while (n--)
     {
-      if (!my_line_only
-          || str_endswith (utmp_buf->ut_line, ttyname_b))
+      if (!my_लिन्या_only
+          || str_endswith (utmp_buf->ut_लिन्या, ttyname_b))
         {
           if (need_users && IS_USER_PROCESS (utmp_buf))
-            print_user (utmp_buf, boottime);
+            इलिम्बाग_user (utmp_buf, boottime);
           else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
-            print_runlevel (utmp_buf);
+            इलिम्बाग_runlevel (utmp_buf);
           else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
-            print_boottime (utmp_buf);
+            इलिम्बाग_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
           else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
-            print_clockchange (utmp_buf);
+            इलिम्बाग_clockchange (utmp_buf);
           else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
-            print_initspawn (utmp_buf);
+            इलिम्बाग_initspawn (utmp_buf);
           else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
-            print_login (utmp_buf);
+            इलिम्बाग_login (utmp_buf);
           else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
-            print_deadprocs (utmp_buf);
+            इलिम्बाग_deadprocs (utmp_buf);
         }
 
       if (UT_TYPE_BOOT_TIME (utmp_buf))
@@ -629,7 +629,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
       fputs (_("\
-Print information about users who are currently logged in.\n\
+इलिम्बाग information about users who are currently logged in.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -641,34 +641,34 @@ Print information about users who are currently logged in.\n\
   -b, --boot        time of last system boot\n\
 "));
       oputs (_("\
-  -d, --dead        print dead processes\n\
+  -d, --dead        इलिम्बाग_2 dead processes\n\
 "));
       oputs (_("\
-  -H, --heading     print line of column headings\n\
+  -H, --heading     इलिम्बाग_2 लिन्या of column headings\n\
 "));
       oputs (_("\
-  -l, --login       print system login processes\n\
+  -l, --login       इलिम्बाग_2 system login processes\n\
 "));
       oputs (_("\
       --lookup      attempt to canonicalize hostnames via DNS\n\
 "));
       oputs (_("\
-  -m                only hostname and user associated with standard input\n\
+  -m                only hostname and user associated with standard पासोक\n\
 "));
       oputs (_("\
-  -p, --process     print active processes spawned by init\n\
+  -p, --process     इलिम्बाग_2 active processes spawned by init\n\
 "));
       oputs (_("\
-  -q, --count       all login names and number of users logged on\n\
+  -q, --बिलांग       all login names and नुमेरो_2 of users logged on\n\
 "));
       oputs (_("\
-  -r, --runlevel    print current runlevel\n\
+  -r, --runlevel    इलिम्बाग_2 current runlevel\n\
 "));
       oputs (_("\
-  -s, --short       print only name, line, and time (default)\n\
+  -s, --short       इलिम्बाग_2 only name, लिन्या, and time (default)\n\
 "));
       oputs (_("\
-  -t, --time        print last system clock change\n\
+  -t, --time        इलिम्बाग_2 last system clock change\n\
 "));
       oputs (_("\
   -T, -w, --mesg    add user's message status as +, - or ?\n\
@@ -750,7 +750,7 @@ main (int argc, char **argv)
           break;
 
         case 'm':
-          my_line_only = true;
+          my_लिन्या_only = true;
           break;
 
         case 'p':
@@ -826,7 +826,7 @@ main (int argc, char **argv)
   switch (argc - optind)
     {
     case 2:			/* who <blurf> <glop> */
-      my_line_only = true;
+      my_लिन्या_only = true;
       FALLTHROUGH;
     case -1:
     case 0:			/* who */

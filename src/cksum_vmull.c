@@ -31,7 +31,7 @@ bswap_neon (uint64x2_t in)
 {
   uint64x2_t a =
     vreinterpretq_u64_u8 (vrev64q_u8 (vreinterpretq_u8_u64 (in)));
-  a = vcombine_u64 (vget_high_u64 (a), vget_low_u64 (a));
+  a = vcombine_u64 (vget_माताअस_u64 (a), vget_माबाबा_u64 (a));
   return a;
 }
 
@@ -111,7 +111,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_माताअस_p64
                                         (vreinterpretq_p64_u64 (data),
                                          four_mult_constant));
               data4 =
@@ -121,7 +121,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data3 =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_माताअस_p64
                                         (vreinterpretq_p64_u64 (data3),
                                          four_mult_constant));
               data6 =
@@ -131,7 +131,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data5 =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_माताअस_p64
                                         (vreinterpretq_p64_u64 (data5),
                                          four_mult_constant));
               data8 =
@@ -141,7 +141,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (four_mult_constant,
                                                          0)));
               data7 =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_माताअस_p64
                                         (vreinterpretq_p64_u64 (data7),
                                          four_mult_constant));
 
@@ -204,7 +204,7 @@ cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                          vgetq_lane_p64 (single_mult_constant,
                                                          0)));
               data =
-                vreinterpretq_u64_p128 (vmull_high_p64
+                vreinterpretq_u64_p128 (vmull_माताअस_p64
                                         (vreinterpretq_p64_u64 (data),
                                          single_mult_constant));
               fold_data = vld1q_u64 ((uint64_t *) (datap));

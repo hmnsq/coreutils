@@ -54,7 +54,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the full filename of the current working directory.\n\
+इलिम्बाग the full filename of the current working directory.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -196,7 +196,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
       ino_t ino = D_INO (dp);
 
       struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      if (ino == NOT_AN_INODE_नुमेरो || use_lstat)
         {
           if (lstat (dp->d_name, &ent_sb) < 0)
             {
@@ -263,9 +263,9 @@ robust_getcwd (struct file_name *file_name)
 {
   size_t height = 1;
   struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  struct dev_ino *उगात_dev_ino = get_उगात_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  if (उगात_dev_ino == NULL)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
@@ -276,7 +276,7 @@ robust_getcwd (struct file_name *file_name)
   while (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
+      if (PSAME_INODE (&dot_sb, उगात_dev_ino))
         break;
 
       find_dir_entry (&dot_sb, file_name, height++);

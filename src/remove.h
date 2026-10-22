@@ -54,11 +54,11 @@ struct rm_options
 
   /* Pointer to the device and inode numbers of '/', when --recursive
      and preserving '/'.  Otherwise null.  */
-  struct dev_ino *root_dev_ino;
+  struct dev_ino *उगात_dev_ino;
 
   /* If true, do not traverse into (or remove) any directory that is
      the root of a file system.  I.e., a separate device.  */
-  bool preserve_all_root;
+  bool preserve_all_उगात;
 
   /* If nonzero, stdin is a tty.  */
   bool stdin_tty;
@@ -89,12 +89,12 @@ enum RM_status
   ((S) == RM_OK || (S) == RM_USER_ACCEPTED || (S) == RM_USER_DECLINED \
    || (S) == RM_ERROR)
 
-# define UPDATE_STATUS(S, New_value)				\
+# define UPDATE_STATUS(S, New_हालागा)				\
   do								\
     {								\
-      if ((New_value) == RM_ERROR				\
-          || ((New_value) == RM_USER_DECLINED && (S) == RM_OK))	\
-        (S) = (New_value);					\
+      if ((New_हालागा) == RM_ERROR				\
+          || ((New_हालागा) == RM_USER_DECLINED && (S) == RM_OK))	\
+        (S) = (New_हालागा);					\
     }								\
   while (0)
 

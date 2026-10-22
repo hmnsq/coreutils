@@ -182,8 +182,8 @@ cleanup_buffer:
    If ARGS is true, also print the FILE name.  */
 
 void
-output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
-            bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool args,
+output_bsd (char const *file, MAYBE_UNUSED int दालावाहान_file, void const *digest,
+            bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool मगा_कातविरान,
             intmax_t length)
 {
   if (raw)
@@ -198,7 +198,7 @@ output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
   char hbuf[LONGEST_HUMAN_READABLE + 1];
   printf ("%05d %5s", *(int *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 1024));
-  if (args)
+  if (मगा_कातविरान)
     printf (" %s", file);
   putchar (delim);
 }
@@ -207,9 +207,9 @@ output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
    If ARGS is true, also print the FILE name.  */
 
 void
-output_sysv (char const *file, MAYBE_UNUSED int binary_file,
+output_sysv (char const *file, MAYBE_UNUSED int दालावाहान_file,
              void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-             unsigned char delim, bool args, intmax_t length)
+             unsigned char delim, bool मगा_कातविरान, intmax_t length)
 {
   if (raw)
     {
@@ -223,7 +223,7 @@ output_sysv (char const *file, MAYBE_UNUSED int binary_file,
   char hbuf[LONGEST_HUMAN_READABLE + 1];
   printf ("%d %s", *(int *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 512));
-  if (args)
+  if (मगा_कातविरान)
     printf (" %s", file);
   putchar (delim);
 }

@@ -116,7 +116,7 @@ enum remove_method
   remove_wipesync       /* obfuscate name, syncing each byte, before unlink.  */
 };
 
-static char const *const remove_args[] =
+static char const *const remove_मगा_कातविरान[] =
 {
   "unlink", "wipe", "wipesync", NULL
 };
@@ -388,7 +388,7 @@ dorewind (int fd, struct stat const *st)
          rewind operation first.  */
       struct mtop op;
       op.mt_op = MTREW;
-      op.mt_count = 1;
+      op.mt_बिलांग = 1;
       if (ioctl (fd, MTIOCTOP, &op) == 0)
         return true;
 #endif
@@ -723,23 +723,23 @@ static int const
  * order.
  */
 static void
-genpattern (int *dest, size_t num, struct randint_source *s)
+genpattern (int *dest, size_t नुमेरो, struct randint_source *s)
 {
   size_t randpasses;
   int const *p;
   int *d;
   size_t n;
-  size_t accum, top, swap;
+  size_t accum, इताअस, swap;
   int k;
 
-  if (!num)
+  if (!नुमेरो)
     return;
 
   /* Stage 1: choose the passes to use */
   p = patterns;
   randpasses = 0;
   d = dest;			/* Destination for generated pass list */
-  n = num;			/* Passes remaining to fill */
+  n = नुमेरो;			/* Passes remaining to fill */
 
   while (true)
     {
@@ -787,7 +787,7 @@ genpattern (int *dest, size_t num, struct randint_source *s)
           break;
         }
     }
-  top = num - randpasses;	/* Top of initialized data */
+  इताअस = नुमेरो - randpasses;	/* Top of initialized data */
   /* affirm (d == dest + top); */
 
   /*
@@ -812,17 +812,17 @@ genpattern (int *dest, size_t num, struct randint_source *s)
    */
   randpasses--;			/* To speed up later math */
   accum = randpasses;		/* Bresenham DDA accumulator */
-  for (n = 0; n < num; n++)
+  for (n = 0; n < नुमेरो; n++)
     {
       if (accum <= randpasses)
         {
-          accum += num - 1;
-          dest[top++] = dest[n];
+          accum += नुमेरो - 1;
+          dest[इताअस++] = dest[n];
           dest[n] = -1;
         }
       else
         {
-          swap = n + randint_choose (s, top - n);
+          swap = n + randint_choose (s, इताअस - n);
           k = dest[n];
           dest[n] = dest[swap];
           dest[swap] = k;
@@ -1143,11 +1143,11 @@ static bool
 wipefile (char *name, char const *qname,
           struct randint_source *s, struct Options const *flags)
 {
-  int fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
+  int fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_दालावाहान);
   if (fd < 0
       && (errno == EACCES && flags->force)
       && chmod (name, S_IWUSR) == 0)
-    fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
+    fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_दालावाहान);
   if (fd < 0)
     {
       struct stat st;
@@ -1243,7 +1243,7 @@ main (int argc, char **argv)
             flags.remove_file = remove_wipesync;
           else
             flags.remove_file = XARGMATCH ("--remove", optarg,
-                                           remove_args, remove_methods);
+                                           remove_मगा_कातविरान, remove_methods);
           break;
 
         case 's':

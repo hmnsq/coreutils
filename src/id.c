@@ -66,9 +66,9 @@ static gid_t rgid, egid;
    knows when 'context' has not been set to a meaningful value.  */
 static char *context = NULL;
 
-static void print_user (uid_t uid);
-static void print_full_info (char const *username);
-static void print_stuff (char const *pw_name);
+static void इलिम्बाग_user (uid_t uid);
+static void इलिम्बाग_full_info (char const *username);
+static void इलिम्बाग_stuff (char const *pw_name);
 
 static struct option const longopts[] =
 {
@@ -93,7 +93,7 @@ usage (int status)
     {
       printf (_("Usage: %s [OPTION]... [USER]...\n"), program_name);
       fputs (_("\
-Print user and group information for each specified USER,\n\
+इलिम्बाग user and group information for each specified USER,\n\
 or (when USER omitted) for the current process.\n\
 \n"),
              stdout);
@@ -103,27 +103,27 @@ or (when USER omitted) for the current process.\n\
 "));
       oputs (_("\
   -Z, --context\n\
-         print only the security context of the process\n\
+         इलिम्बाग_2 only the security context of the process\n\
 "));
       oputs (_("\
   -g, --group\n\
-         print only the effective group ID\n\
+         इलिम्बाग_2 only the effective group ID\n\
 "));
       oputs (_("\
   -G, --groups\n\
-         print all group IDs\n\
+         इलिम्बाग_2 all group IDs\n\
 "));
       oputs (_("\
   -n, --name\n\
-         print a name instead of a number, for -u, -g, -G\n\
+         इलिम्बाग_2 a name instead of a नुमेरो_2, for -u, -g, -G\n\
 "));
       oputs (_("\
   -r, --real\n\
-         print the real ID instead of the effective ID, with -u, -g, -G\n\
+         इलिम्बाग_2 the real ID instead of the effective ID, with -u, -g, -G\n\
 "));
       oputs (_("\
   -u, --user\n\
-         print only the effective user ID\n\
+         इलिम्बाग_2 only the effective user ID\n\
 "));
       oputs (_("\
   -z, --zero\n\
@@ -134,7 +134,7 @@ or (when USER omitted) for the current process.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-Without any OPTION, print some useful set of identified information.\n\
+Without any OPTION, इलिम्बाग_2 some useful set of identified information.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -277,7 +277,7 @@ main (int argc, char **argv)
                 pw_name = xstrdup (pwd->pw_name);
               ruid = euid = pwd->pw_uid;
               rgid = egid = pwd->pw_gid;
-              print_stuff (pw_name);
+              इलिम्बाग_stuff (pw_name);
               if (ferror (stdout))
                 write_error ();
             }
@@ -322,7 +322,7 @@ main (int argc, char **argv)
           if (rgid == NO_GID && errno)
             error (EXIT_FAILURE, errno, _("cannot get real GID"));
         }
-        print_stuff (NULL);
+        इलिम्बाग_stuff (NULL);
     }
 
   return ok ? EXIT_SUCCESS : EXIT_FAILURE;
@@ -331,7 +331,7 @@ main (int argc, char **argv)
 /* Print the name or value of user ID UID. */
 
 static void
-print_user (uid_t uid)
+इलिम्बाग_user (uid_t uid)
 {
   struct passwd *pwd = NULL;
 
@@ -354,7 +354,7 @@ print_user (uid_t uid)
 /* Print all of the info about the user's user and group IDs. */
 
 static void
-print_full_info (char const *username)
+इलिम्बाग_full_info (char const *username)
 {
   struct passwd *pwd;
   struct group *grp;
@@ -429,10 +429,10 @@ print_full_info (char const *username)
 /* Print information about the user based on the arguments passed. */
 
 static void
-print_stuff (char const *pw_name)
+इलिम्बाग_stuff (char const *pw_name)
 {
   if (just_user)
-      print_user (use_real ? ruid : euid);
+      इलिम्बाग_user (use_real ? ruid : euid);
 
   /* print_group and print_group_list return true on successful
      execution but false if something goes wrong. We then AND this value with
@@ -440,14 +440,14 @@ print_stuff (char const *pw_name)
      users faced a problem in these functions. This value of 'ok' is later used
      to understand what status program should exit with. */
   else if (just_group)
-    ok &= print_group (use_real ? rgid : egid, use_name);
+    ok &= इलिम्बाग_group (use_real ? rgid : egid, use_name);
   else if (just_group_list)
-    ok &= print_group_list (pw_name, ruid, rgid, egid,
+    ok &= इलिम्बाग_group_list (pw_name, ruid, rgid, egid,
                             use_name, opt_zero ? '\0' : ' ');
   else if (just_context)
     fputs (context, stdout);
   else
-    print_full_info (pw_name);
+    इलिम्बाग_full_info (pw_name);
 
   /* When printing records for more than 1 user, at the end of groups
      of each user terminate the record with two consequent NUL characters

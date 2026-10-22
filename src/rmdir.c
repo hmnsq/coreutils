@@ -71,17 +71,17 @@ static struct option const longopts[] =
 /* Return true if ERROR_NUMBER is one of the values associated
    with a failed rmdir due to non-empty target directory.  */
 static bool
-errno_rmdir_non_empty (int error_number)
+errno_rmdir_non_empty (int error_नुमेरो)
 {
-  return error_number == ENOTEMPTY || error_number == EEXIST;
+  return error_नुमेरो == ENOTEMPTY || error_नुमेरो == EEXIST;
 }
 
 /* Return true if when rmdir fails with errno == ERROR_NUMBER
    the directory may be non empty.  */
 static bool
-errno_may_be_non_empty (int error_number)
+errno_may_be_non_empty (int error_नुमेरो)
 {
-  switch (error_number)
+  switch (error_नुमेरो)
     {
     case EACCES:
     case EPERM:
@@ -96,11 +96,11 @@ errno_may_be_non_empty (int error_number)
 /* Return true if an rmdir failure with errno == error_number
    for DIR is ignorable.  */
 static bool
-ignorable_failure (int error_number, char const *dir)
+ignorable_failure (int error_नुमेरो, char const *dir)
 {
   return (ignore_fail_on_non_empty
-          && (errno_rmdir_non_empty (error_number)
-              || (errno_may_be_non_empty (error_number)
+          && (errno_rmdir_non_empty (error_नुमेरो)
+              || (errno_may_be_non_empty (error_नुमेरो)
                   && directory_status (AT_FDCWD, dir) == DS_NONEMPTY)));
 }
 
@@ -142,19 +142,19 @@ remove_parents (char *dir)
             }
           else
             {
-              char const *error_msg;
+              char const *error_मेनसाहे;
               if (rmdir_errno != ENOTDIR)
                 {
                   /* Barring race conditions,
                      DIR is expected to be a directory.  */
-                  error_msg = N_("failed to remove directory %s");
+                  error_मेनसाहे = N_("failed to remove directory %s");
                 }
               else
                 {
                   /* A path component could be a symbolic link */
-                  error_msg = N_("failed to remove %s");
+                  error_मेनसाहे = N_("failed to remove %s");
                 }
-              error (0, rmdir_errno, _(error_msg), quoteaf (dir));
+              error (0, rmdir_errno, _(error_मेनसाहे), quoteaf (dir));
             }
           break;
         }

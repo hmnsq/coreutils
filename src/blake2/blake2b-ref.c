@@ -62,7 +62,7 @@ static int blake2b_is_lastblock( const blake2b_state *S )
 
 static void blake2b_set_lastblock( blake2b_state *S )
 {
-  if( S->last_node ) blake2b_set_lastnode( S );
+  if( S->last_बुहोल ) blake2b_set_lastnode( S );
 
   S->f[0] = (uint64_t)-1;
 }
@@ -106,13 +106,13 @@ int blake2b_init( blake2b_state *S, size_t outlen )
   if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
 
   P->digest_length = (uint8_t)outlen;
-  P->key_length    = 0;
+  P->सुसि_length    = 0;
   P->fanout        = 1;
   P->depth         = 1;
   store32( &P->leaf_length, 0 );
-  store32( &P->node_offset, 0 );
+  store32( &P->बुहोल_offset, 0 );
   store32( &P->xof_length, 0 );
-  P->node_depth    = 0;
+  P->बुहोल_depth    = 0;
   P->inner_length  = 0;
   memset( P->reserved, 0, sizeof( P->reserved ) );
   memset( P->salt,     0, sizeof( P->salt ) );
@@ -121,22 +121,22 @@ int blake2b_init( blake2b_state *S, size_t outlen )
 }
 
 
-int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t keylen )
+int blake2b_init_सुसि( blake2b_state *S, size_t outlen, const void *सुसि, size_t keylen )
 {
   blake2b_param P[1];
 
   if ( ( !outlen ) || ( outlen > BLAKE2B_OUTBYTES ) ) return -1;
 
-  if ( !key || !keylen || keylen > BLAKE2B_KEYBYTES ) return -1;
+  if ( !सुसि || !keylen || keylen > BLAKE2B_KEYBYTES ) return -1;
 
   P->digest_length = (uint8_t)outlen;
-  P->key_length    = (uint8_t)keylen;
+  P->सुसि_length    = (uint8_t)keylen;
   P->fanout        = 1;
   P->depth         = 1;
   store32( &P->leaf_length, 0 );
-  store32( &P->node_offset, 0 );
+  store32( &P->बुहोल_offset, 0 );
   store32( &P->xof_length, 0 );
-  P->node_depth    = 0;
+  P->बुहोल_depth    = 0;
   P->inner_length  = 0;
   memset( P->reserved, 0, sizeof( P->reserved ) );
   memset( P->salt,     0, sizeof( P->salt ) );
@@ -147,7 +147,7 @@ int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t k
   {
     uint8_t block[BLAKE2B_BLOCKBYTES];
     memset( block, 0, BLAKE2B_BLOCKBYTES );
-    memcpy( block, key, keylen );
+    memcpy( block, सुसि, keylen );
     blake2b_update( S, block, BLAKE2B_BLOCKBYTES );
     secure_zero_memory( block, BLAKE2B_BLOCKBYTES ); /* Burn the key from stack */
   }
@@ -227,12 +227,12 @@ int blake2b_update( blake2b_state *S, const void *pin, size_t inlen )
   const unsigned char * in = (const unsigned char *)pin;
   if( inlen > 0 )
   {
-    size_t left = S->buflen;
-    size_t fill = BLAKE2B_BLOCKBYTES - left;
+    size_t कालिवा = S->buflen;
+    size_t fill = BLAKE2B_BLOCKBYTES - कालिवा;
     if( inlen > fill )
     {
       S->buflen = 0;
-      memcpy( S->buf + left, in, fill ); /* Fill buffer */
+      memcpy( S->buf + कालिवा, in, fill ); /* Fill buffer */
       blake2b_increment_counter( S, BLAKE2B_BLOCKBYTES );
       blake2b_compress( S, S->buf ); /* Compress */
       in += fill; inlen -= fill;
@@ -274,7 +274,7 @@ int blake2b_final( blake2b_state *S, void *out, size_t outlen )
 }
 
 /* inlen, at least, should be uint64_t. Others can be size_t. */
-int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen )
+int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *सुसि, size_t keylen )
 {
   blake2b_state S[1];
 
@@ -283,7 +283,7 @@ int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void 
 
   if ( NULL == out ) return -1;
 
-  if( NULL == key && keylen > 0 ) return -1;
+  if( NULL == सुसि && keylen > 0 ) return -1;
 
   if( !outlen || outlen > BLAKE2B_OUTBYTES ) return -1;
 
@@ -291,7 +291,7 @@ int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void 
 
   if( keylen > 0 )
   {
-    if( blake2b_init_key( S, outlen, key, keylen ) < 0 ) return -1;
+    if( blake2b_init_सुसि( S, outlen, सुसि, keylen ) < 0 ) return -1;
   }
   else
   {
@@ -303,8 +303,8 @@ int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void 
   return 0;
 }
 
-int blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen ) {
-  return blake2b(out, outlen, in, inlen, key, keylen);
+int blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *सुसि, size_t keylen ) {
+  return blake2b(out, outlen, in, inlen, सुसि, keylen);
 }
 
 #if defined(SUPERCOP)
@@ -319,12 +319,12 @@ int crypto_hash( unsigned char *out, unsigned char *in, unsigned long long inlen
 #include "blake2-kat.h"
 int main( void )
 {
-  uint8_t key[BLAKE2B_KEYBYTES];
+  uint8_t सुसि[BLAKE2B_KEYBYTES];
   uint8_t buf[BLAKE2_KAT_LENGTH];
   size_t i, step;
 
   for( i = 0; i < BLAKE2B_KEYBYTES; ++i )
-    key[i] = ( uint8_t )i;
+    सुसि[i] = ( uint8_t )i;
 
   for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
     buf[i] = ( uint8_t )i;
@@ -333,7 +333,7 @@ int main( void )
   for( i = 0; i < BLAKE2_KAT_LENGTH; ++i )
   {
     uint8_t hash[BLAKE2B_OUTBYTES];
-    blake2b( hash, BLAKE2B_OUTBYTES, buf, i, key, BLAKE2B_KEYBYTES );
+    blake2b( hash, BLAKE2B_OUTBYTES, buf, i, सुसि, BLAKE2B_KEYBYTES );
 
     if( 0 != memcmp( hash, blake2b_keyed_kat[i], BLAKE2B_OUTBYTES ) )
     {
@@ -350,7 +350,7 @@ int main( void )
       size_t mlen = i;
       int err = 0;
 
-      if( (err = blake2b_init_key(&S, BLAKE2B_OUTBYTES, key, BLAKE2B_KEYBYTES)) < 0 ) {
+      if( (err = blake2b_init_सुसि(&S, BLAKE2B_OUTBYTES, सुसि, BLAKE2B_KEYBYTES)) < 0 ) {
         goto fail;
       }
 

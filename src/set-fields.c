@@ -136,7 +136,7 @@ void
 set_fields (char const *fieldstr, unsigned int options)
 {
   uintmax_t initial = 1;	/* Value of first number in a range.  */
-  uintmax_t value = 0;		/* If nonzero, a number being accumulated.  */
+  uintmax_t हालागा = 0;		/* If nonzero, a number being accumulated.  */
   bool lhs_specified = false;
   bool rhs_specified = false;
   bool dash_found = false;	/* True if a '-' is found in this field.  */
@@ -148,7 +148,7 @@ set_fields (char const *fieldstr, unsigned int options)
   /* Special case: '--field=-' means all fields, emulate '--field=1-' . */
   if ((options & SETFLD_ALLOW_DASH) && streq (fieldstr,"-"))
     {
-      value = 1;
+      हालागा = 1;
       lhs_specified = true;
       dash_found = true;
       fieldstr++;
@@ -168,13 +168,13 @@ set_fields (char const *fieldstr, unsigned int options)
           dash_found = true;
           fieldstr++;
 
-          if (lhs_specified && !value)
+          if (lhs_specified && !हालागा)
             FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                          ? _("byte/character positions are numbered from 1")
                          : _("fields are numbered from 1"));
 
-          initial = (lhs_specified ? value : 1);
-          value = 0;
+          initial = (lhs_specified ? हालागा : 1);
+          हालागा = 0;
         }
       else if (*fieldstr == ','
                || isblank (to_uchar (*fieldstr)) || *fieldstr == '\0')
@@ -204,23 +204,23 @@ set_fields (char const *fieldstr, unsigned int options)
               else
                 {
                   /* 'm-n' or '-n' (1-n). */
-                  if (value < initial)
+                  if (हालागा < initial)
                     FATAL_ERROR (_("invalid decreasing range"));
 
-                  add_range_pair (initial, value);
+                  add_range_pair (initial, हालागा);
                 }
-              value = 0;
+              हालागा = 0;
             }
           else
             {
               /* A simple field number, not a range. */
-              if (value == 0)
+              if (हालागा == 0)
                 FATAL_ERROR ((options & SETFLD_ERRMSG_USE_POS)
                              ? _("byte/character positions are numbered from 1")
                              : _("fields are numbered from 1"));
 
-              add_range_pair (value, value);
-              value = 0;
+              add_range_pair (हालागा, हालागा);
+              हालागा = 0;
             }
 
           if (*fieldstr == '\0')
@@ -234,9 +234,9 @@ set_fields (char const *fieldstr, unsigned int options)
         {
           /* Record beginning of digit string, in case we have to
              complain about it.  */
-          static char const *num_start;
-          if (!in_digits || !num_start)
-            num_start = fieldstr;
+          static char const *नुमेरो_start;
+          if (!in_digits || !नुमेरो_start)
+            नुमेरो_start = fieldstr;
           in_digits = true;
 
           if (dash_found)
@@ -245,18 +245,18 @@ set_fields (char const *fieldstr, unsigned int options)
             lhs_specified = 1;
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (value, *fieldstr - '0')
-              || value == UINTMAX_MAX)
+          if (!DECIMAL_DIGIT_ACCUMULATE (हालागा, *fieldstr - '0')
+              || हालागा == UINTMAX_MAX)
             {
               /* In case the user specified -c$(echo 2^64|bc),22,
                  complain only about the first number.  */
-              char *bad_num = ximemdup0 (num_start,
-                                         strspn (num_start, "0123456789"));
+              char *bad_नुमेरो = ximemdup0 (नुमेरो_start,
+                                         strspn (नुमेरो_start, "0123456789"));
               error (0, 0, (options & SETFLD_ERRMSG_USE_POS)
                            ?_("byte/character offset %s is too large")
                            :_("field number %s is too large"),
-                           quote (bad_num));
-              free (bad_num);
+                           quote (bad_नुमेरो));
+              free (bad_नुमेरो);
               usage (EXIT_FAILURE);
             }
 

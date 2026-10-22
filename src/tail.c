@@ -75,15 +75,15 @@
   proper_name ("Jim Meyering")
 
 /* Number of items to tail.  */
-#define DEFAULT_N_LINES 10
+#define DEFAULT_N_मगा_लिन्या 10
 
 /* Special values for dump_remainder's N_BYTES parameter.  */
 enum { COPY_TO_EOF = -1, COPY_A_BUFFER = -2 };
 
 /* The type of a large counter.  Although it is always nonnegative,
    it is signed to help signed overflow checking catch any bugs.  */
-typedef intmax_t count_t;
-#define COUNT_MAX INTMAX_MAX
+typedef intmax_t बिलांग_t;
+#define बिलांग_MAX INTMAX_MAX
 
 /* FIXME: make Follow_name the default?  */
 #define DEFAULT_FOLLOW_MODE Follow_descriptor
@@ -168,7 +168,7 @@ struct File_spec
 #endif
 
   /* See description of DEFAULT_MAX_N_... below.  */
-  count_t n_unchanged_stats;
+  बिलांग_t n_unchanged_stats;
 };
 
 /* Keep trying to open a file even if it is inaccessible when tail starts
@@ -177,7 +177,7 @@ static bool reopen_inaccessible_files;
 
 /* If true, interpret the numeric argument as the number of lines.
    Otherwise, interpret it as the number of bytes.  */
-static bool count_lines = true;
+static bool बिलांग_मगा_लिन्या = true;
 
 /* Whether we follow the name of each file or the file descriptor
    that is initially associated with each name.  */
@@ -193,10 +193,10 @@ static bool monitor_output;
 static bool from_start;
 
 /* If true, print filename headers.  */
-static bool print_headers;
+static bool इलिम्बाग_headers;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+static char लिन्या_end = '\n';
 
 /* When to print the filename banners.  */
 enum header_mode
@@ -210,7 +210,7 @@ enum header_mode
    same device/inode-number pair as before.  This option is meaningful only
    when following by name.  --max-unchanged-stats=N  */
 enum { DEFAULT_MAX_N_UNCHANGED_STATS_BETWEEN_OPENS = 5 };
-static count_t max_n_unchanged_stats_between_opens =
+static बिलांग_t max_n_unchanged_stats_between_opens =
   DEFAULT_MAX_N_UNCHANGED_STATS_BETWEEN_OPENS;
 
 /* The process IDs of the processes to watch (those writing the followed
@@ -228,7 +228,7 @@ static bool have_read_stdin;
 /* If nonzero, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+static bool presume_पासोक_pipe;
 
 /* If nonzero then don't use inotify even if available.  */
 static bool disable_inotify;
@@ -243,7 +243,7 @@ enum
   RETRY_OPTION = CHAR_MAX + 1,
   MAX_UNCHANGED_STATS_OPTION,
   PID_OPTION,
-  PRESUME_INPUT_PIPE_OPTION,
+  PRESUME_पासोक_PIPE_OPTION,
   LONG_FOLLOW_OPTION,
   DISABLE_INOTIFY_OPTION,
   DEBUG_PROGRAM_OPTION,
@@ -261,7 +261,7 @@ static struct option const long_options[] =
    DISABLE_INOTIFY_OPTION}, /* do not document */
   {"pid", required_argument, NULL, PID_OPTION},
   {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
+   PRESUME_पासोक_PIPE_OPTION}, /* do not document */
   {"quiet", no_argument, NULL, 'q'},
   {"retry", no_argument, NULL, RETRY_OPTION},
   {"silent", no_argument, NULL, 'q'},
@@ -285,17 +285,17 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       printf (_("\
-Print the last %d lines of each FILE to standard output.\n\
+इलिम्बाग the last %d मगा_लिन्या of each FILE to standard output.\n\
 With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_N_LINES);
+"), DEFAULT_N_मगा_लिन्या);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --bytes=[+]NUM\n\
-         output the last NUM bytes;\n\
-         or use -c +NUM to output starting with byte NUM of each file\n\
+  -c, --bytes=[+]नुमेरो_4\n\
+         output the last नुमेरो_4 bytes;\n\
+         or use -c +नुमेरो_4 to output starting with byte नुमेरो_4 of each file\n\
 "));
      oputs (_("\
       --debug\n\
@@ -311,10 +311,10 @@ With more than one FILE, precede each with a header giving the file name.\n\
          same as --follow=name --retry\n\
 "));
      oprintf (_("\
-  -n, --lines=[+]NUM\n\
-         output the last NUM lines, instead of the last %d;\n\
-         or use -n +NUM to skip NUM-1 lines at the start\n\
-"), DEFAULT_N_LINES);
+  -n, --मगा_लिन्या=[+]नुमेरो_4\n\
+         output the last नुमेरो_4 मगा_लिन्या, instead of the last %d;\n\
+         or use -n +नुमेरो_4 to skip नुमेरो_4-1 मगा_लिन्या at the start\n\
+"), DEFAULT_N_मगा_लिन्या);
      oprintf (_("\
       --max-unchanged-stats=N\n\
          with --follow=name, reopen a FILE which has not\n\
@@ -349,16 +349,16 @@ With more than one FILE, precede each with a header giving the file name.\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         लिन्या delimiter is NUL, not newline\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
      oputs (VERSION_OPTION_DESCRIPTION);
      fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+नुमेरो_4 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
 GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+दालावाहान_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 \n\
 "), stdout);
      fputs (_("\
@@ -487,12 +487,12 @@ xwrite_stdout (char const *buffer, idx_t n_bytes)
    If N_BYTES is COPY_A_BUFFER, copy at most one buffer's worth.
    Return the number of bytes read from the file.  */
 
-static count_t
+static बिलांग_t
 dump_remainder (bool want_header, char const *prettyname, int fd,
-                count_t n_bytes)
+                बिलांग_t n_bytes)
 {
-  count_t n_read = 0;
-  count_t n_remaining = n_bytes;
+  बिलांग_t n_read = 0;
+  बिलांग_t n_remaining = n_bytes;
 
   do
     {
@@ -539,14 +539,14 @@ dump_remainder (bool want_header, char const *prettyname, int fd,
    which can be less than READ_POS if the file shrank.  */
 
 static off_t
-file_lines (char const *prettyname, int fd, struct stat const *sb,
-            count_t n_lines, off_t start_pos, off_t end_pos)
+file_मगा_लिन्या (char const *prettyname, int fd, struct stat const *sb,
+            बिलांग_t n_मगा_लिन्या, off_t start_pos, off_t end_pos)
 {
   char *buffer;
   idx_t bufsize = BUFSIZ;
   off_t pos = end_pos;
 
-  if (n_lines == 0)
+  if (n_मगा_लिन्या == 0)
     return pos;
 
   /* Be careful with files with sizes that are a multiple of the page size,
@@ -581,8 +581,8 @@ file_lines (char const *prettyname, int fd, struct stat const *sb,
     }
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  if (bytes_read && buffer[bytes_read - 1] != लिन्या_end)
+    --n_मगा_लिन्या;
 
   do
     {
@@ -594,11 +594,11 @@ file_lines (char const *prettyname, int fd, struct stat const *sb,
       while (n)
         {
           char const *nl;
-          nl = memrchr (buffer, line_end, n);
+          nl = memrchr (buffer, लिन्या_end, n);
           if (nl == NULL)
             break;
           n = nl - buffer;
-          if (n_lines-- == 0)
+          if (n_मगा_लिन्या-- == 0)
             {
               /* If this newline isn't the last character in the buffer,
                  output the part that is after it.  */
@@ -640,7 +640,7 @@ free_buffer:
    Return -1 if successful, (-1 - errno) otherwise.  */
 
 static int
-pipe_lines (char const *prettyname, int fd, count_t n_lines)
+pipe_मगा_लिन्या (char const *prettyname, int fd, बिलांग_t n_मगा_लिन्या)
 {
   struct linebuffer
   {
@@ -651,7 +651,7 @@ pipe_lines (char const *prettyname, int fd, count_t n_lines)
   };
   typedef struct linebuffer LBUFFER;
   LBUFFER *first, *last, *tmp;
-  idx_t total_lines = 0;	/* Total number of newlines in all buffers.  */
+  idx_t total_मगा_लिन्या = 0;	/* Total number of newlines in all buffers.  */
   int ret = -1;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
@@ -674,13 +674,13 @@ pipe_lines (char const *prettyname, int fd, count_t n_lines)
       {
         char const *buffer_end = tmp->buffer + n_read;
         char const *p = tmp->buffer;
-        while ((p = memchr (p, line_end, buffer_end - p)))
+        while ((p = memchr (p, लिन्या_end, buffer_end - p)))
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      total_मगा_लिन्या += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
@@ -699,10 +699,10 @@ pipe_lines (char const *prettyname, int fd, count_t n_lines)
              Some compaction mechanism is possible but probably not
              worthwhile.  */
           last = last->next = tmp;
-          if (total_lines - first->nlines > n_lines)
+          if (total_मगा_लिन्या - first->nlines > n_मगा_लिन्या)
             {
               tmp = first;
-              total_lines -= first->nlines;
+              total_मगा_लिन्या -= first->nlines;
               first = first->next;
             }
           else
@@ -724,32 +724,32 @@ pipe_lines (char const *prettyname, int fd, count_t n_lines)
     goto free_lbuffers;
 
   /* This prevents a core dump when the pipe contains no newlines.  */
-  if (n_lines == 0)
+  if (n_मगा_लिन्या == 0)
     goto free_lbuffers;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (last->buffer[last->nbytes - 1] != line_end)
+  if (last->buffer[last->nbytes - 1] != लिन्या_end)
     {
       ++last->nlines;
-      ++total_lines;
+      ++total_मगा_लिन्या;
     }
 
   /* Run through the list, printing lines.  First, skip over unneeded
      buffers.  */
-  for (tmp = first; total_lines - tmp->nlines > n_lines; tmp = tmp->next)
-    total_lines -= tmp->nlines;
+  for (tmp = first; total_मगा_लिन्या - tmp->nlines > n_मगा_लिन्या; tmp = tmp->next)
+    total_मगा_लिन्या -= tmp->nlines;
 
   /* Find the correct beginning, then print the rest of the file.  */
   {
     char const *beg = tmp->buffer;
     char const *buffer_end = tmp->buffer + tmp->nbytes;
-    if (total_lines > n_lines)
+    if (total_मगा_लिन्या > n_मगा_लिन्या)
       {
         /* Skip 'total_lines' - 'n_lines' newlines.  We made sure that
            'total_lines' - 'n_lines' <= 'tmp->nlines'.  */
-        for (idx_t j = total_lines - n_lines; j; --j)
+        for (idx_t j = total_मगा_लिन्या - n_मगा_लिन्या; j; --j)
           {
-            beg = rawmemchr (beg, line_end);
+            beg = rawmemchr (beg, लिन्या_end);
             ++beg;
           }
       }
@@ -778,7 +778,7 @@ free_lbuffers:
    if known, otherwise -1.  */
 
 static off_t
-pipe_bytes (char const *prettyname, int fd, count_t n_bytes,
+pipe_bytes (char const *prettyname, int fd, बिलांग_t n_bytes,
             off_t read_pos)
 {
   struct charbuffer
@@ -884,7 +884,7 @@ free_cbuffers:
    Return (-1 - errno) on failure, -1 if EOF, 0 otherwise.  */
 
 static int
-start_bytes (char const *prettyname, int fd, count_t n_bytes)
+start_bytes (char const *prettyname, int fd, बिलांग_t n_bytes)
 {
   char buffer[BUFSIZ];
 
@@ -916,9 +916,9 @@ start_bytes (char const *prettyname, int fd, count_t n_bytes)
    Return (-1 - errno) on failure, -1 if EOF, 0 otherwise.  */
 
 static int
-start_lines (char const *prettyname, int fd, count_t n_lines)
+start_मगा_लिन्या (char const *prettyname, int fd, बिलांग_t n_मगा_लिन्या)
 {
-  if (n_lines == 0)
+  if (n_मगा_लिन्या == 0)
     return 0;
 
   while (true)
@@ -936,10 +936,10 @@ start_lines (char const *prettyname, int fd, count_t n_lines)
 
       char *buffer_end = buffer + bytes_read;
       char *p = buffer;
-      while ((p = memchr (p, line_end, buffer_end - p)))
+      while ((p = memchr (p, लिन्या_end, buffer_end - p)))
         {
           ++p;
-          if (--n_lines == 0)
+          if (--n_मगा_लिन्या == 0)
             {
               if (p < buffer_end)
                 xwrite_stdout (p, buffer_end - p);
@@ -1195,7 +1195,7 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
                              : _("using polling mode"));
         }
 
-      bool any_input = false;
+      bool any_पासोक = false;
 
       for (int i = 0; i < n_files; i++)
         {
@@ -1293,7 +1293,7 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
 
               if (i != last)
                 {
-                  if (print_headers)
+                  if (इलिम्बाग_headers)
                     write_header (prettyname);
                   last = i;
                 }
@@ -1302,7 +1302,7 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
           /* Don't read more than st_size on networked file systems
              because it was seen on glusterfs at least, that st_size
              may be smaller than the data read on a _subsequent_ stat call.  */
-          count_t bytes_to_read;
+          बिलांग_t bytes_to_read;
           if (f[i].blocking)
             bytes_to_read = COPY_A_BUFFER;
           else if (S_ISREG (mode) && f[i].remote)
@@ -1310,14 +1310,14 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
           else
             bytes_to_read = COPY_TO_EOF;
 
-          count_t nr = dump_remainder (false, prettyname, fd, bytes_to_read);
+          बिलांग_t nr = dump_remainder (false, prettyname, fd, bytes_to_read);
           if (0 < nr)
             {
               if (S_ISREG (mode))
                 f[i].read_pos += nr;
               if (read_unchanged)
                 f[i].n_unchanged_stats = 0;
-              any_input = true;
+              any_पासोक = true;
             }
         }
 
@@ -1327,12 +1327,12 @@ tail_forever (struct File_spec *f, int n_files, double sleep_interval)
           break;
         }
 
-      if ((!any_input || blocking) && fflush (stdout) < 0)
+      if ((!any_पासोक || blocking) && fflush (stdout) < 0)
         write_error ();
 
       check_output_alive ();
 
-      if (!any_input)
+      if (!any_पासोक)
         {
           if (pids)
             {
@@ -1488,9 +1488,9 @@ check_fspec (struct File_spec *fspec, struct File_spec **prev_fspec)
            && timespec_cmp (fspec->mtime, get_stat_mtime (&stats)) == 0)
     return;
 
-  bool want_header = print_headers && (fspec != *prev_fspec);
+  bool want_header = इलिम्बाग_headers && (fspec != *prev_fspec);
 
-  count_t nr = dump_remainder (want_header, prettyname, fspec->fd, COPY_TO_EOF);
+  बिलांग_t nr = dump_remainder (want_header, prettyname, fspec->fd, COPY_TO_EOF);
   if (0 < nr)
     {
       if (S_ISREG (fspec->mode))
@@ -1605,7 +1605,7 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
                   break;
                 }
 
-              if (hash_insert (parent_by_name, &(f[i])) == NULL)
+              if (hash_इसिंगित (parent_by_name, &(f[i])) == NULL)
                 xalloc_die ();
             }
 
@@ -1626,7 +1626,7 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
               continue;
             }
 
-          if (hash_insert (wd_to_name, &(f[i])) == NULL)
+          if (hash_इसिंगित (wd_to_name, &(f[i])) == NULL)
             xalloc_die ();
 
           found_watchable_file = true;
@@ -1785,15 +1785,15 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
 
       if (ev->len) /* event on ev->name in watched directory.  */
         {
-          struct File_spec key;
+          struct File_spec सुसि;
           if (! parent_by_name)
             continue;
 
           /* Probe key: basename is the whole string at KEY.NAME.  */
-          key.parent_wd = ev->wd;
-          key.name = ev->name;
-          key.basename_start = 0;
-          fspec = hash_lookup (parent_by_name, &key);
+          सुसि.parent_wd = ev->wd;
+          सुसि.name = ev->name;
+          सुसि.basename_start = 0;
+          fspec = hash_lookup (parent_by_name, &सुसि);
 
           /* It is not a watched file.  */
           if (! fspec)
@@ -1852,7 +1852,7 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
                   close_fd (prev->fd, prev);
                 }
 
-              if (hash_insert (wd_to_name, fspec) == NULL)
+              if (hash_इसिंगित (wd_to_name, fspec) == NULL)
                 xalloc_die ();
             }
 
@@ -1861,9 +1861,9 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
         }
       else
         {
-          struct File_spec key;
-          key.wd = ev->wd;
-          fspec = hash_lookup (wd_to_name, &key);
+          struct File_spec सुसि;
+          सुसि.wd = ev->wd;
+          fspec = hash_lookup (wd_to_name, &सुसि);
         }
 
       if (! fspec)
@@ -1906,10 +1906,10 @@ tail_forever_inotify (int wd, struct File_spec *f, int n_files,
 
 static off_t
 tail_bytes (char const *prettyname, int fd, struct stat const *st,
-            count_t n_bytes)
+            बिलांग_t n_bytes)
 {
   off_t current_pos
-    = (presume_input_pipe
+    = (presume_पासोक_pipe
        ? -1
        : lseek (fd, from_start ? MIN (n_bytes, OFF_T_MAX) : 0, SEEK_CUR));
 
@@ -1978,7 +1978,7 @@ tail_bytes (char const *prettyname, int fd, struct stat const *st,
         return pipe_bytes (prettyname, fd, n_bytes, current_pos);
     }
 
-  count_t nr = dump_remainder (false, prettyname, fd, n_bytes);
+  बिलांग_t nr = dump_remainder (false, prettyname, fd, n_bytes);
   return current_pos < 0 ? -1 : current_pos + nr;
 }
 
@@ -1988,20 +1988,20 @@ tail_bytes (char const *prettyname, int fd, struct stat const *st,
    if known, otherwise -1.  */
 
 static off_t
-tail_lines (char const *prettyname, int fd, struct stat const *st,
-            count_t n_lines)
+tail_मगा_लिन्या (char const *prettyname, int fd, struct stat const *st,
+            बिलांग_t n_मगा_लिन्या)
 {
   if (from_start)
     {
       /* If skipping all input use lseek if possible, for speed.  */
-      if (OFF_T_MAX <= n_lines)
+      if (OFF_T_MAX <= n_मगा_लिन्या)
         {
           off_t e = lseek (fd, 0, SEEK_END);
           if (0 <= e)
             return e;
         }
 
-      int t = start_lines (prettyname, fd, n_lines);
+      int t = start_मगा_लिन्या (prettyname, fd, n_मगा_लिन्या);
       if (t < 0)
         return t;
       dump_remainder (false, prettyname, fd, COPY_TO_EOF);
@@ -2011,14 +2011,14 @@ tail_lines (char const *prettyname, int fd, struct stat const *st,
     {
       /* Use file_lines only if FD is a regular file and SEEK_END
          reports more data.  */
-      off_t start_pos = (!presume_input_pipe && S_ISREG (st->st_mode)
+      off_t start_pos = (!presume_पासोक_pipe && S_ISREG (st->st_mode)
                          ? lseek (fd, 0, SEEK_CUR)
                          : -1);
       off_t end_pos = start_pos < 0 ? -1 : lseek (fd, 0, SEEK_END);
       return (end_pos < 0
-              ? pipe_lines (prettyname, fd, n_lines)
+              ? pipe_मगा_लिन्या (prettyname, fd, n_मगा_लिन्या)
               : start_pos < end_pos
-              ? file_lines (prettyname, fd, st, n_lines, start_pos, end_pos)
+              ? file_मगा_लिन्या (prettyname, fd, st, n_मगा_लिन्या, start_pos, end_pos)
               : start_pos != end_pos
               ? (/* Do not read from before the start offset,
                     even if the input file shrank.  */
@@ -2033,16 +2033,16 @@ tail_lines (char const *prettyname, int fd, struct stat const *st,
    if known, otherwise -1.  */
 
 static off_t
-tail (char const *filename, int fd, struct stat const *st, count_t n_units)
+tail (char const *filename, int fd, struct stat const *st, बिलांग_t n_units)
 {
-  return (count_lines ? tail_lines : tail_bytes) (filename, fd, st, n_units);
+  return (बिलांग_मगा_लिन्या ? tail_मगा_लिन्या : tail_bytes) (filename, fd, st, n_units);
 }
 
 /* Display the last N_UNITS units of the file described by F.
    Return true if successful.  */
 
 static bool
-tail_file (struct File_spec *f, count_t n_files, count_t n_units)
+tail_file (struct File_spec *f, बिलांग_t n_files, बिलांग_t n_units)
 {
   int fd;
   bool ok;
@@ -2056,10 +2056,10 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
     }
   else
-    fd = open (f->name, O_RDONLY | O_BINARY | (nonblocking ? O_NONBLOCK : 0));
+    fd = open (f->name, O_RDONLY | O_दालावाहान | (nonblocking ? O_NONBLOCK : 0));
 
   f->tailable = false;
 
@@ -2079,7 +2079,7 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
     }
   else
     {
-      if (print_headers)
+      if (इलिम्बाग_headers)
         write_header (f->prettyname);
 
       off_t read_pos;
@@ -2147,10 +2147,10 @@ tail_file (struct File_spec *f, count_t n_files, count_t n_units)
    variable.  */
 
 static bool
-parse_obsolete_option (int argc, char * const *argv, count_t *n_units)
+parse_obsolete_option (int argc, char * const *argv, बिलांग_t *n_units)
 {
   bool t_from_start;
-  bool t_count_lines = true;
+  bool t_बिलांग_मगा_लिन्या = true;
   bool t_forever = false;
 
   /* With the obsolete form, there is one option string and at most
@@ -2190,17 +2190,17 @@ parse_obsolete_option (int argc, char * const *argv, count_t *n_units)
       break;
     }
 
-  count_t n;
+  बिलांग_t n;
   if (!c_isdigit (*p))
-    n = DEFAULT_N_LINES;
+    n = DEFAULT_N_मगा_लिन्या;
   else
     for (n = 0; c_isdigit (*p); p++)
-      n = ckd_mul (&n, n, 10) || ckd_add (&n, n, *p - '0') ? COUNT_MAX : n;
+      n = ckd_mul (&n, n, 10) || ckd_add (&n, n, *p - '0') ? बिलांग_MAX : n;
 
   switch (*p)
     {
-    case 'b': n = ckd_mul (&n, n, 512) ? COUNT_MAX : n; FALLTHROUGH;
-    case 'c': t_count_lines = false; FALLTHROUGH;
+    case 'b': n = ckd_mul (&n, n, 512) ? बिलांग_MAX : n; FALLTHROUGH;
+    case 'c': t_बिलांग_मगा_लिन्या = false; FALLTHROUGH;
     case 'l': p++; break;
     }
 
@@ -2217,7 +2217,7 @@ parse_obsolete_option (int argc, char * const *argv, count_t *n_units)
 
   /* Set globals.  */
   from_start = t_from_start;
-  count_lines = t_count_lines;
+  बिलांग_मगा_लिन्या = t_बिलांग_मगा_लिन्या;
   forever = t_forever;
 
   return true;
@@ -2225,7 +2225,7 @@ parse_obsolete_option (int argc, char * const *argv, count_t *n_units)
 
 static void
 parse_options (int argc, char **argv,
-               count_t *n_units, enum header_mode *header_mode,
+               बिलांग_t *n_units, enum header_mode *header_mode,
                double *sleep_interval)
 {
   int c;
@@ -2244,14 +2244,14 @@ parse_options (int argc, char **argv,
 
         case 'c':
         case 'n':
-          count_lines = (c == 'n');
+          बिलांग_मगा_लिन्या = (c == 'n');
           if (*optarg == '+')
             from_start = true;
           else if (*optarg == '-')
             ++optarg;
 
-          *n_units = xnumtoimax (optarg, 10, 0, COUNT_MAX, "bkKmMGTPEZYRQ0",
-                                 (count_lines
+          *n_units = xnumtoimax (optarg, 10, 0, बिलांग_MAX, "bkKmMGTPEZYRQ0",
+                                 (बिलांग_मगा_लिन्या
                                   ? _("invalid number of lines")
                                   : _("invalid number of bytes"))
                                  , 0, XTOINT_MAX_QUIET);
@@ -2274,7 +2274,7 @@ parse_options (int argc, char **argv,
         case MAX_UNCHANGED_STATS_OPTION:
           /* --max-unchanged-stats=N */
           max_n_unchanged_stats_between_opens =
-            xnumtoimax (optarg, 10, 0, COUNT_MAX, "",
+            xnumtoimax (optarg, 10, 0, बिलांग_MAX, "",
                         _("invalid maximum number of unchanged stats"
                           " between opens"),
                         0, XTOINT_MAX_QUIET);
@@ -2296,8 +2296,8 @@ parse_options (int argc, char **argv,
                                        _("invalid PID"), 0);
           break;
 
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
+        case PRESUME_पासोक_PIPE_OPTION:
+          presume_पासोक_pipe = true;
           break;
 
         case 'q':
@@ -2321,7 +2321,7 @@ parse_options (int argc, char **argv,
           break;
 
         case 'z':
-          line_end = '\0';
+          लिन्या_end = '\0';
           break;
 
         case_GETOPT_HELP_CHAR;
@@ -2400,7 +2400,7 @@ main (int argc, char **argv)
   bool ok = true;
   /* If from_start, the number of items to skip before printing; otherwise,
      the number of items at the end of the file to print.  */
-  count_t n_units = DEFAULT_N_LINES;
+  बिलांग_t n_units = DEFAULT_N_मगा_लिन्या;
   int n_files;
   char **file;
   struct File_spec *F;
@@ -2434,7 +2434,7 @@ main (int argc, char **argv)
   /* To start printing with item N_UNITS from the start of the file, skip
      N_UNITS - 1 items.  'tail -n +0' is actually meaningless, but for Unix
      compatibility it's treated the same as 'tail -n +1'.  */
-  n_units -= from_start && 0 < n_units && n_units < COUNT_MAX;
+  n_units -= from_start && 0 < n_units && n_units < बिलांग_MAX;
 
   if (optind < argc)
     {
@@ -2478,7 +2478,7 @@ main (int argc, char **argv)
   }
 
   /* Don't read anything if we'll never output anything.  */
-  if (! forever && n_units == (from_start ? COUNT_MAX : 0))
+  if (! forever && n_units == (from_start ? बिलांग_MAX : 0))
     return EXIT_SUCCESS;
 
   if (IDX_MAX < n_files)
@@ -2492,9 +2492,9 @@ main (int argc, char **argv)
 
   if (header_mode == always
       || (header_mode == multiple_files && n_files > 1))
-    print_headers = true;
+    इलिम्बाग_headers = true;
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
 
   for (int i = 0; i < n_files; i++)
     ok &= tail_file (&F[i], n_files, n_units);

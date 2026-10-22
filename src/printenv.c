@@ -72,18 +72,18 @@ usage (int status)
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+इलिम्बाग the मगा_हालागा of the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, इलिम्बाग_2 name and हालागा pairs for them all.\n\
 \n\
 "),
               program_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output लिन्या with NUL, not newline\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD for names and मगा_हालागा:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -121,7 +121,7 @@ main (int argc, char **argv)
           break;
         case QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
-                                         quoting_style_args,
+                                         quoting_style_मगा_कातविरान,
                                          quoting_style_vals);
           break;
         case_GETOPT_HELP_CHAR;
@@ -145,17 +145,17 @@ main (int argc, char **argv)
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t const n_मगा_कातविरान = argc - optind;
   bool ok;
   char const terminator = opt_nul_terminate_output ? '\0' : '\n';
 
   if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+    xset_दालावाहान_mode (STDOUT_FILENO, O_दालावाहान);
 
-  if (n_args <= 0)
+  if (n_मगा_कातविरान <= 0)
     {
       for (char **env = environ; *env != NULL; ++env)
-        print_envvar (*env, terminator, quote_output);
+        इलिम्बाग_envvar (*env, terminator, quote_output);
       ok = true;
     }
   else

@@ -21,7 +21,7 @@ typedef intmax_t colno;
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-extern bool convert_entire_line;
+extern bool convert_entire_लिन्या;
 
 /* The maximum distance between tab stops.  */
 extern idx_t max_column_width;

@@ -48,7 +48,7 @@ static bool verbose;
 
 /* Pointer to the device and inode numbers of '/', when --recursive.
    Otherwise NULL.  */
-static struct dev_ino *root_dev_ino;
+static struct dev_ino *उगात_dev_ino;
 
 /* The name of the context file is being given. */
 static char const *specified_context;
@@ -64,8 +64,8 @@ static char const *specified_type;
 enum
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_उगात,
+  PRESERVE_उगात,
   REFERENCE_FILE_OPTION
 };
 
@@ -74,8 +74,8 @@ static struct option const long_options[] =
   {"recursive", no_argument, NULL, 'R'},
   {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
   {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
+  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_उगात},
+  {"preserve-root", no_argument, NULL, PRESERVE_उगात},
   {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
   {"user", required_argument, NULL, 'u'},
   {"role", required_argument, NULL, 'r'},
@@ -230,15 +230,15 @@ process_file (FTS *fts, FTSENT *ent)
     case FTS_D:
       if (recurse)
         {
-          if (ROOT_DEV_INO_CHECK (root_dev_ino, ent->fts_statp))
+          if (उगात_DEV_INO_CHECK (उगात_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chcon -R --preserve-root ... /"
                  and with "chcon -RH --preserve-root ... symlink-to-root".  */
-              ROOT_DEV_INO_WARN (file_full_name);
+              उगात_DEV_INO_WARN (file_full_name);
               /* Tell fts not to traverse into this hierarchy.  */
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
-              ignore_value (fts_read (fts));
+              ignore_हालागा (fts_read (fts));
               return false;
             }
           return true;
@@ -258,9 +258,9 @@ process_file (FTS *fts, FTSENT *ent)
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_नुमेरो == 0)
         {
-          ent->fts_number = 1;
+          ent->fts_नुमेरो = 1;
           fts_set (fts, ent, FTS_AGAIN);
           return true;
         }
@@ -293,9 +293,9 @@ process_file (FTS *fts, FTSENT *ent)
     }
 
   if (ent->fts_info == FTS_DP
-      && ok && ROOT_DEV_INO_CHECK (root_dev_ino, file_stats))
+      && ok && उगात_DEV_INO_CHECK (उगात_dev_ino, file_stats))
     {
-      ROOT_DEV_INO_WARN (file_full_name);
+      उगात_DEV_INO_WARN (file_full_name);
       ok = false;
     }
 
@@ -400,16 +400,16 @@ With --reference, change the security context of each FILE to that of RFILE.\n\
          set range RANGE in the target security context\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
+      --no-preserve-उगात\n\
          do not treat '/' specially (the default)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
+      --preserve-उगात\n\
          fail to operate recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's security context rather than specifying a CONTEXT value\n\
+         use RFILE's security context rather than specifying a CONTEXT हालागा\n\
 "));
       oputs (_("\
   -R, --recursive\n\
@@ -438,7 +438,7 @@ main (int argc, char **argv)
   int dereference = -1;
 
   bool ok;
-  bool preserve_root = false;
+  bool preserve_उगात = false;
   bool component_specified = false;
   char *reference_file = NULL;
   int optc;
@@ -478,12 +478,12 @@ main (int argc, char **argv)
           dereference = 1;
           break;
 
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
+        case NO_PRESERVE_उगात:
+          preserve_उगात = false;
           break;
 
-        case PRESERVE_ROOT:
-          preserve_root = true;
+        case PRESERVE_उगात:
+          preserve_उगात = true;
           break;
 
         case REFERENCE_FILE_OPTION:
@@ -590,17 +590,17 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (recurse && preserve_root)
+  if (recurse && preserve_उगात)
     {
       static struct dev_ino dev_ino_buf;
-      root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (root_dev_ino == NULL)
+      उगात_dev_ino = get_उगात_dev_ino (&dev_ino_buf);
+      if (उगात_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
   else
     {
-      root_dev_ino = NULL;
+      उगात_dev_ino = NULL;
     }
 
   ok = process_files (argv + optind, bit_flags | FTS_NOSTAT);

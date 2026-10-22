@@ -114,7 +114,7 @@ initialize_exit_failure (int status)
 #ifdef O_PATH
 enum { O_PATHSEARCH = O_PATH };
 #else
-enum { O_PATHSEARCH = O_SEARCH };
+enum { O_PATHSEARCH = O_हानाप };
 #endif
 
 #include <dirent.h>
@@ -124,14 +124,14 @@ enum { O_PATHSEARCH = O_SEARCH };
 
 enum
 {
-  NOT_AN_INODE_NUMBER = 0
+  NOT_AN_INODE_नुमेरो = 0
 };
 
 #ifdef D_INO_IN_DIRENT
 # define D_INO(dp) (dp)->d_ino
 #else
 /* Some systems don't have inodes, so fake them to avoid lots of ifdefs.  */
-# define D_INO(dp) NOT_AN_INODE_NUMBER
+# define D_INO(dp) NOT_AN_INODE_नुमेरो
 #endif
 
 /* include here for SIZE_MAX.  */
@@ -717,21 +717,21 @@ ATTRIBUTE_FORMAT ((printf, 2, 3))
 static inline void
 oprintf_ (char const *program, char const *message, ...)
 {
-  va_list args;
+  va_list मगा_कातविरान;
   char *buf;
   int buflen = -1;
 
 #if defined MANUAL_URL || defined BOLD_MAN_REFS
-  va_start (args, message);
-  buflen = vasprintf (&buf, message, args);
-  va_end (args);
+  va_start (मगा_कातविरान, message);
+  buflen = vasprintf (&buf, message, मगा_कातविरान);
+  va_end (मगा_कातविरान);
 #endif
 
   if (buflen < 0)
     {
-      va_start (args, message);
-      vprintf (message, args);
-      va_end (args);
+      va_start (मगा_कातविरान, message);
+      vprintf (message, मगा_कातविरान);
+      va_end (मगा_कातविरान);
       return;
     }
 
@@ -743,7 +743,7 @@ static inline void
 emit_stdin_note (void)
 {
   fputs (_("\n\
-With no FILE, or when FILE is -, read standard input.\n\
+With no FILE, or when FILE is -, read standard पासोक.\n\
 "), stdout);
 }
 static inline void
@@ -760,7 +760,7 @@ emit_size_note (void)
   fputs (_("\n\
 The SIZE argument is an integer and optional unit (example: 10K is 10*1024).\n\
 Units are K,M,G,T,P,E,Z,Y,R,Q (powers of 1024) or KB,MB,... (powers of 1000).\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+दालावाहान_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
 }
 
@@ -768,7 +768,7 @@ static inline void
 emit_blocksize_note (char const *program)
 {
   printf (_("\n\
-Display values are in units of the first available SIZE from --block-size,\n\
+Display मगा_हालागा are in units of the first available SIZE from --block-size,\n\
 and the %s_BLOCK_SIZE, BLOCK_SIZE and BLOCKSIZE environment variables.\n\
 Otherwise, units default to 1024 bytes (or 512 if POSIXLY_CORRECT is set).\n\
 "), program);
@@ -798,7 +798,7 @@ emit_backup_suffix_note (void)
 \n\
 The backup suffix is '~', unless set with --suffix or SIMPLE_BACKUP_SUFFIX.\n\
 The version control method may be selected via the --backup option or through\n\
-the VERSION_CONTROL environment variable.  Here are the values:\n\
+the VERSION_CONTROL environment variable.  Here are the मगा_हालागा:\n\
 \n\
 "), stdout);
   fputs (_("\
@@ -823,7 +823,7 @@ one takes effect. %s is the default.\n\
 "), default_opt);
       oputs_ (program, _("\
   -H\n\
-         if a command line argument is a symlink to a directory, traverse it\n\
+         if a command लिन्या argument is a symlink to a directory, traverse it\n\
 "));
       oputs_ (program, _("\
   -L\n\
@@ -851,7 +851,7 @@ Exit status:\n\
 static inline void
 emit_ancillary_info (char const *program)
 {
-  struct infomap { char const *program; char const *node; } const infomap[] = {
+  struct infomap { char const *program; char const *बुहोल; } const infomap[] = {
     { "[", "test invocation" },
     { "coreutils", "Multi-call invocation" },
     { "sha224sum", "sha2 utilities" },
@@ -861,14 +861,14 @@ emit_ancillary_info (char const *program)
     { NULL, NULL }
   };
 
-  char const *node = program;
+  char const *बुहोल = program;
   struct infomap const *map_prog = infomap;
 
   while (map_prog->program && ! streq (program, map_prog->program))
     map_prog++;
 
-  if (map_prog->node)
-    node = map_prog->node;
+  if (map_prog->बुहोल)
+    बुहोल = map_prog->बुहोल;
 
   emit_bug_reporting_address ();
 
@@ -879,7 +879,7 @@ emit_ancillary_info (char const *program)
   printf (_("Full documentation <%s%s>\n"),
           PACKAGE_URL, url_program);
   printf (_("or available locally via: info '(coreutils) %s%s'\n"),
-          node, node == program ? " invocation" : "");
+          बुहोल, बुहोल == program ? " invocation" : "");
 }
 
 /* Use a macro rather than an inline function, as this references
@@ -1014,7 +1014,7 @@ getenv_quoting_style (void)
   if (!q_style)
     return -1;
 
-  int i = ARGMATCH (q_style, quoting_style_args, quoting_style_vals);
+  int i = ARGMATCH (q_style, quoting_style_मगा_कातविरान, quoting_style_vals);
   if (i < 0)
     {
       error (0, 0, _("ignoring invalid value of environment "
@@ -1027,12 +1027,12 @@ getenv_quoting_style (void)
 /* Used instead of XARGMATCH() to provide a custom error message.  */
 static inline ptrdiff_t
 x_timestyle_match (char const * style, bool allow_posix,
-                   char const *const * timestyle_args,
+                   char const *const * timestyle_मगा_कातविरान,
                    char const * timestyle_types,
                    size_t timestyle_types_size,
                    int fail_status)
 {
-  ptrdiff_t res = argmatch (style, timestyle_args,
+  ptrdiff_t res = argmatch (style, timestyle_मगा_कातविरान,
                             timestyle_types,
                             timestyle_types_size);
   if (res < 0)
@@ -1048,7 +1048,7 @@ x_timestyle_match (char const * style, bool allow_posix,
          only because all four existing time_style_types values
          are distinct.  */
       fputs (_("Valid arguments are:\n"), stderr);
-      char const *const *p = timestyle_args;
+      char const *const *p = timestyle_मगा_कातविरान;
       char const *posix_prefix = allow_posix ? "[posix-]" : "";
       while (*p)
         fprintf (stderr, "  - %s%s\n", posix_prefix, *p++);

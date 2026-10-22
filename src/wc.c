@@ -57,22 +57,22 @@ static bool debug;
 
 /* Cumulative number of lines, words, chars and bytes in all files so far.
    max_line_length is the maximum over all files processed so far.  */
-static uintmax_t total_lines;
-static uintmax_t total_words;
+static uintmax_t total_मगा_लिन्या;
+static uintmax_t total_मगा_सालिता;
 static uintmax_t total_chars;
 static uintmax_t total_bytes;
-static bool total_lines_overflow;
-static bool total_words_overflow;
+static bool total_मगा_लिन्या_overflow;
+static bool total_मगा_सालिता_overflow;
 static bool total_chars_overflow;
 static bool total_bytes_overflow;
-static intmax_t max_line_length;
+static intmax_t max_लिन्या_length;
 
 /* Which counts to print. */
-static bool print_lines, print_words, print_chars, print_bytes;
-static bool print_linelength;
+static bool इलिम्बाग_मगा_लिन्या, इलिम्बाग_मगा_सालिता, इलिम्बाग_chars, इलिम्बाग_bytes;
+static bool इलिम्बाग_linelength;
 
 /* The print width of each count.  */
-static int number_width;
+static int नुमेरो_width_2;
 
 /* True if we have ever read the standard input. */
 static bool have_read_stdin;
@@ -125,7 +125,7 @@ enum total_type
     total_only,         /* 2: --total=only */
     total_never         /* 3: --total=never */
   };
-static char const *const total_args[] =
+static char const *const total_मगा_कातविरान[] =
 {
   "auto", "always", "only", "never", NULL
 };
@@ -133,7 +133,7 @@ static enum total_type const total_types[] =
 {
   total_auto, total_always, total_only, total_never
 };
-ARGMATCH_VERIFY (total_args, total_types);
+ARGMATCH_VERIFY (total_मगा_कातविरान, total_types);
 static enum total_type total_mode = total_auto;
 
 #ifdef USE_AVX2_WC_LINECOUNT
@@ -194,9 +194,9 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name, program_name);
       fputs (_("\
-Print newline, word, and byte counts for each FILE, and a total line if\n\
+इलिम्बाग newline, word, and byte counts for each FILE, and a total लिन्या if\n\
 more than one FILE is specified.  A word is a nonempty sequence of non white\n\
-space delimited by white space characters or by start or end of input.\n\
+space delimited by white space characters or by start or end of पासोक.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -204,41 +204,41 @@ space delimited by white space characters or by start or end of input.\n\
       fputs (_("\
 \n\
 The options below may be used to select which counts are printed, always in\n\
-the following order: newline, word, character, byte, maximum line length.\n\
+the following order: newline, word, character, byte, maximum लिन्या length.\n\
 "), stdout);
       oputs (_("\
   -c, --bytes\n\
-         print the byte counts\n\
+         इलिम्बाग_2 the byte counts\n\
 "));
       oputs (_("\
   -m, --chars\n\
-         print the character counts\n\
+         इलिम्बाग_2 the character counts\n\
 "));
       oputs (_("\
-  -l, --lines\n\
-         print the newline counts\n\
+  -l, --मगा_लिन्या\n\
+         इलिम्बाग_2 the newline counts\n\
 "));
       oputs (_("\
       --debug\n\
-         indicate what line count acceleration is used\n\
+         indicate what लिन्या बिलांग acceleration is used\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by\n\
+         read पासोक from the files specified by\n\
          NUL-terminated names in file F;\n\
-         If F is -, read names from standard input\n\
+         If F is -, read names from standard पासोक\n\
 "));
       oputs (_("\
-  -L, --max-line-length\n\
-         print the maximum display width\n\
+  -L, --max-लिन्या-length\n\
+         इलिम्बाग_2 the maximum display width\n\
 "));
       oputs (_("\
-  -w, --words\n\
-         print the word counts\n\
+  -w, --मगा_सालिता\n\
+         इलिम्बाग_2 the word counts\n\
 "));
       oputs (_("\
       --total=WHEN\n\
-         when to print a line with total counts;\n\
+         when to इलिम्बाग_2 a लिन्या with total counts;\n\
          WHEN can be: auto, always, only, never\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -260,8 +260,8 @@ maybe_c32isnbspace (char32_t wc)
 /* FILE is the name of the file (or null for standard input)
    associated with the specified counters.  */
 static void
-write_counts (uintmax_t lines,
-              uintmax_t words,
+write_counts (uintmax_t मगा_लिन्या,
+              uintmax_t मगा_सालिता,
               uintmax_t chars,
               uintmax_t bytes,
               intmax_t linelength,
@@ -272,28 +272,28 @@ write_counts (uintmax_t lines,
   char buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
                 INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_lines)
+  if (इलिम्बाग_मगा_लिन्या)
     {
-      printf (format_int, number_width, umaxtostr (lines, buf));
+      printf (format_int, नुमेरो_width_2, umaxtostr (मगा_लिन्या, buf));
       format_int = format_sp_int;
     }
-  if (print_words)
+  if (इलिम्बाग_मगा_सालिता)
     {
-      printf (format_int, number_width, umaxtostr (words, buf));
+      printf (format_int, नुमेरो_width_2, umaxtostr (मगा_सालिता, buf));
       format_int = format_sp_int;
     }
-  if (print_chars)
+  if (इलिम्बाग_chars)
     {
-      printf (format_int, number_width, umaxtostr (chars, buf));
+      printf (format_int, नुमेरो_width_2, umaxtostr (chars, buf));
       format_int = format_sp_int;
     }
-  if (print_bytes)
+  if (इलिम्बाग_bytes)
     {
-      printf (format_int, number_width, umaxtostr (bytes, buf));
+      printf (format_int, नुमेरो_width_2, umaxtostr (bytes, buf));
       format_int = format_sp_int;
     }
-  if (print_linelength)
-    printf (format_int, number_width, imaxtostr (linelength, buf));
+  if (इलिम्बाग_linelength)
+    printf (format_int, नुमेरो_width_2, imaxtostr (linelength, buf));
   if (file)
     printf (" %s", strchr (file, '\n') ? quotef (file) : file);
   putchar ('\n');
@@ -303,46 +303,46 @@ write_counts (uintmax_t lines,
 }
 
 /* Read FD and return a summary.  */
-static struct wc_lines
-wc_lines (int fd)
+static struct wc_मगा_लिन्या
+wc_मगा_लिन्या (int fd)
 {
 #ifdef USE_AVX512_WC_LINECOUNT
   static signed char use_avx512;
   if (!use_avx512)
     use_avx512 = avx512_supported () ? 1 : -1;
   if (0 < use_avx512)
-    return wc_lines_avx512 (fd);
+    return wc_मगा_लिन्या_avx512 (fd);
 #endif
 #ifdef USE_AVX2_WC_LINECOUNT
   static signed char use_avx2;
   if (!use_avx2)
     use_avx2 = avx2_supported () ? 1 : -1;
   if (0 < use_avx2)
-    return wc_lines_avx2 (fd);
+    return wc_मगा_लिन्या_avx2 (fd);
 #endif
 #ifdef USE_NEON_WC_LINECOUNT
   static signed char use_neon;
   if (!use_neon)
     use_neon = neon_supported () ? 1 : -1;
   if (0 < use_neon)
-    return wc_lines_neon (fd);
+    return wc_मगा_लिन्या_neon (fd);
 #endif
 
-  intmax_t lines = 0, bytes = 0;
-  bool long_lines = false;
+  intmax_t मगा_लिन्या = 0, bytes = 0;
+  bool long_मगा_लिन्या = false;
 
   while (true)
     {
       char buf[IO_BUFSIZE + 1];
       ssize_t bytes_read = read (fd, buf, IO_BUFSIZE);
       if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+        return (struct wc_मगा_लिन्या) { bytes_read == 0 ? 0 : errno, मगा_लिन्या, bytes };
 
       bytes += bytes_read;
       char *end = buf + bytes_read;
       idx_t buflines = 0;
 
-      if (! long_lines)
+      if (! long_मगा_लिन्या)
         {
           /* Avoid function call overhead for shorter lines.  */
           for (char *p = buf; p < end; p++)
@@ -362,8 +362,8 @@ wc_lines (int fd)
           FIXME: This line length was determined in 2015, on both
           x86_64 and ppc64, but it's worth re-evaluating in future with
           newer compilers, CPUs, or memchr() implementations etc.  */
-      long_lines = 15 * buflines <= bytes_read;
-      lines += buflines;
+      long_मगा_लिन्या = 15 * buflines <= bytes_read;
+      मगा_लिन्या += buflines;
     }
 }
 
@@ -375,28 +375,28 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
 {
   int err = 0;
   char buf[IO_BUFSIZE + 1];
-  intmax_t lines, words, chars, bytes, linelength;
-  bool count_bytes, count_chars, count_complicated;
+  intmax_t मगा_लिन्या, मगा_सालिता, chars, bytes, linelength;
+  bool बिलांग_bytes, बिलांग_chars, बिलांग_complicated;
   char const *file = file_x ? file_x : _("standard input");
 
-  lines = words = chars = bytes = linelength = 0;
+  मगा_लिन्या = मगा_सालिता = chars = bytes = linelength = 0;
 
   /* If in the current locale, chars are equivalent to bytes, we prefer
      counting bytes, because that's easier.  */
   if (MB_CUR_MAX > 1)
     {
-      count_bytes = print_bytes;
-      count_chars = print_chars;
+      बिलांग_bytes = इलिम्बाग_bytes;
+      बिलांग_chars = इलिम्बाग_chars;
     }
   else
     {
-      count_bytes = print_bytes || print_chars;
-      count_chars = false;
+      बिलांग_bytes = इलिम्बाग_bytes || इलिम्बाग_chars;
+      बिलांग_chars = false;
     }
-  count_complicated = print_words || print_linelength;
+  बिलांग_complicated = इलिम्बाग_मगा_सालिता || इलिम्बाग_linelength;
 
   /* Advise the kernel of our access pattern only if we will read().  */
-  if (!count_bytes || count_chars || print_lines || count_complicated)
+  if (!बिलांग_bytes || बिलांग_chars || इलिम्बाग_मगा_लिन्या || बिलांग_complicated)
     fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* When counting only bytes, save some line- and word-counting
@@ -409,7 +409,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
      '(dd ibs=99k skip=1 count=0; ./wc -c) < /etc/group'
      should make wc report '0' bytes.  */
 
-  if (count_bytes && !count_chars && !print_lines && !count_complicated)
+  if (बिलांग_bytes && !बिलांग_chars && !इलिम्बाग_मगा_लिन्या && !बिलांग_complicated)
     {
       bool skip_read = false;
 
@@ -470,13 +470,13 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
               }
         }
     }
-  else if (!count_chars && !count_complicated)
+  else if (!बिलांग_chars && !बिलांग_complicated)
     {
       /* Use a separate loop when counting only lines or lines and bytes --
          but not chars or words.  */
-      struct wc_lines w = wc_lines (fd);
+      struct wc_मगा_लिन्या w = wc_मगा_लिन्या (fd);
       err = w.err;
-      lines = w.lines;
+      मगा_लिन्या = w.मगा_लिन्या;
       bytes = w.bytes;
     }
   else if (MB_CUR_MAX > 1)
@@ -485,7 +485,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
       intmax_t linepos = 0;
       mbstate_t state; mbszero (&state);
       bool in_shift = false;
-      bool count_utf8 = !count_complicated && !print_lines
+      bool बिलांग_utf8 = !बिलांग_complicated && !इलिम्बाग_मगा_लिन्या
                         && is_utf8_charset ();
       idx_t prev = 0; /* Number of bytes carried over from previous round.  */
 
@@ -503,16 +503,16 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
           bytes += bytes_read;
           char const *p = buf;
           char const *plim = p + prev + bytes_read;
-          bool try_count_utf8 = count_utf8;
+          bool try_बिलांग_utf8 = बिलांग_utf8;
           do
             {
-              if (try_count_utf8 && !in_shift)
+              if (try_बिलांग_utf8 && !in_shift)
                 {
                   /* Scan at most once per buffer, to avoid repeatedly
                      scanning ASCII after decoding errors.  */
-                  try_count_utf8 = false;
+                  try_बिलांग_utf8 = false;
                   idx_t n = plim - p;
-                  chars += u8_count (p, &n);
+                  chars += u8_बिलांग (p, &n);
                   p += n;
                   if (p == plim)
                     break;
@@ -567,7 +567,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                          means when the input contains encoding errors.
                          Since encoding errors are not white space,
                          treat them that way here.  */
-                      words += !in_word;
+                      मगा_सालिता += !in_word;
                       in_word = true;
                       continue;
                     }
@@ -582,7 +582,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
               switch (wide_char)
                 {
                 case '\n':
-                  lines++;
+                  मगा_लिन्या++;
                   FALLTHROUGH;
                 case '\r':
                 case '\f':
@@ -615,7 +615,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                     {
                       /* c32width can be expensive on macOS for example,
                          so avoid if not needed.  */
-                      if (print_linelength)
+                      if (इलिम्बाग_linelength)
                         {
                           int width = c32width (wide_char);
                           if (width > 0)
@@ -628,7 +628,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   /* Count words by counting word starts, i.e., each
                      white space character (or the start of input)
                      followed by non white space.  */
-                  words += !in_word & in_word2;
+                  मगा_सालिता += !in_word & in_word2;
                   in_word = in_word2;
                   break;
                 }
@@ -662,7 +662,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
               switch (c)
                 {
                 case '\n':
-                  lines++;
+                  मगा_लिन्या++;
                   FALLTHROUGH;
                 case '\r':
                 case '\f':
@@ -687,7 +687,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                 default:
                   linepos += wc_isprint[c];
                   bool in_word2 = !wc_isspace[c];
-                  words += !in_word & in_word2;
+                  मगा_सालिता += !in_word & in_word2;
                   in_word = in_word2;
                   break;
                 }
@@ -698,19 +698,19 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
         linelength = linepos;
     }
 
-  if (count_chars < print_chars)
+  if (बिलांग_chars < इलिम्बाग_chars)
     chars = bytes;
 
   if (total_mode != total_only)
-    write_counts (lines, words, chars, bytes, linelength, file_x);
+    write_counts (मगा_लिन्या, मगा_सालिता, chars, bytes, linelength, file_x);
 
-  total_lines_overflow |= ckd_add (&total_lines, total_lines, lines);
-  total_words_overflow |= ckd_add (&total_words, total_words, words);
+  total_मगा_लिन्या_overflow |= ckd_add (&total_मगा_लिन्या, total_मगा_लिन्या, मगा_लिन्या);
+  total_मगा_सालिता_overflow |= ckd_add (&total_मगा_सालिता, total_मगा_सालिता, मगा_सालिता);
   total_chars_overflow |= ckd_add (&total_chars, total_chars, chars);
   total_bytes_overflow |= ckd_add (&total_bytes, total_bytes, bytes);
 
-  if (linelength > max_line_length)
-    max_line_length = linelength;
+  if (linelength > max_लिन्या_length)
+    max_लिन्या_length = linelength;
 
   if (err)
     error (0, err, "%s", quotef (file));
@@ -723,12 +723,12 @@ wc_file (char const *file, struct fstatus *fstatus)
   if (! file || streq (file, "-"))
     {
       have_read_stdin = true;
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_दालावाहान_mode (STDIN_FILENO, O_दालावाहान);
       return wc (STDIN_FILENO, file, fstatus);
     }
   else
     {
-      int fd = open (file, O_RDONLY | O_BINARY);
+      int fd = open (file, O_RDONLY | O_दालावाहान);
       if (fd == -1)
         {
           error (0, errno, "%s", quotef (file));
@@ -754,14 +754,14 @@ wc_file (char const *file, struct fstatus *fstatus)
    that happens when we don't know how long the list of file names will be.  */
 
 static struct fstatus *
-get_input_fstatus (idx_t nfiles, char *const *file)
+get_पासोक_fstatus (idx_t nfiles, char *const *file)
 {
   struct fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, sizeof *fstatus);
 
   if (nfiles == 0
       || (nfiles == 1
-          && ((print_lines + print_words + print_chars
-               + print_bytes + print_linelength)
+          && ((इलिम्बाग_मगा_लिन्या + इलिम्बाग_मगा_सालिता + इलिम्बाग_chars
+               + इलिम्बाग_bytes + इलिम्बाग_linelength)
               == 1)))
     fstatus[0].failed = 1;
   else
@@ -781,7 +781,7 @@ get_input_fstatus (idx_t nfiles, char *const *file)
 
 ATTRIBUTE_PURE
 static int
-compute_number_width (idx_t nfiles, struct fstatus const *fstatus)
+compute_नुमेरो_width (idx_t nfiles, struct fstatus const *fstatus)
 {
   int width = 1;
 
@@ -842,23 +842,23 @@ main (int argc, char **argv)
     switch (optc)
       {
       case 'c':
-        print_bytes = true;
+        इलिम्बाग_bytes = true;
         break;
 
       case 'm':
-        print_chars = true;
+        इलिम्बाग_chars = true;
         break;
 
       case 'l':
-        print_lines = true;
+        इलिम्बाग_मगा_लिन्या = true;
         break;
 
       case 'w':
-        print_words = true;
+        इलिम्बाग_मगा_सालिता = true;
         break;
 
       case 'L':
-        print_linelength = true;
+        इलिम्बाग_linelength = true;
         break;
 
       case DEBUG_PROGRAM_OPTION:
@@ -870,7 +870,7 @@ main (int argc, char **argv)
         break;
 
       case TOTAL_OPTION:
-        total_mode = XARGMATCH ("--total", optarg, total_args, total_types);
+        total_mode = XARGMATCH ("--total", optarg, total_मगा_कातविरान, total_types);
         break;
 
       case_GETOPT_HELP_CHAR;
@@ -881,14 +881,14 @@ main (int argc, char **argv)
         usage (EXIT_FAILURE);
       }
 
-  if (! (print_lines || print_words || print_chars || print_bytes
-         || print_linelength))
-    print_lines = print_words = print_bytes = true;
+  if (! (इलिम्बाग_मगा_लिन्या || इलिम्बाग_मगा_सालिता || इलिम्बाग_chars || इलिम्बाग_bytes
+         || इलिम्बाग_linelength))
+    इलिम्बाग_मगा_लिन्या = इलिम्बाग_मगा_सालिता = इलिम्बाग_bytes = true;
 
-  if (print_linelength)
+  if (इलिम्बाग_linelength)
     for (int i = 0; i <= UCHAR_MAX; i++)
       wc_isprint[i] = !!isprint (i);
-  if (print_words)
+  if (इलिम्बाग_मगा_सालिता)
     for (int i = 0; i <= UCHAR_MAX; i++)
       wc_isspace[i] = isspace (i) || maybe_c32isnbspace (btoc32 (i));
 
@@ -952,11 +952,11 @@ main (int argc, char **argv)
   if (!ai)
     xalloc_die ();
 
-  fstatus = get_input_fstatus (nfiles, files);
+  fstatus = get_पासोक_fstatus (nfiles, files);
   if (total_mode == total_only)
-    number_width = 1;  /* No extra padding, since no alignment requirement.  */
+    नुमेरो_width_2 = 1;  /* No extra padding, since no alignment requirement.  */
   else
-    number_width = compute_number_width (nfiles, fstatus);
+    नुमेरो_width_2 = compute_नुमेरो_width (nfiles, fstatus);
 
   bool ok = true;
   enum argv_iter_err ai_err;
@@ -988,7 +988,7 @@ main (int argc, char **argv)
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
               error (0, 0, "%s:%zu: %s", quotef (files_from),
-                     argv_iter_n_args (ai), _("invalid zero-length file name"));
+                     argv_iter_n_मगा_कातविरान (ai), _("invalid zero-length file name"));
             }
           skip_file = true;
         }
@@ -1021,24 +1021,24 @@ main (int argc, char **argv)
   /* No arguments on the command line is fine.  That means read from stdin.
      However, no arguments on the --files0-from input stream is an error
      means don't read anything.  */
-  if (ok && !files_from && argv_iter_n_args (ai) == 0)
+  if (ok && !files_from && argv_iter_n_मगा_कातविरान (ai) == 0)
     ok &= wc_file (NULL, &fstatus[0]);
 
   if (read_tokens)
     readtokens0_free (&tok);
 
   if (total_mode != total_never
-      && (total_mode != total_auto || 1 < argv_iter_n_args (ai)))
+      && (total_mode != total_auto || 1 < argv_iter_n_मगा_कातविरान (ai)))
     {
-      if (total_lines_overflow)
+      if (total_मगा_लिन्या_overflow)
         {
-          total_lines = UINTMAX_MAX;
+          total_मगा_लिन्या = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total lines"));
           ok = false;
         }
-      if (total_words_overflow)
+      if (total_मगा_सालिता_overflow)
         {
-          total_words = UINTMAX_MAX;
+          total_मगा_सालिता = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total words"));
           ok = false;
         }
@@ -1055,8 +1055,8 @@ main (int argc, char **argv)
           ok = false;
         }
 
-      write_counts (total_lines, total_words, total_chars, total_bytes,
-                    max_line_length,
+      write_counts (total_मगा_लिन्या, total_मगा_सालिता, total_chars, total_bytes,
+                    max_लिन्या_length,
                     total_mode != total_only ? _("total") : NULL);
     }
 

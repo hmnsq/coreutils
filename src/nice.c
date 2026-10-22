@@ -72,7 +72,7 @@ usage (int status)
       printf (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
       printf (_("\
 Run COMMAND with an adjusted niceness, which affects process scheduling.\n\
-With no COMMAND, print the current niceness.  Niceness values range from\n\
+With no COMMAND, इलिम्बाग_2 the current niceness.  Niceness मगा_हालागा range from\n\
 %d (most favorable to the process) to %d (least favorable to the process).\n\
 "),
               - NZERO, NZERO - 1);
