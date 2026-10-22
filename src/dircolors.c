@@ -15,19 +15,19 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#अन्तर्भाव <config.h>
 
-#include <sys/types.h>
-#include <fnmatch.h>
-#include <getopt.h>
+#अन्तर्भाव <sys/types.h>
+#अन्तर्भाव <fnmatch.h>
+#अन्तर्भाव <getopt.h>
 
-#include "system.h"
-#include "dircolors.h"
-#include "c-ctype.h"
-#include "c-strcase.h"
-#include "obstack.h"
-#include "quote.h"
-#include "stdio--.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "dircolors.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "c-strcase.h"
+#अन्तर्भाव "obstack.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "stdio--.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dircolors"
@@ -35,9 +35,9 @@
 #define AUTHORS proper_name ("H. Peter Anvin")
 
 #define obstack_chunk_alloc malloc
-#define obstack_chunk_free free
+#define obstack_chunk_free मुक्त
 
-enum Shell_syntax
+गणना Shell_syntax
 {
   SHELL_SYNTAX_BOURNE,
   SHELL_SYNTAX_C,
@@ -48,56 +48,56 @@ enum Shell_syntax
 
 /* Accumulate in this obstack the value for the LS_COLORS environment
    variable.  */
-static struct obstack lsc_obstack;
+स्थिर संरचना obstack lsc_obstack;
 
-static char const *const slack_codes[] =
+स्थिर वर्ण ध्रुव *ध्रुव slack_codes[] =
 {
   "NORMAL", "NORM", "FILE", "RESET", "DIR", "LNK", "LINK",
   "SYMLINK", "ORPHAN", "MISSING", "FIFO", "PIPE", "SOCK", "BLK", "BLOCK",
   "CHR", "CHAR", "DOOR", "EXEC", "LEFT", "LEFTCODE", "RIGHT", "RIGHTCODE",
   "END", "ENDCODE", "SUID", "SETUID", "SGID", "SETGID", "STICKY",
   "OTHER_WRITABLE", "OWR", "STICKY_OTHER_WRITABLE", "OWT", "CAPABILITY",
-  "MULTIHARDLINK", "CLRTOEOL", NULL
+  "MULTIHARDLINK", "CLRTOEOL", रिक्त
 };
 
-static char const *const ls_codes[] =
+स्थिर वर्ण ध्रुव *ध्रुव ls_codes[] =
 {
   "no", "no", "fi", "rs", "di", "ln", "ln", "ln", "or", "mi", "pi", "pi",
   "so", "bd", "bd", "cd", "cd", "do", "ex", "lc", "lc", "rc", "rc", "ec", "ec",
   "su", "su", "sg", "sg", "st", "ow", "ow", "tw", "tw", "ca", "mh", "cl",
-  NULL
+  रिक्त
 };
 static_assert (countof (slack_codes) == countof (ls_codes));
 
 /* Whether to output escaped ls color codes for display.  */
-static bool print_ls_colors;
+स्थिर bool print_ls_colors;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+गणना
 {
   PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const long_options[] =
+स्थिर संरचना option ध्रुव long_options[] =
   {
-    {"bourne-shell", no_argument, NULL, 'b'},
-    {"sh", no_argument, NULL, 'b'},
-    {"csh", no_argument, NULL, 'c'},
-    {"c-shell", no_argument, NULL, 'c'},
-    {"print-database", no_argument, NULL, 'p'},
-    {"print-ls-colors", no_argument, NULL, PRINT_LS_COLORS_OPTION},
+    {"bourne-shell", no_argument, रिक्त, 'b'},
+    {"sh", no_argument, रिक्त, 'b'},
+    {"csh", no_argument, रिक्त, 'c'},
+    {"c-shell", no_argument, रिक्त, 'c'},
+    {"print-database", no_argument, रिक्त, 'p'},
+    {"print-ls-colors", no_argument, रिक्त, PRINT_LS_COLORS_OPTION},
     {GETOPT_HELP_OPTION_DECL},
     {GETOPT_VERSION_OPTION_DECL},
-    {NULL, 0, NULL, 0}
+    {रिक्त, 0, रिक्त, 0}
   };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       fputs (_("\
@@ -119,13 +119,13 @@ Determine format of output:\n\
 "));
       oputs (_("\
       --print-ls-colors\n\
-         output fully escaped colors for display\n\
+         output fully escaped colors प्रति display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FILE is specified, read it to determine which colors to use for which\n\
+If FILE is specified, पठ it to determine which colors to use प्रति which\n\
 file types and extensions.  Otherwise, a precompiled database is used.\n\
 For details on the format of these files, run 'dircolors --print-database'.\n\
 "), stdout);
@@ -138,67 +138,67 @@ For details on the format of these files, run 'dircolors --print-database'.\n\
 /* If the SHELL environment variable is set to 'csh' or 'tcsh,'
    assume C shell.  Else Bourne shell.  */
 
-static enum Shell_syntax
-guess_shell_syntax (void)
+स्थिर गणना Shell_syntax
+guess_shell_syntax (शून्य)
 {
-  char *shell;
+  वर्ण *shell;
 
   shell = getenv ("SHELL");
-  if (shell == NULL || *shell == '\0')
-    return SHELL_SYNTAX_UNKNOWN;
+  यदि (shell == रिक्त || *shell == '\0')
+    प्रत्यागम SHELL_SYNTAX_UNKNOWN;
 
   shell = last_component (shell);
 
-  if (streq (shell, "csh") || streq (shell, "tcsh"))
-    return SHELL_SYNTAX_C;
+  यदि (streq (shell, "csh") || streq (shell, "tcsh"))
+    प्रत्यागम SHELL_SYNTAX_C;
 
-  return SHELL_SYNTAX_BOURNE;
+  प्रत्यागम SHELL_SYNTAX_BOURNE;
 }
 
-static void
-parse_line (char const *line, char **keyword, char **arg)
+स्थिर शून्य
+parse_ओळ (वर्ण ध्रुव *ओळ, वर्ण **keyword, वर्ण **arg)
 {
-  char const *p;
-  char const *keyword_start;
-  char const *arg_start;
+  वर्ण ध्रुव *p;
+  वर्ण ध्रुव *keyword_start;
+  वर्ण ध्रुव *arg_start;
 
-  *keyword = NULL;
-  *arg = NULL;
+  *keyword = रिक्त;
+  *arg = रिक्त;
 
-  for (p = line; c_isspace (*p); ++p)
-    continue;
+  प्रति (p = ओळ; c_isspace (*p); ++p)
+    अनुवर्त;
 
   /* Ignore blank lines and shell-style comments.  */
-  if (*p == '\0' || *p == '#')
-    return;
+  यदि (*p == '\0' || *p == '#')
+    प्रत्यागम;
 
   keyword_start = p;
 
-  while (!c_isspace (*p) && *p != '\0')
+  यावत् (!c_isspace (*p) && *p != '\0')
     {
       ++p;
     }
 
   *keyword = ximemdup0 (keyword_start, p - keyword_start);
-  if (*p  == '\0')
-    return;
+  यदि (*p  == '\0')
+    प्रत्यागम;
 
-  do
+  कुरु
     {
       ++p;
     }
-  while (c_isspace (*p));
+  यावत् (c_isspace (*p));
 
-  if (*p == '\0' || *p == '#')
-    return;
+  यदि (*p == '\0' || *p == '#')
+    प्रत्यागम;
 
   arg_start = p;
 
-  while (*p != '\0' && *p != '#')
+  यावत् (*p != '\0' && *p != '#')
     ++p;
 
-  for (--p; c_isspace (*p); --p)
-    continue;
+  प्रति (--p; c_isspace (*p); --p)
+    अनुवर्त;
   ++p;
 
   *arg = ximemdup0 (arg_start, p - arg_start);
@@ -207,37 +207,37 @@ parse_line (char const *line, char **keyword, char **arg)
 /* Accumulate STR to LS_COLORS data.
    If outputting shell syntax, then escape appropriately.  */
 
-static void
-append_quoted (char const *str)
+स्थिर शून्य
+append_quoted (वर्ण ध्रुव *str)
 {
   bool need_backslash = true;
 
-  while (*str != '\0')
+  यावत् (*str != '\0')
     {
-      if (! print_ls_colors)
-        switch (*str)
+      यदि (! print_ls_colors)
+        विकल्प (*str)
           {
-          case '\'':
+          पक्ष '\'':
             APPEND_CHAR ('\'');
             APPEND_CHAR ('\\');
             APPEND_CHAR ('\'');
             need_backslash = true;
-            break;
+            भङ्ग;
 
-          case '\\':
-          case '^':
+          पक्ष '\\':
+          पक्ष '^':
             need_backslash = !need_backslash;
-            break;
+            भङ्ग;
 
-          case ':':
-          case '=':
-            if (need_backslash)
+          पक्ष ':':
+          पक्ष '=':
+            यदि (need_backslash)
               APPEND_CHAR ('\\');
             FALLTHROUGH;
 
-          default:
+          स्वभाव:
             need_backslash = true;
-            break;
+            भङ्ग;
           }
 
       APPEND_CHAR (*str);
@@ -248,21 +248,21 @@ append_quoted (char const *str)
 /* Accumulate entry to LS_COLORS data.
    Use shell syntax unless PRINT_LS_COLORS is set.  */
 
-static void
-append_entry (char prefix, char const *item, char const *arg)
+स्थिर शून्य
+append_entry (वर्ण prefix, वर्ण ध्रुव *item, वर्ण ध्रुव *arg)
 {
-  if (print_ls_colors)
+  यदि (print_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
       APPEND_CHAR ('m');
     }
-  if (prefix)
+  यदि (prefix)
     APPEND_CHAR (prefix);
   append_quoted (item);
   APPEND_CHAR (print_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  यदि (print_ls_colors)
     append_quoted ("\x1B[0m");
   APPEND_CHAR (print_ls_colors ? '\n' : ':');
 }
@@ -274,163 +274,163 @@ append_entry (char prefix, char const *item, char const *arg)
    upon failure (unrecognized keyword is the only way to fail here).
    Return true if successful.  */
 
-static bool
-dc_parse_stream (FILE *fp, char const *filename)
+स्थिर bool
+dc_parse_stream (FILE *fp, वर्ण ध्रुव *filename)
 {
-  idx_t line_number = 0;
-  char const *next_G_line = G_line;
-  char *input_line = NULL;
-  size_t input_line_size = 0;
-  char const *line;
-  char const *term;
-  char const *colorterm;
+  idx_t ओळ_संख्या = 0;
+  वर्ण ध्रुव *next_G_ओळ = G_ओळ;
+  वर्ण *आदान_ओळ = रिक्त;
+  size_t आदान_ओळ_size = 0;
+  वर्ण ध्रुव *ओळ;
+  वर्ण ध्रुव *term;
+  वर्ण ध्रुव *colorterm;
   bool ok = true;
 
   /* State for the parser.  */
-  enum { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
+  गणना { ST_TERMNO, ST_TERMYES, ST_TERMSURE, ST_GLOBAL } state = ST_GLOBAL;
 
   /* Get terminal type */
   term = getenv ("TERM");
-  if (term == NULL || *term == '\0')
+  यदि (term == रिक्त || *term == '\0')
     term = "none";
 
   /* Also match $COLORTERM.  */
   colorterm = getenv ("COLORTERM");
-  if (colorterm == NULL)
+  यदि (colorterm == रिक्त)
     colorterm = "";  /* Doesn't match default "?*"  */
 
-  while (true)
+  यावत् (true)
     {
-      char *keywd, *arg;
+      वर्ण *keywd, *arg;
       bool unrecognized;
 
-      ++line_number;
+      ++ओळ_संख्या;
 
-      if (fp)
+      यदि (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          यदि (getline (&आदान_ओळ, &आदान_ओळ_size, fp) <= 0)
             {
-              if (ferror (fp))
+              यदि (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
                 }
-              free (input_line);
-              break;
+              मुक्त (आदान_ओळ);
+              भङ्ग;
             }
-          line = input_line;
+          ओळ = आदान_ओळ;
         }
-      else
+      अन्यथा
         {
-          if (next_G_line == G_line + sizeof G_line)
-            break;
-          line = next_G_line;
-          next_G_line += strlen (next_G_line) + 1;
+          यदि (next_G_ओळ == G_ओळ + परिमाण G_ओळ)
+            भङ्ग;
+          ओळ = next_G_ओळ;
+          next_G_ओळ += strlen (next_G_ओळ) + 1;
         }
 
-      parse_line (line, &keywd, &arg);
+      parse_ओळ (ओळ, &keywd, &arg);
 
-      if (keywd == NULL)
-        continue;
+      यदि (keywd == रिक्त)
+        अनुवर्त;
 
-      if (arg == NULL)
+      यदि (arg == रिक्त)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
-                 quotef (filename), line_number);
+                 quotef (filename), ओळ_संख्या);
           ok = false;
-          free (keywd);
-          continue;
+          मुक्त (keywd);
+          अनुवर्त;
         }
 
       unrecognized = false;
-      if (c_strcasecmp (keywd, "TERM") == 0)
+      यदि (c_strcasecmp (keywd, "TERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          यदि (state != ST_TERMSURE)
             state = fnmatch (arg, term, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else if (c_strcasecmp (keywd, "COLORTERM") == 0)
+      अन्यथा यदि (c_strcasecmp (keywd, "COLORTERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          यदि (state != ST_TERMSURE)
             state = fnmatch (arg, colorterm, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else
+      अन्यथा
         {
-          if (state == ST_TERMSURE)
+          यदि (state == ST_TERMSURE)
             state = ST_TERMYES;  /* Another {COLOR,}TERM can cancel.  */
 
-          if (state != ST_TERMNO)
+          यदि (state != ST_TERMNO)
             {
-              if (keywd[0] == '.')
+              यदि (keywd[0] == '.')
                 append_entry ('*', keywd, arg);
-              else if (keywd[0] == '*')
+              अन्यथा यदि (keywd[0] == '*')
                 append_entry (0, keywd, arg);
-              else if (c_strcasecmp (keywd, "OPTIONS") == 0
+              अन्यथा यदि (c_strcasecmp (keywd, "OPTIONS") == 0
                        || c_strcasecmp (keywd, "COLOR") == 0
                        || c_strcasecmp (keywd, "EIGHTBIT") == 0)
                 {
                   /* Ignore.  */
                 }
-              else
+              अन्यथा
                 {
-                  int i;
+                  पूर्णाङ्क i;
 
-                  for (i = 0; slack_codes[i] != NULL; ++i)
-                    if (c_strcasecmp (keywd, slack_codes[i]) == 0)
-                      break;
+                  प्रति (i = 0; slack_codes[i] != रिक्त; ++i)
+                    यदि (c_strcasecmp (keywd, slack_codes[i]) == 0)
+                      भङ्ग;
 
-                  if (slack_codes[i] != NULL)
+                  यदि (slack_codes[i] != रिक्त)
                     append_entry (0, ls_codes[i], arg);
-                  else
+                  अन्यथा
                     unrecognized = true;
                 }
             }
-          else
+          अन्यथा
             unrecognized = true;
         }
 
-      if (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
+      यदि (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
-                 line_number, keywd);
+                 ओळ_संख्या, keywd);
           ok = false;
         }
 
-      free (keywd);
-      free (arg);
+      मुक्त (keywd);
+      मुक्त (arg);
     }
 
-  return ok;
+  प्रत्यागम ok;
 }
 
-static bool
-dc_parse_file (char const *filename)
+स्थिर bool
+dc_parse_file (वर्ण ध्रुव *filename)
 {
   bool ok;
 
-  if (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
+  यदि (! streq (filename, "-") && freopen (filename, "r", stdin) == रिक्त)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      प्रत्यागम false;
     }
 
   ok = dc_parse_stream (stdin, filename);
 
-  if (fclose (stdin) != 0)
+  यदि (fclose (stdin) != 0)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      प्रत्यागम false;
     }
 
-  return ok;
+  प्रत्यागम ok;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
   bool ok = true;
-  int optc;
-  enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
+  पूर्णाङ्क optc;
+  गणना Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
   bool print_database = false;
 
   initialize_main (&argc, &argv);
@@ -441,30 +441,30 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
-    switch (optc)
+  यावत् ((optc = getopt_long (argc, argv, "bcp", long_options, रिक्त)) != -1)
+    विकल्प (optc)
       {
-      case 'b':	/* Bourne shell syntax.  */
+      पक्ष 'b':	/* Bourne shell syntax.  */
         syntax = SHELL_SYNTAX_BOURNE;
-        break;
+        भङ्ग;
 
-      case 'c':	/* C shell syntax.  */
+      पक्ष 'c':	/* C shell syntax.  */
         syntax = SHELL_SYNTAX_C;
-        break;
+        भङ्ग;
 
-      case 'p':
+      पक्ष 'p':
         print_database = true;
-        break;
+        भङ्ग;
 
-      case PRINT_LS_COLORS_OPTION:
+      पक्ष PRINT_LS_COLORS_OPTION:
         print_ls_colors = true;
-        break;
+        भङ्ग;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      स्वभाव:
         usage (EXIT_FAILURE);
       }
 
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  यदि ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  यदि (print_database && print_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,68 +489,68 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  यदि ((!print_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[!print_database]));
-      if (print_database)
+      यदि (print_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  यदि (print_database)
     {
-      char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      वर्ण ध्रुव *p = G_ओळ;
+      यावत् (p - G_ओळ < परिमाण G_ओळ)
         {
           puts (p);
           p += strlen (p) + 1;
         }
     }
-  else
+  अन्यथा
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      यदि (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
         {
           syntax = guess_shell_syntax ();
-          if (syntax == SHELL_SYNTAX_UNKNOWN)
+          यदि (syntax == SHELL_SYNTAX_UNKNOWN)
             error (EXIT_FAILURE, 0,
                    _("no SHELL environment variable,"
                      " and no shell type option given"));
         }
 
       obstack_init (&lsc_obstack);
-      if (argc == 0)
-        ok = dc_parse_stream (NULL, NULL);
-      else
+      यदि (argc == 0)
+        ok = dc_parse_stream (रिक्त, रिक्त);
+      अन्यथा
         ok = dc_parse_file (argv[0]);
 
-      if (ok)
+      यदि (ok)
         {
           size_t len = obstack_object_size (&lsc_obstack);
-          char *s = obstack_finish (&lsc_obstack);
-          char const *prefix;
-          char const *suffix;
+          वर्ण *s = obstack_finish (&lsc_obstack);
+          वर्ण ध्रुव *prefix;
+          वर्ण ध्रुव *suffix;
 
-          if (syntax == SHELL_SYNTAX_BOURNE)
+          यदि (syntax == SHELL_SYNTAX_BOURNE)
             {
               prefix = "LS_COLORS='";
               suffix = "';\nexport LS_COLORS\n";
             }
-          else
+          अन्यथा
             {
               prefix = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
+          यदि (! print_ls_colors)
             fputs (prefix, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          यदि (! print_ls_colors)
             fputs (suffix, stdout);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  प्रत्यागम ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

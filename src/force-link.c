@@ -23,64 +23,64 @@
    randomly-named temporary, which is safer for many applications than
    a window where B does not exist.  */
 
-#include <config.h>
-#include "system.h"
+#अन्तर्भाव <config.h>
+#अन्तर्भाव "system.h"
 
-#include "force-link.h"
+#अन्तर्भाव "force-link.h"
 
-#include <tempname.h>
+#अन्तर्भाव <tempname.h>
 
 /* A basename pattern suitable for a temporary file.  It should work
    even on file systems like FAT that support only short names.
    "Cu" is short for "Coreutils" or for "Changeable unstable",
    take your pick....  */
 
-static char const simple_pattern[] = "CuXXXXXX";
-enum { x_suffix_len = sizeof "XXXXXX" - 1 };
+स्थिर वर्ण ध्रुव simple_pattern[] = "CuXXXXXX";
+गणना { x_suffix_len = परिमाण "XXXXXX" - 1 };
 
 /* A size for smallish buffers containing file names.  Longer file
    names can use malloc.  */
 
-enum { smallsize = 256 };
+गणना { smallsize = 256 };
 
 /* Return a template for a file in the same directory as DSTNAME.
    Use BUF if the template fits, otherwise use malloc and return NULL
    (setting errno) if unsuccessful.  */
 
-static char *
-samedir_template (char const *dstname, char buf[smallsize])
+स्थिर वर्ण *
+samedir_template (वर्ण ध्रुव *dstname, वर्ण buf[smallsize])
 {
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
-  size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
-  char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  size_t dsttmpsize = dstdirlen + परिमाण simple_pattern;
+  वर्ण *dsttmp;
+  यदि (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  अन्यथा
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      यदि (!dsttmp)
+        प्रत्यागम dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  प्रत्यागम dsttmp;
 }
 
 
 /* Auxiliaries for force_linkat.  */
 
-struct link_arg
+संरचना link_arg
 {
-  int srcdir;
-  char const *srcname;
-  int dstdir;
-  int flags;
+  पूर्णाङ्क srcdir;
+  वर्ण ध्रुव *srcname;
+  पूर्णाङ्क dstdir;
+  पूर्णाङ्क flags;
 };
 
-static int
-try_link (char *dest, void *arg)
+स्थिर पूर्णाङ्क
+try_link (वर्ण *dest, शून्य *arg)
 {
-  struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  संरचना link_arg *a = arg;
+  प्रत्यागम linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+बाह्य पूर्णाङ्क
+force_linkat (पूर्णाङ्क srcdir, वर्ण ध्रुव *srcname,
+              पूर्णाङ्क dstdir, वर्ण ध्रुव *dstname, पूर्णाङ्क flags, bool force,
+              पूर्णाङ्क linkat_errno)
 {
-  if (linkat_errno < 0)
+  यदि (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  यदि (!force || linkat_errno != EEXIST)
+    प्रत्यागम linkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
-  struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  वर्ण buf[smallsize];
+  वर्ण *dsttmp = samedir_template (dstname, buf);
+  यदि (! dsttmp)
+    प्रत्यागम errno;
+  संरचना link_arg arg = { srcdir, srcname, dstdir, flags };
+  पूर्णाङ्क err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  यदि (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  अन्यथा
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,25 +120,25 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  यदि (dsttmp != buf)
+    मुक्त (dsttmp);
+  प्रत्यागम err;
 }
 
 
 /* Auxiliaries for force_symlinkat.  */
 
-struct symlink_arg
+संरचना symlink_arg
 {
-  char const *srcname;
-  int dstdir;
+  वर्ण ध्रुव *srcname;
+  पूर्णाङ्क dstdir;
 };
 
-static int
-try_symlink (char *dest, void *arg)
+स्थिर पूर्णाङ्क
+try_symlink (वर्ण *dest, शून्य *arg)
 {
-  struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  संरचना symlink_arg *a = arg;
+  प्रत्यागम symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+बाह्य पूर्णाङ्क
+force_symlinkat (वर्ण ध्रुव *srcname, पूर्णाङ्क dstdir, वर्ण ध्रुव *dstname,
+                 bool force, पूर्णाङ्क symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  यदि (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  यदि (!force || symlinkat_errno != EEXIST)
+    प्रत्यागम symlinkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
-  struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  वर्ण buf[smallsize];
+  वर्ण *dsttmp = samedir_template (dstname, buf);
+  यदि (!dsttmp)
+    प्रत्यागम errno;
+  संरचना symlink_arg arg = { srcname, dstdir };
+  पूर्णाङ्क err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  यदि (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  अन्यथा यदि (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  अन्यथा
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  यदि (dsttmp != buf)
+    मुक्त (dsttmp);
+  प्रत्यागम err;
 }

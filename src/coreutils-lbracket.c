@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "system.h"
+#अन्तर्भाव <config.h>
+#अन्तर्भाव "system.h"
 
-#include "test.h"
+#अन्तर्भाव "test.h"
 /* Ensure that the main for test is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_test (int argc, char **argv);
-int single_binary_main_lbracket (int argc, char **argv);
+पूर्णाङ्क single_द्विमान_main_test (पूर्णाङ्क argc, वर्ण **argv);
+पूर्णाङ्क single_द्विमान_main_lbracket (पूर्णाङ्क argc, वर्ण **argv);
 
-int
-single_binary_main_lbracket (int argc, char **argv)
+पूर्णाङ्क
+single_द्विमान_main_lbracket (पूर्णाङ्क argc, वर्ण **argv)
 {
   test_mode = TEST_LBRACKET;
-  return single_binary_main_test (argc, argv);
+  प्रत्यागम single_द्विमान_main_test (argc, argv);
 }
