@@ -33,7 +33,7 @@
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
   {"mode", required_argument, NULL, 'm'},
@@ -43,11 +43,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᤀᤡ᤺ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᤀᤡ᤺ᤆᤡ
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -66,7 +66,7 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or ᤀᤡ᤺ CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -76,12 +76,12 @@ Create named pipes (FIFOs) with the given NAMEs.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  var_na const *specified_mode = NULL;
+  var_na const *scontext = NULL;
+  sa_nracanaa selabel_handle *set_security_context = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -91,39 +91,39 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  puur_naa_nka optc;
+  ᤀᤠ᤺ ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case 'm':
+        pak_sa 'm':
           specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+          bha_nga;
+        pak_sa 'Z':
+          ᤀᤡ᤺ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ᤀᤡ᤺ (optarg)
                 scontext = optarg;
-              else
+              ᤀᤡ᤺ᤆᤡ
                 {
                   set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                        NULL, 0);
-                  if (! set_security_context)
+                  ᤀᤡ᤺ (! set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -131,52 +131,52 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  ᤀᤡ᤺ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  ᤀᤡ᤺ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      puur_naa_nka ret = 0;
+      ᤀᤡ᤺ (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      ᤀᤡ᤺ᤆᤡ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ᤀᤡ᤺ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
   mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  ᤀᤡ᤺ (specified_mode)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      sa_nracanaa mode_change *change = mode_compile (specified_mode);
+      ᤀᤡ᤺ (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
       mode_t umask_value = umask (0);
       umask (umask_value);
       newmode = mode_adjust (newmode, false, umask_value, change, NULL);
       free (change);
-      if (newmode & ~S_IRWXUGO)
+      ᤀᤡ᤺ (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
 
-  int exit_status = EXIT_SUCCESS;
+  puur_naa_nka exit_status = EXIT_SUCCESS;
   for (; optind < argc; ++optind)
     {
-      if (set_security_context)
+      ᤀᤡ᤺ (set_security_context)
         defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+      ᤀᤡ᤺ (mkfifo (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot create fifo %s"), quoteaf (argv[optind]));
           exit_status = EXIT_FAILURE;
         }
-      else if (specified_mode && lchmod (argv[optind], newmode) != 0)
+      ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (specified_mode && lchmod (argv[optind], newmode) != 0)
         {
           error (0, errno, _("cannot set permissions of %s"),
                  quoteaf (argv[optind]));
@@ -184,5 +184,5 @@ main (int argc, char **argv)
         }
     }
 
-  return exit_status;
+  ᤀᤡᤴ exit_status;
 }

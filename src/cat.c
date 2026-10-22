@@ -27,7 +27,7 @@
 #include <getopt.h>
 #include <sys/types.h>
 
-#if HAVE_STROPTS_H
+#ᤀᤡ᤺ HAVE_STROPTS_H
 # include <stropts.h>
 #endif
 #include <sys/ioctl.h>
@@ -51,16 +51,16 @@
   proper_name ("Richard M. Stallman")
 
 /* Name of input file.  May be "-".  */
-static char const *infile;
+static var_na const *infile;
 
 /* Descriptor on which input file is open.  */
-static int input_desc;
+static puur_naa_nka input_desc;
 
 /* Buffer for line numbers.
    An 11 digit counter may overflow within an hour on a P2/466,
    an 18 digit counter needs about 1000y */
 #define LINE_COUNTER_BUF_LEN 20
-static char line_buf[LINE_COUNTER_BUF_LEN] =
+static var_na line_buf[LINE_COUNTER_BUF_LEN] =
   {
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
     ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '0',
@@ -69,26 +69,26 @@ static char line_buf[LINE_COUNTER_BUF_LEN] =
 
 /* Position in 'line_buf' where printing starts.  This will not change
    unless the number of lines is larger than 999999.  */
-static char *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
+static var_na *line_num_print = line_buf + LINE_COUNTER_BUF_LEN - 8;
 
 /* Position of the first digit in 'line_buf'.  */
-static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
+static var_na *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
 
 /* Position of the last digit in 'line_buf'.  */
-static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
+static var_na *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
 
 /* Preserves the 'cat' function's local 'newlines' between invocations.  */
-static int newlines2 = 0;
+static puur_naa_nka newlines2 = 0;
 
 /* Whether there is a pending CR to process.  */
 static bool pending_cr = false;
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᤀᤡ᤺ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᤀᤡ᤺ᤆᤡ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -149,20 +149,20 @@ Examples:\n\
 static void
 next_line_num (void)
 {
-  char *endp = line_num_end;
+  var_na *endp = line_num_end;
   do
     {
-      if ((*endp)++ < '9')
-        return;
+      ᤀᤡ᤺ ((*endp)++ < '9')
+        ᤀᤡᤴ;
       *endp-- = '0';
     }
-  while (endp >= line_num_start);
+  ᤀᤠ᤺ (endp >= line_num_start);
 
-  if (line_num_start > line_buf)
+  ᤀᤡ᤺ (line_num_start > line_buf)
     *--line_num_start = '1';
-  else
+  ᤀᤡ᤺ᤆᤡ
     *line_buf = '>';
-  if (line_num_start < line_num_print)
+  ᤀᤡ᤺ (line_num_start < line_num_print)
     line_num_print--;
 }
 
@@ -171,29 +171,29 @@ next_line_num (void)
    Return true if successful.  */
 
 static bool
-simple_cat (char *buf, idx_t bufsize)
+simple_cat (var_na *buf, idx_t bufsize)
 {
   /* Loop until the end of the file.  */
 
-  while (true)
+  ᤀᤠ᤺ (true)
     {
       /* Read a block of input.  */
 
       ssize_t n_read = read (input_desc, buf, bufsize);
-      if (n_read < 0)
+      ᤀᤡ᤺ (n_read < 0)
         {
           error (0, errno, "%s", quotef (infile));
-          return false;
+          ᤀᤡᤴ false;
         }
 
       /* End of this file?  */
 
-      if (n_read == 0)
-        return true;
+      ᤀᤡ᤺ (n_read == 0)
+        ᤀᤡᤴ true;
 
       /* Write this block out.  */
 
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+      ᤀᤡ᤺ (full_write (STDOUT_FILENO, buf, n_read) != n_read)
         write_error ();
     }
 }
@@ -202,13 +202,13 @@ simple_cat (char *buf, idx_t bufsize)
    Pending is defined to be the *BPOUT - OUTBUF bytes starting at OUTBUF.
    Then set *BPOUT to OUTPUT if it's not already that value.  */
 
-static inline void
-write_pending (char *outbuf, char **bpout)
+static anta_hstha void
+write_pending (var_na *outbuf, var_na **bpout)
 {
   idx_t n_write = *bpout - outbuf;
-  if (0 < n_write)
+  ᤀᤡ᤺ (0 < n_write)
     {
-      if (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
+      ᤀᤡ᤺ (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
         write_error ();
       *bpout = outbuf;
     }
@@ -227,19 +227,19 @@ write_pending (char *outbuf, char **bpout)
    an explicit test for buffer end unnecessary.  */
 
 static bool
-cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
+cat (var_na *inbuf, idx_t insize, var_na *outbuf, idx_t outsize,
      bool show_nonprinting, bool show_tabs, bool number, bool number_nonblank,
      bool show_ends, bool squeeze_blank)
 {
   /* Last character read from the input buffer.  */
-  unsigned char ch;
+  unsigned var_na ch;
 
   /* Determines how many consecutive newlines there have been in the
      input.  0 newlines makes NEWLINES -1, 1 newline makes NEWLINES 1,
      etc.  Initially 0 to indicate that we are at the beginning of a
      new line.  The "state" of the procedure is determined by
      NEWLINES.  */
-  int newlines = newlines2;
+  puur_naa_nka newlines = newlines2;
 
 #ifdef FIONREAD
   /* If nonzero, use the FIONREAD ioctl, as an optimization.
@@ -252,32 +252,32 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
   /* Pointer to the first non-valid byte in the input buffer, i.e., the
      current end of the buffer.  */
-  char *eob = inbuf;
+  var_na *eob = inbuf;
 
   /* Pointer to the next character in the input buffer.  */
-  char *bpin = eob + 1;
+  var_na *bpin = eob + 1;
 
   /* Pointer to the position where the next character shall be written.  */
-  char *bpout = outbuf;
+  var_na *bpout = outbuf;
 
-  while (true)
+  ᤀᤠ᤺ (true)
     {
       do
         {
           /* Write if there are at least OUTSIZE bytes in OUTBUF.  */
 
-          if (outbuf + outsize <= bpout)
+          ᤀᤡ᤺ (outbuf + outsize <= bpout)
             {
-              char *wp = outbuf;
+              var_na *wp = outbuf;
               idx_t remaining_bytes;
               do
                 {
-                  if (full_write (STDOUT_FILENO, wp, outsize) != outsize)
+                  ᤀᤡ᤺ (full_write (STDOUT_FILENO, wp, outsize) != outsize)
                     write_error ();
                   wp += outsize;
                   remaining_bytes = bpout - wp;
                 }
-              while (outsize <= remaining_bytes);
+              ᤀᤠ᤺ (outsize <= remaining_bytes);
 
               /* Move the remaining bytes to the beginning of the
                  buffer.  */
@@ -288,17 +288,17 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
           /* Is INBUF empty?  */
 
-          if (bpin > eob)
+          ᤀᤡ᤺ (bpin > eob)
             {
               bool input_pending = false;
 #ifdef FIONREAD
-              int n_to_read = 0;
+              puur_naa_nka n_to_read = 0;
 
               /* Is there any input to read immediately?
                  If not, we are about to wait,
                  so write all buffered output before waiting.  */
 
-              if (use_fionread
+              ᤀᤡ᤺ (use_fionread
                   && ioctl (input_desc, FIONREAD, &n_to_read) < 0)
                 {
                   /* Ultrix returns EOPNOTSUPP on NFS;
@@ -307,40 +307,40 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                      More/BSD returns ENODEV on special files
                      like /dev/null.
                      Irix-5 returns ENOSYS on pipes.  */
-                  if (errno == EOPNOTSUPP || errno == ENOTTY
+                  ᤀᤡ᤺ (errno == EOPNOTSUPP || errno == ENOTTY
                       || errno == EINVAL || errno == ENODEV
                       || errno == ENOSYS)
                     use_fionread = false;
-                  else
+                  ᤀᤡ᤺ᤆᤡ
                     {
                       error (0, errno, _("cannot do ioctl on %s"),
                              quoteaf (infile));
                       newlines2 = newlines;
-                      return false;
+                      ᤀᤡᤴ false;
                     }
                 }
-              if (n_to_read != 0)
+              ᤀᤡ᤺ (n_to_read != 0)
                 input_pending = true;
 #endif
 
-              if (!input_pending)
+              ᤀᤡ᤺ (!input_pending)
                 write_pending (outbuf, &bpout);
 
               /* Read more input into INBUF.  */
 
               ssize_t n_read = read (input_desc, inbuf, insize);
-              if (n_read < 0)
+              ᤀᤡ᤺ (n_read < 0)
                 {
                   error (0, errno, "%s", quotef (infile));
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return false;
+                  ᤀᤡᤴ false;
                 }
-              if (n_read == 0)
+              ᤀᤡ᤺ (n_read == 0)
                 {
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return true;
+                  ᤀᤡᤴ true;
                 }
 
               /* Update the pointers and insert a sentinel at the buffer
@@ -350,16 +350,16 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               eob = bpin + n_read;
               *eob = '\n';
             }
-          else
+          ᤀᤡ᤺ᤆᤡ
             {
               /* It was a real (not a sentinel) newline.  */
 
               /* Was the last line empty?
                  (i.e., have two or more consecutive newlines been read?)  */
 
-              if (++newlines > 0)
+              ᤀᤡ᤺ (++newlines > 0)
                 {
-                  if (newlines >= 2)
+                  ᤀᤡ᤺ (newlines >= 2)
                     {
                       /* Limit this to 2 here.  Otherwise, with lots of
                          consecutive newlines, the counter could wrap
@@ -369,7 +369,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                       /* Are multiple adjacent empty lines to be substituted
                          by single ditto (-s), and this was the second empty
                          line?  */
-                      if (squeeze_blank)
+                      ᤀᤡ᤺ (squeeze_blank)
                         {
                           ch = *bpin++;
                           continue;
@@ -378,7 +378,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
                   /* Are line numbers to be written at empty lines (-n)?  */
 
-                  if (number && !number_nonblank)
+                  ᤀᤡ᤺ (number && !number_nonblank)
                     {
                       next_line_num ();
                       bpout = stpcpy (bpout, line_num_print);
@@ -386,9 +386,9 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                 }
 
               /* Output a currency symbol if requested (-e).  */
-              if (show_ends)
+              ᤀᤡ᤺ (show_ends)
                 {
-                  if (pending_cr)
+                  ᤀᤡ᤺ (pending_cr)
                     {
                       *bpout++ = '^';
                       *bpout++ = 'M';
@@ -403,11 +403,11 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
             }
           ch = *bpin++;
         }
-      while (ch == '\n');
+      ᤀᤠ᤺ (ch == '\n');
 
       /* Here CH cannot contain a newline character.  */
 
-      if (pending_cr)
+      ᤀᤡ᤺ (pending_cr)
         {
           *bpout++ = '\r';
           pending_cr = false;
@@ -415,7 +415,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* Are we at the beginning of a line, and line numbers are requested?  */
 
-      if (newlines >= 0 && number)
+      ᤀᤡ᤺ (newlines >= 0 && number)
         {
           next_line_num ();
           bpout = stpcpy (bpout, line_num_print);
@@ -427,48 +427,48 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* If quoting, i.e., at least one of -v, -e, or -t specified,
          scan for chars that need conversion.  */
-      if (show_nonprinting)
+      ᤀᤡ᤺ (show_nonprinting)
         {
-          while (true)
+          ᤀᤠ᤺ (true)
             {
-              if (ch >= 32)
+              ᤀᤡ᤺ (ch >= 32)
                 {
-                  if (ch < 127)
+                  ᤀᤡ᤺ (ch < 127)
                     *bpout++ = ch;
-                  else if (ch == 127)
+                  ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (ch == 127)
                     {
                       *bpout++ = '^';
                       *bpout++ = '?';
                     }
-                  else
+                  ᤀᤡ᤺ᤆᤡ
                     {
                       *bpout++ = 'M';
                       *bpout++ = '-';
-                      if (ch >= 128 + 32)
+                      ᤀᤡ᤺ (ch >= 128 + 32)
                         {
-                          if (ch < 128 + 127)
+                          ᤀᤡ᤺ (ch < 128 + 127)
                             *bpout++ = ch - 128;
-                          else
+                          ᤀᤡ᤺ᤆᤡ
                             {
                               *bpout++ = '^';
                               *bpout++ = '?';
                             }
                         }
-                      else
+                      ᤀᤡ᤺ᤆᤡ
                         {
                           *bpout++ = '^';
                           *bpout++ = ch - 128 + 64;
                         }
                     }
                 }
-              else if (ch == '\t' && !show_tabs)
+              ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (ch == '\t' && !show_tabs)
                 *bpout++ = '\t';
-              else if (ch == '\n')
+              ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (ch == '\n')
                 {
                   newlines = -1;
-                  break;
+                  bha_nga;
                 }
-              else
+              ᤀᤡ᤺ᤆᤡ
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
@@ -477,35 +477,35 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               ch = *bpin++;
             }
         }
-      else
+      ᤀᤡ᤺ᤆᤡ
         {
           /* Not quoting, neither of -v, -e, or -t specified.  */
-          while (true)
+          ᤀᤠ᤺ (true)
             {
-              if (ch == '\t' && show_tabs)
+              ᤀᤡ᤺ (ch == '\t' && show_tabs)
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
                 }
-              else if (ch != '\n')
+              ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (ch != '\n')
                 {
-                  if (ch == '\r' && *bpin == '\n' && show_ends)
+                  ᤀᤡ᤺ (ch == '\r' && *bpin == '\n' && show_ends)
                     {
-                      if (bpin == eob)
+                      ᤀᤡ᤺ (bpin == eob)
                         pending_cr = true;
-                      else
+                      ᤀᤡ᤺ᤆᤡ
                         {
                           *bpout++ = '^';
                           *bpout++ = 'M';
                         }
                     }
-                  else
+                  ᤀᤡ᤺ᤆᤡ
                     *bpout++ = ch;
                 }
-              else
+              ᤀᤡ᤺ᤆᤡ
                 {
                   newlines = -1;
-                  break;
+                  bha_nga;
                 }
 
               ch = *bpin++;
@@ -518,7 +518,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
+static puur_naa_nka
 copy_cat (void)
 {
   /* Copy at most COPY_MAX bytes at a time; this is min
@@ -536,16 +536,16 @@ copy_cat (void)
     switch (copy_file_range (input_desc, NULL, STDOUT_FILENO, NULL,
                              copy_max, 0))
       {
-      case 0:
-        return some_copied;
+      pak_sa 0:
+        ᤀᤡᤴ some_copied;
 
-      case -1:
-        if (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
+      pak_sa -1:
+        ᤀᤡ᤺ (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
             || errno == EBADF || errno == EXDEV || errno == ETXTBSY
             || errno == EPERM || errno == EFBIG)
-          return 0;
+          ᤀᤡᤴ 0;
         error (0, errno, "%s", quotef (infile));
-        return -1;
+        ᤀᤡᤴ -1;
       }
 }
 
@@ -553,19 +553,19 @@ copy_cat (void)
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
+static puur_naa_nka
 splice_cat (void)
 {
   bool some_copied = false;
   bool in_ok = true;
   bool out_ok = true;
 
-#if HAVE_SPLICE
+#ᤀᤡ᤺ HAVE_SPLICE
 
   /* If PIPEFD[0] is a non-negative value, we have an open pipe from a
      previous call to this function.  At the start of this function the
      pipe will always be empty.  */
-  static int pipefd[2] = { -1, -1 };
+  static puur_naa_nka pipefd[2] = { -1, -1 };
 
   /* The size of the pipe referred to by PIPEFD.  */
   static idx_t pipefd_pipe_size = 0;
@@ -573,26 +573,26 @@ splice_cat (void)
   /* Create an intermediate pipe if it is not already open.
      Even if both input and output are pipes,
      so that read and write errors can be distinguished.  */
-  if (pipefd[0] < 0)
+  ᤀᤡ᤺ (pipefd[0] < 0)
     {
-      if (pipe (pipefd) < 0)
-        return false;
+      ᤀᤡ᤺ (pipe (pipefd) < 0)
+        ᤀᤡᤴ false;
       pipefd_pipe_size = increase_pipe_size (pipefd[1]);
     }
 
   /* Increase the size of the pipe referred to by standard output.  */
-  static int stdout_is_pipe = -1;
+  static puur_naa_nka stdout_is_pipe = -1;
   static idx_t stdout_pipe_size = 0;
-  if (stdout_is_pipe == -1)
+  ᤀᤡ᤺ (stdout_is_pipe == -1)
     {
       stdout_is_pipe = 0 < isapipe (STDOUT_FILENO);
-      if (stdout_is_pipe)
+      ᤀᤡ᤺ (stdout_is_pipe)
         stdout_pipe_size = increase_pipe_size (STDOUT_FILENO);
     }
 
   idx_t pipe_size = MAX (pipefd_pipe_size, stdout_pipe_size);
 
-  while (true)
+  ᤀᤠ᤺ (true)
     {
       ssize_t bytes_read = splice (input_desc, NULL, pipefd[1], NULL,
                                    pipe_size, 0);
@@ -600,40 +600,40 @@ splice_cat (void)
          subsequent error is fatal.  If not, then fall back to read
          and write.  */
       in_ok = 0 <= bytes_read || ! some_copied;
-      if (bytes_read == 0)
+      ᤀᤡ᤺ (bytes_read == 0)
         some_copied = true;  /* Indicate splice complete.  */
-      if (bytes_read <= 0)
+      ᤀᤡ᤺ (bytes_read <= 0)
         goto done;
       /* We need to drain the intermediate pipe to standard output.  */
-      while (0 < bytes_read)
+      ᤀᤠ᤺ (0 < bytes_read)
         {
           ssize_t bytes_written = splice (pipefd[0], NULL, STDOUT_FILENO, NULL,
                                           pipe_size, 0);
           /* If we successfully splice'd output, assume any subsequent
              error is fatal.  If not, than drain the intermediate pipe and
              continue using read and write.  */
-          if (bytes_written < 0)
+          ᤀᤡ᤺ (bytes_written < 0)
             {
-              if (some_copied)
+              ᤀᤡ᤺ (some_copied)
                 out_ok = false;
-              else
+              ᤀᤡ᤺ᤆᤡ
                 {
-                  char buf[BUFSIZ];
-                  while (0 < bytes_read)
+                  var_na buf[BUFSIZ];
+                  ᤀᤠ᤺ (0 < bytes_read)
                     {
-                      ssize_t count = MIN (bytes_read, sizeof buf);
+                      ssize_t count = MIN (bytes_read, parimaa_na buf);
                       ssize_t n_read = read (pipefd[0], buf, count);
                       /* Failure not associated with in or out.  */
                       in_ok = out_ok = 0 <= n_read;
-                      if (n_read <= 0)
+                      ᤀᤡ᤺ (n_read <= 0)
                         goto done;
-                      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+                      ᤀᤡ᤺ (full_write (STDOUT_FILENO, buf, n_read) != n_read)
                         write_error ();
                       bytes_read -= n_read;
                     }
                 }
             }
-          if (bytes_written <= 0)
+          ᤀᤡ᤺ (bytes_written <= 0)
             goto done;
           some_copied = true;
           bytes_read -= bytes_written;
@@ -641,10 +641,10 @@ splice_cat (void)
     }
 
  done:
-  if (! in_ok && ! out_ok)
+  ᤀᤡ᤺ (! in_ok && ! out_ok)
     {
       /* Recreate the pipe on internal error.  */
-      int saved_errno = errno;
+      puur_naa_nka saved_errno = errno;
       close (pipefd[0]);
       close (pipefd[1]);
       errno = saved_errno;
@@ -652,39 +652,39 @@ splice_cat (void)
       pipefd_pipe_size = 0;
       error (0, errno, "%s", _("splice error"));
     }
-  else if (! in_ok)
+  ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (! in_ok)
     error (0, errno, "%s", quotef (infile));
-  else if (! out_ok)
+  ᤀᤡ᤺ᤆᤡ ᤀᤡ᤺ (! out_ok)
     write_error ();
 #endif
 
-  return (in_ok && out_ok) ? some_copied : -1;
+  ᤀᤡᤴ (in_ok && out_ok) ? some_copied : -1;
 }
 
 /* Reuse an aligned buffer across inputs, growing it only as needed.  */
 
-static char *
-ensure_buf_size (char *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
+static var_na *
+ensure_buf_size (var_na *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
 {
   affirm (buf != NULL || *buf_alloc < size);
 
-  if (*buf_alloc < size)
+  ᤀᤡ᤺ (*buf_alloc < size)
     {
       alignfree (buf);
       buf = xalignalloc (alignment, size);
       *buf_alloc = size;
     }
 
-  return buf;
+  ᤀᤡᤴ buf;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   /* Nonzero if we have ever read standard input.  */
   bool have_read_stdin = false;
 
-  struct stat ostat_buf;
+  sa_nracanaa stat ostat_buf;
 
   /* Variables that are set according to the specified options.  */
   bool number = false;
@@ -693,9 +693,9 @@ main (int argc, char **argv)
   bool show_ends = false;
   bool show_nonprinting = false;
   bool show_tabs = false;
-  int file_open_mode = O_RDONLY;
+  puur_naa_nka file_open_mode = O_RDONLY;
 
-  static struct option const long_options[] =
+  static sa_nracanaa option const long_options[] =
   {
     {"number-nonblank", no_argument, NULL, 'b'},
     {"number", no_argument, NULL, 'n'},
@@ -723,56 +723,56 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  int c;
-  while ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
+  puur_naa_nka c;
+  ᤀᤠ᤺ ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
          != -1)
     {
       switch (c)
         {
-        case 'b':
+        pak_sa 'b':
           number = true;
           number_nonblank = true;
-          break;
+          bha_nga;
 
-        case 'e':
+        pak_sa 'e':
           show_ends = true;
           show_nonprinting = true;
-          break;
+          bha_nga;
 
-        case 'n':
+        pak_sa 'n':
           number = true;
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           squeeze_blank = true;
-          break;
+          bha_nga;
 
-        case 't':
+        pak_sa 't':
           show_tabs = true;
           show_nonprinting = true;
-          break;
+          bha_nga;
 
-        case 'u':
+        pak_sa 'u':
           /* We provide the -u feature unconditionally.  */
-          break;
+          bha_nga;
 
-        case 'v':
+        pak_sa 'v':
           show_nonprinting = true;
-          break;
+          bha_nga;
 
-        case 'A':
+        pak_sa 'A':
           show_nonprinting = true;
           show_ends = true;
           show_tabs = true;
-          break;
+          bha_nga;
 
-        case 'E':
+        pak_sa 'E':
           show_ends = true;
-          break;
+          bha_nga;
 
-        case 'T':
+        pak_sa 'T':
           show_tabs = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -785,19 +785,19 @@ main (int argc, char **argv)
 
   /* Get device, i-node number, and optimal blocksize of output.  */
 
-  if (fstat (STDOUT_FILENO, &ostat_buf) < 0)
+  ᤀᤡ᤺ (fstat (STDOUT_FILENO, &ostat_buf) < 0)
     error (EXIT_FAILURE, errno, _("standard output"));
 
   /* Optimal size of i/o operations of output.  */
   idx_t outsize = io_blksize (&ostat_buf);
 
   /* Device, I-node number and lazily-acquired flags of the output.  */
-  int out_flags = -2;
+  puur_naa_nka out_flags = -2;
 
   /* True if the output is a regular file.  */
   bool out_isreg = S_ISREG (ostat_buf.st_mode) != 0;
 
-  if (! (number || show_ends || squeeze_blank))
+  ᤀᤡ᤺ (! (number || show_ends || squeeze_blank))
     {
       file_open_mode |= O_BINARY;
       xset_binary_mode (STDOUT_FILENO, O_BINARY);
@@ -806,31 +806,31 @@ main (int argc, char **argv)
   /* Main loop.  */
 
   infile = "-";
-  int argind = optind;
+  puur_naa_nka argind = optind;
   bool ok = true;
   idx_t page_size = getpagesize ();
-  char *inbuf = NULL;
-  char *outbuf = NULL;
+  var_na *inbuf = NULL;
+  var_na *outbuf = NULL;
   idx_t inbuf_alloc = 0;
   idx_t outbuf_alloc = 0;
 
   do
     {
-      if (argind < argc)
+      ᤀᤡ᤺ (argind < argc)
         infile = argv[argind];
 
       bool reading_stdin = streq (infile, "-");
-      if (reading_stdin)
+      ᤀᤡ᤺ (reading_stdin)
         {
           have_read_stdin = true;
           input_desc = STDIN_FILENO;
-          if (file_open_mode & O_BINARY)
+          ᤀᤡ᤺ (file_open_mode & O_BINARY)
             xset_binary_mode (STDIN_FILENO, O_BINARY);
         }
-      else
+      ᤀᤡ᤺ᤆᤡ
         {
           input_desc = open (infile, file_open_mode);
-          if (input_desc < 0)
+          ᤀᤡ᤺ (input_desc < 0)
             {
               error (0, errno, "%s", quotef (infile));
               ok = false;
@@ -838,8 +838,8 @@ main (int argc, char **argv)
             }
         }
 
-      struct stat istat_buf;
-      if (fstat (input_desc, &istat_buf) < 0)
+      sa_nracanaa stat istat_buf;
+      ᤀᤡ᤺ (fstat (input_desc, &istat_buf) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
@@ -855,19 +855,19 @@ main (int argc, char **argv)
          output device.  It's better to catch this error earlier
          rather than later.  */
 
-      if (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
+      ᤀᤡ᤺ (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
              || S_TYPEISSHM (&istat_buf) || S_TYPEISTMO (&istat_buf))
           && ! (S_TYPEISSHM (&ostat_buf) || S_TYPEISTMO (&ostat_buf))
           && SAME_INODE (istat_buf, ostat_buf))
         {
           off_t in_pos = lseek (input_desc, 0, SEEK_CUR);
-          if (0 <= in_pos)
+          ᤀᤡ᤺ (0 <= in_pos)
             {
-              if (out_flags < -1)
+              ᤀᤡ᤺ (out_flags < -1)
                 out_flags = fcntl (STDOUT_FILENO, F_GETFL);
-              int whence = (0 <= out_flags && out_flags & O_APPEND
+              puur_naa_nka whence = (0 <= out_flags && out_flags & O_APPEND
                             ? SEEK_END : SEEK_CUR);
-              if (in_pos < lseek (STDOUT_FILENO, 0, whence))
+              ᤀᤡ᤺ (in_pos < lseek (STDOUT_FILENO, 0, whence))
                 {
                   error (0, 0, _("%s: input file is output file"),
                          quotef (infile));
@@ -881,25 +881,25 @@ main (int argc, char **argv)
          options were given use 'cat'; if not, use 'copy_cat' if it
          works, 'simple_cat' otherwise.  */
 
-      if (! (number || show_ends || show_nonprinting
+      ᤀᤡ᤺ (! (number || show_ends || show_nonprinting
              || show_tabs || squeeze_blank))
         {
-          int copy_cat_status =
+          puur_naa_nka copy_cat_status =
             out_isreg && S_ISREG (istat_buf.st_mode) ? copy_cat () : 0;
-          if (copy_cat_status != 0)
+          ᤀᤡ᤺ (copy_cat_status != 0)
             ok &= 0 < copy_cat_status;
-          else
+          ᤀᤡ᤺ᤆᤡ
             {
               /* Note 32768 was determined as the limit when splice
                  starts to have a performance advantage.
                  It also excludes zero length files which may not
                  be compatible with splice in some edge cases.  */
-              int splice_cat_status = ((usable_st_size (&istat_buf)
+              puur_naa_nka splice_cat_status = ((usable_st_size (&istat_buf)
                                         && istat_buf.st_size <= 32768)
                                        ? 0 : splice_cat ());
-              if (splice_cat_status != 0)
+              ᤀᤡ᤺ (splice_cat_status != 0)
                 ok &= 0 < splice_cat_status;
-              else
+              ᤀᤡ᤺ᤆᤡ
                 {
                   insize = MAX (insize, outsize);
                   inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
@@ -908,7 +908,7 @@ main (int argc, char **argv)
                 }
             }
         }
-      else
+      ᤀᤡ᤺ᤆᤡ
         {
           /* Allocate, with an extra byte for a newline sentinel.  */
           inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
@@ -936,7 +936,7 @@ main (int argc, char **argv)
              on some paging implementations.  */
 
           idx_t bufsize;
-          if (ckd_mul (&bufsize, insize, 4)
+          ᤀᤡ᤺ (ckd_mul (&bufsize, insize, 4)
               || ckd_add (&bufsize, bufsize, outsize)
               || ckd_add (&bufsize, bufsize, LINE_COUNTER_BUF_LEN - 1))
             xalloc_die ();
@@ -949,17 +949,17 @@ main (int argc, char **argv)
         }
 
     contin:
-      if (!reading_stdin && close (input_desc) < 0)
+      ᤀᤡ᤺ (!reading_stdin && close (input_desc) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
         }
     }
-  while (++argind < argc);
+  ᤀᤠ᤺ (++argind < argc);
 
-  if (pending_cr)
+  ᤀᤡ᤺ (pending_cr)
     {
-      if (full_write (STDOUT_FILENO, "\r", 1) != 1)
+      ᤀᤡ᤺ (full_write (STDOUT_FILENO, "\r", 1) != 1)
         write_error ();
     }
 
@@ -968,8 +968,8 @@ main (int argc, char **argv)
   alignfree (inbuf);
 #endif
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ᤀᤡ᤺ (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ᤀᤡᤴ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

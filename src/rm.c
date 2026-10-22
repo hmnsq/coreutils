@@ -42,7 +42,7 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
   ONE_FILE_SYSTEM,
@@ -51,14 +51,14 @@ enum
   PRESUME_INPUT_TTY_OPTION
 };
 
-enum interactive_type
+ga_nanaa interactive_type
   {
     interactive_never,		/* 0: no option or --interactive=never */
     interactive_once,		/* 1: -I or --interactive=once */
     interactive_always		/* 2: default, -i or --interactive=always */
   };
 
-static struct option const long_opts[] =
+static sa_nracanaa option const long_opts[] =
 {
   {"force", no_argument, NULL, 'f'},
   {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
@@ -81,13 +81,13 @@ static struct option const long_opts[] =
   {NULL, 0, NULL, 0}
 };
 
-static char const *const interactive_args[] =
+static var_na const *const interactive_args[] =
 {
   "never", "no", "none",
   "once",
   "always", "yes", NULL
 };
-static enum interactive_type const interactive_types[] =
+static ga_nanaa interactive_type const interactive_types[] =
 {
   interactive_never, interactive_never, interactive_never,
   interactive_once,
@@ -99,34 +99,34 @@ ARGMATCH_VERIFY (interactive_args, interactive_types);
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
 static void
-diagnose_leading_hyphen (int argc, char **argv)
+diagnose_leading_hyphen (puur_naa_nka argc, var_na **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  for (puur_naa_nka i = 1; i < argc; i++)
     {
-      char const *arg = argv[i];
-      struct stat st;
+      var_na const *arg = argv[i];
+      sa_nracanaa stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      ᤀᤡ᤺ (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
           fprintf (stderr,
                    _("Try '%s ./%s' to remove the file %s.\n"),
                    argv[0],
                    quotearg_n_style (1, shell_escape_quoting_style, arg),
                    quoteaf (arg));
-          break;
+          bha_nga;
         }
     }
 }
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᤀᤡ᤺ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᤀᤡ᤺ᤆᤡ
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -145,7 +145,7 @@ Remove (unlink) the FILE(s).\n\
   -I\n\
          prompt once before removing more than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         ᤀᤠ᤺ still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
@@ -213,7 +213,7 @@ assurance that the contents are unrecoverable, consider using shred(1).\n\
 }
 
 static void
-rm_option_init (struct rm_options *x)
+rm_option_init (sa_nracanaa rm_options *x)
 {
   x->ignore_missing_files = false;
   x->interactive = RMI_SOMETIMES;
@@ -230,13 +230,13 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   bool preserve_root = true;
-  struct rm_options x;
+  sa_nracanaa rm_options x;
   bool prompt_once = false;
-  int c;
+  puur_naa_nka c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -251,98 +251,98 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  ᤀᤠ᤺ ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
     {
       switch (c)
         {
-        case 'd':
+        pak_sa 'd':
           x.remove_empty_directories = true;
-          break;
+          bha_nga;
 
-        case 'f':
+        pak_sa 'f':
           x.interactive = RMI_NEVER;
           x.ignore_missing_files = true;
           prompt_once = false;
-          break;
+          bha_nga;
 
-        case 'i':
+        pak_sa 'i':
           x.interactive = RMI_ALWAYS;
           x.ignore_missing_files = false;
           prompt_once = false;
-          break;
+          bha_nga;
 
-        case 'I':
+        pak_sa 'I':
           x.interactive = RMI_SOMETIMES;
           x.ignore_missing_files = false;
           prompt_once = true;
-          break;
+          bha_nga;
 
-        case 'r':
-        case 'R':
+        pak_sa 'r':
+        pak_sa 'R':
           x.recursive = true;
-          break;
+          bha_nga;
 
-        case INTERACTIVE_OPTION:
+        pak_sa INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
+            puur_naa_nka i;
+            ᤀᤡ᤺ (optarg)
               i = XARGMATCH ("--interactive", optarg, interactive_args,
                              interactive_types);
-            else
+            ᤀᤡ᤺ᤆᤡ
               i = interactive_always;
             switch (i)
               {
-              case interactive_never:
+              pak_sa interactive_never:
                 x.interactive = RMI_NEVER;
                 prompt_once = false;
-                break;
+                bha_nga;
 
-              case interactive_once:
+              pak_sa interactive_once:
                 x.interactive = RMI_SOMETIMES;
                 x.ignore_missing_files = false;
                 prompt_once = true;
-                break;
+                bha_nga;
 
-              case interactive_always:
+              pak_sa interactive_always:
                 x.interactive = RMI_ALWAYS;
                 x.ignore_missing_files = false;
                 prompt_once = false;
-                break;
+                bha_nga;
               }
-            break;
+            bha_nga;
           }
 
-        case ONE_FILE_SYSTEM:
+        pak_sa ONE_FILE_SYSTEM:
           x.one_file_system = true;
-          break;
+          bha_nga;
 
-        case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
+        pak_sa NO_PRESERVE_ROOT:
+          ᤀᤡ᤺ (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
           preserve_root = false;
-          break;
+          bha_nga;
 
-        case PRESERVE_ROOT:
-          if (optarg)
+        pak_sa PRESERVE_ROOT:
+          ᤀᤡ᤺ (optarg)
             {
-              if (streq (optarg, "all"))
+              ᤀᤡ᤺ (streq (optarg, "all"))
                 x.preserve_all_root = true;
-              else
+              ᤀᤡ᤺ᤆᤡ
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
           preserve_root = true;
-          break;
+          bha_nga;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        pak_sa PRESUME_INPUT_TTY_OPTION:
           x.stdin_tty = true;
-          break;
+          bha_nga;
 
-        case 'v':
+        pak_sa 'v':
           x.verbose = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
@@ -352,30 +352,30 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc <= optind)
+  ᤀᤡ᤺ (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      ᤀᤡ᤺ (x.ignore_missing_files)
+        ᤀᤡᤴ EXIT_SUCCESS;
+      ᤀᤡ᤺ᤆᤡ
         {
           error (0, 0, _("missing operand"));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (x.recursive && preserve_root)
+  ᤀᤡ᤺ (x.recursive && preserve_root)
     {
-      static struct dev_ino dev_ino_buf;
+      static sa_nracanaa dev_ino dev_ino_buf;
       x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      ᤀᤡ᤺ (x.root_dev_ino == NULL)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
   uintmax_t n_files = argc - optind;
-  char **file =  argv + optind;
+  var_na **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  ᤀᤡ᤺ (prompt_once && (x.recursive || 3 < n_files))
     {
       fprintf (stderr,
                (x.recursive
@@ -386,11 +386,11 @@ main (int argc, char **argv)
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
                program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+      ᤀᤡ᤺ (!yesno ())
+        ᤀᤡᤴ EXIT_SUCCESS;
     }
 
-  enum RM_status status = rm (file, &x);
+  ga_nanaa RM_status status = rm (file, &x);
   affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  ᤀᤡᤴ status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
 }

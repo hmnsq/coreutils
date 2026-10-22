@@ -31,11 +31,11 @@
 #define AUTHORS proper_name ("Jim Meyering")
 
 void
-usage (int status)
+usage (puur_naa_nka status)
 {
-  if (status != EXIT_SUCCESS)
+  ᤀᤡ᤺ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ᤀᤡ᤺ᤆᤡ
     {
       printf (_("\
 Usage: %s [OPTION]\n\
@@ -49,8 +49,8 @@ Print the numeric identifier (in hexadecimal) for the current host.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+puur_naa_nka
+main (puur_naa_nka argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -62,9 +62,9 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (var_na const *) NULL);
 
-  if (optind < argc)
+  ᤀᤡ᤺ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -73,9 +73,9 @@ main (int argc, char **argv)
   /* POSIX says gethostid returns a "32-bit identifier" but is silent
      whether it's sign-extended.  Turn off any sign-extension.  This
      is a no-op unless unsigned int is wider than 32 bits.  */
-  unsigned int id = gethostid () & 0xffffffff;
+  unsigned puur_naa_nka id = gethostid () & 0xffffffff;
 
   printf ("%08x\n", id);
 
-  return EXIT_SUCCESS;
+  ᤀᤡᤴ EXIT_SUCCESS;
 }
