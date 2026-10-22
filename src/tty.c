@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "quote.h"
 
 /* Exit statuses.  */
-enum
+गणना
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -44,32 +44,32 @@ enum
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+स्थिर bool silent;
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_argument, रिक्त, 's'},
+  {"quiet", no_argument, रिक्त, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  जइ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अण्णहा
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name of the terminal connected to standard निवेशः.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only प्रत्यागम an exit status\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -78,10 +78,10 @@ Print the file name of the terminal connected to standard input.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int optc;
+  पूर्णाङ्क optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  जाव ((optc = getopt_long (argc, argv, "s", longopts, रिक्त)) != -1)
     {
-      switch (optc)
+      विकल्प (optc)
         {
-        case 's':
+        पक्ष 's':
           silent = true;
-          break;
+          भङ्ग;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        स्वभाव:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  जइ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  जइ (silent)
+    प्रत्यागम isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  पूर्णाङ्क status;
+  वर्ण ध्रुव *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
+  जइ (tty)
     status = EXIT_SUCCESS;
-  else
+  अण्णहा
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      पूर्णाङ्क ttyname_err = errno;
+      जइ (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
       status = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  प्रत्यागम status;
 }

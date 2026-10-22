@@ -16,31 +16,31 @@
 
 /* David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <getopt.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
+#अन्तर्भाव "system.h"
 
-#if ! HAVE_NICE
+#जइ ! HAVE_NICE
 /* Include this after "system.h" so we're sure to have definitions
    (from time.h or sys/time.h) required for e.g. the ru_utime member.  */
 # include <sys/resource.h>
 #endif
 
-#include "c-ctype.h"
-#include "quote.h"
-#include "xstrtol.h"
+#अन्तर्भाव "c-ctype.h"
+#अन्तर्भाव "quote.h"
+#अन्तर्भाव "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nice"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-#if HAVE_NICE
+#जइ HAVE_NICE
 # define GET_NICENESS() nice (0)
-#else
+#अण्णहा
 # define GET_NICENESS() getpriority (PRIO_PROCESS, 0)
 #endif
 
@@ -49,30 +49,30 @@
 #endif
 
 /* This is required for Darwin Kernel Version 7.7.0.  */
-#if NZERO == 0
+#जइ NZERO == 0
 # undef  NZERO
 # define NZERO 20
 #endif
 
-static struct option const longopts[] =
+स्थिर संरचना option ध्रुव longopts[] =
 {
-  {"adjustment", required_argument, NULL, 'n'},
+  {"adjustment", required_argument, रिक्त, 'n'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {रिक्त, 0, रिक्त, 0}
 };
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  जइ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अण्णहा
     {
       printf (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
       printf (_("\
 Run COMMAND with an adjusted niceness, which affects process scheduling.\n\
-With no COMMAND, print the current niceness.  Niceness values range from\n\
+With no COMMAND, print the current niceness.  Niceness मानानि range from\n\
 %d (most favorable to the process) to %d (least favorable to the process).\n\
 "),
               - NZERO, NZERO - 1);
@@ -81,7 +81,7 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
 
       oputs (_("\
   -n, --adjustment=N\n\
-         add integer N to the niceness (default 10)\n\
+         add integer N to the niceness (स्वभाव 10)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -92,20 +92,20 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
   exit (status);
 }
 
-static bool
-perm_related_errno (int err)
+स्थिर bool
+perm_related_errno (पूर्णाङ्क err)
 {
-  return err == EACCES || err == EPERM;
+  प्रत्यागम err == EACCES || err == EPERM;
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
-  int current_niceness;
-  int adjustment = 10;
-  char const *adjustment_given = NULL;
+  पूर्णाङ्क current_niceness;
+  पूर्णाङ्क adjustment = 10;
+  वर्ण ध्रुव *adjustment_given = रिक्त;
   bool ok;
-  int i;
+  पूर्णाङ्क i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -116,20 +116,20 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  for (i = 1; i < argc; /* empty */)
+  प्रति (i = 1; i < argc; /* empty */)
     {
-      char const *s = argv[i];
+      वर्ण ध्रुव *s = argv[i];
 
-      if (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
+      जइ (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
         {
           adjustment_given = s + 1;
           ++i;
         }
-      else
+      अण्णहा
         {
-          int c;
-          int fake_argc = argc - (i - 1);
-          char **fake_argv = argv + (i - 1);
+          पूर्णाङ्क c;
+          पूर्णाङ्क fake_argc = argc - (i - 1);
+          वर्ण **fake_argv = argv + (i - 1);
 
           /* Ensure that any getopt diagnostics use the right name.  */
           fake_argv[0] = argv[0];
@@ -137,82 +137,82 @@ main (int argc, char **argv)
           /* Initialize getopt_long's internal state.  */
           optind = 0;
 
-          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, NULL);
+          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, रिक्त);
           i += optind - 1;
 
-          switch (c)
+          विकल्प (c)
             {
-            case 'n':
+            पक्ष 'n':
               adjustment_given = optarg;
-              break;
+              भङ्ग;
 
-            case -1:
-              break;
+            पक्ष -1:
+              भङ्ग;
 
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-            default:
+            स्वभाव:
               usage (EXIT_CANCELED);
-              break;
+              भङ्ग;
             }
 
-          if (c == -1)
-            break;
+          जइ (c == -1)
+            भङ्ग;
         }
     }
 
-  if (adjustment_given)
+  जइ (adjustment_given)
     {
       /* If the requested adjustment is outside the valid range,
          silently bring it to just within range; this mimics what
          "setpriority" and "nice" do.  */
-#if (defined __gnu_hurd__                                               \
+#जइ (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) only supported 0 to (2 * NZERO - 2) niceness
          until glibc 2.43.  */
-      enum { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
-#else
-      enum { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
+      गणना { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
+#अण्णहा
+      गणना { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
 #endif
-      long int tmp;
-      if (LONGINT_OVERFLOW < xstrtol (adjustment_given, NULL, 10, &tmp, ""))
+      long पूर्णाङ्क tmp;
+      जइ (LONGINT_OVERFLOW < xstrtol (adjustment_given, रिक्त, 10, &tmp, ""))
         error (EXIT_CANCELED, 0, _("invalid adjustment %s"),
                quote (adjustment_given));
-#if (defined __gnu_hurd__                                               \
+#जइ (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) also did not clamp the new niceness into the
          supported range until glibc 2.43.
          See <https://sourceware.org/PR33614>.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      जइ (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      if (tmp < 0)
+      जइ (tmp < 0)
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
+          पूर्णाङ्क sum;
+          जइ (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
             adjustment = MIN_ADJUSTMENT - current_niceness;
-          else
+          अण्णहा
             adjustment = tmp;
         }
-      else
+      अण्णहा
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
+          पूर्णाङ्क sum;
+          जइ (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
             adjustment = MAX_ADJUSTMENT - current_niceness;
-          else
+          अण्णहा
             adjustment = tmp;
         }
-#else
+#अण्णहा
       adjustment = MAX (MIN_ADJUSTMENT, MIN (tmp, MAX_ADJUSTMENT));
 #endif
     }
 
-  if (i == argc)
+  जइ (i == argc)
     {
-      if (adjustment_given)
+      जइ (adjustment_given)
         {
           error (0, 0, _("a command must be given with an adjustment"));
           usage (EXIT_CANCELED);
@@ -220,22 +220,22 @@ main (int argc, char **argv)
       /* No command given; print the niceness.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      जइ (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
       printf ("%d\n", current_niceness);
-      return EXIT_SUCCESS;
+      प्रत्यागम EXIT_SUCCESS;
     }
 
   errno = 0;
-#if HAVE_NICE
+#जइ HAVE_NICE
   ok = (nice (adjustment) != -1 || errno == 0);
-#else
+#अण्णहा
   current_niceness = GET_NICENESS ();
-  if (current_niceness == -1 && errno != 0)
+  जइ (current_niceness == -1 && errno != 0)
     error (EXIT_CANCELED, errno, _("cannot get niceness"));
   ok = (setpriority (PRIO_PROCESS, 0, current_niceness + adjustment) == 0);
 #endif
-  if (!ok)
+  जइ (!ok)
     {
       error (perm_related_errno (errno) ? 0
              : EXIT_CANCELED, errno, _("cannot set niceness"));
@@ -244,13 +244,13 @@ main (int argc, char **argv)
          close_stdout, but execvp() gets in the way.  If stderr
          encountered a write failure, there is no need to try calling
          error() again.  */
-      if (ferror (stderr))
-        return EXIT_CANCELED;
+      जइ (ferror (stderr))
+        प्रत्यागम EXIT_CANCELED;
     }
 
   execvp (argv[i], &argv[i]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  पूर्णाङ्क exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[i]));
-  return exit_status;
+  प्रत्यागम exit_status;
 }
