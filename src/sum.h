@@ -1,18 +1,18 @@
-extern int
-bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+बाह्य पूर्णाङ्क
+bsd_sum_stream (FILE *stream, शून्य *resstream, intmax_t *length);
 
-extern int
-sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+बाह्य पूर्णाङ्क
+sysv_sum_stream (FILE *stream, शून्य *resstream, intmax_t *length);
 
-typedef int (*sumfn)(FILE *, void *, intmax_t *);
+प्रकारनिर्देश पूर्णाङ्क (*sumfn)(FILE *, शून्य *, intmax_t *);
 
 
-extern void
-output_bsd (char const *file, int binary_file, void const *digest,
-            bool raw, bool tagged, unsigned char delim, bool args,
+बाह्य शून्य
+output_bsd (वर्ण ध्रुव *file, पूर्णाङ्क द्विआधारी_file, शून्य ध्रुव *digest,
+            bool raw, bool tagged, unsigned वर्ण delim, bool args,
             intmax_t length);
 
-extern void
-output_sysv (char const *file, int binary_file, void const *digest,
-             bool raw, bool tagged, unsigned char delim, bool args,
+बाह्य शून्य
+output_sysv (वर्ण ध्रुव *file, पूर्णाङ्क द्विआधारी_file, शून्य ध्रुव *digest,
+             bool raw, bool tagged, unsigned वर्ण delim, bool args,
              intmax_t length);

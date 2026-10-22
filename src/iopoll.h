@@ -1,8 +1,8 @@
 #define IOPOLL_BROKEN_OUTPUT -2
 #define IOPOLL_ERROR         -3
 
-int iopoll (int fdin, int fdout, bool block);
-bool iopoll_input_ok (int fdin);
-bool iopoll_output_ok (int fdout);
+पूर्णाङ्क iopoll (पूर्णाङ्क fdin, पूर्णाङ्क fdout, bool block);
+bool iopoll_निवेश_ok (पूर्णाङ्क fdin);
+bool iopoll_output_ok (पूर्णाङ्क fdout);
 
-bool write_wait (int fd, void const *buffer, size_t size);
+bool write_wait (पूर्णाङ्क fd, शून्य ध्रुव *buffer, size_t size);
