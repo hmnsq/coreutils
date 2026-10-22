@@ -1,2 +1,2 @@
-#include "ls.h"
-enum ls_modes ls_mode = LS_LS;
+#شامل "ls.h"
+شمارش ls_modes ls_mode = LS_LS;

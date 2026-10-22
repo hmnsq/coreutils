@@ -16,15 +16,15 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#شامل "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#شامل "system.h"
+#شامل "canonicalize.h"
+#شامل "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "readlink"
@@ -32,35 +32,35 @@
 #define AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+ایستا bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+ایستا bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+ایستا bool quote_output;
 
-static struct option const longopts[] =
+ایستا ساختار option ثابت longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_argument, پوچ, 'f'},
+  {"canonicalize-existing", no_argument, پوچ, 'e'},
+  {"canonicalize-missing", no_argument, پوچ, 'm'},
+  {"no-newline", no_argument, پوچ, 'n'},
+  {"quiet", no_argument, پوچ, 'q'},
+  {"silent", no_argument, پوچ, 's'},
+  {"verbose", no_argument, پوچ, 'v'},
+  {"zero", no_argument, پوچ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {پوچ, 0, پوچ, 0}
 };
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
@@ -85,7 +85,7 @@ usage (int status)
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         انجامبده not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,16 +93,16 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by پیشفرض اگر POSIXLY_CORRECT is not set)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by پیشفرض اگر POSIXLY_CORRECT is set)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output سطر with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -111,13 +111,13 @@ usage (int status)
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  صحیح can_mode = -1;
+  صحیح status = EXIT_SUCCESS;
+  صحیح optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
@@ -128,91 +128,91 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  وقتی ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, پوچ)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'e':
+        حالت 'e':
           can_mode = CAN_EXISTING;
-          break;
-        case 'f':
+          بشکن;
+        حالت 'f':
           can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
+          بشکن;
+        حالت 'm':
           can_mode = CAN_MISSING;
-          break;
-        case 'n':
+          بشکن;
+        حالت 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          بشکن;
+        حالت 'q':
+        حالت 's':
           verbose = false;
-          break;
-        case 'v':
+          بشکن;
+        حالت 'v':
           verbose = true;
-          break;
-        case 'z':
+          بشکن;
+        حالت 'z':
           use_nuls = true;
-          break;
+          بشکن;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        پیشفرض:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  اگر (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  اگر (argc - optind > 1)
     {
-      if (no_newline)
+      اگر (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  اگر (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحیح qs = getenv_quoting_style ();
+      اگر (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      اگر (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (پوچ, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  اگر (getenv ("POSIXLY_CORRECT") != پوچ)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  برای (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
+      نویسه ثابت *fname = argv[optind];
+      نویسه *مقدار = (can_mode != -1
                      ? canonicalize_filename_mode (fname, can_mode)
                      : areadlink_with_size (fname, 63));
-      if (value)
+      اگر (مقدار)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
+          fputs (quote_output ? quoteN (مقدار) : مقدار, stdout);
+          اگر (! no_newline)
             putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          آزاد (مقدار);
+          اگر (ferror (stdout))
             write_error ();
         }
-      else
+      وگرنه
         {
           status = EXIT_FAILURE;
-          if (verbose)
+          اگر (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  بازگشت status;
 }

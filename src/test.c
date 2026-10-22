@@ -20,35 +20,35 @@
 /* Define TEST_STANDALONE to get the /bin/test version.  Otherwise, you get
    the shell builtin version. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
 #define TEST_STANDALONE 1
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME (test_mode == TEST_TEST ? "test" : "[")
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "issymlink.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "strnumcmp.h"
-#include "test.h"
+#شامل "system.h"
+#شامل "assure.h"
+#شامل "c-ctype.h"
+#شامل "issymlink.h"
+#شامل "quote.h"
+#شامل "stat-time.h"
+#شامل "strnumcmp.h"
+#شامل "test.h"
 
-#include <stdarg.h>
+#شامل <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#اگر HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+شمارش { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+شمارش binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,36 +58,36 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
+#اگر defined TEST_STANDALONE
 # define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
-   static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+# define test_main_return(val) بازگشت val
+#وگرنه
+   ایستا jmp_buf test_exit_buf;
+   ایستا صحیح test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+ایستا صحیح pos;		/* The offset of the current argument in ARGV. */
+ایستا صحیح argc;	/* The number of arguments present in ARGV. */
+ایستا نویسه **argv;	/* The argument list. */
 
-static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
-static bool two_arguments (void);
-static bool three_arguments (void);
-static bool posixtest (int);
+ایستا bool unary_operator (تهی);
+ایستا bool دودویی_operator (bool, شمارش binop);
+ایستا bool two_arguments (تهی);
+ایستا bool three_arguments (تهی);
+ایستا bool posixtest (صحیح);
 
-static bool expr (void);
-static bool term (void);
-static bool and (void);
-static bool or (void);
+ایستا bool عبارت (تهی);
+ایستا bool term (تهی);
+ایستا bool and (تهی);
+ایستا bool or (تهی);
 
-static void beyond (void);
+ایستا تهی beyond (تهی);
 
 ATTRIBUTE_FORMAT ((printf, 1, 2))
-static _Noreturn void
-test_syntax_error (char const *format, ...)
+ایستا _Noreturn تهی
+test_syntax_error (نویسه ثابت *format, ...)
 {
   va_list ap;
   va_start (ap, format);
@@ -99,17 +99,17 @@ test_syntax_error (char const *format, ...)
    past the end of the argument list.  This check is suppressed if the
    argument is false.  */
 
-static void
+ایستا تهی
 advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  اگر (f && pos >= argc)
     beyond ();
 }
 
-static void
-unary_advance (void)
+ایستا تهی
+unary_advance (تهی)
 {
   advance (true);
   ++pos;
@@ -119,8 +119,8 @@ unary_advance (void)
  * beyond - call when we're beyond the end of the argument list (an
  *	error condition)
  */
-static _Noreturn void
-beyond (void)
+ایستا _Noreturn تهی
+beyond (تهی)
 {
   test_syntax_error (_("missing argument after %s"), quote (argv[argc - 1]));
 }
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+ایستا نویسه ثابت *
+find_int (نویسه ثابت *string)
 {
-  char const *p;
-  char const *number_start;
+  نویسه ثابت *p;
+  نویسه ثابت *عدد_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
-    continue;
+  برای (p = string; isspace (to_uchar (*p)); p++)
+    ادامه;
 
-  if (*p == '+')
+  اگر (*p == '+')
     {
       p++;
-      number_start = p;
+      عدد_start = p;
     }
-  else
+  وگرنه
     {
-      number_start = p;
+      عدد_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  اگر (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      وقتی (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      وقتی (isspace (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      اگر (!*p)
+        بازگشت عدد_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+ایستا ساختار timespec
+get_mtime (نویسه ثابت *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  ساختار stat finfo;
+  بازگشت (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+ایستا صحیح
+binop (نویسه ثابت *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  بازگشت (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -213,142 +213,142 @@ binop (char const *s)
  *	'-l' string
  *	positive and negative integers
  */
-static bool
-term (void)
+ایستا bool
+term (تهی)
 {
-  bool value;
+  bool مقدار;
   bool negated = false;
-  int bop;
+  صحیح bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  وقتی (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  اگر (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  اگر (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      صحیح nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      برای (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        اگر (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            بشکن;
           }
 
-      value = posixtest (nargs);
-      if (!argv[pos])
+      مقدار = posixtest (nargs);
+      اگر (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      وگرنه
+        اگر (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  وگرنه اگر (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
-    value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+    مقدار = دودویی_operator (true, bop);
+  وگرنه اگر (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
-    value = binary_operator (false, bop);
+    مقدار = دودویی_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  وگرنه اگر (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
-    value = unary_operator ();
-  else
+    مقدار = unary_operator ();
+  وگرنه
     {
-      value = (argv[pos][0] != '\0');
+      مقدار = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  بازگشت negated ^ مقدار;
 }
 
-static bool
-binary_operator (bool l_is_l, enum binop bop)
+ایستا bool
+دودویی_operator (bool l_is_l, شمارش binop bop)
 {
-  int op;
+  صحیح op;
 
-  if (l_is_l)
+  اگر (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  اگر (r_is_l)
     advance (false);
 
   pos += 3;
 
-  switch (bop)
+  انتخاب (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    حالت EQ_BINOP: حالت GE_BINOP: حالت GT_BINOP:
+    حالت LE_BINOP: حالت LT_BINOP: حالت NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
+        نویسه lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        نویسه rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        نویسه ثابت *l = (l_is_l
                          ? umaxtostr (strlen (argv[op - 1]), lbuf)
                          : find_int (argv[op - 1]));
-        char const *r = (r_is_l
+        نویسه ثابت *r = (r_is_l
                          ? umaxtostr (strlen (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
-        switch (+bop)
+        صحیح cmp = strintcmp (l, r);
+        انتخاب (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          حالت EQ_BINOP: بازگشت cmp == 0;
+          حالت GE_BINOP: بازگشت cmp >= 0;
+          حالت GT_BINOP: بازگشت cmp >  0;
+          حالت LE_BINOP: بازگشت cmp <= 0;
+          حالت LT_BINOP: بازگشت cmp <  0;
+          حالت NE_BINOP: بازگشت cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    حالت NT_BINOP: حالت OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        اگر (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        صحیح cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        بازگشت bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    حالت EF_BINOP:
+      اگر (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      وگرنه
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          ساختار stat st[2];
+          بازگشت (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    حالت EQ_STRING_BINOP:
+    حالت NE_STRING_BINOP:
+      بازگشت streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    حالت GT_STRING_BINOP:
+    حالت LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        صحیح cmp = strcoll (argv[op - 1], argv[op + 1]);
+        بازگشت bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -356,14 +356,14 @@ binary_operator (bool l_is_l, enum binop bop)
   affirm (false);
 }
 
-static bool
-unary_operator (void)
+ایستا bool
+unary_operator (تهی)
 {
-  struct stat stat_buf;
+  ساختار stat stat_buf;
 
-  switch (argv[pos][1])
+  انتخاب (argv[pos][1])
     {
-    default:
+    پیشفرض:
       test_syntax_error (_("%s: unary operator expected"), quote (argv[pos]));
 
       /* All of the following unary operators use unary_advance (), which
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    حالت 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      بازگشت stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    حالت 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      بازگشت euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    حالت 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      بازگشت euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    حالت 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      بازگشت euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    حالت 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        اگر (stat (argv[pos - 1], &stat_buf) != 0)
+          بازگشت false;
+        ساختار timespec atime = get_stat_atime (&stat_buf);
+        ساختار timespec mtime = get_stat_mtime (&stat_buf);
+        بازگشت (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    حالت 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        اگر (stat (argv[pos - 1], &stat_buf) != 0)
+          بازگشت false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        بازگشت ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    حالت 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        اگر (stat (argv[pos - 1], &stat_buf) != 0)
+          بازگشت false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        بازگشت ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    حالت 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    حالت 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    حالت 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    حالت 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    حالت 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    حالت 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    حالت 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
+    حالت 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    حالت 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      بازگشت issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    حالت 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    حالت 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    حالت 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      بازگشت (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    حالت 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        long صحیح fd;
+        نویسه ثابت *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
         errno = 0;
-        fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        fd = strtol (arg, پوچ, 10);
+        بازگشت (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    حالت 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      بازگشت argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    حالت 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      بازگشت argv[pos - 1][0] == '\0';
     }
 }
 
@@ -504,16 +504,16 @@ unary_operator (void)
  *	term
  *	term '-a' and
  */
-static bool
-and (void)
+ایستا bool
+and (تهی)
 {
-  bool value = true;
+  bool مقدار = true;
 
-  while (true)
+  وقتی (true)
     {
-      value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      مقدار &= term ();
+      اگر (! (pos < argc && streq (argv[pos], "-a")))
+        بازگشت مقدار;
       advance (false);
     }
 }
@@ -523,16 +523,16 @@ and (void)
  *	and
  *	and '-o' or
  */
-static bool
-or (void)
+ایستا bool
+or (تهی)
 {
-  bool value = false;
+  bool مقدار = false;
 
-  while (true)
+  وقتی (true)
     {
-      value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      مقدار |= and ();
+      اگر (! (pos < argc && streq (argv[pos], "-o")))
+        بازگشت مقدار;
       advance (false);
     }
 }
@@ -541,122 +541,122 @@ or (void)
  * expr:
  *	or
  */
-static bool
-expr (void)
+ایستا bool
+عبارت (تهی)
 {
-  if (pos >= argc)
+  اگر (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  بازگشت or ();		/* Same with this. */
 }
 
-static bool
-one_argument (void)
+ایستا bool
+one_argument (تهی)
 {
-  return argv[pos++][0] != '\0';
+  بازگشت argv[pos++][0] != '\0';
 }
 
-static bool
-two_arguments (void)
+ایستا bool
+two_arguments (تهی)
 {
-  bool value;
+  bool مقدار;
 
-  if (streq (argv[pos], "!"))
+  اگر (streq (argv[pos], "!"))
     {
       advance (false);
-      value = ! one_argument ();
+      مقدار = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  وگرنه اگر (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
-      value = unary_operator ();
+      مقدار = unary_operator ();
     }
-  else
+  وگرنه
     beyond ();
-  return (value);
+  بازگشت (مقدار);
 }
 
-static bool
-three_arguments (void)
+ایستا bool
+three_arguments (تهی)
 {
-  bool value;
-  int bop = binop (argv[pos + 1]);
+  bool مقدار;
+  صحیح bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
-    value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  اگر (0 <= bop)
+    مقدار = دودویی_operator (false, bop);
+  وگرنه اگر (streq (argv[pos], "!"))
     {
       advance (true);
-      value = !two_arguments ();
+      مقدار = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  وگرنه اگر (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
-      value = one_argument ();
+      مقدار = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  وگرنه اگر (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
-    value = expr ();
-  else
+    مقدار = عبارت ();
+  وگرنه
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  بازگشت (مقدار);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
-static bool
-posixtest (int nargs)
+ایستا bool
+posixtest (صحیح nargs)
 {
-  bool value;
+  bool مقدار;
 
-  switch (nargs)
+  انتخاب (nargs)
     {
-      case 1:
-        value = one_argument ();
-        break;
+      حالت 1:
+        مقدار = one_argument ();
+        بشکن;
 
-      case 2:
-        value = two_arguments ();
-        break;
+      حالت 2:
+        مقدار = two_arguments ();
+        بشکن;
 
-      case 3:
-        value = three_arguments ();
-        break;
+      حالت 3:
+        مقدار = three_arguments ();
+        بشکن;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      حالت 4:
+        اگر (streq (argv[pos], "!"))
           {
             advance (true);
-            value = !three_arguments ();
-            break;
+            مقدار = !three_arguments ();
+            بشکن;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        اگر (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
-            value = two_arguments ();
+            مقدار = two_arguments ();
             advance (false);
-            break;
+            بشکن;
           }
         FALLTHROUGH;
-      case 5:
-      default:
+      حالت 5:
+      پیشفرض:
         affirm (0 < nargs);
-        value = expr ();
+        مقدار = عبارت ();
     }
 
-  return (value);
+  بازگشت (مقدار);
 }
 
-#if defined TEST_STANDALONE
+#اگر defined TEST_STANDALONE
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       fputs (_("\
 Usage: test EXPRESSION\n\
@@ -768,7 +768,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -L FILE     FILE exists and is a symbolic link (same as -h)\n\
 "));
       oputs (_("\
-  -N FILE     FILE exists and has been modified since it was last read\n\
+  -N FILE     FILE exists and has been modified since it was last اقرأ\n\
 "));
       oputs (_("\
   -O FILE     FILE exists and is owned by the effective user ID\n\
@@ -777,7 +777,7 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -p FILE     FILE exists and is a named pipe\n\
 "));
       oputs (_("\
-  -r FILE     FILE exists and the user has read access\n\
+  -r FILE     FILE exists and the user has اقرأ access\n\
 "));
       oputs (_("\
   -s FILE     FILE exists and has a size greater than zero\n\
@@ -792,20 +792,20 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
   -u FILE     FILE exists and its set-user-ID bit is set\n\
 "));
       oputs (_("\
-  -w FILE     FILE exists and the user has write access\n\
+  -w FILE     FILE exists and the user has اكتب access\n\
 "));
       oputs (_("\
-  -x FILE     FILE exists and the user has execute (or search) access\n\
+  -x FILE     FILE exists and the user has execute (or جستجو) access\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except برای -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) برای shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
 \n\
-Binary -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
+دودویی_2 -a and -o are ambiguous.  Use 'test EXPR1 && test EXPR2'\n\
 or 'test EXPR1 || test EXPR2' instead.\n\
 "), stdout);
       fputs (_("\
@@ -819,8 +819,8 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
-# define main test_command
+#اگر !defined TEST_STANDALONE
+# define اصلی test_command
 #endif
 
 #define AUTHORS \
@@ -833,19 +833,19 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+صحیح
+اصلی (صحیح margc, نویسه **margv)
 {
-  bool value;
+  bool مقدار;
 
-#if !defined TEST_STANDALONE
-  int code;
+#اگر !defined TEST_STANDALONE
+  صحیح code;
 
   code = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  اگر (code)
+    بازگشت (test_error_return);
+#وگرنه /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -858,7 +858,7 @@ main (int margc, char **margv)
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  اگر (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      اگر (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          اگر (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          اگر (streq (margv[1], "--version"))
             {
               version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
+                           (نویسه *) پوچ);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      اگر (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,13 +887,13 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  اگر (pos >= argc)
     test_main_return (TEST_FALSE);
 
-  value = posixtest (argc - 1);
+  مقدار = posixtest (argc - 1);
 
-  if (pos != argc)
+  اگر (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
-  test_main_return (value ? TEST_TRUE : TEST_FALSE);
+  test_main_return (مقدار ? TEST_TRUE : TEST_FALSE);
 }

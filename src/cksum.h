@@ -1,4 +1,4 @@
-enum Algorithm
+شمارش Algorithm
 {
   bsd,
   sysv,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+بیرونی شمارش Algorithm cksum_algorithm;

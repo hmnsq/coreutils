@@ -16,13 +16,13 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <getopt.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#شامل "system.h"
+#شامل "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "sync"
@@ -35,7 +35,7 @@
 # define HAVE_SYNCFS 0
 #endif
 
-enum sync_mode
+شمارش sync_mode
 {
   MODE_FILE,
   MODE_DATA,
@@ -43,21 +43,21 @@ enum sync_mode
   MODE_SYNC
 };
 
-static struct option const long_options[] =
+ایستا ساختار option ثابت long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_argument, پوچ, 'd'},
+  {"file-system", no_argument, پوچ, 'f'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {پوچ, 0, پوچ, 0}
 };
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
       fputs (_("\
@@ -84,39 +84,39 @@ or their containing file systems.\n\
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+ایستا bool
+sync_arg (شمارش sync_mode mode, نویسه ثابت *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  صحیح open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#اگر defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  اگر (mode == MODE_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
 #endif
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  صحیح fd = open (file, open_flags);
+  اگر (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      صحیح rd_errno = errno;
+      اگر (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      اگر (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          بازگشت false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  صحیح fdflags = fcntl (fd, F_GETFL);
+  اگر (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,47 +124,47 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  اگر (ret)
     {
-      int sync_status = -1;
+      صحیح sync_status = -1;
 
-      switch (mode)
+      انتخاب (mode)
         {
-        case MODE_DATA:
+        حالت MODE_DATA:
           sync_status = fdatasync (fd);
-          break;
+          بشکن;
 
-        case MODE_FILE:
+        حالت MODE_FILE:
           sync_status = fsync (fd);
-          break;
+          بشکن;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
+        حالت MODE_FILE_SYSTEM:
+#اگر HAVE_SYNCFS
           sync_status = syncfs (fd);
-          break;
+          بشکن;
 #endif
-        case MODE_SYNC: default:
+        حالت MODE_SYNC: پیشفرض:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      اگر (sync_status < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  اگر (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  بازگشت ret;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
   bool arg_data = false, arg_file_system = false;
   bool ok = true;
@@ -177,55 +177,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  صحیح c;
+  وقتی ((c = getopt_long (argc, argv, "df", long_options, پوچ))
          != -1)
     {
-      switch (c)
+      انتخاب (c)
         {
-        case 'd':
+        حالت 'd':
           arg_data = true;
-          break;
+          بشکن;
 
-        case 'f':
+        حالت 'f':
           arg_file_system = true;
-          break;
+          بشکن;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        پیشفرض:
           usage (EXIT_FAILURE);
         }
     }
 
   bool args_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  اگر (arg_data && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  اگر (!args_specified && arg_data)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
+  شمارش sync_mode mode;
+  اگر (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
     mode = MODE_SYNC;
-  else if (arg_file_system)
+  وگرنه اگر (arg_file_system)
     mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
+  وگرنه اگر (! arg_data)
     mode = MODE_FILE;
-  else
+  وگرنه
     mode = MODE_DATA;
 
-  if (mode == MODE_SYNC)
+  اگر (mode == MODE_SYNC)
     sync ();
-  else
+  وگرنه
     {
-      for (; optind < argc; optind++)
+      برای (; optind < argc; optind++)
         ok &= sync_arg (mode, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  بازگشت ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

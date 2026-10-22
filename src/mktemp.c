@@ -16,16 +16,16 @@
 
 /* Written by Jim Meyering and Eric Blake.  */
 
-#include <config.h>
-#include <sys/types.h>
-#include <getopt.h>
+#شامل <config.h>
+#شامل <sys/types.h>
+#شامل <getopt.h>
 
-#include "system.h"
+#شامل "system.h"
 
-#include "close-stream.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "tempname.h"
+#شامل "close-stream.h"
+#شامل "filenamecat.h"
+#شامل "quote.h"
+#شامل "tempname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "mktemp"
@@ -34,33 +34,33 @@
   proper_name ("Jim Meyering"), \
   proper_name ("Eric Blake")
 
-static char const *default_template = "tmp.XXXXXXXXXX";
+ایستا نویسه ثابت *default_template = "tmp.XXXXXXXXXX";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمارش
 {
   SUFFIX_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+ایستا ساختار option ثابت longopts[] =
 {
-  {"directory", no_argument, NULL, 'd'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"dry-run", no_argument, NULL, 'u'},
-  {"suffix", required_argument, NULL, SUFFIX_OPTION},
-  {"tmpdir", optional_argument, NULL, 'p'},
+  {"directory", no_argument, پوچ, 'd'},
+  {"quiet", no_argument, پوچ, 'q'},
+  {"dry-run", no_argument, پوچ, 'u'},
+  {"suffix", required_argument, پوچ, SUFFIX_OPTION},
+  {"tmpdir", optional_argument, پوچ, 'p'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {پوچ, 0, پوچ, 0}
 };
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("Usage: %s [OPTION]... [TEMPLATE]\n"), program_name);
       fputs (_("\
@@ -78,7 +78,7 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
 "));
       oputs (_("\
   -u, --dry-run\n\
-         do not create anything; merely print a name (unsafe)\n\
+         انجامبده not create anything; merely print a name (unsafe)\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -87,12 +87,12 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
       --suffix=SUFF\n\
          append SUFF to TEMPLATE; SUFF must not contain a slash.\n\
-         This option is implied if TEMPLATE does not end in X\n\
+         This option is implied اگر TEMPLATE does not end in X\n\
 "));
       oputs (_("\
   -p DIR, --tmpdir[=DIR]\n\
          interpret TEMPLATE relative to DIR;\n\
-         if DIR is not specified, use $TMPDIR if set, else /tmp.\n\
+         اگر DIR is not specified, use $TMPDIR اگر set, وگرنه /tmp.\n\
          With this option, TEMPLATE must not be an absolute name;\n\
          unlike with -t, TEMPLATE may contain slashes,\n\
          but mktemp creates only the final component\n\
@@ -100,8 +100,8 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
   -t\n\
          interpret TEMPLATE as a single file name component,\n\
-         relative to a directory: $TMPDIR, if set;\n\
-         else the directory specified via -p; else /tmp [deprecated]\n\
+         relative to a directory: $TMPDIR, اگر set;\n\
+         وگرنه the directory specified via -p; وگرنه /tmp [deprecated]\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -111,62 +111,62 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
   exit (status);
 }
 
-static size_t
-count_consecutive_X_s (char const *s, size_t len)
+ایستا size_t
+شمار_consecutive_X_s (نویسه ثابت *s, size_t len)
 {
   size_t n = 0;
-  for ( ; len && s[len - 1] == 'X'; len--)
+  برای ( ; len && s[len - 1] == 'X'; len--)
     ++n;
-  return n;
+  بازگشت n;
 }
 
-static int
-mkstemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
+ایستا صحیح
+mkstemp_len (نویسه *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
+  بازگشت gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
                            x_len);
 }
 
-static int
-mkdtemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
+ایستا صحیح
+mkdtemp_len (نویسه *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
+  بازگشت gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
                            x_len);
 }
 
 /* True if we have already closed standard output.  */
-static bool stdout_closed;
+ایستا bool stdout_closed;
 
 /* Avoid closing stdout twice.  Since we conditionally call
    close_stream (stdout) in order to decide whether to clean up a
    temporary file, the exit hook needs to know whether to do all of
    close_stdout or just the stderr half.  */
-static void
-maybe_close_stdout (void)
+ایستا تهی
+maybe_close_stdout (تهی)
 {
-  if (!stdout_closed)
+  اگر (!stdout_closed)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  وگرنه اگر (close_stream (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
-  char const *dest_dir;
-  char const *dest_dir_arg = NULL;
+  نویسه ثابت *dest_dir;
+  نویسه ثابت *dest_dir_arg = پوچ;
   bool suppress_file_err = false;
-  int c;
-  char *template;
-  char *suffix = NULL;
+  صحیح c;
+  نویسه *template;
+  نویسه *suffix = پوچ;
   bool use_dest_dir = false;
   bool deprecated_t_option = false;
   bool create_directory = false;
   bool dry_run = false;
-  int status = EXIT_SUCCESS;
-  size_t x_count;
+  صحیح status = EXIT_SUCCESS;
+  size_t x_شمار;
   size_t suffix_len;
-  char *dest_name = NULL;
+  نویسه *dest_name = پوچ;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -176,63 +176,63 @@ main (int argc, char **argv)
 
   atexit (maybe_close_stdout);
 
-  while ((c = getopt_long (argc, argv, "dp:qtuV", longopts, NULL)) != -1)
+  وقتی ((c = getopt_long (argc, argv, "dp:qtuV", longopts, پوچ)) != -1)
     {
-      switch (c)
+      انتخاب (c)
         {
-        case 'd':
+        حالت 'd':
           create_directory = true;
-          break;
-        case 'p':
+          بشکن;
+        حالت 'p':
           dest_dir_arg = optarg;
           use_dest_dir = true;
-          break;
-        case 'q':
+          بشکن;
+        حالت 'q':
           suppress_file_err = true;
-          break;
-        case 't':
+          بشکن;
+        حالت 't':
           use_dest_dir = true;
           deprecated_t_option = true;
-          break;
-        case 'u':
+          بشکن;
+        حالت 'u':
           dry_run = true;
-          break;
+          بشکن;
 
-        case SUFFIX_OPTION:
+        حالت SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          بشکن;
 
         case_GETOPT_HELP_CHAR;
 
-        case 'V': /* Undocumented alias, for compatibility with the original
+        حالت 'V': /* Undocumented alias, for compatibility with the original
                      mktemp program.  */
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        پیشفرض:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_args = argc - optind;
-  if (2 <= n_args)
+  صحیح n_args = argc - optind;
+  اگر (2 <= n_args)
     {
       error (0, 0, _("too many templates"));
       usage (EXIT_FAILURE);
     }
 
-  if (n_args == 0)
+  اگر (n_args == 0)
     {
       use_dest_dir = true;
-      template = (char *) default_template;
+      template = (نویسه *) default_template;
     }
-  else
+  وگرنه
     {
       template = argv[optind];
     }
 
-  if (suffix)
+  اگر (suffix)
     {
       size_t len = strlen (template);
-      if (!len || template[len - 1] != 'X')
+      اگر (!len || template[len - 1] != 'X')
         {
           error (EXIT_FAILURE, 0,
                  _("with --suffix, template %s must end in X"),
@@ -245,69 +245,69 @@ main (int argc, char **argv)
       template = dest_name;
       suffix = dest_name + len;
     }
-  else
+  وگرنه
     {
       template = xstrdup (template);
       suffix = strrchr (template, 'X');
-      if (!suffix)
+      اگر (!suffix)
         suffix = strchr (template, '\0');
-      else
+      وگرنه
         suffix++;
       suffix_len = strlen (suffix);
     }
 
   /* At this point, template is malloc'd, and suffix points into template.  */
-  if (suffix_len && last_component (suffix) != suffix)
+  اگر (suffix_len && last_component (suffix) != suffix)
     {
       error (EXIT_FAILURE, 0,
              _("invalid suffix %s, contains directory separator"),
              quote (suffix));
     }
-  x_count = count_consecutive_X_s (template, suffix - template);
-  if (x_count < 3)
+  x_شمار = شمار_consecutive_X_s (template, suffix - template);
+  اگر (x_شمار < 3)
     {
       /* when suffix was appended to template only diagnose the template.  */
-      if (template == dest_name)
+      اگر (template == dest_name)
         template[suffix - template] = '\0';
       error (EXIT_FAILURE, 0, _("too few X's in template %s"),
              quote (template));
     }
 
-  if (use_dest_dir)
+  اگر (use_dest_dir)
     {
-      if (deprecated_t_option)
+      اگر (deprecated_t_option)
         {
-          char *env = getenv ("TMPDIR");
-          if (env && *env)
+          نویسه *env = getenv ("TMPDIR");
+          اگر (env && *env)
             dest_dir = env;
-          else if (dest_dir_arg && *dest_dir_arg)
+          وگرنه اگر (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          وگرنه
             dest_dir = "/tmp";
 
-          if (last_component (template) != template)
+          اگر (last_component (template) != template)
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s, contains directory separator"),
                    quote (template));
         }
-      else
+      وگرنه
         {
-          if (dest_dir_arg && *dest_dir_arg)
+          اگر (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          وگرنه
             {
-              char *env = getenv ("TMPDIR");
+              نویسه *env = getenv ("TMPDIR");
               dest_dir = (env && *env ? env : "/tmp");
             }
-          if (IS_ABSOLUTE_FILE_NAME (template))
+          اگر (IS_ABSOLUTE_FILE_NAME (template))
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s; with --tmpdir,"
                      " it may not be absolute"),
                    quote (template));
         }
 
-      dest_name = file_name_concat (dest_dir, template, NULL);
-      free (template);
+      dest_name = file_name_concat (dest_dir, template, پوچ);
+      آزاد (template);
       template = dest_name;
       /* Note that suffix is now invalid.  */
     }
@@ -316,39 +316,39 @@ main (int argc, char **argv)
      mkstemp may leave the buffer in an undefined state.  */
   dest_name = xstrdup (template);
 
-  if (create_directory)
+  اگر (create_directory)
     {
-      int err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (err != 0)
+      صحیح err = mkdtemp_len (dest_name, suffix_len, x_شمار, dry_run);
+      اگر (err != 0)
         {
-          if (!suppress_file_err)
+          اگر (!suppress_file_err)
             error (0, errno, _("failed to create directory via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
-  else
+  وگرنه
     {
-      int fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (fd < 0 || (!dry_run && close (fd) != 0))
+      صحیح fd = mkstemp_len (dest_name, suffix_len, x_شمار, dry_run);
+      اگر (fd < 0 || (!dry_run && close (fd) != 0))
         {
-          if (!suppress_file_err)
+          اگر (!suppress_file_err)
             error (0, errno, _("failed to create file via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
 
-  if (status == EXIT_SUCCESS)
+  اگر (status == EXIT_SUCCESS)
     {
       puts (dest_name);
       /* If we created a file, but then failed to output the file
          name, we should clean up the mess before failing.  */
-      if (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
+      اگر (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
         {
-          int saved_errno = errno;
+          صحیح saved_errno = errno;
           (create_directory ? rmdir : unlink) (dest_name);
-          if (!suppress_file_err)
+          اگر (!suppress_file_err)
             error (0, saved_errno, _("write error"));
           status = EXIT_FAILURE;
         }

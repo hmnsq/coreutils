@@ -23,64 +23,64 @@
    randomly-named temporary, which is safer for many applications than
    a window where B does not exist.  */
 
-#include <config.h>
-#include "system.h"
+#شامل <config.h>
+#شامل "system.h"
 
-#include "force-link.h"
+#شامل "force-link.h"
 
-#include <tempname.h>
+#شامل <tempname.h>
 
 /* A basename pattern suitable for a temporary file.  It should work
    even on file systems like FAT that support only short names.
    "Cu" is short for "Coreutils" or for "Changeable unstable",
    take your pick....  */
 
-static char const simple_pattern[] = "CuXXXXXX";
-enum { x_suffix_len = sizeof "XXXXXX" - 1 };
+ایستا نویسه ثابت simple_pattern[] = "CuXXXXXX";
+شمارش { x_suffix_len = اندازه "XXXXXX" - 1 };
 
 /* A size for smallish buffers containing file names.  Longer file
    names can use malloc.  */
 
-enum { smallsize = 256 };
+شمارش { smallsize = 256 };
 
 /* Return a template for a file in the same directory as DSTNAME.
    Use BUF if the template fits, otherwise use malloc and return NULL
    (setting errno) if unsuccessful.  */
 
-static char *
-samedir_template (char const *dstname, char buf[smallsize])
+ایستا نویسه *
+samedir_template (نویسه ثابت *dstname, نویسه buf[smallsize])
 {
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
-  size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
-  char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  size_t dsttmpsize = dstdirlen + اندازه simple_pattern;
+  نویسه *dsttmp;
+  اگر (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  وگرنه
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      اگر (!dsttmp)
+        بازگشت dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  بازگشت dsttmp;
 }
 
 
 /* Auxiliaries for force_linkat.  */
 
-struct link_arg
+ساختار link_arg
 {
-  int srcdir;
-  char const *srcname;
-  int dstdir;
-  int flags;
+  صحیح srcdir;
+  نویسه ثابت *srcname;
+  صحیح dstdir;
+  صحیح flags;
 };
 
-static int
-try_link (char *dest, void *arg)
+ایستا صحیح
+try_link (نویسه *dest, تهی *arg)
 {
-  struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  ساختار link_arg *a = arg;
+  بازگشت linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+بیرونی صحیح
+force_linkat (صحیح srcdir, نویسه ثابت *srcname,
+              صحیح dstdir, نویسه ثابت *dstname, صحیح flags, bool force,
+              صحیح linkat_errno)
 {
-  if (linkat_errno < 0)
+  اگر (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  اگر (!force || linkat_errno != EEXIST)
+    بازگشت linkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
-  struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  نویسه buf[smallsize];
+  نویسه *dsttmp = samedir_template (dstname, buf);
+  اگر (! dsttmp)
+    بازگشت errno;
+  ساختار link_arg arg = { srcdir, srcname, dstdir, flags };
+  صحیح err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  اگر (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  وگرنه
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,25 +120,25 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  اگر (dsttmp != buf)
+    آزاد (dsttmp);
+  بازگشت err;
 }
 
 
 /* Auxiliaries for force_symlinkat.  */
 
-struct symlink_arg
+ساختار symlink_arg
 {
-  char const *srcname;
-  int dstdir;
+  نویسه ثابت *srcname;
+  صحیح dstdir;
 };
 
-static int
-try_symlink (char *dest, void *arg)
+ایستا صحیح
+try_symlink (نویسه *dest, تهی *arg)
 {
-  struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  ساختار symlink_arg *a = arg;
+  بازگشت symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+بیرونی صحیح
+force_symlinkat (نویسه ثابت *srcname, صحیح dstdir, نویسه ثابت *dstname,
+                 bool force, صحیح symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  اگر (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  اگر (!force || symlinkat_errno != EEXIST)
+    بازگشت symlinkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
-  struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  نویسه buf[smallsize];
+  نویسه *dsttmp = samedir_template (dstname, buf);
+  اگر (!dsttmp)
+    بازگشت errno;
+  ساختار symlink_arg arg = { srcname, dstdir };
+  صحیح err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  اگر (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  وگرنه اگر (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  وگرنه
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  اگر (dsttmp != buf)
+    آزاد (dsttmp);
+  بازگشت err;
 }

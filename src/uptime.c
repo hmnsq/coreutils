@@ -16,17 +16,17 @@
 
 /* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
-#include "system.h"
+#شامل "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
-#include "fprintftime.h"
+#شامل "long-options.h"
+#شامل "quote.h"
+#شامل "readutmp.h"
+#شامل "fprintftime.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "uptime"
@@ -36,120 +36,120 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
 
-static int
-print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
+ایستا صحیح
+print_uptime (idx_t n, STRUCT_UTMP ثابت *utmp_buf)
 {
-  int status = EXIT_SUCCESS;
+  صحیح status = EXIT_SUCCESS;
   time_t boot_time = 0;
 
   /* Loop through all the utmp entries we just read and count up the valid
      ones, also in the process possibly gleaning boottime. */
   idx_t entries = 0;
-  for (idx_t i = 0; i < n; i++)
+  برای (idx_t i = 0; i < n; i++)
     {
-      STRUCT_UTMP const *this = &utmp_buf[i];
+      STRUCT_UTMP ثابت *this = &utmp_buf[i];
       entries += IS_USER_PROCESS (this);
-      if (UT_TYPE_BOOT_TIME (this))
+      اگر (UT_TYPE_BOOT_TIME (this))
         boot_time = this->ut_ts.tv_sec;
     }
   /* The gnulib module 'readutmp' is supposed to provide a BOOT_TIME entry
      on all platforms.  */
-  if (boot_time == 0)
+  اگر (boot_time == 0)
     {
       error (0, errno, _("couldn't get boot time"));
       status = EXIT_FAILURE;
     }
 
-  time_t time_now = time (NULL);
-  struct tm *tmn = time_now == (time_t) -1 ? NULL : localtime (&time_now);
+  time_t time_now = time (پوچ);
+  ساختار tm *tmn = time_now == (time_t) -1 ? پوچ : localtime (&time_now);
   /* procps' version of uptime also prints the seconds field, but
      previous versions of coreutils don't. */
-  if (tmn)
+  اگر (tmn)
     /* TRANSLATORS: This prints the current clock time. */
     fprintftime (stdout, _(" %H:%M:%S  "), tmn, (timezone_t) 0, 0);
-  else
+  وگرنه
     {
       printf (_(" ??:????  "));
       status = EXIT_FAILURE;
     }
 
   intmax_t uptime;
-  if (time_now == (time_t) -1 || boot_time == 0
+  اگر (time_now == (time_t) -1 || boot_time == 0
       || ckd_sub (&uptime, time_now, boot_time) || uptime < 0)
     {
       printf (_("up ???? days ??:??,  "));
       status = EXIT_FAILURE;
     }
-  else
+  وگرنه
     {
       intmax_t updays = uptime / 86400;
-      int uphours = uptime % 86400 / 3600;
-      int upmins = uptime % 86400 % 3600 / 60;
-      if (0 < updays)
+      صحیح uphours = uptime % 86400 / 3600;
+      صحیح upmins = uptime % 86400 % 3600 / 60;
+      اگر (0 < updays)
         printf (ngettext ("up %jd day %2d:%02d,  ",
                           "up %jd days %2d:%02d,  ",
                           select_plural (updays)),
                 updays, uphours, upmins);
-      else
+      وگرنه
         printf (_("up %2d:%02d,  "), uphours, upmins);
     }
 
   printf (ngettext ("%td user", "%td users", select_plural (entries)),
           entries);
 
-  double avg[3];
-  int loads = getloadavg (avg, 3);
+  دوگانه avg[3];
+  صحیح loads = getloadavg (avg, 3);
 
-  if (loads == -1)
+  اگر (loads == -1)
     putchar ('\n');
-  else
+  وگرنه
     {
-      if (loads > 0)
+      اگر (loads > 0)
         printf (_(",  load average: %.2f"), avg[0]);
-      if (loads > 1)
+      اگر (loads > 1)
         printf (", %.2f", avg[1]);
-      if (loads > 2)
+      اگر (loads > 2)
         printf (", %.2f", avg[2]);
-      if (loads > 0)
+      اگر (loads > 0)
         putchar ('\n');
     }
 
-  return status;
+  بازگشت status;
 }
 
 /* Display the system uptime and the number of users on the system,
    according to utmp file FILENAME.  Use read_utmp OPTIONS to read the
    utmp file.  */
 
-static _Noreturn void
-uptime (char const *filename, int options)
+ایستا _Noreturn تهی
+uptime (نویسه ثابت *filename, صحیح options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  int read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
+  صحیح read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
                           ? EXIT_FAILURE : EXIT_SUCCESS);
-  if (read_utmp_status != EXIT_SUCCESS)
+  اگر (read_utmp_status != EXIT_SUCCESS)
     {
       error (0, errno, "%s", quotef (filename));
       n_users = 0;
-      utmp_buf = NULL;
+      utmp_buf = پوچ;
     }
 
-  int print_uptime_status = print_uptime (n_users, utmp_buf);
+  صحیح print_uptime_status = print_uptime (n_users, utmp_buf);
   exit (MAX (read_utmp_status, print_uptime_status));
 }
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
 Print the current time, the length of time the system has been up,\n\
-the number of users on the system, and the average number of jobs\n\
+the عدد of users on the system, and the average عدد of jobs\n\
 in the run queue over the last 1, 5 and 15 minutes."));
 #ifdef __linux__
       /* It would be better to introduce a configure test for this,
@@ -159,7 +159,7 @@ in the run queue over the last 1, 5 and 15 minutes."));
       printf (_("  \
 Processes in\n\
 an uninterruptible sleep state also contribute to the load average.\n"));
-#else
+#وگرنه
       printf (_("\n"));
 #endif
       printf (_("\
@@ -173,8 +173,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -186,19 +186,19 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (نویسه ثابت *) پوچ);
 
-  switch (argc - optind)
+  انتخاب (argc - optind)
     {
-    case 0:			/* uptime */
+    حالت 0:			/* uptime */
       uptime (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      بشکن;
 
-    case 1:			/* uptime <utmp file> */
+    حالت 1:			/* uptime <utmp file> */
       uptime (argv[optind], 0);
-      break;
+      بشکن;
 
-    default:			/* lose */
+    پیشفرض:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }

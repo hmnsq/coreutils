@@ -1,2 +1,2 @@
-#include "test.h"
-enum test_modes test_mode = TEST_TEST;
+#شامل "test.h"
+شمارش test_modes test_mode = TEST_TEST;

@@ -18,187 +18,187 @@
 
 /* Written by Kayvan Aghaiepour and David MacKenzie. */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <endian.h>
-#include "system.h"
-#include "human.h"
-#include "sum.h"
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <endian.h>
+#شامل "system.h"
+#شامل "human.h"
+#شامل "sum.h"
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+صحیح
+bsd_sum_stream (FILE *stream, تهی *resstream, intmax_t *length)
 {
-  int ret = -1;
+  صحیح ret = -1;
   idx_t sum;
-  int checksum = 0;	/* The checksum mod 2^16. */
+  صحیح checksum = 0;	/* The checksum mod 2^16. */
   intmax_t total_bytes = 0;	/* The number of bytes. */
-  enum { buffer_length = 32768 };
+  شمارش { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  اگر (! buffer)
+    بازگشت -1;
 
   /* Process file */
-  while (true)
+  وقتی (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    وقتی (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      اگر (n == 0)
         {
-          if (ferror (stream))
-            goto cleanup_buffer;
-          goto final_process;
+          اگر (ferror (stream))
+            برو cleanup_buffer;
+          برو final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
-        break;
+      اگر (buffer_length == sum)
+        بشکن;
 
-      if (feof (stream))
-        goto final_process;
+      اگر (feof (stream))
+        برو final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    برای (size_t i = 0; i < sum; i++)
       {
         checksum = (checksum >> 1) + ((checksum & 1) << 15);
         checksum += buffer[i];
         checksum &= 0xffff;	/* Keep it within bounds. */
       }
-    if (ckd_add (&total_bytes, total_bytes, sum))
+    اگر (ckd_add (&total_bytes, total_bytes, sum))
       {
         errno = EOVERFLOW;
-        goto cleanup_buffer;
+        برو cleanup_buffer;
       }
   }
 
 final_process:;
 
-  for (idx_t i = 0; i < sum; i++)
+  برای (idx_t i = 0; i < sum; i++)
     {
       checksum = (checksum >> 1) + ((checksum & 1) << 15);
       checksum += buffer[i];
       checksum &= 0xffff;	/* Keep it within bounds. */
     }
-  if (ckd_add (&total_bytes, total_bytes, sum))
+  اگر (ckd_add (&total_bytes, total_bytes, sum))
     {
       errno = EOVERFLOW;
-      goto cleanup_buffer;
+      برو cleanup_buffer;
     }
 
-  memcpy (resstream, &checksum, sizeof checksum);
+  memcpy (resstream, &checksum, اندازه checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
-  free (buffer);
-  return ret;
+  آزاد (buffer);
+  بازگشت ret;
 }
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+صحیح
+sysv_sum_stream (FILE *stream, تهی *resstream, intmax_t *length)
 {
-  int ret = -1;
+  صحیح ret = -1;
   idx_t sum;
   intmax_t total_bytes = 0;
-  enum { buffer_length = 32768 };
+  شمارش { buffer_length = 32768 };
   uint8_t *buffer = malloc (buffer_length);
 
-  if (! buffer)
-    return -1;
+  اگر (! buffer)
+    بازگشت -1;
 
   /* The sum of all the input bytes, modulo (UINT_MAX + 1).  */
-  unsigned int s = 0;
+  unsigned صحیح s = 0;
 
   /* Process file */
-  while (true)
+  وقتی (true)
   {
     sum = 0;
 
     /* Read block */
-    while (true)
+    وقتی (true)
     {
       size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      اگر (n == 0)
         {
-          if (ferror (stream))
-            goto cleanup_buffer;
-          goto final_process;
+          اگر (ferror (stream))
+            برو cleanup_buffer;
+          برو final_process;
         }
 
       sum += n;
 
-      if (buffer_length == sum)
-        break;
+      اگر (buffer_length == sum)
+        بشکن;
 
-      if (feof (stream))
-        goto final_process;
+      اگر (feof (stream))
+        برو final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    برای (size_t i = 0; i < sum; i++)
       s += buffer[i];
-    if (total_bytes + sum < total_bytes)
+    اگر (total_bytes + sum < total_bytes)
       {
         errno = EOVERFLOW;
-        goto cleanup_buffer;
+        برو cleanup_buffer;
       }
     total_bytes += sum;
   }
 
 final_process:;
 
-  for (size_t i = 0; i < sum; i++)
+  برای (size_t i = 0; i < sum; i++)
     s += buffer[i];
-  if (total_bytes + sum < total_bytes)
+  اگر (total_bytes + sum < total_bytes)
     {
       errno = EOVERFLOW;
-      goto cleanup_buffer;
+      برو cleanup_buffer;
     }
   total_bytes += sum;
 
-  int r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
-  int checksum = (r & 0xffff) + (r >> 16);
+  صحیح r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
+  صحیح checksum = (r & 0xffff) + (r >> 16);
 
-  memcpy (resstream, &checksum, sizeof checksum);
+  memcpy (resstream, &checksum, اندازه checksum);
   *length = total_bytes;
   ret = 0;
 cleanup_buffer:
-  free (buffer);
-  return ret;
+  آزاد (buffer);
+  بازگشت ret;
 }
 
 /* Print the checksum and size (in 1024 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
-            bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool args,
+تهی
+output_bsd (نویسه ثابت *file, MAYBE_UNUSED صحیح دودویی_file, تهی ثابت *digest,
+            bool raw, MAYBE_UNUSED bool tagged, unsigned نویسه delim, bool args,
             intmax_t length)
 {
-  if (raw)
+  اگر (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(صحیح *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      بازگشت;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%05d %5s", *(int *)digest,
+  نویسه hbuf[LONGEST_HUMAN_READABLE + 1];
+  printf ("%05d %5s", *(صحیح *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 1024));
-  if (args)
+  اگر (args)
     printf (" %s", file);
   putchar (delim);
 }
@@ -206,24 +206,24 @@ output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
 /* Print the checksum and size (in 512 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_sysv (char const *file, MAYBE_UNUSED int binary_file,
-             void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-             unsigned char delim, bool args, intmax_t length)
+تهی
+output_sysv (نویسه ثابت *file, MAYBE_UNUSED صحیح دودویی_file,
+             تهی ثابت *digest, bool raw, MAYBE_UNUSED bool tagged,
+             unsigned نویسه delim, bool args, intmax_t length)
 {
-  if (raw)
+  اگر (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
+      uint16_t out_int = *(صحیح *)digest;
       out_int = htobe16 (out_int);
       fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      بازگشت;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%d %s", *(int *)digest,
+  نویسه hbuf[LONGEST_HUMAN_READABLE + 1];
+  printf ("%d %s", *(صحیح *)digest,
           human_readable (length, hbuf, human_ceiling, 1, 512));
-  if (args)
+  اگر (args)
     printf (" %s", file);
   putchar (delim);
 }

@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "system.h"
-#include "cksum.h"
+#شامل <config.h>
+#شامل "system.h"
+#شامل "cksum.h"
 
 /* Ensure that the main for cksum is declared even if the tool is not built
    in this single-binary. */
-int single_binary_main_cksum (int argc, char **argv);
-int single_binary_main_md5sum (int argc, char **argv);
+صحیح single_دودویی_main_cksum (صحیح argc, نویسه **argv);
+صحیح single_دودویی_main_md5sum (صحیح argc, نویسه **argv);
 
-int
-single_binary_main_md5sum (int argc, char **argv)
+صحیح
+single_دودویی_main_md5sum (صحیح argc, نویسه **argv)
 {
   cksum_algorithm = md5;
-  return single_binary_main_cksum (argc, argv);
+  بازگشت single_دودویی_main_cksum (argc, argv);
 }

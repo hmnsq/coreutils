@@ -14,29 +14,29 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل "system.h"
+#شامل "c-ctype.h"
+#شامل "fadvise.h"
+#شامل "quote.h"
 
-#include "expand-common.h"
+#شامل "expand-common.h"
 
 /* If true, convert blanks even after nonblank characters have been
    read on the line.  */
-bool convert_entire_line = false;
+bool convert_entire_سطر = false;
 
 /* If nonzero, the size of all tab stops.  If zero, use 'tab_list' instead.  */
-static colno tab_size = 0;
+ایستا colno tab_size = 0;
 
 /* If nonzero, the size of all tab stops after the last specified.  */
-static colno extend_size = 0;
+ایستا colno extend_size = 0;
 
 /* If nonzero, an increment for additional tab stops after the last specified.*/
-static colno increment_size = 0;
+ایستا colno increment_size = 0;
 
 /* The maximum distance between tab stops.  */
 idx_t max_column_width;
@@ -44,61 +44,61 @@ idx_t max_column_width;
 /* Array of the explicit column numbers of the tab stops;
    after 'tab_list' is exhausted, each additional tab is replaced
    by a space.  The first column is column 0.  */
-static colno *tab_list = NULL;
+ایستا colno *tab_list = پوچ;
 
 /* The number of allocated entries in 'tab_list'.  */
-static idx_t n_tabs_allocated = 0;
+ایستا idx_t n_tabs_allocated = 0;
 
 /* The index of the first invalid element of 'tab_list',
    where the next element can be added.  */
-static idx_t first_free_tab = 0;
+ایستا idx_t first_free_tab = 0;
 
 /* Null-terminated array of input filenames.  */
-static char **file_list = NULL;
+ایستا نویسه **file_list = پوچ;
 
 /* Default for 'file_list' if no files are given on the command line.  */
-static char *stdin_argv[] =
+ایستا نویسه *stdin_argv[] =
 {
-  (char *) "-", NULL
+  (نویسه *) "-", پوچ
 };
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+ایستا bool have_read_stdin = false;
 
 /* The desired exit status.  */
-int exit_status = EXIT_SUCCESS;
+صحیح exit_status = EXIT_SUCCESS;
 
 
-static void
+ایستا تهی
 set_max_column_width (colno width)
 {
-  if (max_column_width < width)
+  اگر (max_column_width < width)
     {
-      if (ckd_add (&max_column_width, width, 0))
+      اگر (ckd_add (&max_column_width, width, 0))
         error (EXIT_FAILURE, 0, _("tabs are too far apart"));
     }
 }
 
 /* Add tab stop TABVAL to the end of 'tab_list'.  */
-extern void
+بیرونی تهی
 add_tab_stop (colno tabval)
 {
   colno prev_column = first_free_tab ? tab_list[first_free_tab - 1] : 0;
   colno column_width = prev_column <= tabval ? tabval - prev_column : 0;
 
-  if (first_free_tab == n_tabs_allocated)
-    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, sizeof *tab_list);
+  اگر (first_free_tab == n_tabs_allocated)
+    tab_list = xpalloc (tab_list, &n_tabs_allocated, 1, -1, اندازه *tab_list);
   tab_list[first_free_tab++] = tabval;
 
   set_max_column_width (column_width);
 }
 
-static bool
+ایستا bool
 set_extend_size (colno tabval)
 {
   bool ok = true;
 
-  if (extend_size)
+  اگر (extend_size)
     {
       error (0, 0,
              _("'/' specifier only allowed"
@@ -109,15 +109,15 @@ set_extend_size (colno tabval)
 
   set_max_column_width (extend_size);
 
-  return ok;
+  بازگشت ok;
 }
 
-static bool
+ایستا bool
 set_increment_size (colno tabval)
 {
   bool ok = true;
 
-  if (increment_size)
+  اگر (increment_size)
     {
       error (0,0,
              _("'+' specifier only allowed"
@@ -128,51 +128,51 @@ set_increment_size (colno tabval)
 
   set_max_column_width (increment_size);
 
-  return ok;
+  بازگشت ok;
 }
 
 /* Add the comma or blank separated list of tab stops STOPS
    to the list of tab stops.  */
-extern void
-parse_tab_stops (char const *stops)
+بیرونی تهی
+parse_tab_stops (نویسه ثابت *stops)
 {
   bool have_tabval = false;
   colno tabval = 0;
   bool extend_tabval = false;
   bool increment_tabval = false;
-  char const *num_start = NULL;
+  نویسه ثابت *رقم_start = پوچ;
   bool ok = true;
 
-  for (; *stops; stops++)
+  برای (; *stops; stops++)
     {
-      if (*stops == ',' || isblank (to_uchar (*stops)))
+      اگر (*stops == ',' || isblank (to_uchar (*stops)))
         {
-          if (have_tabval)
+          اگر (have_tabval)
             {
-              if (extend_tabval)
+              اگر (extend_tabval)
                 {
-                  if (! set_extend_size (tabval))
+                  اگر (! set_extend_size (tabval))
                     {
                       ok = false;
-                      break;
+                      بشکن;
                     }
                 }
-              else if (increment_tabval)
+              وگرنه اگر (increment_tabval)
                 {
-                  if (! set_increment_size (tabval))
+                  اگر (! set_increment_size (tabval))
                     {
                       ok = false;
-                      break;
+                      بشکن;
                     }
                 }
-              else
+              وگرنه
                 add_tab_stop (tabval);
             }
           have_tabval = false;
         }
-      else if (*stops == '/')
+      وگرنه اگر (*stops == '/')
         {
-          if (have_tabval)
+          اگر (have_tabval)
             {
               error (0, 0, _("'/' specifier not at start of number: %s"),
                      quote (stops));
@@ -181,9 +181,9 @@ parse_tab_stops (char const *stops)
           extend_tabval = true;
           increment_tabval = false;
         }
-      else if (*stops == '+')
+      وگرنه اگر (*stops == '+')
         {
-          if (have_tabval)
+          اگر (have_tabval)
             {
               error (0, 0, _("'+' specifier not at start of number: %s"),
                      quote (stops));
@@ -192,67 +192,67 @@ parse_tab_stops (char const *stops)
           increment_tabval = true;
           extend_tabval = false;
         }
-      else if (c_isdigit (*stops))
+      وگرنه اگر (c_isdigit (*stops))
         {
-          if (!have_tabval)
+          اگر (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
-              num_start = stops;
+              رقم_start = stops;
             }
 
           /* Detect overflow.  */
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
+          اگر (!DECIMAL_DIGIT_ACCUMULATE (tabval, *stops - '0'))
             {
-              idx_t len = strspn (num_start, "0123456789");
-              char *bad_num = ximemdup0 (num_start, len);
-              error (0, 0, _("tab stop is too large %s"), quote (bad_num));
-              free (bad_num);
+              idx_t len = strspn (رقم_start, "0123456789");
+              نویسه *bad_رقم = ximemdup0 (رقم_start, len);
+              error (0, 0, _("tab stop is too large %s"), quote (bad_رقم));
+              آزاد (bad_رقم);
               ok = false;
-              stops = num_start + len - 1;
+              stops = رقم_start + len - 1;
             }
         }
-      else
+      وگرنه
         {
           error (0, 0, _("tab size contains invalid character(s): %s"),
                  quote (stops));
           ok = false;
-          break;
+          بشکن;
         }
     }
 
-  if (ok && have_tabval)
+  اگر (ok && have_tabval)
     {
-      if (extend_tabval)
+      اگر (extend_tabval)
         ok &= set_extend_size (tabval);
-      else if (increment_tabval)
+      وگرنه اگر (increment_tabval)
         ok &= set_increment_size (tabval);
-      else
+      وگرنه
         add_tab_stop (tabval);
     }
 
-  if (! ok)
+  اگر (! ok)
     exit (EXIT_FAILURE);
 }
 
 /* Check that the list of tab stops TABS, with ENTRIES entries,
    contains only nonzero, ascending values.  */
 
-static void
-validate_tab_stops (colno const *tabs, idx_t entries)
+ایستا تهی
+validate_tab_stops (colno ثابت *tabs, idx_t entries)
 {
   colno prev_tab = 0;
 
-  for (idx_t i = 0; i < entries; i++)
+  برای (idx_t i = 0; i < entries; i++)
     {
-      if (tabs[i] == 0)
+      اگر (tabs[i] == 0)
         error (EXIT_FAILURE, 0, _("tab size cannot be 0"));
-      if (tabs[i] <= prev_tab)
+      اگر (tabs[i] <= prev_tab)
         error (EXIT_FAILURE, 0, _("tab sizes must be ascending"));
       prev_tab = tabs[i];
     }
 
-  if (increment_size && extend_size)
+  اگر (increment_size && extend_size)
     error (EXIT_FAILURE, 0, _("'/' specifier is mutually exclusive with '+'"));
 }
 
@@ -264,18 +264,18 @@ validate_tab_stops (colno const *tabs, idx_t entries)
    tab-stops = N (if value N specified as the only value).
    tab-stops = distinct values given on command line (if multiple values given).
 */
-extern void
-finalize_tab_stops (void)
+بیرونی تهی
+finalize_tab_stops (تهی)
 {
   validate_tab_stops (tab_list, first_free_tab);
 
-  if (first_free_tab == 0)
+  اگر (first_free_tab == 0)
     tab_size = max_column_width = extend_size
                                   ? extend_size : increment_size
                                                   ? increment_size : 8;
-  else if (first_free_tab == 1 && ! extend_size && ! increment_size)
+  وگرنه اگر (first_free_tab == 1 && ! extend_size && ! increment_size)
     tab_size = tab_list[0];
-  else
+  وگرنه
     tab_size = 0;
 }
 
@@ -284,37 +284,37 @@ finalize_tab_stops (void)
    many multiple tab-sizes.  Set *LAST_TAB depending on whether we are
    returning COLUMN + 1 merely because we're past the last tab.
    If the number would overflow, diagnose this and exit.  */
-extern colno
+بیرونی colno
 get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
 {
   *last_tab = false;
   colno tab_distance;
 
   /* single tab-size - return multiples of it */
-  if (tab_size)
+  اگر (tab_size)
     tab_distance = tab_size - column % tab_size;
-  else
+  وگرنه
     {
       /* multiple tab-sizes - iterate them until the tab position is beyond
          the current input column. */
-      for ( ; *tab_index < first_free_tab ; (*tab_index)++ )
+      برای ( ; *tab_index < first_free_tab ; (*tab_index)++ )
         {
           colno tab = tab_list[*tab_index];
-          if (column < tab)
-            return tab;
+          اگر (column < tab)
+            بازگشت tab;
         }
 
       /* relative last tab - return multiples of it */
-      if (extend_size)
+      اگر (extend_size)
         tab_distance = extend_size - column % extend_size;
-      else if (increment_size)
+      وگرنه اگر (increment_size)
         {
           /* incremental last tab - add increment_size to the previous
              tab stop */
           colno end_tab = tab_list[first_free_tab - 1];
           tab_distance = increment_size - ((column - end_tab) % increment_size);
         }
-      else
+      وگرنه
         {
           *last_tab = true;
           tab_distance = 1;
@@ -322,21 +322,21 @@ get_next_tab_column (colno column, idx_t *tab_index, bool *last_tab)
     }
 
   colno tab_stop;
-  if (ckd_add (&tab_stop, column, tab_distance))
+  اگر (ckd_add (&tab_stop, column, tab_distance))
     error (EXIT_FAILURE, 0, _("input line is too long"));
-  return tab_stop;
+  بازگشت tab_stop;
 }
 
 
 /* Sets new file-list */
-extern void
-set_file_list (char **list)
+بیرونی تهی
+set_file_list (نویسه **list)
 {
   have_read_stdin = false;
 
-  if (!list)
+  اگر (!list)
     file_list = stdin_argv;
-  else
+  وگرنه
     file_list = list;
 }
 
@@ -345,61 +345,61 @@ set_file_list (char **list)
    Open a filename of '-' as the standard input.
    Return NULL if there are no more input files.  */
 
-extern FILE *
+بیرونی FILE *
 next_file (FILE *fp)
 {
-  static char *prev_file;
-  char *file;
+  ایستا نویسه *prev_file;
+  نویسه *file;
 
-  if (fp)
+  اگر (fp)
     {
-      int err = errno;
-      if (!ferror (fp))
+      صحیح err = errno;
+      اگر (!ferror (fp))
         err = 0;
-      if (streq (prev_file, "-"))
+      اگر (streq (prev_file, "-"))
         clearerr (fp);		/* Also clear EOF.  */
-      else if (fclose (fp) != 0)
+      وگرنه اگر (fclose (fp) != 0)
         err = errno;
-      if (err)
+      اگر (err)
         {
           error (0, err, "%s", quotef (prev_file));
           exit_status = EXIT_FAILURE;
         }
     }
 
-  while ((file = *file_list++) != NULL)
+  وقتی ((file = *file_list++) != پوچ)
     {
-      if (streq (file, "-"))
+      اگر (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      وگرنه
         fp = fopen (file, "r");
-      if (fp)
+      اگر (fp)
         {
           prev_file = file;
           fadvise (fp, FADVISE_SEQUENTIAL);
-          return fp;
+          بازگشت fp;
         }
       error (0, errno, "%s", quotef (file));
       exit_status = EXIT_FAILURE;
     }
-  return NULL;
+  بازگشت پوچ;
 }
 
 /* Close standard input if we have read from it.  */
-extern void
-cleanup_file_list_stdin (void)
+بیرونی تهی
+cleanup_file_list_stdin (تهی)
 {
-    if (have_read_stdin && fclose (stdin) != 0)
+    اگر (have_read_stdin && fclose (stdin) != 0)
       error (EXIT_FAILURE, errno, "-");
 }
 
 /* Emit the --help output for --tabs=LIST option accepted by expand and
    unexpand.  */
-extern void
-emit_tab_list_info (char const *program)
+بیرونی تهی
+emit_tab_list_info (نویسه ثابت *program)
 {
   /* suppress syntax check for emit_mandatory_arg_note() */
   oputs_ (program, _("\

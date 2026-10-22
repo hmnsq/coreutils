@@ -16,31 +16,31 @@
 
 /* David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
 
-#include "system.h"
+#شامل "system.h"
 
-#if ! HAVE_NICE
+#اگر ! HAVE_NICE
 /* Include this after "system.h" so we're sure to have definitions
    (from time.h or sys/time.h) required for e.g. the ru_utime member.  */
 # include <sys/resource.h>
 #endif
 
-#include "c-ctype.h"
-#include "quote.h"
-#include "xstrtol.h"
+#شامل "c-ctype.h"
+#شامل "quote.h"
+#شامل "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nice"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-#if HAVE_NICE
+#اگر HAVE_NICE
 # define GET_NICENESS() nice (0)
-#else
+#وگرنه
 # define GET_NICENESS() getpriority (PRIO_PROCESS, 0)
 #endif
 
@@ -49,30 +49,30 @@
 #endif
 
 /* This is required for Darwin Kernel Version 7.7.0.  */
-#if NZERO == 0
+#اگر NZERO == 0
 # undef  NZERO
 # define NZERO 20
 #endif
 
-static struct option const longopts[] =
+ایستا ساختار option ثابت longopts[] =
 {
-  {"adjustment", required_argument, NULL, 'n'},
+  {"adjustment", required_argument, پوچ, 'n'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {پوچ, 0, پوچ, 0}
 };
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
       printf (_("\
 Run COMMAND with an adjusted niceness, which affects process scheduling.\n\
-With no COMMAND, print the current niceness.  Niceness values range from\n\
+With no COMMAND, print the current niceness.  Niceness مقادیر range from\n\
 %d (most favorable to the process) to %d (least favorable to the process).\n\
 "),
               - NZERO, NZERO - 1);
@@ -81,7 +81,7 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
 
       oputs (_("\
   -n, --adjustment=N\n\
-         add integer N to the niceness (default 10)\n\
+         add integer N to the niceness (پیشفرض 10)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -92,20 +92,20 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
   exit (status);
 }
 
-static bool
-perm_related_errno (int err)
+ایستا bool
+perm_related_errno (صحیح err)
 {
-  return err == EACCES || err == EPERM;
+  بازگشت err == EACCES || err == EPERM;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
-  int current_niceness;
-  int adjustment = 10;
-  char const *adjustment_given = NULL;
+  صحیح current_niceness;
+  صحیح adjustment = 10;
+  نویسه ثابت *adjustment_given = پوچ;
   bool ok;
-  int i;
+  صحیح i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -116,20 +116,20 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  for (i = 1; i < argc; /* empty */)
+  برای (i = 1; i < argc; /* empty */)
     {
-      char const *s = argv[i];
+      نویسه ثابت *s = argv[i];
 
-      if (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
+      اگر (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
         {
           adjustment_given = s + 1;
           ++i;
         }
-      else
+      وگرنه
         {
-          int c;
-          int fake_argc = argc - (i - 1);
-          char **fake_argv = argv + (i - 1);
+          صحیح c;
+          صحیح fake_argc = argc - (i - 1);
+          نویسه **fake_argv = argv + (i - 1);
 
           /* Ensure that any getopt diagnostics use the right name.  */
           fake_argv[0] = argv[0];
@@ -137,82 +137,82 @@ main (int argc, char **argv)
           /* Initialize getopt_long's internal state.  */
           optind = 0;
 
-          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, NULL);
+          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, پوچ);
           i += optind - 1;
 
-          switch (c)
+          انتخاب (c)
             {
-            case 'n':
+            حالت 'n':
               adjustment_given = optarg;
-              break;
+              بشکن;
 
-            case -1:
-              break;
+            حالت -1:
+              بشکن;
 
             case_GETOPT_HELP_CHAR;
 
             case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-            default:
+            پیشفرض:
               usage (EXIT_CANCELED);
-              break;
+              بشکن;
             }
 
-          if (c == -1)
-            break;
+          اگر (c == -1)
+            بشکن;
         }
     }
 
-  if (adjustment_given)
+  اگر (adjustment_given)
     {
       /* If the requested adjustment is outside the valid range,
          silently bring it to just within range; this mimics what
          "setpriority" and "nice" do.  */
-#if (defined __gnu_hurd__                                               \
+#اگر (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) only supported 0 to (2 * NZERO - 2) niceness
          until glibc 2.43.  */
-      enum { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
-#else
-      enum { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
+      شمارش { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
+#وگرنه
+      شمارش { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
 #endif
-      long int tmp;
-      if (LONGINT_OVERFLOW < xstrtol (adjustment_given, NULL, 10, &tmp, ""))
+      long صحیح tmp;
+      اگر (LONGINT_OVERFLOW < xstrtol (adjustment_given, پوچ, 10, &tmp, ""))
         error (EXIT_CANCELED, 0, _("invalid adjustment %s"),
                quote (adjustment_given));
-#if (defined __gnu_hurd__                                               \
+#اگر (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) also did not clamp the new niceness into the
          supported range until glibc 2.43.
          See <https://sourceware.org/PR33614>.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      اگر (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      if (tmp < 0)
+      اگر (tmp < 0)
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
+          صحیح sum;
+          اگر (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
             adjustment = MIN_ADJUSTMENT - current_niceness;
-          else
+          وگرنه
             adjustment = tmp;
         }
-      else
+      وگرنه
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
+          صحیح sum;
+          اگر (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
             adjustment = MAX_ADJUSTMENT - current_niceness;
-          else
+          وگرنه
             adjustment = tmp;
         }
-#else
+#وگرنه
       adjustment = MAX (MIN_ADJUSTMENT, MIN (tmp, MAX_ADJUSTMENT));
 #endif
     }
 
-  if (i == argc)
+  اگر (i == argc)
     {
-      if (adjustment_given)
+      اگر (adjustment_given)
         {
           error (0, 0, _("a command must be given with an adjustment"));
           usage (EXIT_CANCELED);
@@ -220,22 +220,22 @@ main (int argc, char **argv)
       /* No command given; print the niceness.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      اگر (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
       printf ("%d\n", current_niceness);
-      return EXIT_SUCCESS;
+      بازگشت EXIT_SUCCESS;
     }
 
   errno = 0;
-#if HAVE_NICE
+#اگر HAVE_NICE
   ok = (nice (adjustment) != -1 || errno == 0);
-#else
+#وگرنه
   current_niceness = GET_NICENESS ();
-  if (current_niceness == -1 && errno != 0)
+  اگر (current_niceness == -1 && errno != 0)
     error (EXIT_CANCELED, errno, _("cannot get niceness"));
   ok = (setpriority (PRIO_PROCESS, 0, current_niceness + adjustment) == 0);
 #endif
-  if (!ok)
+  اگر (!ok)
     {
       error (perm_related_errno (errno) ? 0
              : EXIT_CANCELED, errno, _("cannot set niceness"));
@@ -244,13 +244,13 @@ main (int argc, char **argv)
          close_stdout, but execvp() gets in the way.  If stderr
          encountered a write failure, there is no need to try calling
          error() again.  */
-      if (ferror (stderr))
-        return EXIT_CANCELED;
+      اگر (ferror (stderr))
+        بازگشت EXIT_CANCELED;
     }
 
   execvp (argv[i], &argv[i]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  صحیح exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[i]));
-  return exit_status;
+  بازگشت exit_status;
 }

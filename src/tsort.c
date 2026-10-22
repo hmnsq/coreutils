@@ -20,17 +20,17 @@
    sort) in Donald E. Knuth, The Art of Computer Programming, Volume
    1/Fundamental Algorithms, page 262.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "readtokens.h"
-#include "stdio--.h"
-#include "quote.h"
+#شامل "system.h"
+#شامل "assure.h"
+#شامل "fadvise.h"
+#شامل "readtokens.h"
+#شامل "stdio--.h"
+#شامل "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tsort"
@@ -41,42 +41,42 @@
 #define DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+ساختار successor
 {
-  struct item *suc;
-  struct successor *next;
+  ساختار item *suc;
+  ساختار successor *next;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+ساختار item
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  نویسه ثابت *str;
+  ساختار item *چپ, *راست;
+  signed نویسه balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
-  struct item *qlink;
-  struct successor *top;
+  size_t شمار;
+  ساختار item *qlink;
+  ساختار successor *بالاترین;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+ایستا ساختار item *head = پوچ;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+ایستا ساختار item *zeros = پوچ;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+ایستا ساختار item *loop = پوچ;
 
 /* The number of strings to sort.  */
-static size_t n_strings = 0;
+ایستا size_t n_strings = 0;
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -97,14 +97,14 @@ Write totally ordered list consistent with the partial ordering in FILE.\n\
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+ایستا ساختار item *
+new_item (نویسه ثابت *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  ساختار item *k = xzalloc (اندازه *k);
+  اگر (str)
     k->str = xstrdup (str);
-  return k;
+  بازگشت k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,138 +115,138 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+ایستا ساختار item *
+جستجو_item (ساختار item *ریشه, نویسه ثابت *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  ساختار item *p, *q, *r, *s, *t;
+  صحیح a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  اگر (ریشه->راست == پوچ)
+    بازگشت (ریشه->راست = new_item (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = ریشه;
+  s = p = ریشه->راست;
 
-  while (true)
+  وقتی (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      اگر (a == 0)
+        بازگشت p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
-        q = p->left;
-      else
-        q = p->right;
+      اگر (a < 0)
+        q = p->چپ;
+      وگرنه
+        q = p->راست;
 
-      if (q == NULL)
+      اگر (q == پوچ)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
-            p->left = q;
-          else
-            p->right = q;
+          اگر (a < 0)
+            p->چپ = q;
+          وگرنه
+            p->راست = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          اگر (a < 0)
             {
-              r = p = s->left;
+              r = p = s->چپ;
               a = -1;
             }
-          else
+          وگرنه
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->راست;
               a = 1;
             }
 
-          while (p != q)
+          وقتی (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              صحیح cmp = strcmp (str, p->str);
+              اگر (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->چپ;
                 }
-              else
+              وگرنه
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->راست;
                 }
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          اگر (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              بازگشت q;
             }
 
-          if (r->balance == a)
+          اگر (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              اگر (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->چپ = r->راست;
+                  r->راست = s;
                 }
-              else
+              وگرنه
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->راست = r->چپ;
+                  r->چپ = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          وگرنه
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              اگر (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->راست;
+                  r->راست = p->چپ;
+                  p->چپ = r;
+                  s->چپ = p->راست;
+                  p->راست = s;
                 }
-              else
+              وگرنه
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->چپ;
+                  r->چپ = p->راست;
+                  p->راست = r;
+                  s->راست = p->چپ;
+                  p->چپ = s;
                 }
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              اگر (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              وگرنه اگر (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
-          else
-            t->left = p;
+          اگر (s == t->راست)
+            t->راست = p;
+          وگرنه
+            t->چپ = p;
 
-          return q;
+          بازگشت q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      اگر (q->balance)
         {
           t = p;
           s = q;
@@ -260,43 +260,43 @@ search_item (struct item *root, char const *str)
 
 /* Record the fact that J precedes K.  */
 
-static void
-record_relation (struct item *j, struct item *k)
+ایستا تهی
+record_relation (ساختار item *j, ساختار item *k)
 {
-  struct successor *p;
+  ساختار successor *p;
 
-  if (!streq (j->str, k->str))
+  اگر (!streq (j->str, k->str))
     {
-      k->count++;
-      p = xmalloc (sizeof *p);
+      k->شمار++;
+      p = xmalloc (اندازه *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->next = j->بالاترین;
+      j->بالاترین = p;
     }
 }
 
-static bool
-count_items (MAYBE_UNUSED struct item *unused)
+ایستا bool
+شمار_اقلام (MAYBE_UNUSED ساختار item *unused)
 {
   n_strings++;
-  return false;
+  بازگشت false;
 }
 
-static bool
-scan_zeros (struct item *k)
+ایستا bool
+scan_zeros (ساختار item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  اگر (k->شمار == 0 && !k->printed)
     {
-      if (head == NULL)
+      اگر (head == پوچ)
         head = k;
-      else
+      وگرنه
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  بازگشت false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -317,68 +317,68 @@ scan_zeros (struct item *k)
    loop has completely been constructed.  If the loop was found, the
    global variable LOOP will be null.  */
 
-static bool
-detect_loop (struct item *k)
+ایستا bool
+detect_loop (ساختار item *k)
 {
-  if (k->count > 0)
+  اگر (k->شمار > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      اگر (loop == پوچ)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      وگرنه
         {
-          struct successor **p = &k->top;
+          ساختار successor **p = &k->بالاترین;
 
-          while (*p)
+          وقتی (*p)
             {
-              if ((*p)->suc == loop)
+              اگر ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  اگر (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      وقتی (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          ساختار item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          اگر (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
-                              s->suc->count--;
+                              ساختار successor *s = *p;
+                              s->suc->شمار--;
                               *p = s->next;
-                              IF_LINT (free (s));
-                              break;
+                              IF_LINT (آزاد (s));
+                              بشکن;
                             }
 
                           /* Tidy things up since we might have to
                              detect another loop.  */
-                          loop->qlink = NULL;
+                          loop->qlink = پوچ;
                           loop = tmp;
                         }
 
-                      while (loop)
+                      وقتی (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          ساختار item *tmp = loop->qlink;
 
-                          loop->qlink = NULL;
+                          loop->qlink = پوچ;
                           loop = tmp;
                         }
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      بازگشت true;
                     }
-                  else
+                  وگرنه
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      بشکن;
                     }
                 }
 
@@ -387,102 +387,102 @@ detect_loop (struct item *k)
         }
     }
 
-  return false;
+  بازگشت false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
-static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+ایستا bool
+recurse_درخت (ساختار item *ریشه, bool (*action) (ساختار item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  اگر (ریشه->چپ == پوچ && ریشه->راست == پوچ)
+    بازگشت (*action) (ریشه);
+  وگرنه
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      اگر (ریشه->چپ != پوچ)
+        اگر (recurse_درخت (ریشه->چپ, action))
+          بازگشت true;
+      اگر ((*action) (ریشه))
+        بازگشت true;
+      اگر (ریشه->راست != پوچ)
+        اگر (recurse_درخت (ریشه->راست, action))
+          بازگشت true;
     }
 
-  return false;
+  بازگشت false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
-static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+ایستا تهی
+walk_درخت (ساختار item *ریشه, bool (*action) (ساختار item *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  اگر (ریشه->راست)
+    recurse_درخت (ریشه->راست, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
-static _Noreturn void
-tsort (char const *file)
+ایستا _Noreturn تهی
+tsort (نویسه ثابت *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
+  ساختار item *j = پوچ;
+  ساختار item *k = پوچ;
   token_buffer tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  ساختار item *ریشه = new_item (پوچ);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  اگر (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  وقتی (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      size_t len = readtoken (stdin, DELIM, اندازه (DELIM) - 1, &tokenbuffer);
+      اگر (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          اگر (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          بشکن;
         }
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      k = جستجو_item (ریشه, tokenbuffer.buffer);
+      اگر (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
-          k = NULL;
+          k = پوچ;
         }
 
       j = k;
     }
 
-  if (k != NULL)
+  اگر (k != پوچ)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_درخت (ریشه, شمار_اقلام);
 
-  while (n_strings > 0)
+  وقتی (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_درخت (ریشه, scan_zeros);
 
-      while (head)
+      وقتی (head)
         {
-          struct successor *p = head->top;
+          ساختار successor *p = head->بالاترین;
 
           /* T5. Output front of queue.  */
           puts (head->str);
@@ -490,10 +490,10 @@ tsort (char const *file)
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          وقتی (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->شمار--;
+              اگر (p->suc->شمار == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -507,28 +507,28 @@ tsort (char const *file)
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      اگر (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
           ok = false;
 
           /* Print the loop and remove a relation to break it.  */
-          do
-            walk_tree (root, detect_loop);
-          while (loop);
+          انجامبده
+            walk_درخت (ریشه, detect_loop);
+          وقتی (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  اگر (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,34 +538,34 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  وقتی (true)
     {
-      static struct option const long_options[] =
+      ایستا ساختار option ثابت long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
           {GETOPT_VERSION_OPTION_DECL},
-          {NULL, 0, NULL, 0}
+          {پوچ, 0, پوچ, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      صحیح c = getopt_long (argc, argv, "w", long_options, پوچ);
 
-      if (c == -1)
-        break;
+      اگر (c == -1)
+        بشکن;
 
-      switch (c)
+      انتخاب (c)
         {
-        case 'w':
-          break;
+        حالت 'w':
+          بشکن;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        پیشفرض:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (1 < argc - optind)
+  اگر (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);

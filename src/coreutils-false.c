@@ -14,18 +14,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include "system.h"
+#شامل <config.h>
+#شامل "system.h"
 
-#include "true.h"
+#شامل "true.h"
 /* Ensure that the main for true is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_true (int argc, char **argv);
-int single_binary_main_false (int argc, char **argv);
+صحیح single_دودویی_main_true (صحیح argc, نویسه **argv);
+صحیح single_دودویی_main_false (صحیح argc, نویسه **argv);
 
-int
-single_binary_main_false (int argc, char **argv)
+صحیح
+single_دودویی_main_false (صحیح argc, نویسه **argv)
 {
   true_mode = TRUE_FALSE;
-  return single_binary_main_true (argc, argv);
+  بازگشت single_دودویی_main_true (argc, argv);
 }

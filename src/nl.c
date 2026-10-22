@@ -17,21 +17,21 @@
 /* Written by Scott Bartram (nancy!scott@uunet.uu.net)
    Revised by David MacKenzie (djm@gnu.ai.mit.edu) */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <getopt.h>
 
-#include "system.h"
+#شامل "system.h"
 
-#include <regex.h>
+#شامل <regex.h>
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "mcel.h"
-#include "quote.h"
-#include "xdectoint.h"
+#شامل "fadvise.h"
+#شامل "linebuffer.h"
+#شامل "mcel.h"
+#شامل "quote.h"
+#شامل "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "nl"
@@ -44,183 +44,183 @@
    value, and a string separator.  */
 
 /* Right justified, no leading zeroes.  */
-static char const FORMAT_RIGHT_NOLZ[] = "%*jd%s";
+ایستا نویسه ثابت FORMAT_راست_NOLZ[] = "%*jd%s";
 
 /* Right justified, leading zeroes.  */
-static char const FORMAT_RIGHT_LZ[] = "%0*jd%s";
+ایستا نویسه ثابت FORMAT_راست_LZ[] = "%0*jd%s";
 
 /* Left justified, no leading zeroes.  */
-static char const FORMAT_LEFT[] = "%-*jd%s";
+ایستا نویسه ثابت FORMAT_چپ[] = "%-*jd%s";
 
 /* Default section delimiter characters.  */
-static char DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
+ایستا نویسه DEFAULT_SECTION_DELIMITERS[MCEL_LEN_MAX * 2 + 1] = "\\:";
 
 /* Types of input lines: either one of the section delimiters,
    or text to output. */
-enum section
+شمارش section
 {
   Header, Body, Footer, Text
 };
 
 /* Format of body lines (-b).  */
-static char const *body_type = "t";
+ایستا نویسه ثابت *body_type = "t";
 
 /* Format of header lines (-h).  */
-static char const *header_type = "n";
+ایستا نویسه ثابت *header_type = "n";
 
 /* Format of footer lines (-f).  */
-static char const *footer_type = "n";
+ایستا نویسه ثابت *footer_type = "n";
 
 /* Format currently being used (body, header, or footer).  */
-static char const *current_type;
+ایستا نویسه ثابت *current_type;
 
 /* Regex for body lines to number (-bp).  */
-static struct re_pattern_buffer body_regex;
+ایستا ساختار re_pattern_buffer body_regex;
 
 /* Regex for header lines to number (-hp).  */
-static struct re_pattern_buffer header_regex;
+ایستا ساختار re_pattern_buffer header_regex;
 
 /* Regex for footer lines to number (-fp).  */
-static struct re_pattern_buffer footer_regex;
+ایستا ساختار re_pattern_buffer footer_regex;
 
 /* Fastmaps for the above.  */
-static char body_fastmap[UCHAR_MAX + 1];
-static char header_fastmap[UCHAR_MAX + 1];
-static char footer_fastmap[UCHAR_MAX + 1];
+ایستا نویسه body_fastmap[UCHAR_MAX + 1];
+ایستا نویسه header_fastmap[UCHAR_MAX + 1];
+ایستا نویسه footer_fastmap[UCHAR_MAX + 1];
 
 /* Pointer to current regex, if any.  */
-static struct re_pattern_buffer *current_regex = NULL;
+ایستا ساختار re_pattern_buffer *current_regex = پوچ;
 
 /* Separator string to print after line number (-s).  */
-static char const *separator_str = "\t";
+ایستا نویسه ثابت *separator_str = "\t";
 
 /* Input section delimiter string (-d).  */
-static char *section_del = DEFAULT_SECTION_DELIMITERS;
+ایستا نویسه *section_del = DEFAULT_SECTION_DELIMITERS;
 
 /* Input section delimiter length.  */
-static size_t section_del_len;
+ایستا size_t section_del_len;
 
 /* Header delimiter string.  */
-static char *header_del = NULL;
+ایستا نویسه *header_del = پوچ;
 
 /* Header section delimiter length.  */
-static size_t header_del_len;
+ایستا size_t header_del_len;
 
 /* Body delimiter string.  */
-static char *body_del = NULL;
+ایستا نویسه *body_del = پوچ;
 
 /* Body section delimiter length.  */
-static size_t body_del_len;
+ایستا size_t body_del_len;
 
 /* Footer delimiter string.  */
-static char *footer_del = NULL;
+ایستا نویسه *footer_del = پوچ;
 
 /* Footer section delimiter length.  */
-static size_t footer_del_len;
+ایستا size_t footer_del_len;
 
 /* Input buffer.  */
-static struct linebuffer line_buf;
+ایستا ساختار linebuffer سطر_buf;
 
 /* printf format string for unnumbered lines.  */
-static char *print_no_line_fmt = NULL;
+ایستا نویسه *print_no_سطر_fmt = پوچ;
 
 /* Starting line number on each page (-v).  */
-static intmax_t starting_line_number = 1;
+ایستا intmax_t starting_سطر_عدد = 1;
 
 /* Line number increment (-i).  */
-static intmax_t page_incr = 1;
+ایستا intmax_t page_incr = 1;
 
 /* If true, reset line number at start of each page (-p).  */
-static bool reset_numbers = true;
+ایستا bool reset_numbers = true;
 
 /* Number of blank lines to consider to be one line for numbering (-l).  */
-static intmax_t blank_join = 1;
+ایستا intmax_t blank_join = 1;
 
 /* Width of line numbers (-w).  */
-static int lineno_width = 6;
+ایستا صحیح lineno_width = 6;
 
 /* Line number format (-n).  */
-static char const *lineno_format = FORMAT_RIGHT_NOLZ;
+ایستا نویسه ثابت *lineno_format = FORMAT_راست_NOLZ;
 
 /* Current print line number.  */
-static intmax_t line_no;
+ایستا intmax_t سطر_no;
 
 /* Whether the current line number has incremented past limits.  */
-static bool line_no_overflow;
+ایستا bool سطر_no_overflow;
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin;
+ایستا bool have_read_stdin;
 
-static struct option const longopts[] =
+ایستا ساختار option ثابت longopts[] =
 {
-  {"header-numbering", required_argument, NULL, 'h'},
-  {"body-numbering", required_argument, NULL, 'b'},
-  {"footer-numbering", required_argument, NULL, 'f'},
-  {"starting-line-number", required_argument, NULL, 'v'},
-  {"line-increment", required_argument, NULL, 'i'},
-  {"no-renumber", no_argument, NULL, 'p'},
-  {"join-blank-lines", required_argument, NULL, 'l'},
-  {"number-separator", required_argument, NULL, 's'},
-  {"number-width", required_argument, NULL, 'w'},
-  {"number-format", required_argument, NULL, 'n'},
-  {"section-delimiter", required_argument, NULL, 'd'},
+  {"header-numbering", required_argument, پوچ, 'h'},
+  {"body-numbering", required_argument, پوچ, 'b'},
+  {"footer-numbering", required_argument, پوچ, 'f'},
+  {"starting-line-number", required_argument, پوچ, 'v'},
+  {"line-increment", required_argument, پوچ, 'i'},
+  {"no-renumber", no_argument, پوچ, 'p'},
+  {"join-blank-lines", required_argument, پوچ, 'l'},
+  {"number-separator", required_argument, پوچ, 's'},
+  {"number-width", required_argument, پوچ, 'w'},
+  {"number-format", required_argument, پوچ, 'n'},
+  {"section-delimiter", required_argument, پوچ, 'd'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {پوچ, 0, پوچ, 0}
 };
 
 /* Print a usage message and quit. */
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write each FILE to standard output, with line numbers added.\n\
+Write each FILE to standard output, with سطر numbers added.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --body-numbering=STYLE      use STYLE for numbering body lines\n\
+  -b, --body-numbering=STYLE      use STYLE برای numbering body سطرها\n\
 "));
       oputs (_("\
-  -d, --section-delimiter=CC      use CC for logical page delimiters\n\
+  -d, --section-delimiter=CC      use CC برای logical page delimiters\n\
 "));
       oputs (_("\
-  -f, --footer-numbering=STYLE    use STYLE for numbering footer lines\n\
+  -f, --footer-numbering=STYLE    use STYLE برای numbering footer سطرها\n\
 "));
       oputs (_("\
-  -h, --header-numbering=STYLE    use STYLE for numbering header lines\n\
+  -h, --header-numbering=STYLE    use STYLE برای numbering header سطرها\n\
 "));
       oputs (_("\
-  -i, --line-increment=NUMBER     line number increment at each line\n\
+  -i, --سطر-increment=عدد_2     سطر عدد increment at each سطر\n\
 "));
       oputs (_("\
-  -l, --join-blank-lines=NUMBER   group of NUMBER empty lines counted as one\n\
+  -l, --join-blank-سطرها=عدد_2   group of عدد_2 empty سطرها counted as one\n\
 "));
       oputs (_("\
-  -n, --number-format=FORMAT      insert line numbers according to FORMAT\n\
+  -n, --عدد-format=FORMAT      درج سطر numbers according to FORMAT\n\
 "));
       oputs (_("\
-  -p, --no-renumber               do not reset line numbers for each section\n\
+  -p, --no-renumber               انجامبده not reset سطر numbers برای each section\n\
 "));
       oputs (_("\
-  -s, --number-separator=STRING   add STRING after (possible) line number\n\
+  -s, --عدد-separator=STRING   add STRING after (possible) سطر عدد\n\
 "));
       oputs (_("\
-  -v, --starting-line-number=NUMBER  first line number for each section\n\
+  -v, --starting-سطر-عدد=عدد_2  first سطر عدد برای each section\n\
 "));
       oputs (_("\
-  -w, --number-width=NUMBER       use NUMBER columns for line numbers\n\
+  -w, --عدد-width=عدد_2       use عدد_2 columns برای سطر numbers\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -237,19 +237,19 @@ disables section matching.\n\
 \n\
 STYLE is one of:\n\
 \n\
-  a      number all lines\n\
-  t      number only nonempty lines\n\
-  n      number no lines\n\
-  pBRE   number only lines that contain a match for the basic regular\n\
+  a      عدد all سطرها\n\
+  t      عدد only nonempty سطرها\n\
+  n      عدد no سطرها\n\
+  pBRE   عدد only سطرها that contain a match برای the basic regular\n\
          expression, BRE\n\
 "), stdout);
       fputs (_("\
 \n\
 FORMAT is one of:\n\
 \n\
-  ln     left justified, no leading zeros\n\
-  rn     right justified, no leading zeros\n\
-  rz     right justified, leading zeros\n\
+  ln     چپ justified, no leading zeros\n\
+  rn     راست justified, no leading zeros\n\
+  rz     راست justified, leading zeros\n\
 \n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -260,67 +260,67 @@ FORMAT is one of:\n\
 /* Set the command line flag TYPEP and possibly the regex pointer REGEXP,
    according to 'optarg'.  */
 
-static bool
-build_type_arg (char const **typep,
-                struct re_pattern_buffer *regexp, char *fastmap)
+ایستا bool
+build_type_arg (نویسه ثابت **typep,
+                ساختار re_pattern_buffer *regexp, نویسه *fastmap)
 {
-  char const *errmsg;
+  نویسه ثابت *errmsg;
   bool rval = true;
 
-  switch (*optarg)
+  انتخاب (*optarg)
     {
-    case 'a':
-    case 't':
-    case 'n':
+    حالت 'a':
+    حالت 't':
+    حالت 'n':
       *typep = optarg;
-      break;
-    case 'p':
+      بشکن;
+    حالت 'p':
       *typep = optarg++;
-      regexp->buffer = NULL;
+      regexp->buffer = پوچ;
       regexp->allocated = 0;
       regexp->fastmap = fastmap;
-      regexp->translate = NULL;
+      regexp->translate = پوچ;
       re_syntax_options =
         RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
       errmsg = re_compile_pattern (optarg, strlen (optarg), regexp);
-      if (errmsg)
+      اگر (errmsg)
         error (EXIT_FAILURE, 0, "%s", (errmsg));
-      break;
-    default:
+      بشکن;
+    پیشفرض:
       rval = false;
-      break;
+      بشکن;
     }
-  return rval;
+  بازگشت rval;
 }
 
 /* Print the line number and separator; increment the line number. */
 
-static void
-print_lineno (void)
+ایستا تهی
+print_lineno (تهی)
 {
-  if (line_no_overflow)
+  اگر (سطر_no_overflow)
     error (EXIT_FAILURE, 0, _("line number overflow"));
 
-  printf (lineno_format, lineno_width, line_no, separator_str);
+  printf (lineno_format, lineno_width, سطر_no, separator_str);
 
-  if (ckd_add (&line_no, line_no, page_incr))
-    line_no_overflow = true;
+  اگر (ckd_add (&سطر_no, سطر_no, page_incr))
+    سطر_no_overflow = true;
 }
 
-static void
-reset_lineno (void)
+ایستا تهی
+reset_lineno (تهی)
 {
-  if (reset_numbers)
+  اگر (reset_numbers)
     {
-      line_no = starting_line_number;
-      line_no_overflow = false;
+      سطر_no = starting_سطر_عدد;
+      سطر_no_overflow = false;
     }
 }
 
 /* Switch to a header section. */
 
-static void
-proc_header (void)
+ایستا تهی
+proc_header (تهی)
 {
   current_type = header_type;
   current_regex = &header_regex;
@@ -330,8 +330,8 @@ proc_header (void)
 
 /* Switch to a body section. */
 
-static void
-proc_body (void)
+ایستا تهی
+proc_body (تهی)
 {
   current_type = body_type;
   current_regex = &body_regex;
@@ -341,8 +341,8 @@ proc_body (void)
 
 /* Switch to a footer section. */
 
-static void
-proc_footer (void)
+ایستا تهی
+proc_footer (تهی)
 {
   current_type = footer_type;
   current_regex = &footer_regex;
@@ -352,101 +352,101 @@ proc_footer (void)
 
 /* Process a regular text line in 'line_buf'. */
 
-static void
-proc_text (void)
+ایستا تهی
+proc_text (تهی)
 {
-  static intmax_t blank_lines = 0;	/* Consecutive blank lines so far. */
+  ایستا intmax_t blank_سطرها = 0;	/* Consecutive blank lines so far. */
 
-  switch (*current_type)
+  انتخاب (*current_type)
     {
-    case 'a':
-      if (blank_join > 1)
+    حالت 'a':
+      اگر (blank_join > 1)
         {
-          if (1 < line_buf.length || ++blank_lines == blank_join)
+          اگر (1 < سطر_buf.length || ++blank_سطرها == blank_join)
             {
               print_lineno ();
-              blank_lines = 0;
+              blank_سطرها = 0;
             }
-          else
-            fputs (print_no_line_fmt, stdout);
+          وگرنه
+            fputs (print_no_سطر_fmt, stdout);
         }
-      else
+      وگرنه
         print_lineno ();
-      break;
-    case 't':
-      if (1 < line_buf.length)
+      بشکن;
+    حالت 't':
+      اگر (1 < سطر_buf.length)
         print_lineno ();
-      else
-        fputs (print_no_line_fmt, stdout);
-      break;
-    case 'n':
-      fputs (print_no_line_fmt, stdout);
-      break;
-    case 'p':
-      switch (re_search (current_regex, line_buf.buffer, line_buf.length - 1,
-                         0, line_buf.length - 1, NULL))
+      وگرنه
+        fputs (print_no_سطر_fmt, stdout);
+      بشکن;
+    حالت 'n':
+      fputs (print_no_سطر_fmt, stdout);
+      بشکن;
+    حالت 'p':
+      انتخاب (re_جستجو (current_regex, سطر_buf.buffer, سطر_buf.length - 1,
+                         0, سطر_buf.length - 1, پوچ))
         {
-        case -2:
+        حالت -2:
           error (EXIT_FAILURE, errno, _("error in regular expression search"));
 
-        case -1:
-          fputs (print_no_line_fmt, stdout);
-          break;
+        حالت -1:
+          fputs (print_no_سطر_fmt, stdout);
+          بشکن;
 
-        default:
+        پیشفرض:
           print_lineno ();
-          break;
+          بشکن;
         }
     }
-  fwrite (line_buf.buffer, sizeof (char), line_buf.length, stdout);
+  fwrite (سطر_buf.buffer, اندازه (نویسه), سطر_buf.length, stdout);
 }
 
 /* Return the type of line in 'line_buf'. */
 
-static enum section
-check_section (void)
+ایستا شمارش section
+check_section (تهی)
 {
-  size_t len = line_buf.length - 1;
+  size_t len = سطر_buf.length - 1;
 
-  if (len < section_del_len || footer_del_len < section_del_len
-      || !memeq (line_buf.buffer, section_del, section_del_len))
-    return Text;
-  if (len == header_del_len
-      && memeq (line_buf.buffer, header_del, header_del_len))
-    return Header;
-  if (len == body_del_len
-      && memeq (line_buf.buffer, body_del, body_del_len))
-    return Body;
-  if (len == footer_del_len
-      && memeq (line_buf.buffer, footer_del, footer_del_len))
-    return Footer;
-  return Text;
+  اگر (len < section_del_len || footer_del_len < section_del_len
+      || !memeq (سطر_buf.buffer, section_del, section_del_len))
+    بازگشت Text;
+  اگر (len == header_del_len
+      && memeq (سطر_buf.buffer, header_del, header_del_len))
+    بازگشت Header;
+  اگر (len == body_del_len
+      && memeq (سطر_buf.buffer, body_del, body_del_len))
+    بازگشت Body;
+  اگر (len == footer_del_len
+      && memeq (سطر_buf.buffer, footer_del, footer_del_len))
+    بازگشت Footer;
+  بازگشت Text;
 }
 
 /* Read and process the file pointed to by FP. */
 
-static void
+ایستا تهی
 process_file (FILE *fp)
 {
-  while (readlinebuffer (&line_buf, fp))
+  وقتی (readlinebuffer (&سطر_buf, fp))
     {
-      switch (check_section ())
+      انتخاب (check_section ())
         {
-        case Header:
+        حالت Header:
           proc_header ();
-          break;
-        case Body:
+          بشکن;
+        حالت Body:
           proc_body ();
-          break;
-        case Footer:
+          بشکن;
+        حالت Footer:
           proc_footer ();
-          break;
-        case Text:
+          بشکن;
+        حالت Text:
           proc_text ();
-          break;
+          بشکن;
         }
 
-      if (ferror (stdout))
+      اگر (ferror (stdout))
         write_error ();
     }
 }
@@ -454,24 +454,24 @@ process_file (FILE *fp)
 /* Process file FILE to standard output.
    Return true if successful.  */
 
-static bool
-nl_file (char const *file)
+ایستا bool
+nl_file (نویسه ثابت *file)
 {
   FILE *stream;
 
-  if (streq (file, "-"))
+  اگر (streq (file, "-"))
     {
       have_read_stdin = true;
       stream = stdin;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  وگرنه
     {
       stream = fopen (file, "r");
-      if (stream == NULL)
+      اگر (stream == پوچ)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          بازگشت false;
         }
     }
 
@@ -479,25 +479,25 @@ nl_file (char const *file)
 
   process_file (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  صحیح err = errno;
+  اگر (!ferror (stream))
     err = 0;
-  if (streq (file, "-"))
+  اگر (streq (file, "-"))
     clearerr (stream);		/* Also clear EOF. */
-  else if (fclose (stream) != 0 && !err)
+  وگرنه اگر (fclose (stream) != 0 && !err)
     err = errno;
-  if (err)
+  اگر (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      بازگشت false;
     }
-  return true;
+  بازگشت true;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
-  int c;
+  صحیح c;
   size_t len;
   bool ok = true;
 
@@ -509,106 +509,106 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
-                           NULL))
+  وقتی ((c = getopt_long (argc, argv, "h:b:f:v:i:pl:s:w:n:d:", longopts,
+                           پوچ))
          != -1)
     {
-      switch (c)
+      انتخاب (c)
         {
-        case 'h':
-          if (! build_type_arg (&header_type, &header_regex, header_fastmap))
+        حالت 'h':
+          اگر (! build_type_arg (&header_type, &header_regex, header_fastmap))
             {
               error (0, 0, _("invalid header numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'b':
-          if (! build_type_arg (&body_type, &body_regex, body_fastmap))
+          بشکن;
+        حالت 'b':
+          اگر (! build_type_arg (&body_type, &body_regex, body_fastmap))
             {
               error (0, 0, _("invalid body numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'f':
-          if (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
+          بشکن;
+        حالت 'f':
+          اگر (! build_type_arg (&footer_type, &footer_regex, footer_fastmap))
             {
               error (0, 0, _("invalid footer numbering style: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'v':
-          starting_line_number = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
+          بشکن;
+        حالت 'v':
+          starting_سطر_عدد = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                              _("invalid starting line number"),
                                              0);
-          break;
-        case 'i':
+          بشکن;
+        حالت 'i':
           page_incr = xdectoimax (optarg, INTMAX_MIN, INTMAX_MAX, "",
                                   _("invalid line number increment"), 0);
-          break;
-        case 'p':
+          بشکن;
+        حالت 'p':
           reset_numbers = false;
-          break;
-        case 'l':
+          بشکن;
+        حالت 'l':
           blank_join = xnumtoimax (optarg, 10, 1, INTMAX_MAX, "",
                                    _("invalid line number of blank lines"),
                                    0, XTOINT_MIN_RANGE | XTOINT_MAX_QUIET);
-          break;
-        case 's':
+          بشکن;
+        حالت 's':
           separator_str = optarg;
-          break;
-        case 'w':
+          بشکن;
+        حالت 'w':
           lineno_width = xnumtoimax (optarg, 10, 1, INT_MAX, "",
                                      _("invalid line number field width"),
                                      0, XTOINT_MIN_RANGE);
-          break;
-        case 'n':
-          if (streq (optarg, "ln"))
-            lineno_format = FORMAT_LEFT;
-          else if (streq (optarg, "rn"))
-            lineno_format = FORMAT_RIGHT_NOLZ;
-          else if (streq (optarg, "rz"))
-            lineno_format = FORMAT_RIGHT_LZ;
-          else
+          بشکن;
+        حالت 'n':
+          اگر (streq (optarg, "ln"))
+            lineno_format = FORMAT_چپ;
+          وگرنه اگر (streq (optarg, "rn"))
+            lineno_format = FORMAT_راست_NOLZ;
+          وگرنه اگر (streq (optarg, "rz"))
+            lineno_format = FORMAT_راست_LZ;
+          وگرنه
             {
               error (0, 0, _("invalid line numbering format: %s"),
                      quote (optarg));
               ok = false;
             }
-          break;
-        case 'd':
+          بشکن;
+        حالت 'd':
           len = strlen (optarg);
-          if (1 < MB_CUR_MAX)
+          اگر (1 < MB_CUR_MAX)
             {
-              char const *p = optarg;
-              char const *lim = p + len;
-              int n_chars = 0;
-              for (; p < lim && n_chars < 2; ++n_chars)
+              نویسه ثابت *p = optarg;
+              نویسه ثابت *lim = p + len;
+              صحیح n_chars = 0;
+              برای (; p < lim && n_chars < 2; ++n_chars)
                   p += mcel_scan (p, lim).len;
-              if (n_chars == 1)
-                memcpy (mempcpy (section_del, optarg, len),  ":", sizeof ":");
-              else
+              اگر (n_chars == 1)
+                memcpy (mempcpy (section_del, optarg, len),  ":", اندازه ":");
+              وگرنه
                 section_del = optarg;
             }
-          else
+          وگرنه
             {
-              if (len == 1)
+              اگر (len == 1)
                 *section_del = *optarg;
-              else
+              وگرنه
                 section_del = optarg;
             }
-          break;
+          بشکن;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        پیشفرض:
           ok = false;
-          break;
+          بشکن;
         }
     }
 
-  if (!ok)
+  اگر (!ok)
     usage (EXIT_FAILURE);
 
   /* Initialize the section delimiters.  */
@@ -625,28 +625,28 @@ main (int argc, char **argv)
   footer_del = body_del + len;
 
   /* Initialize the input buffer.  */
-  initbuffer (&line_buf);
+  initbuffer (&سطر_buf);
 
   /* Initialize the printf format for unnumbered lines. */
   len = strlen (separator_str);
-  print_no_line_fmt = xmalloc (lineno_width + len + 1);
-  memset (print_no_line_fmt, ' ', lineno_width + len);
-  print_no_line_fmt[lineno_width + len] = '\0';
+  print_no_سطر_fmt = xmalloc (lineno_width + len + 1);
+  memset (print_no_سطر_fmt, ' ', lineno_width + len);
+  print_no_سطر_fmt[lineno_width + len] = '\0';
 
-  line_no = starting_line_number;
+  سطر_no = starting_سطر_عدد;
   current_type = body_type;
   current_regex = &body_regex;
 
   /* Main processing. */
 
-  if (optind == argc)
+  اگر (optind == argc)
     ok = nl_file ("-");
-  else
-    for (; optind < argc; optind++)
+  وگرنه
+    برای (; optind < argc; optind++)
       ok &= nl_file (argv[optind]);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  اگر (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  بازگشت ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -14,12 +14,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل "system.h"
+#شامل "assure.h"
+#شامل "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "echo"
@@ -30,11 +30,11 @@
 
 /* If true, interpret backslash escapes by default.  */
 #ifndef DEFAULT_ECHO_TO_XPG
-enum { DEFAULT_ECHO_TO_XPG = false };
+شمارش { DEFAULT_ECHO_TO_XPG = false };
 #endif
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
@@ -49,11 +49,11 @@ Echo the STRING(s) to standard output.\n\
 \n\
 "), stdout);
   oputs (_("\
-  -n     do not output the trailing newline\n\
+  -n     انجامبده not output the trailing newline\n\
 "));
   oputs (_(DEFAULT_ECHO_TO_XPG
            ? N_("\
-  -e     enable interpretation of backslash escapes (default)\n\
+  -e     enable interpretation of backslash escapes (پیشفرض)\n\
 ")
            : N_("\
   -e     enable interpretation of backslash escapes\n\
@@ -63,7 +63,7 @@ Echo the STRING(s) to standard output.\n\
   -E     disable interpretation of backslash escapes\n\
 ")
            : N_("\
-  -E     disable interpretation of backslash escapes (default)\n\
+  -E     disable interpretation of backslash escapes (پیشفرض)\n\
 ")));
   oputs (HELP_OPTION_DESCRIPTION);
   oputs (VERSION_OPTION_DESCRIPTION);
@@ -79,14 +79,14 @@ If -e is in effect, the following sequences are recognized:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new سطر\n\
+  \\r      carriage بازگشت\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
   fputs (_("\
-  \\0NNN   byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
+  \\0NNN   byte with octal مقدار NNN (1 to 3 digits)\n\
+  \\xHH    byte with hexadecimal مقدار HH (1 to 2 digits)\n\
 "), stdout);
   printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
   fputs (_("\n\
@@ -98,18 +98,18 @@ as it avoids problems when outputting option-like strings.\n\
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
-hextobin (unsigned char c)
+ایستا صحیح
+hextobin (unsigned نویسه c)
 {
-  switch (c)
+  انتخاب (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    پیشفرض: بازگشت c - '0';
+    حالت 'a': حالت 'A': بازگشت 10;
+    حالت 'b': حالت 'B': بازگشت 11;
+    حالت 'c': حالت 'C': بازگشت 12;
+    حالت 'd': حالت 'D': بازگشت 13;
+    حالت 'e': حالت 'E': بازگشت 14;
+    حالت 'f': حالت 'F': بازگشت 15;
     }
 }
 
@@ -117,8 +117,8 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
@@ -141,60 +141,60 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  اگر (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      اگر (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      اگر (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+                       (نویسه *) پوچ);
+          بازگشت EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  اگر (allow_options)
+    وقتی (argc > 0 && *argv[0] == '-')
       {
-        char const *temp = argv[0] + 1;
+        نویسه ثابت *temp = argv[0] + 1;
         size_t i;
 
         /* If it appears that we are handling options, then make sure that
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
-          switch (temp[i])
+        برای (i = 0; temp[i]; i++)
+          انتخاب (temp[i])
             {
-            case 'e': case 'E': case 'n':
-              break;
-            default:
-              goto just_echo;
+            حالت 'e': حالت 'E': حالت 'n':
+              بشکن;
+            پیشفرض:
+              برو just_echo;
             }
 
-        if (i == 0)
-          goto just_echo;
+        اگر (i == 0)
+          برو just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
-          switch (*temp++)
+        وقتی (*temp)
+          انتخاب (*temp++)
             {
-            case 'e':
+            حالت 'e':
               do_v9 = true;
-              break;
+              بشکن;
 
-            case 'E':
+            حالت 'E':
               do_v9 = false;
-              break;
+              بشکن;
 
-            case 'n':
+            حالت 'n':
               display_return = false;
-              break;
+              بشکن;
             }
 
         argc--;
@@ -203,84 +203,84 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  اگر (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      وقتی (argc > 0)
         {
-          char const *s = argv[0];
-          unsigned char c;
+          نویسه ثابت *s = argv[0];
+          unsigned نویسه c;
 
-          while ((c = *s++))
+          وقتی ((c = *s++))
             {
-              if (c == '\\' && *s)
+              اگر (c == '\\' && *s)
                 {
-                  switch (c = *s++)
+                  انتخاب (c = *s++)
                     {
-                    case 'a': c = '\a'; break;
-                    case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
-                    case 'e': c = '\x1B'; break;
-                    case 'f': c = '\f'; break;
-                    case 'n': c = '\n'; break;
-                    case 'r': c = '\r'; break;
-                    case 't': c = '\t'; break;
-                    case 'v': c = '\v'; break;
-                    case 'x':
+                    حالت 'a': c = '\a'; بشکن;
+                    حالت 'b': c = '\b'; بشکن;
+                    حالت 'c': بازگشت EXIT_SUCCESS;
+                    حالت 'e': c = '\x1B'; بشکن;
+                    حالت 'f': c = '\f'; بشکن;
+                    حالت 'n': c = '\n'; بشکن;
+                    حالت 'r': c = '\r'; بشکن;
+                    حالت 't': c = '\t'; بشکن;
+                    حالت 'v': c = '\v'; بشکن;
+                    حالت 'x':
                       {
-                        unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
-                          goto not_an_escape;
+                        unsigned نویسه ch = *s;
+                        اگر (! c_isxdigit (ch))
+                          برو not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        اگر (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
                           }
                       }
-                      break;
-                    case '0':
+                      بشکن;
+                    حالت '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
-                        break;
+                      اگر (! ('0' <= *s && *s <= '7'))
+                        بشکن;
                       c = *s++;
                       FALLTHROUGH;
-                    case '1': case '2': case '3':
-                    case '4': case '5': case '6': case '7':
+                    حالت '1': حالت '2': حالت '3':
+                    حالت '4': حالت '5': حالت '6': حالت '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      اگر ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      اگر ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      break;
-                    case '\\': break;
+                      بشکن;
+                    حالت '\\': بشکن;
 
                     not_an_escape:
-                    default:  putchar ('\\'); break;
+                    پیشفرض:  putchar ('\\'); بشکن;
                     }
                 }
               putchar (c);
             }
           argc--;
           argv++;
-          if (argc > 0)
+          اگر (argc > 0)
             putchar (' ');
         }
     }
-  else
+  وگرنه
     {
-      while (argc > 0)
+      وقتی (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
+          اگر (argc > 0)
             putchar (' ');
         }
     }
 
-  if (display_return)
+  اگر (display_return)
     putchar ('\n');
-  return EXIT_SUCCESS;
+  بازگشت EXIT_SUCCESS;
 }

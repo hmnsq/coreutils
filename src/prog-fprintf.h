@@ -19,7 +19,7 @@
 
 # include <stdio.h>
 
-extern void prog_fprintf (FILE *fp, char const *fmt, ...)
+بیرونی تهی prog_fprintf (FILE *fp, نویسه ثابت *fmt, ...)
   _GL_ATTRIBUTE_FORMAT ((__printf__, 2, 3)) _GL_ATTRIBUTE_NONNULL ((1, 2));
 
 #endif

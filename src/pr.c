@@ -307,22 +307,22 @@
 
 */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "hard-locale.h"
-#include "mbswidth.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "strftime.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
-#include "xdectoint.h"
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل "system.h"
+#شامل "c-ctype.h"
+#شامل "fadvise.h"
+#شامل "hard-locale.h"
+#شامل "mbswidth.h"
+#شامل "quote.h"
+#شامل "stat-time.h"
+#شامل "stdio--.h"
+#شامل "strftime.h"
+#شامل "xstrtol.h"
+#شامل "xstrtol-error.h"
+#شامل "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pr"
@@ -380,12 +380,12 @@
    options.  Many of the "int" values below should be "size_t" or
    something else like that.  */
 
-struct COLUMN;
-struct COLUMN
+ساختار COLUMN;
+ساختار COLUMN
   {
     FILE *fp;			/* Input stream for this column. */
-    char const *name;		/* File name. */
-    enum
+    نویسه ثابت *name;		/* File name. */
+    شمارش
       {
         OPEN,
         FF_FOUND,		/* used with -b option, set with \f, changed
@@ -396,15 +396,15 @@ struct COLUMN
     status;			/* Status of the file pointer. */
 
     /* Func to print lines in this col. */
-    bool (*print_func) (struct COLUMN *);
+    bool (*print_func) (ساختار COLUMN *);
 
     /* Func to print/store chars in this col. */
-    void (*char_func) (char);
+    تهی (*char_func) (نویسه);
 
-    int current_line;		/* Index of current place in line_vector. */
-    int lines_stored;		/* Number of lines stored in buff. */
-    int lines_to_print;		/* No. lines stored or space left on page. */
-    int start_position;		/* Horizontal position of first char. */
+    صحیح current_سطر;		/* Index of current place in line_vector. */
+    صحیح سطرها_stored;		/* Number of lines stored in buff. */
+    صحیح سطرها_to_print;		/* No. lines stored or space left on page. */
+    صحیح start_position;		/* Horizontal position of first char. */
     bool numbered;
     bool full_page_printed;	/* True means printed without a FF found. */
 
@@ -414,186 +414,186 @@ struct COLUMN
        the next line. */
   };
 
-typedef struct COLUMN COLUMN;
+تعریفنوع ساختار COLUMN COLUMN;
 
-static int char_to_clump (char c);
-static bool read_line (COLUMN *p);
-static bool print_page (void);
-static bool print_stored (COLUMN *p);
-static bool open_file (char *name, COLUMN *p);
-static bool skip_to_page (uintmax_t page);
-static void print_header (void);
-static void pad_across_to (int position);
-static void add_line_number (COLUMN *p);
-static int getoptnum (char const *n_str, int min, char const *errfmt);
-static void getoptarg (char *arg, char switch_char, char *character,
-                       int *number);
-static void print_files (int number_of_files, char **av);
-static void init_parameters (int number_of_files);
-static void init_header (char const *filename, int desc);
-static bool init_fps (int number_of_files, char **av);
-static void init_funcs (void);
-static void init_store_cols (void);
-static void store_columns (void);
-static void balance (int total_stored);
-static void store_char (char c);
-static void pad_down (unsigned int lines);
-static void read_rest_of_line (COLUMN *p);
-static void skip_read (COLUMN *p, int column_number);
-static void print_char (char c);
-static void cleanup (void);
-static void print_sep_string (void);
-static void separator_string (char const *optarg_S);
+ایستا صحیح char_to_clump (نویسه c);
+ایستا bool read_سطر (COLUMN *p);
+ایستا bool print_page (تهی);
+ایستا bool print_stored (COLUMN *p);
+ایستا bool open_file (نویسه *name, COLUMN *p);
+ایستا bool skip_to_page (uintmax_t page);
+ایستا تهی print_header (تهی);
+ایستا تهی pad_across_to (صحیح position);
+ایستا تهی add_سطر_عدد (COLUMN *p);
+ایستا صحیح getoptnum (نویسه ثابت *n_str, صحیح min, نویسه ثابت *errfmt);
+ایستا تهی getoptarg (نویسه *arg, نویسه switch_char, نویسه *character,
+                       صحیح *عدد);
+ایستا تهی print_files (صحیح عدد_of_files, نویسه **av);
+ایستا تهی init_parameters (صحیح عدد_of_files);
+ایستا تهی init_header (نویسه ثابت *filename, صحیح desc);
+ایستا bool init_fps (صحیح عدد_of_files, نویسه **av);
+ایستا تهی init_funcs (تهی);
+ایستا تهی init_store_cols (تهی);
+ایستا تهی store_columns (تهی);
+ایستا تهی balance (صحیح total_stored);
+ایستا تهی store_char (نویسه c);
+ایستا تهی pad_down (unsigned صحیح سطرها);
+ایستا تهی read_rest_of_سطر (COLUMN *p);
+ایستا تهی skip_read (COLUMN *p, صحیح column_عدد);
+ایستا تهی print_char (نویسه c);
+ایستا تهی cleanup (تهی);
+ایستا تهی print_sep_string (تهی);
+ایستا تهی separator_string (نویسه ثابت *optarg_S);
 
 /* All of the columns to print.  */
-static COLUMN *column_vector;
+ایستا COLUMN *column_vector;
 
 /* When printing a single file in multiple downward columns,
    we store the leftmost columns contiguously in buff.
    To print a line from buff, get the index of the first character
    from line_vector[i], and print up to line_vector[i + 1]. */
-static char *buff;
+ایستا نویسه *buff;
 
 /* Index of the position in buff where the next character
    will be stored. */
-static unsigned int buff_current;
+ایستا unsigned صحیح buff_current;
 
 /* The number of characters in buff.
    Used for allocation of buff and to detect overflow of buff. */
-static idx_t buff_allocated;
+ایستا idx_t buff_allocated;
 
 /* Array of indices into buff.
    Each entry is an index of the first character of a line.
    This is used when storing lines to facilitate shuffling when
    we do column balancing on the last page. */
-static int *line_vector;
+ایستا صحیح *سطر_vector;
 
 /* Array of horizontal positions.
    For each line in line_vector, end_vector[line] is the horizontal
    position we are in after printing that line.  We keep track of this
    so that we know how much we need to pad to prepare for the next
    column. */
-static int *end_vector;
+ایستا صحیح *end_vector;
 
 /* (-m) True means we're printing multiple files in parallel. */
-static bool parallel_files = false;
+ایستا bool parallel_files = false;
 
 /* (-m) True means a line starts with some empty columns (some files
    already CLOSED or ON_HOLD) which we have to align. */
-static bool align_empty_cols;
+ایستا bool align_empty_cols;
 
 /* (-m) True means we have not yet found any printable column in a line.
    align_empty_cols = true  has to be maintained. */
-static bool empty_line;
+ایستا bool empty_سطر;
 
 /* (-m) False means printable column output precedes a form feed found.
    Column alignment is done only once. No additional action with that form
    feed.
    True means we found only a form feed in a column. Maybe we have to do
    some column alignment with that form feed. */
-static bool FF_only;
+ایستا bool FF_only;
 
 /* (-[0-9]+) True means we're given an option explicitly specifying
    number of columns.  Used to detect when this option is used with -m
    and when translating old options to new/long options. */
-static bool explicit_columns = false;
+ایستا bool explicit_columns = false;
 
 /* (-t|-T) False means we aren't printing headers and footers. */
-static bool extremities = true;
+ایستا bool extremities = true;
 
 /* (-t) True means we retain all FF set by hand in input files.
    False is set with -T option. */
-static bool keep_FF = false;
-static bool print_a_FF = false;
+ایستا bool keep_FF = false;
+ایستا bool print_a_FF = false;
 
 /* True means we need to print a header as soon as we know we've got input
    to print after it. */
-static bool print_a_header;
+ایستا bool print_a_header;
 
 /* (-f) True means use formfeeds instead of newlines to separate pages. */
-static bool use_form_feed = false;
+ایستا bool use_form_feed = false;
 
 /* True means we have read the standard input. */
-static bool have_read_stdin = false;
+ایستا bool have_read_stdin = false;
 
 /* True means the -a flag has been given. */
-static bool print_across_flag = false;
+ایستا bool print_across_flag = false;
 
 /* True means we're printing one file in multiple (>1) downward columns. */
-static bool storing_columns = true;
+ایستا bool storing_columns = true;
 
 /* (-b) True means balance columns on the last page as Sys V does. */
 /* That's no longer an independent option. With storing_columns = true
    balance_columns = true is used too (s. function init_parameters).
    We get a consistent formulation with "FF set by hand" in input files. */
-static bool balance_columns = false;
+ایستا bool balance_columns = false;
 
 /* (-l) Number of lines on a page, including header and footer lines. */
-static int lines_per_page = 66;
+ایستا صحیح سطرها_per_page = 66;
 
 /* Number of lines in the header and footer can be reset to 0 using
    the -t flag. */
-enum { lines_per_header = 5 };
-static int lines_per_body;
-enum { lines_per_footer = 5 };
+شمارش { سطرها_per_header = 5 };
+ایستا صحیح سطرها_per_body;
+شمارش { سطرها_per_footer = 5 };
 
 /* (-w|-W) Width in characters of the page.  Does not include the width of
    the margin. */
-static int chars_per_line = 72;
+ایستا صحیح chars_per_سطر = 72;
 
 /* (-w|W) True means we truncate lines longer than chars_per_column. */
-static bool truncate_lines = false;
+ایستا bool truncate_سطرها = false;
 
 /* (-J) True means we join lines without any line truncation. -J
    dominates -w option. */
-static bool join_lines = false;
+ایستا bool join_سطرها = false;
 
 /* Number of characters in a column.  Based on col_sep_length and
    page width. */
-static int chars_per_column;
+ایستا صحیح chars_per_column;
 
 /* (-e) True means convert tabs to spaces on input. */
-static bool untabify_input = false;
+ایستا bool untabify_درون_داد = false;
 
 /* (-e) The input tab character. */
-static char input_tab_char = '\t';
+ایستا نویسه درون_داد_tab_char = '\t';
 
 /* (-e) Tabstops are at chars_per_tab, 2*chars_per_tab, 3*chars_per_tab, ...
    where the leftmost column is 1. */
-static int chars_per_input_tab = 8;
+ایستا صحیح chars_per_درون_داد_tab = 8;
 
 /* (-i) True means convert spaces to tabs on output. */
-static bool tabify_output = false;
+ایستا bool tabify_output = false;
 
 /* (-i) The output tab character. */
-static char output_tab_char = '\t';
+ایستا نویسه output_tab_char = '\t';
 
 /* (-i) The width of the output tab. */
-static int chars_per_output_tab = 8;
+ایستا صحیح chars_per_output_tab = 8;
 
 /* Keeps track of pending white space.  When we hit a nonspace
    character after some whitespace, we print whitespace, tabbing
    if necessary to get to output_position + spaces_not_printed. */
-static int spaces_not_printed;
+ایستا صحیح spaces_not_printed;
 
 /* (-o) Number of spaces in the left margin (tabs used when possible). */
-static int chars_per_margin = 0;
+ایستا صحیح chars_per_margin = 0;
 
 /* Position where the next character will fall.
    Leftmost position is 0 + chars_per_margin.
    Rightmost position is chars_per_margin + chars_per_line - 1.
    This is important for converting spaces to tabs on output. */
-static int output_position;
+ایستا صحیح output_position;
 
 /* Horizontal position relative to the current file.
    (output_position depends on where we are on the page;
    input_position depends on where we are in the file.)
    Important for converting tabs to spaces on input. */
-static int input_position;
+ایستا صحیح درون_داد_position;
 
 /* True if there were any failed opens so we can exit with nonzero
    status.  */
-static bool failed_opens = false;
+ایستا bool failed_opens = false;
 
 /* The number of spaces taken up if we print a tab character with width
    c_ from position h_. */
@@ -604,18 +604,18 @@ static bool failed_opens = false;
 #define POS_AFTER_TAB(c_, h_) ((h_) + TAB_WIDTH (c_, h_))
 
 /* (-NNN) Number of columns of text to print. */
-static int columns = 1;
+ایستا صحیح columns = 1;
 
 /* (+NNN:MMM) Page numbers on which to begin and stop printing.
    first_page_number = 0  will be used to check input only. */
-static uintmax_t first_page_number = 0;
-static uintmax_t last_page_number = UINTMAX_MAX;
+ایستا uintmax_t first_page_عدد = 0;
+ایستا uintmax_t last_page_عدد = UINTMAX_MAX;
 
 /* Number of files open (not closed, not on hold). */
-static int files_ready_to_read = 0;
+ایستا صحیح files_ready_to_read = 0;
 
 /* Current page number.  Displayed in header. */
-static uintmax_t page_number;
+ایستا uintmax_t page_عدد;
 
 /* Current line number.  Displayed when -n flag is specified.
 
@@ -630,148 +630,148 @@ static uintmax_t page_number;
    Otherwise, line numbering is as follows:
    1    foo     3       goo     5       too
    2    moo     4       hoo     6       zoo */
-static int line_number;
+ایستا صحیح سطر_عدد;
 
 /* (-n) True means lines should be preceded by numbers. */
-static bool numbered_lines = false;
+ایستا bool numbered_سطرها = false;
 
 /* (-n) Character which follows each line number. */
-static char number_separator = '\t';
+ایستا نویسه عدد_separator = '\t';
 
 /* (-n) line counting starts with 1st line of input file (not with 1st
    line of 1st page printed). */
-static int line_count = 1;
+ایستا صحیح سطر_شمار = 1;
 
 /* (-n) True means counting of skipped lines starts with 1st line of
    input file. False means -N option is used in addition, counting of
    skipped lines not required. */
-static bool skip_count = true;
+ایستا bool skip_شمار = true;
 
 /* (-N) Counting starts with start_line_number = NUMBER at 1st line of
    first page printed, usually not 1st page of input file. */
-static int start_line_num = 1;
+ایستا صحیح start_سطر_رقم = 1;
 
 /* (-n) Width in characters of a line number. */
-static int chars_per_number = 5;
+ایستا صحیح chars_per_عدد = 5;
 
 /* Used when widening the first column to accommodate numbers -- only
    needed when printing files in parallel.  Includes width of both the
    number and the number_separator. */
-static int number_width;
+ایستا صحیح عدد_width;
 
 /* Buffer sprintf uses to format a line number. */
-static char *number_buff;
+ایستا نویسه *عدد_buff;
 
 /* (-v) True means nonprintable characters are printed as escape sequences.
    control-g becomes \007. */
-static bool use_esc_sequence = false;
+ایستا bool use_esc_sequence = false;
 
 /* (-c) True means nonprintable characters are printed as control prefixes.
    control-g becomes ^G. */
-static bool use_cntrl_prefix = false;
+ایستا bool use_cntrl_prefix = false;
 
 /* (-d) True means output is double spaced. */
-static bool double_space = false;
+ایستا bool double_space = false;
 
 /* Number of files opened initially in init_files.  Should be 1
    unless we're printing multiple files in parallel. */
-static int total_files = 0;
+ایستا صحیح total_files = 0;
 
 /* (-r) True means don't complain if we can't open a file. */
-static bool ignore_failed_opens = false;
+ایستا bool ignore_failed_opens = false;
 
 /* (-S) True means we separate columns with a specified string.
    -S option does not affect line truncation nor column alignment. */
-static bool use_col_separator = false;
+ایستا bool use_col_separator = false;
 
 /* String used to separate columns if the -S option has been specified.
    Default without -S but together with one of the column options
    -a|COLUMN|-m is a 'space' and with the -J option a 'tab'. */
-static char const *col_sep_string = "";
-static int col_sep_length = 0;
-static char *column_separator = (char *) " ";
-static char *line_separator = (char *) "\t";
+ایستا نویسه ثابت *col_sep_string = "";
+ایستا صحیح col_sep_length = 0;
+ایستا نویسه *column_separator = (نویسه *) " ";
+ایستا نویسه *سطر_separator = (نویسه *) "\t";
 
 /* Number of separator characters waiting to be printed as soon as we
    know that we have any input remaining to be printed. */
-static int separators_not_printed;
+ایستا صحیح separators_not_printed;
 
 /* Position we need to pad to, as soon as we know that we have input
    remaining to be printed. */
-static int padding_not_printed;
+ایستا صحیح padding_not_printed;
 
 /* True means we should pad the end of the page.  Remains false until we
    know we have a page to print. */
-static bool pad_vertically;
+ایستا bool pad_vertically;
 
 /* (-h) String of characters used in place of the filename in the header. */
-static char *custom_header;
+ایستا نویسه *custom_header;
 
 /* (-D) Date format for the header.  */
-static char const *date_format;
+ایستا نویسه ثابت *date_format;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+ایستا timezone_t localtz;
 
 /* Date and file name for the header.  */
-static char *date_text;
-static char const *file_text;
+ایستا نویسه *date_text;
+ایستا نویسه ثابت *file_text;
 
 /* Output columns available, not counting the date and file name.  */
-static int header_width_available;
+ایستا صحیح header_width_available;
 
-static char *clump_buff;
+ایستا نویسه *clump_buff;
 
 /* True means we read the line no. lines_per_body in skip_read
    called by skip_to_page. That variable controls the coincidence of a
    "FF set by hand" and "full_page_printed", see above the definition of
    structure COLUMN. */
-static bool last_line = false;
+ایستا bool last_سطر = false;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمارش
 {
   COLUMNS_OPTION = CHAR_MAX + 1,
   PAGES_OPTION
 };
 
-static char const short_options[] =
+ایستا نویسه ثابت short_options[] =
   "-0123456789D:FJN:S::TW:abcde::fh:i::l:mn::o:rs::tvw:";
 
-static struct option const long_options[] =
+ایستا ساختار option ثابت long_options[] =
 {
-  {"pages", required_argument, NULL, PAGES_OPTION},
-  {"columns", required_argument, NULL, COLUMNS_OPTION},
-  {"across", no_argument, NULL, 'a'},
-  {"show-control-chars", no_argument, NULL, 'c'},
-  {"double-space", no_argument, NULL, 'd'},
-  {"date-format", required_argument, NULL, 'D'},
-  {"expand-tabs", optional_argument, NULL, 'e'},
-  {"form-feed", no_argument, NULL, 'f'},
-  {"header", required_argument, NULL, 'h'},
-  {"output-tabs", optional_argument, NULL, 'i'},
-  {"join-lines", no_argument, NULL, 'J'},
-  {"length", required_argument, NULL, 'l'},
-  {"merge", no_argument, NULL, 'm'},
-  {"number-lines", optional_argument, NULL, 'n'},
-  {"first-line-number", required_argument, NULL, 'N'},
-  {"indent", required_argument, NULL, 'o'},
-  {"no-file-warnings", no_argument, NULL, 'r'},
-  {"separator", optional_argument, NULL, 's'},
-  {"sep-string", optional_argument, NULL, 'S'},
-  {"omit-header", no_argument, NULL, 't'},
-  {"omit-pagination", no_argument, NULL, 'T'},
-  {"show-nonprinting", no_argument, NULL, 'v'},
-  {"width", required_argument, NULL, 'w'},
-  {"page-width", required_argument, NULL, 'W'},
+  {"pages", required_argument, پوچ, PAGES_OPTION},
+  {"columns", required_argument, پوچ, COLUMNS_OPTION},
+  {"across", no_argument, پوچ, 'a'},
+  {"show-control-chars", no_argument, پوچ, 'c'},
+  {"double-space", no_argument, پوچ, 'd'},
+  {"date-format", required_argument, پوچ, 'D'},
+  {"expand-tabs", optional_argument, پوچ, 'e'},
+  {"form-feed", no_argument, پوچ, 'f'},
+  {"header", required_argument, پوچ, 'h'},
+  {"output-tabs", optional_argument, پوچ, 'i'},
+  {"join-lines", no_argument, پوچ, 'J'},
+  {"length", required_argument, پوچ, 'l'},
+  {"merge", no_argument, پوچ, 'm'},
+  {"number-lines", optional_argument, پوچ, 'n'},
+  {"first-line-number", required_argument, پوچ, 'N'},
+  {"indent", required_argument, پوچ, 'o'},
+  {"no-file-warnings", no_argument, پوچ, 'r'},
+  {"separator", optional_argument, پوچ, 's'},
+  {"sep-string", optional_argument, پوچ, 'S'},
+  {"omit-header", no_argument, پوچ, 't'},
+  {"omit-pagination", no_argument, پوچ, 'T'},
+  {"show-nonprinting", no_argument, پوچ, 'v'},
+  {"width", required_argument, پوچ, 'w'},
+  {"page-width", required_argument, پوچ, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {پوچ, 0, پوچ, 0}
 };
 
-static _Noreturn void
-integer_overflow (void)
+ایستا _Noreturn تهی
+integer_overflow (تهی)
 {
   error (EXIT_FAILURE, 0, _("integer overflow"));
 }
@@ -780,62 +780,62 @@ integer_overflow (void)
    stored lines. */
 
 ATTRIBUTE_PURE
-static unsigned int
-cols_ready_to_print (void)
+ایستا unsigned صحیح
+cols_ready_to_print (تهی)
 {
   COLUMN *q;
-  unsigned int i;
-  unsigned int n;
+  unsigned صحیح i;
+  unsigned صحیح n;
 
   n = 0;
-  for (q = column_vector, i = 0; i < columns; ++q, ++i)
-    if (q->status == OPEN
+  برای (q = column_vector, i = 0; i < columns; ++q, ++i)
+    اگر (q->status == OPEN
         || q->status == FF_FOUND	/* With -b: To print a header only */
-        || (storing_columns && q->lines_stored > 0 && q->lines_to_print > 0))
+        || (storing_columns && q->سطرها_stored > 0 && q->سطرها_to_print > 0))
       ++n;
-  return n;
+  بازگشت n;
 }
 
 /* Estimate first_ / last_page_number
    using option +FIRST_PAGE:LAST_PAGE */
 
-static bool
-first_last_page (int oi, char c, char const *pages)
+ایستا bool
+first_last_page (صحیح oi, نویسه c, نویسه ثابت *pages)
 {
-  char *p;
+  نویسه *p;
   uintmax_t first;
   uintmax_t last = UINTMAX_MAX;
   strtol_error err = xstrtoumax (pages, &p, 10, &first, "");
-  if (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
+  اگر (err != LONGINT_OK && err != LONGINT_INVALID_SUFFIX_CHAR)
     xstrtol_fatal (err, oi, c, long_options, pages);
 
-  if (p == pages || !first)
-    return false;
+  اگر (p == pages || !first)
+    بازگشت false;
 
-  if (*p == ':')
+  اگر (*p == ':')
     {
-      char const *p1 = p + 1;
+      نویسه ثابت *p1 = p + 1;
       err = xstrtoumax (p1, &p, 10, &last, "");
-      if (err != LONGINT_OK)
+      اگر (err != LONGINT_OK)
         xstrtol_fatal (err, oi, c, long_options, pages);
-      if (p1 == p || last < first)
-        return false;
+      اگر (p1 == p || last < first)
+        بازگشت false;
     }
 
-  if (*p)
-    return false;
+  اگر (*p)
+    بازگشت false;
 
-  first_page_number = first;
-  last_page_number = last;
-  return true;
+  first_page_عدد = first;
+  last_page_عدد = last;
+  بازگشت true;
 }
 
 /* Parse column count string S, and if it's valid (1 or larger and
    within range of the type of 'columns') set the global variables
    columns and explicit_columns.  Otherwise, exit with a diagnostic.  */
 
-static void
-parse_column_count (char const *s)
+ایستا تهی
+parse_column_شمار (نویسه ثابت *s)
 {
   columns = getoptnum (s, 1, _("invalid number of columns"));
   explicit_columns = true;
@@ -843,27 +843,27 @@ parse_column_count (char const *s)
 
 /* Estimate length of col_sep_string with option -S.  */
 
-static void
-separator_string (char const *optarg_S)
+ایستا تهی
+separator_string (نویسه ثابت *optarg_S)
 {
   size_t len = strlen (optarg_S);
-  if (INT_MAX < len)
+  اگر (INT_MAX < len)
     integer_overflow ();
   col_sep_length = len;
   col_sep_string = optarg_S;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+اصلی (صحیح argc, نویسه **argv)
 {
-  unsigned int n_files;
+  unsigned صحیح n_files;
   bool old_options = false;
   bool old_w = false;
   bool old_s = false;
-  char **file_names;
+  نویسه **file_names;
 
   /* Accumulate the digits of old-style options like -99.  */
-  char *column_count_string = NULL;
+  نویسه *column_شمار_string = پوچ;
   idx_t n_digits = 0;
   idx_t n_alloc = 0;
 
@@ -877,189 +877,189 @@ main (int argc, char **argv)
 
   n_files = 0;
   file_names = (argc > 1
-                ? xnmalloc (argc - 1, sizeof (char *))
-                : NULL);
+                ? xnmalloc (argc - 1, اندازه (نویسه *))
+                : پوچ);
 
-  while (true)
+  وقتی (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      صحیح oi = -1;
+      صحیح c = getopt_long (argc, argv, short_options, long_options, &oi);
+      اگر (c == -1)
+        بشکن;
 
-      if (c_isdigit (c))
+      اگر (c_isdigit (c))
         {
           /* Accumulate column-count digits specified via old-style options. */
-          if (n_digits + 1 >= n_alloc)
-            column_count_string = xpalloc (column_count_string, &n_alloc, 2, -1,
-                                           sizeof *column_count_string);
-          column_count_string[n_digits++] = c;
-          column_count_string[n_digits] = '\0';
-          continue;
+          اگر (n_digits + 1 >= n_alloc)
+            column_شمار_string = xpalloc (column_شمار_string, &n_alloc, 2, -1,
+                                           اندازه *column_شمار_string);
+          column_شمار_string[n_digits++] = c;
+          column_شمار_string[n_digits] = '\0';
+          ادامه;
         }
 
       n_digits = 0;
 
-      switch (c)
+      انتخاب (c)
         {
-        case 1:			/* Non-option argument. */
+        حالت 1:			/* Non-option argument. */
           /* long option --page dominates old '+FIRST_PAGE ...'.  */
-          if (! (first_page_number == 0
+          اگر (! (first_page_عدد == 0
                  && *optarg == '+' && first_last_page (-2, '+', optarg + 1)))
             file_names[n_files++] = optarg;
-          break;
+          بشکن;
 
-        case PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
+        حالت PAGES_OPTION:	/* --pages=FIRST_PAGE[:LAST_PAGE] */
           {			/* dominates old opt +... */
-            if (! optarg)
+            اگر (! optarg)
               error (EXIT_FAILURE, 0,
                      _("'--pages=FIRST_PAGE[:LAST_PAGE]' missing argument"));
-            else if (! first_last_page (oi, 0, optarg))
+            وگرنه اگر (! first_last_page (oi, 0, optarg))
               error (EXIT_FAILURE, 0, _("invalid page range %s"),
                      quote (optarg));
-            break;
+            بشکن;
           }
 
-        case COLUMNS_OPTION:	/* --columns=COLS */
+        حالت COLUMNS_OPTION:	/* --columns=COLS */
           {
-            parse_column_count (optarg);
+            parse_column_شمار (optarg);
 
             /* If there was a prior column count specified via the
                short-named option syntax, e.g., -9, ensure that this
                long-name-specified value overrides it.  */
-            free (column_count_string);
-            column_count_string = NULL;
+            آزاد (column_شمار_string);
+            column_شمار_string = پوچ;
             n_alloc = 0;
-            break;
+            بشکن;
           }
 
-        case 'a':
+        حالت 'a':
           print_across_flag = true;
           storing_columns = false;
-          break;
-        case 'b':
+          بشکن;
+        حالت 'b':
           balance_columns = true;
-          break;
-        case 'c':
+          بشکن;
+        حالت 'c':
           use_cntrl_prefix = true;
-          break;
-        case 'd':
+          بشکن;
+        حالت 'd':
           double_space = true;
-          break;
-        case 'D':
+          بشکن;
+        حالت 'D':
           date_format = optarg;
-          break;
-        case 'e':
-          if (optarg)
-            getoptarg (optarg, 'e', &input_tab_char,
-                       &chars_per_input_tab);
+          بشکن;
+        حالت 'e':
+          اگر (optarg)
+            getoptarg (optarg, 'e', &درون_داد_tab_char,
+                       &chars_per_درون_داد_tab);
           /* Could check tab width > 0. */
-          untabify_input = true;
-          break;
-        case 'f':
-        case 'F':
+          untabify_درون_داد = true;
+          بشکن;
+        حالت 'f':
+        حالت 'F':
           use_form_feed = true;
-          break;
-        case 'h':
+          بشکن;
+        حالت 'h':
           custom_header = optarg;
-          break;
-        case 'i':
-          if (optarg)
+          بشکن;
+        حالت 'i':
+          اگر (optarg)
             getoptarg (optarg, 'i', &output_tab_char,
                        &chars_per_output_tab);
           /* Could check tab width > 0. */
           tabify_output = true;
-          break;
-        case 'J':
-          join_lines = true;
-          break;
-        case 'l':
-          lines_per_page
+          بشکن;
+        حالت 'J':
+          join_سطرها = true;
+          بشکن;
+        حالت 'l':
+          سطرها_per_page
             = getoptnum (optarg, 1,
                          _("'-l PAGE_LENGTH' invalid number of lines"));
-          break;
-        case 'm':
+          بشکن;
+        حالت 'm':
           parallel_files = true;
           storing_columns = false;
-          break;
-        case 'n':
-          numbered_lines = true;
-          if (optarg)
-            getoptarg (optarg, 'n', &number_separator,
-                       &chars_per_number);
-          break;
-        case 'N':
-          skip_count = false;
-          start_line_num
+          بشکن;
+        حالت 'n':
+          numbered_سطرها = true;
+          اگر (optarg)
+            getoptarg (optarg, 'n', &عدد_separator,
+                       &chars_per_عدد);
+          بشکن;
+        حالت 'N':
+          skip_شمار = false;
+          start_سطر_رقم
             = getoptnum (optarg, INT_MIN,
                          _("'-N NUMBER' invalid starting line number"));
-          break;
-        case 'o':
+          بشکن;
+        حالت 'o':
           chars_per_margin = getoptnum (optarg, 0,
                                         _("'-o MARGIN' invalid line offset"));
-          break;
-        case 'r':
+          بشکن;
+        حالت 'r':
           ignore_failed_opens = true;
-          break;
-        case 's':
+          بشکن;
+        حالت 's':
           old_options = true;
           old_s = true;
-          if (!use_col_separator && optarg)
+          اگر (!use_col_separator && optarg)
             separator_string (optarg);
-          break;
-        case 'S':
+          بشکن;
+        حالت 'S':
           old_s = false;
           /* Reset an additional input of -s, -S dominates -s */
           col_sep_string = "";
           col_sep_length = 0;
           use_col_separator = true;
-          if (optarg)
+          اگر (optarg)
             separator_string (optarg);
-          break;
-        case 't':
+          بشکن;
+        حالت 't':
           extremities = false;
           keep_FF = true;
-          break;
-        case 'T':
+          بشکن;
+        حالت 'T':
           extremities = false;
           keep_FF = false;
-          break;
-        case 'v':
+          بشکن;
+        حالت 'v':
           use_esc_sequence = true;
-          break;
-        case 'w':
+          بشکن;
+        حالت 'w':
           old_options = true;
           old_w = true;
           {
-            int tmp_cpl
+            صحیح tmp_cpl
               = getoptnum (optarg, 1,
                            _("'-w PAGE_WIDTH' invalid number of characters"));
-            if (! truncate_lines)
-              chars_per_line = tmp_cpl;
+            اگر (! truncate_سطرها)
+              chars_per_سطر = tmp_cpl;
           }
-          break;
-        case 'W':
+          بشکن;
+        حالت 'W':
           old_w = false;			/* dominates -w */
-          truncate_lines = true;
-          chars_per_line
+          truncate_سطرها = true;
+          chars_per_سطر
             = getoptnum (optarg, 1,
                          _("'-W PAGE_WIDTH' invalid number of characters"));
-          break;
+          بشکن;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        پیشفرض:
           usage (EXIT_FAILURE);
-          break;
+          بشکن;
         }
     }
 
-  if (column_count_string)
+  اگر (column_شمار_string)
     {
-      parse_column_count (column_count_string);
-      free (column_count_string);
+      parse_column_شمار (column_شمار_string);
+      آزاد (column_شمار_string);
     }
 
-  if (! date_format)
+  اگر (! date_format)
     date_format = (getenv ("POSIXLY_CORRECT") && !hard_locale (LC_TIME)
                    ? "%b %e %H:%M %Y"
                    : "%Y-%m-%d %H:%M");
@@ -1067,14 +1067,14 @@ main (int argc, char **argv)
   localtz = tzalloc (getenv ("TZ"));
 
   /* Now we can set a reasonable initial value: */
-  if (first_page_number == 0)
-    first_page_number = 1;
+  اگر (first_page_عدد == 0)
+    first_page_عدد = 1;
 
-  if (parallel_files && explicit_columns)
+  اگر (parallel_files && explicit_columns)
     error (EXIT_FAILURE, 0,
            _("cannot specify number of columns when printing in parallel"));
 
-  if (parallel_files && print_across_flag)
+  اگر (parallel_files && print_across_flag)
     error (EXIT_FAILURE, 0,
            _("cannot specify both printing across and printing in parallel"));
 
@@ -1082,39 +1082,39 @@ main (int argc, char **argv)
    To meet downward compatibility with other UNIX pr utilities
    and some POSIX specifications. */
 
-  if (old_options)
+  اگر (old_options)
     {
-      if (old_w)
+      اگر (old_w)
         {
-          if (parallel_files || explicit_columns)
+          اگر (parallel_files || explicit_columns)
             {
               /* activate -W */
-              truncate_lines = true;
-              if (old_s)
+              truncate_سطرها = true;
+              اگر (old_s)
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
                 use_col_separator = true;
             }
-          else
+          وگرنه
             /* old -w sets width with columns only
                activate -J */
-            join_lines = true;
+            join_سطرها = true;
         }
-      else if (!use_col_separator)
+      وگرنه اگر (!use_col_separator)
         {
           /* No -S option read */
-          if (old_s && (parallel_files || explicit_columns))
+          اگر (old_s && (parallel_files || explicit_columns))
             {
-              if (!truncate_lines)
+              اگر (!truncate_سطرها)
                 {
                   /* old -s (without -w and -W) annuls column alignment,
                   uses fields, activate -J */
-                  join_lines = true;
-                  if (col_sep_length > 0)
+                  join_سطرها = true;
+                  اگر (col_sep_length > 0)
                     /* activate -S */
                     use_col_separator = true;
                 }
-              else
+              وگرنه
                 /* with -W */
                 /* adapt HP-UX and SunOS: -s = no separator;
                    activate -S */
@@ -1123,40 +1123,40 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; optind++)
+  برای (; optind < argc; optind++)
     {
       file_names[n_files++] = argv[optind];
     }
 
-  if (n_files == 0)
+  اگر (n_files == 0)
     {
       /* No file arguments specified;  read from standard input.  */
-      print_files (0, NULL);
+      print_files (0, پوچ);
     }
-  else
+  وگرنه
     {
-      if (parallel_files)
+      اگر (parallel_files)
         print_files (n_files, file_names);
-      else
+      وگرنه
         {
-          for (unsigned int i = 0; i < n_files; i++)
+          برای (unsigned صحیح i = 0; i < n_files; i++)
             print_files (1, &file_names[i]);
         }
     }
 
   cleanup ();
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  اگر (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, _("standard input"));
   main_exit (failed_opens ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
 /* Parse numeric arguments, ensuring MIN <= number <= INT_MAX.  */
 
-static int
-getoptnum (char const *n_str, int min, char const *err)
+ایستا صحیح
+getoptnum (نویسه ثابت *n_str, صحیح min, نویسه ثابت *err)
 {
-  return xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
+  بازگشت xnumtoimax (n_str, 10, min, INT_MAX, "", err, 0,
                      min <= 0 ? 0 : XTOINT_MIN_RANGE);
 }
 
@@ -1166,82 +1166,82 @@ getoptnum (char const *n_str, int min, char const *err)
    separator, and k is the optional width of the field used when printing
    a number. */
 
-static void
-getoptarg (char *arg, char switch_char, char *character, int *number)
+ایستا تهی
+getoptarg (نویسه *arg, نویسه switch_char, نویسه *character, صحیح *عدد)
 {
-  char const *num = arg;
+  نویسه ثابت *رقم = arg;
 
-  if (!*num)
+  اگر (!*رقم)
     {
-      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (num));
+      error (0, 0, _("'-%c': Invalid argument: %s"), switch_char, quote (رقم));
       usage (EXIT_FAILURE);
     }
 
-  if (!c_isdigit (*num))
-    *character = *num++;
-  if (*num)
+  اگر (!c_isdigit (*رقم))
+    *character = *رقم++;
+  اگر (*رقم)
     {
-      long int tmp_long;
-      strtol_error e = xstrtol (num, NULL, 10, &tmp_long, "");
-      if (e == LONGINT_OK)
+      long صحیح tmp_long;
+      strtol_error e = xstrtol (رقم, پوچ, 10, &tmp_long, "");
+      اگر (e == LONGINT_OK)
         {
-          if (tmp_long <= 0)
+          اگر (tmp_long <= 0)
             e = LONGINT_INVALID;
-          else if (INT_MAX < tmp_long)
+          وگرنه اگر (INT_MAX < tmp_long)
             e = LONGINT_OVERFLOW;
         }
-      if (e != LONGINT_OK)
+      اگر (e != LONGINT_OK)
         {
           error (0, e & LONGINT_OVERFLOW ? EOVERFLOW : 0,
              _("'-%c' extra characters or invalid number in the argument: %s"),
                  switch_char, quote (arg));
           usage (EXIT_FAILURE);
         }
-      *number = tmp_long;
+      *عدد = tmp_long;
     }
 }
 
 /* Set parameters related to formatting. */
 
-static void
-init_parameters (int number_of_files)
+ایستا تهی
+init_parameters (صحیح عدد_of_files)
 {
-  int chars_used_by_number = 0;
+  صحیح chars_used_by_عدد = 0;
 
-  lines_per_body = lines_per_page - lines_per_header - lines_per_footer;
-  if (lines_per_body <= 0)
+  سطرها_per_body = سطرها_per_page - سطرها_per_header - سطرها_per_footer;
+  اگر (سطرها_per_body <= 0)
     {
       extremities = false;
       keep_FF = true;
     }
-  if (! extremities)
-    lines_per_body = lines_per_page;
+  اگر (! extremities)
+    سطرها_per_body = سطرها_per_page;
 
-  if (double_space)
-    lines_per_body = MAX (1, lines_per_body / 2);
+  اگر (double_space)
+    سطرها_per_body = MAX (1, سطرها_per_body / 2);
 
   /* If input is stdin, cannot print parallel files.  BSD dumps core
      on this. */
-  if (number_of_files == 0)
+  اگر (عدد_of_files == 0)
     parallel_files = false;
 
-  if (parallel_files)
-    columns = number_of_files;
+  اگر (parallel_files)
+    columns = عدد_of_files;
 
   /* One file, multi columns down: -b option is set to get a consistent
      formulation with "FF set by hand" in input files. */
-  if (storing_columns)
+  اگر (storing_columns)
     balance_columns = true;
 
   /* Tabification is assumed for multiple columns. */
-  if (columns > 1)
+  اگر (columns > 1)
     {
-      if (!use_col_separator)
+      اگر (!use_col_separator)
         {
           /* Use default separator */
-          if (join_lines)
-            col_sep_string = line_separator;
-          else
+          اگر (join_سطرها)
+            col_sep_string = سطر_separator;
+          وگرنه
             col_sep_string = column_separator;
 
           col_sep_length = 1;
@@ -1249,26 +1249,26 @@ init_parameters (int number_of_files)
         }
       /* It's rather pointless to define a TAB separator with column
          alignment */
-      else if (!join_lines && col_sep_length == 1 && *col_sep_string == '\t')
+      وگرنه اگر (!join_سطرها && col_sep_length == 1 && *col_sep_string == '\t')
         col_sep_string = column_separator;
 
-      truncate_lines = true;
-      if (! (col_sep_length == 1 && *col_sep_string == '\t'))
-        untabify_input = true;
+      truncate_سطرها = true;
+      اگر (! (col_sep_length == 1 && *col_sep_string == '\t'))
+        untabify_درون_داد = true;
       tabify_output = true;
     }
-  else
+  وگرنه
     storing_columns = false;
 
   /* -J dominates -w in any case */
-  if (join_lines)
-    truncate_lines = false;
+  اگر (join_سطرها)
+    truncate_سطرها = false;
 
-  if (numbered_lines)
+  اگر (numbered_سطرها)
     {
-      int chars_per_default_tab = 8;
+      صحیح chars_per_default_tab = 8;
 
-      line_count = start_line_num;
+      سطر_شمار = start_سطر_رقم;
 
       /* To allow input tab-expansion (-e sensitive) use:
          if (number_separator == input_tab_char)
@@ -1276,34 +1276,34 @@ init_parameters (int number_of_files)
              + TAB_WIDTH (chars_per_input_tab, chars_per_number);   */
 
       /* Estimate chars_per_text without any margin and keep it constant. */
-      if (number_separator == '\t')
-        number_width = (chars_per_number
-                        + TAB_WIDTH (chars_per_default_tab, chars_per_number));
-      else
-        number_width = chars_per_number + 1;
+      اگر (عدد_separator == '\t')
+        عدد_width = (chars_per_عدد
+                        + TAB_WIDTH (chars_per_default_tab, chars_per_عدد));
+      وگرنه
+        عدد_width = chars_per_عدد + 1;
 
       /* The number is part of the column width unless we are
          printing files in parallel. */
-      if (parallel_files)
-        chars_used_by_number = number_width;
+      اگر (parallel_files)
+        chars_used_by_عدد = عدد_width;
     }
 
-  int sep_chars, useful_chars;
-  if (ckd_mul (&sep_chars, columns - 1, col_sep_length))
+  صحیح sep_chars, useful_chars;
+  اگر (ckd_mul (&sep_chars, columns - 1, col_sep_length))
     sep_chars = INT_MAX;
-  if (ckd_sub (&useful_chars, chars_per_line - chars_used_by_number,
+  اگر (ckd_sub (&useful_chars, chars_per_سطر - chars_used_by_عدد,
                sep_chars))
     useful_chars = 0;
   chars_per_column = useful_chars / columns;
 
-  if (chars_per_column < 1)
+  اگر (chars_per_column < 1)
     error (EXIT_FAILURE, 0, _("page width too narrow"));
 
-  if (numbered_lines)
+  اگر (numbered_سطرها)
     {
-      free (number_buff);
-      number_buff = xmalloc (MAX (chars_per_number,
-                                  INT_STRLEN_BOUND (line_number)) + 1);
+      آزاد (عدد_buff);
+      عدد_buff = xmalloc (MAX (chars_per_عدد,
+                                  INT_STRLEN_BOUND (سطر_عدد)) + 1);
     }
 
   /* Pick the maximum between the tab width and the width of an
@@ -1311,8 +1311,8 @@ init_parameters (int number_of_files)
      The width of an escape sequence (4) isn't the lower limit any longer.
      We've to use 8 as the lower limit, if we use chars_per_default_tab = 8
      to expand a tab which is not an input_tab-char. */
-  free (clump_buff);
-  clump_buff = xmalloc (MAX (8, chars_per_input_tab));
+  آزاد (clump_buff);
+  clump_buff = xmalloc (MAX (8, chars_per_درون_داد_tab));
 }
 
 /* Open the necessary files,
@@ -1326,42 +1326,42 @@ init_parameters (int number_of_files)
    With each column/file p, p->full_page_printed is initialized,
    see also open_file.  */
 
-static bool
-init_fps (int number_of_files, char **av)
+ایستا bool
+init_fps (صحیح عدد_of_files, نویسه **av)
 {
   COLUMN *p;
 
   total_files = 0;
 
-  free (column_vector);
-  column_vector = xnmalloc (columns, sizeof (COLUMN));
+  آزاد (column_vector);
+  column_vector = xnmalloc (columns, اندازه (COLUMN));
 
-  if (parallel_files)
+  اگر (parallel_files)
     {
-      int files_left = number_of_files;
-      for (p = column_vector; files_left--; ++p, ++av)
+      صحیح files_چپ = عدد_of_files;
+      برای (p = column_vector; files_چپ--; ++p, ++av)
         {
-          if (! open_file (*av, p))
+          اگر (! open_file (*av, p))
             {
               --p;
               --columns;
             }
         }
-      if (columns == 0)
-        return false;
+      اگر (columns == 0)
+        بازگشت false;
       init_header ("", -1);
     }
-  else
+  وگرنه
     {
       p = column_vector;
-      if (number_of_files > 0)
+      اگر (عدد_of_files > 0)
         {
-          if (! open_file (*av, p))
-            return false;
+          اگر (! open_file (*av, p))
+            بازگشت false;
           init_header (*av, fileno (p->fp));
-          p->lines_stored = 0;
+          p->سطرها_stored = 0;
         }
-      else
+      وگرنه
         {
           p->name = _("standard input");
           p->fp = stdin;
@@ -1370,23 +1370,23 @@ init_fps (int number_of_files, char **av)
           p->full_page_printed = false;
           ++total_files;
           init_header ("", -1);
-          p->lines_stored = 0;
+          p->سطرها_stored = 0;
         }
 
-      char const *firstname = p->name;
+      نویسه ثابت *firstname = p->name;
       FILE *firstfp = p->fp;
-      int i;
-      for (i = columns - 1, ++p; i; --i, ++p)
+      صحیح i;
+      برای (i = columns - 1, ++p; i; --i, ++p)
         {
           p->name = firstname;
           p->fp = firstfp;
           p->status = OPEN;
           p->full_page_printed = false;
-          p->lines_stored = 0;
+          p->سطرها_stored = 0;
         }
     }
   files_ready_to_read = total_files;
-  return true;
+  بازگشت true;
 }
 
 /* Determine print_func and char_func, the functions
@@ -1395,24 +1395,24 @@ init_fps (int number_of_files, char **av)
    Determine the horizontal position desired when we begin
    printing a column (p->start_position). */
 
-static void
-init_funcs (void)
+ایستا تهی
+init_funcs (تهی)
 {
-  int i, h, h_next;
+  صحیح i, h, h_next;
   COLUMN *p;
 
   h = chars_per_margin;
 
-  if (!truncate_lines)
+  اگر (!truncate_سطرها)
     h_next = ANYWHERE;
-  else
+  وگرنه
     {
       /* When numbering lines of parallel files, we enlarge the
          first column to accommodate the number.  Looks better than
          the Sys V approach. */
-      if (parallel_files && numbered_lines)
-        h_next = h + chars_per_column + number_width;
-      else
+      اگر (parallel_files && numbered_سطرها)
+        h_next = h + chars_per_column + عدد_width;
+      وگرنه
         h_next = h + chars_per_column;
     }
 
@@ -1422,35 +1422,35 @@ init_funcs (void)
 
   /* This loop takes care of all but the rightmost column. */
 
-  for (p = column_vector, i = 1; i < columns; ++p, ++i)
+  برای (p = column_vector, i = 1; i < columns; ++p, ++i)
     {
-      if (storing_columns)	/* One file, multi columns down. */
+      اگر (storing_columns)	/* One file, multi columns down. */
         {
           p->char_func = store_char;
           p->print_func = print_stored;
         }
-      else
+      وگرنه
         /* One file, multi columns across; or parallel files.  */
         {
           p->char_func = print_char;
-          p->print_func = read_line;
+          p->print_func = read_سطر;
         }
 
       /* Number only the first column when printing files in
          parallel. */
-      p->numbered = numbered_lines && (!parallel_files || i == 1);
+      p->numbered = numbered_سطرها && (!parallel_files || i == 1);
       p->start_position = h;
 
       /* If we don't truncate lines, all start_positions are
          ANYWHERE, except the first column's start_position when
          using a margin. */
 
-      if (!truncate_lines)
+      اگر (!truncate_سطرها)
         {
           h = ANYWHERE;
           h_next = ANYWHERE;
         }
-      else
+      وگرنه
         {
           h = h_next + col_sep_length;
           h_next = h + chars_per_column;
@@ -1461,18 +1461,18 @@ init_funcs (void)
 
      Doesn't need to be stored unless we intend to balance
      columns on the last page. */
-  if (storing_columns && balance_columns)
+  اگر (storing_columns && balance_columns)
     {
       p->char_func = store_char;
       p->print_func = print_stored;
     }
-  else
+  وگرنه
     {
       p->char_func = print_char;
-      p->print_func = read_line;
+      p->print_func = read_سطر;
     }
 
-  p->numbered = numbered_lines && (!parallel_files || i == 1);
+  p->numbered = numbered_سطرها && (!parallel_files || i == 1);
   p->start_position = h;
 }
 
@@ -1481,32 +1481,32 @@ init_funcs (void)
    With each file p, p->full_page_printed is initialized,
    see also init_fps. */
 
-static bool
-open_file (char *name, COLUMN *p)
+ایستا bool
+open_file (نویسه *name, COLUMN *p)
 {
-  if (streq (name, "-"))
+  اگر (streq (name, "-"))
     {
       p->name = _("standard input");
       p->fp = stdin;
       have_read_stdin = true;
     }
-  else
+  وگرنه
     {
       p->name = name;
       p->fp = fopen (name, "r");
     }
-  if (p->fp == NULL)
+  اگر (p->fp == پوچ)
     {
       failed_opens = true;
-      if (!ignore_failed_opens)
+      اگر (!ignore_failed_opens)
         error (0, errno, "%s", quotef (name));
-      return false;
+      بازگشت false;
     }
   fadvise (p->fp, FADVISE_SEQUENTIAL);
   p->status = OPEN;
   p->full_page_printed = false;
   ++total_files;
-  return true;
+  بازگشت true;
 }
 
 /* Close the file in P.
@@ -1514,40 +1514,40 @@ open_file (char *name, COLUMN *p)
    If we aren't dealing with multiple files in parallel, we change
    the status of all columns in the column list to reflect the close. */
 
-static void
+ایستا تهی
 close_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  صحیح i;
 
-  if (p->status == CLOSED)
-    return;
+  اگر (p->status == CLOSED)
+    بازگشت;
 
-  int err = errno;
-  if (!ferror (p->fp))
+  صحیح err = errno;
+  اگر (!ferror (p->fp))
     err = 0;
-  if (fileno (p->fp) == STDIN_FILENO)
+  اگر (fileno (p->fp) == STDIN_FILENO)
     clearerr (p->fp);
-  else if (fclose (p->fp) != 0 && !err)
+  وگرنه اگر (fclose (p->fp) != 0 && !err)
     err = errno;
-  if (err)
+  اگر (err)
     error (EXIT_FAILURE, err, "%s", quotef (p->name));
 
-  if (!parallel_files)
+  اگر (!parallel_files)
     {
-      for (q = column_vector, i = columns; i; ++q, --i)
+      برای (q = column_vector, i = columns; i; ++q, --i)
         {
           q->status = CLOSED;
-          if (q->lines_stored == 0)
+          اگر (q->سطرها_stored == 0)
             {
-              q->lines_to_print = 0;
+              q->سطرها_to_print = 0;
             }
         }
     }
-  else
+  وگرنه
     {
       p->status = CLOSED;
-      p->lines_to_print = 0;
+      p->سطرها_to_print = 0;
     }
 
   --files_ready_to_read;
@@ -1559,49 +1559,49 @@ close_file (COLUMN *p)
    If we aren't dealing with parallel files, we must change the
    status of all columns in the column list. */
 
-static void
+ایستا تهی
 hold_file (COLUMN *p)
 {
   COLUMN *q;
-  int i;
+  صحیح i;
 
-  if (!parallel_files)
-    for (q = column_vector, i = columns; i; ++q, --i)
+  اگر (!parallel_files)
+    برای (q = column_vector, i = columns; i; ++q, --i)
       {
-        if (storing_columns)
+        اگر (storing_columns)
           q->status = FF_FOUND;
-        else
+        وگرنه
           q->status = ON_HOLD;
       }
-  else
+  وگرنه
     p->status = ON_HOLD;
 
-  p->lines_to_print = 0;
+  p->سطرها_to_print = 0;
   --files_ready_to_read;
 }
 
 /* Undo hold_file -- go through the column list and change any
    ON_HOLD columns to OPEN.  Used at the end of each page. */
 
-static void
-reset_status (void)
+ایستا تهی
+reset_status (تهی)
 {
-  int i = columns;
+  صحیح i = columns;
   COLUMN *p;
 
-  for (p = column_vector; i; --i, ++p)
-    if (p->status == ON_HOLD)
+  برای (p = column_vector; i; --i, ++p)
+    اگر (p->status == ON_HOLD)
       {
         p->status = OPEN;
         files_ready_to_read++;
       }
 
-  if (storing_columns)
+  اگر (storing_columns)
     {
-      if (column_vector->status == CLOSED)
+      اگر (column_vector->status == CLOSED)
         /* We use the info to output an error message in  skip_to_page. */
         files_ready_to_read = 0;
-      else
+      وگرنه
         files_ready_to_read = 1;
     }
 }
@@ -1615,29 +1615,29 @@ reset_status (void)
    in each column.
    Print the file(s). */
 
-static void
-print_files (int number_of_files, char **av)
+ایستا تهی
+print_files (صحیح عدد_of_files, نویسه **av)
 {
-  init_parameters (number_of_files);
-  if (! init_fps (number_of_files, av))
-    return;
-  if (storing_columns)
+  init_parameters (عدد_of_files);
+  اگر (! init_fps (عدد_of_files, av))
+    بازگشت;
+  اگر (storing_columns)
     init_store_cols ();
 
-  if (first_page_number > 1)
+  اگر (first_page_عدد > 1)
     {
-      if (!skip_to_page (first_page_number))
-        return;
-      else
-        page_number = first_page_number;
+      اگر (!skip_to_page (first_page_عدد))
+        بازگشت;
+      وگرنه
+        page_عدد = first_page_عدد;
     }
-  else
-    page_number = 1;
+  وگرنه
+    page_عدد = 1;
 
   init_funcs ();
 
-  line_number = line_count;
-  while (print_page ())
+  سطر_عدد = سطر_شمار;
+  وقتی (print_page ())
     ;
 }
 
@@ -1645,50 +1645,50 @@ print_files (int number_of_files, char **av)
    If DESC is non-negative, it is a file descriptor open to
    FILENAME for reading.  */
 
-static void
-init_header (char const *filename, int desc)
+ایستا تهی
+init_header (نویسه ثابت *filename, صحیح desc)
 {
-  char *buf = NULL;
-  struct stat st;
-  struct timespec t;
-  int ns;
-  struct tm tm;
+  نویسه *buf = پوچ;
+  ساختار stat st;
+  ساختار timespec t;
+  صحیح ns;
+  ساختار tm tm;
 
   /* If parallel files or standard input, use current date. */
-  if (streq (filename, "-"))
+  اگر (streq (filename, "-"))
     desc = -1;
-  if (0 <= desc && fstat (desc, &st) == 0)
+  اگر (0 <= desc && fstat (desc, &st) == 0)
     t = get_stat_mtime (&st);
-  else
+  وگرنه
     {
-      static struct timespec timespec;
-      if (! timespec.tv_sec)
+      ایستا ساختار timespec timespec;
+      اگر (! timespec.tv_sec)
         gettime (&timespec);
       t = timespec;
     }
 
   ns = t.tv_nsec;
-  if (localtime_rz (localtz, &t.tv_sec, &tm))
+  اگر (localtime_rz (localtz, &t.tv_sec, &tm))
     {
-      ptrdiff_t len = nstrftime (NULL, MIN (PTRDIFF_MAX, SIZE_MAX),
+      ptrdiff_t len = nstrftime (پوچ, MIN (PTRDIFF_MAX, SIZE_MAX),
                                  date_format, &tm, localtz, ns);
-      if (0 <= len)
+      اگر (0 <= len)
         {
           buf = ximalloc (len + 1);
           nstrftime (buf, len + 1, date_format, &tm, localtz, ns);
         }
     }
-  if (!buf)
+  اگر (!buf)
     {
-      char secbuf[INT_BUFSIZE_BOUND (intmax_t)];
-      buf = xmalloc (sizeof secbuf + MAX (10, INT_BUFSIZE_BOUND (int)));
+      نویسه secbuf[INT_BUFSIZE_BOUND (intmax_t)];
+      buf = xmalloc (اندازه secbuf + MAX (10, INT_BUFSIZE_BOUND (صحیح)));
       sprintf (buf, "%s.%09d", timetostr (t.tv_sec, secbuf), ns);
     }
 
-  free (date_text);
+  آزاد (date_text);
   date_text = buf;
   file_text = custom_header ? custom_header : desc < 0 ? "" : filename;
-  header_width_available = (chars_per_line
+  header_width_available = (chars_per_سطر
                             - mbswidth (date_text, 0)
                             - mbswidth (file_text, 0));
 }
@@ -1703,66 +1703,66 @@ init_header (char const *filename, int desc)
    if we're reading straight from the file)
    Keep track of this total so we know when to stop printing */
 
-static void
-init_page (void)
+ایستا تهی
+init_page (تهی)
 {
-  int j;
+  صحیح j;
   COLUMN *p;
 
-  if (storing_columns)
+  اگر (storing_columns)
     {
       store_columns ();
-      for (j = columns - 1, p = column_vector; j; --j, ++p)
+      برای (j = columns - 1, p = column_vector; j; --j, ++p)
         {
-          p->lines_to_print = p->lines_stored;
+          p->سطرها_to_print = p->سطرها_stored;
         }
 
       /* Last column. */
-      if (balance_columns)
+      اگر (balance_columns)
         {
-          p->lines_to_print = p->lines_stored;
+          p->سطرها_to_print = p->سطرها_stored;
         }
       /* Since we're not balancing columns, we don't need to store
          the rightmost column.   Read it straight from the file. */
-      else
+      وگرنه
         {
-          if (p->status == OPEN)
+          اگر (p->status == OPEN)
             {
-              p->lines_to_print = lines_per_body;
+              p->سطرها_to_print = سطرها_per_body;
             }
-          else
-            p->lines_to_print = 0;
+          وگرنه
+            p->سطرها_to_print = 0;
         }
     }
-  else
-    for (j = columns, p = column_vector; j; --j, ++p)
-      if (p->status == OPEN)
+  وگرنه
+    برای (j = columns, p = column_vector; j; --j, ++p)
+      اگر (p->status == OPEN)
         {
-          p->lines_to_print = lines_per_body;
+          p->سطرها_to_print = سطرها_per_body;
         }
-      else
-        p->lines_to_print = 0;
+      وگرنه
+        p->سطرها_to_print = 0;
 }
 
 /* Align empty columns and print separators.
    Empty columns will be formed by files with status ON_HOLD or CLOSED
    when printing multiple files in parallel. */
 
-static void
+ایستا تهی
 align_column (COLUMN *p)
 {
   padding_not_printed = p->start_position;
-  if (col_sep_length < padding_not_printed)
+  اگر (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  اگر (use_col_separator)
     print_sep_string ();
 
-  if (p->numbered)
-    add_line_number (p);
+  اگر (p->numbered)
+    add_سطر_عدد (p);
 }
 
 /* Print one page.
@@ -1776,11 +1776,11 @@ align_column (COLUMN *p)
    reset the status of all files -- any files which where on hold because
    of formfeeds are now put back into the lineup. */
 
-static bool
-print_page (void)
+ایستا bool
+print_page (تهی)
 {
-  int j;
-  int lines_left_on_page;
+  صحیح j;
+  صحیح سطرها_چپ_on_page;
   COLUMN *p;
 
   /* Used as an accumulator (with | operator) of successive values of
@@ -1794,111 +1794,111 @@ print_page (void)
 
   init_page ();
 
-  if (cols_ready_to_print () == 0)
-    return false;
+  اگر (cols_ready_to_print () == 0)
+    بازگشت false;
 
-  if (extremities)
+  اگر (extremities)
     print_a_header = true;
 
   /* Don't pad unless we know a page was printed. */
   pad_vertically = false;
   pv = false;
 
-  lines_left_on_page = lines_per_body;
-  if (double_space)
-    lines_left_on_page *= 2;
+  سطرها_چپ_on_page = سطرها_per_body;
+  اگر (double_space)
+    سطرها_چپ_on_page *= 2;
 
-  while (lines_left_on_page > 0 && cols_ready_to_print () > 0)
+  وقتی (سطرها_چپ_on_page > 0 && cols_ready_to_print () > 0)
     {
       output_position = 0;
       spaces_not_printed = 0;
       separators_not_printed = 0;
       pad_vertically = false;
       align_empty_cols = false;
-      empty_line = true;
+      empty_سطر = true;
 
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      برای (j = 1, p = column_vector; j <= columns; ++j, ++p)
         {
-          input_position = 0;
-          if (p->lines_to_print > 0 || p->status == FF_FOUND)
+          درون_داد_position = 0;
+          اگر (p->سطرها_to_print > 0 || p->status == FF_FOUND)
             {
               FF_only = false;
               padding_not_printed = p->start_position;
-              if (!(p->print_func) (p))
-                read_rest_of_line (p);
+              اگر (!(p->print_func) (p))
+                read_rest_of_سطر (p);
               pv |= pad_vertically;
 
-              --p->lines_to_print;
-              if (p->lines_to_print <= 0)
+              --p->سطرها_to_print;
+              اگر (p->سطرها_to_print <= 0)
                 {
-                  if (cols_ready_to_print () == 0)
-                    break;
+                  اگر (cols_ready_to_print () == 0)
+                    بشکن;
                 }
 
               /* File p changed its status to ON_HOLD or CLOSED */
-              if (parallel_files && p->status != OPEN)
+              اگر (parallel_files && p->status != OPEN)
                 {
-                  if (empty_line)
+                  اگر (empty_سطر)
                     align_empty_cols = true;
-                  else if (p->status == CLOSED
+                  وگرنه اگر (p->status == CLOSED
                            || (p->status == ON_HOLD && FF_only))
                     align_column (p);
                 }
             }
-          else if (parallel_files)
+          وگرنه اگر (parallel_files)
             {
               /* File status ON_HOLD or CLOSED */
-              if (empty_line)
+              اگر (empty_سطر)
                 align_empty_cols = true;
-              else
+              وگرنه
                 align_column (p);
             }
 
           /* We need it also with an empty column */
-          if (use_col_separator)
+          اگر (use_col_separator)
             ++separators_not_printed;
         }
 
-      if (pad_vertically)
+      اگر (pad_vertically)
         {
           putchar ('\n');
-          --lines_left_on_page;
+          --سطرها_چپ_on_page;
         }
 
-      if (cols_ready_to_print () == 0 && !extremities)
-        break;
+      اگر (cols_ready_to_print () == 0 && !extremities)
+        بشکن;
 
-      if (double_space && pv)
+      اگر (double_space && pv)
         {
           putchar ('\n');
-          --lines_left_on_page;
+          --سطرها_چپ_on_page;
         }
     }
 
-  if (lines_left_on_page == 0)
-    for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-      if (p->status == OPEN)
+  اگر (سطرها_چپ_on_page == 0)
+    برای (j = 1, p = column_vector; j <= columns; ++j, ++p)
+      اگر (p->status == OPEN)
         p->full_page_printed = true;
 
   pad_vertically = pv;
 
-  if (pad_vertically && extremities)
-    pad_down (lines_left_on_page + lines_per_footer);
-  else if (keep_FF && print_a_FF)
+  اگر (pad_vertically && extremities)
+    pad_down (سطرها_چپ_on_page + سطرها_per_footer);
+  وگرنه اگر (keep_FF && print_a_FF)
     {
       putchar ('\f');
       print_a_FF = false;
     }
 
-  if (ferror (stdout))
+  اگر (ferror (stdout))
     write_error ();
 
-  if (last_page_number < ++page_number)
-    return false;		/* Stop printing with LAST_PAGE */
+  اگر (last_page_عدد < ++page_عدد)
+    بازگشت false;		/* Stop printing with LAST_PAGE */
 
   reset_status ();		/* Change ON_HOLD to OPEN. */
 
-  return true;			/* More pages to go. */
+  بازگشت true;			/* More pages to go. */
 }
 
 /* Allocate space for storing columns.
@@ -1915,26 +1915,26 @@ print_page (void)
    because the last entry tells us the index of the last character,
    which we need to know in order to print the last line in buff. */
 
-static void
-init_store_cols (void)
+ایستا تهی
+init_store_cols (تهی)
 {
   /* Tune this.  */
-  int total_lines, total_lines_1, chars_per_column_1, chars_if_truncate;
-  if (ckd_mul (&total_lines, lines_per_body, columns)
-      || ckd_add (&total_lines_1, total_lines, 1)
+  صحیح total_سطرها, total_سطرها_1, chars_per_column_1, chars_if_truncate;
+  اگر (ckd_mul (&total_سطرها, سطرها_per_body, columns)
+      || ckd_add (&total_سطرها_1, total_سطرها, 1)
       || ckd_add (&chars_per_column_1, chars_per_column, 1)
-      || ckd_mul (&chars_if_truncate, total_lines, chars_per_column_1)
+      || ckd_mul (&chars_if_truncate, total_سطرها, chars_per_column_1)
       || ckd_mul (&buff_allocated, chars_if_truncate, use_col_separator + 1))
     integer_overflow ();
 
-  free (line_vector);
+  آزاد (سطر_vector);
   /* FIXME: here's where it was allocated.  */
-  line_vector = xnmalloc (total_lines_1, sizeof *line_vector);
+  سطر_vector = xnmalloc (total_سطرها_1, اندازه *سطر_vector);
 
-  free (end_vector);
-  end_vector = xnmalloc (total_lines, sizeof *end_vector);
+  آزاد (end_vector);
+  end_vector = xnmalloc (total_سطرها, اندازه *end_vector);
 
-  free (buff);
+  آزاد (buff);
   buff = ximalloc (buff_allocated);
 }
 
@@ -1950,147 +1950,147 @@ init_store_cols (void)
    buff_start is the index in buff of the first character in the
    current line. */
 
-static void
-store_columns (void)
+ایستا تهی
+store_columns (تهی)
 {
-  int i, j;
-  unsigned int line = 0;
-  unsigned int buff_start;
-  int last_col;		/* The rightmost column which will be saved in buff */
+  صحیح i, j;
+  unsigned صحیح سطر = 0;
+  unsigned صحیح buff_start;
+  صحیح last_col;		/* The rightmost column which will be saved in buff */
   COLUMN *p;
 
   buff_current = 0;
   buff_start = 0;
 
-  if (balance_columns)
+  اگر (balance_columns)
     last_col = columns;
-  else
+  وگرنه
     last_col = columns - 1;
 
-  for (i = 1, p = column_vector; i <= last_col; ++i, ++p)
-    p->lines_stored = 0;
+  برای (i = 1, p = column_vector; i <= last_col; ++i, ++p)
+    p->سطرها_stored = 0;
 
-  for (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
+  برای (i = 1, p = column_vector; i <= last_col && files_ready_to_read;
        ++i, ++p)
     {
-      p->current_line = line;
-      for (j = lines_per_body; j && files_ready_to_read; --j)
+      p->current_سطر = سطر;
+      برای (j = سطرها_per_body; j && files_ready_to_read; --j)
 
-        if (p->status == OPEN)	/* Redundant.  Clean up. */
+        اگر (p->status == OPEN)	/* Redundant.  Clean up. */
           {
-            input_position = 0;
+            درون_داد_position = 0;
 
-            if (!read_line (p))
-              read_rest_of_line (p);
+            اگر (!read_سطر (p))
+              read_rest_of_سطر (p);
 
-            if (p->status == OPEN
+            اگر (p->status == OPEN
                 || buff_start != buff_current)
               {
-                ++p->lines_stored;
-                line_vector[line] = buff_start;
-                end_vector[line++] = input_position;
+                ++p->سطرها_stored;
+                سطر_vector[سطر] = buff_start;
+                end_vector[سطر++] = درون_داد_position;
                 buff_start = buff_current;
               }
           }
     }
 
   /* Keep track of the location of the last char in buff. */
-  line_vector[line] = buff_start;
+  سطر_vector[سطر] = buff_start;
 
-  if (balance_columns)
-    balance (line);
+  اگر (balance_columns)
+    balance (سطر);
 }
 
-static void
-balance (int total_stored)
+ایستا تهی
+balance (صحیح total_stored)
 {
   COLUMN *p;
-  int i, lines;
-  int first_line = 0;
+  صحیح i, سطرها;
+  صحیح first_سطر = 0;
 
-  for (i = 1, p = column_vector; i <= columns; ++i, ++p)
+  برای (i = 1, p = column_vector; i <= columns; ++i, ++p)
     {
-      lines = total_stored / columns;
-      if (i <= total_stored % columns)
-        ++lines;
+      سطرها = total_stored / columns;
+      اگر (i <= total_stored % columns)
+        ++سطرها;
 
-      p->lines_stored = lines;
-      p->current_line = first_line;
+      p->سطرها_stored = سطرها;
+      p->current_سطر = first_سطر;
 
-      first_line += lines;
+      first_سطر += سطرها;
     }
 }
 
 /* Store a character in the buffer. */
 
-static void
-store_char (char c)
+ایستا تهی
+store_char (نویسه c)
 {
-  if (buff_current >= buff_allocated)
+  اگر (buff_current >= buff_allocated)
     {
       /* May be too generous. */
-      buff = xpalloc (buff, &buff_allocated, 1, -1, sizeof *buff);
+      buff = xpalloc (buff, &buff_allocated, 1, -1, اندازه *buff);
     }
   buff[buff_current++] = c;
 }
 
-static void
-add_line_number (COLUMN *p)
+ایستا تهی
+add_سطر_عدد (COLUMN *p)
 {
-  int i;
-  char *s;
-  int num_width;
+  صحیح i;
+  نویسه *s;
+  صحیح رقم_width;
 
   /* Cutting off the higher-order digits is more informative than
      lower-order cut off. */
-  num_width = sprintf (number_buff, "%*d", chars_per_number, line_number);
-  line_number++;
-  s = number_buff + (num_width - chars_per_number);
-  for (i = chars_per_number; i > 0; i--)
+  رقم_width = sprintf (عدد_buff, "%*d", chars_per_عدد, سطر_عدد);
+  سطر_عدد++;
+  s = عدد_buff + (رقم_width - chars_per_عدد);
+  برای (i = chars_per_عدد; i > 0; i--)
     (p->char_func) (*s++);
 
-  if (columns > 1)
+  اگر (columns > 1)
     {
       /* Tabification is assumed for multiple columns, also for n-separators,
          but 'default n-separator = TAB' hasn't been given priority over
          equal column_width also specified by POSIX. */
-      if (number_separator == '\t')
+      اگر (عدد_separator == '\t')
         {
-          i = number_width - chars_per_number;
-          while (i-- > 0)
+          i = عدد_width - chars_per_عدد;
+          وقتی (i-- > 0)
             (p->char_func) (' ');
         }
-      else
-        (p->char_func) (number_separator);
+      وگرنه
+        (p->char_func) (عدد_separator);
     }
-  else
+  وگرنه
     /* To comply with POSIX, we avoid any expansion of default TAB
        separator with a single column output. No column_width requirement
        has to be considered. */
     {
-      (p->char_func) (number_separator);
-      if (number_separator == '\t')
+      (p->char_func) (عدد_separator);
+      اگر (عدد_separator == '\t')
         output_position = POS_AFTER_TAB (chars_per_output_tab,
                           output_position);
     }
 
-  if (truncate_lines && !parallel_files)
-    input_position += number_width;
+  اگر (truncate_سطرها && !parallel_files)
+    درون_داد_position += عدد_width;
 }
 
 /* Print (or store) padding until the current horizontal position
    is position. */
 
-static void
-pad_across_to (int position)
+ایستا تهی
+pad_across_to (صحیح position)
 {
-  int h = output_position;
+  صحیح h = output_position;
 
-  if (tabify_output)
+  اگر (tabify_output)
     spaces_not_printed = position - output_position;
-  else
+  وگرنه
     {
-      while (++h <= position)
+      وقتی (++h <= position)
         putchar (' ');
       output_position = position;
     }
@@ -2101,13 +2101,13 @@ pad_across_to (int position)
    If the user has requested a formfeed, use one.
    Otherwise, use newlines. */
 
-static void
-pad_down (unsigned int lines)
+ایستا تهی
+pad_down (unsigned صحیح سطرها)
 {
-  if (use_form_feed)
+  اگر (use_form_feed)
     putchar ('\f');
-  else
-    for (unsigned int i = lines; i; --i)
+  وگرنه
+    برای (unsigned صحیح i = سطرها; i; --i)
       putchar ('\n');
 }
 
@@ -2117,27 +2117,27 @@ pad_down (unsigned int lines)
    hit.  Used when we've truncated a line and we no longer need
    to print or store its characters. */
 
-static void
-read_rest_of_line (COLUMN *p)
+ایستا تهی
+read_rest_of_سطر (COLUMN *p)
 {
-  int c;
+  صحیح c;
   FILE *f = p->fp;
 
-  while ((c = getc (f)) != '\n')
+  وقتی ((c = getc (f)) != '\n')
     {
-      if (c == '\f')
+      اگر (c == '\f')
         {
-          if ((c = getc (f)) != '\n')
+          اگر ((c = getc (f)) != '\n')
             ungetc (c, f);
-          if (keep_FF)
+          اگر (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          break;
+          بشکن;
         }
-      else if (c == EOF)
+      وگرنه اگر (c == EOF)
         {
           close_file (p);
-          break;
+          بشکن;
         }
     }
 }
@@ -2151,65 +2151,65 @@ read_rest_of_line (COLUMN *p)
    Count lines of skipped pages to find the line number of 1st page
    printed relative to 1st line of input file (start_line_num). */
 
-static void
-skip_read (COLUMN *p, int column_number)
+ایستا تهی
+skip_read (COLUMN *p, صحیح column_عدد)
 {
-  int c;
+  صحیح c;
   FILE *f = p->fp;
-  int i;
+  صحیح i;
   bool single_ff = false;
   COLUMN *q;
 
   /* Read 1st character in a line or any character succeeding a FF */
-  if ((c = getc (f)) == '\f' && p->full_page_printed)
+  اگر ((c = getc (f)) == '\f' && p->full_page_printed)
     /* A FF-coincidence with a previous full_page_printed.
        To avoid an additional empty page, eliminate the FF */
-    if ((c = getc (f)) == '\n')
+    اگر ((c = getc (f)) == '\n')
       c = getc (f);
 
   p->full_page_printed = false;
 
   /* 1st character a FF means a single FF without any printable
      characters. Don't count it as a line with -n option. */
-  if (c == '\f')
+  اگر (c == '\f')
     single_ff = true;
 
   /* Preparing for a FF-coincidence: Maybe we finish that page
      without a FF found */
-  if (last_line)
+  اگر (last_سطر)
     p->full_page_printed = true;
 
-  while (c != '\n')
+  وقتی (c != '\n')
     {
-      if (c == '\f')
+      اگر (c == '\f')
         {
           /* No FF-coincidence possible,
              no catching up of a FF-coincidence with next page */
-          if (last_line)
+          اگر (last_سطر)
             {
-              if (!parallel_files)
-                for (q = column_vector, i = columns; i; ++q, --i)
+              اگر (!parallel_files)
+                برای (q = column_vector, i = columns; i; ++q, --i)
                   q->full_page_printed = false;
-              else
+              وگرنه
                 p->full_page_printed = false;
             }
 
-          if ((c = getc (f)) != '\n')
+          اگر ((c = getc (f)) != '\n')
             ungetc (c, f);
           hold_file (p);
-          break;
+          بشکن;
         }
-      else if (c == EOF)
+      وگرنه اگر (c == EOF)
         {
           close_file (p);
-          break;
+          بشکن;
         }
       c = getc (f);
     }
 
-  if (skip_count)
-    if ((!parallel_files || column_number == 1) && !single_ff)
-      ++line_count;
+  اگر (skip_شمار)
+    اگر ((!parallel_files || column_عدد == 1) && !single_ff)
+      ++سطر_شمار;
 }
 
 /* If we're tabifying output,
@@ -2218,20 +2218,20 @@ skip_read (COLUMN *p, int column_number)
    of our desired horizontal position and delays printing
    until this function is called. */
 
-static void
-print_white_space (void)
+ایستا تهی
+print_white_space (تهی)
 {
-  int h_new;
-  int h_old = output_position;
-  int goal = h_old + spaces_not_printed;
+  صحیح h_new;
+  صحیح h_old = output_position;
+  صحیح goal = h_old + spaces_not_printed;
 
-  while (goal - h_old > 1
+  وقتی (goal - h_old > 1
          && (h_new = POS_AFTER_TAB (chars_per_output_tab, h_old)) <= goal)
     {
       putchar (output_tab_char);
       h_old = h_new;
     }
-  while (++h_old <= goal)
+  وقتی (++h_old <= goal)
     putchar (' ');
 
   output_position = goal;
@@ -2243,43 +2243,43 @@ print_white_space (void)
    We keep a count until we know that we'll be printing a line,
    then print_sep_string() is called. */
 
-static void
-print_sep_string (void)
+ایستا تهی
+print_sep_string (تهی)
 {
-  char const *s = col_sep_string;
-  int l = col_sep_length;
+  نویسه ثابت *s = col_sep_string;
+  صحیح l = col_sep_length;
 
-  if (separators_not_printed <= 0)
+  اگر (separators_not_printed <= 0)
     {
       /* We'll be starting a line with chars_per_margin, anything else? */
-      if (spaces_not_printed > 0)
+      اگر (spaces_not_printed > 0)
         print_white_space ();
     }
-  else
+  وگرنه
     {
-      for (; separators_not_printed > 0; --separators_not_printed)
+      برای (; separators_not_printed > 0; --separators_not_printed)
         {
-          while (l-- > 0)
+          وقتی (l-- > 0)
             {
               /* 3 types of sep_strings: spaces only, spaces and chars,
               chars only */
-              if (*s == ' ')
+              اگر (*s == ' ')
                 {
                   /* We're tabifying output; consecutive spaces in
                   sep_string may have to be converted to tabs */
                   s++;
                   ++spaces_not_printed;
                 }
-              else
+              وگرنه
                 {
-                  if (spaces_not_printed > 0)
+                  اگر (spaces_not_printed > 0)
                     print_white_space ();
                   putchar (*s++);
                   ++output_position;
                 }
             }
           /* sep_string ends with some spaces */
-          if (spaces_not_printed > 0)
+          اگر (spaces_not_printed > 0)
             print_white_space ();
         }
     }
@@ -2288,13 +2288,13 @@ print_sep_string (void)
 /* Print (or store, depending on p->char_func) a clump of N
    characters. */
 
-static void
-print_clump (COLUMN *p, int n, char *clump)
+ایستا تهی
+print_clump (COLUMN *p, صحیح n, نویسه *clump)
 {
-  while (n--)
+  وقتی (n--)
     (p->char_func) (*clump++);
 
-  if (ferror (stdout))
+  اگر (ferror (stdout))
     write_error ();
 }
 
@@ -2307,26 +2307,26 @@ print_clump (COLUMN *p, int n, char *clump)
    a nonspace is encountered, call print_white_space() to print the
    required number of tabs and spaces. */
 
-static void
-print_char (char c)
+ایستا تهی
+print_char (نویسه c)
 {
-  if (tabify_output)
+  اگر (tabify_output)
     {
-      if (c == ' ')
+      اگر (c == ' ')
         {
           ++spaces_not_printed;
-          return;
+          بازگشت;
         }
-      else if (spaces_not_printed > 0)
+      وگرنه اگر (spaces_not_printed > 0)
         print_white_space ();
 
       /* Nonprintables are assumed to have width 0, except '\b'. */
-      if (! isprint (to_uchar (c)))
+      اگر (! isprint (to_uchar (c)))
         {
-          if (c == '\b')
+          اگر (c == '\b')
             --output_position;
         }
-      else
+      وگرنه
         ++output_position;
     }
   putchar (c);
@@ -2335,44 +2335,44 @@ print_char (char c)
 /* Skip to page PAGE before printing.
    PAGE may be larger than total number of pages. */
 
-static bool
+ایستا bool
 skip_to_page (uintmax_t page)
 {
-  for (uintmax_t n = 1; n < page; ++n)
+  برای (uintmax_t n = 1; n < page; ++n)
     {
       COLUMN *p;
-      int j;
+      صحیح j;
 
-      for (int i = 1; i < lines_per_body; ++i)
+      برای (صحیح i = 1; i < سطرها_per_body; ++i)
         {
-          for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-            if (p->status == OPEN)
+          برای (j = 1, p = column_vector; j <= columns; ++j, ++p)
+            اگر (p->status == OPEN)
               skip_read (p, j);
         }
-      last_line = true;
-      for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-        if (p->status == OPEN)
+      last_سطر = true;
+      برای (j = 1, p = column_vector; j <= columns; ++j, ++p)
+        اگر (p->status == OPEN)
           skip_read (p, j);
 
-      if (storing_columns)	/* change FF_FOUND to ON_HOLD */
-        for (j = 1, p = column_vector; j <= columns; ++j, ++p)
-          if (p->status != CLOSED)
+      اگر (storing_columns)	/* change FF_FOUND to ON_HOLD */
+        برای (j = 1, p = column_vector; j <= columns; ++j, ++p)
+          اگر (p->status != CLOSED)
             p->status = ON_HOLD;
 
       reset_status ();
-      last_line = false;
+      last_سطر = false;
 
-      if (files_ready_to_read < 1)
+      اگر (files_ready_to_read < 1)
         {
           /* It's very helpful, normally the total number of pages is
              not known in advance.  */
           error (0, 0,
                  _("starting page number %ju exceeds page count %ju"),
                  page, n);
-          break;
+          بشکن;
         }
     }
-  return files_ready_to_read > 0;
+  بازگشت files_ready_to_read > 0;
 }
 
 /* Print a header.
@@ -2380,25 +2380,25 @@ skip_to_page (uintmax_t page)
    Formfeeds are assumed to use up two lines at the beginning of
    the page. */
 
-static void
-print_header (void)
+ایستا تهی
+print_header (تهی)
 {
-  char page_text[256 + INT_STRLEN_BOUND (page_number)];
-  int available_width;
-  int lhs_spaces;
-  int rhs_spaces;
+  نویسه page_text[256 + INT_STRLEN_BOUND (page_عدد)];
+  صحیح available_width;
+  صحیح lhs_spaces;
+  صحیح rhs_spaces;
 
   output_position = 0;
   pad_across_to (chars_per_margin);
   print_white_space ();
 
-  if (page_number == 0)
+  اگر (page_عدد == 0)
     error (EXIT_FAILURE, 0, _("page number overflow"));
 
   /* The translator must ensure that formatting the translation of
      "Page %ju" does not generate more than (sizeof page_text - 1)
      bytes.  */
-  sprintf (page_text, _("Page %ju"), page_number);
+  sprintf (page_text, _("Page %ju"), page_عدد);
   available_width = header_width_available - mbswidth (page_text, 0);
   available_width = MAX (0, available_width);
   lhs_spaces = available_width >> 1;
@@ -2434,125 +2434,125 @@ print_header (void)
    Return false if we exceed chars_per_column before reading
    an end of line character, true otherwise. */
 
-static bool
-read_line (COLUMN *p)
+ایستا bool
+read_سطر (COLUMN *p)
 {
-  int c;
-  int chars IF_LINT (= 0);
-  int last_input_position;
-  int j, k;
+  صحیح c;
+  صحیح chars IF_LINT (= 0);
+  صحیح last_درون_داد_position;
+  صحیح j, k;
   COLUMN *q;
 
   /* read 1st character in each line or any character succeeding a FF: */
   c = getc (p->fp);
 
-  last_input_position = input_position;
+  last_درون_داد_position = درون_داد_position;
 
-  if (c == '\f' && p->full_page_printed)
-    if ((c = getc (p->fp)) == '\n')
+  اگر (c == '\f' && p->full_page_printed)
+    اگر ((c = getc (p->fp)) == '\n')
       c = getc (p->fp);
   p->full_page_printed = false;
 
-  switch (c)
+  انتخاب (c)
     {
-    case '\f':
-      if ((c = getc (p->fp)) != '\n')
+    حالت '\f':
+      اگر ((c = getc (p->fp)) != '\n')
         ungetc (c, p->fp);
       FF_only = true;
-      if (print_a_header && !storing_columns)
+      اگر (print_a_header && !storing_columns)
         {
           pad_vertically = true;
           print_header ();
         }
-      else if (keep_FF)
+      وگرنه اگر (keep_FF)
         print_a_FF = true;
       hold_file (p);
-      return true;
-    case EOF:
+      بازگشت true;
+    حالت EOF:
       close_file (p);
-      return true;
-    case '\n':
-      break;
-    default:
+      بازگشت true;
+    حالت '\n':
+      بشکن;
+    پیشفرض:
       chars = char_to_clump (c);
     }
 
-  if (truncate_lines && input_position > chars_per_column)
+  اگر (truncate_سطرها && درون_داد_position > chars_per_column)
     {
-      input_position = last_input_position;
-      return false;
+      درون_داد_position = last_درون_داد_position;
+      بازگشت false;
     }
 
-  if (p->char_func != store_char)
+  اگر (p->char_func != store_char)
     {
       pad_vertically = true;
 
-      if (print_a_header && !storing_columns)
+      اگر (print_a_header && !storing_columns)
         print_header ();
 
-      if (parallel_files && align_empty_cols)
+      اگر (parallel_files && align_empty_cols)
         {
           /* We have to align empty columns at the beginning of a line. */
           k = separators_not_printed;
           separators_not_printed = 0;
-          for (j = 1, q = column_vector; j <= k; ++j, ++q)
+          برای (j = 1, q = column_vector; j <= k; ++j, ++q)
             {
               align_column (q);
               separators_not_printed += 1;
             }
           padding_not_printed = p->start_position;
-          if (truncate_lines)
+          اگر (truncate_سطرها)
             spaces_not_printed = chars_per_column;
-          else
+          وگرنه
             spaces_not_printed = 0;
           align_empty_cols = false;
         }
 
-      if (col_sep_length < padding_not_printed)
+      اگر (col_sep_length < padding_not_printed)
         {
           pad_across_to (padding_not_printed - col_sep_length);
           padding_not_printed = ANYWHERE;
         }
 
-      if (use_col_separator)
+      اگر (use_col_separator)
         print_sep_string ();
     }
 
-  if (p->numbered)
-    add_line_number (p);
+  اگر (p->numbered)
+    add_سطر_عدد (p);
 
-  empty_line = false;
-  if (c == '\n')
-    return true;
+  empty_سطر = false;
+  اگر (c == '\n')
+    بازگشت true;
 
   print_clump (p, chars, clump_buff);
 
-  while (true)
+  وقتی (true)
     {
       c = getc (p->fp);
 
-      switch (c)
+      انتخاب (c)
         {
-        case '\n':
-          return true;
-        case '\f':
-          if ((c = getc (p->fp)) != '\n')
+        حالت '\n':
+          بازگشت true;
+        حالت '\f':
+          اگر ((c = getc (p->fp)) != '\n')
             ungetc (c, p->fp);
-          if (keep_FF)
+          اگر (keep_FF)
             print_a_FF = true;
           hold_file (p);
-          return true;
-        case EOF:
+          بازگشت true;
+        حالت EOF:
           close_file (p);
-          return true;
+          بازگشت true;
         }
 
-      last_input_position = input_position;
+      last_درون_داد_position = درون_داد_position;
       chars = char_to_clump (c);
-      if (truncate_lines && input_position > chars_per_column)
+      اگر (truncate_سطرها && درون_داد_position > chars_per_column)
         {
-          input_position = last_input_position;
-          return false;
+          درون_داد_position = last_درون_داد_position;
+          بازگشت false;
         }
 
       print_clump (p, chars, clump_buff);
@@ -2573,13 +2573,13 @@ read_line (COLUMN *p)
 
    Return true, meaning there is no need to call read_rest_of_line. */
 
-static bool
+ایستا bool
 print_stored (COLUMN *p)
 {
   COLUMN *q;
 
-  int line = p->current_line++;
-  char *first = &buff[line_vector[line]];
+  صحیح سطر = p->current_سطر++;
+  نویسه *first = &buff[سطر_vector[سطر]];
   /* FIXME
      UMR: Uninitialized memory read:
      * This is occurring while in:
@@ -2591,46 +2591,46 @@ print_stored (COLUMN *p)
      xmalloc        [xmalloc.c:94]
      init_store_cols [pr.c:1648]
      */
-  char *last = &buff[line_vector[line + 1]];
+  نویسه *last = &buff[سطر_vector[سطر + 1]];
 
   pad_vertically = true;
 
-  if (print_a_header)
+  اگر (print_a_header)
     print_header ();
 
-  if (p->status == FF_FOUND)
+  اگر (p->status == FF_FOUND)
     {
-      int i;
-      for (i = 1, q = column_vector; i <= columns; ++i, ++q)
+      صحیح i;
+      برای (i = 1, q = column_vector; i <= columns; ++i, ++q)
         q->status = ON_HOLD;
-      if (column_vector->lines_to_print <= 0)
+      اگر (column_vector->سطرها_to_print <= 0)
         {
-          if (!extremities)
+          اگر (!extremities)
             pad_vertically = false;
-          return true;		/* print a header only */
+          بازگشت true;		/* print a header only */
         }
     }
 
-  if (col_sep_length < padding_not_printed)
+  اگر (col_sep_length < padding_not_printed)
     {
       pad_across_to (padding_not_printed - col_sep_length);
       padding_not_printed = ANYWHERE;
     }
 
-  if (use_col_separator)
+  اگر (use_col_separator)
     print_sep_string ();
 
-  while (first != last)
+  وقتی (first != last)
     print_char (*first++);
 
-  if (spaces_not_printed == 0)
+  اگر (spaces_not_printed == 0)
     {
-      output_position = p->start_position + end_vector[line];
-      if (p->start_position - col_sep_length == chars_per_margin)
+      output_position = p->start_position + end_vector[سطر];
+      اگر (p->start_position - col_sep_length == chars_per_margin)
         output_position -= col_sep_length;
     }
 
-  return true;
+  بازگشت true;
 }
 
 /* Convert a character to the proper format and return the number of
@@ -2645,80 +2645,80 @@ print_stored (COLUMN *p)
    characters in clump_buff.  (e.g., the width of '\b' is -1, while the
    number of characters is 1.) */
 
-static int
-char_to_clump (char c)
+ایستا صحیح
+char_to_clump (نویسه c)
 {
-  unsigned char uc = c;
-  char *s = clump_buff;
-  char esc_buff[4];
-  int width;
-  int chars;
-  int chars_per_c = 8;
+  unsigned نویسه uc = c;
+  نویسه *s = clump_buff;
+  نویسه esc_buff[4];
+  صحیح width;
+  صحیح chars;
+  صحیح chars_per_c = 8;
 
-  if (c == input_tab_char)
-    chars_per_c = chars_per_input_tab;
+  اگر (c == درون_داد_tab_char)
+    chars_per_c = chars_per_درون_داد_tab;
 
-  if (c == input_tab_char || c == '\t')
+  اگر (c == درون_داد_tab_char || c == '\t')
     {
-      width = TAB_WIDTH (chars_per_c, input_position);
+      width = TAB_WIDTH (chars_per_c, درون_داد_position);
 
-      if (untabify_input)
+      اگر (untabify_درون_داد)
         {
-          for (int i = width; i; --i)
+          برای (صحیح i = width; i; --i)
             *s++ = ' ';
           chars = width;
         }
-      else
+      وگرنه
         {
           *s = c;
           chars = 1;
         }
 
     }
-  else if (! isprint (uc))
+  وگرنه اگر (! isprint (uc))
     {
-      if (use_esc_sequence)
+      اگر (use_esc_sequence)
         {
           width = 4;
           chars = 4;
           *s++ = '\\';
           sprintf (esc_buff, "%03o", uc);
-          for (int i = 0; i <= 2; ++i)
+          برای (صحیح i = 0; i <= 2; ++i)
             *s++ = esc_buff[i];
         }
-      else if (use_cntrl_prefix)
+      وگرنه اگر (use_cntrl_prefix)
         {
-          if (uc < 0200)
+          اگر (uc < 0200)
             {
               width = 2;
               chars = 2;
               *s++ = '^';
               *s = c ^ 0100;
             }
-          else
+          وگرنه
             {
               width = 4;
               chars = 4;
               *s++ = '\\';
               sprintf (esc_buff, "%03o", uc);
-              for (int i = 0; i <= 2; ++i)
+              برای (صحیح i = 0; i <= 2; ++i)
                 *s++ = esc_buff[i];
             }
         }
-      else if (c == '\b')
+      وگرنه اگر (c == '\b')
         {
           width = -1;
           chars = 1;
           *s = c;
         }
-      else
+      وگرنه
         {
           width = 0;
           chars = 1;
           *s = c;
         }
     }
-  else
+  وگرنه
     {
       width = 1;
       chars = 1;
@@ -2726,20 +2726,20 @@ char_to_clump (char c)
     }
 
   /* Too many backspaces must put us in position 0 -- never negative.  */
-  if (width < 0 && input_position == 0)
+  اگر (width < 0 && درون_داد_position == 0)
     {
       chars = 0;
-      input_position = 0;
+      درون_داد_position = 0;
     }
-  else if (width < 0 && input_position <= -width)
-    input_position = 0;
-  else
+  وگرنه اگر (width < 0 && درون_داد_position <= -width)
+    درون_داد_position = 0;
+  وگرنه
     {
-      if (ckd_add (&input_position, input_position, width))
+      اگر (ckd_add (&درون_داد_position, درون_داد_position, width))
         integer_overflow ();
     }
 
-  return chars;
+  بازگشت chars;
 }
 
 /* We've just printed some files and need to clean up things before
@@ -2747,25 +2747,25 @@ char_to_clump (char c)
 
    Free everything we've xmalloc'ed, except 'header'. */
 
-static void
-cleanup (void)
+ایستا تهی
+cleanup (تهی)
 {
-  free (number_buff);
-  free (clump_buff);
-  free (column_vector);
-  free (line_vector);
-  free (end_vector);
-  free (buff);
+  آزاد (عدد_buff);
+  آزاد (clump_buff);
+  آزاد (column_vector);
+  آزاد (سطر_vector);
+  آزاد (end_vector);
+  آزاد (buff);
 }
 
 /* Complain, print a usage message, and die. */
 
-void
-usage (int status)
+تهی
+usage (صحیح status)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وگرنه
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -2773,7 +2773,7 @@ Usage: %s [OPTION]... [FILE]...\n\
               program_name);
 
       fputs (_("\
-Paginate or columnate FILE(s) for printing.\n\
+Paginate or columnate FILE(s) برای printing.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -2786,7 +2786,7 @@ Paginate or columnate FILE(s) for printing.\n\
       oputs (_("\
   -COLS, --columns=COLS\n\
          output COLS columns and print columns down, unless -a is used.\n\
-         Balance number of lines in the columns on each page\n\
+         Balance عدد of سطرها in the columns on each page\n\
 "));
       oputs (_("\
   -a, --across\n\
@@ -2797,61 +2797,61 @@ Paginate or columnate FILE(s) for printing.\n\
          use hat notation (^G) and octal backslash notation\n\
 "));
       oputs (_("\
-  -d, --double-space\n\
-         double space the output\n\
+  -d, --دوگانه-space\n\
+         دوگانه space the output\n\
 "));
       oputs (_("\
   -D, --date-format=FORMAT\n\
-         use FORMAT for the header date\n\
+         use FORMAT برای the header date\n\
 "));
       oputs (_("\
   -e[CHAR[WIDTH]], --expand-tabs[=CHAR[WIDTH]]\n\
-         expand input CHARs (TABs) to tab WIDTH (8)\n\
+         expand درون_داد CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
   -F, -f, --form-feed\n\
          use form feeds instead of newlines to separate pages\n\
-         (by a 3-line page header with -F or a 5-line header\n\
+         (by a 3-سطر page header with -F or a 5-سطر header\n\
          and trailer without -F)\n\
 "));
       oputs (_("\
   -h, --header=HEADER\n\
          use a centered HEADER instead of filename in page header,\n\
-         -h \"\" prints a blank line, don't use -h\"\"\n\
+         -h \"\" prints a blank سطر, don't use -h\"\"\n\
 "));
       oputs (_("\
   -i[CHAR[WIDTH]], --output-tabs[=CHAR[WIDTH]]\n\
          replace spaces with CHARs (TABs) to tab WIDTH (8)\n\
 "));
       oputs (_("\
-  -J, --join-lines\n\
-         merge full lines, turns off -W line truncation,\n\
+  -J, --join-سطرها\n\
+         merge full سطرها, turns off -W سطر truncation,\n\
          no column alignment, --sep-string[=STRING] sets separators\n\
 "));
       oputs (_("\
   -l, --length=PAGE_LENGTH\n\
-         set the page length to PAGE_LENGTH (66) lines\n\
-         (default number of lines of text 56, and with -F 63).\n\
-         implies -t if PAGE_LENGTH <= 10\n\
+         set the page length to PAGE_LENGTH (66) سطرها\n\
+         (پیشفرض عدد of سطرها of text 56, and with -F 63).\n\
+         implies -t اگر PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -m, --merge\n\
          print all files in parallel, one in each column,\n\
-         truncate lines, but join lines of full length with -J\n\
+         truncate سطرها, but join سطرها of full length with -J\n\
 "));
       oputs (_("\
-  -n[SEP[DIGITS]], --number-lines[=SEP[DIGITS]]\n\
-         number lines, use DIGITS (5) digits, then SEP (TAB),\n\
-         default counting starts with 1st line of input file\n\
+  -n[SEP[DIGITS]], --عدد-سطرها[=SEP[DIGITS]]\n\
+         عدد سطرها, use DIGITS (5) digits, then SEP (TAB),\n\
+         پیشفرض counting starts with 1st سطر of درون_داد file\n\
 "));
       oputs (_("\
-  -N, --first-line-number=NUMBER\n\
-         start counting with NUMBER at 1st line of first\n\
+  -N, --first-سطر-عدد=عدد_2\n\
+         start counting with عدد_2 at 1st سطر of first\n\
          page printed (see +FIRST_PAGE)\n\
 "));
       oputs (_("\
   -o, --indent=MARGIN\n\
-         offset each line with MARGIN (zero) spaces, do not\n\
+         offset each سطر with MARGIN (zero) spaces, انجامبده not\n\
          affect -w or -W, MARGIN will be added to PAGE_WIDTH\n\
 "));
       oputs (_("\
@@ -2860,9 +2860,9 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -s[CHAR], --separator[=CHAR]\n\
-         separate columns by a single character, default for CHAR\n\
-         is the <TAB> character without -w and \'no char\' with -w.\n\
-         -s[CHAR] turns off line truncation of all 3 column\n\
+         separate columns by a single character, پیشفرض برای CHAR\n\
+         is the <TAB> character without -w and \'no نویسه\' with -w.\n\
+         -s[CHAR] turns off سطر truncation of all 3 column\n\
          options (-COLS|-a -COLS|-m) except -w is set\n\
 "));
       oputs (_("\
@@ -2873,12 +2873,12 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -t, --omit-header\n\
-         omit page headers and trailers; implied if PAGE_LENGTH <= 10\n\
+         omit page headers and trailers; implied اگر PAGE_LENGTH <= 10\n\
 "));
       oputs (_("\
   -T, --omit-pagination\n\
          omit page headers and trailers,\n\
-         eliminate any pagination by form feeds set in input files\n\
+         eliminate any pagination by form feeds set in درون_داد files\n\
 "));
       oputs (_("\
   -v, --show-nonprinting\n\
@@ -2886,13 +2886,13 @@ Paginate or columnate FILE(s) for printing.\n\
 "));
       oputs (_("\
   -w, --width=PAGE_WIDTH\n\
-         set page width to PAGE_WIDTH (72) characters for\n\
-         multiple text-column output only, -s[char] turns off (72)\n\
+         set page width to PAGE_WIDTH (72) characters برای\n\
+         multiple text-column output only, -s[نویسه] turns off (72)\n\
 "));
       oputs (_("\
   -W, --page-width=PAGE_WIDTH\n\
          set page width to PAGE_WIDTH (72) characters always,\n\
-         truncate lines, except -J option is set,\n\
+         truncate سطرها, except -J option is set,\n\
          no interference with -S or -s\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
