@@ -20,25 +20,25 @@
 
    Simply call the system 'unlink' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#अन्तर्भाव <config.h>
+#अन्तर्भाव <stdio.h>
+#अन्तर्भाव <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#अन्तर्भाव "system.h"
+#अन्तर्भाव "long-options.h"
+#अन्तर्भाव "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "unlink"
 
 #define AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+शून्य
+usage (पूर्णाङ्क status)
 {
-  if (status != EXIT_SUCCESS)
+  यदि (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  अन्यथा
     {
       printf (_("\
 Usage: %s FILE\n\
@@ -52,8 +52,8 @@ Usage: %s FILE\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+पूर्णाङ्क
+main (पूर्णाङ्क argc, वर्ण **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -65,22 +65,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (वर्ण ध्रुव *) रिक्त);
 
-  if (argc < optind + 1)
+  यदि (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 1 < argc)
+  यदि (optind + 1 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (unlink (argv[optind]) != 0)
+  यदि (unlink (argv[optind]) != 0)
     error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  प्रत्यागम EXIT_SUCCESS;
 }
