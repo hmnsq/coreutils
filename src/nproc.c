@@ -47,11 +47,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -68,7 +68,7 @@ then they will determine the minimum and maximum returned value respectively.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
+         如果 possible, exclude N processing units.\n\
          The result is guaranteed to be at least 1.\n\
 "));
 
@@ -79,8 +79,8 @@ then they will determine the minimum and maximum returned value respectively.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   unsigned long ignore = 0;
   initialize_main (&argc, &argv);
@@ -93,10 +93,10 @@ main (int argc, char **argv)
 
   enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  当 (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
+      整数 c = getopt_long (argc, argv, "", longopts, NULL);
+      如果 (c == -1)
         break;
       switch (c)
         {
@@ -118,7 +118,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc != optind)
+  如果 (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -126,12 +126,12 @@ main (int argc, char **argv)
 
   unsigned long nproc = num_processors (mode);
 
-  if (ignore < nproc)
+  如果 (ignore < nproc)
     nproc -= ignore;
-  else
+  否则
     nproc = 1;
 
   printf ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  返回 EXIT_SUCCESS;
 }

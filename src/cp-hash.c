@@ -55,7 +55,7 @@ src_to_dest_hash (void const *x, size_t table_size)
   /* Ignoring the device number here should be fine.  */
   /* The cast to uintmax_t prevents negative remainders
      if st_ino is negative.  */
-  return (uintmax_t) {p->st_ino} % table_size;
+  返回 (uintmax_t) {p->st_ino} % table_size;
 }
 
 /* Compare two Src_to_dest entries.
@@ -65,7 +65,7 @@ src_to_dest_compare (void const *x, void const *y)
 {
   struct Src_to_dest const *a = x;
   struct Src_to_dest const *b = y;
-  return PSAME_INODE (a, b);
+  返回 PSAME_INODE (a, b);
 }
 
 static void
@@ -89,7 +89,7 @@ forget_created (ino_t ino, dev_t dev)
   probe.name = NULL;
 
   ent = hash_remove (src_to_dest, &probe);
-  if (ent)
+  如果 (ent)
     src_to_dest_free (ent);
 }
 
@@ -104,7 +104,7 @@ src_to_dest_lookup (ino_t ino, dev_t dev)
   ent.st_ino = ino;
   ent.st_dev = dev;
   e = hash_lookup (src_to_dest, &ent);
-  return e ? e->name : NULL;
+  返回 e ? e->name : NULL;
 }
 
 /* Add file NAME, copied from inode number INO and device number DEV,
@@ -123,7 +123,7 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   ent->st_dev = dev;
 
   ent_from_table = hash_insert (src_to_dest, ent);
-  if (ent_from_table == NULL)
+  如果 (ent_from_table == NULL)
     {
       /* Insertion failed due to lack of memory.  */
       xalloc_die ();
@@ -132,14 +132,14 @@ remember_copied (char const *name, ino_t ino, dev_t dev)
   /* Determine whether there was already an entry in the table
      with a matching key.  If so, free ENT (it wasn't inserted) and
      return the 'name' from the table entry.  */
-  if (ent_from_table != ent)
+  如果 (ent_from_table != ent)
     {
       src_to_dest_free (ent);
-      return ent_from_table->name;
+      返回 ent_from_table->name;
     }
 
   /* New key;  insertion succeeded.  */
-  return NULL;
+  返回 NULL;
 }
 
 /* Initialize the hash table.  */
@@ -150,6 +150,6 @@ hash_init (void)
                                  src_to_dest_hash,
                                  src_to_dest_compare,
                                  src_to_dest_free);
-  if (src_to_dest == NULL)
+  如果 (src_to_dest == NULL)
     xalloc_die ();
 }

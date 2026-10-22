@@ -33,12 +33,12 @@
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
+static 整数
 userid_compare (const void *v_a, const void *v_b)
 {
   char **a = (char **) v_a;
   char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  返回 strcmp (*a, *b);
 }
 
 static void
@@ -47,9 +47,9 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
   char **u = xinmalloc (n, sizeof *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  当 (n--)
     {
-      if (IS_USER_PROCESS (this))
+      如果 (IS_USER_PROCESS (this))
         {
           char *trimmed_name;
 
@@ -63,14 +63,14 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
 
   qsort (u, n_entries, sizeof (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  为 (idx_t i = 0; i < n_entries; i++)
     {
       char c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
       putchar (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
+  为 (idx_t i = 0; i < n_entries; i++)
     free (u[i]);
   free (u);
 }
@@ -79,12 +79,12 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
    Use read_utmp OPTIONS to read FILENAME.  */
 
 static void
-users (char const *filename, int options)
+users (char const *filename, 整数 options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  如果 (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
@@ -93,11 +93,11 @@ users (char const *filename, int options)
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -113,8 +113,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -143,5 +143,5 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  返回 EXIT_SUCCESS;
 }

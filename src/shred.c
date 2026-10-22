@@ -78,7 +78,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <sys/types.h>
-#if defined __linux__ && HAVE_SYS_MTIO_H
+#如果 defined __linux__ && HAVE_SYS_MTIO_H
 # include <sys/mtio.h>
 #endif
 
@@ -160,16 +160,16 @@ static struct option const long_opts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
 Overwrite the specified FILE(s) repeatedly, in order to make it harder\n\
-for even very expensive hardware probing to recover the data.\n\
+为 even very expensive hardware probing to recover the data.\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -180,7 +180,7 @@ If FILE is -, shred standard output.\n\
 
       oputs (_("\
   -f, --force\n\
-         change permissions to allow writing if necessary\n\
+         change permissions to allow writing 如果 necessary\n\
 "));
       oprintf (_("\
   -n, --iterations=N\n\
@@ -209,7 +209,7 @@ If FILE is -, shred standard output.\n\
       oputs (_("\
   -x, --exact\n\
          do not round file sizes up to the next full block;\n\
-         this is the default for non-regular files\n\
+         this is the default 为 non-regular files\n\
 "));
       oputs (_("\
   -z, --zero\n\
@@ -219,12 +219,12 @@ If FILE is -, shred standard output.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FILE will be skipped with a diagnostic message if it is a FIFO, socket, or\n\
+FILE will be skipped with a diagnostic message 如果 it is a FIFO, socket, or\n\
 terminal, since its data does not reside on disk.\n\
 "), stdout);
       fputs (_("\
 \n\
-Delete FILE(s) if --remove (-u) is specified.  The default is not to remove\n\
+Delete FILE(s) 如果 --remove (-u) is specified.  The default is not to remove\n\
 the files because it is common to operate on device files like /dev/hda,\n\
 and those files usually should not be removed.\n\
 The optional HOW parameter indicates how to remove a directory entry:\n\
@@ -238,7 +238,7 @@ The default mode is 'wipesync', but note it can be expensive.\n\
 CAUTION: shred assumes the file system and hardware overwrite data in place.\n\
 Although this is common, many platforms operate otherwise.  Also, backups\n\
 and mirrors may contain unremovable copies that will let a shredded file\n\
-be recovered later.  See the GNU coreutils manual for details.\n\
+be recovered later.  See the GNU coreutils manual 为 details.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -249,20 +249,20 @@ be recovered later.  See the GNU coreutils manual for details.\n\
  * Determine if pattern type is periodic or not.
  */
 static bool
-periodic_pattern (int type)
+periodic_pattern (整数 type)
 {
-  if (type <= 0)
-    return false;
+  如果 (type <= 0)
+    返回 false;
 
   unsigned char r[3];
-  unsigned int bits = type & 0xfff;
+  unsigned 整数 bits = type & 0xfff;
 
   bits |= bits << 12;
   r[0] = (bits >> 4) & 255;
   r[1] = (bits >> 8) & 255;
   r[2] = bits & 255;
 
-  return (r[0] != r[1]) || (r[0] != r[2]);
+  返回 (r[0] != r[1]) || (r[0] != r[2]);
 }
 
 /*
@@ -272,23 +272,23 @@ periodic_pattern (int type)
  * size is less.  Larger sizes are filled exactly.
  */
 static void
-fillpattern (int type, unsigned char *r, size_t size)
+fillpattern (整数 type, unsigned char *r, size_t size)
 {
   size_t i;
-  unsigned int bits = type & 0xfff;
+  unsigned 整数 bits = type & 0xfff;
 
   bits |= bits << 12;
   r[0] = (bits >> 4) & 255;
   r[1] = (bits >> 8) & 255;
   r[2] = bits & 255;
-  for (i = 3; i <= size / 2; i *= 2)
+  为 (i = 3; i <= size / 2; i *= 2)
     memcpy (r + i, r, i);
-  if (i < size)
+  如果 (i < size)
     memcpy (r + i, r, size - i);
 
   /* Invert the first bit of every sector. */
-  if (type & 0x1000)
-    for (i = 0; i < size; i += SECTOR_SIZE)
+  如果 (type & 0x1000)
+    为 (i = 0; i < size; i += SECTOR_SIZE)
       r[i] ^= 0x80;
 }
 
@@ -300,18 +300,18 @@ fillpattern (int type, unsigned char *r, size_t size)
 static void
 passname (unsigned char const *data, char name[PASS_NAME_SIZE])
 {
-  if (data)
+  如果 (data)
     sprintf (name, "%02x%02x%02x", data[0], data[1], data[2]);
-  else
+  否则
     memcpy (name, "random", PASS_NAME_SIZE);
 }
 
 /* Return true when it's ok to ignore an fsync or fdatasync
    failure that set errno to ERRNO_VAL.  */
 static bool
-ignorable_sync_errno (int errno_val)
+ignorable_sync_errno (整数 errno_val)
 {
-  return (errno_val == EINVAL
+  返回 (errno_val == EINVAL
           || errno_val == EBADF
           /* HP-UX does this */
           || errno_val == EISDIR);
@@ -323,54 +323,54 @@ ignorable_sync_errno (int errno_val)
    (setting errno) on failure.  It is not an error if fdatasync and/or
    fsync is not supported for this file, or if the file is not a
    writable file descriptor.  */
-static int
-dosync (int fd, char const *qname)
+static 整数
+dosync (整数 fd, char const *qname)
 {
-  int err;
+  整数 err;
 
-  if (fdatasync (fd) == 0)
-    return 0;
+  如果 (fdatasync (fd) == 0)
+    返回 0;
   err = errno;
-  if ( ! ignorable_sync_errno (err))
+  如果 ( ! ignorable_sync_errno (err))
     {
       error (0, err, _("%s: fdatasync failed"), qname);
       errno = err;
-      return -1;
+      返回 -1;
     }
 
-  if (fsync (fd) == 0)
-    return 0;
+  如果 (fsync (fd) == 0)
+    返回 0;
   err = errno;
-  if ( ! ignorable_sync_errno (err))
+  如果 ( ! ignorable_sync_errno (err))
     {
       error (0, err, _("%s: fsync failed"), qname);
       errno = err;
-      return -1;
+      返回 -1;
     }
 
   sync ();
-  return 0;
+  返回 0;
 }
 
 /* Turn on or off direct I/O mode for file descriptor FD, if possible.
    Try to turn it on if ENABLE is true.  Otherwise, try to turn it off.  */
 static void
-direct_mode (int fd, bool enable)
+direct_mode (整数 fd, bool enable)
 {
-  if (O_DIRECT)
+  如果 (O_DIRECT)
     {
-      int fd_flags = fcntl (fd, F_GETFL);
-      if (0 < fd_flags)
+      整数 fd_flags = fcntl (fd, F_GETFL);
+      如果 (0 < fd_flags)
         {
-          int new_flags = (enable
+          整数 new_flags = (enable
                            ? (fd_flags | O_DIRECT)
                            : (fd_flags & ~O_DIRECT));
-          if (new_flags != fd_flags)
+          如果 (new_flags != fd_flags)
             fcntl (fd, F_SETFL, new_flags);
         }
     }
 
-#if HAVE_DIRECTIO && defined DIRECTIO_ON && defined DIRECTIO_OFF
+#如果 HAVE_DIRECTIO && defined DIRECTIO_ON && defined DIRECTIO_OFF
   /* This is Solaris-specific.  */
   directio (fd, enable ? DIRECTIO_ON : DIRECTIO_OFF);
 #endif
@@ -378,25 +378,25 @@ direct_mode (int fd, bool enable)
 
 /* Rewind FD; its status is ST.  */
 static bool
-dorewind (int fd, struct stat const *st)
+dorewind (整数 fd, struct stat const *st)
 {
-  if (S_ISCHR (st->st_mode))
+  如果 (S_ISCHR (st->st_mode))
     {
-#if defined __linux__ && HAVE_SYS_MTIO_H
+#如果 defined __linux__ && HAVE_SYS_MTIO_H
       /* In the Linux kernel, lseek does not work on tape devices; it
          returns a randomish value instead.  Try the low-level tape
          rewind operation first.  */
       struct mtop op;
       op.mt_op = MTREW;
       op.mt_count = 1;
-      if (ioctl (fd, MTIOCTOP, &op) == 0)
-        return true;
+      如果 (ioctl (fd, MTIOCTOP, &op) == 0)
+        返回 true;
 #endif
     }
   off_t offset = lseek (fd, 0, SEEK_SET);
-  if (0 < offset)
+  如果 (0 < offset)
     errno = EINVAL;
-  return offset == 0;
+  返回 offset == 0;
 }
 
 /* By convention, negative sizes represent unknown values.  */
@@ -404,7 +404,7 @@ dorewind (int fd, struct stat const *st)
 static bool
 known (off_t size)
 {
-  return 0 <= size;
+  返回 0 <= size;
 }
 
 /*
@@ -417,10 +417,10 @@ known (off_t size)
  *
  * Return 1 on write error, -1 on other error, 0 on success.
  */
-static int
-dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
-        int type, struct randread_source *s,
-        unsigned long int k, unsigned long int n)
+static 整数
+dopass (整数 fd, struct stat const *st, char const *qname, off_t *sizep,
+        整数 type, struct randread_source *s,
+        unsigned long 整数 k, unsigned long 整数 n)
 {
   off_t size = *sizep;
   off_t offset;                /* Current file position */
@@ -452,10 +452,10 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
      as it's just a performance rather than security consideration,
      and direct I/O can often be unsupported for small non aligned sizes.  */
   bool try_without_directio = 0 < size && size < output_size;
-  if (! try_without_directio)
+  如果 (! try_without_directio)
     direct_mode (fd, true);
 
-  if (! dorewind (fd, st))
+  如果 (! dorewind (fd, st))
     {
       error (0, errno, _("%s: cannot rewind"), qname);
       other_error = true;
@@ -463,19 +463,19 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
     }
 
   /* Constant fill patterns need only be set up once. */
-  if (type >= 0)
+  如果 (type >= 0)
     {
       lim = known (size) && size < FILLPATTERN_SIZE ? size : FILLPATTERN_SIZE;
       fillpattern (type, pbuf, lim);
       passname (pbuf, pass_string);
     }
-  else
+  否则
     {
       passname (NULL, pass_string);
     }
 
   /* Set position if first status update */
-  if (n)
+  如果 (n)
     {
       error (0, 0, _("%s: pass %lu/%lu (%s)..."), qname, k, n, pass_string);
       prev = gethrxtime ();
@@ -483,42 +483,42 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
     }
 
   offset = 0;
-  while (true)
+  当 (true)
     {
       /* How much to write this time? */
       lim = output_size;
-      if (known (size) && size - offset < output_size)
+      如果 (known (size) && size - offset < output_size)
         {
-          if (size < offset)
+          如果 (size < offset)
             break;
           lim = size - offset;
-          if (!lim)
+          如果 (!lim)
             break;
         }
-      if (type < 0)
+      如果 (type < 0)
         randread (s, pbuf, lim);
       /* Loop to retry partial writes. */
-      for (soff = 0; soff < lim; soff += ssize)
+      为 (soff = 0; soff < lim; soff += ssize)
         {
           ssize = write (fd, pbuf + soff, lim - soff);
-          if (ssize <= 0)
+          如果 (ssize <= 0)
             {
-              if (! known (size) && (ssize == 0 || errno == ENOSPC))
+              如果 (! known (size) && (ssize == 0 || errno == ENOSPC))
                 {
                   /* We have found the end of the file.  */
-                  if (soff <= OFF_T_MAX - offset)
+                  如果 (soff <= OFF_T_MAX - offset)
                     *sizep = size = offset + soff;
                   break;
                 }
-              else
+              否则
                 {
-                  int errnum = errno;
+                  整数 errnum = errno;
 
                   /* Retry without direct I/O since this may not be supported
                      at all on some (file) systems, or with the current size.
                      I.e., a specified --size that is not aligned, or when
                      dealing with slop at the end of a file with --exact.  */
-                  if (! try_without_directio && errno == EINVAL)
+                  如果 (! try_without_directio && errno == EINVAL)
                     {
                       direct_mode (fd, false);
                       ssize = 0;
@@ -536,11 +536,11 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
                      also enables direct I/O on some (file) systems.  */
                   static_assert (PERIODIC_OUTPUT_SIZE % SECTOR_SIZE == 0);
                   static_assert (NONPERIODIC_OUTPUT_SIZE % SECTOR_SIZE == 0);
-                  if (errnum == EIO && known (size)
+                  如果 (errnum == EIO && known (size)
                       && (soff | SECTOR_MASK) < lim)
                     {
                       size_t soff1 = (soff | SECTOR_MASK) + 1;
-                      if (lseek (fd, offset + soff1, SEEK_SET) != -1)
+                      如果 (lseek (fd, offset + soff1, SEEK_SET) != -1)
                         {
                           /* Arrange to skip this block. */
                           ssize = soff1 - soff;
@@ -557,7 +557,7 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
 
       /* Okay, we have written "soff" bytes. */
 
-      if (ckd_add (&offset, offset, soff))
+      如果 (ckd_add (&offset, offset, soff))
         {
           error (0, 0, _("%s: file too large"), qname);
           other_error = true;
@@ -567,26 +567,26 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
       bool done = offset == size;
 
       /* Time to print progress? */
-      if (n && ((done && *previous_human_offset)
+      如果 (n && ((done && *previous_human_offset)
                 || VERBOSE_UPDATE <= xtime_sec ((now = gethrxtime ()) - prev)))
         {
           char offset_buf[LONGEST_HUMAN_READABLE + 1];
           char size_buf[LONGEST_HUMAN_READABLE + 1];
-          int human_progress_opts = (human_autoscale | human_SI
+          整数 human_progress_opts = (human_autoscale | human_SI
                                      | human_base_1024 | human_B);
           char const *human_offset
             = human_readable (offset, offset_buf,
                               human_floor | human_progress_opts, 1, 1);
 
-          if (done || !streq (previous_human_offset, human_offset))
+          如果 (done || !streq (previous_human_offset, human_offset))
             {
-              if (! known (size))
+              如果 (! known (size))
                 error (0, 0, _("%s: pass %lu/%lu (%s)...%s"),
                        qname, k, n, pass_string, human_offset);
-              else
+              否则
                 {
                   uintmax_t off = offset;
-                  int percent = (size == 0
+                  整数 percent = (size == 0
                                  ? 100
                                  : (off <= UINTMAX_MAX / 100
                                     ? off * 100 / size
@@ -595,7 +595,7 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
                     = human_readable (size, size_buf,
                                       human_ceiling | human_progress_opts,
                                       1, 1);
-                  if (done)
+                  如果 (done)
                     human_offset = human_size;
                   error (0, 0, _("%s: pass %lu/%lu (%s)...%s/%s %d%%"),
                          qname, k, n, pass_string, human_offset, human_size,
@@ -613,9 +613,9 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
                * It's a common problem with programs that do lots of writes,
                * like mkfs.
                */
-              if (dosync (fd, qname) != 0)
+              如果 (dosync (fd, qname) != 0)
                 {
-                  if (errno != EIO)
+                  如果 (errno != EIO)
                     {
                       other_error = true;
                       goto free_pattern_mem;
@@ -627,9 +627,9 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
     }
 
   /* Force what we just wrote to hit the media. */
-  if (dosync (fd, qname) != 0)
+  如果 (dosync (fd, qname) != 0)
     {
-      if (errno != EIO)
+      如果 (errno != EIO)
         {
           other_error = true;
           goto free_pattern_mem;
@@ -640,7 +640,7 @@ dopass (int fd, struct stat const *st, char const *qname, off_t *sizep,
 free_pattern_mem:
   alignfree (pbuf);
 
-  return other_error ? -1 : write_error;
+  返回 other_error ? -1 : write_error;
 }
 
 /*
@@ -697,7 +697,7 @@ free_pattern_mem:
  * If you want more passes than the entire list of groups can
  * provide, just start repeating from the beginning of the list.
  */
-static int const
+static 整数 const
   patterns[] =
 {
   -2,				/* 2 random passes */
@@ -723,17 +723,17 @@ static int const
  * order.
  */
 static void
-genpattern (int *dest, size_t num, struct randint_source *s)
+genpattern (整数 *dest, size_t num, struct randint_source *s)
 {
   size_t randpasses;
-  int const *p;
-  int *d;
+  整数 const *p;
+  整数 *d;
   size_t n;
   size_t accum, top, swap;
-  int k;
+  整数 k;
 
-  if (!num)
-    return;
+  如果 (!num)
+    返回;
 
   /* Stage 1: choose the passes to use */
   p = patterns;
@@ -741,17 +741,17 @@ genpattern (int *dest, size_t num, struct randint_source *s)
   d = dest;			/* Destination for generated pass list */
   n = num;			/* Passes remaining to fill */
 
-  while (true)
+  当 (true)
     {
       k = *p++;			/* Block descriptor word */
-      if (!k)
+      如果 (!k)
         {			/* Loop back to the beginning */
           p = patterns;
         }
-      else if (k < 0)
+      否则 如果 (k < 0)
         {			/* -k random passes */
           k = -k;
-          if ((size_t) k >= n)
+          如果 ((size_t) k >= n)
             {
               randpasses += n;
               break;
@@ -759,23 +759,23 @@ genpattern (int *dest, size_t num, struct randint_source *s)
           randpasses += k;
           n -= k;
         }
-      else if ((size_t) k <= n)
+      否则 如果 ((size_t) k <= n)
         {			/* Full block of patterns */
-          memcpy (d, p, k * sizeof (int));
+          memcpy (d, p, k * sizeof (整数));
           p += k;
           d += k;
           n -= k;
         }
-      else if (n < 2 || 3 * n < (size_t) k)
+      否则 如果 (n < 2 || 3 * n < (size_t) k)
         {			/* Finish with random */
           randpasses += n;
           break;
         }
-      else
+      否则
         {			/* Pad out with n of the k available */
           do
             {
-              if (n == (size_t) k || randint_choose (s, k) < n)
+              如果 (n == (size_t) k || randint_choose (s, k) < n)
                 {
                   *d++ = *p;
                   n--;
@@ -783,7 +783,7 @@ genpattern (int *dest, size_t num, struct randint_source *s)
               p++;
               k--;
             }
-          while (n);
+          当 (n);
           break;
         }
     }
@@ -812,15 +812,15 @@ genpattern (int *dest, size_t num, struct randint_source *s)
    */
   randpasses--;			/* To speed up later math */
   accum = randpasses;		/* Bresenham DDA accumulator */
-  for (n = 0; n < num; n++)
+  为 (n = 0; n < num; n++)
     {
-      if (accum <= randpasses)
+      如果 (accum <= randpasses)
         {
           accum += num - 1;
           dest[top++] = dest[n];
           dest[n] = -1;
         }
-      else
+      否则
         {
           swap = n + randint_choose (s, top - n);
           k = dest[n];
@@ -837,73 +837,73 @@ genpattern (int *dest, size_t num, struct randint_source *s)
  * size bytes of the given fd.  Return true if successful.
  */
 static bool
-do_wipefd (int fd, char const *qname, struct randint_source *s,
+do_wipefd (整数 fd, char const *qname, struct randint_source *s,
            struct Options const *flags)
 {
   struct stat st;
   off_t size;		/* Size to write, size to read */
   off_t i_size = 0;	/* For small files, initial size to overwrite inode */
-  unsigned long int n;	/* Number of passes for printing purposes */
-  int *passarray;
+  unsigned long 整数 n;	/* Number of passes for printing purposes */
+  整数 *passarray;
   bool ok = true;
   struct randread_source *rs;
 
   n = 0;		/* dopass takes n == 0 to mean "don't print progress" */
-  if (flags->verbose)
+  如果 (flags->verbose)
     n = flags->n_iterations + flags->zero_fill;
 
-  if (fstat (fd, &st))
+  如果 (fstat (fd, &st))
     {
       error (0, errno, _("%s: fstat failed"), qname);
-      return false;
+      返回 false;
     }
 
   /* If we know that we can't possibly shred the file, give up now.
      Otherwise, we may go into an infinite loop writing data before we
      find that we can't rewind the device.  */
-  if ((S_ISCHR (st.st_mode) && isatty (fd))
+  如果 ((S_ISCHR (st.st_mode) && isatty (fd))
       || S_ISFIFO (st.st_mode)
       || S_ISSOCK (st.st_mode))
     {
       error (0, 0, _("%s: invalid file type"), qname);
-      return false;
+      返回 false;
     }
-  else if (S_ISREG (st.st_mode) && st.st_size < 0)
+  否则 如果 (S_ISREG (st.st_mode) && st.st_size < 0)
     {
       error (0, 0, _("%s: file has negative size"), qname);
-      return false;
+      返回 false;
     }
 
   /* Allocate pass array */
   passarray = xnmalloc (flags->n_iterations, sizeof *passarray);
 
   size = flags->size;
-  if (size == -1)
+  如果 (size == -1)
     {
-      if (S_ISREG (st.st_mode))
+      如果 (S_ISREG (st.st_mode))
         {
           size = st.st_size;
 
-          if (! flags->exact)
+          如果 (! flags->exact)
             {
               /* Round up to the nearest block size to clear slack space.  */
               off_t remainder = size % STP_BLKSIZE (&st);
-              if (size && size < STP_BLKSIZE (&st))
+              如果 (size && size < STP_BLKSIZE (&st))
                 i_size = size;
-              if (remainder != 0)
+              如果 (remainder != 0)
                 {
                   off_t size_incr = STP_BLKSIZE (&st) - remainder;
                   size += MIN (size_incr, OFF_T_MAX - size);
                 }
             }
         }
-      else
+      否则
         {
           /* The behavior of lseek is unspecified, but in practice if
              it returns a positive number that's the size of this
              device.  */
           size = lseek (fd, 0, SEEK_END);
-          if (size <= 0)
+          如果 (size <= 0)
             {
               /* We are unable to determine the length, up front.
                  Let dopass do that as part of its first iteration.  */
@@ -911,7 +911,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
             }
         }
     }
-  else if (S_ISREG (st.st_mode)
+  否则 如果 (S_ISREG (st.st_mode)
            && st.st_size < MIN (STP_BLKSIZE (&st), size))
     i_size = st.st_size;
 
@@ -920,18 +920,18 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
 
   rs = randint_get_source (s);
 
-  while (true)
+  当 (true)
     {
       off_t pass_size;
-      unsigned long int pn = n;
+      unsigned long 整数 pn = n;
 
-      if (i_size)
+      如果 (i_size)
         {
           pass_size = i_size;
           i_size = 0;
           pn = 0;
         }
-      else if (size)
+      否则 如果 (size)
         {
           pass_size = size;
           size = 0;
@@ -939,20 +939,20 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
       /* TODO: consider handling tail packing by
          writing the tail padding as a separate pass,
          (that would not rewind).  */
-      else
+      否则
         break;
 
-      for (size_t i = 0; i < flags->n_iterations + flags->zero_fill; i++)
+      为 (size_t i = 0; i < flags->n_iterations + flags->zero_fill; i++)
         {
-          int err = 0;
-          int type = i < flags->n_iterations ? passarray[i] : 0;
+          整数 err = 0;
+          整数 type = i < flags->n_iterations ? passarray[i] : 0;
 
           err = dopass (fd, &st, qname, &pass_size, type, rs, i + 1, pn);
 
-          if (err)
+          如果 (err)
             {
               ok = false;
-              if (err < 0)
+              如果 (err < 0)
                 goto wipefd_out;
             }
         }
@@ -963,7 +963,7 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
      they are not possible here); don't worry about errors reported
      for other file types.  */
 
-  if (flags->remove_file && ftruncate (fd, 0) != 0
+  如果 (flags->remove_file && ftruncate (fd, 0) != 0
       && (S_ISREG (st.st_mode) || S_TYPEISSHM (&st)))
     {
       error (0, errno, _("%s: error truncating"), qname);
@@ -973,27 +973,27 @@ do_wipefd (int fd, char const *qname, struct randint_source *s,
 
 wipefd_out:
   free (passarray);
-  return ok;
+  返回 ok;
 }
 
 /* A wrapper with a little more checking for fds on the command line */
 static bool
-wipefd (int fd, char const *qname, struct randint_source *s,
+wipefd (整数 fd, char const *qname, struct randint_source *s,
         struct Options const *flags)
 {
-  int fd_flags = fcntl (fd, F_GETFL);
+  整数 fd_flags = fcntl (fd, F_GETFL);
 
-  if (fd_flags < 0)
+  如果 (fd_flags < 0)
     {
       error (0, errno, _("%s: fcntl failed"), qname);
-      return false;
+      返回 false;
     }
-  if (fd_flags & O_APPEND)
+  如果 (fd_flags & O_APPEND)
     {
       error (0, 0, _("%s: cannot shred append-only file descriptor"), qname);
-      return false;
+      返回 false;
     }
-  return do_wipefd (fd, qname, s, flags);
+  返回 do_wipefd (fd, qname, s, flags);
 }
 
 /* --- Name-wiping code --- */
@@ -1010,7 +1010,7 @@ static char const nameset[] =
 static bool
 incname (char *name, size_t len)
 {
-  while (len--)
+  当 (len--)
     {
       char const *p = strchr (nameset, name[len]);
 
@@ -1018,17 +1018,17 @@ incname (char *name, size_t len)
          P will never be null here.  */
 
       /* If this character has a successor, use it.  */
-      if (p[1])
+      如果 (p[1])
         {
           name[len] = p[1];
-          return true;
+          返回 true;
         }
 
       /* Otherwise, set this digit to 0 and increment the prefix.  */
       name[len] = nameset[0];
     }
 
-  return false;
+  返回 false;
 }
 
 /*
@@ -1066,30 +1066,30 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
   char *qdir = xstrdup (quotef (dir));
   bool first = true;
   bool ok = true;
-  int dir_fd = -1;
+  整数 dir_fd = -1;
 
-  if (flags->remove_file == remove_wipesync)
+  如果 (flags->remove_file == remove_wipesync)
     dir_fd = open (dir, O_RDONLY | O_DIRECTORY | O_NOCTTY | O_NONBLOCK);
 
-  if (flags->verbose)
+  如果 (flags->verbose)
     error (0, 0, _("%s: removing"), qoldname);
 
-  if (flags->remove_file != remove_unlink)
-    for (size_t len = base_len (base); len != 0; len--)
+  如果 (flags->remove_file != remove_unlink)
+    为 (size_t len = base_len (base); len != 0; len--)
       {
         memset (base, nameset[0], len);
         base[len] = 0;
         bool rename_ok;
-        while (! (rename_ok = (renameatu (AT_FDCWD, oldname, AT_FDCWD, newname,
+        当 (! (rename_ok = (renameatu (AT_FDCWD, oldname, AT_FDCWD, newname,
                                           RENAME_NOREPLACE)
                                == 0))
                && errno == EEXIST && incname (base, len))
           continue;
-        if (rename_ok)
+        如果 (rename_ok)
           {
-            if (0 <= dir_fd && dosync (dir_fd, qdir) != 0)
+            如果 (0 <= dir_fd && dosync (dir_fd, qdir) != 0)
               ok = false;
-            if (flags->verbose)
+            如果 (flags->verbose)
               {
                 /* People seem to understand this better than talking
                    about renaming OLDNAME.  NEWNAME doesn't need
@@ -1104,18 +1104,18 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
           }
       }
 
-  if (unlink (oldname) != 0)
+  如果 (unlink (oldname) != 0)
     {
       error (0, errno, _("%s: failed to remove"), qoldname);
       ok = false;
     }
-  else if (flags->verbose)
+  否则 如果 (flags->verbose)
     error (0, 0, _("%s: removed"), qoldname);
-  if (0 <= dir_fd)
+  如果 (0 <= dir_fd)
     {
-      if (dosync (dir_fd, qdir) != 0)
+      如果 (dosync (dir_fd, qdir) != 0)
         ok = false;
-      if (close (dir_fd) != 0)
+      如果 (close (dir_fd) != 0)
         {
           error (0, errno, _("%s: failed to close"), qdir);
           ok = false;
@@ -1124,7 +1124,7 @@ wipename (char *oldname, char const *qoldname, struct Options const *flags)
   free (newname);
   free (dir);
   free (qdir);
-  return ok;
+  返回 ok;
 }
 
 /*
@@ -1143,43 +1143,43 @@ static bool
 wipefile (char *name, char const *qname,
           struct randint_source *s, struct Options const *flags)
 {
-  int fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
-  if (fd < 0
+  整数 fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
+  如果 (fd < 0
       && (errno == EACCES && flags->force)
       && chmod (name, S_IWUSR) == 0)
     fd = open (name, O_WRONLY | O_NOCTTY | O_NONBLOCK | O_BINARY);
-  if (fd < 0)
+  如果 (fd < 0)
     {
       struct stat st;
-      const int open_errno = errno;
+      const 整数 open_errno = errno;
 
       /* Try to give a more meaningful error message if we attempt to
          open a FIFO with no readers.  */
-      if (open_errno == ENXIO && 0 <= stat (name, &st)
+      如果 (open_errno == ENXIO && 0 <= stat (name, &st)
           && S_ISFIFO (st.st_mode))
         error (0, 0, _("%s: invalid file type"), qname);
-      else
+      否则
         error (0, open_errno, _("%s: failed to open for writing"), qname);
-      return false;
+      返回 false;
     }
 
   /* We used O_NONBLOCK to prevent blocking when opening a FIFO.
      Reset that here.  */
-  int fd_flags = fcntl (fd, F_GETFL);
+  整数 fd_flags = fcntl (fd, F_GETFL);
   bool ok = 0 <= fd_flags && 0 <= fcntl (fd, F_SETFL, fd_flags & ~O_NONBLOCK);
-  if (ok)
+  如果 (ok)
     ok = do_wipefd (fd, qname, s, flags);
-  else
+  否则
     error (0, errno, _("couldn't reset non-blocking mode %s"), qname);
 
-  if (close (fd) != 0)
+  如果 (close (fd) != 0)
     {
       error (0, errno, _("%s: failed to close"), qname);
       ok = false;
     }
-  if (ok && flags->remove_file)
+  如果 (ok && flags->remove_file)
     ok = wipename (name, qname, flags);
-  return ok;
+  返回 ok;
 }
 
 
@@ -1196,14 +1196,14 @@ clear_random_data (void)
 }
 
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   bool ok = true;
   struct Options flags = {0};
   char **file;
-  int n_files;
-  int c;
+  整数 n_files;
+  整数 c;
   char const *random_source = NULL;
 
   initialize_main (&argc, &argv);
@@ -1217,7 +1217,7 @@ main (int argc, char **argv)
   flags.n_iterations = DEFAULT_PASSES;
   flags.size = -1;
 
-  while ((c = getopt_long (argc, argv, "fn:s:uvxz", long_opts, NULL)) != -1)
+  当 ((c = getopt_long (argc, argv, "fn:s:uvxz", long_opts, NULL)) != -1)
     {
       switch (c)
         {
@@ -1228,20 +1228,20 @@ main (int argc, char **argv)
         case 'n':
           flags.n_iterations = xdectoumax (optarg, 0,
                                            MIN (ULONG_MAX,
-                                                SIZE_MAX / sizeof (int)), "",
+                                                SIZE_MAX / sizeof (整数)), "",
                                            _("invalid number of passes"), 0);
           break;
 
         case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
+          如果 (random_source && !streq (random_source, optarg))
             error (EXIT_FAILURE, 0, _("multiple random sources specified"));
           random_source = optarg;
           break;
 
         case 'u':
-          if (optarg == NULL)
+          如果 (optarg == NULL)
             flags.remove_file = remove_wipesync;
-          else
+          否则
             flags.remove_file = XARGMATCH ("--remove", optarg,
                                            remove_args, remove_methods);
           break;
@@ -1275,26 +1275,26 @@ main (int argc, char **argv)
   file = argv + optind;
   n_files = argc - optind;
 
-  if (n_files == 0)
+  如果 (n_files == 0)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
   randint_source = randint_all_new (random_source, SIZE_MAX);
-  if (! randint_source)
+  如果 (! randint_source)
     error (EXIT_FAILURE, errno, "%s",
            quotef (random_source ? random_source : "getrandom"));
   atexit (clear_random_data);
 
-  for (int i = 0; i < n_files; i++)
+  为 (整数 i = 0; i < n_files; i++)
     {
       char *qname = xstrdup (quotef (file[i]));
-      if (streq (file[i], "-"))
+      如果 (streq (file[i], "-"))
         {
           ok &= wipefd (STDOUT_FILENO, qname, randint_source, &flags);
         }
-      else
+      否则
         {
           /* Plain filename - Note that this overwrites *argv! */
           ok &= wipefile (file[i], qname, randint_source, &flags);
@@ -1302,7 +1302,7 @@ main (int argc, char **argv)
       free (qname);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  返回 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 /*
  * vim:sw=2:sts=2:

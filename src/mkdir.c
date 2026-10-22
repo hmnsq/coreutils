@@ -48,15 +48,15 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
       fputs (_("\
-Create the DIRECTORY(ies), if they do not already exist.\n\
+Create the DIRECTORY(ies), 如果 they do not already exist.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -67,12 +67,12 @@ Create the DIRECTORY(ies), if they do not already exist.\n\
 "));
       oputs (_("\
   -p, --parents\n\
-         no error if existing, make parent directories as needed,\n\
+         no error 如果 existing, make parent directories as needed,\n\
          with their file modes unaffected by any -m option\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print a message for each created directory\n\
+         print a message 为 each created directory\n\
 "));
       oputs (_("\
   -Z\n\
@@ -81,7 +81,7 @@ Create the DIRECTORY(ies), if they do not already exist.\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or 如果 CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -96,7 +96,7 @@ struct mkdir_options
 {
   /* Function to make an ancestor, or NULL if ancestors should not be
      made.  */
-  int (*make_ancestor_function) (char const *, char const *, void *);
+  整数 (*make_ancestor_function) (char const *, char const *, void *);
 
   /* Umask value for when making an ancestor.  */
   mode_t umask_ancestor;
@@ -122,7 +122,7 @@ static void
 announce_mkdir (char const *dir, void *options)
 {
   struct mkdir_options const *o = options;
-  if (o->created_directory_format)
+  如果 (o->created_directory_format)
     prog_fprintf (stdout, o->created_directory_format, quoteaf (dir));
 }
 
@@ -131,51 +131,51 @@ announce_mkdir (char const *dir, void *options)
    parent.  Return 0 if successful and the resulting directory is
    readable, 1 if successful but the resulting directory is not
    readable, -1 (setting errno) otherwise.  */
-static int
+static 整数
 make_ancestor (char const *dir, char const *component, void *options)
 {
   struct mkdir_options const *o = options;
 
-  if (o->set_security_context
+  如果 (o->set_security_context
       && defaultcon (o->set_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  if (o->umask_ancestor != o->umask_self)
+  如果 (o->umask_ancestor != o->umask_self)
     umask (o->umask_ancestor);
-  int r = mkdir (component, S_IRWXUGO);
-  if (o->umask_ancestor != o->umask_self)
+  整数 r = mkdir (component, S_IRWXUGO);
+  如果 (o->umask_ancestor != o->umask_self)
     {
-      int mkdir_errno = errno;
+      整数 mkdir_errno = errno;
       umask (o->umask_self);
       errno = mkdir_errno;
     }
-  if (r == 0)
+  如果 (r == 0)
     {
       r = (o->umask_ancestor & S_IRUSR) != 0;
       announce_mkdir (dir, options);
     }
-  return r;
+  返回 r;
 }
 
 /* Process a command-line file name.  */
-static int
+static 整数
 process_dir (char *dir, struct savewd *wd, void *options)
 {
   struct mkdir_options const *o = options;
 
   /* If possible set context before DIR created.  */
-  if (o->set_security_context)
+  如果 (o->set_security_context)
     {
-      if (! o->make_ancestor_function
+      如果 (! o->make_ancestor_function
           && defaultcon (o->set_security_context, dir, S_IFDIR) < 0
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to set default creation context for %s"),
                quoteaf (dir));
     }
 
-  int ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
+  整数 ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
                                o->mode, announce_mkdir,
                                o->mode_bits, (uid_t) -1, (gid_t) -1, true)
              ? EXIT_SUCCESS
@@ -186,23 +186,23 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && o->set_security_context
+  如果 (ret == EXIT_SUCCESS && o->set_security_context
       && o->make_ancestor_function)
     {
-      if (! restorecon (o->set_security_context, last_component (dir), false)
+      如果 (! restorecon (o->set_security_context, last_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  返回 ret;
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   char const *specified_mode = NULL;
-  int optc;
+  整数 optc;
   char const *scontext = NULL;
   struct mkdir_options options;
 
@@ -220,7 +220,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "pm:vZ", longopts, NULL)) != -1)
+  当 ((optc = getopt_long (argc, argv, "pm:vZ", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -234,24 +234,24 @@ main (int argc, char **argv)
           options.created_directory_format = _("created directory %s");
           break;
         case 'Z':
-          if (is_smack_enabled ())
+          如果 (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          否则 如果 (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              如果 (optarg)
                 scontext = optarg;
-              else
+              否则
                 {
                   options.set_security_context = selabel_open (SELABEL_CTX_FILE,
                                                                NULL, 0);
-                  if (! options.set_security_context)
+                  如果 (! options.set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          否则 如果 (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
@@ -265,7 +265,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  如果 (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -274,30 +274,30 @@ main (int argc, char **argv)
   /* FIXME: This assumes mkdir() is done in the same process.
      If that's not always the case we would need to call this
      like we do when options.set_security_context.  */
-  if (scontext)
+  如果 (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
+      整数 ret = 0;
+      如果 (is_smack_enabled ())
         ret = smack_set_label_for_self (scontext);
-      else
+      否则
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      如果 (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
 
-  if (options.make_ancestor_function || specified_mode)
+  如果 (options.make_ancestor_function || specified_mode)
     {
       mode_t umask_value = umask (0);
       options.umask_ancestor = umask_value & ~(S_IWUSR | S_IXUSR);
 
-      if (specified_mode)
+      如果 (specified_mode)
         {
           struct mode_change *change = mode_compile (specified_mode);
-          if (!change)
+          如果 (!change)
             error (EXIT_FAILURE, 0, _("invalid mode %s"),
                    quote (specified_mode));
           options.mode = mode_adjust (S_IRWXUGO, true, umask_value, change,
@@ -305,7 +305,7 @@ main (int argc, char **argv)
           options.umask_self = umask_value & ~options.mode;
           free (change);
         }
-      else
+      否则
         {
           options.mode = S_IRWXUGO;
           options.umask_self = umask_value;
@@ -314,6 +314,6 @@ main (int argc, char **argv)
       umask (options.umask_self);
     }
 
-  return savewd_process_files (argc - optind, argv + optind,
+  返回 savewd_process_files (argc - optind, argv + optind,
                                process_dir, &options);
 }

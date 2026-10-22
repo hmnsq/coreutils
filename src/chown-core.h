@@ -83,7 +83,7 @@ uid_to_name (uid_t)
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
 bool
-chown_files (char **files, int bit_flags,
+chown_files (char **files, 整数 bit_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
              struct Chown_option const *chopt)

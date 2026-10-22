@@ -39,8 +39,8 @@
 # define MAXGID GID_T_MAX
 #endif
 
-static inline bool uid_unset (uid_t uid) { return uid == (uid_t) -1; }
-static inline bool gid_unset (gid_t gid) { return gid == (gid_t) -1; }
+static inline bool uid_unset (uid_t uid) { 返回 uid == (uid_t) -1; }
+static inline bool gid_unset (gid_t gid) { 返回 gid == (gid_t) -1; }
 #define uid_set(x) (!uid_unset (x))
 #define gid_set(x) (!gid_unset (x))
 
@@ -61,22 +61,22 @@ static struct option const long_opts[] =
   {NULL, 0, NULL, 0}
 };
 
-#if ! HAVE_SETGROUPS
+#如果 ! HAVE_SETGROUPS
 /* At least Interix lacks supplemental group support.  */
-static int
+static 整数
 setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
 {
-  if (size == 0)
+  如果 (size == 0)
     {
       /* Return success when clearing supplemental groups
          as ! HAVE_SETGROUPS should only be the case on
          platforms that don't support supplemental groups.  */
-      return 0;
+      返回 0;
     }
-  else
+  否则
     {
       errno = ENOTSUP;
-      return -1;
+      返回 -1;
     }
 }
 #endif
@@ -89,7 +89,7 @@ setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
    Upon any failure return nonzero, and issue diagnostic if SHOW_ERRORS is true.
    Otherwise return zero.  */
 
-static int
+static 整数
 parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
                          idx_t *pn_gids, bool show_errors)
 {
@@ -97,41 +97,41 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
   idx_t n_gids_allocated = 0;
   idx_t n_gids = 0;
   char *buffer = xstrdup (groups);
-  int ret = 0;
+  整数 ret = 0;
 
-  for (char const *tmp = strtok (buffer, ","); tmp;
+  为 (char const *tmp = strtok (buffer, ","); tmp;
        tmp = strtok (NULL, ","))
     {
       struct group *g;
       uintmax_t value;
 
-      if (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
+      如果 (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
           && value <= MAXGID)
         {
-          while (isspace (to_uchar (*tmp)))
+          当 (isspace (to_uchar (*tmp)))
             tmp++;
-          if (*tmp != '+')
+          如果 (*tmp != '+')
             {
               /* Handle the case where the name is numeric.  */
               g = getgrnam (tmp);
-              if (g != NULL)
+              如果 (g != NULL)
                 value = g->gr_gid;
             }
           /* Flag that we've got a group from the number.  */
           g = (struct group *) (intptr_t) ! NULL;
         }
-      else
+      否则
         {
           g = getgrnam (tmp);
-          if (g != NULL)
+          如果 (g != NULL)
             value = g->gr_gid;
         }
 
-      if (g == NULL)
+      如果 (g == NULL)
         {
           ret = -1;
 
-          if (show_errors)
+          如果 (show_errors)
             {
               error (0, errno, _("invalid group %s"), quote (tmp));
               continue;
@@ -140,25 +140,25 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
           break;
         }
 
-      if (n_gids == n_gids_allocated)
+      如果 (n_gids == n_gids_allocated)
         gids = xpalloc (gids, &n_gids_allocated, 1, -1, sizeof *gids);
       gids[n_gids++] = value;
     }
 
-  if (ret == 0 && n_gids == 0)
+  如果 (ret == 0 && n_gids == 0)
     {
-      if (show_errors)
+      如果 (show_errors)
         error (0, 0, _("invalid group list %s"), quote (groups));
       ret = -1;
     }
 
   *pgids = gids;
 
-  if (ret == 0)
+  如果 (ret == 0)
     *pn_gids = n_gids;
 
   free (buffer);
-  return ret;
+  返回 ret;
 }
 
 /* Return whether the passed path is equivalent to "/".
@@ -171,15 +171,15 @@ is_root (char const *dir)
   char *resolved = canonicalize_file_name (dir);
   bool is_res_root = resolved && streq ("/", resolved);
   free (resolved);
-  return is_res_root;
+  返回 is_res_root;
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... NEWROOT [COMMAND [ARG]...]\n"), program_name);
@@ -214,10 +214,10 @@ If no command is given, run '\"$SHELL\" -i' (default: '/bin/sh -i').\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
-  int c;
+  整数 c;
 
   /* Input user and groups spec.  */
   char *userspec = NULL;
@@ -243,7 +243,7 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+", long_opts, NULL)) != -1)
+  当 ((c = getopt_long (argc, argv, "+", long_opts, NULL)) != -1)
     {
       switch (c)
         {
@@ -254,7 +254,7 @@ main (int argc, char **argv)
                as we lookup the primary group by default
                (and support doing so for UIDs as well as names.  */
             idx_t userlen = strlen (userspec);
-            if (userlen && userspec[userlen - 1] == ':')
+            如果 (userlen && userspec[userlen - 1] == ':')
               userspec[userlen - 1] = '\0';
             break;
           }
@@ -276,7 +276,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc <= optind)
+  如果 (argc <= optind)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
@@ -285,14 +285,14 @@ main (int argc, char **argv)
   char const *newroot = argv[optind];
   bool is_oldroot = is_root (newroot);
 
-  if (! is_oldroot && skip_chdir)
+  如果 (! is_oldroot && skip_chdir)
     {
       error (0, 0, _("option --skip-chdir only permitted if NEWROOT is old %s"),
              quoteaf ("/"));
       usage (EXIT_CANCELED);
     }
 
-  if (! is_oldroot)
+  如果 (! is_oldroot)
     {
       /* We have to look up users and groups twice.
         - First, outside the chroot to load potentially necessary passwd/group
@@ -300,17 +300,17 @@ main (int argc, char **argv)
         - Second, inside chroot to redo parsing in case IDs are different.
           Within chroot lookup is the main justification for having
           the --user option supported by the chroot command itself.  */
-      if (userspec)
+      如果 (userspec)
         ignore_value (parse_user_spec (userspec, &uid, &gid, NULL, NULL));
 
       /* If no gid is supplied or looked up, do so now.
         Also lookup the username for use with getgroups.  */
-      if (uid_set (uid) && (! groups || gid_unset (gid)))
+      如果 (uid_set (uid) && (! groups || gid_unset (gid)))
         {
           const struct passwd *pwd;
-          if ((pwd = getpwuid (uid)))
+          如果 ((pwd = getpwuid (uid)))
             {
-              if (gid_unset (gid))
+              如果 (gid_unset (gid))
                 {
                   gid = pwd->pw_gid;
                   gid_inferred = true;
@@ -319,37 +319,37 @@ main (int argc, char **argv)
             }
         }
 
-      if (groups && *groups)
+      如果 (groups && *groups)
         ignore_value (parse_additional_groups (groups, &out_gids, &n_gids,
                                                false));
-#if HAVE_SETGROUPS
-      else if (! groups && gid_set (gid) && username)
+#如果 HAVE_SETGROUPS
+      否则 如果 (! groups && gid_set (gid) && username)
         {
-          int ngroups = xgetgroups (username, gid, &out_gids);
-          if (0 < ngroups)
+          整数 ngroups = xgetgroups (username, gid, &out_gids);
+          如果 (0 < ngroups)
             n_gids = ngroups;
         }
 #endif
     }
 
-  if (chroot (newroot) != 0)
+  如果 (chroot (newroot) != 0)
     error (EXIT_CANCELED, errno, _("cannot change root directory to %s"),
            quoteaf (newroot));
 
-  if (! skip_chdir && chdir ("/"))
+  如果 (! skip_chdir && chdir ("/"))
     error (EXIT_CANCELED, errno, _("cannot chdir to root directory"));
 
-  if (argc == optind + 1)
+  如果 (argc == optind + 1)
     {
       /* No command.  Run an interactive shell.  */
       char *shell = getenv ("SHELL");
-      if (shell == NULL)
+      如果 (shell == NULL)
         shell = bad_cast ("/bin/sh");
       argv[0] = shell;
       argv[1] = bad_cast ("-i");
       argv[2] = NULL;
     }
-  else
+  否则
     {
       /* The following arguments give the command.  */
       argv += optind + 1;
@@ -357,27 +357,27 @@ main (int argc, char **argv)
 
   /* Attempt to set all three: supplementary groups, group ID, user ID.
      Diagnose any failures.  If any have failed, exit before execvp.  */
-  if (userspec)
+  如果 (userspec)
     {
       bool warn;
       char const *err = parse_user_spec_warn (userspec, &uid, &gid,
                                               NULL, NULL, &warn);
-      if (err)
+      如果 (err)
         error (warn ? 0 : EXIT_CANCELED, 0, "%s", (err));
     }
 
   /* If no gid is supplied or looked up, do so now.
      Also lookup the username for use with getgroups.  */
-  if (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
+  如果 (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
     {
       const struct passwd *pwd;
-      if ((pwd = getpwuid (uid)))
+      如果 ((pwd = getpwuid (uid)))
         {
-          if (gid_unset (gid) || gid_inferred)
+          如果 (gid_unset (gid) || gid_inferred)
             gid = pwd->pw_gid;
           username = pwd->pw_name;
         }
-      else if (gid_unset (gid))
+      否则 如果 (gid_unset (gid))
         {
           error (EXIT_CANCELED, errno,
                  _("no group specified for unknown uid: %ju"),
@@ -387,29 +387,29 @@ main (int argc, char **argv)
 
   GETGROUPS_T *gids = out_gids;
   GETGROUPS_T *in_gids = NULL;
-  if (groups && *groups)
+  如果 (groups && *groups)
     {
-      if (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
+      如果 (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
         {
-          if (! n_gids)
-            return EXIT_CANCELED;
+          如果 (! n_gids)
+            返回 EXIT_CANCELED;
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      否则
         gids = in_gids;
     }
-#if HAVE_SETGROUPS
-  else if (! groups && gid_set (gid) && username)
+#如果 HAVE_SETGROUPS
+  否则 如果 (! groups && gid_set (gid) && username)
     {
-      int ngroups = xgetgroups (username, gid, &in_gids);
-      if (ngroups <= 0)
+      整数 ngroups = xgetgroups (username, gid, &in_gids);
+      如果 (ngroups <= 0)
         {
-          if (! n_gids)
+          如果 (! n_gids)
             error (EXIT_CANCELED, errno,
                    _("failed to get supplemental groups"));
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      否则
         {
           n_gids = ngroups;
           gids = in_gids;
@@ -417,22 +417,22 @@ main (int argc, char **argv)
     }
 #endif
 
-  if ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
+  如果 ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
     error (EXIT_CANCELED, errno, _("failed to set supplemental groups"));
 
   free (in_gids);
   free (out_gids);
 
-  if (gid_set (gid) && setgid (gid))
+  如果 (gid_set (gid) && setgid (gid))
     error (EXIT_CANCELED, errno, _("failed to set group-ID"));
 
-  if (uid_set (uid) && setuid (uid))
+  如果 (uid_set (uid) && setuid (uid))
     error (EXIT_CANCELED, errno, _("failed to set user-ID"));
 
   /* Execute the given command.  */
   execvp (argv[0], argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  整数 exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  返回 exit_status;
 }

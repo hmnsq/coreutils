@@ -40,16 +40,16 @@
 
 #ifdef _XOPEN_NAME_MAX
 # define NAME_MAX_MINIMUM _XOPEN_NAME_MAX
-#else
+#否则
 # define NAME_MAX_MINIMUM _POSIX_NAME_MAX
 #endif
 #ifdef _XOPEN_PATH_MAX
 # define PATH_MAX_MINIMUM _XOPEN_PATH_MAX
-#else
+#否则
 # define PATH_MAX_MINIMUM _POSIX_PATH_MAX
 #endif
 
-#if ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
+#如果 ! (HAVE_PATHCONF && defined _PC_NAME_MAX && defined _PC_PATH_MAX)
 # ifndef _PC_NAME_MAX
 #  define _PC_NAME_MAX 0
 #  define _PC_PATH_MAX 1
@@ -78,11 +78,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... NAME...\n"), program_name);
       fputs (_("\
@@ -90,14 +90,14 @@ Diagnose invalid or non-portable file names.\n\
 \n\
 "), stdout);
       oputs (_("\
-  -p     check for most POSIX systems\n\
+  -p     check 为 most POSIX systems\n\
 "));
       oputs (_("\
-  -P     check for empty names and leading \"-\"\n\
+  -P     check 为 empty names and leading \"-\"\n\
 "));
       oputs (_("\
       --portability\n\
-         check for all POSIX systems (equivalent to -p -P)\n\
+         check 为 all POSIX systems (equivalent to -p -P)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -106,13 +106,13 @@ Diagnose invalid or non-portable file names.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   bool ok = true;
   bool check_basic_portability = false;
   bool check_extra_portability = false;
-  int optc;
+  整数 optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -122,7 +122,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "+pP", longopts, NULL)) != -1)
+  当 ((optc = getopt_long (argc, argv, "+pP", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -148,17 +148,17 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  如果 (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (; optind < argc; ++optind)
+  为 (; optind < argc; ++optind)
     ok &= validate_file_name (argv[optind],
                               check_basic_portability, check_extra_portability);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  返回 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* If FILE contains a component with a leading "-", report an error
@@ -167,15 +167,15 @@ main (int argc, char **argv)
 static bool
 no_leading_hyphen (char const *file)
 {
-  for (char const *p = file;  (p = strchr (p, '-'));  p++)
-    if (p == file || p[-1] == '/')
+  为 (char const *p = file;  (p = strchr (p, '-'));  p++)
+    如果 (p == file || p[-1] == '/')
       {
         error (0, 0, _("leading '-' in a component of file name %s"),
                quoteaf (file));
-        return false;
+        返回 false;
       }
 
-  return true;
+  返回 true;
 }
 
 /* If FILE (of length FILELEN) contains only portable characters,
@@ -191,7 +191,7 @@ portable_chars_only (char const *file, size_t filelen)
                              "0123456789._-"));
   char const *invalid = file + validlen;
 
-  if (*invalid)
+  如果 (*invalid)
     {
       mbstate_t mbstate; mbszero (&mbstate);
       size_t charlen = mbrlen (invalid, filelen - validlen, &mbstate);
@@ -200,10 +200,10 @@ portable_chars_only (char const *file, size_t filelen)
              quotearg_n_style_mem (1, locale_quoting_style, invalid,
                                    (charlen <= MB_LEN_MAX ? charlen : 1)),
              quoteaf_n (0, file));
-      return false;
+      返回 false;
     }
 
-  return true;
+  返回 true;
 }
 
 /* Return the address of the start of the next file name component in F.  */
@@ -212,9 +212,9 @@ ATTRIBUTE_PURE
 static char *
 component_start (char *f)
 {
-  while (*f == '/')
+  当 (*f == '/')
     f++;
-  return f;
+  返回 f;
 }
 
 /* Return the size of the file name component F.  F must be nonempty.  */
@@ -224,9 +224,9 @@ static size_t
 component_len (char const *f)
 {
   size_t len;
-  for (len = 1; f[len] != '/' && f[len]; len++)
+  为 (len = 1; f[len] != '/' && f[len]; len++)
     continue;
-  return len;
+  返回 len;
 }
 
 /* Make sure that
@@ -261,10 +261,10 @@ validate_file_name (char *file, bool check_basic_portability,
   /* True if the file is known to exist.  */
   bool file_exists = false;
 
-  if (check_extra_portability && ! no_leading_hyphen (file))
-    return false;
+  如果 (check_extra_portability && ! no_leading_hyphen (file))
+    返回 false;
 
-  if ((check_basic_portability || check_extra_portability)
+  如果 ((check_basic_portability || check_extra_portability)
       && filelen == 0)
     {
       /* Fail, since empty names are not portable.  As of
@@ -272,15 +272,15 @@ validate_file_name (char *file, bool check_basic_portability,
          should (or is allowed to) fail, so this is not a
          conformance violation.  */
       error (0, 0, _("empty file name"));
-      return false;
+      返回 false;
     }
 
-  if (check_basic_portability)
+  如果 (check_basic_portability)
     {
-      if (! portable_chars_only (file, filelen))
-        return false;
+      如果 (! portable_chars_only (file, filelen))
+        返回 false;
     }
-  else
+  否则
     {
       /* Check whether a file name component is in a directory that
          is not searchable, or has some other serious problem.
@@ -288,43 +288,43 @@ validate_file_name (char *file, bool check_basic_portability,
          hosts do (as an alias for "."), so allow "" if lstat does.  */
 
       struct stat st;
-      if (lstat (file, &st) == 0)
+      如果 (lstat (file, &st) == 0)
         file_exists = true;
-      else if (errno != ENOENT || filelen == 0)
+      否则 如果 (errno != ENOENT || filelen == 0)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          返回 false;
         }
     }
 
-  if (check_basic_portability
+  如果 (check_basic_portability
       || (! file_exists && PATH_MAX_MINIMUM <= filelen))
     {
       idx_t maxsize;
 
-      if (check_basic_portability)
+      如果 (check_basic_portability)
         maxsize = _POSIX_PATH_MAX;
-      else
+      否则
         {
-          long int size;
+          long 整数 size;
           char const *dir = (*file == '/' ? "/" : ".");
           errno = 0;
           size = pathconf (dir, _PC_PATH_MAX);
-          if (size < 0 && errno != 0)
+          如果 (size < 0 && errno != 0)
             {
               error (0, errno,
                      _("%s: unable to determine maximum file name length"),
                      dir);
-              return false;
+              返回 false;
             }
           maxsize = MIN (size, MIN (SSIZE_MAX, IDX_MAX));
         }
 
-      if (maxsize <= filelen)
+      如果 (maxsize <= filelen)
         {
           error (0, 0, _("limit %td exceeded by length %td of file name %s"),
                  maxsize - 1, filelen, quoteaf (file));
-          return false;
+          返回 false;
         }
     }
 
@@ -334,13 +334,13 @@ validate_file_name (char *file, bool check_basic_portability,
      it's more convenient to check component lengths below.  */
 
   check_component_lengths = check_basic_portability;
-  if (! check_component_lengths && ! file_exists)
+  如果 (! check_component_lengths && ! file_exists)
     {
-      for (char *start = file; *(start = component_start (start)); )
+      为 (char *start = file; *(start = component_start (start)); )
         {
           size_t length = component_len (start);
 
-          if (NAME_MAX_MINIMUM < length)
+          如果 (NAME_MAX_MINIMUM < length)
             {
               check_component_lengths = true;
               break;
@@ -350,7 +350,7 @@ validate_file_name (char *file, bool check_basic_portability,
         }
     }
 
-  if (check_component_lengths)
+  如果 (check_component_lengths)
     {
       /* The limit on file name components for the current component.
          This defaults to NAME_MAX_MINIMUM, for the sake of non-POSIX
@@ -361,24 +361,24 @@ validate_file_name (char *file, bool check_basic_portability,
       /* If nonzero, the known limit on file name components.  */
       idx_t known_name_max = check_basic_portability ? _POSIX_NAME_MAX : 0;
 
-      for (char *start = file; *(start = component_start (start)); )
+      为 (char *start = file; *(start = component_start (start)); )
         {
           idx_t length;
 
-          if (known_name_max)
+          如果 (known_name_max)
             name_max = known_name_max;
-          else
+          否则
             {
-              long int len;
+              long 整数 len;
               char const *dir = (start == file ? "." : file);
               char c = *start;
               errno = 0;
               *start = '\0';
               len = pathconf (dir, _PC_NAME_MAX);
               *start = c;
-              if (0 <= len)
+              如果 (0 <= len)
                 name_max = MIN (len, MIN (SSIZE_MAX, IDX_MAX));
-              else
+              否则
                 switch (errno)
                   {
                   case 0:
@@ -395,13 +395,13 @@ validate_file_name (char *file, bool check_basic_portability,
                     *start = '\0';
                     error (0, errno, "%s", quotef (dir));
                     *start = c;
-                    return false;
+                    返回 false;
                   }
             }
 
           length = component_len (start);
 
-          if (name_max < length)
+          如果 (name_max < length)
             {
               char c = start[length];
               start[length] = '\0';
@@ -410,12 +410,12 @@ validate_file_name (char *file, bool check_basic_portability,
                        "of file name component %s"),
                      name_max, length, quote (start));
               start[length] = c;
-              return false;
+              返回 false;
             }
 
           start += length;
         }
     }
 
-  return true;
+  返回 true;
 }

@@ -33,18 +33,18 @@
   proper_name ("Paul Eggert")
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s NUMBER[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause 为 NUMBER seconds, where NUMBER is an integer or floating-point.\n\
+SUFFIX may be 's','m','h', or 'd', 为 seconds, minutes, hours, days.\n\
+With multiple arguments, pause 为 the sum of their values.\n\
 \n\
 "),
               program_name, program_name);
@@ -64,7 +64,7 @@ With multiple arguments, pause for the sum of their values.\n\
 static bool
 apply_suffix (double *x, char suffix_char)
 {
-  int multiplier;
+  整数 multiplier;
 
   switch (suffix_char)
     {
@@ -82,16 +82,16 @@ apply_suffix (double *x, char suffix_char)
       multiplier = 60 * 60 * 24;
       break;
     default:
-      return false;
+      返回 false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  返回 true;
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   double seconds = 0.0;
   bool ok = true;
@@ -108,19 +108,19 @@ main (int argc, char **argv)
                                    Version, true, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (argc == 1)
+  如果 (argc == 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (int i = optind; i < argc; i++)
+  为 (整数 i = optind; i < argc; i++)
     {
       char *p;
       errno = 0;
       double duration = cl_strtod (argv[i], &p);
       double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      如果 (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
+  如果 (!ok)
     usage (EXIT_FAILURE);
 
-  if (xnanosleep (seconds))
+  如果 (xnanosleep (seconds))
     error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  返回 EXIT_SUCCESS;
 }

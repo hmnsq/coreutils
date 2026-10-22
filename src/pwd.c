@@ -46,11 +46,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -59,7 +59,7 @@ Print the full filename of the current working directory.\n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even 如果 it contains symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
@@ -90,13 +90,13 @@ file_name_init (void)
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  整数 init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
   p->start = p->buf + init_alloc - 1;
   p->start[0] = '\0';
-  return p;
+  返回 p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
@@ -104,7 +104,7 @@ static void
 file_name_prepend (struct file_name *p, char const *s, size_t s_len)
 {
   idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  如果 (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
@@ -129,13 +129,13 @@ nth_parent (size_t n)
   char *buf = xnmalloc (3, n);
   char *p = buf;
 
-  for (size_t i = 0; i < n; i++)
+  为 (size_t i = 0; i < n; i++)
     {
       memcpy (p, "../", 3);
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  返回 buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -154,17 +154,17 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
                 size_t parent_height)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  如果 (dirp == NULL)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
            quote (nth_parent (parent_height)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  整数 fd = dirfd (dirp);
+  如果 ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
            quote (nth_parent (parent_height)));
 
   struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  如果 ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
            quote (nth_parent (parent_height)));
 
@@ -173,17 +173,17 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
   bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
 
   bool found = false;
-  while (true)
+  当 (true)
     {
       struct dirent const *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      如果 ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
         {
-          if (errno)
+          如果 (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              整数 e = errno;
               closedir (dirp);
               errno = e;
 
@@ -196,9 +196,9 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
       ino_t ino = D_INO (dp);
 
       struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      如果 (ino == NOT_AN_INODE_NUMBER || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          如果 (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
               continue;
@@ -206,12 +206,12 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
+      如果 (ino != dot_sb->st_ino)
         continue;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      如果 ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
           found = true;
@@ -219,7 +219,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  如果 (dirp == NULL || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
@@ -227,7 +227,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
              quote (nth_parent (parent_height)));
     }
 
-  if ( ! found)
+  如果 ( ! found)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
            quote (nth_parent (parent_height)));
@@ -265,25 +265,25 @@ robust_getcwd (struct file_name *file_name)
   struct dev_ino dev_ino_buf;
   struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  如果 (root_dev_ino == NULL)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
   struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  如果 (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  当 (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
+      如果 (PSAME_INODE (&dot_sb, root_dev_ino))
         break;
 
       find_dir_entry (&dot_sb, file_name, height++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  如果 (file_name->start[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
@@ -296,28 +296,28 @@ logical_getcwd (void)
   char const *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
+  如果 (!wd || wd[0] != '/')
+    返回 NULL;
   char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  当 ((p = strstr (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      如果 (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        返回 NULL;
       p++;
     }
 
   /* System call validation.  */
   struct stat st1;
   struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  如果 (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    返回 wd;
+  返回 NULL;
 }
 
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
@@ -332,10 +332,10 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  当 (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
+      整数 c = getopt_long (argc, argv, "LP", longopts, NULL);
+      如果 (c == -1)
         break;
       switch (c)
         {
@@ -355,26 +355,26 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind < argc)
+  如果 (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  如果 (logical)
     {
       char const *wd = logical_getcwd ();
-      if (wd)
+      如果 (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          返回 EXIT_SUCCESS;
         }
     }
 
   char *wd = xgetcwd ();
-  if (wd != NULL)
+  如果 (wd != NULL)
     {
       puts (wd);
       free (wd);
     }
-  else
+  否则
     {
       struct file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
@@ -382,5 +382,5 @@ main (int argc, char **argv)
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  返回 EXIT_SUCCESS;
 }

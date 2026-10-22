@@ -63,11 +63,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
       fputs (_("\
@@ -115,17 +115,17 @@ Print the resolved absolute file name.\n\
 /* A wrapper around canonicalize_filename_mode(),
    to call it twice when in LOGICAL mode.  */
 static char *
-realpath_canon (char const *fname, int can_mode)
+realpath_canon (char const *fname, 整数 can_mode)
 {
   char *can_fname = canonicalize_filename_mode (fname, can_mode);
-  if (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
+  如果 (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
     {
       can_mode &= ~CAN_NOLINKS;
       char *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
       free (can_fname);
-      return can_fname2;
+      返回 can_fname2;
     }
-  return can_fname;
+  返回 can_fname;
 }
 
 /* Test whether canonical prefix is parent or match of path.  */
@@ -139,31 +139,31 @@ path_prefix (char const *prefix, char const *path)
 
   /* '/' is the prefix of everything except '//' (since we know '//'
      is only present after canonicalization if it is distinct).  */
-  if (!*prefix)
-    return *path != '/';
+  如果 (!*prefix)
+    返回 *path != '/';
 
   /* Likewise, '//' is a prefix of any double-slash path.  */
-  if (*prefix == '/' && !prefix[1])
-    return *path == '/';
+  如果 (*prefix == '/' && !prefix[1])
+    返回 *path == '/';
 
   /* Any other prefix has a non-slash portion.  */
-  while (*prefix && *path)
+  当 (*prefix && *path)
     {
-      if (*prefix != *path)
+      如果 (*prefix != *path)
         break;
       prefix++;
       path++;
     }
-  return (!*prefix && (*path == '/' || !*path));
+  返回 (!*prefix && (*path == '/' || !*path));
 }
 
 static bool
 isdir (char const *path)
 {
   struct stat sb;
-  if (stat (path, &sb) != 0)
+  如果 (stat (path, &sb) != 0)
     error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (path));
-  return S_ISDIR (sb.st_mode);
+  返回 S_ISDIR (sb.st_mode);
 }
 
 static void
@@ -177,35 +177,35 @@ print_path (char const *path)
 static bool
 print_relative_path (char const *can_fname)
 {
-  if (!quote_output)
-    return relpath (can_fname, can_relative_to, NULL, 0);
+  如果 (!quote_output)
+    返回 relpath (can_fname, can_relative_to, NULL, 0);
 
   size_t size;
-  if (ckd_mul (&size, strlen (can_relative_to), 2)
+  如果 (ckd_mul (&size, strlen (can_relative_to), 2)
       || ckd_add (&size, size, strlen (can_fname))
       || ckd_add (&size, size, 1))
     xalloc_die ();
 
   char *relative_path = xmalloc (size);
   bool success = relpath (can_fname, can_relative_to, relative_path, size);
-  if (success)
+  如果 (success)
     print_path (relative_path);
   free (relative_path);
-  return success;
+  返回 success;
 }
 
 static bool
-process_path (char const *fname, int can_mode)
+process_path (char const *fname, 整数 can_mode)
 {
   char *can_fname = realpath_canon (fname, can_mode);
-  if (!can_fname)
+  如果 (!can_fname)
     {
-      if (verbose)
+      如果 (verbose)
         error (0, errno, "%s", quotef (fname));
-      return false;
+      返回 false;
     }
 
-  if (!can_relative_to
+  如果 (!can_relative_to
       || (can_relative_base && !path_prefix (can_relative_base, can_fname))
       || (can_relative_to && !print_relative_path (can_fname)))
     print_path (can_fname);
@@ -214,17 +214,17 @@ process_path (char const *fname, int can_mode)
 
   free (can_fname);
 
-  if (ferror (stdout))
+  如果 (ferror (stdout))
     write_error ();
 
-  return true;
+  返回 true;
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   bool ok = true;
-  int can_mode = CAN_ALL_BUT_LAST;
+  整数 can_mode = CAN_ALL_BUT_LAST;
   char const *relative_to = NULL;
   char const *relative_base = NULL;
 
@@ -236,10 +236,10 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  当 (true)
     {
-      int c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
-      if (c == -1)
+      整数 c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
+      如果 (c == -1)
         break;
       switch (c)
         {
@@ -286,50 +286,50 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind >= argc)
+  如果 (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! use_nuls && isatty (STDOUT_FILENO))
+  如果 (! use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      整数 qs = getenv_quoting_style ();
+      如果 (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      如果 (qs != literal_quoting_style)
         {
           set_quoting_style (NULL, qs);
           quote_output = true;
         }
     }
 
-  if (relative_base && !relative_to)
+  如果 (relative_base && !relative_to)
     relative_to = relative_base;
 
   bool need_dir = (can_mode & CAN_MODE_MASK) == CAN_EXISTING;
-  if (relative_to)
+  如果 (relative_to)
     {
       can_relative_to = realpath_canon (relative_to, can_mode);
-      if (!can_relative_to)
+      如果 (!can_relative_to)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_to));
-      if (need_dir && !isdir (can_relative_to))
+      如果 (need_dir && !isdir (can_relative_to))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_to));
     }
-  if (relative_base == relative_to)
+  如果 (relative_base == relative_to)
     can_relative_base = can_relative_to;
-  else if (relative_base)
+  否则 如果 (relative_base)
     {
       char *base = realpath_canon (relative_base, can_mode);
-      if (!base)
+      如果 (!base)
         error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
-      if (need_dir && !isdir (base))
+      如果 (need_dir && !isdir (base))
         error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
       /* --relative-to is a no-op if it does not have --relative-base
            as a prefix */
-      if (path_prefix (base, can_relative_to))
+      如果 (path_prefix (base, can_relative_to))
         can_relative_base = base;
-      else
+      否则
         {
           free (base);
           can_relative_base = can_relative_to;
@@ -337,8 +337,8 @@ main (int argc, char **argv)
         }
     }
 
-  for (; optind < argc; ++optind)
+  为 (; optind < argc; ++optind)
     ok &= process_path (argv[optind], can_mode);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  返回 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

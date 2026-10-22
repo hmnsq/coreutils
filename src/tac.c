@@ -110,11 +110,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -157,22 +157,22 @@ output (char const *start, char const *past_end)
   size_t bytes_to_add = past_end - start;
   size_t bytes_available = WRITESIZE - bytes_in_buffer;
 
-  if (!start)
+  如果 (!start)
     {
-      if (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
+      如果 (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
           != bytes_in_buffer)
         write_error ();
       bytes_in_buffer = 0;
-      return;
+      返回;
     }
 
   /* Write out as many full buffers as possible. */
-  while (bytes_to_add >= bytes_available)
+  当 (bytes_to_add >= bytes_available)
     {
       memcpy (buffer + bytes_in_buffer, start, bytes_available);
       bytes_to_add -= bytes_available;
       start += bytes_available;
-      if (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
+      如果 (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
         write_error ();
       bytes_in_buffer = 0;
       bytes_available = WRITESIZE;
@@ -187,7 +187,7 @@ output (char const *start, char const *past_end)
    Return true if successful.  */
 
 static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+tac_seekable (整数 input_fd, char const *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
@@ -213,48 +213,48 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
      it here for i/o efficiency (page/sector boundaries and all that).
      Note: the efficiency gain has not been verified. */
   size_t remainder = file_pos % read_size;
-  if (remainder != 0)
+  如果 (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      如果 (lseek (input_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  当 ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
          && file_pos != 0)
     {
       off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      如果 (lseek (input_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
       file_pos -= read_size;
     }
 
   /* Now scan forward, looking for end of file.  */
-  while (saved_record_size == read_size)
+  当 (saved_record_size == read_size)
     {
       ssize_t nread = read (input_fd, G_buffer, read_size);
-      if (nread == 0)
+      如果 (nread == 0)
         break;
       saved_record_size = nread;
-      if (saved_record_size < 0)
+      如果 (saved_record_size < 0)
         break;
       file_pos += nread;
     }
 
-  if (saved_record_size < 0)
+  如果 (saved_record_size < 0)
     {
       error (0, errno, _("%s: read error"), quotef (file));
-      return false;
+      返回 false;
     }
 
   match_start = past_end = G_buffer + saved_record_size;
   /* For non-regexp search, move past impossible positions for a match. */
-  if (sentinel_length)
+  如果 (sentinel_length)
     match_start -= match_length1;
 
-  while (true)
+  当 (true)
     {
       /* Search backward from 'match_start' - 1 to 'G_buffer' for a match
          with 'separator'; for speed, use strncmp if 'separator' contains no
@@ -262,34 +262,34 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
          If the match succeeds, set 'match_start' to point to the start of
          the match and 'match_length' to the length of the match.
          Otherwise, make 'match_start' < 'G_buffer'. */
-      if (sentinel_length == 0)
+      如果 (sentinel_length == 0)
         {
           size_t i = match_start - G_buffer;
           regoff_t ri = i;
           regoff_t range = 1 - ri;
           regoff_t ret;
 
-          if (1 < range)
+          如果 (1 < range)
             error (EXIT_FAILURE, 0, _("record too large"));
 
-          if (range == 1
+          如果 (range == 1
               || ((ret = re_search (&compiled_separator, G_buffer,
                                     i, i - 1, range, &regs))
                   == -1))
             match_start = G_buffer - 1;
-          else if (ret == -2)
+          否则 如果 (ret == -2)
             error (EXIT_FAILURE, 0,
                    _("error in regular expression search"));
-          else
+          否则
             {
               match_start = G_buffer + regs.start[0];
               match_length = regs.end[0] - regs.start[0];
             }
         }
-      else
+      否则
         {
           /* 'match_length' is constant for non-regexp boundaries. */
-          while (*--match_start != first_char
+          当 (*--match_start != first_char
                  || (match_length1 && !STREQ_LEN (match_start + 1, separator1,
                                                   match_length1)))
             /* Do nothing. */ ;
@@ -297,17 +297,17 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
 
       /* Check whether we backed off the front of 'G_buffer' without finding
          a match for 'separator'. */
-      if (match_start < G_buffer)
+      如果 (match_start < G_buffer)
         {
-          if (file_pos == 0)
+          如果 (file_pos == 0)
             {
               /* Hit the beginning of the file; print the remaining record. */
               output (G_buffer, past_end);
-              return true;
+              返回 true;
             }
 
           saved_record_size = past_end - G_buffer;
-          if (saved_record_size > read_size)
+          如果 (saved_record_size > read_size)
             {
               /* 'G_buffer_size' is about twice 'read_size', so since
                  we want to read in another 'read_size' bytes before
@@ -319,7 +319,7 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
 
               read_size *= 2;
               G_buffer_size = read_size * 2 + sentinel_length + 2;
-              if (G_buffer_size < old_G_buffer_size)
+              如果 (G_buffer_size < old_G_buffer_size)
                 xalloc_die ();
               newbuffer = xrealloc (G_buffer - offset, G_buffer_size);
               newbuffer += offset;
@@ -327,14 +327,14 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
             }
 
           /* Back up to the start of the next bufferfull of the file.  */
-          if (file_pos >= read_size)
+          如果 (file_pos >= read_size)
             file_pos -= read_size;
-          else
+          否则
             {
               read_size = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          如果 (lseek (input_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
@@ -342,39 +342,39 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
           memmove (G_buffer + read_size, G_buffer, saved_record_size);
           past_end = G_buffer + read_size + saved_record_size;
           /* For non-regexp searches, avoid unnecessary scanning. */
-          if (sentinel_length)
+          如果 (sentinel_length)
             match_start = G_buffer + read_size;
-          else
+          否则
             match_start = past_end;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          如果 (full_read (input_fd, G_buffer, read_size) != read_size)
             {
               error (0, errno, _("%s: read error"), quotef (file));
-              return false;
+              返回 false;
             }
         }
-      else
+      否则
         {
           /* Found a match of 'separator'. */
-          if (separator_ends_record)
+          如果 (separator_ends_record)
             {
               char *match_end = match_start + match_length;
 
               /* If this match of 'separator' isn't at the end of the
                  file, print the record. */
-              if (!first_time || match_end != past_end)
+              如果 (!first_time || match_end != past_end)
                 output (match_end, past_end);
               past_end = match_end;
               first_time = false;
             }
-          else
+          否则
             {
               output (match_start, past_end);
               past_end = match_start;
             }
 
           /* For non-regex matching, we can back up.  */
-          if (sentinel_length > 0)
+          如果 (sentinel_length > 0)
             match_start -= match_length - 1;
         }
     }
@@ -385,29 +385,29 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
 static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+copy_to_temp (FILE **g_tmp, char **g_tempfile, 整数 input_fd, char const *file)
 {
   FILE *fp;
   char *file_name;
   uintmax_t bytes_copied = 0;
-  if (!temp_stream (&fp, &file_name))
-    return -1;
+  如果 (!temp_stream (&fp, &file_name))
+    返回 -1;
 
-  while (true)
+  当 (true)
     {
       ssize_t bytes_read = read (input_fd, G_buffer, read_size);
-      if (bytes_read == 0)
+      如果 (bytes_read == 0)
         break;
-      if (bytes_read < 0)
+      如果 (bytes_read < 0)
         {
           error (0, errno, _("%s: read error"), quotef (file));
-          return -1;
+          返回 -1;
         }
 
-      if (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
+      如果 (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
         {
           error (0, errno, _("%s: write error"), quotef (file_name));
-          return -1;
+          返回 -1;
         }
 
       /* Implicitly <= OFF_T_MAX due to preceding fwrite(),
@@ -416,31 +416,31 @@ copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
       bytes_copied += bytes_read;
     }
 
-  if (fflush (fp) != 0)
+  如果 (fflush (fp) != 0)
     {
       error (0, errno, _("%s: write error"), quotef (file_name));
-      return -1;
+      返回 -1;
     }
 
   *g_tmp = fp;
   *g_tempfile = file_name;
-  return bytes_copied;
+  返回 bytes_copied;
 }
 
 /* Copy INPUT_FD to a temporary, then tac that file.
    Return true if successful.  */
 
 static bool
-tac_nonseekable (int input_fd, char const *file)
+tac_nonseekable (整数 input_fd, char const *file)
 {
   FILE *tmp_stream;
   char *tmp_file;
   off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
-  if (bytes_copied < 0)
-    return false;
+  如果 (bytes_copied < 0)
+    返回 false;
 
   bool ok = tac_seekable (fileno (tmp_stream), tmp_file, bytes_copied);
-  return ok;
+  返回 ok;
 }
 
 /* Print FILE in reverse, copying it to a temporary
@@ -452,24 +452,24 @@ tac_file (char const *filename)
 {
   bool ok;
   off_t file_size;
-  int fd;
+  整数 fd;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  如果 (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
       xset_binary_mode (STDIN_FILENO, O_BINARY);
     }
-  else
+  否则
     {
       fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      如果 (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
                  quoteaf (filename));
-          return false;
+          返回 false;
         }
     }
 
@@ -479,19 +479,19 @@ tac_file (char const *filename)
         ? tac_nonseekable (fd, filename)
         : tac_seekable (fd, filename, file_size));
 
-  if (!is_stdin && close (fd) != 0)
+  如果 (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("%s: read error"), quotef (filename));
       ok = false;
     }
-  return ok;
+  返回 ok;
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   char const *error_message;	/* Return value from re_compile_pattern. */
-  int optc;
+  整数 optc;
   bool ok;
   size_t half_buffer_size;
 
@@ -508,7 +508,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
+  当 ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
     {
       switch (optc)
         {
@@ -528,9 +528,9 @@ main (int argc, char **argv)
         }
     }
 
-  if (sentinel_length == 0)
+  如果 (sentinel_length == 0)
     {
-      if (*separator == 0)
+      如果 (*separator == 0)
         error (EXIT_FAILURE, 0, _("separator cannot be empty"));
 
       compiled_separator.buffer = NULL;
@@ -539,30 +539,30 @@ main (int argc, char **argv)
       compiled_separator.translate = NULL;
       error_message = re_compile_pattern (separator, strlen (separator),
                                           &compiled_separator);
-      if (error_message)
+      如果 (error_message)
         error (EXIT_FAILURE, 0, "%s", (error_message));
     }
-  else
+  否则
     match_length = sentinel_length = *separator ? strlen (separator) : 1;
 
   read_size = INITIAL_READSIZE;
-  while (sentinel_length >= read_size / 2)
+  当 (sentinel_length >= read_size / 2)
     {
-      if (SIZE_MAX / 2 < read_size)
+      如果 (SIZE_MAX / 2 < read_size)
         xalloc_die ();
       read_size *= 2;
     }
   half_buffer_size = read_size + sentinel_length + 1;
   G_buffer_size = 2 * half_buffer_size;
-  if (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
+  如果 (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
     xalloc_die ();
   G_buffer = xmalloc (G_buffer_size);
-  if (sentinel_length)
+  如果 (sentinel_length)
     {
       memcpy (G_buffer, separator, sentinel_length + !!*separator);
       G_buffer += sentinel_length;
     }
-  else
+  否则
     {
       ++G_buffer;
     }
@@ -575,14 +575,14 @@ main (int argc, char **argv)
 
   {
     ok = true;
-    for (size_t i = 0; file[i]; ++i)
+    为 (size_t i = 0; file[i]; ++i)
       ok &= tac_file (file[i]);
   }
 
   /* Flush the output buffer. */
   output ((char *) NULL, (char *) NULL);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  如果 (have_read_stdin && close (STDIN_FILENO) < 0)
     {
       error (0, errno, "-");
       ok = false;

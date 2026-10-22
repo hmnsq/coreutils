@@ -22,11 +22,11 @@
    needed for correctness.  */
 #ifdef _MSC_VER
 # define BLAKE2_PACKED(x) __pragma (pack (push, 1)) x __pragma (pack (pop))
-#else
+#否则
 # define BLAKE2_PACKED(x) x _GL_ATTRIBUTE_PACKED
 #endif
 
-#if defined(__cplusplus)
+#如果 defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -144,54 +144,54 @@ extern "C" {
   };
 
   /* Streaming API */
-  int blake2s_init( blake2s_state *S, size_t outlen );
-  int blake2s_init_key( blake2s_state *S, size_t outlen, const void *key, size_t keylen );
-  int blake2s_init_param( blake2s_state *S, const blake2s_param *P );
-  int blake2s_update( blake2s_state *S, const void *in, size_t inlen );
-  int blake2s_final( blake2s_state *S, void *out, size_t outlen );
+  整数 blake2s_init( blake2s_state *S, size_t outlen );
+  整数 blake2s_init_key( blake2s_state *S, size_t outlen, const void *key, size_t keylen );
+  整数 blake2s_init_param( blake2s_state *S, const blake2s_param *P );
+  整数 blake2s_update( blake2s_state *S, const void *in, size_t inlen );
+  整数 blake2s_final( blake2s_state *S, void *out, size_t outlen );
 
-  int blake2b_init( blake2b_state *S, size_t outlen );
-  int blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t keylen );
-  int blake2b_init_param (blake2b_state *S, const blake2b_param *P)
+  整数 blake2b_init( blake2b_state *S, size_t outlen );
+  整数 blake2b_init_key( blake2b_state *S, size_t outlen, const void *key, size_t keylen );
+  整数 blake2b_init_param (blake2b_state *S, const blake2b_param *P)
     _GL_ATTRIBUTE_NONNULL ();
-  int blake2b_update( blake2b_state *S, const void *in, size_t inlen );
-  int blake2b_final( blake2b_state *S, void *out, size_t outlen );
+  整数 blake2b_update( blake2b_state *S, const void *in, size_t inlen );
+  整数 blake2b_final( blake2b_state *S, void *out, size_t outlen );
 
-  int blake2sp_init( blake2sp_state *S, size_t outlen );
-  int blake2sp_init_key( blake2sp_state *S, size_t outlen, const void *key, size_t keylen );
-  int blake2sp_update( blake2sp_state *S, const void *in, size_t inlen );
-  int blake2sp_final( blake2sp_state *S, void *out, size_t outlen );
+  整数 blake2sp_init( blake2sp_state *S, size_t outlen );
+  整数 blake2sp_init_key( blake2sp_state *S, size_t outlen, const void *key, size_t keylen );
+  整数 blake2sp_update( blake2sp_state *S, const void *in, size_t inlen );
+  整数 blake2sp_final( blake2sp_state *S, void *out, size_t outlen );
 
-  int blake2bp_init( blake2bp_state *S, size_t outlen );
-  int blake2bp_init_key( blake2bp_state *S, size_t outlen, const void *key, size_t keylen );
-  int blake2bp_update( blake2bp_state *S, const void *in, size_t inlen );
-  int blake2bp_final( blake2bp_state *S, void *out, size_t outlen );
+  整数 blake2bp_init( blake2bp_state *S, size_t outlen );
+  整数 blake2bp_init_key( blake2bp_state *S, size_t outlen, const void *key, size_t keylen );
+  整数 blake2bp_update( blake2bp_state *S, const void *in, size_t inlen );
+  整数 blake2bp_final( blake2bp_state *S, void *out, size_t outlen );
 
   /* Variable output length API */
-  int blake2xs_init( blake2xs_state *S, const size_t outlen );
-  int blake2xs_init_key( blake2xs_state *S, const size_t outlen, const void *key, size_t keylen );
-  int blake2xs_update( blake2xs_state *S, const void *in, size_t inlen );
-  int blake2xs_final(blake2xs_state *S, void *out, size_t outlen);
+  整数 blake2xs_init( blake2xs_state *S, const size_t outlen );
+  整数 blake2xs_init_key( blake2xs_state *S, const size_t outlen, const void *key, size_t keylen );
+  整数 blake2xs_update( blake2xs_state *S, const void *in, size_t inlen );
+  整数 blake2xs_final(blake2xs_state *S, void *out, size_t outlen);
 
-  int blake2xb_init( blake2xb_state *S, const size_t outlen );
-  int blake2xb_init_key( blake2xb_state *S, const size_t outlen, const void *key, size_t keylen );
-  int blake2xb_update( blake2xb_state *S, const void *in, size_t inlen );
-  int blake2xb_final(blake2xb_state *S, void *out, size_t outlen);
+  整数 blake2xb_init( blake2xb_state *S, const size_t outlen );
+  整数 blake2xb_init_key( blake2xb_state *S, const size_t outlen, const void *key, size_t keylen );
+  整数 blake2xb_update( blake2xb_state *S, const void *in, size_t inlen );
+  整数 blake2xb_final(blake2xb_state *S, void *out, size_t outlen);
 
   /* Simple API */
-  int blake2s( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
-  int blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2s( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2b( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
 
-  int blake2sp( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
-  int blake2bp( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2sp( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2bp( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
 
-  int blake2xs( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
-  int blake2xb( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2xs( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2xb( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
 
   /* This is simply an alias for blake2b */
-  int blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
+  整数 blake2( void *out, size_t outlen, const void *in, size_t inlen, const void *key, size_t keylen );
 
-#if defined(__cplusplus)
+#如果 defined(__cplusplus)
 }
 #endif
 

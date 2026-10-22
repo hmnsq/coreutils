@@ -81,7 +81,7 @@ static char *
 uid_to_str (uid_t uid)
 {
   char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
+  返回 xstrdup (TYPE_SIGNED (uid_t) ? imaxtostr (uid, buf)
                   : umaxtostr (uid, buf));
 }
 
@@ -92,7 +92,7 @@ static char *
 gid_to_str (gid_t gid)
 {
   char buf[INT_BUFSIZE_BOUND (intmax_t)];
-  return xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
+  返回 xstrdup (TYPE_SIGNED (gid_t) ? imaxtostr (gid, buf)
                   : umaxtostr (gid, buf));
 }
 
@@ -104,7 +104,7 @@ extern char *
 gid_to_name (gid_t gid)
 {
   struct group *grp = getgrgid (gid);
-  return grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
+  返回 grp ? xstrdup (grp->gr_name) : gid_to_str (gid);
 }
 
 /* Convert the numeric user-id, UID, to a string stored in xmalloc'd memory,
@@ -115,7 +115,7 @@ extern char *
 uid_to_name (uid_t uid)
 {
   struct passwd *pwd = getpwuid (uid);
-  return pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
+  返回 pwd ? xstrdup (pwd->pw_name) : uid_to_str (uid);
 }
 
 /* Allocate a string representing USER and GROUP.  */
@@ -125,24 +125,24 @@ user_group_str (char const *user, char const *group)
 {
   char *spec = NULL;
 
-  if (user)
+  如果 (user)
     {
-      if (group)
+      如果 (group)
         {
           spec = xmalloc (strlen (user) + 1 + strlen (group) + 1);
           stpcpy (stpcpy (stpcpy (spec, user), ":"), group);
         }
-      else
+      否则
         {
           spec = xstrdup (user);
         }
     }
-  else if (group)
+  否则 如果 (group)
     {
       spec = xstrdup (group);
     }
 
-  return spec;
+  返回 spec;
 }
 
 /* Tell the user how/if the user and group of FILE have been changed.
@@ -154,11 +154,11 @@ describe_change (char const *file, enum Change_status changed,
                  char const *old_user, char const *old_group,
                  char const *user, char const *group)
 {
-  if (changed == CH_NOT_APPLIED)
+  如果 (changed == CH_NOT_APPLIED)
     {
       printf (_("neither symbolic link %s nor referent has been changed\n"),
               quoteaf (file));
-      return;
+      返回;
     }
 
   char *spec = user_group_str (user, group);
@@ -174,13 +174,13 @@ describe_change (char const *file, enum Change_status changed,
              : _("no change to ownership of %s\n"));
       break;
     case CH_FAILED:
-      if (old_spec)
+      如果 (old_spec)
         {
           fmt = (user ? _("failed to change ownership of %s from %s to %s\n")
                  : group ? _("failed to change group of %s from %s to %s\n")
                  : _("failed to change ownership of %s\n"));
         }
-      else
+      否则
         {
           fmt = (user ? _("failed to change ownership of %s to %s\n")
                  : group ? _("failed to change group of %s to %s\n")
@@ -225,49 +225,49 @@ describe_change (char const *file, enum Change_status changed,
    Return one of the RCH_status values.  */
 
 static enum RCH_status
-restricted_chown (int cwd_fd, char const *file,
+restricted_chown (整数 cwd_fd, char const *file,
                   struct stat const *orig_st,
                   uid_t uid, gid_t gid,
                   uid_t required_uid, gid_t required_gid)
 {
-  if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
-    return RC_do_ordinary_chown;
+  如果 (required_uid == (uid_t) -1 && required_gid == (gid_t) -1)
+    返回 RC_do_ordinary_chown;
 
-  int open_flags = O_NONBLOCK | O_NOCTTY;
-  if (! S_ISREG (orig_st->st_mode))
+  整数 open_flags = O_NONBLOCK | O_NOCTTY;
+  如果 (! S_ISREG (orig_st->st_mode))
     {
-      if (S_ISDIR (orig_st->st_mode))
+      如果 (S_ISDIR (orig_st->st_mode))
         open_flags |= O_DIRECTORY;
-      else
-        return RC_do_ordinary_chown;
+      否则
+        返回 RC_do_ordinary_chown;
     }
 
-  int fd = openat (cwd_fd, file, O_RDONLY | open_flags);
-  if (! (0 <= fd
+  整数 fd = openat (cwd_fd, file, O_RDONLY | open_flags);
+  如果 (! (0 <= fd
          || (errno == EACCES && S_ISREG (orig_st->st_mode)
              && 0 <= (fd = openat (cwd_fd, file, O_WRONLY | open_flags)))))
-    return (errno == EACCES ? RC_do_ordinary_chown : RC_error);
+    返回 (errno == EACCES ? RC_do_ordinary_chown : RC_error);
 
   enum RCH_status status = RC_ok;
   struct stat st;
-  if (fstat (fd, &st) != 0)
+  如果 (fstat (fd, &st) != 0)
     status = RC_error;
-  else if (! psame_inode (orig_st, &st))
+  否则 如果 (! psame_inode (orig_st, &st))
     status = RC_inode_changed;
-  else if ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
+  否则 如果 ((required_uid == (uid_t) -1 || required_uid == st.st_uid)
            && (required_gid == (gid_t) -1 || required_gid == st.st_gid))
     {
-#if HAVE_FCHOWN
-      if (fchown (fd, uid, gid) == 0)
-        return close (fd) < 0 ? RC_error : RC_ok;
+#如果 HAVE_FCHOWN
+      如果 (fchown (fd, uid, gid) == 0)
+        返回 close (fd) < 0 ? RC_error : RC_ok;
 #endif
       status = RC_error;
     }
 
-  int saved_errno = errno;
+  整数 saved_errno = errno;
   close (fd);
   errno = saved_errno;
-  return status;
+  返回 status;
 }
 
 /* Change the owner and/or group of the file specified by FTS and ENT
@@ -287,15 +287,15 @@ change_file_owner (FTS *fts, FTSENT *ent,
   bool ok = true;
   bool ignore_missing = ignore_missing_fts_entry (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  如果 (ignore_missing && ignorable_fts_error (ent))
+    返回 true;
 
   switch (ent->fts_info)
     {
     case FTS_D:
-      if (chopt->recurse)
+      如果 (chopt->recurse)
         {
-          if (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
+          如果 (ROOT_DEV_INO_CHECK (chopt->root_dev_ino, ent->fts_statp))
             {
               /* This happens e.g., with "chown -R --preserve-root 0 /"
                  and with "chown -RH --preserve-root 0 symlink-to-root".  */
@@ -304,15 +304,15 @@ change_file_owner (FTS *fts, FTSENT *ent,
               fts_set (fts, ent, FTS_SKIP);
               /* Ensure that we do not process "/" on the second visit.  */
               ignore_value (fts_read (fts));
-              return false;
+              返回 false;
             }
-          return true;
+          返回 true;
         }
       break;
 
     case FTS_DP:
-      if (! chopt->recurse)
-        return true;
+      如果 (! chopt->recurse)
+        返回 true;
       break;
 
     case FTS_NS:
@@ -323,36 +323,36 @@ change_file_owner (FTS *fts, FTSENT *ent,
          accessible when control reaches this point.  So, if this is
          the first time we've seen the FTS_NS for this file, tell
          fts_read to stat it "again".  */
-      if (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
+      如果 (ent->fts_level == FTS_ROOTLEVEL && ent->fts_number == 0)
         {
           ent->fts_number = 1;
           fts_set (fts, ent, FTS_AGAIN);
-          return true;
+          返回 true;
         }
-      if (! chopt->force_silent)
+      如果 (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot access %s"),
                quoteaf (file_full_name));
       ok = false;
       break;
 
     case FTS_ERR:
-      if (! chopt->force_silent)
+      如果 (! chopt->force_silent)
         error (0, ent->fts_errno, "%s", quotef (file_full_name));
       ok = false;
       break;
 
     case FTS_DNR:
-      if (! chopt->force_silent)
+      如果 (! chopt->force_silent)
         error (0, ent->fts_errno, _("cannot read directory %s"),
                quoteaf (file_full_name));
       ok = false;
       break;
 
     case FTS_DC:		/* directory that causes cycles */
-      if (cycle_warning_required (fts, ent))
+      如果 (cycle_warning_required (fts, ent))
         {
           emit_cycle_warning (file_full_name);
-          return false;
+          返回 false;
         }
       break;
 
@@ -363,12 +363,12 @@ change_file_owner (FTS *fts, FTSENT *ent,
   bool do_chown;
   struct stat stat_buf;
   struct stat const *file_stats;
-  if (!ok)
+  如果 (!ok)
     {
       do_chown = false;
       file_stats = NULL;
     }
-  else if (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
+  否则 如果 (required_uid == (uid_t) -1 && required_gid == (gid_t) -1
            && chopt->verbosity == V_off
            && ! chopt->root_dev_ino
            && ! chopt->affect_symlink_referent)
@@ -376,20 +376,20 @@ change_file_owner (FTS *fts, FTSENT *ent,
       do_chown = true;
       file_stats = ent->fts_statp;
     }
-  else
+  否则
     {
       file_stats = ent->fts_statp;
 
       /* If this is a symlink and we're dereferencing them,
          stat it to get info on the referent.  */
-      if (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
+      如果 (chopt->affect_symlink_referent && S_ISLNK (file_stats->st_mode))
         {
-          if (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
+          如果 (fstatat (fts->fts_cwd_fd, file, &stat_buf, 0) != 0)
             {
-              if (ignore_missing
+              如果 (ignore_missing
                   && ignorable_traversal_errno (errno))
-                return true;
-              if (! chopt->force_silent)
+                返回 true;
+              如果 (! chopt->force_silent)
                 error (0, errno, _("cannot dereference %s"),
                        quoteaf (file_full_name));
               ok = false;
@@ -406,31 +406,31 @@ change_file_owner (FTS *fts, FTSENT *ent,
     }
 
   /* This happens when chown -LR --preserve-root encounters a symlink-to-/.  */
-  if (ok
+  如果 (ok
       && FTSENT_IS_DIRECTORY (ent)
       && ROOT_DEV_INO_CHECK (chopt->root_dev_ino, file_stats))
     {
       ROOT_DEV_INO_WARN (file_full_name);
-      return false;
+      返回 false;
     }
 
   bool symlink_changed = true;
-  if (do_chown)
+  如果 (do_chown)
     {
-      if ( ! chopt->affect_symlink_referent)
+      如果 ( ! chopt->affect_symlink_referent)
         {
           ok = (lchownat (fts->fts_cwd_fd, file, uid, gid) == 0);
 
           /* Ignore any error due to lack of support; POSIX requires
              this behavior for top-level symbolic links with -h, and
              implies that it's required for all symbolic links.  */
-          if (!ok && is_ENOTSUP (errno))
+          如果 (!ok && is_ENOTSUP (errno))
             {
               ok = true;
               symlink_changed = false;
             }
         }
-      else
+      否则
         {
           /* If possible, avoid a race condition with --from=O:G and without the
              (-h) --no-dereference option.  If fts's stat call determined
@@ -477,12 +477,12 @@ change_file_owner (FTS *fts, FTSENT *ent,
          by some other user and operating on files in a directory
          where M has write access.  */
 
-      if (do_chown && !ok)
+      如果 (do_chown && !ok)
         {
-          if (ignore_missing
+          如果 (ignore_missing
               && ignorable_traversal_errno (errno))
-            return true;
-          if (! chopt->force_silent)
+            返回 true;
+          如果 (! chopt->force_silent)
             error (0, errno, (uid != (uid_t) -1
                               ? _("changing ownership of %s")
                               : _("changing group of %s")),
@@ -490,14 +490,14 @@ change_file_owner (FTS *fts, FTSENT *ent,
         }
     }
 
-  if (chopt->verbosity != V_off)
+  如果 (chopt->verbosity != V_off)
     {
       bool changed =
         ((do_chown && ok && symlink_changed)
          && ! ((uid == (uid_t) -1 || uid == file_stats->st_uid)
                && (gid == (gid_t) -1 || gid == file_stats->st_gid)));
 
-      if (changed || chopt->verbosity == V_high)
+      如果 (changed || chopt->verbosity == V_high)
         {
           enum Change_status ch_status =
             (!ok ? CH_FAILED
@@ -519,17 +519,17 @@ change_file_owner (FTS *fts, FTSENT *ent,
                            new_usr, new_grp);
           free (old_usr);
           free (old_grp);
-          if (new_usr != chopt->user_name)
+          如果 (new_usr != chopt->user_name)
             free (new_usr);
-          if (new_grp != chopt->group_name)
+          如果 (new_grp != chopt->group_name)
             free (new_grp);
         }
     }
 
-  if ( ! chopt->recurse)
+  如果 ( ! chopt->recurse)
     fts_set (fts, ent, FTS_SKIP);
 
-  return ok;
+  返回 ok;
 }
 
 /* Change the owner and/or group of the specified FILES.
@@ -542,7 +542,7 @@ change_file_owner (FTS *fts, FTSENT *ent,
    files with user ID and group ID that match the non-(-1) value(s).
    Return true if successful.  */
 extern bool
-chown_files (char **files, int bit_flags,
+chown_files (char **files, 整数 bit_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
              struct Chown_option const *chopt)
@@ -550,7 +550,7 @@ chown_files (char **files, int bit_flags,
   bool ok = true;
 
   /* Use lstat and stat only if they're needed.  */
-  int stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
+  整数 stat_flags = ((required_uid != (uid_t) -1 || required_gid != (gid_t) -1
                      || chopt->affect_symlink_referent
                      || chopt->verbosity != V_off)
                     ? 0
@@ -558,16 +558,16 @@ chown_files (char **files, int bit_flags,
 
   FTS *fts = xfts_open (files, bit_flags | stat_flags, NULL);
 
-  while (true)
+  当 (true)
     {
       FTSENT *ent = fts_read (fts);
 
-      if (ent == NULL)
+      如果 (ent == NULL)
         {
-          if (errno != 0)
+          如果 (errno != 0)
             {
               /* FIXME: try to give a better message  */
-              if (! chopt->force_silent)
+              如果 (! chopt->force_silent)
                 error (0, errno, _("fts_read failed"));
               ok = false;
             }
@@ -578,11 +578,11 @@ chown_files (char **files, int bit_flags,
                                required_uid, required_gid, chopt);
     }
 
-  if (fts_close (fts) != 0)
+  如果 (fts_close (fts) != 0)
     {
       error (0, errno, _("fts_close failed"));
       ok = false;
     }
 
-  return ok;
+  返回 ok;
 }

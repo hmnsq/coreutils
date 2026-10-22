@@ -27,7 +27,7 @@
 #include <getopt.h>
 #include <sys/types.h>
 
-#if HAVE_STROPTS_H
+#如果 HAVE_STROPTS_H
 # include <stropts.h>
 #endif
 #include <sys/ioctl.h>
@@ -54,7 +54,7 @@
 static char const *infile;
 
 /* Descriptor on which input file is open.  */
-static int input_desc;
+static 整数 input_desc;
 
 /* Buffer for line numbers.
    An 11 digit counter may overflow within an hour on a P2/466,
@@ -78,17 +78,17 @@ static char *line_num_start = line_buf + LINE_COUNTER_BUF_LEN - 3;
 static char *line_num_end = line_buf + LINE_COUNTER_BUF_LEN - 3;
 
 /* Preserves the 'cat' function's local 'newlines' between invocations.  */
-static int newlines2 = 0;
+static 整数 newlines2 = 0;
 
 /* Whether there is a pending CR to process.  */
 static bool pending_cr = false;
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -128,7 +128,7 @@ Concatenate FILE(s) to standard output.\n\
   -u                       (ignored)\n\
 "));
       oputs (_("\
-  -v, --show-nonprinting   use ^ and M- notation, except for LFD and TAB\n\
+  -v, --show-nonprinting   use ^ and M- notation, except 为 LFD and TAB\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -152,17 +152,17 @@ next_line_num (void)
   char *endp = line_num_end;
   do
     {
-      if ((*endp)++ < '9')
-        return;
+      如果 ((*endp)++ < '9')
+        返回;
       *endp-- = '0';
     }
-  while (endp >= line_num_start);
+  当 (endp >= line_num_start);
 
-  if (line_num_start > line_buf)
+  如果 (line_num_start > line_buf)
     *--line_num_start = '1';
-  else
+  否则
     *line_buf = '>';
-  if (line_num_start < line_num_print)
+  如果 (line_num_start < line_num_print)
     line_num_print--;
 }
 
@@ -175,25 +175,25 @@ simple_cat (char *buf, idx_t bufsize)
 {
   /* Loop until the end of the file.  */
 
-  while (true)
+  当 (true)
     {
       /* Read a block of input.  */
 
       ssize_t n_read = read (input_desc, buf, bufsize);
-      if (n_read < 0)
+      如果 (n_read < 0)
         {
           error (0, errno, "%s", quotef (infile));
-          return false;
+          返回 false;
         }
 
       /* End of this file?  */
 
-      if (n_read == 0)
-        return true;
+      如果 (n_read == 0)
+        返回 true;
 
       /* Write this block out.  */
 
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+      如果 (full_write (STDOUT_FILENO, buf, n_read) != n_read)
         write_error ();
     }
 }
@@ -206,9 +206,9 @@ static inline void
 write_pending (char *outbuf, char **bpout)
 {
   idx_t n_write = *bpout - outbuf;
-  if (0 < n_write)
+  如果 (0 < n_write)
     {
-      if (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
+      如果 (full_write (STDOUT_FILENO, outbuf, n_write) != n_write)
         write_error ();
       *bpout = outbuf;
     }
@@ -239,7 +239,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
      etc.  Initially 0 to indicate that we are at the beginning of a
      new line.  The "state" of the procedure is determined by
      NEWLINES.  */
-  int newlines = newlines2;
+  整数 newlines = newlines2;
 
 #ifdef FIONREAD
   /* If nonzero, use the FIONREAD ioctl, as an optimization.
@@ -260,24 +260,24 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
   /* Pointer to the position where the next character shall be written.  */
   char *bpout = outbuf;
 
-  while (true)
+  当 (true)
     {
       do
         {
           /* Write if there are at least OUTSIZE bytes in OUTBUF.  */
 
-          if (outbuf + outsize <= bpout)
+          如果 (outbuf + outsize <= bpout)
             {
               char *wp = outbuf;
               idx_t remaining_bytes;
               do
                 {
-                  if (full_write (STDOUT_FILENO, wp, outsize) != outsize)
+                  如果 (full_write (STDOUT_FILENO, wp, outsize) != outsize)
                     write_error ();
                   wp += outsize;
                   remaining_bytes = bpout - wp;
                 }
-              while (outsize <= remaining_bytes);
+              当 (outsize <= remaining_bytes);
 
               /* Move the remaining bytes to the beginning of the
                  buffer.  */
@@ -288,17 +288,17 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
           /* Is INBUF empty?  */
 
-          if (bpin > eob)
+          如果 (bpin > eob)
             {
               bool input_pending = false;
 #ifdef FIONREAD
-              int n_to_read = 0;
+              整数 n_to_read = 0;
 
               /* Is there any input to read immediately?
                  If not, we are about to wait,
                  so write all buffered output before waiting.  */
 
-              if (use_fionread
+              如果 (use_fionread
                   && ioctl (input_desc, FIONREAD, &n_to_read) < 0)
                 {
                   /* Ultrix returns EOPNOTSUPP on NFS;
@@ -307,40 +307,40 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                      More/BSD returns ENODEV on special files
                      like /dev/null.
                      Irix-5 returns ENOSYS on pipes.  */
-                  if (errno == EOPNOTSUPP || errno == ENOTTY
+                  如果 (errno == EOPNOTSUPP || errno == ENOTTY
                       || errno == EINVAL || errno == ENODEV
                       || errno == ENOSYS)
                     use_fionread = false;
-                  else
+                  否则
                     {
                       error (0, errno, _("cannot do ioctl on %s"),
                              quoteaf (infile));
                       newlines2 = newlines;
-                      return false;
+                      返回 false;
                     }
                 }
-              if (n_to_read != 0)
+              如果 (n_to_read != 0)
                 input_pending = true;
 #endif
 
-              if (!input_pending)
+              如果 (!input_pending)
                 write_pending (outbuf, &bpout);
 
               /* Read more input into INBUF.  */
 
               ssize_t n_read = read (input_desc, inbuf, insize);
-              if (n_read < 0)
+              如果 (n_read < 0)
                 {
                   error (0, errno, "%s", quotef (infile));
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return false;
+                  返回 false;
                 }
-              if (n_read == 0)
+              如果 (n_read == 0)
                 {
                   write_pending (outbuf, &bpout);
                   newlines2 = newlines;
-                  return true;
+                  返回 true;
                 }
 
               /* Update the pointers and insert a sentinel at the buffer
@@ -350,16 +350,16 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               eob = bpin + n_read;
               *eob = '\n';
             }
-          else
+          否则
             {
               /* It was a real (not a sentinel) newline.  */
 
               /* Was the last line empty?
                  (i.e., have two or more consecutive newlines been read?)  */
 
-              if (++newlines > 0)
+              如果 (++newlines > 0)
                 {
-                  if (newlines >= 2)
+                  如果 (newlines >= 2)
                     {
                       /* Limit this to 2 here.  Otherwise, with lots of
                          consecutive newlines, the counter could wrap
@@ -369,7 +369,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                       /* Are multiple adjacent empty lines to be substituted
                          by single ditto (-s), and this was the second empty
                          line?  */
-                      if (squeeze_blank)
+                      如果 (squeeze_blank)
                         {
                           ch = *bpin++;
                           continue;
@@ -378,7 +378,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
                   /* Are line numbers to be written at empty lines (-n)?  */
 
-                  if (number && !number_nonblank)
+                  如果 (number && !number_nonblank)
                     {
                       next_line_num ();
                       bpout = stpcpy (bpout, line_num_print);
@@ -386,9 +386,9 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
                 }
 
               /* Output a currency symbol if requested (-e).  */
-              if (show_ends)
+              如果 (show_ends)
                 {
-                  if (pending_cr)
+                  如果 (pending_cr)
                     {
                       *bpout++ = '^';
                       *bpout++ = 'M';
@@ -403,11 +403,11 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
             }
           ch = *bpin++;
         }
-      while (ch == '\n');
+      当 (ch == '\n');
 
       /* Here CH cannot contain a newline character.  */
 
-      if (pending_cr)
+      如果 (pending_cr)
         {
           *bpout++ = '\r';
           pending_cr = false;
@@ -415,7 +415,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* Are we at the beginning of a line, and line numbers are requested?  */
 
-      if (newlines >= 0 && number)
+      如果 (newlines >= 0 && number)
         {
           next_line_num ();
           bpout = stpcpy (bpout, line_num_print);
@@ -427,48 +427,48 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
 
       /* If quoting, i.e., at least one of -v, -e, or -t specified,
          scan for chars that need conversion.  */
-      if (show_nonprinting)
+      如果 (show_nonprinting)
         {
-          while (true)
+          当 (true)
             {
-              if (ch >= 32)
+              如果 (ch >= 32)
                 {
-                  if (ch < 127)
+                  如果 (ch < 127)
                     *bpout++ = ch;
-                  else if (ch == 127)
+                  否则 如果 (ch == 127)
                     {
                       *bpout++ = '^';
                       *bpout++ = '?';
                     }
-                  else
+                  否则
                     {
                       *bpout++ = 'M';
                       *bpout++ = '-';
-                      if (ch >= 128 + 32)
+                      如果 (ch >= 128 + 32)
                         {
-                          if (ch < 128 + 127)
+                          如果 (ch < 128 + 127)
                             *bpout++ = ch - 128;
-                          else
+                          否则
                             {
                               *bpout++ = '^';
                               *bpout++ = '?';
                             }
                         }
-                      else
+                      否则
                         {
                           *bpout++ = '^';
                           *bpout++ = ch - 128 + 64;
                         }
                     }
                 }
-              else if (ch == '\t' && !show_tabs)
+              否则 如果 (ch == '\t' && !show_tabs)
                 *bpout++ = '\t';
-              else if (ch == '\n')
+              否则 如果 (ch == '\n')
                 {
                   newlines = -1;
                   break;
                 }
-              else
+              否则
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
@@ -477,32 +477,32 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
               ch = *bpin++;
             }
         }
-      else
+      否则
         {
           /* Not quoting, neither of -v, -e, or -t specified.  */
-          while (true)
+          当 (true)
             {
-              if (ch == '\t' && show_tabs)
+              如果 (ch == '\t' && show_tabs)
                 {
                   *bpout++ = '^';
                   *bpout++ = ch + 64;
                 }
-              else if (ch != '\n')
+              否则 如果 (ch != '\n')
                 {
-                  if (ch == '\r' && *bpin == '\n' && show_ends)
+                  如果 (ch == '\r' && *bpin == '\n' && show_ends)
                     {
-                      if (bpin == eob)
+                      如果 (bpin == eob)
                         pending_cr = true;
-                      else
+                      否则
                         {
                           *bpout++ = '^';
                           *bpout++ = 'M';
                         }
                     }
-                  else
+                  否则
                     *bpout++ = ch;
                 }
-              else
+              否则
                 {
                   newlines = -1;
                   break;
@@ -518,7 +518,7 @@ cat (char *inbuf, idx_t insize, char *outbuf, idx_t outsize,
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
+static 整数
 copy_cat (void)
 {
   /* Copy at most COPY_MAX bytes at a time; this is min
@@ -532,20 +532,20 @@ copy_cat (void)
      so fall back on read+write if the copy_file_range is
      unsupported or the input file seems empty.  */
 
-  for (bool some_copied = false; ; some_copied = true)
+  为 (bool some_copied = false; ; some_copied = true)
     switch (copy_file_range (input_desc, NULL, STDOUT_FILENO, NULL,
                              copy_max, 0))
       {
       case 0:
-        return some_copied;
+        返回 some_copied;
 
       case -1:
-        if (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
+        如果 (errno == ENOSYS || is_ENOTSUP (errno) || errno == EINVAL
             || errno == EBADF || errno == EXDEV || errno == ETXTBSY
             || errno == EPERM || errno == EFBIG)
-          return 0;
+          返回 0;
         error (0, errno, "%s", quotef (infile));
-        return -1;
+        返回 -1;
       }
 }
 
@@ -553,19 +553,19 @@ copy_cat (void)
    Return 1 if successful, 0 if ordinary read+write should be tried,
    -1 if a serious problem has been diagnosed.  */
 
-static int
+static 整数
 splice_cat (void)
 {
   bool some_copied = false;
   bool in_ok = true;
   bool out_ok = true;
 
-#if HAVE_SPLICE
+#如果 HAVE_SPLICE
 
   /* If PIPEFD[0] is a non-negative value, we have an open pipe from a
      previous call to this function.  At the start of this function the
      pipe will always be empty.  */
-  static int pipefd[2] = { -1, -1 };
+  static 整数 pipefd[2] = { -1, -1 };
 
   /* The size of the pipe referred to by PIPEFD.  */
   static idx_t pipefd_pipe_size = 0;
@@ -573,26 +573,26 @@ splice_cat (void)
   /* Create an intermediate pipe if it is not already open.
      Even if both input and output are pipes,
      so that read and write errors can be distinguished.  */
-  if (pipefd[0] < 0)
+  如果 (pipefd[0] < 0)
     {
-      if (pipe (pipefd) < 0)
-        return false;
+      如果 (pipe (pipefd) < 0)
+        返回 false;
       pipefd_pipe_size = increase_pipe_size (pipefd[1]);
     }
 
   /* Increase the size of the pipe referred to by standard output.  */
-  static int stdout_is_pipe = -1;
+  static 整数 stdout_is_pipe = -1;
   static idx_t stdout_pipe_size = 0;
-  if (stdout_is_pipe == -1)
+  如果 (stdout_is_pipe == -1)
     {
       stdout_is_pipe = 0 < isapipe (STDOUT_FILENO);
-      if (stdout_is_pipe)
+      如果 (stdout_is_pipe)
         stdout_pipe_size = increase_pipe_size (STDOUT_FILENO);
     }
 
   idx_t pipe_size = MAX (pipefd_pipe_size, stdout_pipe_size);
 
-  while (true)
+  当 (true)
     {
       ssize_t bytes_read = splice (input_desc, NULL, pipefd[1], NULL,
                                    pipe_size, 0);
@@ -600,40 +600,40 @@ splice_cat (void)
          subsequent error is fatal.  If not, then fall back to read
          and write.  */
       in_ok = 0 <= bytes_read || ! some_copied;
-      if (bytes_read == 0)
+      如果 (bytes_read == 0)
         some_copied = true;  /* Indicate splice complete.  */
-      if (bytes_read <= 0)
+      如果 (bytes_read <= 0)
         goto done;
       /* We need to drain the intermediate pipe to standard output.  */
-      while (0 < bytes_read)
+      当 (0 < bytes_read)
         {
           ssize_t bytes_written = splice (pipefd[0], NULL, STDOUT_FILENO, NULL,
                                           pipe_size, 0);
           /* If we successfully splice'd output, assume any subsequent
              error is fatal.  If not, than drain the intermediate pipe and
              continue using read and write.  */
-          if (bytes_written < 0)
+          如果 (bytes_written < 0)
             {
-              if (some_copied)
+              如果 (some_copied)
                 out_ok = false;
-              else
+              否则
                 {
                   char buf[BUFSIZ];
-                  while (0 < bytes_read)
+                  当 (0 < bytes_read)
                     {
                       ssize_t count = MIN (bytes_read, sizeof buf);
                       ssize_t n_read = read (pipefd[0], buf, count);
                       /* Failure not associated with in or out.  */
                       in_ok = out_ok = 0 <= n_read;
-                      if (n_read <= 0)
+                      如果 (n_read <= 0)
                         goto done;
-                      if (full_write (STDOUT_FILENO, buf, n_read) != n_read)
+                      如果 (full_write (STDOUT_FILENO, buf, n_read) != n_read)
                         write_error ();
                       bytes_read -= n_read;
                     }
                 }
             }
-          if (bytes_written <= 0)
+          如果 (bytes_written <= 0)
             goto done;
           some_copied = true;
           bytes_read -= bytes_written;
@@ -641,10 +641,10 @@ splice_cat (void)
     }
 
  done:
-  if (! in_ok && ! out_ok)
+  如果 (! in_ok && ! out_ok)
     {
       /* Recreate the pipe on internal error.  */
-      int saved_errno = errno;
+      整数 saved_errno = errno;
       close (pipefd[0]);
       close (pipefd[1]);
       errno = saved_errno;
@@ -652,13 +652,13 @@ splice_cat (void)
       pipefd_pipe_size = 0;
       error (0, errno, "%s", _("splice error"));
     }
-  else if (! in_ok)
+  否则 如果 (! in_ok)
     error (0, errno, "%s", quotef (infile));
-  else if (! out_ok)
+  否则 如果 (! out_ok)
     write_error ();
 #endif
 
-  return (in_ok && out_ok) ? some_copied : -1;
+  返回 (in_ok && out_ok) ? some_copied : -1;
 }
 
 /* Reuse an aligned buffer across inputs, growing it only as needed.  */
@@ -668,18 +668,18 @@ ensure_buf_size (char *buf, idx_t *buf_alloc, idx_t alignment, idx_t size)
 {
   affirm (buf != NULL || *buf_alloc < size);
 
-  if (*buf_alloc < size)
+  如果 (*buf_alloc < size)
     {
       alignfree (buf);
       buf = xalignalloc (alignment, size);
       *buf_alloc = size;
     }
 
-  return buf;
+  返回 buf;
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
   /* Nonzero if we have ever read standard input.  */
   bool have_read_stdin = false;
@@ -693,7 +693,7 @@ main (int argc, char **argv)
   bool show_ends = false;
   bool show_nonprinting = false;
   bool show_tabs = false;
-  int file_open_mode = O_RDONLY;
+  整数 file_open_mode = O_RDONLY;
 
   static struct option const long_options[] =
   {
@@ -723,8 +723,8 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  int c;
-  while ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
+  整数 c;
+  当 ((c = getopt_long (argc, argv, "benstuvAET", long_options, NULL))
          != -1)
     {
       switch (c)
@@ -785,19 +785,19 @@ main (int argc, char **argv)
 
   /* Get device, i-node number, and optimal blocksize of output.  */
 
-  if (fstat (STDOUT_FILENO, &ostat_buf) < 0)
+  如果 (fstat (STDOUT_FILENO, &ostat_buf) < 0)
     error (EXIT_FAILURE, errno, _("standard output"));
 
   /* Optimal size of i/o operations of output.  */
   idx_t outsize = io_blksize (&ostat_buf);
 
   /* Device, I-node number and lazily-acquired flags of the output.  */
-  int out_flags = -2;
+  整数 out_flags = -2;
 
   /* True if the output is a regular file.  */
   bool out_isreg = S_ISREG (ostat_buf.st_mode) != 0;
 
-  if (! (number || show_ends || squeeze_blank))
+  如果 (! (number || show_ends || squeeze_blank))
     {
       file_open_mode |= O_BINARY;
       xset_binary_mode (STDOUT_FILENO, O_BINARY);
@@ -806,7 +806,7 @@ main (int argc, char **argv)
   /* Main loop.  */
 
   infile = "-";
-  int argind = optind;
+  整数 argind = optind;
   bool ok = true;
   idx_t page_size = getpagesize ();
   char *inbuf = NULL;
@@ -816,21 +816,21 @@ main (int argc, char **argv)
 
   do
     {
-      if (argind < argc)
+      如果 (argind < argc)
         infile = argv[argind];
 
       bool reading_stdin = streq (infile, "-");
-      if (reading_stdin)
+      如果 (reading_stdin)
         {
           have_read_stdin = true;
           input_desc = STDIN_FILENO;
-          if (file_open_mode & O_BINARY)
+          如果 (file_open_mode & O_BINARY)
             xset_binary_mode (STDIN_FILENO, O_BINARY);
         }
-      else
+      否则
         {
           input_desc = open (infile, file_open_mode);
-          if (input_desc < 0)
+          如果 (input_desc < 0)
             {
               error (0, errno, "%s", quotef (infile));
               ok = false;
@@ -839,7 +839,7 @@ main (int argc, char **argv)
         }
 
       struct stat istat_buf;
-      if (fstat (input_desc, &istat_buf) < 0)
+      如果 (fstat (input_desc, &istat_buf) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
@@ -855,19 +855,19 @@ main (int argc, char **argv)
          output device.  It's better to catch this error earlier
          rather than later.  */
 
-      if (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
+      如果 (! (S_ISFIFO (istat_buf.st_mode) || S_ISSOCK (istat_buf.st_mode)
              || S_TYPEISSHM (&istat_buf) || S_TYPEISTMO (&istat_buf))
           && ! (S_TYPEISSHM (&ostat_buf) || S_TYPEISTMO (&ostat_buf))
           && SAME_INODE (istat_buf, ostat_buf))
         {
           off_t in_pos = lseek (input_desc, 0, SEEK_CUR);
-          if (0 <= in_pos)
+          如果 (0 <= in_pos)
             {
-              if (out_flags < -1)
+              如果 (out_flags < -1)
                 out_flags = fcntl (STDOUT_FILENO, F_GETFL);
-              int whence = (0 <= out_flags && out_flags & O_APPEND
+              整数 whence = (0 <= out_flags && out_flags & O_APPEND
                             ? SEEK_END : SEEK_CUR);
-              if (in_pos < lseek (STDOUT_FILENO, 0, whence))
+              如果 (in_pos < lseek (STDOUT_FILENO, 0, whence))
                 {
                   error (0, 0, _("%s: input file is output file"),
                          quotef (infile));
@@ -881,25 +881,25 @@ main (int argc, char **argv)
          options were given use 'cat'; if not, use 'copy_cat' if it
          works, 'simple_cat' otherwise.  */
 
-      if (! (number || show_ends || show_nonprinting
+      如果 (! (number || show_ends || show_nonprinting
              || show_tabs || squeeze_blank))
         {
-          int copy_cat_status =
+          整数 copy_cat_status =
             out_isreg && S_ISREG (istat_buf.st_mode) ? copy_cat () : 0;
-          if (copy_cat_status != 0)
+          如果 (copy_cat_status != 0)
             ok &= 0 < copy_cat_status;
-          else
+          否则
             {
               /* Note 32768 was determined as the limit when splice
                  starts to have a performance advantage.
                  It also excludes zero length files which may not
                  be compatible with splice in some edge cases.  */
-              int splice_cat_status = ((usable_st_size (&istat_buf)
+              整数 splice_cat_status = ((usable_st_size (&istat_buf)
                                         && istat_buf.st_size <= 32768)
                                        ? 0 : splice_cat ());
-              if (splice_cat_status != 0)
+              如果 (splice_cat_status != 0)
                 ok &= 0 < splice_cat_status;
-              else
+              否则
                 {
                   insize = MAX (insize, outsize);
                   inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
@@ -908,7 +908,7 @@ main (int argc, char **argv)
                 }
             }
         }
-      else
+      否则
         {
           /* Allocate, with an extra byte for a newline sentinel.  */
           inbuf = ensure_buf_size (inbuf, &inbuf_alloc,
@@ -936,7 +936,7 @@ main (int argc, char **argv)
              on some paging implementations.  */
 
           idx_t bufsize;
-          if (ckd_mul (&bufsize, insize, 4)
+          如果 (ckd_mul (&bufsize, insize, 4)
               || ckd_add (&bufsize, bufsize, outsize)
               || ckd_add (&bufsize, bufsize, LINE_COUNTER_BUF_LEN - 1))
             xalloc_die ();
@@ -949,17 +949,17 @@ main (int argc, char **argv)
         }
 
     contin:
-      if (!reading_stdin && close (input_desc) < 0)
+      如果 (!reading_stdin && close (input_desc) < 0)
         {
           error (0, errno, "%s", quotef (infile));
           ok = false;
         }
     }
-  while (++argind < argc);
+  当 (++argind < argc);
 
-  if (pending_cr)
+  如果 (pending_cr)
     {
-      if (full_write (STDOUT_FILENO, "\r", 1) != 1)
+      如果 (full_write (STDOUT_FILENO, "\r", 1) != 1)
         write_error ();
     }
 
@@ -968,8 +968,8 @@ main (int argc, char **argv)
   alignfree (inbuf);
 #endif
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  如果 (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  返回 ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

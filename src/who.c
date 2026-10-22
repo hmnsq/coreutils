@@ -51,42 +51,42 @@
 
 #ifdef RUN_LVL
 # define UT_TYPE_RUN_LVL(U) ((U)->ut_type == RUN_LVL)
-#else
+#否则
 # define UT_TYPE_RUN_LVL(U) false
 #endif
 
 #ifdef INIT_PROCESS
 # define UT_TYPE_INIT_PROCESS(U) ((U)->ut_type == INIT_PROCESS)
-#else
+#否则
 # define UT_TYPE_INIT_PROCESS(U) false
 #endif
 
 #ifdef DEAD_PROCESS
 # define UT_TYPE_DEAD_PROCESS(U) ((U)->ut_type == DEAD_PROCESS)
-#else
+#否则
 # define UT_TYPE_DEAD_PROCESS(U) false
 #endif
 
 #ifdef NEW_TIME
 # define UT_TYPE_NEW_TIME(U) ((U)->ut_type == NEW_TIME)
-#else
+#否则
 # define UT_TYPE_NEW_TIME(U) false
 #endif
 
 #define IDLESTR_LEN 6
 
-#if HAVE_STRUCT_XTMP_UT_PID
+#如果 HAVE_STRUCT_XTMP_UT_PID
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
   char Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
-  sprintf (Var, "%ld", (long int) (Utmp_ent->ut_pid))
-#else
+  sprintf (Var, "%ld", (long 整数) (Utmp_ent->ut_pid))
+#否则
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
   char const *Var = ""
 #endif
 
-#if HAVE_STRUCT_XTMP_UT_ID
+#如果 HAVE_STRUCT_XTMP_UT_ID
 # define UT_ID(U) ((U)->ut_id)
-#else
+#否则
 # define UT_ID(U) "??"
 #endif
 
@@ -143,7 +143,7 @@ static bool my_line_only;
 /* The strftime format to use for login times, and its expected
    output width.  */
 static char const *time_format;
-static int time_format_width;
+static 整数 time_format_width;
 
 /* for long options with no corresponding short option, use enum */
 enum
@@ -181,27 +181,27 @@ idle_string (time_t when, time_t boottime)
 {
   static time_t now = TYPE_MINIMUM (time_t);
 
-  if (now == TYPE_MINIMUM (time_t))
+  如果 (now == TYPE_MINIMUM (time_t))
     time (&now);
 
-  int seconds_idle;
-  if (boottime < when && when <= now
+  整数 seconds_idle;
+  如果 (boottime < when && when <= now
       && ! ckd_sub (&seconds_idle, now, when)
       && seconds_idle < 24 * 60 * 60)
     {
-      if (seconds_idle < 60)
-        return "  .  ";
-      else
+      如果 (seconds_idle < 60)
+        返回 "  .  ";
+      否则
         {
           static char idle_hhmm[IDLESTR_LEN];
           sprintf (idle_hhmm, "%02d:%02d",
                    seconds_idle / (60 * 60),
                    (seconds_idle % (60 * 60)) / 60);
-          return idle_hhmm;
+          返回 idle_hhmm;
         }
     }
 
-  return _(" old ");
+  返回 _(" old ");
 }
 
 /* Return a time string.  */
@@ -211,13 +211,13 @@ time_string (STRUCT_UTMP const *utmp_ent)
   static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
   struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  如果 (tmp)
     {
       strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      返回 buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  否则
+    返回 timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Print formatted output line. Uses mostly arbitrary field sizes, probably
@@ -237,20 +237,20 @@ print_line (char const *user, const char state,
 
   mesg[1] = state;
 
-  if (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
+  如果 (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
     sprintf (x_idle, " %-6s", idle);
-  else
+  否则
     *x_idle = '\0';
 
-  if (!short_output && strlen (pid) < sizeof x_pid - 1)
+  如果 (!short_output && strlen (pid) < sizeof x_pid - 1)
     sprintf (x_pid, " %10s", pid);
-  else
+  否则
     *x_pid = '\0';
 
   x_exitstr = xmalloc (include_exit ? 1 + MAX (12, strlen (exitstr)) + 1 : 1);
-  if (include_exit)
+  如果 (include_exit)
     sprintf (x_exitstr, " %-12s", exitstr);
-  else
+  否则
     *x_exitstr = '\0';
 
   buf = xasprintf ("%-8s"
@@ -280,7 +280,7 @@ print_line (char const *user, const char state,
   {
     /* Remove any trailing spaces.  */
     char *p = buf + strlen (buf);
-    while (*--p == ' ')
+    当 (*--p == ' ')
       /* empty */;
     *(p + 1) = '\0';
   }
@@ -299,11 +299,11 @@ is_tty_writable (struct stat const *pstat)
   /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
      https://bugzilla.redhat.com/454261 */
   struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
+  如果 (!ttygr || (pstat->st_gid != ttygr->gr_gid))
+    返回 false;
 #endif
 
-  return pstat->st_mode & S_IWGRP;
+  返回 pstat->st_mode & S_IWGRP;
 }
 
 /* Send properly parsed USER_PROCESS info to print_line.  The most
@@ -317,7 +317,7 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
   char idlestr[IDLESTR_LEN + 1];
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
   static char *hoststr;
-#if HAVE_STRUCT_XTMP_UT_HOST
+#如果 HAVE_STRUCT_XTMP_UT_HOST
   static idx_t hostlen;
 #endif
 
@@ -326,39 +326,39 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
   char *space = strchr (line, ' ');
   line = space ? space + 1 : line;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  整数 dirfd;
+  如果 (IS_ABSOLUTE_FILE_NAME (line))
     dirfd = AT_FDCWD;
-  else
+  否则
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      static 整数 dev_dirfd;
+      如果 (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          如果 (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  如果 (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
       last_change = stats.st_atime;
     }
-  else
+  否则
     {
       mesg = '?';
       last_change = 0;
     }
 
-  if (last_change)
+  如果 (last_change)
     sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
-  else
+  否则
     sprintf (idlestr, "  ?");
 
-#if HAVE_STRUCT_XTMP_UT_HOST
-  if (utmp_ent->ut_host[0])
+#如果 HAVE_STRUCT_XTMP_UT_HOST
+  如果 (utmp_ent->ut_host[0])
     {
       char *host = NULL;
       char *display = NULL;
@@ -366,22 +366,22 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
 
       /* Look for an X display.  */
       display = strchr (ut_host, ':');
-      if (display)
+      如果 (display)
         *display++ = '\0';
 
-      if (*ut_host && do_lookup)
+      如果 (*ut_host && do_lookup)
         {
           /* See if we can canonicalize it.  */
           host = canon_host (ut_host);
         }
 
-      if (! host)
+      如果 (! host)
         host = ut_host;
 
-      if (display)
+      如果 (display)
         {
           idx_t needed = strlen (host) + strlen (display) + 4;
-          if (hostlen < needed)
+          如果 (hostlen < needed)
             {
               free (hoststr);
               hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
@@ -392,10 +392,10 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
           *p++ = ':';
           strcpy (stpcpy (p, display), ")");
         }
-      else
+      否则
         {
           idx_t needed = strlen (host) + 3;
-          if (hostlen < needed)
+          如果 (hostlen < needed)
             {
               free (hoststr);
               hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
@@ -405,12 +405,12 @@ print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
           strcpy (stpcpy (p, host), ")");
         }
 
-      if (host != ut_host)
+      如果 (host != ut_host)
         free (host);
     }
-  else
+  否则
     {
-      if (hostlen < 1)
+      如果 (hostlen < 1)
         hoststr = xpalloc (hoststr, &hostlen, 1, -1, 1);
       *hoststr = '\0';
     }
@@ -440,7 +440,7 @@ make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
   char *p = mempcpy (comment, prefix, prefixlen);
   p = mempcpy (p, id, idlen);
   *p = '\0';
-  return comment;
+  返回 comment;
 }
 
 static void
@@ -450,7 +450,7 @@ print_deadprocs (STRUCT_UTMP const *utmp_ent)
   char *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  if (!exitstr)
+  如果 (!exitstr)
     exitstr = xmalloc (strlen (_("term="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_termination) + 1
                        + strlen (_("exit="))
@@ -505,11 +505,11 @@ print_runlevel (STRUCT_UTMP const *utmp_ent)
   unsigned char last = utmp_ent->ut_pid / 256;
   unsigned char curr = utmp_ent->ut_pid % 256;
 
-  if (!runlevline)
+  如果 (!runlevline)
     runlevline = xmalloc (strlen (_("run-level")) + 3);
   sprintf (runlevline, "%s %c", _("run-level"), curr);
 
-  if (!comment)
+  如果 (!comment)
     comment = xmalloc (strlen (_("last=")) + 2);
   sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
 
@@ -524,15 +524,15 @@ list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
 {
   idx_t entries = 0;
 
-  while (n--)
+  当 (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      如果 (IS_USER_PROCESS (utmp_buf))
         {
           char *trimmed_name;
 
           trimmed_name = extract_trimmed_name (utmp_buf);
 
-          if (entries)
+          如果 (entries)
             putchar (' ');
           fputs (trimmed_name, stdout);
           free (trimmed_name);
@@ -557,43 +557,43 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
   char *ttyname_b IF_LINT ( = NULL);
   time_t boottime = TYPE_MINIMUM (time_t);
 
-  if (include_heading)
+  如果 (include_heading)
     print_heading ();
 
-  if (my_line_only)
+  如果 (my_line_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
-      if (!ttyname_b)
-        return;
-      if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
+      如果 (!ttyname_b)
+        返回;
+      如果 (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
         ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
     }
 
-  while (n--)
+  当 (n--)
     {
-      if (!my_line_only
+      如果 (!my_line_only
           || str_endswith (utmp_buf->ut_line, ttyname_b))
         {
-          if (need_users && IS_USER_PROCESS (utmp_buf))
+          如果 (need_users && IS_USER_PROCESS (utmp_buf))
             print_user (utmp_buf, boottime);
-          else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
+          否则 如果 (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
             print_runlevel (utmp_buf);
-          else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
+          否则 如果 (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
             print_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
-          else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
+          否则 如果 (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
             print_clockchange (utmp_buf);
-          else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
+          否则 如果 (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
             print_initspawn (utmp_buf);
-          else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
+          否则 如果 (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
             print_login (utmp_buf);
-          else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
+          否则 如果 (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
             print_deadprocs (utmp_buf);
         }
 
-      if (UT_TYPE_BOOT_TIME (utmp_buf))
+      如果 (UT_TYPE_BOOT_TIME (utmp_buf))
         boottime = utmp_buf->ut_ts.tv_sec;
 
       utmp_buf++;
@@ -603,29 +603,29 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 /* Display a list of who is on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read the file.  */
 static void
-who (char const *filename, int options)
+who (char const *filename, 整数 options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (short_list)
+  如果 (short_list)
     options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  如果 (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
-  if (short_list)
+  如果 (short_list)
     list_entries_who (n_users, utmp_buf);
-  else
+  否则
     scan_entries (n_users, utmp_buf);
 
   free (utmp_buf);
 }
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
       fputs (_("\
@@ -694,10 +694,10 @@ If ARG1 ARG2 given, -m presumed: 'am i' or 'mom likes' are usual.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
-  int optc;
+  整数 optc;
   bool assumptions = true;
 
   initialize_main (&argc, &argv);
@@ -708,7 +708,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
+  当 ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
          != -1)
     {
       switch (optc)
@@ -801,23 +801,23 @@ main (int argc, char **argv)
         }
     }
 
-  if (assumptions)
+  如果 (assumptions)
     {
       need_users = true;
       short_output = true;
     }
 
-  if (include_exit)
+  如果 (include_exit)
     {
       short_output = false;
     }
 
-  if (hard_locale (LC_TIME))
+  如果 (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  否则
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
@@ -842,5 +842,5 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  返回 EXIT_SUCCESS;
 }

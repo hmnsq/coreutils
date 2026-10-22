@@ -23,7 +23,7 @@
 
 #include "system.h"
 
-#if ! HAVE_NICE
+#如果 ! HAVE_NICE
 /* Include this after "system.h" so we're sure to have definitions
    (from time.h or sys/time.h) required for e.g. the ru_utime member.  */
 # include <sys/resource.h>
@@ -38,9 +38,9 @@
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-#if HAVE_NICE
+#如果 HAVE_NICE
 # define GET_NICENESS() nice (0)
-#else
+#否则
 # define GET_NICENESS() getpriority (PRIO_PROCESS, 0)
 #endif
 
@@ -49,7 +49,7 @@
 #endif
 
 /* This is required for Darwin Kernel Version 7.7.0.  */
-#if NZERO == 0
+#如果 NZERO == 0
 # undef  NZERO
 # define NZERO 20
 #endif
@@ -63,11 +63,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (整数 status)
 {
-  if (status != EXIT_SUCCESS)
+  如果 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  否则
     {
       printf (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
       printf (_("\
@@ -93,19 +93,19 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
 }
 
 static bool
-perm_related_errno (int err)
+perm_related_errno (整数 err)
 {
-  return err == EACCES || err == EPERM;
+  返回 err == EACCES || err == EPERM;
 }
 
-int
-main (int argc, char **argv)
+整数
+主要 (整数 argc, char **argv)
 {
-  int current_niceness;
-  int adjustment = 10;
+  整数 current_niceness;
+  整数 adjustment = 10;
   char const *adjustment_given = NULL;
   bool ok;
-  int i;
+  整数 i;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -116,19 +116,19 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  for (i = 1; i < argc; /* empty */)
+  为 (i = 1; i < argc; /* empty */)
     {
       char const *s = argv[i];
 
-      if (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
+      如果 (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
         {
           adjustment_given = s + 1;
           ++i;
         }
-      else
+      否则
         {
-          int c;
-          int fake_argc = argc - (i - 1);
+          整数 c;
+          整数 fake_argc = argc - (i - 1);
           char **fake_argv = argv + (i - 1);
 
           /* Ensure that any getopt diagnostics use the right name.  */
@@ -158,61 +158,61 @@ main (int argc, char **argv)
               break;
             }
 
-          if (c == -1)
+          如果 (c == -1)
             break;
         }
     }
 
-  if (adjustment_given)
+  如果 (adjustment_given)
     {
       /* If the requested adjustment is outside the valid range,
          silently bring it to just within range; this mimics what
          "setpriority" and "nice" do.  */
-#if (defined __gnu_hurd__                                               \
+#如果 (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) only supported 0 to (2 * NZERO - 2) niceness
          until glibc 2.43.  */
       enum { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
-#else
+#否则
       enum { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
 #endif
-      long int tmp;
-      if (LONGINT_OVERFLOW < xstrtol (adjustment_given, NULL, 10, &tmp, ""))
+      long 整数 tmp;
+      如果 (LONGINT_OVERFLOW < xstrtol (adjustment_given, NULL, 10, &tmp, ""))
         error (EXIT_CANCELED, 0, _("invalid adjustment %s"),
                quote (adjustment_given));
-#if (defined __gnu_hurd__                                               \
+#如果 (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) also did not clamp the new niceness into the
          supported range until glibc 2.43.
          See <https://sourceware.org/PR33614>.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      如果 (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      if (tmp < 0)
+      如果 (tmp < 0)
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
+          整数 sum;
+          如果 (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
             adjustment = MIN_ADJUSTMENT - current_niceness;
-          else
+          否则
             adjustment = tmp;
         }
-      else
+      否则
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
+          整数 sum;
+          如果 (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
             adjustment = MAX_ADJUSTMENT - current_niceness;
-          else
+          否则
             adjustment = tmp;
         }
-#else
+#否则
       adjustment = MAX (MIN_ADJUSTMENT, MIN (tmp, MAX_ADJUSTMENT));
 #endif
     }
 
-  if (i == argc)
+  如果 (i == argc)
     {
-      if (adjustment_given)
+      如果 (adjustment_given)
         {
           error (0, 0, _("a command must be given with an adjustment"));
           usage (EXIT_CANCELED);
@@ -220,22 +220,22 @@ main (int argc, char **argv)
       /* No command given; print the niceness.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      如果 (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
       printf ("%d\n", current_niceness);
-      return EXIT_SUCCESS;
+      返回 EXIT_SUCCESS;
     }
 
   errno = 0;
-#if HAVE_NICE
+#如果 HAVE_NICE
   ok = (nice (adjustment) != -1 || errno == 0);
-#else
+#否则
   current_niceness = GET_NICENESS ();
-  if (current_niceness == -1 && errno != 0)
+  如果 (current_niceness == -1 && errno != 0)
     error (EXIT_CANCELED, errno, _("cannot get niceness"));
   ok = (setpriority (PRIO_PROCESS, 0, current_niceness + adjustment) == 0);
 #endif
-  if (!ok)
+  如果 (!ok)
     {
       error (perm_related_errno (errno) ? 0
              : EXIT_CANCELED, errno, _("cannot set niceness"));
@@ -244,13 +244,13 @@ main (int argc, char **argv)
          close_stdout, but execvp() gets in the way.  If stderr
          encountered a write failure, there is no need to try calling
          error() again.  */
-      if (ferror (stderr))
-        return EXIT_CANCELED;
+      如果 (ferror (stderr))
+        返回 EXIT_CANCELED;
     }
 
   execvp (argv[i], &argv[i]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  整数 exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[i]));
-  return exit_status;
+  返回 exit_status;
 }
