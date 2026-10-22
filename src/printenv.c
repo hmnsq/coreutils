@@ -27,18 +27,18 @@
 
    David MacKenzie and Richard Mlynarik */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "printenv.h"
-#include "xbinary-io.h"
+#ضمن "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ضمن "system.h"
+#ضمن "printenv.h"
+#ضمن "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+تعداد { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "printenv"
@@ -49,41 +49,41 @@ enum { PRINTENV_FAILURE = 2 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"null", no_argument, NULL, '0'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
+  {"null", no_argument, عدم, '0'},
+  {"quoting-style", required_argument, عدم, QUOTING_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+Print the نيلاي_سموا of the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, print name and نيلاي pairs لكل them all.\n\
 \n\
 "),
               program_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output باريس with NUL, not newline\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD لكل names and نيلاي_سموا:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  صحيح quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,79 +110,79 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  صحيح optc;
+  طالما ((optc = getopt_long (argc, argv, "+0", longopts, عدم)) != -1)
     {
-      switch (optc)
+      بدل (optc)
         {
-        case '0':
+        حالة '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          اكسر;
+        حالة QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
                                          quoting_style_args,
                                          quoting_style_vals);
-          break;
+          اكسر;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        افتراضي:
           usage (PRINTENV_FAILURE);
         }
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  صحيح qs = quoting_style_opt;
+  إذا (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      إذا (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  إذا (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      set_quoting_style (عدم, qs);
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t ثابت n_args = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  حرف ثابت terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  إذا (opt_nul_terminate_output)
+    xset_بيناري_mode (STDOUT_FILENO, O_بيناري);
 
-  if (n_args <= 0)
+  إذا (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      لكل (حرف **env = environ; *env != عدم; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  وإلا
     {
-      int matches = 0;
+      صحيح matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      لكل (صحيح i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
-            continue;
+          إذا (strchr (argv[i], '='))
+            استمر;
 
-          for (char **env = environ; *env; ++env)
+          لكل (حرف **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              حرف ثابت *ep = *env;
+              حرف ثابت *ap = argv[i];
+              طالما (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  إذا (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      حرف ثابت *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
                       putchar (terminator);
                       matched = true;
-                      break;
+                      اكسر;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  أرجع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
