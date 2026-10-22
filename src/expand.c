@@ -32,47 +32,47 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "ioblksize.h"
+#ಅನ್ತರ್ಭಾವ "mcel.h"
+#ಅನ್ತರ್ಭಾವ "mbbuf.h"
+#ಅನ್ತರ್ಭಾವ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "expand"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "expand"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_ವಾದ, ಖಾಲಿ, 't'},
+  {"initial", no_ವಾದ, ಖಾಲಿ, 'i'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Convert tabs in each FILE to spaces, writing to standard output.\n\
+Convert tabs ಒಳ each FILE ಗಮ್ಯ spaces, writing ಗಮ್ಯ standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -80,38 +80,38 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         ಮಾಡು not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
          have tabs N characters apart, not 8\n\
 "));
-      emit_tab_list_info (PROGRAM_NAME);
+      emit_tab_list_info (ಕಾರ್ಯಕ್ರಮ_NAME);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+expand (ಶೂನ್ಯ)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = ಮುಂದಿನ_file (ಖಾಲಿ);
 
-  if (!fp)
-    return;
+  ಆದರೆ (!fp)
+    ಹಿಂತಿರುಗಿ;
 
-  static char line_in[IO_BUFSIZE];
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸಾಲು_ಒಳ[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, ಸಾಲು_ಒಳ, ಗಾತ್ರ ಸಾಲು_ಒಳ, fp);
 
-  while (true)
+  ಆಗ (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -124,122 +124,122 @@ expand (void)
          is true:  */
 
       /* Column of next input character.  */
-      colno column = 0;
+      colno ಸ್ತಂಭ = 0;
 
       /* Index in TAB_LIST of next tab stop to examine.  */
-      idx_t tab_index = 0;
+      idx_t tab_ಸೂಚ್ಯಂಕ = 0;
 
 
       /* Convert a line of text.  */
 
-      do
+      ಮಾಡು
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
-                 && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+          ಆಗ ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+                 && (fp = ಮುಂದಿನ_file (fp)))
+            mbbuf_init (&mbbuf, ಸಾಲು_ಒಳ, ಗಾತ್ರ ಸಾಲು_ಒಳ, fp);
 
-          if (convert)
+          ಆದರೆ (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_ಸಾಲು || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              ಆದರೆ (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
-                  bool last_tab;
-                  colno next_tab_column
-                    = get_next_tab_column (column, &tab_index, &last_tab);
+                  bool ಕೊನೆಯ_tab;
+                  colno ಮುಂದಿನ_tab_ಸ್ತಂಭ
+                    = get_ಮುಂದಿನ_tab_ಸ್ತಂಭ (ಸ್ತಂಭ, &tab_ಸೂಚ್ಯಂಕ, &ಕೊನೆಯ_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  ಆಗ (++ಸ್ತಂಭ < ಮುಂದಿನ_tab_ಸ್ತಂಭ)
+                    ಆದರೆ (ಅಕ್ಷರ_ಬರೆ (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  ಆದರೆ (ಅಕ್ಷರ_ಬರೆ (' ') < 0)
                     write_error ();
 
-                  continue;
+                  ಮುಂದುವರಿ;
                 }
-              else if (g.ch == '\b')
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
-                  column -= !!column;
-                  tab_index -= !!tab_index;
+                  ಸ್ತಂಭ -= !!ಸ್ತಂಭ;
+                  tab_ಸೂಚ್ಯಂಕ -= !!tab_ಸೂಚ್ಯಂಕ;
                 }
-              else
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  ಪೂರ್ಣಾಂಕ ಅಗಲ = c32width (g.ch);
+                  ಆದರೆ (ckd_ಕೂಡಿಸು (&ಸ್ತಂಭ, ಸ್ತಂಭ, ಅಗಲ < 0 ? 1 : ಅಗಲ))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          ಆದರೆ (g.ch == MBBUF_EOF)
+            ಹಿಂತಿರುಗಿ;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_ಸ್ಥಾನಾಂತರ (&mbbuf, g), ಗಾತ್ರ (ಅಕ್ಷರ), g.len, stdout);
+          ಆದರೆ (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      ಆಗ (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int c;
+  ಪೂರ್ಣಾಂಕ c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_ಸಾಲು = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ಆಗ ((c = getopt_long (argc, argv, shortopts, longopts, ಖಾಲಿ)) != -1)
     {
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        ಸ್ಥಿತಿ 'i':
+          convert_entire_ಸಾಲು = false;
+          ನಿಲ್ಲಿಸು;
 
-        case 't':
+        ಸ್ಥಿತಿ 't':
           parse_tab_stops (optarg);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        ಸ್ಥಿತಿ '0': ಸ್ಥಿತಿ '1': ಸ್ಥಿತಿ '2': ಸ್ಥಿತಿ '3': ಸ್ಥಿತಿ '4':
+        ಸ್ಥಿತಿ '5': ಸ್ಥಿತಿ '6': ಸ್ಥಿತಿ '7': ಸ್ಥಿತಿ '8': ಸ್ಥಿತಿ '9':
+          ಆದರೆ (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              char tab_stop[2];
+              ಅಕ್ಷರ tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  ಗಣ_file_list (optind < argc ? &argv[optind] : ಖಾಲಿ);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  ಹಿಂತಿರುಗಿ exit_ಸ್ಥಿತಿ;
 }

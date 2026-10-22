@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
 
 /* Exit statuses.  */
-enum
+ಎಣಿಕೆ
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -39,52 +39,52 @@ enum
   };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tty"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "tty"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+ಸ್ಥಿರ bool silent;
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_ವಾದ, ಖಾಲಿ, 's'},
+  {"quiet", no_ವಾದ, ಖಾಲಿ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      ಬರೆ (_("Usage: %s [OPTION]...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name ದ the terminal connected ಗಮ್ಯ standard ಒಳಹರಿವು.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only ಹಿಂತಿರುಗಿ an ನಿರ್ಗಮಿಸು ಸ್ಥಿತಿ_2\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int optc;
+  ಪೂರ್ಣಾಂಕ optc;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  ಆಗ ((optc = getopt_long (argc, argv, "s", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 's':
+        ಸ್ಥಿತಿ 's':
           silent = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  ಆದರೆ (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  ಆದರೆ (silent)
+    ಹಿಂತಿರುಗಿ isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
-    status = EXIT_SUCCESS;
-  else
+  ಆದರೆ (tty)
+    ಸ್ಥಿತಿ_2 = EXIT_SUCCESS;
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      ಪೂರ್ಣಾಂಕ ttyname_err = errno;
+      ಆದರೆ (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
-      status = TTY_STDIN_NOTTY;
+      ಸ್ಥಿತಿ_2 = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  ಹಿಂತಿರುಗಿ ಸ್ಥಿತಿ_2;
 }

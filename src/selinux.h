@@ -16,40 +16,40 @@
 
 /* Written by Daniel Walsh <dwalsh@redhat.com> */
 
-#ifndef COREUTILS_SELINUX_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ COREUTILS_SELINUX_H
 # define COREUTILS_SELINUX_H
 
-struct selabel_handle;
+ರಚನೆ selabel_handle;
 
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
-static inline bool
-ignorable_ctx_err (int err)
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ bool
+ignorable_ctx_err (ಪೂರ್ಣಾಂಕ err)
 {
-  return err == ENOTSUP || err == ENODATA;
+  ಹಿಂತಿರುಗಿ err == ENOTSUP || err == ENODATA;
 }
 
-# if HAVE_SELINUX_LABEL_H
+# ಆದರೆ HAVE_SELINUX_LABEL_H
 
-extern bool
-restorecon (struct selabel_handle *selabel_handle,
-            char const *path, bool recurse);
-extern int
-defaultcon (struct selabel_handle *selabel_handle,
-            char const *path, mode_t mode);
+ಬಾಹ್ಯ bool
+restorecon (ರಚನೆ selabel_handle *selabel_handle,
+            ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮಾರ್ಗ, bool recurse);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ
+defaultcon (ರಚನೆ selabel_handle *selabel_handle,
+            ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮಾರ್ಗ, mode_t ಬಹುಲಕ_2);
 
-# else
+# ಇಲ್ಲದಿದ್ದರೆ
 
-static inline bool
-restorecon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED bool recurse)
-{ errno = ENOTSUP; return false; }
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ bool
+restorecon (MAYBE_ಬಳಸದ ರಚನೆ selabel_handle *selabel_handle,
+            MAYBE_ಬಳಸದ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮಾರ್ಗ, MAYBE_ಬಳಸದ bool recurse)
+{ errno = ENOTSUP; ಹಿಂತಿರುಗಿ false; }
 
-static inline int
-defaultcon (MAYBE_UNUSED struct selabel_handle *selabel_handle,
-            MAYBE_UNUSED char const *path, MAYBE_UNUSED mode_t mode)
-{ errno = ENOTSUP; return -1; }
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ ಪೂರ್ಣಾಂಕ
+defaultcon (MAYBE_ಬಳಸದ ರಚನೆ selabel_handle *selabel_handle,
+            MAYBE_ಬಳಸದ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮಾರ್ಗ, MAYBE_ಬಳಸದ mode_t ಬಹುಲಕ_2)
+{ errno = ENOTSUP; ಹಿಂತಿರುಗಿ -1; }
 
 # endif
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ

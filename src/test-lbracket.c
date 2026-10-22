@@ -1,2 +1,2 @@
-#include "test.h"
-enum test_modes test_mode = TEST_LBRACKET;
+#ಅನ್ತರ್ಭಾವ "test.h"
+ಎಣಿಕೆ test_modes test_ಬಹುಲಕ = TEST_LBRACKET;

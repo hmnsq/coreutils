@@ -1,4 +1,4 @@
-enum chown_modes
+ಎಣಿಕೆ chown_modes
 {
   /* This is for the 'chown' program.  */
   CHOWN_CHOWN,
@@ -7,4 +7,4 @@ enum chown_modes
   CHOWN_CHGRP,
 };
 
-extern enum chown_modes chown_mode;
+ಬಾಹ್ಯ ಎಣಿಕೆ chown_modes chown_ಬಹುಲಕ;

@@ -16,38 +16,38 @@
 
 /* Written by Ross Paterson <rap@doc.ic.ac.uk>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
 
 /* Redefine.  Otherwise, systems (Unicos for one) with headers that define
    it to be a type get syntax errors for the variable declaration below.  */
-#define word unused_word_type
+#ವ್ಯಾಖ್ಯಾನಿಸು ಶಬ್ದ_2 ಬಳಸದ_ಶಬ್ದ_type
 
-#include "c-ctype.h"
-#include "system.h"
-#include "fadvise.h"
-#include "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "fadvise.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "fmt"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "fmt"
 
-#define AUTHORS proper_name ("Ross Paterson")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("Ross Paterson")
 
 /* The following parameters represent the program's idea of what is
    "best".  Adjust to taste, subject to the caveats given.  */
 
 /* Default longest permitted line length (max_width).  */
-#define WIDTH	75
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಗಲ_2	75
 
 /* Prefer lines to be LEEWAY % shorter than the maximum width, giving
    room for optimization.  */
-#define LEEWAY	7
+#ವ್ಯಾಖ್ಯಾನಿಸು LEEWAY	7
 
 /* The default secondary indent of tagged paragraph used for unindented
    one-line paragraphs not preceded by any multi-line paragraphs.  */
-#define DEF_INDENT 3
+#ವ್ಯಾಖ್ಯಾನಿಸು DEF_INDENT 3
 
 /* Costs and bonuses are expressed as the equivalent departure from the
    optimal line length, multiplied by 10.  e.g. assigning something a
@@ -60,48 +60,48 @@
    a floating-point type.  There are other problems besides COST,
    though; see MAXWORDS below.  */
 
-typedef long int COST;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ ವೆಚ್ಚ;
 
-#define MAXCOST	TYPE_MAXIMUM (COST)
+#ವ್ಯಾಖ್ಯಾನಿಸು MAXCOST	TYPE_ಗರಿಷ್ಠ (ವೆಚ್ಚ)
 
-#define SQR(n)		((n) * (n))
-#define EQUIV(n)	SQR ((COST) (n))
+#ವ್ಯಾಖ್ಯಾನಿಸು SQR(n)		((n) * (n))
+#ವ್ಯಾಖ್ಯಾನಿಸು EQUIV(n)	SQR ((ವೆಚ್ಚ) (n))
 
 /* Cost of a filled line n chars longer or shorter than goal_width.  */
-#define SHORT_COST(n)	EQUIV ((n) * 10)
+#ವ್ಯಾಖ್ಯಾನಿಸು SHORT_ವೆಚ್ಚ(n)	EQUIV ((n) * 10)
 
 /* Cost of the difference between adjacent filled lines.  */
-#define RAGGED_COST(n)	(SHORT_COST (n) / 2)
+#ವ್ಯಾಖ್ಯಾನಿಸು RAGGED_ವೆಚ್ಚ(n)	(SHORT_ವೆಚ್ಚ (n) / 2)
 
 /* Basic cost per line.  */
-#define LINE_COST	EQUIV (70)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಸಾಲು_ವೆಚ್ಚ	EQUIV (70)
 
 /* Cost of breaking a line after the first word of a sentence, where
    the length of the word is N.  */
-#define WIDOW_COST(n)	(EQUIV (200) / ((n) + 2))
+#ವ್ಯಾಖ್ಯಾನಿಸು WIDOW_ವೆಚ್ಚ(n)	(EQUIV (200) / ((n) + 2))
 
 /* Cost of breaking a line before the last word of a sentence, where
    the length of the word is N.  */
-#define ORPHAN_COST(n)	(EQUIV (150) / ((n) + 2))
+#ವ್ಯಾಖ್ಯಾನಿಸು ORPHAN_ವೆಚ್ಚ(n)	(EQUIV (150) / ((n) + 2))
 
 /* Bonus for breaking a line at the end of a sentence.  */
-#define SENTENCE_BONUS	EQUIV (50)
+#ವ್ಯಾಖ್ಯಾನಿಸು SENTENCE_BONUS	EQUIV (50)
 
 /* Cost of breaking a line after a period not marking end of a sentence.
    With the definition of sentence we are using (borrowed from emacs, see
    get_line()) such a break would then look like a sentence break.  Hence
    we assign a very high cost -- it should be avoided unless things are
    really bad.  */
-#define NOBREAK_COST	EQUIV (600)
+#ವ್ಯಾಖ್ಯಾನಿಸು NOBREAK_ವೆಚ್ಚ	EQUIV (600)
 
 /* Bonus for breaking a line before open parenthesis.  */
-#define PAREN_BONUS	EQUIV (40)
+#ವ್ಯಾಖ್ಯಾನಿಸು PAREN_BONUS	EQUIV (40)
 
 /* Bonus for breaking a line after other punctuation.  */
-#define PUNCT_BONUS	EQUIV(40)
+#ವ್ಯಾಖ್ಯಾನಿಸು PUNCT_BONUS	EQUIV(40)
 
 /* Credit for breaking a long paragraph one line later.  */
-#define LINE_CREDIT	EQUIV(3)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಸಾಲು_CREDIT	EQUIV(3)
 
 /* Size of paragraph buffer, in words and characters.  Longer paragraphs
    are handled neatly (cf. flush_paragraph()), so long as these values
@@ -110,134 +110,134 @@ typedef long int COST;
    and/or cause more overflows in cost calculations.  FIXME: Remove these
    arbitrary limits.  */
 
-#define MAXWORDS	1000
-#define MAXCHARS	5000
+#ವ್ಯಾಖ್ಯಾನಿಸು MAXWORDS	1000
+#ವ್ಯಾಖ್ಯಾನಿಸು MAXCHARS	5000
 
 /* Extra ctype(3)-style macros.  */
 
-#define isopen(c)	(strchr ("(['`\"", c) != NULL)
-#define isclose(c)	(strchr (")]'\"", c) != NULL)
-#define isperiod(c)	(strchr (".?!", c) != NULL)
+#ವ್ಯಾಖ್ಯಾನಿಸು isopen(c)	(strchr ("(['`\"", c) != ಖಾಲಿ)
+#ವ್ಯಾಖ್ಯಾನಿಸು isclose(c)	(strchr (")]'\"", c) != ಖಾಲಿ)
+#ವ್ಯಾಖ್ಯಾನಿಸು isperiod(c)	(strchr (".?!", c) != ಖಾಲಿ)
 
 /* Size of a tab stop, for expansion on input and re-introduction on
    output.  */
-#define TABWIDTH	8
+#ವ್ಯಾಖ್ಯಾನಿಸು TABWIDTH	8
 
 /* Word descriptor structure.  */
 
-typedef struct Word WORD;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಶಬ್ದ_3 ಶಬ್ದ;
 
-struct Word
+ರಚನೆ ಶಬ್ದ_3
   {
 
     /* Static attributes determined during input.  */
 
-    char const *text;		/* the text of the word */
-    int length;			/* length of this word */
-    int space;			/* the size of the following space */
-    unsigned int paren:1;	/* starts with open paren */
-    unsigned int period:1;	/* ends in [.?!])* */
-    unsigned int punct:1;	/* ends in punctuation */
-    unsigned int final:1;	/* end of sentence */
+    ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಪಠ್ಯ;		/* the text of the word */
+    ಪೂರ್ಣಾಂಕ ಉದ್ದಳತೆ;			/* length of this word */
+    ಪೂರ್ಣಾಂಕ space;			/* the size of the following space */
+    ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ paren:1;	/* starts with open paren */
+    ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ period:1;	/* ends in [.?!])* */
+    ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ punct:1;	/* ends in punctuation */
+    ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ final:1;	/* end of sentence */
 
     /* The remaining fields are computed during the optimization.  */
 
-    int line_length;		/* length of the best line starting here */
-    COST best_cost;		/* cost of best paragraph starting here */
-    WORD *next_break;		/* break which achieves best_cost */
+    ಪೂರ್ಣಾಂಕ ಸಾಲು_ಉದ್ದಳತೆ;		/* length of the best line starting here */
+    ವೆಚ್ಚ ಉತ್ತಮ_ವೆಚ್ಚ;		/* cost of best paragraph starting here */
+    ಶಬ್ದ *ಮುಂದಿನ_break;		/* break which achieves best_cost */
   };
 
 /* Forward declarations.  */
 
-static void set_prefix (char *p);
-static bool fmt (FILE *f, char const *);
-static bool get_paragraph (FILE *f);
-static int get_line (FILE *f, int c);
-static int get_prefix (FILE *f);
-static int get_space (FILE *f, int c);
-static int copy_rest (FILE *f, int c);
-static bool same_para (int c);
-static void flush_paragraph (void);
-static void fmt_paragraph (void);
-static void check_punctuation (WORD *w);
-static COST base_cost (WORD *this);
-static COST line_cost (WORD *next, int len);
-static void put_paragraph (WORD *finish);
-static void put_line (WORD *w, int indent);
-static void put_word (WORD *w);
-static void put_space (int space);
+ಸ್ಥಿರ ಶೂನ್ಯ ಗಣ_ಪೂರ್ವಪ್ರತ್ಯಯ (ಅಕ್ಷರ *p);
+ಸ್ಥಿರ bool fmt (FILE *f, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *);
+ಸ್ಥಿರ bool get_paragraph (FILE *f);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ get_ಸಾಲು (FILE *f, ಪೂರ್ಣಾಂಕ c);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ get_ಪೂರ್ವಪ್ರತ್ಯಯ (FILE *f);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ get_space (FILE *f, ಪೂರ್ಣಾಂಕ c);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ copy_rest (FILE *f, ಪೂರ್ಣಾಂಕ c);
+ಸ್ಥಿರ bool same_para (ಪೂರ್ಣಾಂಕ c);
+ಸ್ಥಿರ ಶೂನ್ಯ flush_paragraph (ಶೂನ್ಯ);
+ಸ್ಥಿರ ಶೂನ್ಯ fmt_paragraph (ಶೂನ್ಯ);
+ಸ್ಥಿರ ಶೂನ್ಯ check_punctuation (ಶಬ್ದ *w);
+ಸ್ಥಿರ ವೆಚ್ಚ ತಳ_ವೆಚ್ಚ (ಶಬ್ದ *this);
+ಸ್ಥಿರ ವೆಚ್ಚ ಸಾಲು_ವೆಚ್ಚ_2 (ಶಬ್ದ *ಮುಂದಿನ, ಪೂರ್ಣಾಂಕ len);
+ಸ್ಥಿರ ಶೂನ್ಯ put_paragraph (ಶಬ್ದ *ಮುಕ್ತಾಯ);
+ಸ್ಥಿರ ಶೂನ್ಯ put_ಸಾಲು (ಶಬ್ದ *w, ಪೂರ್ಣಾಂಕ indent);
+ಸ್ಥಿರ ಶೂನ್ಯ put_ಶಬ್ದ (ಶಬ್ದ *w);
+ಸ್ಥಿರ ಶೂನ್ಯ put_space (ಪೂರ್ಣಾಂಕ space);
 
 /* Option values.  */
 
 /* If true, first 2 lines may have different indent (default false).  */
-static bool crown;
+ಸ್ಥಿರ bool crown;
 
 /* If true, first 2 lines _must_ have different indent (default false).  */
-static bool tagged;
+ಸ್ಥಿರ bool tagged;
 
 /* If true, each line is a paragraph on its own (default false).  */
-static bool split;
+ಸ್ಥಿರ bool ವಿಭಜಿಸು;
 
 /* If true, don't preserve inter-word spacing (default false).  */
-static bool uniform;
+ಸ್ಥಿರ bool ಏಕರೂಪ;
 
 /* Prefix minus leading and trailing spaces (default "").  */
-static char const *prefix = "";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಪೂರ್ವಪ್ರತ್ಯಯ = "";
 
 /* User-supplied maximum line width (default WIDTH).  The only output
    lines longer than this will each comprise a single word.  */
-static int max_width = WIDTH;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ max_ಅಗಲ = ಅಗಲ_2;
 
 /* Values derived from the option values.  */
 
 /* The length of prefix minus leading space.  */
-static int prefix_full_length;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಪೂರ್ವಪ್ರತ್ಯಯ_ತುಂಬಿದ_ಉದ್ದಳತೆ;
 
 /* The length of the leading space trimmed from the prefix.  */
-static int prefix_lead_space;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಪೂರ್ವಪ್ರತ್ಯಯ_lead_space;
 
 /* The length of prefix minus leading and trailing space.  */
-static int prefix_length;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಪೂರ್ವಪ್ರತ್ಯಯ_ಉದ್ದಳತೆ;
 
 /* The preferred width of text lines, set to LEEWAY % less than max_width.  */
-static int goal_width;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ goal_ಅಗಲ;
 
 /* Dynamic variables.  */
 
 /* Start column of the character most recently read from the input file.  */
-static int in_column;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಒಳ_ಸ್ತಂಭ;
 
 /* Start column of the next character to be written to stdout.  */
-static int out_column;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಹೊರಹೋಗು_ಸ್ತಂಭ;
 
 /* Space for the paragraph text -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static char parabuf[MAXCHARS];
+ಸ್ಥಿರ ಅಕ್ಷರ parabuf[MAXCHARS];
 
 /* A pointer into parabuf, indicating the first unused character position.  */
-static char *wptr;
+ಸ್ಥಿರ ಅಕ್ಷರ *wptr;
 
 /* The words of a paragraph -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static WORD word[MAXWORDS];
+ಸ್ಥಿರ ಶಬ್ದ ಶಬ್ದ_2[MAXWORDS];
 
 /* A pointer into the above word array, indicating the first position
    after the last complete word.  Sometimes it will point at an incomplete
    word.  */
-static WORD *word_limit;
+ಸ್ಥಿರ ಶಬ್ದ *ಶಬ್ದ_ಎಲ್ಲೆ;
 
 /* If true, current input file contains tab characters, and so tabs can be
    used for white space on output.  */
-static bool tabs;
+ಸ್ಥಿರ bool tabs;
 
 /* Space before trimmed prefix on each line of the current paragraph.  */
-static int prefix_indent;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಪೂರ್ವಪ್ರತ್ಯಯ_indent;
 
 /* Indentation of the first line of the current paragraph.  */
-static int first_indent;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಮೊದಲ_indent;
 
 /* Indentation of other lines of the current paragraph */
-static int other_indent;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ other_indent;
 
 /* To detect the end of a paragraph, we need to look ahead to the first
    non-blank character after the prefix on the next line, or the first
@@ -247,28 +247,28 @@ static int other_indent;
    prefix (next_prefix_indent).  See get_paragraph() and copy_rest().  */
 
 /* The last character read from the input file.  */
-static int next_char;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಮುಂದಿನ_char;
 
 /* The space before the trimmed prefix (or part of it) on the next line
    after the current paragraph.  */
-static int next_prefix_indent;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent;
 
 /* If nonzero, the length of the last line output in the current
    paragraph, used to charge for raggedness at the split point for long
    paragraphs chosen by fmt_paragraph().  */
-static int last_line_length;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಕೊನೆಯ_ಸಾಲು_ಉದ್ದಳತೆ;
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), program_name);
+      ಬರೆ (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Reformat each paragraph in the FILE(s), writing to standard output.\n\
-The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
+Reformat each paragraph ಒಳ the FILE(s), writing ಗಮ್ಯ standard output.\n\
+The option -ಅಗಲ_2 is an abbreviated form ದ --ಅಗಲ=DIGITS.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -276,78 +276,78 @@ The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
 
       oputs (_("\
   -c, --crown-margin\n\
-         preserve indentation of first two lines\n\
+         preserve indentation ದ ಮೊದಲ two ಸಾಲುಗಳು\n\
 "));
       oputs (_("\
-  -p, --prefix=STRING\n\
-         reformat only lines beginning with STRING,\n\
-         reattaching the prefix to reformatted lines\n\
+  -p, --ಪೂರ್ವಪ್ರತ್ಯಯ=STRING\n\
+         reformat only ಸಾಲುಗಳು beginning with STRING,\n\
+         reattaching the ಪೂರ್ವಪ್ರತ್ಯಯ ಗಮ್ಯ reformatted ಸಾಲುಗಳು\n\
 "));
       oputs (_("\
-  -s, --split-only\n\
-         split long lines, but do not refill\n\
+  -s, --ವಿಭಜಿಸು-only\n\
+         ವಿಭಜಿಸು ದೀರ್ಘ ಸಾಲುಗಳು, but ಮಾಡು not refill\n\
 "));
       oputs (_("\
   -t, --tagged-paragraph\n\
-         indentation of first line different from second\n\
+         indentation ದ ಮೊದಲ ಸಾಲು different from ಎರಡನೇ\n\
 "));
       oputs (_("\
-  -u, --uniform-spacing\n\
-         one space between words, two after sentences\n\
+  -u, --ಏಕರೂಪ-spacing\n\
+         one space between ಪದಗಳು, two after sentences\n\
 "));
       oputs (_("\
-  -w, --width=WIDTH\n\
-         maximum line width (default of 75 columns)\n\
+  -w, --ಅಗಲ=ಅಗಲ_2\n\
+         ಗರಿಷ್ಠ ಸಾಲು ಅಗಲ (ಪೂರ್ವನಿಯೋಜಿತ ದ 75 columns)\n\
 "));
       /* Tell xgettext that the "% o" below is not a printf-style
          format string:  xgettext:no-c-format */
       oputs (_("\
-  -g, --goal=WIDTH\n\
-         goal width (default of 93% of width)\n\
+  -g, --goal=ಅಗಲ_2\n\
+         goal ಅಗಲ (ಪೂರ್ವನಿಯೋಜಿತ ದ 93% ದ ಅಗಲ)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Decode options and launch execution.  */
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"crown-margin", no_argument, NULL, 'c'},
-  {"prefix", required_argument, NULL, 'p'},
-  {"split-only", no_argument, NULL, 's'},
-  {"tagged-paragraph", no_argument, NULL, 't'},
-  {"uniform-spacing", no_argument, NULL, 'u'},
-  {"width", required_argument, NULL, 'w'},
-  {"goal", required_argument, NULL, 'g'},
+  {"crown-margin", no_ವಾದ, ಖಾಲಿ, 'c'},
+  {"prefix", required_ವಾದ, ಖಾಲಿ, 'p'},
+  {"split-only", no_ವಾದ, ಖಾಲಿ, 's'},
+  {"tagged-paragraph", no_ವಾದ, ಖಾಲಿ, 't'},
+  {"uniform-spacing", no_ವಾದ, ಖಾಲಿ, 'u'},
+  {"width", required_ವಾದ, ಖಾಲಿ, 'w'},
+  {"goal", required_ವಾದ, ಖಾಲಿ, 'g'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0},
 };
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int optchar;
+  ಪೂರ್ಣಾಂಕ optchar;
   bool ok = true;
-  char const *max_width_option = NULL;
-  char const *goal_width_option = NULL;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *max_ಅಗಲ_option = ಖಾಲಿ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *goal_ಅಗಲ_option = ಖಾಲಿ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  if (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  ಆದರೆ (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
       /* Old option syntax; a dash followed by one or more digits.  */
-      max_width_option = argv[1] + 1;
+      max_ಅಗಲ_option = argv[1] + 1;
 
       /* Make the option we just parsed invisible to getopt.  */
       argv[1] = argv[0];
@@ -355,97 +355,97 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
-                                 long_options, NULL))
+  ಆಗ ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
+                                 long_options, ಖಾಲಿ))
          != -1)
-    switch (optchar)
+    ಆಯ್ಕೆ (optchar)
       {
-      default:
-        if (c_isdigit (optchar))
-          error (0, 0, _("invalid option -- %c; -WIDTH is recognized\
- only when it is the first\noption; use -w N instead"),
+      ಪೂರ್ವನಿಯೋಜಿತ:
+        ಆದರೆ (c_isdigit (optchar))
+          error (0, 0, _("invalid option -- %c; -ಅಗಲ_2 is recognized\
+ only when it is the ಮೊದಲ\noption; use -w N instead"),
                  optchar);
         usage (EXIT_FAILURE);
 
-      case 'c':
+      ಸ್ಥಿತಿ 'c':
         crown = true;
-        break;
+        ನಿಲ್ಲಿಸು;
 
-      case 's':
-        split = true;
-        break;
+      ಸ್ಥಿತಿ 's':
+        ವಿಭಜಿಸು = true;
+        ನಿಲ್ಲಿಸು;
 
-      case 't':
+      ಸ್ಥಿತಿ 't':
         tagged = true;
-        break;
+        ನಿಲ್ಲಿಸು;
 
-      case 'u':
-        uniform = true;
-        break;
+      ಸ್ಥಿತಿ 'u':
+        ಏಕರೂಪ = true;
+        ನಿಲ್ಲಿಸು;
 
-      case 'w':
-        max_width_option = optarg;
-        break;
+      ಸ್ಥಿತಿ 'w':
+        max_ಅಗಲ_option = optarg;
+        ನಿಲ್ಲಿಸು;
 
-      case 'g':
-        goal_width_option = optarg;
-        break;
+      ಸ್ಥಿತಿ 'g':
+        goal_ಅಗಲ_option = optarg;
+        ನಿಲ್ಲಿಸು;
 
-      case 'p':
-        set_prefix (optarg);
-        break;
+      ಸ್ಥಿತಿ 'p':
+        ಗಣ_ಪೂರ್ವಪ್ರತ್ಯಯ (optarg);
+        ನಿಲ್ಲಿಸು;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
       }
 
-  if (max_width_option)
+  ಆದರೆ (max_ಅಗಲ_option)
     {
       /* Limit max_width to MAXCHARS / 2; otherwise, the resulting
          output can be quite ugly.  */
-      max_width = xnumtoumax (max_width_option, 10, 0, MAXCHARS / 2, "",
+      max_ಅಗಲ = xnumtoumax (max_ಅಗಲ_option, 10, 0, MAXCHARS / 2, "",
                               _("invalid width"), 0, XTOINT_MAX_RANGE);
     }
 
-  if (goal_width_option)
+  ಆದರೆ (goal_ಅಗಲ_option)
     {
       /* Limit goal_width to max_width.  */
-      goal_width = xdectoumax (goal_width_option, 0, max_width, "",
+      goal_ಅಗಲ = xdectoumax (goal_ಅಗಲ_option, 0, max_ಅಗಲ, "",
                                _("invalid goal"), 0);
-      if (max_width_option == NULL)
-        max_width = goal_width + 10;
+      ಆದರೆ (max_ಅಗಲ_option == ಖಾಲಿ)
+        max_ಅಗಲ = goal_ಅಗಲ + 10;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      goal_width = max_width * (2 * (100 - LEEWAY) + 1) / 200;
+      goal_ಅಗಲ = max_ಅಗಲ * (2 * (100 - LEEWAY) + 1) / 200;
     }
 
   bool have_read_stdin = false;
 
-  if (optind == argc)
+  ಆದರೆ (optind == argc)
     {
       have_read_stdin = true;
       ok = fmt (stdin, "-");
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      for (; optind < argc; optind++)
+      ಗಾಗಿ (; optind < argc; optind++)
         {
-          char *file = argv[optind];
-          if (streq (file, "-"))
+          ಅಕ್ಷರ *file = argv[optind];
+          ಆದರೆ (streq (file, "-"))
             {
               ok &= fmt (stdin, file);
               have_read_stdin = true;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              FILE *in_stream;
-              in_stream = fopen (file, "r");
-              if (in_stream != NULL)
-                ok &= fmt (in_stream, file);
-              else
+              FILE *ಒಳ_ಹರಿವು;
+              ಒಳ_ಹರಿವು = fopen (file, "r");
+              ಆದರೆ (ಒಳ_ಹರಿವು != ಖಾಲಿ)
+                ok &= fmt (ಒಳ_ಹರಿವು, file);
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
                   error (0, errno, _("cannot open %s for reading"),
                          quoteaf (file));
@@ -455,33 +455,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (have_read_stdin && fclose (stdin) != 0)
+  ಆದರೆ (have_read_stdin && fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s", _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಹಿಂತಿರುಗಿ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Trim space from the front and back of the string P, yielding the prefix,
    and record the lengths of the prefix and the space trimmed.  */
 
-static void
-set_prefix (char *p)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_ಪೂರ್ವಪ್ರತ್ಯಯ (ಅಕ್ಷರ *p)
 {
-  char *s;
+  ಅಕ್ಷರ *s;
 
-  prefix_lead_space = 0;
-  while (*p == ' ')
+  ಪೂರ್ವಪ್ರತ್ಯಯ_lead_space = 0;
+  ಆಗ (*p == ' ')
     {
-      prefix_lead_space++;
+      ಪೂರ್ವಪ್ರತ್ಯಯ_lead_space++;
       p++;
     }
-  prefix = p;
-  prefix_full_length = strlen (p);
-  s = p + prefix_full_length;
-  while (s > p && s[-1] == ' ')
+  ಪೂರ್ವಪ್ರತ್ಯಯ = p;
+  ಪೂರ್ವಪ್ರತ್ಯಯ_ತುಂಬಿದ_ಉದ್ದಳತೆ = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (p);
+  s = p + ಪೂರ್ವಪ್ರತ್ಯಯ_ತುಂಬಿದ_ಉದ್ದಳತೆ;
+  ಆಗ (s > p && s[-1] == ' ')
     s--;
   *s = '\0';
-  prefix_length = s - p;
+  ಪೂರ್ವಪ್ರತ್ಯಯ_ಉದ್ದಳತೆ = s - p;
 }
 
 /* Read F and send formatted output to stdout.
@@ -489,52 +489,52 @@ set_prefix (char *p)
    If !F, assume F resulted from an fopen failure and diagnose that.
    Return true if successful.  */
 
-static bool
-fmt (FILE *f, char const *file)
+ಸ್ಥಿರ bool
+fmt (FILE *f, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
   fadvise (f, FADVISE_SEQUENTIAL);
   tabs = false;
   other_indent = 0;
-  next_char = get_prefix (f);
-  while (get_paragraph (f))
+  ಮುಂದಿನ_char = get_ಪೂರ್ವಪ್ರತ್ಯಯ (f);
+  ಆಗ (get_paragraph (f))
     {
       fmt_paragraph ();
-      put_paragraph (word_limit);
+      put_paragraph (ಶಬ್ದ_ಎಲ್ಲೆ);
     }
 
-  int err = ferror (f) ? 0 : -1;
+  ಪೂರ್ಣಾಂಕ err = ferror (f) ? 0 : -1;
   /* err < 0 means success.  */
-  if (f == stdin)
+  ಆದರೆ (f == stdin)
     clearerr (f);
-  else if (fclose (f) != 0 && err < 0)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fclose (f) != 0 && err < 0)
     err = errno;
-  if (0 <= err)
+  ಆದರೆ (0 <= err)
     {
-      if (f == stdin)
+      ಆದರೆ (f == stdin)
         error (0, errno, _("read error"));
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         error (0, errno, _("error reading %s"), quoteaf (file));
     }
-  return err < 0;
+  ಹಿಂತಿರುಗಿ err < 0;
 }
 
 /* Set the global variable 'other_indent' according to SAME_PARAGRAPH
    and other global variables.  */
 
-static void
-set_other_indent (bool same_paragraph)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_other_indent (bool same_paragraph)
 {
-  if (split)
-    other_indent = first_indent;
-  else if (crown)
+  ಆದರೆ (ವಿಭಜಿಸು)
+    other_indent = ಮೊದಲ_indent;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (crown)
     {
-      other_indent = (same_paragraph ? in_column : first_indent);
+      other_indent = (same_paragraph ? ಒಳ_ಸ್ತಂಭ : ಮೊದಲ_indent);
     }
-  else if (tagged)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (tagged)
     {
-      if (same_paragraph && in_column != first_indent)
+      ಆದರೆ (same_paragraph && ಒಳ_ಸ್ತಂಭ != ಮೊದಲ_indent)
         {
-          other_indent = in_column;
+          other_indent = ಒಳ_ಸ್ತಂಭ;
         }
 
       /* Only one line: use the secondary indent from last time if it
@@ -542,12 +542,12 @@ set_other_indent (bool same_paragraph)
          input so far.  But if these rules make the two indents the same,
          pick a new secondary indent.  */
 
-      else if (other_indent == first_indent)
-        other_indent = first_indent == 0 ? DEF_INDENT : 0;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (other_indent == ಮೊದಲ_indent)
+        other_indent = ಮೊದಲ_indent == 0 ? DEF_INDENT : 0;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      other_indent = first_indent;
+      other_indent = ಮೊದಲ_indent;
     }
 }
 
@@ -566,76 +566,76 @@ set_other_indent (bool same_paragraph)
    Return false if end-of-file was encountered before the start of a
    paragraph, else true.  */
 
-static bool
+ಸ್ಥಿರ bool
 get_paragraph (FILE *f)
 {
-  int c;
+  ಪೂರ್ಣಾಂಕ c;
 
-  last_line_length = 0;
-  c = next_char;
+  ಕೊನೆಯ_ಸಾಲು_ಉದ್ದಳತೆ = 0;
+  c = ಮುಂದಿನ_char;
 
   /* Scan (and copy) blank lines, and lines not introduced by the prefix.  */
 
-  while (c == '\n' || c == EOF
-         || next_prefix_indent < prefix_lead_space
-         || in_column < next_prefix_indent + prefix_full_length)
+  ಆಗ (c == '\n' || c == EOF
+         || ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent < ಪೂರ್ವಪ್ರತ್ಯಯ_lead_space
+         || ಒಳ_ಸ್ತಂಭ < ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent + ಪೂರ್ವಪ್ರತ್ಯಯ_ತುಂಬಿದ_ಉದ್ದಳತೆ)
     {
       c = copy_rest (f, c);
-      if (c == EOF)
+      ಆದರೆ (c == EOF)
         {
-          next_char = EOF;
-          return false;
+          ಮುಂದಿನ_char = EOF;
+          ಹಿಂತಿರುಗಿ false;
         }
-      putchar ('\n');
-      c = get_prefix (f);
+      ಅಕ್ಷರ_ಬರೆ ('\n');
+      c = get_ಪೂರ್ವಪ್ರತ್ಯಯ (f);
     }
 
   /* Got a suitable first line for a paragraph.  */
 
-  prefix_indent = next_prefix_indent;
-  first_indent = in_column;
+  ಪೂರ್ವಪ್ರತ್ಯಯ_indent = ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent;
+  ಮೊದಲ_indent = ಒಳ_ಸ್ತಂಭ;
   wptr = parabuf;
-  word_limit = word;
-  c = get_line (f, c);
-  set_other_indent (same_para (c));
+  ಶಬ್ದ_ಎಲ್ಲೆ = ಶಬ್ದ_2;
+  c = get_ಸಾಲು (f, c);
+  ಗಣ_other_indent (same_para (c));
 
   /* Read rest of paragraph (unless split is specified).  */
 
-  if (split)
+  ಆದರೆ (ವಿಭಜಿಸು)
     {
-      /* empty */
+      /*ಖಾಲಿಗಳು*/
     }
-  else if (crown)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (crown)
     {
-      if (same_para (c))
+      ಆದರೆ (same_para (c))
         {
-          do
+          ಮಾಡು
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_ಸಾಲು (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          ಆಗ (same_para (c) && ಒಳ_ಸ್ತಂಭ == other_indent);
         }
     }
-  else if (tagged)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (tagged)
     {
-      if (same_para (c) && in_column != first_indent)
+      ಆದರೆ (same_para (c) && ಒಳ_ಸ್ತಂಭ != ಮೊದಲ_indent)
         {
-          do
+          ಮಾಡು
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_ಸಾಲು (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          ಆಗ (same_para (c) && ಒಳ_ಸ್ತಂಭ == other_indent);
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      while (same_para (c) && in_column == other_indent)
-        c = get_line (f, c);
+      ಆಗ (same_para (c) && ಒಳ_ಸ್ತಂಭ == other_indent)
+        c = get_ಸಾಲು (f, c);
     }
 
-  (word_limit - 1)->period = (word_limit - 1)->final = true;
-  next_char = c;
-  return true;
+  (ಶಬ್ದ_ಎಲ್ಲೆ - 1)->period = (ಶಬ್ದ_ಎಲ್ಲೆ - 1)->final = true;
+  ಮುಂದಿನ_char = c;
+  ಹಿಂತಿರುಗಿ true;
 }
 
 /* Copy to the output a line that failed to match the prefix, or that
@@ -643,37 +643,37 @@ get_paragraph (FILE *f)
    that failed to match the prefix.  In the latter, C is \n or EOF.
    Return the character (\n or EOF) ending the line.  */
 
-static int
-copy_rest (FILE *f, int c)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+copy_rest (FILE *f, ಪೂರ್ಣಾಂಕ c)
 {
-  out_column = 0;
-  if (in_column > next_prefix_indent || (c != '\n' && c != EOF))
+  ಹೊರಹೋಗು_ಸ್ತಂಭ = 0;
+  ಆದರೆ (ಒಳ_ಸ್ತಂಭ > ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent || (c != '\n' && c != EOF))
     {
-      put_space (next_prefix_indent);
-      for (char const *s = prefix; out_column != in_column && *s; out_column++)
-        putchar (*s++);
-      if (c != EOF && c != '\n')
-        put_space (in_column - out_column);
-      if (c == EOF && in_column >= next_prefix_indent + prefix_length)
-        putchar ('\n');
+      put_space (ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent);
+      ಗಾಗಿ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s = ಪೂರ್ವಪ್ರತ್ಯಯ; ಹೊರಹೋಗು_ಸ್ತಂಭ != ಒಳ_ಸ್ತಂಭ && *s; ಹೊರಹೋಗು_ಸ್ತಂಭ++)
+        ಅಕ್ಷರ_ಬರೆ (*s++);
+      ಆದರೆ (c != EOF && c != '\n')
+        put_space (ಒಳ_ಸ್ತಂಭ - ಹೊರಹೋಗು_ಸ್ತಂಭ);
+      ಆದರೆ (c == EOF && ಒಳ_ಸ್ತಂಭ >= ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent + ಪೂರ್ವಪ್ರತ್ಯಯ_ಉದ್ದಳತೆ)
+        ಅಕ್ಷರ_ಬರೆ ('\n');
     }
-  while (c != '\n' && c != EOF)
+  ಆಗ (c != '\n' && c != EOF)
     {
-      putchar (c);
+      ಅಕ್ಷರ_ಬರೆ (c);
       c = getc (f);
     }
-  return c;
+  ಹಿಂತಿರುಗಿ c;
 }
 
 /* Return true if a line whose first non-blank character after the
    prefix (if any) is C could belong to the current paragraph,
    otherwise false.  */
 
-static bool
-same_para (int c)
+ಸ್ಥಿರ bool
+same_para (ಪೂರ್ಣಾಂಕ c)
 {
-  return (next_prefix_indent == prefix_indent
-          && in_column >= next_prefix_indent + prefix_full_length
+  ಹಿಂತಿರುಗಿ (ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent == ಪೂರ್ವಪ್ರತ್ಯಯ_indent
+          && ಒಳ_ಸ್ತಂಭ >= ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent + ಪೂರ್ವಪ್ರತ್ಯಯ_ತುಂಬಿದ_ಉದ್ದಳತೆ
           && c != '\n' && c != EOF);
 }
 
@@ -685,144 +685,144 @@ same_para (int c)
 
    Return the first non-blank character of the next line.  */
 
-static int
-get_line (FILE *f, int c)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+get_ಸಾಲು (FILE *f, ಪೂರ್ಣಾಂಕ c)
 {
-  int start;
-  char *end_of_parabuf;
-  WORD *end_of_word;
+  ಪೂರ್ಣಾಂಕ ಆರಂಭ;
+  ಅಕ್ಷರ *ಕೊನೆ_ದ_parabuf;
+  ಶಬ್ದ *ಕೊನೆ_ದ_ಶಬ್ದ;
 
-  end_of_parabuf = &parabuf[MAXCHARS];
-  end_of_word = &word[MAXWORDS - 2];
+  ಕೊನೆ_ದ_parabuf = &parabuf[MAXCHARS];
+  ಕೊನೆ_ದ_ಶಬ್ದ = &ಶಬ್ದ_2[MAXWORDS - 2];
 
-  do
+  ಮಾಡು
     {				/* for each word in a line */
 
       /* Scan word.  */
 
-      word_limit->text = wptr;
-      do
+      ಶಬ್ದ_ಎಲ್ಲೆ->ಪಠ್ಯ = wptr;
+      ಮಾಡು
         {
-          if (wptr == end_of_parabuf)
+          ಆದರೆ (wptr == ಕೊನೆ_ದ_parabuf)
             {
-              set_other_indent (true);
+              ಗಣ_other_indent (true);
               flush_paragraph ();
             }
           *wptr++ = c;
           c = getc (f);
         }
-      while (c != EOF && !c_isspace (c));
-      in_column += word_limit->length = wptr - word_limit->text;
-      check_punctuation (word_limit);
+      ಆಗ (c != EOF && !c_isspace (c));
+      ಒಳ_ಸ್ತಂಭ += ಶಬ್ದ_ಎಲ್ಲೆ->ಉದ್ದಳತೆ = wptr - ಶಬ್ದ_ಎಲ್ಲೆ->ಪಠ್ಯ;
+      check_punctuation (ಶಬ್ದ_ಎಲ್ಲೆ);
 
       /* Scan inter-word space.  */
 
-      start = in_column;
+      ಆರಂಭ = ಒಳ_ಸ್ತಂಭ;
       c = get_space (f, c);
-      word_limit->space = in_column - start;
-      word_limit->final = (c == EOF
-                           || (word_limit->period
-                               && (c == '\n' || word_limit->space > 1)));
-      if (c == '\n' || c == EOF || uniform)
-        word_limit->space = word_limit->final ? 2 : 1;
-      if (word_limit == end_of_word)
+      ಶಬ್ದ_ಎಲ್ಲೆ->space = ಒಳ_ಸ್ತಂಭ - ಆರಂಭ;
+      ಶಬ್ದ_ಎಲ್ಲೆ->final = (c == EOF
+                           || (ಶಬ್ದ_ಎಲ್ಲೆ->period
+                               && (c == '\n' || ಶಬ್ದ_ಎಲ್ಲೆ->space > 1)));
+      ಆದರೆ (c == '\n' || c == EOF || ಏಕರೂಪ)
+        ಶಬ್ದ_ಎಲ್ಲೆ->space = ಶಬ್ದ_ಎಲ್ಲೆ->final ? 2 : 1;
+      ಆದರೆ (ಶಬ್ದ_ಎಲ್ಲೆ == ಕೊನೆ_ದ_ಶಬ್ದ)
         {
-          set_other_indent (true);
+          ಗಣ_other_indent (true);
           flush_paragraph ();
         }
-      word_limit++;
+      ಶಬ್ದ_ಎಲ್ಲೆ++;
     }
-  while (c != '\n' && c != EOF);
-  return get_prefix (f);
+  ಆಗ (c != '\n' && c != EOF);
+  ಹಿಂತಿರುಗಿ get_ಪೂರ್ವಪ್ರತ್ಯಯ (f);
 }
 
 /* Read a prefix from input file F.  Return either first non-matching
    character, or first non-blank character after the prefix.  */
 
-static int
-get_prefix (FILE *f)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+get_ಪೂರ್ವಪ್ರತ್ಯಯ (FILE *f)
 {
-  int c;
+  ಪೂರ್ಣಾಂಕ c;
 
-  in_column = 0;
+  ಒಳ_ಸ್ತಂಭ = 0;
   c = get_space (f, getc (f));
-  if (prefix_length == 0)
-    next_prefix_indent = prefix_lead_space < in_column ?
-      prefix_lead_space : in_column;
-  else
+  ಆದರೆ (ಪೂರ್ವಪ್ರತ್ಯಯ_ಉದ್ದಳತೆ == 0)
+    ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent = ಪೂರ್ವಪ್ರತ್ಯಯ_lead_space < ಒಳ_ಸ್ತಂಭ ?
+      ಪೂರ್ವಪ್ರತ್ಯಯ_lead_space : ಒಳ_ಸ್ತಂಭ;
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      next_prefix_indent = in_column;
-      for (char const *p = prefix; *p != '\0'; p++)
+      ಮುಂದಿನ_ಪೂರ್ವಪ್ರತ್ಯಯ_indent = ಒಳ_ಸ್ತಂಭ;
+      ಗಾಗಿ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = ಪೂರ್ವಪ್ರತ್ಯಯ; *p != '\0'; p++)
         {
-          unsigned char pc = *p;
-          if (c != pc)
-            return c;
-          in_column++;
+          ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ pc = *p;
+          ಆದರೆ (c != pc)
+            ಹಿಂತಿರುಗಿ c;
+          ಒಳ_ಸ್ತಂಭ++;
           c = getc (f);
         }
       c = get_space (f, c);
     }
-  return c;
+  ಹಿಂತಿರುಗಿ c;
 }
 
 /* Read blank characters from input file F, starting with C, and keeping
    in_column up-to-date.  Return first non-blank character.  */
 
-static int
-get_space (FILE *f, int c)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+get_space (FILE *f, ಪೂರ್ಣಾಂಕ c)
 {
-  while (true)
+  ಆಗ (true)
     {
-      if (c == ' ')
-        in_column++;
-      else if (c == '\t')
+      ಆದರೆ (c == ' ')
+        ಒಳ_ಸ್ತಂಭ++;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (c == '\t')
         {
           tabs = true;
-          in_column = (in_column / TABWIDTH + 1) * TABWIDTH;
+          ಒಳ_ಸ್ತಂಭ = (ಒಳ_ಸ್ತಂಭ / TABWIDTH + 1) * TABWIDTH;
         }
-      else
-        return c;
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಹಿಂತಿರುಗಿ c;
       c = getc (f);
     }
 }
 
 /* Set extra fields in word W describing any attached punctuation.  */
 
-static void
-check_punctuation (WORD *w)
+ಸ್ಥಿರ ಶೂನ್ಯ
+check_punctuation (ಶಬ್ದ *w)
 {
-  char const *start = w->text;
-  char const *finish = start + (w->length - 1);
-  unsigned char fin = *finish;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಆರಂಭ = w->ಪಠ್ಯ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮುಕ್ತಾಯ = ಆರಂಭ + (w->ಉದ್ದಳತೆ - 1);
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ fin = *ಮುಕ್ತಾಯ;
 
-  w->paren = isopen (*start);
+  w->paren = isopen (*ಆರಂಭ);
   w->punct = !! ispunct (fin);
-  while (start < finish && isclose (*finish))
-    finish--;
-  w->period = isperiod (*finish);
+  ಆಗ (ಆರಂಭ < ಮುಕ್ತಾಯ && isclose (*ಮುಕ್ತಾಯ))
+    ಮುಕ್ತಾಯ--;
+  w->period = isperiod (*ಮುಕ್ತಾಯ);
 }
 
 /* Flush part of the paragraph to make room.  This function is called on
    hitting the limit on the number of words or characters.  */
 
-static void
-flush_paragraph (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+flush_paragraph (ಶೂನ್ಯ)
 {
-  WORD *split_point;
-  WORD *w;
-  int shift;
-  COST best_break;
+  ಶಬ್ದ *ವಿಭಜಿಸು_ಬಿಂದು;
+  ಶಬ್ದ *w;
+  ಪೂರ್ಣಾಂಕ ಸರಿಸು;
+  ವೆಚ್ಚ ಉತ್ತಮ_break;
 
   /* In the special case where it's all one word, just flush it.  */
 
-  if (word_limit == word)
+  ಆದರೆ (ಶಬ್ದ_ಎಲ್ಲೆ == ಶಬ್ದ_2)
     {
-      size_t to_write = wptr - parabuf;
-      if (fwrite (parabuf, 1, to_write, stdout) != to_write)
+      size_t ಗಮ್ಯ_write = wptr - parabuf;
+      ಆದರೆ (fwrite (parabuf, 1, ಗಮ್ಯ_write, stdout) != ಗಮ್ಯ_write)
         write_error ();
 
       wptr = parabuf;
-      return;
+      ಹಿಂತಿರುಗಿ;
     }
 
   /* Otherwise:
@@ -835,226 +835,226 @@ flush_paragraph (void)
 
   /* Choose a good split point.  */
 
-  split_point = word_limit;
-  best_break = MAXCOST;
-  for (w = word->next_break; w != word_limit; w = w->next_break)
+  ವಿಭಜಿಸು_ಬಿಂದು = ಶಬ್ದ_ಎಲ್ಲೆ;
+  ಉತ್ತಮ_break = MAXCOST;
+  ಗಾಗಿ (w = ಶಬ್ದ_2->ಮುಂದಿನ_break; w != ಶಬ್ದ_ಎಲ್ಲೆ; w = w->ಮುಂದಿನ_break)
     {
-      if (w->best_cost - w->next_break->best_cost < best_break)
+      ಆದರೆ (w->ಉತ್ತಮ_ವೆಚ್ಚ - w->ಮುಂದಿನ_break->ಉತ್ತಮ_ವೆಚ್ಚ < ಉತ್ತಮ_break)
         {
-          split_point = w;
-          best_break = w->best_cost - w->next_break->best_cost;
+          ವಿಭಜಿಸು_ಬಿಂದು = w;
+          ಉತ್ತಮ_break = w->ಉತ್ತಮ_ವೆಚ್ಚ - w->ಮುಂದಿನ_break->ಉತ್ತಮ_ವೆಚ್ಚ;
         }
-      if (best_break <= MAXCOST - LINE_CREDIT)
-        best_break += LINE_CREDIT;
+      ಆದರೆ (ಉತ್ತಮ_break <= MAXCOST - ಸಾಲು_CREDIT)
+        ಉತ್ತಮ_break += ಸಾಲು_CREDIT;
     }
-  put_paragraph (split_point);
+  put_paragraph (ವಿಭಜಿಸು_ಬಿಂದು);
 
   /* Copy text of words down to start of parabuf -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (parabuf, split_point->text, wptr - split_point->text);
-  shift = split_point->text - parabuf;
-  wptr -= shift;
+  memmove (parabuf, ವಿಭಜಿಸು_ಬಿಂದು->ಪಠ್ಯ, wptr - ವಿಭಜಿಸು_ಬಿಂದು->ಪಠ್ಯ);
+  ಸರಿಸು = ವಿಭಜಿಸು_ಬಿಂದು->ಪಠ್ಯ - parabuf;
+  wptr -= ಸರಿಸು;
 
   /* Adjust text pointers.  */
 
-  for (w = split_point; w <= word_limit; w++)
-    w->text -= shift;
+  ಗಾಗಿ (w = ವಿಭಜಿಸು_ಬಿಂದು; w <= ಶಬ್ದ_ಎಲ್ಲೆ; w++)
+    w->ಪಠ್ಯ -= ಸರಿಸು;
 
   /* Copy words from split_point down to word -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (word, split_point, (word_limit - split_point + 1) * sizeof *word);
-  word_limit -= split_point - word;
+  memmove (ಶಬ್ದ_2, ವಿಭಜಿಸು_ಬಿಂದು, (ಶಬ್ದ_ಎಲ್ಲೆ - ವಿಭಜಿಸು_ಬಿಂದು + 1) * ಗಾತ್ರ *ಶಬ್ದ_2);
+  ಶಬ್ದ_ಎಲ್ಲೆ -= ವಿಭಜಿಸು_ಬಿಂದು - ಶಬ್ದ_2;
 }
 
 /* Compute the optimal formatting for the whole paragraph by computing
    and remembering the optimal formatting for each suffix from the empty
    one to the whole paragraph.  */
 
-static void
-fmt_paragraph (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+fmt_paragraph (ಶೂನ್ಯ)
 {
-  WORD *w;
-  int len;
-  COST wcost, best;
-  int saved_length;
+  ಶಬ್ದ *w;
+  ಪೂರ್ಣಾಂಕ len;
+  ವೆಚ್ಚ wcost, ಉತ್ತಮ;
+  ಪೂರ್ಣಾಂಕ saved_ಉದ್ದಳತೆ;
 
-  word_limit->best_cost = 0;
-  saved_length = word_limit->length;
-  word_limit->length = max_width;	/* sentinel */
+  ಶಬ್ದ_ಎಲ್ಲೆ->ಉತ್ತಮ_ವೆಚ್ಚ = 0;
+  saved_ಉದ್ದಳತೆ = ಶಬ್ದ_ಎಲ್ಲೆ->ಉದ್ದಳತೆ;
+  ಶಬ್ದ_ಎಲ್ಲೆ->ಉದ್ದಳತೆ = max_ಅಗಲ;	/* sentinel */
 
-  for (WORD *start = word_limit - 1; start >= word; start--)
+  ಗಾಗಿ (ಶಬ್ದ *ಆರಂಭ = ಶಬ್ದ_ಎಲ್ಲೆ - 1; ಆರಂಭ >= ಶಬ್ದ_2; ಆರಂಭ--)
     {
-      best = MAXCOST;
-      len = start == word ? first_indent : other_indent;
+      ಉತ್ತಮ = MAXCOST;
+      len = ಆರಂಭ == ಶಬ್ದ_2 ? ಮೊದಲ_indent : other_indent;
 
       /* At least one word, however long, in the line.  */
 
-      w = start;
-      len += w->length;
-      do
+      w = ಆರಂಭ;
+      len += w->ಉದ್ದಳತೆ;
+      ಮಾಡು
         {
           w++;
 
           /* Consider breaking before w.  */
 
-          wcost = line_cost (w, len) + w->best_cost;
-          if (start == word && last_line_length > 0)
-            wcost += RAGGED_COST (len - last_line_length);
-          if (wcost < best)
+          wcost = ಸಾಲು_ವೆಚ್ಚ_2 (w, len) + w->ಉತ್ತಮ_ವೆಚ್ಚ;
+          ಆದರೆ (ಆರಂಭ == ಶಬ್ದ_2 && ಕೊನೆಯ_ಸಾಲು_ಉದ್ದಳತೆ > 0)
+            wcost += RAGGED_ವೆಚ್ಚ (len - ಕೊನೆಯ_ಸಾಲು_ಉದ್ದಳತೆ);
+          ಆದರೆ (wcost < ಉತ್ತಮ)
             {
-              best = wcost;
-              start->next_break = w;
-              start->line_length = len;
+              ಉತ್ತಮ = wcost;
+              ಆರಂಭ->ಮುಂದಿನ_break = w;
+              ಆರಂಭ->ಸಾಲು_ಉದ್ದಳತೆ = len;
             }
 
           /* This is a kludge to keep us from computing 'len' as the
              sum of the sentinel length and some non-zero number.
              Since the sentinel w->length may be INT_MAX, adding
              to that would give a negative result.  */
-          if (w == word_limit)
-            break;
+          ಆದರೆ (w == ಶಬ್ದ_ಎಲ್ಲೆ)
+            ನಿಲ್ಲಿಸು;
 
-          len += (w - 1)->space + w->length;	/* w > start >= word */
+          len += (w - 1)->space + w->ಉದ್ದಳತೆ;	/* w > start >= word */
         }
-      while (len <= max_width);
-      start->best_cost = best + base_cost (start);
+      ಆಗ (len <= max_ಅಗಲ);
+      ಆರಂಭ->ಉತ್ತಮ_ವೆಚ್ಚ = ಉತ್ತಮ + ತಳ_ವೆಚ್ಚ (ಆರಂಭ);
     }
 
-  word_limit->length = saved_length;
+  ಶಬ್ದ_ಎಲ್ಲೆ->ಉದ್ದಳತೆ = saved_ಉದ್ದಳತೆ;
 }
 
 /* Work around <https://gcc.gnu.org/PR109628>.  */
-#if __GNUC__ == 13
+#ಆದರೆ __GNUC__ == 13
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Return the constant component of the cost of breaking before the
    word THIS.  */
 
-static COST
-base_cost (WORD *this)
+ಸ್ಥಿರ ವೆಚ್ಚ
+ತಳ_ವೆಚ್ಚ (ಶಬ್ದ *this)
 {
-  COST cost;
+  ವೆಚ್ಚ ವೆಚ್ಚ_2;
 
-  cost = LINE_COST;
+  ವೆಚ್ಚ_2 = ಸಾಲು_ವೆಚ್ಚ;
 
-  if (this > word)
+  ಆದರೆ (this > ಶಬ್ದ_2)
     {
-      if ((this - 1)->period)
+      ಆದರೆ ((this - 1)->period)
         {
-          if ((this - 1)->final)
-            cost -= SENTENCE_BONUS;
-          else
-            cost += NOBREAK_COST;
+          ಆದರೆ ((this - 1)->final)
+            ವೆಚ್ಚ_2 -= SENTENCE_BONUS;
+          ಇಲ್ಲದಿದ್ದರೆ
+            ವೆಚ್ಚ_2 += NOBREAK_ವೆಚ್ಚ;
         }
-      else if ((this - 1)->punct)
-        cost -= PUNCT_BONUS;
-      else if (this > word + 1 && (this - 2)->final)
-        cost += WIDOW_COST ((this - 1)->length);
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ ((this - 1)->punct)
+        ವೆಚ್ಚ_2 -= PUNCT_BONUS;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (this > ಶಬ್ದ_2 + 1 && (this - 2)->final)
+        ವೆಚ್ಚ_2 += WIDOW_ವೆಚ್ಚ ((this - 1)->ಉದ್ದಳತೆ);
     }
 
-  if (this->paren)
-    cost -= PAREN_BONUS;
-  else if (this->final)
-    cost += ORPHAN_COST (this->length);
+  ಆದರೆ (this->paren)
+    ವೆಚ್ಚ_2 -= PAREN_BONUS;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (this->final)
+    ವೆಚ್ಚ_2 += ORPHAN_ವೆಚ್ಚ (this->ಉದ್ದಳತೆ);
 
-  return cost;
+  ಹಿಂತಿರುಗಿ ವೆಚ್ಚ_2;
 }
 
 /* Return the component of the cost of breaking before word NEXT that
    depends on LEN, the length of the line beginning there.  */
 
-static COST
-line_cost (WORD *next, int len)
+ಸ್ಥಿರ ವೆಚ್ಚ
+ಸಾಲು_ವೆಚ್ಚ_2 (ಶಬ್ದ *ಮುಂದಿನ, ಪೂರ್ಣಾಂಕ len)
 {
-  int n;
-  COST cost;
+  ಪೂರ್ಣಾಂಕ n;
+  ವೆಚ್ಚ ವೆಚ್ಚ_2;
 
-  if (next == word_limit)
-    return 0;
-  n = goal_width - len;
-  cost = SHORT_COST (n);
-  if (next->next_break != word_limit)
+  ಆದರೆ (ಮುಂದಿನ == ಶಬ್ದ_ಎಲ್ಲೆ)
+    ಹಿಂತಿರುಗಿ 0;
+  n = goal_ಅಗಲ - len;
+  ವೆಚ್ಚ_2 = SHORT_ವೆಚ್ಚ (n);
+  ಆದರೆ (ಮುಂದಿನ->ಮುಂದಿನ_break != ಶಬ್ದ_ಎಲ್ಲೆ)
     {
-      n = len - next->line_length;
-      cost += RAGGED_COST (n);
+      n = len - ಮುಂದಿನ->ಸಾಲು_ಉದ್ದಳತೆ;
+      ವೆಚ್ಚ_2 += RAGGED_ವೆಚ್ಚ (n);
     }
-  return cost;
+  ಹಿಂತಿರುಗಿ ವೆಚ್ಚ_2;
 }
 
 /* Output to stdout a paragraph from word up to (but not including)
    FINISH, which must be in the next_break chain from word.  */
 
-static void
-put_paragraph (WORD *finish)
+ಸ್ಥಿರ ಶೂನ್ಯ
+put_paragraph (ಶಬ್ದ *ಮುಕ್ತಾಯ)
 {
-  put_line (word, first_indent);
-  for (WORD *w = word->next_break; w != finish; w = w->next_break)
-    put_line (w, other_indent);
+  put_ಸಾಲು (ಶಬ್ದ_2, ಮೊದಲ_indent);
+  ಗಾಗಿ (ಶಬ್ದ *w = ಶಬ್ದ_2->ಮುಂದಿನ_break; w != ಮುಕ್ತಾಯ; w = w->ಮುಂದಿನ_break)
+    put_ಸಾಲು (w, other_indent);
 }
 
 /* Output to stdout the line beginning with word W, beginning in column
    INDENT, including the prefix (if any).  */
 
-static void
-put_line (WORD *w, int indent)
+ಸ್ಥಿರ ಶೂನ್ಯ
+put_ಸಾಲು (ಶಬ್ದ *w, ಪೂರ್ಣಾಂಕ indent)
 {
-  WORD *endline;
+  ಶಬ್ದ *endline;
 
-  out_column = 0;
-  put_space (prefix_indent);
-  fputs (prefix, stdout);
-  out_column += prefix_length;
-  put_space (indent - out_column);
+  ಹೊರಹೋಗು_ಸ್ತಂಭ = 0;
+  put_space (ಪೂರ್ವಪ್ರತ್ಯಯ_indent);
+  fputs (ಪೂರ್ವಪ್ರತ್ಯಯ, stdout);
+  ಹೊರಹೋಗು_ಸ್ತಂಭ += ಪೂರ್ವಪ್ರತ್ಯಯ_ಉದ್ದಳತೆ;
+  put_space (indent - ಹೊರಹೋಗು_ಸ್ತಂಭ);
 
-  endline = w->next_break - 1;
-  for (; w != endline; w++)
+  endline = w->ಮುಂದಿನ_break - 1;
+  ಗಾಗಿ (; w != endline; w++)
     {
-      put_word (w);
+      put_ಶಬ್ದ (w);
       put_space (w->space);
     }
-  put_word (w);
-  last_line_length = out_column;
-  putchar ('\n');
+  put_ಶಬ್ದ (w);
+  ಕೊನೆಯ_ಸಾಲು_ಉದ್ದಳತೆ = ಹೊರಹೋಗು_ಸ್ತಂಭ;
+  ಅಕ್ಷರ_ಬರೆ ('\n');
 
-  if (ferror (stdout))
+  ಆದರೆ (ferror (stdout))
     write_error ();
 }
 
 /* Output to stdout the word W.  */
 
-static void
-put_word (WORD *w)
+ಸ್ಥಿರ ಶೂನ್ಯ
+put_ಶಬ್ದ (ಶಬ್ದ *w)
 {
-  char const *s = w->text;
-  for (int n = w->length; n != 0; n--)
-    putchar (*s++);
-  out_column += w->length;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s = w->ಪಠ್ಯ;
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ n = w->ಉದ್ದಳತೆ; n != 0; n--)
+    ಅಕ್ಷರ_ಬರೆ (*s++);
+  ಹೊರಹೋಗು_ಸ್ತಂಭ += w->ಉದ್ದಳತೆ;
 }
 
 /* Output to stdout SPACE spaces, or equivalent tabs.  */
 
-static void
-put_space (int space)
+ಸ್ಥಿರ ಶೂನ್ಯ
+put_space (ಪೂರ್ಣಾಂಕ space)
 {
-  int space_target, tab_target;
+  ಪೂರ್ಣಾಂಕ space_ಗುರಿ, tab_ಗುರಿ;
 
-  space_target = out_column + space;
-  if (tabs)
+  space_ಗುರಿ = ಹೊರಹೋಗು_ಸ್ತಂಭ + space;
+  ಆದರೆ (tabs)
     {
-      tab_target = space_target / TABWIDTH * TABWIDTH;
-      if (out_column + 1 < tab_target)
-        while (out_column < tab_target)
+      tab_ಗುರಿ = space_ಗುರಿ / TABWIDTH * TABWIDTH;
+      ಆದರೆ (ಹೊರಹೋಗು_ಸ್ತಂಭ + 1 < tab_ಗುರಿ)
+        ಆಗ (ಹೊರಹೋಗು_ಸ್ತಂಭ < tab_ಗುರಿ)
           {
-            putchar ('\t');
-            out_column = (out_column / TABWIDTH + 1) * TABWIDTH;
+            ಅಕ್ಷರ_ಬರೆ ('\t');
+            ಹೊರಹೋಗು_ಸ್ತಂಭ = (ಹೊರಹೋಗು_ಸ್ತಂಭ / TABWIDTH + 1) * TABWIDTH;
           }
     }
-  while (out_column < space_target)
+  ಆಗ (ಹೊರಹೋಗು_ಸ್ತಂಭ < space_ಗುರಿ)
     {
-      putchar (' ');
-      out_column++;
+      ಅಕ್ಷರ_ಬರೆ (' ');
+      ಹೊರಹೋಗು_ಸ್ತಂಭ++;
     }
 }

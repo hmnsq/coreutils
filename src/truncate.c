@@ -20,267 +20,267 @@
    flexible wrt the size specifications and the use of long options,
    to better fit the "GNU" environment.  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "stat-size.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "truncate"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "truncate"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
 /* (-c) If true, don't create if not already there */
-static bool no_create;
+ಸ್ಥಿರ bool no_create;
 
 /* (-o) If true, --size refers to blocks not bytes */
-static bool block_mode;
+ಸ್ಥಿರ bool ಖಂಡ_ಬಹುಲಕ;
 
 /* (-r) Reference file to use size from */
-static char const *ref_file;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ref_file;
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"no-create", no_argument, NULL, 'c'},
-  {"io-blocks", no_argument, NULL, 'o'},
-  {"reference", required_argument, NULL, 'r'},
-  {"size", required_argument, NULL, 's'},
+  {"no-create", no_ವಾದ, ಖಾಲಿ, 'c'},
+  {"io-blocks", no_ವಾದ, ಖಾಲಿ, 'o'},
+  {"reference", required_ವಾದ, ಖಾಲಿ, 'r'},
+  {"size", required_ವಾದ, ಖಾಲಿ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-typedef enum
-{ rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_mode_t;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಎಣಿಕೆ
+{ rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_ಬಹುಲಕ_t;
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s OPTION... FILE...\n"), program_name);
+      ಬರೆ (_("Usage: %s OPTION... FILE...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Shrink or extend the size of each FILE to the specified size\n\
+Shrink or extend the ಗಾತ್ರ_2 ದ each FILE ಗಮ್ಯ the specified ಗಾತ್ರ_2\n\
 \n\
-A FILE argument that does not exist is created.\n\
+A FILE ವಾದ that does not exist is created.\n\
 \n\
-If a FILE is larger than the specified size, the extra data is lost.\n\
+If a FILE is larger than the specified ಗಾತ್ರ_2, the extra ದತ್ತಾಂಶ is ಕಳೆದುಹೋದ.\n\
 If a FILE is shorter, it is extended and the sparse extended part (hole)\n\
-reads as zero bytes.\n\
+reads as zero ಬೈಟುಗಳು.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --no-create        do not create any files\n\
+  -c, --no-create        ಮಾಡು not create any files\n\
 "));
       oputs (_("\
-  -o, --io-blocks        treat SIZE as number of IO blocks instead of bytes\n\
+  -o, --io-ಖಂಡಗಳು        treat ಗಾತ್ರ_3 as ಸಂಖ್ಯೆ ದ IO ಖಂಡಗಳು instead ದ ಬೈಟುಗಳು\n\
 "));
       oputs (_("\
-  -r, --reference=RFILE  base size on RFILE\n\
+  -r, --reference=RFILE  ತಳ_2 ಗಾತ್ರ_2 on RFILE\n\
 "));
       oputs (_("\
-  -s, --size=SIZE        set or adjust the file size by SIZE bytes\n\
+  -s, --ಗಾತ್ರ_2=ಗಾತ್ರ_3        ಗಣ_2 or adjust the file ಗಾತ್ರ_2 by ಗಾತ್ರ_3 ಬೈಟುಗಳು\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_size_note ();
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ಗಾತ್ರ_note ();
       fputs (_("\n\
-SIZE may also be prefixed by one of the following modifying characters:\n\
-'+' extend by, '-' reduce by, '<' at most, '>' at least,\n\
-'/' round down to multiple of, '%' round up to multiple of.\n"), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+ಗಾತ್ರ_3 may also be prefixed by one ದ the following modifying characters:\n\
+'+' extend by, '-' reduce by, '<' at most, '>' at ಕನಿಷ್ಠ,\n\
+'/' ಸುತ್ತು_2 ಕೆಳಕ್ಕೆ ಗಮ್ಯ ಅಪವರ್ತ್ಯ ದ, '%' ಸುತ್ತು_2 ಮೇಲೆ ಗಮ್ಯ ಅಪವರ್ತ್ಯ ದ.\n"), stdout);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* return true on success, false on error.  */
-static bool
-do_ftruncate (int fd, char const *fname, off_t ssize, off_t rsize,
-              rel_mode_t rel_mode)
+ಸ್ಥಿರ bool
+do_ftruncate (ಪೂರ್ಣಾಂಕ fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fname, off_t ssize, off_t rsize,
+              rel_ಬಹುಲಕ_t rel_ಬಹುಲಕ)
 {
-  struct stat sb;
+  ರಚನೆ stat sb;
   off_t nsize;
 
-  if ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
+  ಆದರೆ ((ಖಂಡ_ಬಹುಲಕ || (rel_ಬಹುಲಕ && rsize < 0)) && fstat (fd, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (fname));
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
-  if (block_mode)
+  ಆದರೆ (ಖಂಡ_ಬಹುಲಕ)
     {
       ptrdiff_t blksize = STP_BLKSIZE (&sb);
       intmax_t ssize0 = ssize;
-      if (ckd_mul (&ssize, ssize, blksize))
+      ಆದರೆ (ckd_mul (&ssize, ssize, blksize))
         {
           error (0, 0,
                  _("overflow in %jd * %td byte blocks for file %s"),
                  ssize0, blksize, quoteaf (fname));
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
     }
-  if (rel_mode)
+  ಆದರೆ (rel_ಬಹುಲಕ)
     {
       off_t fsize;
 
-      if (0 <= rsize)
+      ಆದರೆ (0 <= rsize)
         fsize = rsize;
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          if (usable_st_size (&sb))
+          ಆದರೆ (usable_st_ಗಾತ್ರ (&sb))
             {
-              fsize = sb.st_size;
-              if (fsize < 0)
+              fsize = sb.st_ಗಾತ್ರ;
+              ಆದರೆ (fsize < 0)
                 {
                   /* Sanity check.  Overflow is the only reason I can think
                      this would ever go negative. */
                   error (0, 0, _("%s has unusable, apparently negative size"),
                          quoteaf (fname));
-                  return false;
+                  ಹಿಂತಿರುಗಿ false;
                 }
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               fsize = lseek (fd, 0, SEEK_END);
-              if (fsize < 0)
+              ಆದರೆ (fsize < 0)
                 {
                   error (0, errno, _("cannot get the size of %s"),
                          quoteaf (fname));
-                  return false;
+                  ಹಿಂತಿರುಗಿ false;
                 }
             }
         }
 
-      if (rel_mode == rm_min)
+      ಆದರೆ (rel_ಬಹುಲಕ == rm_min)
         nsize = MAX (fsize, ssize);
-      else if (rel_mode == rm_max)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (rel_ಬಹುಲಕ == rm_max)
         nsize = MIN (fsize, ssize);
-      else if (rel_mode == rm_rdn)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (rel_ಬಹುಲಕ == rm_rdn)
         /* 0..ssize-1 -> 0 */
         nsize = fsize - fsize % ssize;
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          if (rel_mode == rm_rup)
+          ಆದರೆ (rel_ಬಹುಲಕ == rm_rup)
             {
               /* 1..ssize -> ssize */
               off_t r = fsize % ssize;
               ssize = r == 0 ? 0 : ssize - r;
             }
-          if (ckd_add (&nsize, fsize, ssize))
+          ಆದರೆ (ckd_ಕೂಡಿಸು (&nsize, fsize, ssize))
             {
               error (0, 0, _("overflow extending size of file %s"),
                      quoteaf (fname));
-              return false;
+              ಹಿಂತಿರುಗಿ false;
             }
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     nsize = ssize;
-  if (nsize < 0)
+  ಆದರೆ (nsize < 0)
     nsize = 0;
 
-  if (ftruncate (fd, nsize) != 0)
+  ಆದರೆ (ftruncate (fd, nsize) != 0)
     {
       error (0, errno, _("failed to truncate %s at %jd bytes"),
              quoteaf (fname), (intmax_t) {nsize});
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  bool got_size = false;
-  off_t size IF_LINT ( = 0);
+  bool got_ಗಾತ್ರ = false;
+  off_t ಗಾತ್ರ_2 IF_LINT ( = 0);
   off_t rsize = -1;
-  rel_mode_t rel_mode = rm_abs;
-  int c;
+  rel_ಬಹುಲಕ_t rel_ಬಹುಲಕ = rm_abs;
+  ಪೂರ್ಣಾಂಕ c;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
+  ಆಗ ((c = getopt_long (argc, argv, "cor:s:", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'c':
+        ಸ್ಥಿತಿ 'c':
           no_create = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'o':
-          block_mode = true;
-          break;
+        ಸ್ಥಿತಿ 'o':
+          ಖಂಡ_ಬಹುಲಕ = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 'r':
+        ಸ್ಥಿತಿ 'r':
           ref_file = optarg;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 's':
+        ಸ್ಥಿತಿ 's':
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ಆಗ (ಖಾಲಿಯೇ (ಗಮ್ಯ_uchar (*optarg)))
             optarg++;
-          switch (*optarg)
+          ಆಯ್ಕೆ (*optarg)
             {
-            case '<':
-              rel_mode = rm_max;
+            ಸ್ಥಿತಿ '<':
+              rel_ಬಹುಲಕ = rm_max;
               optarg++;
-              break;
-            case '>':
-              rel_mode = rm_min;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ '>':
+              rel_ಬಹುಲಕ = rm_min;
               optarg++;
-              break;
-            case '/':
-              rel_mode = rm_rdn;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ '/':
+              rel_ಬಹುಲಕ = rm_rdn;
               optarg++;
-              break;
-            case '%':
-              rel_mode = rm_rup;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ '%':
+              rel_ಬಹುಲಕ = rm_rup;
               optarg++;
-              break;
+              ನಿಲ್ಲಿಸು;
             }
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ಆಗ (ಖಾಲಿಯೇ (ಗಮ್ಯ_uchar (*optarg)))
             optarg++;
-          if (*optarg == '+' || *optarg == '-')
+          ಆದರೆ (*optarg == '+' || *optarg == '-')
             {
-              if (rel_mode)
+              ಆದರೆ (rel_ಬಹುಲಕ)
                 {
                   error (0, 0, _("multiple relative modifiers specified"));
                   /* Note other combinations are flagged as invalid numbers */
                   usage (EXIT_FAILURE);
                 }
-              rel_mode = rm_rel;
+              rel_ಬಹುಲಕ = rm_rel;
             }
           /* Support dd BLOCK size suffixes + lowercase g,t,m for bsd compat.
              Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats. */
-          size = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
+          ಗಾತ್ರ_2 = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
                              _("Invalid number"), 0);
           /* Rounding to multiple of 0 is nonsensical */
-          if ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
+          ಆದರೆ ((rel_ಬಹುಲಕ == rm_rup || rel_ಬಹುಲಕ == rm_rdn) && ಗಾತ್ರ_2 == 0)
             error (EXIT_FAILURE, 0, _("division by zero"));
-          got_size = true;
-          break;
+          got_ಗಾತ್ರ = true;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
@@ -289,91 +289,91 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify either size or reference file */
-  if (!ref_file && !got_size)
+  ಆದರೆ (!ref_file && !got_ಗಾತ್ರ)
     {
       error (0, 0, _("you must specify either %s or %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* must specify a relative size with a reference file */
-  if (ref_file && got_size && !rel_mode)
+  ಆದರೆ (ref_file && got_ಗಾತ್ರ && !rel_ಬಹುಲಕ)
     {
       error (0, 0, _("you must specify a relative %s with %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* block_mode without size is not valid */
-  if (block_mode && !got_size)
+  ಆದರೆ (ಖಂಡ_ಬಹುಲಕ && !got_ಗಾತ್ರ)
     {
       error (0, 0, _("%s was specified but %s was not"),
              quote_n (0, "--io-blocks"), quote_n (1, "--size"));
       usage (EXIT_FAILURE);
     }
   /* must specify at least 1 file */
-  if (argc < 1)
+  ಆದರೆ (argc < 1)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (ref_file)
+  ಆದರೆ (ref_file)
     {
-      struct stat sb;
-      off_t file_size = -1;
-      if (stat (ref_file, &sb) != 0)
+      ರಚನೆ stat sb;
+      off_t file_ಗಾತ್ರ = -1;
+      ಆದರೆ (stat (ref_file, &sb) != 0)
         error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (ref_file));
-      if (usable_st_size (&sb))
-        file_size = sb.st_size;
-      else
+      ಆದರೆ (usable_st_ಗಾತ್ರ (&sb))
+        file_ಗಾತ್ರ = sb.st_ಗಾತ್ರ;
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* O_NONBLOCK so we do not hang forever on a FIFO with no writer.  */
-          int ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
-          if (0 <= ref_fd)
+          ಪೂರ್ಣಾಂಕ ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
+          ಆದರೆ (0 <= ref_fd)
             {
-              off_t file_end = lseek (ref_fd, 0, SEEK_END);
-              int saved_errno = errno;
+              off_t file_ಕೊನೆ = lseek (ref_fd, 0, SEEK_END);
+              ಪೂರ್ಣಾಂಕ saved_errno = errno;
               close (ref_fd); /* ignore failure */
-              if (0 <= file_end)
-                file_size = file_end;
-              else
+              ಆದರೆ (0 <= file_ಕೊನೆ)
+                file_ಗಾತ್ರ = file_ಕೊನೆ;
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
                   /* restore, in case close clobbered it. */
                   errno = saved_errno;
                 }
             }
         }
-      if (file_size < 0)
+      ಆದರೆ (file_ಗಾತ್ರ < 0)
         error (EXIT_FAILURE, errno, _("cannot get the size of %s"),
                quoteaf (ref_file));
-      if (!got_size)
-        size = file_size;
-      else
-        rsize = file_size;
+      ಆದರೆ (!got_ಗಾತ್ರ)
+        ಗಾತ್ರ_2 = file_ಗಾತ್ರ;
+      ಇಲ್ಲದಿದ್ದರೆ
+        rsize = file_ಗಾತ್ರ;
     }
 
-  int oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
+  ಪೂರ್ಣಾಂಕ oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
   bool errors = false;
 
-  for (char const *fname; (fname = *argv); argv++)
+  ಗಾಗಿ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fname; (fname = *argv); argv++)
     {
-      int fd = open (fname, oflags, MODE_RW_UGO);
-      if (fd < 0)
+      ಪೂರ್ಣಾಂಕ fd = open (fname, oflags, ಬಹುಲಕ_RW_UGO);
+      ಆದರೆ (fd < 0)
         {
           /* 'truncate -s0 -c no-such-file'  shouldn't gen error
              'truncate -s0 no-such-dir/file' should gen ENOENT error
              'truncate -s0 no-such-dir/' should gen EISDIR error
              'truncate -s0 .' should gen EISDIR error */
-          if (!(no_create && errno == ENOENT))
+          ಆದರೆ (!(no_create && errno == ENOENT))
             {
               error (0, errno, _("cannot open %s for writing"),
                      quoteaf (fname));
               errors = true;
             }
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          errors |= !do_ftruncate (fd, fname, size, rsize, rel_mode);
-          if (close (fd) != 0)
+          errors |= !do_ftruncate (fd, fname, ಗಾತ್ರ_2, rsize, rel_ಬಹುಲಕ);
+          ಆದರೆ (close (fd) != 0)
             {
               error (0, errno, _("failed to close %s"), quoteaf (fname));
               errors = true;
@@ -381,5 +381,5 @@ main (int argc, char **argv)
         }
     }
 
-  return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+  ಹಿಂತಿರುಗಿ errors ? EXIT_FAILURE : EXIT_SUCCESS;
 }

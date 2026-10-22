@@ -16,122 +16,122 @@
 
 /* Written by Giuseppe Scrivano.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "nproc.h"
-#include "quote.h"
-#include "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "nproc.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nproc"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "nproc"
 
-#define AUTHORS proper_name ("Giuseppe Scrivano")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("Giuseppe Scrivano")
 
-enum
+ಎಣಿಕೆ
 {
   ALL_OPTION = CHAR_MAX + 1,
   IGNORE_OPTION
 };
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"all", no_argument, NULL, ALL_OPTION},
-  {"ignore", required_argument, NULL, IGNORE_OPTION},
+  {"all", no_ವಾದ, ಖಾಲಿ, ALL_OPTION},
+  {"ignore", required_ವಾದ, ಖಾಲಿ, IGNORE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      ಬರೆ (_("Usage: %s [OPTION]...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Print the number of processing units available to the current process,\n\
-which may be less than the number of online processors.\n\
-If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are set,\n\
-then they will determine the minimum and maximum returned value respectively.\n\
+Print the ಸಂಖ್ಯೆ ದ processing units ಲಭ್ಯ ಗಮ್ಯ the current process,\n\
+which may be less than the ಸಂಖ್ಯೆ ದ online processors.\n\
+If the 'OMP_NUM_THREADS' or 'OMP_THREAD_LIMIT' environment variables are ಗಣ_2,\n\
+then they will determine the minimum and ಗರಿಷ್ಠ returned ಮೌಲ್ಯ respectively.\n\
 \n\
 "), stdout);
       oputs (_("\
       --all\n\
-         print the number of installed processors,\n\
+         print the ಸಂಖ್ಯೆ ದ installed processors,\n\
          disregarding any OpenMP environment variables, or CPU quotas.\n\
 "));
       oputs (_("\
       --ignore=N\n\
-         if possible, exclude N processing units.\n\
-         The result is guaranteed to be at least 1.\n\
+         ಆದರೆ possible, exclude N processing units.\n\
+         The ಫಲಿತಾಂಶ is guaranteed ಗಮ್ಯ be at ಕನಿಷ್ಠ 1.\n\
 "));
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  unsigned long ignore = 0;
+  ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ignore = 0;
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
+  ಎಣಿಕೆ nproc_query ಬಹುಲಕ_2 = NPROC_CURRENT_OVERRIDABLE;
 
-  while (true)
+  ಆಗ (true)
     {
-      int c = getopt_long (argc, argv, "", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      ಪೂರ್ಣಾಂಕ c = getopt_long (argc, argv, "", longopts, ಖಾಲಿ);
+      ಆದರೆ (c == -1)
+        ನಿಲ್ಲಿಸು;
+      ಆಯ್ಕೆ (c)
         {
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        case ALL_OPTION:
-          mode = NPROC_ALL;
-          break;
+        ಸ್ಥಿತಿ ALL_OPTION:
+          ಬಹುಲಕ_2 = NPROC_ALL;
+          ನಿಲ್ಲಿಸು;
 
-        case IGNORE_OPTION:
+        ಸ್ಥಿತಿ IGNORE_OPTION:
           ignore = xnumtoumax (optarg, 10, 0, ULONG_MAX, "",
                                _("invalid number"), 0, XTOINT_MAX_QUIET);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc != optind)
+  ಆದರೆ (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  unsigned long nproc = num_processors (mode);
+  ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ nproc = ಅಂಕೆ_processors (ಬಹುಲಕ_2);
 
-  if (ignore < nproc)
+  ಆದರೆ (ignore < nproc)
     nproc -= ignore;
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     nproc = 1;
 
-  printf ("%lu\n", nproc);
+  ಬರೆ ("%lu\n", nproc);
 
-  return EXIT_SUCCESS;
+  ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
 }

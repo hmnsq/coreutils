@@ -16,36 +16,36 @@
 
 /* Written by Mike Parker, David MacKenzie, and Jim Meyering */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <selinux/label.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "filenamecat.h"
-#include "remove.h"
-#include "renameatu.h"
-#include "root-dev-ino.h"
-#include "targetdir.h"
-#include "priv-set.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "backupfile.h"
+#ಅನ್ತರ್ಭಾವ "copy.h"
+#ಅನ್ತರ್ಭಾವ "cp-hash.h"
+#ಅನ್ತರ್ಭಾವ "filenamecat.h"
+#ಅನ್ತರ್ಭಾವ "remove.h"
+#ಅನ್ತರ್ಭಾವ "renameatu.h"
+#ಅನ್ತರ್ಭಾವ "root-dev-ino.h"
+#ಅನ್ತರ್ಭಾವ "targetdir.h"
+#ಅನ್ತರ್ಭಾವ "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mv"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "mv"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Mike Parker"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಎಣಿಕೆ
 {
   DEBUG_OPTION = CHAR_MAX + 1,
   EXCHANGE_OPTION,
@@ -53,43 +53,43 @@ enum
   STRIP_TRAILING_SLASHES_OPTION
 };
 
-static char const *const update_type_string[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ update_type_string[] =
 {
-  "all", "none", "none-fail", "older", NULL
+  "all", "none", "none-fail", "older", ಖಾಲಿ
 };
-static enum Update_type const update_type[] =
+ಸ್ಥಿರ ಎಣಿಕೆ Update_type ಸ್ಥಿರಾಂಕ update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"backup", optional_argument, NULL, 'b'},
-  {"context", no_argument, NULL, 'Z'},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"exchange", no_argument, NULL, EXCHANGE_OPTION},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"no-clobber", no_argument, NULL, 'n'},   /* Deprecated.  */
-  {"no-copy", no_argument, NULL, NO_COPY_OPTION},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"strip-trailing-slashes", no_argument, NULL,
+  {"backup", optional_ವಾದ, ಖಾಲಿ, 'b'},
+  {"context", no_ವಾದ, ಖಾಲಿ, 'Z'},
+  {"debug", no_ವಾದ, ಖಾಲಿ, DEBUG_OPTION},
+  {"exchange", no_ವಾದ, ಖಾಲಿ, EXCHANGE_OPTION},
+  {"force", no_ವಾದ, ಖಾಲಿ, 'f'},
+  {"interactive", no_ವಾದ, ಖಾಲಿ, 'i'},
+  {"no-clobber", no_ವಾದ, ಖಾಲಿ, 'n'},   /* Deprecated.  */
+  {"no-copy", no_ವಾದ, ಖಾಲಿ, NO_COPY_OPTION},
+  {"no-target-directory", no_ವಾದ, ಖಾಲಿ, 'T'},
+  {"strip-trailing-slashes", no_ವಾದ, ಖಾಲಿ,
    STRIP_TRAILING_SLASHES_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"update", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"suffix", required_ವಾದ, ಖಾಲಿ, 'S'},
+  {"target-directory", required_ವಾದ, ಖಾಲಿ, 't'},
+  {"update", optional_ವಾದ, ಖಾಲಿ, 'u'},
+  {"verbose", no_ವಾದ, ಖಾಲಿ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-static void
-rm_option_init (struct rm_options *x)
+ಸ್ಥಿರ ಶೂನ್ಯ
+rm_option_init (ರಚನೆ rm_options *x)
 {
   x->ignore_missing_files = false;
-  x->remove_empty_directories = true;
+  x->remove_ಖಾಲಿಗಳು_directories = true;
   x->recursive = true;
   x->one_file_system = false;
 
@@ -107,57 +107,57 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = true;
 
   {
-    static struct dev_ino dev_ino_buf;
-    x->root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-    if (x->root_dev_ino == NULL)
+    ಸ್ಥಿರ ರಚನೆ dev_ino dev_ino_buf;
+    x->ಬೇರು_dev_ino = get_ಬೇರು_dev_ino (&dev_ino_buf);
+    ಆದರೆ (x->ಬೇರು_dev_ino == ಖಾಲಿ)
       error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
              quoteaf ("/"));
   }
 
-  x->preserve_all_root = false;
+  x->preserve_all_ಬೇರು = false;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+ಸ್ಥಿರ ಶೂನ್ಯ
+cp_option_init (ರಚನೆ cp_options *x)
 {
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
   cp_options_default (x);
   x->copy_as_regular = false;  /* FIXME: maybe make this an option */
-  x->reflink_mode = REFLINK_AUTO;
+  x->reflink_ಬಹುಲಕ = REFLINK_AUTO;
   x->dereference = DEREF_NEVER;
   x->unlink_dest_before_opening = false;
   x->unlink_dest_after_failed_open = false;
   x->hard_link = false;
   x->interactive = I_UNSPECIFIED;
-  x->move_mode = true;
-  x->install_mode = false;
+  x->move_ಬಹುಲಕ = true;
+  x->install_ಬಹುಲಕ = false;
   x->one_file_system = false;
   x->preserve_ownership = true;
   x->preserve_links = true;
-  x->preserve_mode = true;
+  x->preserve_ಬಹುಲಕ = true;
   x->preserve_timestamps = true;
-  x->explicit_no_preserve_mode= false;
+  x->explicit_no_preserve_ಬಹುಲಕ= false;
   x->preserve_security_context = selinux_enabled;
-  x->set_security_context = NULL;
+  x->ಗಣ_security_context = ಖಾಲಿ;
   x->reduce_diagnostics = false;
-  x->data_copy_required = true;
+  x->ದತ್ತಾಂಶ_copy_required = true;
   x->require_preserve = false;  /* FIXME: maybe make this an option */
   x->require_preserve_context = false;
   x->preserve_xattr = true;
   x->require_preserve_xattr = true;
   x->recursive = true;
-  x->sparse_mode = SPARSE_AUTO;  /* FIXME: maybe make this an option */
+  x->sparse_ಬಹುಲಕ = SPARSE_AUTO;  /* FIXME: maybe make this an option */
   x->symbolic_link = false;
-  x->set_mode = false;
-  x->mode = 0;
+  x->ಗಣ_ಬಹುಲಕ = false;
+  x->ಬಹುಲಕ_2 = 0;
   x->stdin_tty = isatty (STDIN_FILENO);
 
   x->open_dangling_dest_symlink = false;
   x->update = UPDATE_ALL;
   x->verbose = false;
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = ಖಾಲಿ;
+  x->src_info = ಖಾಲಿ;
 }
 
 /* Move SOURCE onto DEST aka DEST_DIRFD+DEST_RELNAME.
@@ -165,19 +165,19 @@ cp_option_init (struct cp_options *x)
    If SOURCE is a directory, DEST must not exist.
    Return true if successful.  */
 
-static bool
-do_move (char const *source, char const *dest,
-         int dest_dirfd, char const *dest_relname, const struct cp_options *x)
+ಸ್ಥಿರ bool
+do_move (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮೂಲ_2, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *dest,
+         ಪೂರ್ಣಾಂಕ dest_dirfd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *dest_relname, ಸ್ಥಿರಾಂಕ ರಚನೆ cp_options *x)
 {
   bool copy_into_self;
   bool rename_succeeded;
-  bool ok = copy (source, dest, dest_dirfd, dest_relname, 0, x,
+  bool ok = copy (ಮೂಲ_2, dest, dest_dirfd, dest_relname, 0, x,
                   &copy_into_self, &rename_succeeded);
 
-  if (ok)
+  ಆದರೆ (ok)
     {
-      char const *dir_to_remove;
-      if (copy_into_self)
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *dir_ಗಮ್ಯ_remove;
+      ಆದರೆ (copy_into_self)
         {
           /* In general, when copy returns with copy_into_self set, SOURCE is
              the same as, or a parent of DEST.  In this case we know it's a
@@ -190,16 +190,16 @@ do_move (char const *source, char const *dest,
              copied-into-self directory, DEST ('b/b' in the example),
              and failing.  */
 
-          dir_to_remove = NULL;
+          dir_ಗಮ್ಯ_remove = ಖಾಲಿ;
           ok = false;
         }
-      else if (rename_succeeded)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (rename_succeeded)
         {
           /* No need to remove anything.  SOURCE was successfully
              renamed to DEST.  Or the user declined to rename a file.  */
-          dir_to_remove = NULL;
+          dir_ಗಮ್ಯ_remove = ಖಾಲಿ;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* This may mean SOURCE and DEST referred to different devices.
              It may also conceivably mean that even though they referred
@@ -223,64 +223,64 @@ do_move (char const *source, char const *dest,
              This function used to resort to copying only when rename
              failed and set errno to EXDEV.  */
 
-          dir_to_remove = source;
+          dir_ಗಮ್ಯ_remove = ಮೂಲ_2;
         }
 
-      if (dir_to_remove != NULL)
+      ಆದರೆ (dir_ಗಮ್ಯ_remove != ಖಾಲಿ)
         {
-          struct rm_options rm_options;
+          ರಚನೆ rm_options rm_options;
           rm_option_init (&rm_options);
           rm_options.verbose = x->verbose;
-          char const *dir[2] = { dir_to_remove, NULL };
+          ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *dir[2] = { dir_ಗಮ್ಯ_remove, ಖಾಲಿ };
 
-          enum RM_status status = rm ((void *) dir, &rm_options);
-          affirm (VALID_STATUS (status));
-          if (status == RM_ERROR)
+          ಎಣಿಕೆ RM_ಸ್ಥಿತಿ ಸ್ಥಿತಿ_2 = rm ((ಶೂನ್ಯ *) dir, &rm_options);
+          affirm (VALID_ಸ್ಥಿತಿ (ಸ್ಥಿತಿ_2));
+          ಆದರೆ (ಸ್ಥಿತಿ_2 == RM_ERROR)
             ok = false;
         }
     }
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s [OPTION]... [-T] SOURCE DEST\n\
-  or:  %s [OPTION]... SOURCE... DIRECTORY\n\
-  or:  %s [OPTION]... -t DIRECTORY SOURCE...\n\
+      ಬರೆ (_("\
+Usage: %s [OPTION]... [-T] ಮೂಲ DEST\n\
+  or:  %s [OPTION]... ಮೂಲ... DIRECTORY\n\
+  or:  %s [OPTION]... -t DIRECTORY ಮೂಲ...\n\
 "),
-              program_name, program_name, program_name);
+              ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
+Rename ಮೂಲ ಗಮ್ಯ DEST, or move ಮೂಲ(s) ಗಮ್ಯ DIRECTORY.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
       --backup[=CONTROL]\n\
-         make a backup of each existing destination file\n\
+         make a backup ದ each existing destination file\n\
 "));
       oputs (_("\
   -b\n\
-         like --backup but does not accept an argument\n\
+         like --backup but does not accept an ವಾದ\n\
 "));
       oputs (_("\
       --debug\n\
-         explain how a file is copied.  Implies -v\n\
+         explain how a file is copied.  ಸೂಚಿಸುತ್ತದೆ_2 -v\n\
 "));
       oputs (_("\
       --exchange\n\
-         exchange source and destination\n\
+         exchange ಮೂಲ_2 and destination\n\
 "));
       oputs (_("\
   -f, --force\n\
-         do not prompt before overwriting\n\
+         ಮಾಡು not prompt before overwriting\n\
 "));
       oputs (_("\
   -i, --interactive\n\
@@ -291,68 +291,68 @@ Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
          (deprecated) silently skip existing files.  See also --update\n\
 "));
       fputs (_("\
-If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
+If you specify ಇನ್ನಷ್ಟು than one ದ -i, -f, -n, only the final one takes effect.\n\
 "), stdout);
       oputs (_("\
       --no-copy\n\
-         do not copy if renaming fails\n\
+         ಮಾಡು not copy ಆದರೆ renaming fails\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
-         remove any trailing slashes from each SOURCE argument\n\
+         remove any trailing slashes from each ಮೂಲ ವಾದ\n\
 "));
       oputs (_("\
   -S, --suffix=SUFFIX\n\
          override the usual backup suffix\n\
 "));
       oputs (_("\
-  -t, --target-directory=DIRECTORY\n\
-         move all SOURCE arguments into DIRECTORY\n\
+  -t, --ಗುರಿ-directory=DIRECTORY\n\
+         move all ಮೂಲ arguments into DIRECTORY\n\
 "));
       oputs (_("\
-  -T, --no-target-directory\n\
-         treat DEST as a normal file\n\
+  -T, --no-ಗುರಿ-directory\n\
+         treat DEST as a ಸಾಮಾನ್ಯ file\n\
 "));
       oputs (_("\
       --update[=UPDATE]\n\
          control which existing files are updated;\n\
-         UPDATE={all,none,none-fail,older(default)}\n\
+         UPDATE={all,none,none-fail,older(ಪೂರ್ವನಿಯೋಜಿತ)}\n\
 "));
       oputs (_("\
   -u\n\
-         equivalent to --update[=older].  See below\n\
+         equivalent ಗಮ್ಯ --update[=older].  See ಕೆಳಗೆ\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         explain what is being done\n\
+         explain what is being ಮುಗಿದ\n\
 "));
       oputs (_("\
   -Z, --context\n\
-         set SELinux security context of destination file to default type\n\
+         ಗಣ_2 SELinux security context ದ destination file ಗಮ್ಯ ಪೂರ್ವನಿಯೋಜಿತ type\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       emit_update_parameters_note ();
       emit_backup_suffix_note ();
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *backup_suffix = ಖಾಲಿ;
+  ಅಕ್ಷರ *ಆವೃತ್ತಿ_control_string = ಖಾಲಿ;
+  ರಚನೆ cp_options x;
   bool remove_trailing_slashes = false;
-  char const *target_directory = NULL;
-  bool no_target_directory = false;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಗುರಿ_directory = ಖಾಲಿ;
+  bool no_ಗುರಿ_directory = false;
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -362,133 +362,133 @@ main (int argc, char **argv)
   cp_option_init (&x);
 
   /* Try to disable the ability to unlink a directory.  */
-  priv_set_remove_linkdir ();
+  priv_ಗಣ_remove_linkdir ();
 
-  int c;
-  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
+  ಪೂರ್ಣಾಂಕ c;
+  ಆಗ ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, ಖಾಲಿ))
          != -1)
     {
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'b':
+        ಸ್ಥಿತಿ 'b':
           make_backups = true;
-          if (optarg)
-            version_control_string = optarg;
-          break;
-        case 'f':
+          ಆದರೆ (optarg)
+            ಆವೃತ್ತಿ_control_string = optarg;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'f':
           x.interactive = I_ALWAYS_YES;
-          break;
-        case 'i':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'i':
           x.interactive = I_ASK_USER;
-          break;
-        case 'n':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
-        case DEBUG_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
-        case EXCHANGE_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ EXCHANGE_OPTION:
           x.exchange = true;
-          break;
-        case NO_COPY_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ NO_COPY_OPTION:
           x.no_copy = true;
-          break;
-        case STRIP_TRAILING_SLASHES_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
-        case 't':
-          if (target_directory)
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 't':
+          ಆದರೆ (ಗುರಿ_directory)
             error (EXIT_FAILURE, 0, _("multiple target directories specified"));
-          target_directory = optarg;
-          break;
-        case 'T':
-          no_target_directory = true;
-          break;
-        case 'u':
+          ಗುರಿ_directory = optarg;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'T':
+          no_ಗುರಿ_directory = true;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          ಆದರೆ (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
-        case 'v':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'v':
           x.verbose = true;
-          break;
-        case 'S':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
-        case 'Z':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'Z':
           /* As a performance enhancement, don't even bother trying
              to "restorecon" when not on an selinux-enabled kernel.  */
-          if (selinux_enabled)
+          ಆದರೆ (selinux_enabled)
             {
               x.preserve_security_context = false;
-              x.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                     NULL, 0);
-              if (! x.set_security_context)
+              x.ಗಣ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                     ಖಾಲಿ, 0);
+              ಆದರೆ (! x.ಗಣ_security_context)
                 error (0, errno, _("warning: ignoring --context"));
             }
-          break;
+          ನಿಲ್ಲಿಸು;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_files = argc - optind;
-  char **file = argv + optind;
+  ಪೂರ್ಣಾಂಕ n_files = argc - optind;
+  ಅಕ್ಷರ **file = argv + optind;
 
-  if (n_files <= !target_directory)
+  ಆದರೆ (n_files <= !ಗುರಿ_directory)
     {
-      if (n_files <= 0)
+      ಆದರೆ (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
-  sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  ರಚನೆ stat sb;
+  sb.st_ಬಹುಲಕ = 0;
+  ಪೂರ್ಣಾಂಕ ಗುರಿ_dirfd = AT_FDCWD;
+  ಆದರೆ (no_ಗುರಿ_directory)
     {
-      if (target_directory)
+      ಆದರೆ (ಗುರಿ_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      ಆದರೆ (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಗುರಿ_directory)
     {
-      target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      ಗುರಿ_dirfd = ಗುರಿ_directory_ಕಾರ್ಯಾಂಶ (ಗುರಿ_directory, &sb);
+      ಆದರೆ (! ಗುರಿ_dirfd_valid (ಗುರಿ_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
-               quoteaf (target_directory));
+               quoteaf (ಗುರಿ_directory));
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      char const *lastfile = file[n_files - 1];
-      if (n_files == 2 && !x.exchange)
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *lastfile = file[n_files - 1];
+      ಆದರೆ (n_files == 2 && !x.exchange)
         x.rename_errno = (renameatu (AT_FDCWD, file[0], AT_FDCWD, lastfile,
                                      RENAME_NOREPLACE)
                           ? errno : 0);
-      if (x.rename_errno != 0)
+      ಆದರೆ (x.rename_errno != 0)
         {
-          int fd = target_directory_operand (lastfile, &sb);
-          if (target_dirfd_valid (fd))
+          ಪೂರ್ಣಾಂಕ fd = ಗುರಿ_directory_ಕಾರ್ಯಾಂಶ (lastfile, &sb);
+          ಆದರೆ (ಗುರಿ_dirfd_valid (fd))
             {
               x.rename_errno = -1;
-              target_dirfd = fd;
-              target_directory = lastfile;
+              ಗುರಿ_dirfd = fd;
+              ಗುರಿ_directory = lastfile;
               n_files--;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               /* The last operand LASTFILE cannot be opened as a directory.
                  If there are more than two operands, report an error.
@@ -499,11 +499,11 @@ main (int argc, char **argv)
                  In this case use stat to test whether LASTFILE is a
                  directory, in case opening a non-directory with (O_SEARCH
                  | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-              int err = errno;
-              if (2 < n_files
-                  || (O_PATHSEARCH == O_SEARCH && err == EACCES
-                      && (sb.st_mode != 0 || stat (lastfile, &sb) == 0)
-                      && S_ISDIR (sb.st_mode)))
+              ಪೂರ್ಣಾಂಕ err = errno;
+              ಆದರೆ (2 < n_files
+                  || (O_PATHSEARCH == O_ಹುಡುಕು && err == EACCES
+                      && (sb.st_ಬಹುಲಕ != 0 || stat (lastfile, &sb) == 0)
+                      && S_ISDIR (sb.st_ಬಹುಲಕ)))
                 error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));
             }
         }
@@ -514,14 +514,14 @@ main (int argc, char **argv)
      systems (e.g., GNU/Linux) have a rename function that honors a
      trailing slash in the source, while others (Solaris 9, FreeBSD
      7.2) have a rename function that ignores it.  */
-  if (remove_trailing_slashes)
-    for (int i = 0; i < n_files; i++)
+  ಆದರೆ (remove_trailing_slashes)
+    ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0; i < n_files; i++)
       strip_trailing_slashes (file[i]);
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  ಆದರೆ (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  ಆದರೆ (make_backups
       && (x.exchange
           || x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
@@ -533,39 +533,39 @@ main (int argc, char **argv)
     }
 
   x.backup_type = (make_backups
-                   ? xget_version (_("backup type"),
-                                   version_control_string)
+                   ? xget_ಆವೃತ್ತಿ (_("backup type"),
+                                   ಆವೃತ್ತಿ_control_string)
                    : no_backups);
-  set_simple_backup_suffix (backup_suffix);
+  ಗಣ_simple_backup_suffix (backup_suffix);
 
   hash_init ();
 
   bool ok;
-  if (target_directory)
+  ಆದರೆ (ಗುರಿ_directory)
     {
       /* Initialize the hash table only if we'll need it.
          The problem it is used to detect can arise only if there are
          two or more files to move.  */
-      if (2 <= n_files)
+      ಆದರೆ (2 <= n_files)
         dest_info_init (&x);
 
       ok = true;
-      for (int i = 0; i < n_files; ++i)
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0; i < n_files; ++i)
         {
-          x.last_file = i + 1 == n_files;
-          char const *source = file[i];
-          char const *source_basename = last_component (source);
-          char *dest_relname;
-          char *dest = file_name_concat (target_directory, source_basename,
+          x.ಕೊನೆಯ_file = i + 1 == n_files;
+          ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮೂಲ_2 = file[i];
+          ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮೂಲ_basename = ಕೊನೆಯ_component (ಮೂಲ_2);
+          ಅಕ್ಷರ *dest_relname;
+          ಅಕ್ಷರ *dest = file_name_concat (ಗುರಿ_directory, ಮೂಲ_basename,
                                          &dest_relname);
           strip_trailing_slashes (dest_relname);
-          ok &= do_move (source, dest, target_dirfd, dest_relname, &x);
-          free (dest);
+          ok &= do_move (ಮೂಲ_2, dest, ಗುರಿ_dirfd, dest_relname, &x);
+          ಬಿಡುಗಡೆ (dest);
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      x.last_file = true;
+      x.ಕೊನೆಯ_file = true;
       ok = do_move (file[0], file[1], AT_FDCWD, file[1], &x);
     }
 

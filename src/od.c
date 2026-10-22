@@ -16,56 +16,56 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <endian.h>
-#include <float.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "ftoastr.h"
-#include "quote.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xprintf.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#ಅನ್ತರ್ಭಾವ <endian.h>
+#ಅನ್ತರ್ಭಾವ <float.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "ftoastr.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "stat-size.h"
+#ಅನ್ತರ್ಭಾವ "xbinary-io.h"
+#ಅನ್ತರ್ಭಾವ "xprintf.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol-error.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "od"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "od"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("Jim Meyering")
 
 /* The default number of input bytes per output line.  */
-#define DEFAULT_BYTES_PER_BLOCK 16
+#ವ್ಯಾಖ್ಯಾನಿಸು DEFAULT_ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ 16
 
-#if FLOAT16_SUPPORTED
+#ಆದರೆ FLOAT16_SUPPORTED
   /* Available since clang 6 (2018), and gcc 7 (2017).  */
-  typedef _Float16 float16;
-#else
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ _Float16 float16;
+#ಇಲ್ಲದಿದ್ದರೆ
 # define FLOAT16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
-  typedef float float16;
-#endif
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ದಶಮಾಂಶ float16;
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if BF16_SUPPORTED
+#ಆದರೆ BF16_SUPPORTED
   /* Available since clang 11 (2020), and gcc 13 (2023). */
-  typedef __bf16 bfloat16;
-#else
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ __bf16 bfloat16;
+#ಇಲ್ಲದಿದ್ದರೆ
 # define BF16_SUPPORTED 0
   /* This is just a place-holder to avoid a few '#if' directives.
      In this case, the type isn't actually used.  */
-  typedef float bfloat16;
-#endif
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ದಶಮಾಂಶ bfloat16;
+#ಆದರೆ_ಅಂತ್ಯ
 
-enum size_spec
+ಎಣಿಕೆ ಗಾತ್ರ_spec
   {
-    NO_SIZE = 0,
+    NO_ಗಾತ್ರ = 0,
     CHAR,
     SHORT = CHAR + (UCHAR_MAX < USHRT_MAX),
     INT = SHORT + (USHRT_MAX < UINT_MAX),
@@ -78,98 +78,98 @@ enum size_spec
                                    || FLT_MAX_EXP < DBL_MAX_EXP),
     FLOAT_LONG_DOUBLE = FLOAT_DOUBLE + (DBL_MANT_DIG < LDBL_MANT_DIG
                                         || DBL_MAX_EXP < LDBL_MAX_EXP),
-    N_SIZE_SPECS
+    N_ಗಾತ್ರ_SPECS
   };
 
-enum output_format
+ಎಣಿಕೆ output_format
   {
     SIGNED_DECIMAL,
     UNSIGNED_DECIMAL,
     OCTAL,
     HEXADECIMAL,
-    FLOATING_POINT,
-    HFLOATING_POINT,
-    BFLOATING_POINT,
+    FLOATING_ಬಿಂದು,
+    HFLOATING_ಬಿಂದು,
+    BFLOATING_ಬಿಂದು,
     NAMED_CHARACTER,
     CHARACTER
   };
 
-enum { MAX_INTEGRAL_TYPE_WIDTH = UINTMAX_WIDTH };
+ಎಣಿಕೆ { MAX_INTEGRAL_TYPE_ಅಗಲ = UINTMAX_ಅಗಲ };
 
 /* The maximum number of bytes needed for a format string, including
    the trailing nul.  Each format string expects a variable amount of
    padding (guaranteed to be at least 1 plus the field width), then an
    element that will be formatted in the field.  */
-enum
+ಎಣಿಕೆ
   {
-    FMT_BYTES_ALLOCATED =
-      sizeof "%*.%dlld" - sizeof "%d" + INT_STRLEN_BOUND (int) + 1
+    FMT_ಬೈಟುಗಳು_ALLOCATED =
+      ಗಾತ್ರ "%*.%dlld" - ಗಾತ್ರ "%d" + INT_STRLEN_BOUND (ಪೂರ್ಣಾಂಕ) + 1
   };
 
 /* Ensure that our choice for FMT_BYTES_ALLOCATED is reasonable.  */
-static_assert (MAX_INTEGRAL_TYPE_WIDTH <= 3 * 99);
+static_assert (MAX_INTEGRAL_TYPE_ಅಗಲ <= 3 * 99);
 
 /* The type of a print function.  FIELDS is the number of fields per
    line, BLANK is the number of fields to leave blank.  WIDTH is width
    of one field, excluding leading space, and PAD is total pad to
    divide among FIELDS.  PAD is at least as large as FIELDS.  */
-typedef void (*print_function_type)
-  (idx_t fields, idx_t blank, void const *data,
-   char const *fmt, int width, idx_t pad);
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಶೂನ್ಯ (*print_function_type)
+  (idx_t fields, idx_t blank, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *ದತ್ತಾಂಶ,
+   ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fmt, ಪೂರ್ಣಾಂಕ ಅಗಲ, idx_t pad);
 
 /* Each output format specification (from '-t spec' or from
    old-style options) is represented by one of these structures.  */
-struct tspec
+ರಚನೆ tspec
   {
-    enum output_format fmt;
-    enum size_spec size; /* Type of input object.  */
+    ಎಣಿಕೆ output_format fmt;
+    ಎಣಿಕೆ ಗಾತ್ರ_spec ಗಾತ್ರ_2; /* Type of input object.  */
     print_function_type print_function;
-    char fmt_string[FMT_BYTES_ALLOCATED]; /* Of the style "%*d".  */
-    bool hexl_mode_trailer;
-    int field_width; /* Minimum width of a field, excluding leading space.  */
-    idx_t pad_width; /* Total padding to be divided among fields.  */
+    ಅಕ್ಷರ fmt_string[FMT_ಬೈಟುಗಳು_ALLOCATED]; /* Of the style "%*d".  */
+    bool hexl_ಬಹುಲಕ_trailer;
+    ಪೂರ್ಣಾಂಕ ಕ್ಷೇತ್ರ_ಅಗಲ; /* Minimum width of a field, excluding leading space.  */
+    idx_t pad_ಅಗಲ; /* Total padding to be divided among fields.  */
   };
 
 /* Convert enum size_spec to the size of the named type.  */
-static const int width_bytes[] =
+ಸ್ಥಿರ ಸ್ಥಿರಾಂಕ ಪೂರ್ಣಾಂಕ ಅಗಲ_ಬೈಟುಗಳು[] =
 {
   -1,
-  sizeof (unsigned char),
-#if UCHAR_MAX < USHRT_MAX
-  sizeof (unsigned short int),
-#endif
-#if USHRT_MAX < UINT_MAX
-  sizeof (unsigned int),
-#endif
-#if UINT_MAX < ULONG_MAX
-  sizeof (unsigned long int),
-#endif
-#if ULONG_MAX < ULLONG_MAX
-  sizeof (unsigned long long int),
-#endif
-#if ULLONG_MAX < UINTMAX_MAX
-  sizeof (uintmax_t),
-#endif
-#if BF16_SUPPORTED
-  sizeof (bfloat16),
-#elif FLOAT16_SUPPORTED
-  sizeof (float16),
-#endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
-  sizeof (float),
-#endif
-  sizeof (double),
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
-  sizeof (long double),
-#endif
+  ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ),
+#ಆದರೆ UCHAR_MAX < USHRT_MAX
+  ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ),
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ USHRT_MAX < UINT_MAX
+  ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ),
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ UINT_MAX < ULONG_MAX
+  ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ),
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ ULONG_MAX < ULLONG_MAX
+  ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ),
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ ULLONG_MAX < UINTMAX_MAX
+  ಗಾತ್ರ (uintmax_t),
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ BF16_SUPPORTED
+  ಗಾತ್ರ (bfloat16),
+#ಅಥವಾಆದರೆ FLOAT16_SUPPORTED
+  ಗಾತ್ರ (float16),
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+  ಗಾತ್ರ (ದಶಮಾಂಶ),
+#ಆದರೆ_ಅಂತ್ಯ
+  ಗಾತ್ರ (ದ್ವಿಗುಣ),
+#ಆದರೆ DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+  ಗಾತ್ರ (ದೀರ್ಘ ದ್ವಿಗುಣ),
+#ಆದರೆ_ಅಂತ್ಯ
 };
 
 /* Ensure that for each member of 'enum size_spec' there is an
    initializer in the width_bytes array.  */
-static_assert (countof (width_bytes) == N_SIZE_SPECS);
+static_assert (countof (ಅಗಲ_ಬೈಟುಗಳು) == N_ಗಾತ್ರ_SPECS);
 
 /* Names for some non-printing characters.  */
-static char const charname[33][4] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ charname[33][4] =
 {
   "nul", "soh", "stx", "etx", "eot", "enq", "ack", "bel",
   "bs", "ht", "nl", "vt", "ff", "cr", "so", "si",
@@ -179,82 +179,82 @@ static char const charname[33][4] =
 };
 
 /* Address base (8, 10 or 16).  */
-static int address_base = 8;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ವಿಳಾಸ_ತಳ = 8;
 
 /* The number of octal digits required to represent the largest
    address value.  */
-enum { MAX_ADDRESS_LENGTH = ((INTMAX_WIDTH - 1) / 3
-                             + ((INTMAX_WIDTH - 1) % 3 != 0)) };
+ಎಣಿಕೆ { MAX_ವಿಳಾಸ_ಉದ್ದಳತೆ = ((INTMAX_ಅಗಲ - 1) / 3
+                             + ((INTMAX_ಅಗಲ - 1) % 3 != 0)) };
 
 /* Width of a normal address.  */
-static int address_pad_len = 7;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ವಿಳಾಸ_pad_len = 7;
 
 /* Minimum length when detecting --strings.  */
-static idx_t string_min;
+ಸ್ಥಿರ idx_t string_min;
 
 /* True when in --strings mode.  */
-static bool flag_dump_strings;
+ಸ್ಥಿರ bool flag_dump_ಅಕ್ಷರಸರಣಿಗಳು;
 
 /* True if we should recognize the older non-option arguments
    that specified at most one file and optional arguments specifying
    offset and pseudo-start address.  */
-static bool traditional;
+ಸ್ಥಿರ bool traditional;
 
 /* True if an old-style 'pseudo-address' was specified.  */
-static bool flag_pseudo_start;
+ಸ್ಥಿರ bool flag_pseudo_ಆರಂಭ;
 
 /* The difference between the old-style pseudo starting address and
    the number of bytes to skip.  */
-static intmax_t pseudo_offset;
+ಸ್ಥಿರ intmax_t pseudo_ಸ್ಥಾನಾಂತರ;
 
 /* Function that accepts an address and an optional following char,
    and prints the address and char to stdout.  */
-static void format_address_std (intmax_t, char);
-static void (*format_address) (intmax_t, char) = format_address_std;
+ಸ್ಥಿರ ಶೂನ್ಯ format_ವಿಳಾಸ_std (intmax_t, ಅಕ್ಷರ);
+ಸ್ಥಿರ ಶೂನ್ಯ (*format_ವಿಳಾಸ) (intmax_t, ಅಕ್ಷರ) = format_ವಿಳಾಸ_std;
 
 /* The number of input bytes to skip before formatting and writing.  */
-static intmax_t n_bytes_to_skip;
+ಸ್ಥಿರ intmax_t n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip;
 
 /* The offset of the first byte after the last byte to be formatted.
    If negative, there is no limit.  */
-static intmax_t end_offset = -1;
+ಸ್ಥಿರ intmax_t ಕೊನೆ_ಸ್ಥಾನಾಂತರ = -1;
 
 /* When true and two or more consecutive blocks are equal, format
    only the first block and output an asterisk alone on the following
    line to indicate that identical blocks have been elided.  */
-static bool abbreviate_duplicate_blocks = true;
+ಸ್ಥಿರ bool abbreviate_duplicate_ಖಂಡಗಳು = true;
 
 /* An array of specs describing how to format each input block.  */
-static struct tspec *spec;
+ಸ್ಥಿರ ರಚನೆ tspec *spec;
 
 /* The number of format specs.  */
-static idx_t n_specs;
+ಸ್ಥಿರ idx_t n_specs;
 
 /* The allocated length of SPEC.  */
-static idx_t n_specs_allocated;
+ಸ್ಥಿರ idx_t n_specs_allocated;
 
 /* The number of input bytes formatted per output line.  It must be
    a multiple of the least common multiple of the sizes associated with
    the specified output types.  It should be as large as possible, but
    no larger than 16 -- unless specified with the -w option.  */
-static idx_t bytes_per_block;
+ಸ್ಥಿರ idx_t ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ;
 
 /* Human-readable representation of *file_list (for error messages).
    It differs from file_list[-1] only when file_list[-1] is "-".  */
-static char const *input_filename;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಒಳಹರಿವು_filename;
 
 /* A null-terminated list of the file-arguments from the command line.  */
-static char const *const *file_list;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ *file_list;
 
 /* Initializer for file_list if no file-arguments
    were specified on the command line.  */
-static char const *const default_file_list[] = {"-", NULL};
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ default_file_list[] = {"-", ಖಾಲಿ};
 
 /* The input stream associated with the current file.  */
-static FILE *in_stream;
+ಸ್ಥಿರ FILE *ಒಳ_ಹರಿವು;
 
 /* If true, at least one of the files we read was standard input.  */
-static bool have_read_stdin;
+ಸ್ಥಿರ bool have_read_stdin;
 
 /* Map the size in bytes to a type identifier.
    When two types have the same machine layout:
@@ -262,145 +262,145 @@ static bool have_read_stdin;
      - Prefer unsigned long to higher-ranked types, as it is older.
      - Prefer uintmax_t to unsigned long long int; this wins if %lld
        does not work but %jd does (e.g., MS-Windows).  */
-static enum size_spec const integral_type_size[] =
+ಸ್ಥಿರ ಎಣಿಕೆ ಗಾತ್ರ_spec ಸ್ಥಿರಾಂಕ integral_type_ಗಾತ್ರ[] =
   {
-#if UCHAR_MAX < USHRT_MAX
-    [sizeof (unsigned char)] = CHAR,
-#endif
-#if USHRT_MAX < UINT_MAX
-    [sizeof (unsigned short int)] = SHORT,
-#endif
-    [sizeof (unsigned int)] = INT,
-#if UINT_MAX < ULONG_MAX
-    [sizeof (unsigned long int)] = LONG,
-#endif
-#if ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
-    [sizeof (unsigned long long int)] = LONG_LONG,
-#endif
-#if ULONG_MAX < UINTMAX_MAX
-    [sizeof (uintmax_t)] = INTMAX,
-#endif
+#ಆದರೆ UCHAR_MAX < USHRT_MAX
+    [ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)] = CHAR,
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ USHRT_MAX < UINT_MAX
+    [ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ)] = SHORT,
+#ಆದರೆ_ಅಂತ್ಯ
+    [ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ)] = INT,
+#ಆದರೆ UINT_MAX < ULONG_MAX
+    [ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ)] = LONG,
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ ULONG_MAX < ULLONG_MAX && ULLONG_MAX < UINTMAX_MAX
+    [ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ)] = LONG_LONG,
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ ULONG_MAX < UINTMAX_MAX
+    [ಗಾತ್ರ (uintmax_t)] = INTMAX,
+#ಆದರೆ_ಅಂತ್ಯ
   };
 
 /* Map the size in bytes to a floating type identifier.
    When two types have the same machine layout:
      - Prefer double to the other types, as its format is shorter.  */
-static enum size_spec const fp_type_size[] =
+ಸ್ಥಿರ ಎಣಿಕೆ ಗಾತ್ರ_spec ಸ್ಥಿರಾಂಕ fp_type_ಗಾತ್ರ[] =
   {
-#if FLOAT16_SUPPORTED
-    [sizeof (float16)] = FLOAT_HALF,
-#elif BF16_SUPPORTED
-    [sizeof (bfloat16)] = FLOAT_HALF,
-#endif
-#if FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
-    [sizeof (float)] = FLOAT_SINGLE,
-#endif
-    [sizeof (double)] = FLOAT_DOUBLE,
-#if DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
-    [sizeof (long double)] = FLOAT_LONG_DOUBLE,
-#endif
+#ಆದರೆ FLOAT16_SUPPORTED
+    [ಗಾತ್ರ (float16)] = FLOAT_HALF,
+#ಅಥವಾಆದರೆ BF16_SUPPORTED
+    [ಗಾತ್ರ (bfloat16)] = FLOAT_HALF,
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ FLT_MANT_DIG < DBL_MANT_DIG || FLT_MAX_EXP < DBL_MAX_EXP
+    [ಗಾತ್ರ (ದಶಮಾಂಶ)] = FLOAT_SINGLE,
+#ಆದರೆ_ಅಂತ್ಯ
+    [ಗಾತ್ರ (ದ್ವಿಗುಣ)] = FLOAT_DOUBLE,
+#ಆದರೆ DBL_MANT_DIG < LDBL_MANT_DIG || DBL_MAX_EXP < LDBL_MAX_EXP
+    [ಗಾತ್ರ (ದೀರ್ಘ ದ್ವಿಗುಣ)] = FLOAT_LONG_DOUBLE,
+#ಆದರೆ_ಅಂತ್ಯ
   };
 
 /* Use native endianness by default.  */
-static bool input_swap;
+ಸ್ಥಿರ bool ಒಳಹರಿವು_ಅದಲುಬದಲು;
 
-static char const short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ short_options[] = "A:aBbcDdeFfHhIij:LlN:OoS:st:vw::Xx";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಎಣಿಕೆ
 {
   TRADITIONAL_OPTION = CHAR_MAX + 1,
   ENDIAN_OPTION,
 };
 
-enum endian_type
+ಎಣಿಕೆ endian_type
 {
   endian_little,
   endian_big
 };
 
-static char const *const endian_args[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ endian_ವಾದಗಳು[] =
 {
-  "little", "big", NULL
+  "little", "big", ಖಾಲಿ
 };
 
-static enum endian_type const endian_types[] =
+ಸ್ಥಿರ ಎಣಿಕೆ endian_type ಸ್ಥಿರಾಂಕ endian_types[] =
 {
   endian_little, endian_big
 };
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"skip-bytes", required_argument, NULL, 'j'},
-  {"address-radix", required_argument, NULL, 'A'},
-  {"read-bytes", required_argument, NULL, 'N'},
-  {"format", required_argument, NULL, 't'},
-  {"output-duplicates", no_argument, NULL, 'v'},
-  {"strings", optional_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, TRADITIONAL_OPTION},
-  {"width", optional_argument, NULL, 'w'},
-  {"endian", required_argument, NULL, ENDIAN_OPTION },
+  {"skip-bytes", required_ವಾದ, ಖಾಲಿ, 'j'},
+  {"address-radix", required_ವಾದ, ಖಾಲಿ, 'A'},
+  {"read-bytes", required_ವಾದ, ಖಾಲಿ, 'N'},
+  {"format", required_ವಾದ, ಖಾಲಿ, 't'},
+  {"output-duplicates", no_ವಾದ, ಖಾಲಿ, 'v'},
+  {"strings", optional_ವಾದ, ಖಾಲಿ, 'S'},
+  {"traditional", no_ವಾದ, ಖಾಲಿ, TRADITIONAL_OPTION},
+  {"width", optional_ವಾದ, ಖಾಲಿ, 'w'},
+  {"endian", required_ವಾದ, ಖಾಲಿ, ENDIAN_OPTION },
 
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
-  or:  %s [-abcdfilosx]... [FILE] [[+]OFFSET[.][b]]\n\
-  or:  %s --traditional [OPTION]... [FILE] [[+]OFFSET[.][b] [+][LABEL][.][b]]\n\
+  or:  %s [-abcdfilosx]... [FILE] [[+]ಸ್ಥಾನಾಂತರ_2[.][b]]\n\
+  or:  %s --traditional [OPTION]... [FILE] [[+]ಸ್ಥಾನಾಂತರ_2[.][b] [+][LABEL][.][b]]\n\
 "),
-              program_name, program_name, program_name);
+              ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\n\
-Write an unambiguous representation, octal bytes by default,\n\
-of FILE to standard output.  With more than one FILE argument,\n\
-concatenate them in the listed order to form the input.\n\
+Write an unambiguous representation, octal ಬೈಟುಗಳು by ಪೂರ್ವನಿಯೋಜಿತ,\n\
+ದ FILE ಗಮ್ಯ standard output.  With ಇನ್ನಷ್ಟು than one FILE ವಾದ,\n\
+concatenate them ಒಳ the listed ಕ್ರಮ ಗಮ್ಯ form the ಒಳಹರಿವು.\n\
 "), stdout);
 
       emit_stdin_note ();
 
       fputs (_("\
 \n\
-If first and second call formats both apply, the second format is assumed\n\
-if the last operand begins with + or (if there are 2 operands) a digit.\n\
-An OFFSET operand means -j OFFSET.  LABEL is the pseudo-address\n\
-at first byte printed, incremented when dump is progressing.\n\
-For OFFSET and LABEL, a 0x or 0X prefix indicates hexadecimal;\n\
-suffixes may be . for octal and b for multiply by 512.\n\
+If ಮೊದಲ and ಎರಡನೇ call formats both apply, the ಎರಡನೇ format is assumed\n\
+ಆದರೆ the ಕೊನೆಯ ಕಾರ್ಯಾಂಶ_2 begins with + or (ಆದರೆ there are 2 operands) a digit.\n\
+An ಸ್ಥಾನಾಂತರ_2 ಕಾರ್ಯಾಂಶ_2 means -j ಸ್ಥಾನಾಂತರ_2.  LABEL is the pseudo-ವಿಳಾಸ\n\
+at ಮೊದಲ byte printed, incremented when dump is progressing.\n\
+For ಸ್ಥಾನಾಂತರ_2 and LABEL, a 0x or 0X ಪೂರ್ವಪ್ರತ್ಯಯ indicates hexadecimal;\n\
+suffixes may be . ಗಾಗಿ octal and b ಗಾಗಿ multiply by 512.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -A, --address-radix=RADIX\n\
-         output format for file offsets;\n\
-         RADIX is one of [doxn], for Decimal, Octal, Hex or None\n\
+  -A, --ವಿಳಾಸ-radix=RADIX\n\
+         output format ಗಾಗಿ file offsets;\n\
+         RADIX is one ದ [doxn], ಗಾಗಿ Decimal, Octal, Hex or None\n\
 "));
       oputs (_("\
       --endian={big|little}\n\
-         swap input bytes according the specified order\n\
+         ಅದಲುಬದಲು ಒಳಹರಿವು ಬೈಟುಗಳು according the specified ಕ್ರಮ\n\
 "));
       oputs (_("\
-  -j, --skip-bytes=BYTES\n\
-         skip BYTES input bytes first\n\
+  -j, --skip-ಬೈಟುಗಳು=ಬೈಟುಗಳು_2\n\
+         skip ಬೈಟುಗಳು_2 ಒಳಹರಿವು ಬೈಟುಗಳು ಮೊದಲ\n\
 "));
       oputs (_("\
-  -N, --read-bytes=BYTES\n\
-         limit dump to BYTES input bytes\n\
+  -N, --ಪಠ-ಬೈಟುಗಳು=ಬೈಟುಗಳು_2\n\
+         ಎಲ್ಲೆ dump ಗಮ್ಯ ಬೈಟುಗಳು_2 ಒಳಹರಿವು ಬೈಟುಗಳು\n\
 "));
       oputs (_("\
-  -S BYTES, --strings[=BYTES]\n\
-         show only NUL terminated strings\n\
-         of at least BYTES (default 3) printable characters\n\
+  -S ಬೈಟುಗಳು_2, --ಅಕ್ಷರಸರಣಿಗಳು[=ಬೈಟುಗಳು_2]\n\
+         show only NUL terminated ಅಕ್ಷರಸರಣಿಗಳು\n\
+         ದ at ಕನಿಷ್ಠ ಬೈಟುಗಳು_2 (ಪೂರ್ವನಿಯೋಜಿತ 3) printable characters\n\
 "));
       oputs (_("\
   -t, --format=TYPE\n\
@@ -408,35 +408,35 @@ suffixes may be . for octal and b for multiply by 512.\n\
 "));
       oputs (_("\
   -v, --output-duplicates\n\
-         do not use * to mark line suppression\n\
+         ಮಾಡು not use * ಗಮ್ಯ mark ಸಾಲು suppression\n\
 "));
       oputs (_("\
-  -w[BYTES], --width[=BYTES]\n\
-         output BYTES bytes per output line;\n\
-         32 is implied when BYTES is not specified\n\
+  -w[ಬೈಟುಗಳು_2], --ಅಗಲ[=ಬೈಟುಗಳು_2]\n\
+         output ಬೈಟುಗಳು_2 ಬೈಟುಗಳು ಪ್ರತಿ output ಸಾಲು;\n\
+         32 is implied when ಬೈಟುಗಳು_2 is not specified\n\
 "));
       oputs (_("\
       --traditional\n\
-         accept arguments in third form above\n\
+         accept arguments ಒಳ ಮೂರನೇ form above\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 \n\
 Traditional format specifications may be intermixed; they accumulate:\n\
 "), stdout);
       oputs (_("\
-  -a   same as -t a,  select named characters, ignoring high-order bit\n\
+  -a   same as -t a,  select named characters, ignoring ಮೇಲಿನ-ಕ್ರಮ ಬಿಟ್\n\
 "));
       oputs (_("\
-  -b   same as -t o1, select octal bytes\n\
+  -b   same as -t o1, select octal ಬೈಟುಗಳು\n\
 "));
       oputs (_("\
   -c   same as -t c,  select printable characters or backslash escapes\n\
 "));
       oputs (_("\
-  -d   same as -t u2, select unsigned decimal 2-byte units\n\
+  -d   same as -t u2, select ಚಿಹ್ನೆರಹಿತ decimal 2-byte units\n\
 "));
       oputs (_("\
   -f   same as -t fF, select floats\n\
@@ -459,235 +459,235 @@ Traditional format specifications may be intermixed; they accumulate:\n\
       fputs (_("\
 \n\
 \n\
-TYPE is made up of one or more of these specifications:\n\
-  a          named character, ignoring high-order bit\n\
+TYPE is made ಮೇಲೆ ದ one or ಇನ್ನಷ್ಟು ದ these specifications:\n\
+  a          named character, ignoring ಮೇಲಿನ-ಕ್ರಮ ಬಿಟ್\n\
   c          printable character or backslash escape\n\
 "), stdout);
       fputs (_("\
-  d[SIZE]    signed decimal, SIZE bytes per integer\n\
-  f[SIZE]    floating point, SIZE bytes per float\n\
-  o[SIZE]    octal, SIZE bytes per integer\n\
-  u[SIZE]    unsigned decimal, SIZE bytes per integer\n\
-  x[SIZE]    hexadecimal, SIZE bytes per integer\n\
+  d[ಗಾತ್ರ_3]    ಚಿಹ್ನೆಯುಳ್ಳ decimal, ಗಾತ್ರ_3 ಬೈಟುಗಳು ಪ್ರತಿ integer\n\
+  f[ಗಾತ್ರ_3]    floating ಬಿಂದು, ಗಾತ್ರ_3 ಬೈಟುಗಳು ಪ್ರತಿ ದಶಮಾಂಶ\n\
+  o[ಗಾತ್ರ_3]    octal, ಗಾತ್ರ_3 ಬೈಟುಗಳು ಪ್ರತಿ integer\n\
+  u[ಗಾತ್ರ_3]    ಚಿಹ್ನೆರಹಿತ decimal, ಗಾತ್ರ_3 ಬೈಟುಗಳು ಪ್ರತಿ integer\n\
+  x[ಗಾತ್ರ_3]    hexadecimal, ಗಾತ್ರ_3 ಬೈಟುಗಳು ಪ್ರತಿ integer\n\
 "), stdout);
       fputs (_("\
 \n\
-SIZE is a number.  For TYPE in [doux], SIZE may also be C for\n\
-sizeof(char), S for sizeof(short), I for sizeof(int) or L for\n\
-sizeof(long).  If TYPE is f, SIZE may also be B for Brain 16 bit,\n\
-H for Half precision float, F for sizeof(float), D for sizeof(double),\n\
-or L for sizeof(long double).\n\
+ಗಾತ್ರ_3 is a ಸಂಖ್ಯೆ.  For TYPE ಒಳ [doux], ಗಾತ್ರ_3 may also be C ಗಾಗಿ\n\
+ಗಾತ್ರ(ಅಕ್ಷರ), S ಗಾಗಿ ಗಾತ್ರ(ಗಿಡ್ಡ), I ಗಾಗಿ ಗಾತ್ರ(ಪೂರ್ಣಾಂಕ) or L ಗಾಗಿ\n\
+ಗಾತ್ರ(ದೀರ್ಘ).  If TYPE is f, ಗಾತ್ರ_3 may also be B ಗಾಗಿ Brain 16 ಬಿಟ್,\n\
+H ಗಾಗಿ Half precision ದಶಮಾಂಶ, F ಗಾಗಿ ಗಾತ್ರ(ದಶಮಾಂಶ), D ಗಾಗಿ ಗಾತ್ರ(ದ್ವಿಗುಣ),\n\
+or L ಗಾಗಿ ಗಾತ್ರ(ದೀರ್ಘ ದ್ವಿಗುಣ).\n\
 "), stdout);
       fputs (_("\
 \n\
-Adding a z suffix to any type displays printable characters at the end of\n\
-each output line.\n\
+Adding a z suffix ಗಮ್ಯ any type displays printable characters at the ಕೊನೆ ದ\n\
+each output ಸಾಲು.\n\
 "), stdout);
       fputs (_("\
 \n\
 \n\
-BYTES is hex with 0x or 0X prefix, and may have a multiplier suffix:\n\
+ಬೈಟುಗಳು_2 is hex with 0x or 0X ಪೂರ್ವಪ್ರತ್ಯಯ, and may have a multiplier suffix:\n\
   b    512\n\
   KB   1000\n\
   K    1024\n\
   MB   1000*1000\n\
   M    1024*1024\n\
-and so on for G, T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+and so on ಗಾಗಿ G, T, P, E, Z, Y, R, Q.\n\
+ದ್ವಿಮಾನ_2 prefixes can be ಬಳಸಿದ, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Define the print functions.  */
 
 /* Print N spaces, where 0 <= N.
    Do not rely on printf ("%*s", N, "") as N may exceed INT_MAX.  */
-static void
+ಸ್ಥಿರ ಶೂನ್ಯ
 print_n_spaces (intmax_t n)
 {
-  for (; 0 < n; n--)
-    putchar (' ');
+  ಗಾಗಿ (; 0 < n; n--)
+    ಅಕ್ಷರ_ಬರೆ (' ');
 }
 
 /* If there are FIELDS fields, return the total padding up to the
    start of field I, where I < FIELDS.  PAD is the total padding for
    all fields.  The result equals (PAD * I) / FIELDS, except it does
    not suffer from internal overflow.  */
-static idx_t
+ಸ್ಥಿರ idx_t
 pad_at (idx_t fields, idx_t i, idx_t pad)
 {
   /* This implementation assumes that (FIELDS - 1)^2 does not overflow
      intmax_t, an assumption checked by pad_at_overflow.  */
   intmax_t m = pad % fields;
-  return pad / fields * i + m * i / fields;
+  ಹಿಂತಿರುಗಿ pad / fields * i + m * i / fields;
 }
-static bool
-pad_at_overflow (idx_t fields)
+ಸ್ಥಿರ bool
+pad_at_ಅತಿಪ್ರವಾಹ (idx_t fields)
 {
-  intmax_t product;
-  return ckd_mul (&product, fields - 1, fields - 1);
+  intmax_t ಗುಣಲಬ್ಧ;
+  ಹಿಂತಿರುಗಿ ckd_mul (&ಗುಣಲಬ್ಧ, fields - 1, fields - 1);
 }
 
-#define PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
-static void                                                             \
-N (idx_t fields, idx_t blank, void const *block,			\
-   FMT_STRING_DECL, int width, idx_t pad)				\
+#ವ್ಯಾಖ್ಯಾನಿಸು PRINT_FIELDS(N, T, FMT_STRING_DECL, ACTION)                     \
+ಸ್ಥಿರ ಶೂನ್ಯ                                                             \
+N (idx_t fields, idx_t blank, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *ಖಂಡ,			\
+   FMT_STRING_DECL, ಪೂರ್ಣಾಂಕ ಅಗಲ, idx_t pad)				\
 {                                                                       \
-  T const *p = block;                                                   \
-  idx_t pad_remaining = pad;						\
-  for (idx_t i = fields; blank < i; i--)				\
+  T ಸ್ಥಿರಾಂಕ *p = ಖಂಡ;                                                   \
+  idx_t pad_ಉಳಿದ = pad;						\
+  ಗಾಗಿ (idx_t i = fields; blank < i; i--)				\
     {                                                                   \
-      idx_t next_pad = pad_at (fields, i - 1, pad);			\
-      int adjusted_width = pad_remaining - next_pad + width;            \
+      idx_t ಮುಂದಿನ_pad = pad_at (fields, i - 1, pad);			\
+      ಪೂರ್ಣಾಂಕ adjusted_ಅಗಲ = pad_ಉಳಿದ - ಮುಂದಿನ_pad + ಅಗಲ;            \
       T x;                                                              \
-      if (input_swap && sizeof (T) > 1)                                 \
+      ಆದರೆ (ಒಳಹರಿವು_ಅದಲುಬದಲು && ಗಾತ್ರ (T) > 1)                                 \
         {                                                               \
-          union {                                                       \
+          ಒಕ್ಕೂಟ {                                                       \
             T x;                                                        \
-            char b[sizeof (T)];                                         \
+            ಅಕ್ಷರ b[ಗಾತ್ರ (T)];                                         \
           } u;                                                          \
-          for (idx_t j = 0; j < sizeof (T); j++)			\
-            u.b[j] = ((char const *) p)[sizeof (T) - 1 - j];            \
+          ಗಾಗಿ (idx_t j = 0; j < ಗಾತ್ರ (T); j++)			\
+            u.b[j] = ((ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *) p)[ಗಾತ್ರ (T) - 1 - j];            \
           x = u.x;                                                      \
         }                                                               \
-      else                                                              \
+      ಇಲ್ಲದಿದ್ದರೆ                                                              \
         x = *p;                                                         \
       p++;                                                              \
       ACTION;                                                           \
-      pad_remaining = next_pad;                                         \
+      pad_ಉಳಿದ = ಮುಂದಿನ_pad;                                         \
     }                                                                   \
 }
 
-#define PRINT_TYPE(N, T)                                                \
-  PRINT_FIELDS (N, T, char const *fmt_string,                           \
-                xprintf (fmt_string, adjusted_width, x))
+#ವ್ಯಾಖ್ಯಾನಿಸು PRINT_TYPE(N, T)                                                \
+  PRINT_FIELDS (N, T, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fmt_string,                           \
+                xprintf (fmt_string, adjusted_ಅಗಲ, x))
 
-#define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-  PRINT_FIELDS (N, T, MAYBE_UNUSED char const *fmt_string,              \
-                char buf[BUFSIZE];                                      \
-                FTOASTR (buf, sizeof buf, 0, 0, x);                     \
-                xprintf ("%*s", adjusted_width, buf))
+#ವ್ಯಾಖ್ಯಾನಿಸು PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
+  PRINT_FIELDS (N, T, MAYBE_ಬಳಸದ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fmt_string,              \
+                ಅಕ್ಷರ buf[BUFSIZE];                                      \
+                FTOASTR (buf, ಗಾತ್ರ buf, 0, 0, x);                     \
+                xprintf ("%*s", adjusted_ಅಗಲ, buf))
 
-PRINT_TYPE (print_s_char, signed char)
-PRINT_TYPE (print_char, unsigned char)
-PRINT_TYPE (print_s_short, short int)
-PRINT_TYPE (print_short, unsigned short int)
-PRINT_TYPE (print_int, unsigned int)
-PRINT_TYPE (print_long, unsigned long int)
-PRINT_TYPE (print_long_long, unsigned long long int)
+PRINT_TYPE (print_s_char, ಚಿಹ್ನೆಯುಳ್ಳ ಅಕ್ಷರ)
+PRINT_TYPE (print_char, ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ)
+PRINT_TYPE (print_s_short, ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ)
+PRINT_TYPE (print_short, ಚಿಹ್ನೆರಹಿತ ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ)
+PRINT_TYPE (print_int, ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ)
+PRINT_TYPE (print_long, ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ)
+PRINT_TYPE (print_long_long, ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ)
 PRINT_TYPE (print_intmax, uintmax_t)
 
 PRINT_FLOATTYPE (print_bfloat, bfloat16, ftoastr, FLT_BUFSIZE_BOUND)
 PRINT_FLOATTYPE (print_halffloat, float16, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_float, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_double, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_long_double, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_float, ದಶಮಾಂಶ, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_double, ದ್ವಿಗುಣ, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_long_double, ದೀರ್ಘ ದ್ವಿಗುಣ, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-#undef PRINT_TYPE
-#undef PRINT_FLOATTYPE
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು PRINT_TYPE
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು PRINT_FLOATTYPE
 
-static void
-dump_hexl_mode_trailer (idx_t n_bytes, char const *block)
+ಸ್ಥಿರ ಶೂನ್ಯ
+dump_hexl_ಬಹುಲಕ_trailer (idx_t n_ಬೈಟುಗಳು, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಖಂಡ)
 {
   fputs ("  >", stdout);
-  for (idx_t i = n_bytes; i > 0; i--)
+  ಗಾಗಿ (idx_t i = n_ಬೈಟುಗಳು; i > 0; i--)
     {
-      unsigned char c = *block++;
-      unsigned char c2 = (isprint (c) ? c : '.');
-      putchar (c2);
+      ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ c = *ಖಂಡ++;
+      ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ c2 = (isprint (c) ? c : '.');
+      ಅಕ್ಷರ_ಬರೆ (c2);
     }
-  putchar ('<');
+  ಅಕ್ಷರ_ಬರೆ ('<');
 }
 
-static void
-print_named_ascii (idx_t fields, idx_t blank, void const *block,
-                   MAYBE_UNUSED char const *unused_fmt_string,
-                   int width, idx_t pad)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_named_ascii (idx_t fields, idx_t blank, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *ಖಂಡ,
+                   MAYBE_ಬಳಸದ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಬಳಸದ_fmt_string,
+                   ಪೂರ್ಣಾಂಕ ಅಗಲ, idx_t pad)
 {
-  unsigned char const *p = block;
-  idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = ಖಂಡ;
+  idx_t pad_ಉಳಿದ = pad;
+  ಗಾಗಿ (idx_t i = fields; blank < i; i--)
     {
-      int masked_c = *p++ & 0x7f;
-      char const *s;
-      char buf[2];
+      ಪೂರ್ಣಾಂಕ masked_c = *p++ & 0x7f;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s;
+      ಅಕ್ಷರ buf[2];
 
-      if (masked_c == 127)
+      ಆದರೆ (masked_c == 127)
         s = "del";
-      else if (masked_c <= 040)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (masked_c <= 040)
         s = charname[masked_c];
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           buf[0] = masked_c;
           buf[1] = 0;
           s = buf;
         }
 
-      idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
-      xprintf ("%*s", adjusted_width, s);
-      pad_remaining = next_pad;
+      idx_t ಮುಂದಿನ_pad = pad_at (fields, i - 1, pad);
+      ಪೂರ್ಣಾಂಕ adjusted_ಅಗಲ = pad_ಉಳಿದ - ಮುಂದಿನ_pad + ಅಗಲ;
+      xprintf ("%*s", adjusted_ಅಗಲ, s);
+      pad_ಉಳಿದ = ಮುಂದಿನ_pad;
     }
 }
 
-static void
-print_ascii (idx_t fields, idx_t blank, void const *block,
-             MAYBE_UNUSED char const *unused_fmt_string, int width,
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_ascii (idx_t fields, idx_t blank, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *ಖಂಡ,
+             MAYBE_ಬಳಸದ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಬಳಸದ_fmt_string, ಪೂರ್ಣಾಂಕ ಅಗಲ,
              idx_t pad)
 {
-  unsigned char const *p = block;
-  idx_t pad_remaining = pad;
-  for (idx_t i = fields; blank < i; i--)
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = ಖಂಡ;
+  idx_t pad_ಉಳಿದ = pad;
+  ಗಾಗಿ (idx_t i = fields; blank < i; i--)
     {
-      unsigned char c = *p++;
-      char const *s;
-      char buf[4];
+      ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ c = *p++;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s;
+      ಅಕ್ಷರ buf[4];
 
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case '\0':
+        ಸ್ಥಿತಿ '\0':
           s = "\\0";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\a':
+        ಸ್ಥಿತಿ '\a':
           s = "\\a";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\b':
+        ಸ್ಥಿತಿ '\b':
           s = "\\b";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\f':
+        ಸ್ಥಿತಿ '\f':
           s = "\\f";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\n':
+        ಸ್ಥಿತಿ '\n':
           s = "\\n";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\r':
+        ಸ್ಥಿತಿ '\r':
           s = "\\r";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\t':
+        ಸ್ಥಿತಿ '\t':
           s = "\\t";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\v':
+        ಸ್ಥಿತಿ '\v':
           s = "\\v";
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           sprintf (buf, (isprint (c) ? "%c" : "%03o"), c);
           s = buf;
         }
 
-      idx_t next_pad = pad_at (fields, i - 1, pad);
-      int adjusted_width = pad_remaining - next_pad + width;
-      xprintf ("%*s", adjusted_width, s);
-      pad_remaining = next_pad;
+      idx_t ಮುಂದಿನ_pad = pad_at (fields, i - 1, pad);
+      ಪೂರ್ಣಾಂಕ adjusted_ಅಗಲ = pad_ಉಳಿದ - ಮುಂದಿನ_pad + ಅಗಲ;
+      xprintf ("%*s", adjusted_ಅಗಲ, s);
+      pad_ಉಳಿದ = ಮುಂದಿನ_pad;
     }
 }
 
@@ -699,31 +699,31 @@ print_ascii (idx_t fields, idx_t blank, void const *block,
    Otherwise, advance *P to the first non-digit after S, set *VAL to
    the result of the conversion and return true.  */
 
-static bool
-simple_strtoi (char const *s, char const **p, int *val)
+ಸ್ಥಿರ bool
+simple_strtoi (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ **p, ಪೂರ್ಣಾಂಕ *val)
 {
-  int sum;
+  ಪೂರ್ಣಾಂಕ ಮೊತ್ತ;
 
-  for (sum = 0; c_isdigit (*s); s++)
-    if (ckd_mul (&sum, sum, 10) || ckd_add (&sum, sum, *s - '0'))
-      return false;
+  ಗಾಗಿ (ಮೊತ್ತ = 0; c_isdigit (*s); s++)
+    ಆದರೆ (ckd_mul (&ಮೊತ್ತ, ಮೊತ್ತ, 10) || ckd_ಕೂಡಿಸು (&ಮೊತ್ತ, ಮೊತ್ತ, *s - '0'))
+      ಹಿಂತಿರುಗಿ false;
   *p = s;
-  *val = sum;
-  return true;
+  *val = ಮೊತ್ತ;
+  ಹಿಂತಿರುಗಿ true;
 }
 
 /* Return a printf format for SPEC, given that remaining arguments are
    formats for int, long, long long, and intmax_t, respectively.  */
-static char const *
-ispec_to_format (enum size_spec size_spec,
-                 char const *int_format,
-                 char const *long_format,
-                 char const *long_long_format,
-                 char const *intmax_format)
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *
+ispec_ಗಮ್ಯ_format (ಎಣಿಕೆ ಗಾತ್ರ_spec ಗಾತ್ರ_spec,
+                 ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *int_format,
+                 ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *long_format,
+                 ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *long_long_format,
+                 ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *intmax_format)
 {
-  return (LONG < INTMAX && size_spec == INTMAX ? intmax_format
-          : LONG < LONG_LONG && size_spec == LONG_LONG ? long_long_format
-          : INT < LONG && size_spec == LONG ? long_format
+  ಹಿಂತಿರುಗಿ (LONG < INTMAX && ಗಾತ್ರ_spec == INTMAX ? intmax_format
+          : LONG < LONG_LONG && ಗಾತ್ರ_spec == LONG_LONG ? long_long_format
+          : INT < LONG && ಗಾತ್ರ_spec == LONG ? long_format
           : int_format);
 }
 
@@ -746,266 +746,266 @@ ispec_to_format (enum size_spec size_spec,
    string argument.
    */
 
-static bool ATTRIBUTE_NONNULL ()
-decode_one_format (char const *s_orig, char const *s, char const **next,
-                   struct tspec *tspec)
+ಸ್ಥಿರ bool ATTRIBUTE_NONNULL ()
+decode_one_format (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s_orig, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ **ಮುಂದಿನ,
+                   ರಚನೆ tspec *tspec)
 {
-  enum size_spec size_spec;
-  int size;
-  enum output_format fmt;
+  ಎಣಿಕೆ ಗಾತ್ರ_spec ಗಾತ್ರ_spec;
+  ಪೂರ್ಣಾಂಕ ಗಾತ್ರ_2;
+  ಎಣಿಕೆ output_format fmt;
   print_function_type print_function;
-  char const *p;
-  char c;
-  int field_width;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p;
+  ಅಕ್ಷರ c;
+  ಪೂರ್ಣಾಂಕ ಕ್ಷೇತ್ರ_ಅಗಲ;
 
-  switch (*s)
+  ಆಯ್ಕೆ (*s)
     {
-    case 'd':
-    case 'o':
-    case 'u':
-    case 'x':
+    ಸ್ಥಿತಿ 'd':
+    ಸ್ಥಿತಿ 'o':
+    ಸ್ಥಿತಿ 'u':
+    ಸ್ಥಿತಿ 'x':
       c = *s;
       ++s;
-      switch (*s)
+      ಆಯ್ಕೆ (*s)
         {
-        case 'C':
+        ಸ್ಥಿತಿ 'C':
           ++s;
-          size = sizeof (unsigned char);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ);
+          ನಿಲ್ಲಿಸು;
 
-        case 'S':
+        ಸ್ಥಿತಿ 'S':
           ++s;
-          size = sizeof (unsigned short int);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಗಿಡ್ಡ ಪೂರ್ಣಾಂಕ);
+          ನಿಲ್ಲಿಸು;
 
-        case 'I':
+        ಸ್ಥಿತಿ 'I':
           ++s;
-          size = sizeof (unsigned int);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ);
+          ನಿಲ್ಲಿಸು;
 
-        case 'L':
+        ಸ್ಥಿತಿ 'L':
           ++s;
-          size = sizeof (unsigned long int);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ದೀರ್ಘ ಪೂರ್ಣಾಂಕ);
+          ನಿಲ್ಲಿಸು;
 
-        default:
-          if (! simple_strtoi (s, &p, &size))
+        ಪೂರ್ವನಿಯೋಜಿತ:
+          ಆದರೆ (! simple_strtoi (s, &p, &ಗಾತ್ರ_2))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              ಹಿಂತಿರುಗಿ false;
             }
-          if (p == s)
-            size = sizeof (unsigned int);
-          else
+          ಆದರೆ (p == s)
+            ಗಾತ್ರ_2 = ಗಾತ್ರ (ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ);
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              if (countof (integral_type_size) <= size
-                  || integral_type_size[size] == NO_SIZE)
+              ಆದರೆ (countof (integral_type_ಗಾತ್ರ) <= ಗಾತ್ರ_2
+                  || integral_type_ಗಾತ್ರ[ಗಾತ್ರ_2] == NO_ಗಾತ್ರ)
                 {
                   error (0, 0, _("invalid type string %s;\nthis system"
                                  " doesn't provide a %d-byte integral type"),
-                         quote (s_orig), size);
-                  return false;
+                         quote (s_orig), ಗಾತ್ರ_2);
+                  ಹಿಂತಿರುಗಿ false;
                 }
               s = p;
             }
-          break;
+          ನಿಲ್ಲಿಸು;
         }
 
-      size_spec = integral_type_size[size];
+      ಗಾತ್ರ_spec = integral_type_ಗಾತ್ರ[ಗಾತ್ರ_2];
 
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'd':
+        ಸ್ಥಿತಿ 'd':
           fmt = SIGNED_DECIMAL;
-          field_width = INT_BITS_STRLEN_BOUND (CHAR_BIT * size - 1) + 1;
+          ಕ್ಷೇತ್ರ_ಅಗಲ = INT_ಬಿಟ್ಟುಗಳು_STRLEN_BOUND (CHAR_BIT * ಗಾತ್ರ_2 - 1) + 1;
           sprintf (tspec->fmt_string, "%%*%s",
-                   ispec_to_format (size_spec, "d", "ld", "lld", "jd"));
-          break;
+                   ispec_ಗಮ್ಯ_format (ಗಾತ್ರ_spec, "d", "ld", "lld", "jd"));
+          ನಿಲ್ಲಿಸು;
 
-        case 'o':
+        ಸ್ಥಿತಿ 'o':
           fmt = OCTAL;
-          field_width = (CHAR_BIT * size + 2) / 3;
-          sprintf (tspec->fmt_string, "%%*.%d%s", field_width,
-                   ispec_to_format (size_spec, "o", "lo", "llo", "jo"));
-          break;
+          ಕ್ಷೇತ್ರ_ಅಗಲ = (CHAR_BIT * ಗಾತ್ರ_2 + 2) / 3;
+          sprintf (tspec->fmt_string, "%%*.%d%s", ಕ್ಷೇತ್ರ_ಅಗಲ,
+                   ispec_ಗಮ್ಯ_format (ಗಾತ್ರ_spec, "o", "lo", "llo", "jo"));
+          ನಿಲ್ಲಿಸು;
 
-        case 'u':
+        ಸ್ಥಿತಿ 'u':
           fmt = UNSIGNED_DECIMAL;
-          field_width = INT_BITS_STRLEN_BOUND (CHAR_BIT * size);
+          ಕ್ಷೇತ್ರ_ಅಗಲ = INT_ಬಿಟ್ಟುಗಳು_STRLEN_BOUND (CHAR_BIT * ಗಾತ್ರ_2);
           sprintf (tspec->fmt_string, "%%*%s",
-                   ispec_to_format (size_spec, "u", "lu", "llu", "ju"));
-          break;
+                   ispec_ಗಮ್ಯ_format (ಗಾತ್ರ_spec, "u", "lu", "llu", "ju"));
+          ನಿಲ್ಲಿಸು;
 
-        case 'x':
+        ಸ್ಥಿತಿ 'x':
           fmt = HEXADECIMAL;
-          field_width = (CHAR_BIT * size + 3) / 4;
-          sprintf (tspec->fmt_string, "%%*.%d%s", field_width,
-                   ispec_to_format (size_spec, "x", "lx", "llx", "jx"));
-          break;
+          ಕ್ಷೇತ್ರ_ಅಗಲ = (CHAR_BIT * ಗಾತ್ರ_2 + 3) / 4;
+          sprintf (tspec->fmt_string, "%%*.%d%s", ಕ್ಷೇತ್ರ_ಅಗಲ,
+                   ispec_ಗಮ್ಯ_format (ಗಾತ್ರ_spec, "x", "lx", "llx", "jx"));
+          ನಿಲ್ಲಿಸು;
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           affirm (false);
         }
 
       /* Prefer INT, prefer LONG to longer types,
          and prefer INTMAX to LONG_LONG.  */
       print_function
-        = (size_spec == INT
+        = (ಗಾತ್ರ_spec == INT
            ? print_int
-           : SHORT < INT && size_spec == SHORT
+           : SHORT < INT && ಗಾತ್ರ_spec == SHORT
            ? (fmt == SIGNED_DECIMAL ? print_s_short : print_short)
-           : CHAR < SHORT && size_spec == CHAR
+           : CHAR < SHORT && ಗಾತ್ರ_spec == CHAR
            ? (fmt == SIGNED_DECIMAL ? print_s_char : print_char)
-           : INT < LONG && size_spec == LONG
+           : INT < LONG && ಗಾತ್ರ_spec == LONG
            ? print_long
-           : LONG < INTMAX && size_spec == INTMAX
+           : LONG < INTMAX && ಗಾತ್ರ_spec == INTMAX
            ? print_intmax
-           : LONG < LONG_LONG && LONG_LONG < INTMAX && size_spec == LONG_LONG
+           : LONG < LONG_LONG && LONG_LONG < INTMAX && ಗಾತ್ರ_spec == LONG_LONG
            ? print_long_long
-           : (affirm (false), (print_function_type) NULL));
-      break;
+           : (affirm (false), (print_function_type) ಖಾಲಿ));
+      ನಿಲ್ಲಿಸು;
 
-    case 'f':
-      fmt = FLOATING_POINT;
+    ಸ್ಥಿತಿ 'f':
+      fmt = FLOATING_ಬಿಂದು;
       ++s;
-      switch (*s)
+      ಆಯ್ಕೆ (*s)
         {
-        case 'B':
+        ಸ್ಥಿತಿ 'B':
           ++s;
-          fmt = BFLOATING_POINT;
-          size = sizeof (bfloat16);
-          break;
+          fmt = BFLOATING_ಬಿಂದು;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (bfloat16);
+          ನಿಲ್ಲಿಸು;
 
-        case 'H':
+        ಸ್ಥಿತಿ 'H':
           ++s;
-          fmt = HFLOATING_POINT;
-          size = sizeof (float16);
-          break;
+          fmt = HFLOATING_ಬಿಂದು;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (float16);
+          ನಿಲ್ಲಿಸು;
 
-        case 'F':
+        ಸ್ಥಿತಿ 'F':
           ++s;
-          size = sizeof (float);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ದಶಮಾಂಶ);
+          ನಿಲ್ಲಿಸು;
 
-        case 'D':
+        ಸ್ಥಿತಿ 'D':
           ++s;
-          size = sizeof (double);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ದ್ವಿಗುಣ);
+          ನಿಲ್ಲಿಸು;
 
-        case 'L':
+        ಸ್ಥಿತಿ 'L':
           ++s;
-          size = sizeof (long double);
-          break;
+          ಗಾತ್ರ_2 = ಗಾತ್ರ (ದೀರ್ಘ ದ್ವಿಗುಣ);
+          ನಿಲ್ಲಿಸು;
 
-        default:
-          if (! simple_strtoi (s, &p, &size))
+        ಪೂರ್ವನಿಯೋಜಿತ:
+          ಆದರೆ (! simple_strtoi (s, &p, &ಗಾತ್ರ_2))
             {
               /* The integer at P in S would overflow an int.
                  A digit string that long is sufficiently odd looking
                  that the following diagnostic is sufficient.  */
               error (0, 0, _("invalid type string %s"), quote (s_orig));
-              return false;
+              ಹಿಂತಿರುಗಿ false;
             }
-          if (p == s)
-            size = sizeof (double);
-          else
+          ಆದರೆ (p == s)
+            ಗಾತ್ರ_2 = ಗಾತ್ರ (ದ್ವಿಗುಣ);
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              if (countof (fp_type_size) <= size
-                  || fp_type_size[size] == NO_SIZE
+              ಆದರೆ (countof (fp_type_ಗಾತ್ರ) <= ಗಾತ್ರ_2
+                  || fp_type_ಗಾತ್ರ[ಗಾತ್ರ_2] == NO_ಗಾತ್ರ
                   || (! FLOAT16_SUPPORTED && BF16_SUPPORTED
-                      && size == sizeof (bfloat16)))
+                      && ಗಾತ್ರ_2 == ಗಾತ್ರ (bfloat16)))
                 {
                   error (0, 0,
                          _("invalid type string %s;\n"
                            "this system doesn't provide a %d-byte"
                            " floating point type"),
-                         quote (s_orig), size);
-                  return false;
+                         quote (s_orig), ಗಾತ್ರ_2);
+                  ಹಿಂತಿರುಗಿ false;
                 }
               s = p;
             }
-          break;
+          ನಿಲ್ಲಿಸು;
         }
-      size_spec = fp_type_size[size];
+      ಗಾತ್ರ_spec = fp_type_ಗಾತ್ರ[ಗಾತ್ರ_2];
 
-      if ((! FLOAT16_SUPPORTED && fmt == HFLOATING_POINT)
-          || (! BF16_SUPPORTED && fmt == BFLOATING_POINT))
+      ಆದರೆ ((! FLOAT16_SUPPORTED && fmt == HFLOATING_ಬಿಂದು)
+          || (! BF16_SUPPORTED && fmt == BFLOATING_ಬಿಂದು))
       {
         error (0, 0,
                _("this system doesn't provide a %s floating point type"),
                quote (s_orig));
-        return false;
+        ಹಿಂತಿರುಗಿ false;
       }
 
       {
-        struct lconv const *locale = localeconv ();
-        idx_t decimal_point_len =
-          (locale->decimal_point[0] ? strlen (locale->decimal_point) : 1);
+        ರಚನೆ lconv ಸ್ಥಿರಾಂಕ *locale = localeconv ();
+        idx_t decimal_ಬಿಂದು_len =
+          (locale->decimal_ಬಿಂದು[0] ? ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (locale->decimal_ಬಿಂದು) : 1);
 
-        if (size_spec == FLOAT_DOUBLE)
+        ಆದರೆ (ಗಾತ್ರ_spec == FLOAT_DOUBLE)
           {
             print_function = print_double;
-            field_width = DBL_STRLEN_BOUND_L (decimal_point_len);
+            ಕ್ಷೇತ್ರ_ಅಗಲ = DBL_STRLEN_BOUND_L (decimal_ಬಿಂದು_len);
           }
-        else if (FLOAT_SINGLE < FLOAT_DOUBLE && size_spec == FLOAT_SINGLE)
+        ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (FLOAT_SINGLE < FLOAT_DOUBLE && ಗಾತ್ರ_spec == FLOAT_SINGLE)
           {
             print_function = print_float;
-            field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
+            ಕ್ಷೇತ್ರ_ಅಗಲ = FLT_STRLEN_BOUND_L (decimal_ಬಿಂದು_len);
           }
-        else if (FLOAT_HALF < FLOAT_SINGLE && size_spec == FLOAT_HALF)
+        ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (FLOAT_HALF < FLOAT_SINGLE && ಗಾತ್ರ_spec == FLOAT_HALF)
           {
-            print_function = fmt == BFLOATING_POINT
+            print_function = fmt == BFLOATING_ಬಿಂದು
                              ? print_bfloat : print_halffloat;
-            field_width = FLT_STRLEN_BOUND_L (decimal_point_len);
+            ಕ್ಷೇತ್ರ_ಅಗಲ = FLT_STRLEN_BOUND_L (decimal_ಬಿಂದು_len);
           }
-        else if (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
-                 && size_spec == FLOAT_LONG_DOUBLE)
+        ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (FLOAT_DOUBLE < FLOAT_LONG_DOUBLE
+                 && ಗಾತ್ರ_spec == FLOAT_LONG_DOUBLE)
           {
             print_function = print_long_double;
-            field_width = LDBL_STRLEN_BOUND_L (decimal_point_len);
+            ಕ್ಷೇತ್ರ_ಅಗಲ = LDBL_STRLEN_BOUND_L (decimal_ಬಿಂದು_len);
           }
-        else
+        ಇಲ್ಲದಿದ್ದರೆ
           affirm (false);
 
-        break;
+        ನಿಲ್ಲಿಸು;
       }
 
-    case 'a':
+    ಸ್ಥಿತಿ 'a':
       ++s;
       fmt = NAMED_CHARACTER;
-      size_spec = CHAR;
+      ಗಾತ್ರ_spec = CHAR;
       print_function = print_named_ascii;
-      field_width = 3;
-      break;
+      ಕ್ಷೇತ್ರ_ಅಗಲ = 3;
+      ನಿಲ್ಲಿಸು;
 
-    case 'c':
+    ಸ್ಥಿತಿ 'c':
       ++s;
       fmt = CHARACTER;
-      size_spec = CHAR;
+      ಗಾತ್ರ_spec = CHAR;
       print_function = print_ascii;
-      field_width = 3;
-      break;
+      ಕ್ಷೇತ್ರ_ಅಗಲ = 3;
+      ನಿಲ್ಲಿಸು;
 
-    default:
+    ಪೂರ್ವನಿಯೋಜಿತ:
       error (0, 0, _("invalid character '%c' in type string %s"),
              *s, quote (s_orig));
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
-  tspec->size = size_spec;
+  tspec->ಗಾತ್ರ_2 = ಗಾತ್ರ_spec;
   tspec->fmt = fmt;
   tspec->print_function = print_function;
 
-  tspec->field_width = field_width;
-  tspec->hexl_mode_trailer = (*s == 'z');
-  if (tspec->hexl_mode_trailer)
+  tspec->ಕ್ಷೇತ್ರ_ಅಗಲ = ಕ್ಷೇತ್ರ_ಅಗಲ;
+  tspec->hexl_ಬಹುಲಕ_trailer = (*s == 'z');
+  ಆದರೆ (tspec->hexl_ಬಹುಲಕ_trailer)
     s++;
 
-  *next = s;
-  return true;
+  *ಮುಂದಿನ = s;
+  ಹಿಂತಿರುಗಿ true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1015,41 +1015,41 @@ decode_one_format (char const *s_orig, char const *s, char const **next,
    interpreted as standard input.  If any file open fails, give an error
    message and return false.  */
 
-static bool
-open_next_file (void)
+ಸ್ಥಿರ bool
+open_ಮುಂದಿನ_file (ಶೂನ್ಯ)
 {
   bool ok = true;
 
-  do
+  ಮಾಡು
     {
-      input_filename = *file_list;
-      if (input_filename == NULL)
-        return ok;
+      ಒಳಹರಿವು_filename = *file_list;
+      ಆದರೆ (ಒಳಹರಿವು_filename == ಖಾಲಿ)
+        ಹಿಂತಿರುಗಿ ok;
       ++file_list;
 
-      if (streq (input_filename, "-"))
+      ಆದರೆ (streq (ಒಳಹರಿವು_filename, "-"))
         {
-          input_filename = _("standard input");
-          in_stream = stdin;
+          ಒಳಹರಿವು_filename = _("standard input");
+          ಒಳ_ಹರಿವು = stdin;
           have_read_stdin = true;
-          xset_binary_mode (STDIN_FILENO, O_BINARY);
+          xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDIN_FILENO, O_ದ್ವಿಮಾನ);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          in_stream = fopen (input_filename, (O_BINARY ? "rb" : "r"));
-          if (in_stream == NULL)
+          ಒಳ_ಹರಿವು = fopen (ಒಳಹರಿವು_filename, (O_ದ್ವಿಮಾನ ? "rb" : "r"));
+          ಆದರೆ (ಒಳ_ಹರಿವು == ಖಾಲಿ)
             {
-              error (0, errno, "%s", quotef (input_filename));
+              error (0, errno, "%s", quotef (ಒಳಹರಿವು_filename));
               ok = false;
             }
         }
     }
-  while (in_stream == NULL);
+  ಆಗ (ಒಳ_ಹರಿವು == ಖಾಲಿ);
 
-  if (0 <= end_offset && !flag_dump_strings)
-    setvbuf (in_stream, NULL, _IONBF, 0);
+  ಆದರೆ (0 <= ಕೊನೆ_ಸ್ಥಾನಾಂತರ && !flag_dump_ಅಕ್ಷರಸರಣಿಗಳು)
+    setvbuf (ಒಳ_ಹರಿವು, ಖಾಲಿ, _IONBF, 0);
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Test whether there have been errors on in_stream, and close it if
@@ -1059,62 +1059,62 @@ open_next_file (void)
    have occurred.  IN_ERRNO, if nonzero, is the error number
    corresponding to the most recent action for IN_STREAM.  */
 
-static bool
-check_and_close (int in_errno)
+ಸ್ಥಿರ bool
+check_and_close (ಪೂರ್ಣಾಂಕ ಒಳ_errno)
 {
   bool ok = true;
 
-  if (in_stream != NULL)
+  ಆದರೆ (ಒಳ_ಹರಿವು != ಖಾಲಿ)
     {
-      if (!ferror (in_stream))
-        in_errno = 0;
-      if (streq (file_list[-1], "-"))
-        clearerr (in_stream);
-      else if (fclose (in_stream) != 0 && !in_errno)
-        in_errno = errno;
-      if (in_errno)
+      ಆದರೆ (!ferror (ಒಳ_ಹರಿವು))
+        ಒಳ_errno = 0;
+      ಆದರೆ (streq (file_list[-1], "-"))
+        clearerr (ಒಳ_ಹರಿವು);
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fclose (ಒಳ_ಹರಿವು) != 0 && !ಒಳ_errno)
+        ಒಳ_errno = errno;
+      ಆದರೆ (ಒಳ_errno)
         {
-          error (0, in_errno, "%s", quotef (input_filename));
+          error (0, ಒಳ_errno, "%s", quotef (ಒಳಹರಿವು_filename));
           ok = false;
         }
 
-      in_stream = NULL;
+      ಒಳ_ಹರಿವು = ಖಾಲಿ;
     }
 
-  if (ferror (stdout))
+  ಆದರೆ (ferror (stdout))
     {
       error (0, 0, _("write error"));
       ok = false;
     }
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Decode the modern od format string S.  Append the decoded
    representation to the global array SPEC, reallocating SPEC if
    necessary.  Return true if S is valid.  */
 
-static bool ATTRIBUTE_NONNULL ()
-decode_format_string (char const *s)
+ಸ್ಥಿರ bool ATTRIBUTE_NONNULL ()
+decode_format_string (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s)
 {
-  char const *s_orig = s;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s_orig = s;
 
-  while (*s != '\0')
+  ಆಗ (*s != '\0')
     {
-      char const *next;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಮುಂದಿನ;
 
-      if (n_specs_allocated <= n_specs)
-        spec = xpalloc (spec, &n_specs_allocated, 1, -1, sizeof *spec);
+      ಆದರೆ (n_specs_allocated <= n_specs)
+        spec = xpalloc (spec, &n_specs_allocated, 1, -1, ಗಾತ್ರ *spec);
 
-      if (! decode_one_format (s_orig, s, &next, &spec[n_specs]))
-        return false;
+      ಆದರೆ (! decode_one_format (s_orig, s, &ಮುಂದಿನ, &spec[n_specs]))
+        ಹಿಂತಿರುಗಿ false;
 
-      affirm (s != next);
-      s = next;
+      affirm (s != ಮುಂದಿನ);
+      s = ಮುಂದಿನ;
       ++n_specs;
     }
 
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
 /* Given a list of one or more input filenames FILE_LIST, set the global
@@ -1124,18 +1124,18 @@ decode_format_string (char const *s)
    false.  When possible, use seek rather than read operations to
    advance IN_STREAM.  */
 
-static bool
+ಸ್ಥಿರ bool
 skip (intmax_t n_skip)
 {
   bool ok = true;
-  int in_errno = 0;
+  ಪೂರ್ಣಾಂಕ ಒಳ_errno = 0;
 
-  if (n_skip == 0)
-    return true;
+  ಆದರೆ (n_skip == 0)
+    ಹಿಂತಿರುಗಿ true;
 
-  while (in_stream != NULL)	/* EOF.  */
+  ಆಗ (ಒಳ_ಹರಿವು != ಖಾಲಿ)	/* EOF.  */
     {
-      struct stat file_stats;
+      ರಚನೆ stat file_stats;
 
       /* First try seeking.  For large offsets, this extra work is
          worthwhile.  If the offset is below some threshold it may be
@@ -1147,7 +1147,7 @@ skip (intmax_t n_skip)
              Try to do that by getting file's size using fstat.
              But that will work only for regular files.  */
 
-      if (fstat (fileno (in_stream), &file_stats) == 0)
+      ಆದರೆ (fstat (fileno (ಒಳ_ಹರಿವು), &file_stats) == 0)
         {
           /* The st_size field is valid for regular files.
              If the number of bytes left to skip is larger than
@@ -1156,144 +1156,144 @@ skip (intmax_t n_skip)
              when st_size is no greater than the block size, because
              some kernels report nonsense small file sizes for
              proc-like file systems.  */
-          if (S_ISREG (file_stats.st_mode)
-              && STP_BLKSIZE (&file_stats) < file_stats.st_size)
+          ಆದರೆ (S_ISREG (file_stats.st_ಬಹುಲಕ)
+              && STP_BLKSIZE (&file_stats) < file_stats.st_ಗಾತ್ರ)
             {
-              if (file_stats.st_size < n_skip)
-                n_skip -= file_stats.st_size;
-              else
+              ಆದರೆ (file_stats.st_ಗಾತ್ರ < n_skip)
+                n_skip -= file_stats.st_ಗಾತ್ರ;
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
-                  if (fseeko (in_stream, n_skip, SEEK_CUR) != 0)
+                  ಆದರೆ (fseeko (ಒಳ_ಹರಿವು, n_skip, SEEK_CUR) != 0)
                     {
-                      in_errno = errno;
+                      ಒಳ_errno = errno;
                       ok = false;
                     }
                   n_skip = 0;
                 }
             }
 
-          else if (! (S_ISREG (file_stats.st_mode)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (! (S_ISREG (file_stats.st_ಬಹುಲಕ)
                       || S_TYPEISSHM (&file_stats)
                       || S_TYPEISTMO (&file_stats))
-                   && fseeko (in_stream, n_skip, SEEK_CUR) == 0)
+                   && fseeko (ಒಳ_ಹರಿವು, n_skip, SEEK_CUR) == 0)
             n_skip = 0;
 
           /* If it's neither a seekable file with unusable size, nor a
              regular file so large it can't be in a proc-like file system,
              position the file pointer by reading.  */
 
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              char buf[BUFSIZ];
-              idx_t n_bytes_read, n_bytes_to_read = BUFSIZ;
+              ಅಕ್ಷರ buf[BUFSIZ];
+              idx_t n_ಬೈಟುಗಳು_read, n_ಬೈಟುಗಳು_ಗಮ್ಯ_read = BUFSIZ;
 
-              while (0 < n_skip)
+              ಆಗ (0 < n_skip)
                 {
-                  if (n_skip < n_bytes_to_read)
-                    n_bytes_to_read = n_skip;
-                  n_bytes_read = fread (buf, 1, n_bytes_to_read, in_stream);
-                  n_skip -= n_bytes_read;
-                  if (n_bytes_read != n_bytes_to_read)
+                  ಆದರೆ (n_skip < n_ಬೈಟುಗಳು_ಗಮ್ಯ_read)
+                    n_ಬೈಟುಗಳು_ಗಮ್ಯ_read = n_skip;
+                  n_ಬೈಟುಗಳು_read = fread (buf, 1, n_ಬೈಟುಗಳು_ಗಮ್ಯ_read, ಒಳ_ಹರಿವು);
+                  n_skip -= n_ಬೈಟುಗಳು_read;
+                  ಆದರೆ (n_ಬೈಟುಗಳು_read != n_ಬೈಟುಗಳು_ಗಮ್ಯ_read)
                     {
-                      if (ferror (in_stream))
+                      ಆದರೆ (ferror (ಒಳ_ಹರಿವು))
                         {
-                          in_errno = errno;
+                          ಒಳ_errno = errno;
                           ok = false;
                           n_skip = 0;
-                          break;
+                          ನಿಲ್ಲಿಸು;
                         }
-                      if (feof (in_stream))
-                        break;
+                      ಆದರೆ (feof (ಒಳ_ಹರಿವು))
+                        ನಿಲ್ಲಿಸು;
                     }
                 }
             }
 
-          if (n_skip == 0)
-            break;
+          ಆದರೆ (n_skip == 0)
+            ನಿಲ್ಲಿಸು;
         }
 
-      else   /* cannot fstat() file */
+      ಇಲ್ಲದಿದ್ದರೆ   /* cannot fstat() file */
         {
-          error (0, errno, "%s", quotef (input_filename));
+          error (0, errno, "%s", quotef (ಒಳಹರಿವು_filename));
           ok = false;
         }
 
-      ok &= check_and_close (in_errno);
+      ok &= check_and_close (ಒಳ_errno);
 
-      ok &= open_next_file ();
+      ok &= open_ಮುಂದಿನ_file ();
     }
 
-  if (n_skip != 0)
+  ಆದರೆ (n_skip != 0)
     error (EXIT_FAILURE, 0, _("cannot skip past end of combined input"));
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
-static void
-format_address_none (MAYBE_UNUSED intmax_t address,
-                     MAYBE_UNUSED char c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+format_ವಿಳಾಸ_none (MAYBE_ಬಳಸದ intmax_t ವಿಳಾಸ,
+                     MAYBE_ಬಳಸದ ಅಕ್ಷರ c)
 {
 }
 
-static void
-format_address_std (intmax_t address, char c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+format_ವಿಳಾಸ_std (intmax_t ವಿಳಾಸ, ಅಕ್ಷರ c)
 {
-  char buf[MAX_ADDRESS_LENGTH + 2];
-  char *p = buf + sizeof buf;
-  char const *pbound;
+  ಅಕ್ಷರ buf[MAX_ವಿಳಾಸ_ಉದ್ದಳತೆ + 2];
+  ಅಕ್ಷರ *p = buf + ಗಾತ್ರ buf;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *pbound;
 
   *--p = '\0';
   *--p = c;
-  pbound = p - address_pad_len;
+  pbound = p - ವಿಳಾಸ_pad_len;
 
   /* Use a special case of the code for each base.  This is measurably
      faster than generic code.  */
-  switch (address_base)
+  ಆಯ್ಕೆ (ವಿಳಾಸ_ತಳ)
     {
-    case 8:
-      do
-        *--p = '0' + (address & 7);
-      while ((address >>= 3) != 0);
-      break;
+    ಸ್ಥಿತಿ 8:
+      ಮಾಡು
+        *--p = '0' + (ವಿಳಾಸ & 7);
+      ಆಗ ((ವಿಳಾಸ >>= 3) != 0);
+      ನಿಲ್ಲಿಸು;
 
-    case 10:
-      do
-        *--p = '0' + (address % 10);
-      while ((address /= 10) != 0);
-      break;
+    ಸ್ಥಿತಿ 10:
+      ಮಾಡು
+        *--p = '0' + (ವಿಳಾಸ % 10);
+      ಆಗ ((ವಿಳಾಸ /= 10) != 0);
+      ನಿಲ್ಲಿಸು;
 
-    case 16:
-      do
-        *--p = "0123456789abcdef"[address & 15];
-      while ((address >>= 4) != 0);
-      break;
+    ಸ್ಥಿತಿ 16:
+      ಮಾಡು
+        *--p = "0123456789abcdef"[ವಿಳಾಸ & 15];
+      ಆಗ ((ವಿಳಾಸ >>= 4) != 0);
+      ನಿಲ್ಲಿಸು;
     }
 
-  while (pbound < p)
+  ಆಗ (pbound < p)
     *--p = '0';
 
   fputs (p, stdout);
 }
 
-static void
-format_address_paren (intmax_t address, char c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+format_ವಿಳಾಸ_paren (intmax_t ವಿಳಾಸ, ಅಕ್ಷರ c)
 {
-  putchar ('(');
-  format_address_std (address, ')');
-  if (c)
-    putchar (c);
+  ಅಕ್ಷರ_ಬರೆ ('(');
+  format_ವಿಳಾಸ_std (ವಿಳಾಸ, ')');
+  ಆದರೆ (c)
+    ಅಕ್ಷರ_ಬರೆ (c);
 }
 
-static void
-format_address_label (intmax_t address, char c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+format_ವಿಳಾಸ_label (intmax_t ವಿಳಾಸ, ಅಕ್ಷರ c)
 {
-  format_address_std (address, ' ');
+  format_ವಿಳಾಸ_std (ವಿಳಾಸ, ' ');
 
   intmax_t addr;
-  if (ckd_add (&addr, address, pseudo_offset))
+  ಆದರೆ (ckd_ಕೂಡಿಸು (&addr, ವಿಳಾಸ, pseudo_ಸ್ಥಾನಾಂತರ))
     error (EXIT_FAILURE, 0, _("pseudo address too large for input"));
 
-  format_address_paren (addr, c);
+  format_ವಿಳಾಸ_paren (addr, c);
 }
 
 /* Write N_BYTES bytes from CURR_BLOCK to standard output once for each
@@ -1306,58 +1306,58 @@ format_address_label (intmax_t address, char c)
    the blocks PREV_BLOCK and CURR_BLOCK only when N_BYTES == BYTES_PER_BLOCK.
    That condition may be false only for the last input block.  */
 
-static void
-write_block (intmax_t current_offset, idx_t n_bytes,
-             char const *prev_block, char const *curr_block)
+ಸ್ಥಿರ ಶೂನ್ಯ
+write_ಖಂಡ (intmax_t current_ಸ್ಥಾನಾಂತರ, idx_t n_ಬೈಟುಗಳು,
+             ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *prev_ಖಂಡ, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *curr_ಖಂಡ)
 {
-  static bool first = true;
-  static bool prev_pair_equal = false;
+  ಸ್ಥಿರ bool ಮೊದಲ = true;
+  ಸ್ಥಿರ bool prev_pair_equal = false;
 
-  if (abbreviate_duplicate_blocks
-      && !first && n_bytes == bytes_per_block
-      && memeq (prev_block, curr_block, bytes_per_block))
+  ಆದರೆ (abbreviate_duplicate_ಖಂಡಗಳು
+      && !ಮೊದಲ && n_ಬೈಟುಗಳು == ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ
+      && memeq (prev_ಖಂಡ, curr_ಖಂಡ, ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ))
     {
-      if (prev_pair_equal)
+      ಆದರೆ (prev_pair_equal)
         {
           /* The two preceding blocks were equal, and the current
              block is the same as the last one, so print nothing.  */
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          printf ("*\n");
+          ಬರೆ ("*\n");
           prev_pair_equal = true;
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       prev_pair_equal = false;
-      for (idx_t i = 0; i < n_specs; i++)
+      ಗಾಗಿ (idx_t i = 0; i < n_specs; i++)
         {
-          int datum_width = width_bytes[spec[i].size];
-          idx_t fields_per_block = bytes_per_block / datum_width;
-          idx_t blank_fields = (bytes_per_block - n_bytes) / datum_width;
-          if (i == 0)
-            format_address (current_offset, '\0');
-          else
-            print_n_spaces (address_pad_len);
-          (*spec[i].print_function) (fields_per_block, blank_fields,
-                                     curr_block, spec[i].fmt_string,
-                                     spec[i].field_width, spec[i].pad_width);
-          if (spec[i].hexl_mode_trailer)
+          ಪೂರ್ಣಾಂಕ datum_ಅಗಲ = ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2];
+          idx_t fields_ಪ್ರತಿ_ಖಂಡ = ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ / datum_ಅಗಲ;
+          idx_t blank_fields = (ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ - n_ಬೈಟುಗಳು) / datum_ಅಗಲ;
+          ಆದರೆ (i == 0)
+            format_ವಿಳಾಸ (current_ಸ್ಥಾನಾಂತರ, '\0');
+          ಇಲ್ಲದಿದ್ದರೆ
+            print_n_spaces (ವಿಳಾಸ_pad_len);
+          (*spec[i].print_function) (fields_ಪ್ರತಿ_ಖಂಡ, blank_fields,
+                                     curr_ಖಂಡ, spec[i].fmt_string,
+                                     spec[i].ಕ್ಷೇತ್ರ_ಅಗಲ, spec[i].pad_ಅಗಲ);
+          ಆದರೆ (spec[i].hexl_ಬಹುಲಕ_trailer)
             {
               /* Space-pad out to full line width, then dump the trailer.  */
-              int field_width = spec[i].field_width;
-              for (idx_t f = 0; f < blank_fields; f++)
-                print_n_spaces (field_width);
-              idx_t pad_width = pad_at (fields_per_block, blank_fields,
-                                        spec[i].pad_width);
-              print_n_spaces (pad_width);
-              dump_hexl_mode_trailer (n_bytes, curr_block);
+              ಪೂರ್ಣಾಂಕ ಕ್ಷೇತ್ರ_ಅಗಲ = spec[i].ಕ್ಷೇತ್ರ_ಅಗಲ;
+              ಗಾಗಿ (idx_t f = 0; f < blank_fields; f++)
+                print_n_spaces (ಕ್ಷೇತ್ರ_ಅಗಲ);
+              idx_t pad_ಅಗಲ = pad_at (fields_ಪ್ರತಿ_ಖಂಡ, blank_fields,
+                                        spec[i].pad_ಅಗಲ);
+              print_n_spaces (pad_ಅಗಲ);
+              dump_hexl_ಬಹುಲಕ_trailer (n_ಬೈಟುಗಳು, curr_ಖಂಡ);
             }
-          putchar ('\n');
+          ಅಕ್ಷರ_ಬರೆ ('\n');
         }
     }
-  first = false;
+  ಮೊದಲ = false;
 }
 
 /* Read a single byte into *C from the concatenation of the input files
@@ -1371,20 +1371,20 @@ write_block (intmax_t current_offset, idx_t n_bytes,
    set *C to EOF and return.  Subsequent calls do likewise.  Return
    true if successful.  */
 
-static bool
-read_char (int *c)
+ಸ್ಥಿರ bool
+read_char (ಪೂರ್ಣಾಂಕ *c)
 {
   bool ok = true;
 
   *c = EOF;
 
-  while (in_stream && (*c = getc (in_stream)) < 0)
+  ಆಗ (ಒಳ_ಹರಿವು && (*c = getc (ಒಳ_ಹರಿವು)) < 0)
     {
       ok &= check_and_close (errno);
-      ok &= open_next_file ();
+      ok &= open_ಮುಂದಿನ_file ();
     }
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Read N bytes into BLOCK from the concatenation of the input files
@@ -1401,57 +1401,57 @@ read_char (int *c)
    closed.  If there is an error, give a message but continue reading
    as usual and return false.  Otherwise return true.  */
 
-static bool
-read_block (idx_t n, char *block, idx_t *n_bytes_in_buffer)
+ಸ್ಥಿರ bool
+read_ಖಂಡ (idx_t n, ಅಕ್ಷರ *ಖಂಡ, idx_t *n_ಬೈಟುಗಳು_ಒಳ_ಬಫರ್)
 {
   bool ok = true;
 
-  affirm (0 < n && n <= bytes_per_block);
+  affirm (0 < n && n <= ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ);
 
-  *n_bytes_in_buffer = 0;
+  *n_ಬೈಟುಗಳು_ಒಳ_ಬಫರ್ = 0;
 
-  while (in_stream != NULL)	/* EOF.  */
+  ಆಗ (ಒಳ_ಹರಿವು != ಖಾಲಿ)	/* EOF.  */
     {
-      idx_t n_needed = n - *n_bytes_in_buffer;
-      idx_t n_read = fread (block + *n_bytes_in_buffer,
-                            1, n_needed, in_stream);
+      idx_t n_needed = n - *n_ಬೈಟುಗಳು_ಒಳ_ಬಫರ್;
+      idx_t n_read = fread (ಖಂಡ + *n_ಬೈಟುಗಳು_ಒಳ_ಬಫರ್,
+                            1, n_needed, ಒಳ_ಹರಿವು);
 
-      *n_bytes_in_buffer += n_read;
+      *n_ಬೈಟುಗಳು_ಒಳ_ಬಫರ್ += n_read;
 
-      if (n_read == n_needed)
-        break;
+      ಆದರೆ (n_read == n_needed)
+        ನಿಲ್ಲಿಸು;
 
       ok &= check_and_close (errno);
 
-      ok &= open_next_file ();
+      ok &= open_ಮುಂದಿನ_file ();
     }
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Return the least common multiple of the sizes associated
    with the format specs.  */
 
-ATTRIBUTE_PURE
-static int
-get_lcm (void)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+get_lcm (ಶೂನ್ಯ)
 {
-  int l_c_m = 1;
+  ಪೂರ್ಣಾಂಕ l_c_m = 1;
 
-  for (idx_t i = 0; i < n_specs; i++)
-    l_c_m = lcm (l_c_m, width_bytes[spec[i].size]);
-  return l_c_m;
+  ಗಾಗಿ (idx_t i = 0; i < n_specs; i++)
+    l_c_m = lcm (l_c_m, ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2]);
+  ಹಿಂತಿರುಗಿ l_c_m;
 }
 
 /* Act like xstrtoimax (NPTR, NULL, BASE, VAL, VALID_SUFFIXES),
    except reject negative values, and *VAL may be set if
    LONGINT_INVALID is returned.  */
-static strtol_error
-xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
-             char const *restrict valid_suffixes)
+ಸ್ಥಿರ strtol_error
+xstr2nonneg (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸೀಮಿತ nptr, ಪೂರ್ಣಾಂಕ ತಳ_2, intmax_t *val,
+             ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸೀಮಿತ valid_suffixes)
 {
-  strtol_error s_err = xstrtoimax (nptr, NULL, base, val, valid_suffixes);
-  return s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
+  strtol_error s_err = xstrtoimax (nptr, ಖಾಲಿ, ತಳ_2, val, valid_suffixes);
+  ಹಿಂತಿರುಗಿ s_err != LONGINT_INVALID && *val < 0 ? LONGINT_INVALID : s_err;
 }
 
 /* If STR is a valid traditional offset specification with an optional
@@ -1460,43 +1460,43 @@ xstr2nonneg (char const *restrict nptr, int base, intmax_t *val,
    represented, diagnose the problem and exit.  Otherwise return false
    and possibly set *OFFSET.  */
 
-static bool
-parse_old_offset (char *str, intmax_t *offset)
+ಸ್ಥಿರ bool
+parse_old_ಸ್ಥಾನಾಂತರ (ಅಕ್ಷರ *str, intmax_t *ಸ್ಥಾನಾಂತರ)
 {
   /* Skip over any leading '+'.  */
-  char *s = str + (str[0] == '+');
+  ಅಕ್ಷರ *s = str + (str[0] == '+');
 
-  if (! c_isdigit (s[0]))
-    return false;
+  ಆದರೆ (! c_isdigit (s[0]))
+    ಹಿಂತಿರುಗಿ false;
 
   /* Determine the radix for S.  If there is a '.', followed first by
      optional 'b' or (undocumented) 'B' and then by end of string,
      it's decimal, otherwise, if the string begins with '0X' or '0x',
      it's hexadecimal, else octal.  */
-  char *dot = strchr (s, '.');
-  if (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
-    dot = NULL;
-  int radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
+  ಅಕ್ಷರ *dot = strchr (s, '.');
+  ಆದರೆ (dot && dot[(dot[1] == 'b' || dot[1] == 'B') + 1])
+    dot = ಖಾಲಿ;
+  ಪೂರ್ಣಾಂಕ radix = dot ? 10 : s[0] == '0' && (s[1] == 'x' || s[1] == 'X') ? 16 : 8;
 
-  if (dot)
+  ಆದರೆ (dot)
     {
       /* Temporarily remove the '.' from the decimal string.  */
       dot[0] = dot[1];
       dot[1] = '\0';
     }
 
-  enum strtol_error s_err = xstr2nonneg (s, radix, offset, "bB");
+  ಎಣಿಕೆ strtol_error s_err = xstr2nonneg (s, radix, ಸ್ಥಾನಾಂತರ, "bB");
 
-  if (dot)
+  ಆದರೆ (dot)
     {
       /* Restore the decimal string's original value.  */
       dot[1] = dot[0];
       dot[0] = '.';
     }
 
-  if (s_err == LONGINT_OVERFLOW)
+  ಆದರೆ (s_err == LONGINT_ಅತಿಪ್ರವಾಹ)
     error (EXIT_FAILURE, ERANGE, "%s", quotef (str));
-  return s_err == LONGINT_OK;
+  ಹಿಂತಿರುಗಿ s_err == LONGINT_OK;
 }
 
 /* Read a chunk of size BYTES_PER_BLOCK from the input files, write the
@@ -1511,65 +1511,65 @@ parse_old_offset (char *str, intmax_t *offset)
    check_and_close, and if any was false, return false.
    Otherwise, return true.  */
 
-static bool
-dump (void)
+ಸ್ಥಿರ bool
+dump (ಶೂನ್ಯ)
 {
-  char *block[2];
+  ಅಕ್ಷರ *ಖಂಡ[2];
   bool idx = false;
   bool ok = true;
-  idx_t n_bytes_read;
+  idx_t n_ಬೈಟುಗಳು_read;
 
-  block[0] = xinmalloc (1 + abbreviate_duplicate_blocks, bytes_per_block);
-  block[1] = block[0] + abbreviate_duplicate_blocks * bytes_per_block;
+  ಖಂಡ[0] = xinmalloc (1 + abbreviate_duplicate_ಖಂಡಗಳು, ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ);
+  ಖಂಡ[1] = ಖಂಡ[0] + abbreviate_duplicate_ಖಂಡಗಳು * ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ;
 
-  intmax_t current_offset = n_bytes_to_skip;
+  intmax_t current_ಸ್ಥಾನಾಂತರ = n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip;
 
-  do
+  ಮಾಡು
     {
       intmax_t needed_bound
-        = end_offset < 0 ? INTMAX_MAX : end_offset - current_offset;
-      if (needed_bound <= 0)
+        = ಕೊನೆ_ಸ್ಥಾನಾಂತರ < 0 ? INTMAX_MAX : ಕೊನೆ_ಸ್ಥಾನಾಂತರ - current_ಸ್ಥಾನಾಂತರ;
+      ಆದರೆ (needed_bound <= 0)
         {
-          n_bytes_read = 0;
-          break;
+          n_ಬೈಟುಗಳು_read = 0;
+          ನಿಲ್ಲಿಸು;
         }
-      idx_t n_needed = MIN (bytes_per_block, needed_bound);
-      ok &= read_block (n_needed, block[idx], &n_bytes_read);
-      if (n_bytes_read < bytes_per_block)
-        break;
-      affirm (n_bytes_read == bytes_per_block);
-      write_block (current_offset, n_bytes_read,
-                   block[!idx], block[idx]);
-      if (ferror (stdout))
+      idx_t n_needed = MIN (ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ, needed_bound);
+      ok &= read_ಖಂಡ (n_needed, ಖಂಡ[idx], &n_ಬೈಟುಗಳು_read);
+      ಆದರೆ (n_ಬೈಟುಗಳು_read < ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ)
+        ನಿಲ್ಲಿಸು;
+      affirm (n_ಬೈಟುಗಳು_read == ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ);
+      write_ಖಂಡ (current_ಸ್ಥಾನಾಂತರ, n_ಬೈಟುಗಳು_read,
+                   ಖಂಡ[!idx], ಖಂಡ[idx]);
+      ಆದರೆ (ferror (stdout))
         ok = false;
-      current_offset += n_bytes_read;
+      current_ಸ್ಥಾನಾಂತರ += n_ಬೈಟುಗಳು_read;
       idx = !idx;
     }
-  while (ok);
+  ಆಗ (ok);
 
-  if (n_bytes_read > 0)
+  ಆದರೆ (n_ಬೈಟುಗಳು_read > 0)
     {
-      int l_c_m = get_lcm ();
+      ಪೂರ್ಣಾಂಕ l_c_m = get_lcm ();
 
       /* Ensure zero-byte padding up to the smallest multiple of l_c_m that
          is at least as large as n_bytes_read.  */
-      idx_t bytes_to_write = (n_bytes_read + l_c_m - 1
-                              - (n_bytes_read + l_c_m - 1) % l_c_m);
+      idx_t ಬೈಟುಗಳು_ಗಮ್ಯ_write = (n_ಬೈಟುಗಳು_read + l_c_m - 1
+                              - (n_ಬೈಟುಗಳು_read + l_c_m - 1) % l_c_m);
 
-      memset (block[idx] + n_bytes_read, 0, bytes_to_write - n_bytes_read);
-      write_block (current_offset, n_bytes_read, block[!idx], block[idx]);
-      current_offset += n_bytes_read;
+      memset (ಖಂಡ[idx] + n_ಬೈಟುಗಳು_read, 0, ಬೈಟುಗಳು_ಗಮ್ಯ_write - n_ಬೈಟುಗಳು_read);
+      write_ಖಂಡ (current_ಸ್ಥಾನಾಂತರ, n_ಬೈಟುಗಳು_read, ಖಂಡ[!idx], ಖಂಡ[idx]);
+      current_ಸ್ಥಾನಾಂತರ += n_ಬೈಟುಗಳು_read;
     }
 
-  if (ok || current_offset)
-    format_address (current_offset, '\n');
+  ಆದರೆ (ok || current_ಸ್ಥಾನಾಂತರ)
+    format_ವಿಳಾಸ (current_ಸ್ಥಾನಾಂತರ, '\n');
 
-  if (0 <= end_offset && end_offset <= current_offset)
+  ಆದರೆ (0 <= ಕೊನೆ_ಸ್ಥಾನಾಂತರ && ಕೊನೆ_ಸ್ಥಾನಾಂತರ <= current_ಸ್ಥಾನಾಂತರ)
     ok &= check_and_close (0);
 
-  free (block[0]);
+  ಬಿಡುಗಡೆ (ಖಂಡ[0]);
 
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* STRINGS mode.  Find each "string constant" in the input.
@@ -1578,230 +1578,230 @@ dump (void)
    Based on a function written by Richard Stallman for a
    traditional version of od.  Return true if successful.  */
 
-static bool
-dump_strings (void)
+ಸ್ಥಿರ bool
+dump_ಅಕ್ಷರಸರಣಿಗಳು (ಶೂನ್ಯ)
 {
   idx_t bufsize = MAX (100, string_min + 1);
-  char *buf = ximalloc (bufsize);
-  intmax_t address = n_bytes_to_skip;
+  ಅಕ್ಷರ *buf = ximalloc (bufsize);
+  intmax_t ವಿಳಾಸ = n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip;
   bool ok = true;
 
-  while (true)
+  ಆಗ (true)
     {
       idx_t i = 0;
-      int c = 1;  /* Init to 1 so can distinguish if NUL read.  */
+      ಪೂರ್ಣಾಂಕ c = 1;  /* Init to 1 so can distinguish if NUL read.  */
 
-      if (0 <= end_offset
-          && (end_offset < string_min || end_offset - string_min < address))
-        break;
+      ಆದರೆ (0 <= ಕೊನೆ_ಸ್ಥಾನಾಂತರ
+          && (ಕೊನೆ_ಸ್ಥಾನಾಂತರ < string_min || ಕೊನೆ_ಸ್ಥಾನಾಂತರ - string_min < ವಿಳಾಸ))
+        ನಿಲ್ಲಿಸು;
 
       /* Store consecutive printable characters to BUF.  */
-      while (! (0 <= end_offset && end_offset <= address))
+      ಆಗ (! (0 <= ಕೊನೆ_ಸ್ಥಾನಾಂತರ && ಕೊನೆ_ಸ್ಥಾನಾಂತರ <= ವಿಳಾಸ))
         {
-          if (i == bufsize - 1)
-            buf = xpalloc (buf, &bufsize, 1, -1, sizeof *buf);
+          ಆದರೆ (i == bufsize - 1)
+            buf = xpalloc (buf, &bufsize, 1, -1, ಗಾತ್ರ *buf);
           ok &= read_char (&c);
-          if (c < 0)
+          ಆದರೆ (c < 0)
             {
-              free (buf);
-              return ok;
+              ಬಿಡುಗಡೆ (buf);
+              ಹಿಂತಿರುಗಿ ok;
             }
-          address++;
+          ವಿಳಾಸ++;
           buf[i++] = c;
-          if (c == '\0')
-            break;		/* Print this string.  */
-          if (! isprint (c))
+          ಆದರೆ (c == '\0')
+            ನಿಲ್ಲಿಸು;		/* Print this string.  */
+          ಆದರೆ (! isprint (c))
             {
               c = -1;		/* Give up on this string.  */
-              break;
+              ನಿಲ್ಲಿಸು;
             }
         }
 
-      if (c < 0 || i - !c < string_min)
-        continue;
+      ಆದರೆ (c < 0 || i - !c < string_min)
+        ಮುಂದುವರಿ;
 
       buf[i] = 0;
 
       /* If we get here, the string is all printable, so print it.  */
 
-      format_address (address - i, ' ');
+      format_ವಿಳಾಸ (ವಿಳಾಸ - i, ' ');
 
-      for (i = 0; (c = buf[i]); i++)
+      ಗಾಗಿ (i = 0; (c = buf[i]); i++)
         {
-          switch (c)
+          ಆಯ್ಕೆ (c)
             {
-            case '\a':
+            ಸ್ಥಿತಿ '\a':
               fputs ("\\a", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '\b':
+            ಸ್ಥಿತಿ '\b':
               fputs ("\\b", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '\f':
+            ಸ್ಥಿತಿ '\f':
               fputs ("\\f", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '\n':
+            ಸ್ಥಿತಿ '\n':
               fputs ("\\n", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '\r':
+            ಸ್ಥಿತಿ '\r':
               fputs ("\\r", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '\t':
+            ಸ್ಥಿತಿ '\t':
               fputs ("\\t", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '\v':
+            ಸ್ಥಿತಿ '\v':
               fputs ("\\v", stdout);
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            default:
+            ಪೂರ್ವನಿಯೋಜಿತ:
               putc (c, stdout);
             }
         }
-      putchar ('\n');
+      ಅಕ್ಷರ_ಬರೆ ('\n');
     }
 
   /* We reach this point only if we search through
      (max_bytes_to_format - string_min) bytes before reaching EOF.  */
 
-  free (buf);
+  ಬಿಡುಗಡೆ (buf);
 
   ok &= check_and_close (0);
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int n_files;
-  int l_c_m;
-  idx_t desired_width = 0;
+  ಪೂರ್ಣಾಂಕ n_files;
+  ಪೂರ್ಣಾಂಕ l_c_m;
+  idx_t desired_ಅಗಲ = 0;
   bool modern = false;
   bool ok = true;
-  idx_t width_per_block = 0;
-  static char const multipliers[] = "bEGKkMmPQRTYZ0";
+  idx_t ಅಗಲ_ಪ್ರತಿ_ಖಂಡ = 0;
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ multipliers[] = "bEGKkMmPQRTYZ0";
 
   /* The maximum number of bytes that will be formatted.
      If negative, there is no limit.  */
-  intmax_t max_bytes_to_format = -1;
+  intmax_t max_ಬೈಟುಗಳು_ಗಮ್ಯ_format = -1;
 
   /* The old-style 'pseudo starting address' to be printed in parentheses
      after any true address.  */
-  intmax_t pseudo_start IF_LINT ( = 0);
+  intmax_t pseudo_ಆರಂಭ IF_LINT ( = 0);
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  ಆಗ (true)
     {
       intmax_t tmp;
-      enum strtol_error s_err;
-      int oi = -1;
-      int c = getopt_long (argc, argv, short_options, long_options, &oi);
-      if (c == -1)
-        break;
+      ಎಣಿಕೆ strtol_error s_err;
+      ಪೂರ್ಣಾಂಕ oi = -1;
+      ಪೂರ್ಣಾಂಕ c = getopt_long (argc, argv, short_options, long_options, &oi);
+      ಆದರೆ (c == -1)
+        ನಿಲ್ಲಿಸು;
 
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'A':
+        ಸ್ಥಿತಿ 'A':
           modern = true;
-          switch (optarg[0])
+          ಆಯ್ಕೆ (optarg[0])
             {
-            case 'd':
-              format_address = format_address_std;
-              address_base = 10;
-              address_pad_len = 7;
-              break;
-            case 'o':
-              format_address = format_address_std;
-              address_base = 8;
-              address_pad_len = 7;
-              break;
-            case 'x':
-              format_address = format_address_std;
-              address_base = 16;
-              address_pad_len = 6;
-              break;
-            case 'n':
-              format_address = format_address_none;
-              address_pad_len = 0;
-              break;
-            default:
+            ಸ್ಥಿತಿ 'd':
+              format_ವಿಳಾಸ = format_ವಿಳಾಸ_std;
+              ವಿಳಾಸ_ತಳ = 10;
+              ವಿಳಾಸ_pad_len = 7;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 'o':
+              format_ವಿಳಾಸ = format_ವಿಳಾಸ_std;
+              ವಿಳಾಸ_ತಳ = 8;
+              ವಿಳಾಸ_pad_len = 7;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 'x':
+              format_ವಿಳಾಸ = format_ವಿಳಾಸ_std;
+              ವಿಳಾಸ_ತಳ = 16;
+              ವಿಳಾಸ_pad_len = 6;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 'n':
+              format_ವಿಳಾಸ = format_ವಿಳಾಸ_none;
+              ವಿಳಾಸ_pad_len = 0;
+              ನಿಲ್ಲಿಸು;
+            ಪೂರ್ವನಿಯೋಜಿತ:
               error (EXIT_FAILURE, 0,
                      _("invalid output address radix '%c';"
                        " it must be one character from [doxn]"),
                      optarg[0]);
-              break;
+              ನಿಲ್ಲಿಸು;
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'j':
+        ಸ್ಥಿತಿ 'j':
           modern = true;
-          s_err = xstr2nonneg (optarg, 0, &n_bytes_to_skip, multipliers);
-          if (s_err != LONGINT_OK)
+          s_err = xstr2nonneg (optarg, 0, &n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip, multipliers);
+          ಆದರೆ (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'N':
+        ಸ್ಥಿತಿ 'N':
           modern = true;
-          s_err = xstr2nonneg (optarg, 0, &max_bytes_to_format, multipliers);
-          if (s_err != LONGINT_OK)
+          s_err = xstr2nonneg (optarg, 0, &max_ಬೈಟುಗಳು_ಗಮ್ಯ_format, multipliers);
+          ಆದರೆ (s_err != LONGINT_OK)
             xstrtol_fatal (s_err, oi, c, long_options, optarg);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'S':
+        ಸ್ಥಿತಿ 'S':
           modern = true;
-          if (optarg == NULL)
+          ಆದರೆ (optarg == ಖಾಲಿ)
             string_min = 3;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               s_err = xstr2nonneg (optarg, 0, &tmp, multipliers);
               /* The minimum string length + 1 must fit in idx_t,
                  since we may allocate a buffer of this size + 1.  */
               idx_t i;
-              if (s_err == LONGINT_OK && ckd_add (&i, tmp, 1))
-                s_err = LONGINT_OVERFLOW;
-              if (s_err != LONGINT_OK)
+              ಆದರೆ (s_err == LONGINT_OK && ckd_ಕೂಡಿಸು (&i, tmp, 1))
+                s_err = LONGINT_ಅತಿಪ್ರವಾಹ;
+              ಆದರೆ (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
               string_min = tmp;
             }
-          flag_dump_strings = true;
-          break;
+          flag_dump_ಅಕ್ಷರಸರಣಿಗಳು = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 't':
+        ಸ್ಥಿತಿ 't':
           modern = true;
           ok &= decode_format_string (optarg);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'v':
+        ಸ್ಥಿತಿ 'v':
           modern = true;
-          abbreviate_duplicate_blocks = false;
-          break;
+          abbreviate_duplicate_ಖಂಡಗಳು = false;
+          ನಿಲ್ಲಿಸು;
 
-        case TRADITIONAL_OPTION:
+        ಸ್ಥಿತಿ TRADITIONAL_OPTION:
           traditional = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case ENDIAN_OPTION:
-          switch (XARGMATCH ("--endian", optarg, endian_args, endian_types))
+        ಸ್ಥಿತಿ ENDIAN_OPTION:
+          ಆಯ್ಕೆ (XARGMATCH ("--endian", optarg, endian_ವಾದಗಳು, endian_types))
             {
-            case endian_big:
-              input_swap = BYTE_ORDER != BIG_ENDIAN;
-              break;
-            case endian_little:
-              input_swap = BYTE_ORDER != LITTLE_ENDIAN;
-              break;
+            ಸ್ಥಿತಿ endian_big:
+              ಒಳಹರಿವು_ಅದಲುಬದಲು = BYTE_ORDER != BIG_ENDIAN;
+              ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ endian_little:
+              ಒಳಹರಿವು_ಅದಲುಬದಲು = BYTE_ORDER != LITTLE_ENDIAN;
+              ನಿಲ್ಲಿಸು;
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
           /* The next several cases map the traditional format
              specification options to the corresponding modern format
@@ -1810,69 +1810,69 @@ main (int argc, char **argv)
              The obsolescent and undocumented formats are compatible
              with FreeBSD 4.10 od.  */
 
-#define CASE_OLD_ARG(old_char,new_string)		\
-        case old_char:					\
+#ವ್ಯಾಖ್ಯಾನಿಸು CASE_OLD_ARG(old_char,new_string)		\
+        ಸ್ಥಿತಿ old_char:					\
           ok &= decode_format_string (new_string);	\
-          break
+          ನಿಲ್ಲಿಸು
 
           CASE_OLD_ARG ('a', "a");
           CASE_OLD_ARG ('b', "o1");
           CASE_OLD_ARG ('c', "c");
           CASE_OLD_ARG ('D', "u4"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('d', "u2");
-        case 'F': /* obsolescent and undocumented alias */
+        ಸ್ಥಿತಿ 'F': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('e', "fD"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('f', "fF");
-        case 'X': /* obsolescent and undocumented alias */
+        ಸ್ಥಿತಿ 'X': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('H', "x4"); /* obsolescent and undocumented */
           CASE_OLD_ARG ('i', "dI");
-        case 'I': case 'L': /* obsolescent and undocumented aliases */
+        ಸ್ಥಿತಿ 'I': ಸ್ಥಿತಿ 'L': /* obsolescent and undocumented aliases */
           CASE_OLD_ARG ('l', "dL");
           CASE_OLD_ARG ('O', "o4"); /* obsolescent and undocumented */
-        case 'B': /* obsolescent and undocumented alias */
+        ಸ್ಥಿತಿ 'B': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('o', "o2");
           CASE_OLD_ARG ('s', "d2");
-        case 'h': /* obsolescent and undocumented alias */
+        ಸ್ಥಿತಿ 'h': /* obsolescent and undocumented alias */
           CASE_OLD_ARG ('x', "x2");
 
-#undef CASE_OLD_ARG
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು CASE_OLD_ARG
 
-        case 'w':
+        ಸ್ಥಿತಿ 'w':
           modern = true;
-          if (optarg == NULL)
+          ಆದರೆ (optarg == ಖಾಲಿ)
             {
-              desired_width = 32;
+              desired_ಅಗಲ = 32;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               intmax_t w_tmp;
               s_err = xstr2nonneg (optarg, 10, &w_tmp, "");
-              if (s_err == LONGINT_OK)
+              ಆದರೆ (s_err == LONGINT_OK)
                 {
-                  if (ckd_add (&desired_width, w_tmp, 0))
-                    s_err = LONGINT_OVERFLOW;
-                  else if (desired_width == 0)
+                  ಆದರೆ (ckd_ಕೂಡಿಸು (&desired_ಅಗಲ, w_tmp, 0))
+                    s_err = LONGINT_ಅತಿಪ್ರವಾಹ;
+                  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (desired_ಅಗಲ == 0)
                     s_err = LONGINT_INVALID;
                 }
-              if (s_err != LONGINT_OK)
+              ಆದರೆ (s_err != LONGINT_OK)
                 xstrtol_fatal (s_err, oi, c, long_options, optarg);
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
-          break;
+          ನಿಲ್ಲಿಸು;
         }
     }
 
-  if (!ok)
-    return EXIT_FAILURE;
+  ಆದರೆ (!ok)
+    ಹಿಂತಿರುಗಿ EXIT_FAILURE;
 
-  if (flag_dump_strings && n_specs > 0)
+  ಆದರೆ (flag_dump_ಅಕ್ಷರಸರಣಿಗಳು && n_specs > 0)
     error (EXIT_FAILURE, 0,
            _("no type may be specified when dumping strings"));
 
@@ -1890,62 +1890,62 @@ main (int argc, char **argv)
         od [file] [[+]offset[.][b]]
   */
 
-  if (!modern || traditional)
+  ಆದರೆ (!modern || traditional)
     {
       intmax_t o1;
       intmax_t o2;
 
-      switch (n_files)
+      ಆಯ್ಕೆ (n_files)
         {
-        case 1:
-          if ((traditional || argv[optind][0] == '+')
-              && parse_old_offset (argv[optind], &o1))
+        ಸ್ಥಿತಿ 1:
+          ಆದರೆ ((traditional || argv[optind][0] == '+')
+              && parse_old_ಸ್ಥಾನಾಂತರ (argv[optind], &o1))
             {
-              n_bytes_to_skip = o1;
+              n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip = o1;
               --n_files;
               ++argv;
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 2:
-          if ((traditional || argv[optind + 1][0] == '+'
+        ಸ್ಥಿತಿ 2:
+          ಆದರೆ ((traditional || argv[optind + 1][0] == '+'
                || c_isdigit (argv[optind + 1][0]))
-              && parse_old_offset (argv[optind + 1], &o2))
+              && parse_old_ಸ್ಥಾನಾಂತರ (argv[optind + 1], &o2))
             {
-              if (traditional && parse_old_offset (argv[optind], &o1))
+              ಆದರೆ (traditional && parse_old_ಸ್ಥಾನಾಂತರ (argv[optind], &o1))
                 {
-                  n_bytes_to_skip = o1;
-                  flag_pseudo_start = true;
-                  pseudo_start = o2;
+                  n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip = o1;
+                  flag_pseudo_ಆರಂಭ = true;
+                  pseudo_ಆರಂಭ = o2;
                   argv += 2;
                   n_files -= 2;
                 }
-              else
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
-                  n_bytes_to_skip = o2;
+                  n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip = o2;
                   --n_files;
                   argv[optind + 1] = argv[optind];
                   ++argv;
                 }
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 3:
-          if (traditional
-              && parse_old_offset (argv[optind + 1], &o1)
-              && parse_old_offset (argv[optind + 2], &o2))
+        ಸ್ಥಿತಿ 3:
+          ಆದರೆ (traditional
+              && parse_old_ಸ್ಥಾನಾಂತರ (argv[optind + 1], &o1)
+              && parse_old_ಸ್ಥಾನಾಂತರ (argv[optind + 2], &o2))
             {
-              n_bytes_to_skip = o1;
-              flag_pseudo_start = true;
-              pseudo_start = o2;
+              n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip = o1;
+              flag_pseudo_ಆರಂಭ = true;
+              pseudo_ಆರಂಭ = o2;
               argv[optind + 2] = argv[optind];
               argv += 2;
               n_files -= 2;
             }
-          break;
+          ನಿಲ್ಲಿಸು;
         }
 
-      if (traditional && 1 < n_files)
+      ಆದರೆ (traditional && 1 < n_files)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
           error (0, 0, "%s",
@@ -1954,33 +1954,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (flag_pseudo_start)
+  ಆದರೆ (flag_pseudo_ಆರಂಭ)
     {
-      if (format_address == format_address_none)
+      ಆದರೆ (format_ವಿಳಾಸ == format_ವಿಳಾಸ_none)
         {
-          address_base = 8;
-          address_pad_len = 7;
-          format_address = format_address_paren;
+          ವಿಳಾಸ_ತಳ = 8;
+          ವಿಳಾಸ_pad_len = 7;
+          format_ವಿಳಾಸ = format_ವಿಳಾಸ_paren;
         }
-      else
-        format_address = format_address_label;
+      ಇಲ್ಲದಿದ್ದರೆ
+        format_ವಿಳಾಸ = format_ವಿಳಾಸ_label;
     }
 
-  if (0 <= max_bytes_to_format
-      && ckd_add (&end_offset, n_bytes_to_skip, max_bytes_to_format))
+  ಆದರೆ (0 <= max_ಬೈಟುಗಳು_ಗಮ್ಯ_format
+      && ckd_ಕೂಡಿಸು (&ಕೊನೆ_ಸ್ಥಾನಾಂತರ, n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip, max_ಬೈಟುಗಳು_ಗಮ್ಯ_format))
     error (EXIT_FAILURE, 0, _("skip-bytes + read-bytes is too large"));
 
-  if (n_specs == 0)
+  ಆದರೆ (n_specs == 0)
     decode_format_string ("oS");
 
-  if (n_files > 0)
+  ಆದರೆ (n_files > 0)
     {
       /* Set the global pointer FILE_LIST so that it
          references the first file-argument on the command-line.  */
 
-      file_list = (char const *const *) &argv[optind];
+      file_list = (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ *) &argv[optind];
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* No files were listed on the command line.
          Set the global pointer FILE_LIST so that it
@@ -1990,76 +1990,76 @@ main (int argc, char **argv)
     }
 
   /* open the first input file */
-  ok = open_next_file ();
-  if (in_stream == NULL)
-    goto cleanup;
+  ok = open_ಮುಂದಿನ_file ();
+  ಆದರೆ (ಒಳ_ಹರಿವು == ಖಾಲಿ)
+    ಹೋಗು cleanup;
 
   /* skip over any unwanted header bytes */
-  ok &= skip (n_bytes_to_skip);
-  if (in_stream == NULL)
-    goto cleanup;
+  ok &= skip (n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip);
+  ಆದರೆ (ಒಳ_ಹರಿವು == ಖಾಲಿ)
+    ಹೋಗು cleanup;
 
-  pseudo_offset = (flag_pseudo_start ? pseudo_start - n_bytes_to_skip : 0);
+  pseudo_ಸ್ಥಾನಾಂತರ = (flag_pseudo_ಆರಂಭ ? pseudo_ಆರಂಭ - n_ಬೈಟುಗಳು_ಗಮ್ಯ_skip : 0);
 
   /* Compute output block length.  */
   l_c_m = get_lcm ();
 
-  if (desired_width != 0)
+  ಆದರೆ (desired_ಅಗಲ != 0)
     {
-      if (desired_width % l_c_m == 0)
-        bytes_per_block = desired_width;
-      else
+      ಆದರೆ (desired_ಅಗಲ % l_c_m == 0)
+        ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ = desired_ಅಗಲ;
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           error (0, 0, _("warning: invalid width %td; using %d instead"),
-                 desired_width, l_c_m);
-          bytes_per_block = l_c_m;
+                 desired_ಅಗಲ, l_c_m);
+          ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ = l_c_m;
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      if (l_c_m < DEFAULT_BYTES_PER_BLOCK)
-        bytes_per_block = (DEFAULT_BYTES_PER_BLOCK
-                           - DEFAULT_BYTES_PER_BLOCK % l_c_m);
-      else
-        bytes_per_block = l_c_m;
+      ಆದರೆ (l_c_m < DEFAULT_ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ)
+        ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ = (DEFAULT_ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ
+                           - DEFAULT_ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ % l_c_m);
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ = l_c_m;
     }
 
   /* Compute padding necessary to align output block.  */
-  for (idx_t i = 0; i < n_specs; i++)
+  ಗಾಗಿ (idx_t i = 0; i < n_specs; i++)
     {
-      idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      if (pad_at_overflow (fields_per_block))
-        error (EXIT_FAILURE, 0, _("%td is too large"), desired_width);
-      idx_t block_width = (spec[i].field_width + 1) * fields_per_block;
-      if (width_per_block < block_width)
-        width_per_block = block_width;
+      idx_t fields_ಪ್ರತಿ_ಖಂಡ = ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ / ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2];
+      ಆದರೆ (pad_at_ಅತಿಪ್ರವಾಹ (fields_ಪ್ರತಿ_ಖಂಡ))
+        error (EXIT_FAILURE, 0, _("%td is too large"), desired_ಅಗಲ);
+      idx_t ಖಂಡ_ಅಗಲ = (spec[i].ಕ್ಷೇತ್ರ_ಅಗಲ + 1) * fields_ಪ್ರತಿ_ಖಂಡ;
+      ಆದರೆ (ಅಗಲ_ಪ್ರತಿ_ಖಂಡ < ಖಂಡ_ಅಗಲ)
+        ಅಗಲ_ಪ್ರತಿ_ಖಂಡ = ಖಂಡ_ಅಗಲ;
     }
-  for (idx_t i = 0; i < n_specs; i++)
+  ಗಾಗಿ (idx_t i = 0; i < n_specs; i++)
     {
-      idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      idx_t block_width = spec[i].field_width * fields_per_block;
-      spec[i].pad_width = width_per_block - block_width;
+      idx_t fields_ಪ್ರತಿ_ಖಂಡ = ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ / ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2];
+      idx_t ಖಂಡ_ಅಗಲ = spec[i].ಕ್ಷೇತ್ರ_ಅಗಲ * fields_ಪ್ರತಿ_ಖಂಡ;
+      spec[i].pad_ಅಗಲ = ಅಗಲ_ಪ್ರತಿ_ಖಂಡ - ಖಂಡ_ಅಗಲ;
     }
 
-#ifdef DEBUG
-  printf ("lcm=%d, width_per_block=%td\n", l_c_m, width_per_block);
-  for (idx_t i = 0; i < n_specs; i++)
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ DEBUG
+  ಬರೆ ("lcm=%d, width_per_block=%td\n", l_c_m, ಅಗಲ_ಪ್ರತಿ_ಖಂಡ);
+  ಗಾಗಿ (idx_t i = 0; i < n_specs; i++)
     {
-      idx_t fields_per_block = bytes_per_block / width_bytes[spec[i].size];
-      affirm (bytes_per_block % width_bytes[spec[i].size] == 0);
-      affirm (1 <= spec[i].pad_width / fields_per_block);
-      printf ("%td: fmt=\"%s\" in_width=%d out_width=%d pad=%td\n",
-              i, spec[i].fmt_string, width_bytes[spec[i].size],
-              spec[i].field_width, spec[i].pad_width);
+      idx_t fields_ಪ್ರತಿ_ಖಂಡ = ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ / ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2];
+      affirm (ಬೈಟುಗಳು_ಪ್ರತಿ_ಖಂಡ % ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2] == 0);
+      affirm (1 <= spec[i].pad_ಅಗಲ / fields_ಪ್ರತಿ_ಖಂಡ);
+      ಬರೆ ("%td: fmt=\"%s\" in_width=%d out_width=%d pad=%td\n",
+              i, spec[i].fmt_string, ಅಗಲ_ಬೈಟುಗಳು[spec[i].ಗಾತ್ರ_2],
+              spec[i].ಕ್ಷೇತ್ರ_ಅಗಲ, spec[i].pad_ಅಗಲ);
     }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-  ok &= (flag_dump_strings ? dump_strings () : dump ());
+  ok &= (flag_dump_ಅಕ್ಷರಸರಣಿಗಳು ? dump_ಅಕ್ಷರಸರಣಿಗಳು () : dump ());
 
 cleanup:
 
-  if (have_read_stdin && fclose (stdin) < 0)
+  ಆದರೆ (have_read_stdin && fclose (stdin) < 0)
     error (EXIT_FAILURE, errno, _("standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಹಿಂತಿರುಗಿ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

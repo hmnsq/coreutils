@@ -16,151 +16,151 @@
 
 /* Richard Mlynarik and David MacKenzie */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <argz.h>
-#include <getopt.h>
-#include <c-ctype.h>
-#include <signal.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <argz.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <c-ctype.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "hash.h"
-#include "hashcode-mem.h"
-#include "system.h"
-#include "operand2sig.h"
-#include "printenv.h"
-#include "quote.h"
-#include "read-file.h"
-#include "sig2str.h"
-#include "xbinary-io.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ಅನ್ತರ್ಭಾವ "hash.h"
+#ಅನ್ತರ್ಭಾವ "hashcode-mem.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "operand2sig.h"
+#ಅನ್ತರ್ಭಾವ "printenv.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "read-file.h"
+#ಅನ್ತರ್ಭಾವ "sig2str.h"
+#ಅನ್ತರ್ಭಾವ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "env"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "env"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Richard Mlynarik"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Assaf Gordon")
 
 /* Array of envvars to unset.  */
-static char const **usvars;
-static idx_t usvars_alloc;
-static idx_t usvars_used;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ **usvars;
+ಸ್ಥಿರ idx_t usvars_alloc;
+ಸ್ಥಿರ idx_t usvars_ಬಳಸಿದ;
 
 /* Storage for entries read by --env0-from.  */
-static char *env0_from_buffer;
+ಸ್ಥಿರ ಅಕ್ಷರ *env0_from_ಬಫರ್;
 
 /* An environment vector managed directly to preserve raw entries.  */
-struct env_vector
+ರಚನೆ env_ಸದಿಶ
 {
-  char **variable;
-  idx_t used;
+  ಅಕ್ಷರ **variable;
+  idx_t ಬಳಸಿದ;
   idx_t allocated;
 };
 
 /* Annotate the output with extra info to aid the user.  */
-static bool dev_debug;
-#define vmsg devmsg
+ಸ್ಥಿರ bool dev_debug;
+#ವ್ಯಾಖ್ಯಾನಿಸು vmsg devmsg
 
 /* Buffer and length of extracted envvars in -S strings.  */
-static char *varname;
-static idx_t vnlen;
+ಸ್ಥಿರ ಅಕ್ಷರ *varname;
+ಸ್ಥಿರ idx_t vnlen;
 
 /* On mingw, winbase.h defines this to zero.  Undefine it so we can use it
    in the enum.  */
-#undef IGNORE
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು IGNORE
 
 /* Possible actions on each signal.  */
-enum SIGNAL_MODE {
+ಎಣಿಕೆ SIGNAL_ಬಹುಲಕ {
   UNCHANGED = 0,
   DEFAULT,       /* Set to default handler (SIG_DFL).  */
   DEFAULT_NOERR, /* Ditto, but ignore sigaction(2) errors.  */
   IGNORE,        /* Set to ignore (SIG_IGN).  */
   IGNORE_NOERR   /* Ditto, but ignore sigaction(2) errors.  */
 };
-static enum SIGNAL_MODE *signals;
+ಸ್ಥಿರ ಎಣಿಕೆ SIGNAL_ಬಹುಲಕ *ಸಂಕೇತಗಳು;
 
 /* Set of signals to block.  */
-static sigset_t block_signals;
+ಸ್ಥಿರ sigset_t ಖಂಡ_ಸಂಕೇತಗಳು;
 
 /* Set of signals to unblock.  */
-static sigset_t unblock_signals;
+ಸ್ಥಿರ sigset_t unblock_ಸಂಕೇತಗಳು;
 
 /* Whether signal mask adjustment requested.  */
-static bool sig_mask_changed;
+ಸ್ಥಿರ bool sig_ಮುಖವಾಡ_ಬದಲಾಯಿತು;
 
 /* Whether to list non default handling.  */
-static bool report_signal_handling;
+ಸ್ಥಿರ bool report_signal_handling;
 
 /* The isspace characters in the C locale.  */
-#define C_ISSPACE_CHARS " \t\n\v\f\r"
+#ವ್ಯಾಖ್ಯಾನಿಸು C_ISSPACE_CHARS " \t\n\v\f\r"
 
-static char const shortopts[] = "+a:C:iS:u:v0" C_ISSPACE_CHARS;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ shortopts[] = "+a:C:iS:u:v0" C_ISSPACE_CHARS;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಎಣಿಕೆ
 {
   ENV0_FROM_OPTION = CHAR_MAX + 1,
   DEFAULT_SIGNAL_OPTION,
   IGNORE_SIGNAL_OPTION,
-  BLOCK_SIGNAL_OPTION,
+  ಖಂಡ_SIGNAL_OPTION,
   LIST_SIGNAL_HANDLING_OPTION,
   QUOTING_STYLE_OPTION,
 };
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"argv0", required_argument, NULL, 'a'},
-  {"ignore-environment", no_argument, NULL, 'i'},
-  {"env0-from", required_argument, NULL, ENV0_FROM_OPTION},
-  {"null", no_argument, NULL, '0'},
-  {"unset", required_argument, NULL, 'u'},
-  {"chdir", required_argument, NULL, 'C'},
-  {"default-signal", optional_argument, NULL, DEFAULT_SIGNAL_OPTION},
-  {"ignore-signal",  optional_argument, NULL, IGNORE_SIGNAL_OPTION},
-  {"block-signal",   optional_argument, NULL, BLOCK_SIGNAL_OPTION},
-  {"list-signal-handling", no_argument, NULL,  LIST_SIGNAL_HANDLING_OPTION},
-  {"debug", no_argument, NULL, 'v'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
-  {"split-string", required_argument, NULL, 'S'},
+  {"argv0", required_ವಾದ, ಖಾಲಿ, 'a'},
+  {"ignore-environment", no_ವಾದ, ಖಾಲಿ, 'i'},
+  {"env0-from", required_ವಾದ, ಖಾಲಿ, ENV0_FROM_OPTION},
+  {"null", no_ವಾದ, ಖಾಲಿ, '0'},
+  {"unset", required_ವಾದ, ಖಾಲಿ, 'u'},
+  {"chdir", required_ವಾದ, ಖಾಲಿ, 'C'},
+  {"default-signal", optional_ವಾದ, ಖಾಲಿ, DEFAULT_SIGNAL_OPTION},
+  {"ignore-signal",  optional_ವಾದ, ಖಾಲಿ, IGNORE_SIGNAL_OPTION},
+  {"block-signal",   optional_ವಾದ, ಖಾಲಿ, ಖಂಡ_SIGNAL_OPTION},
+  {"list-signal-handling", no_ವಾದ, ಖಾಲಿ,  LIST_SIGNAL_HANDLING_OPTION},
+  {"debug", no_ವಾದ, ಖಾಲಿ, 'v'},
+  {"quoting-style", required_ವಾದ, ಖಾಲಿ, QUOTING_STYLE_OPTION},
+  {"split-string", required_ವಾದ, ಖಾಲಿ, 'S'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s [OPTION]... [-] [NAME=VALUE]... [COMMAND [ARG]...]\n"),
-              program_name);
+      ಬರೆ (_("\
+Usage: %s [OPTION]... [-] [NAME=ಮೌಲ್ಯ_2]... [COMMAND [ARG]...]\n"),
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Set each NAME to VALUE in the environment and run COMMAND.\n\
+ಗಣ_3 each NAME ಗಮ್ಯ ಮೌಲ್ಯ_2 ಒಳ the environment and ಸತತ_2 COMMAND.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -a, --argv0=ARG\n\
-         pass ARG as the zeroth argument of COMMAND\n\
+         pass ARG as the zeroth ವಾದ ದ COMMAND\n\
 "));
       oputs (_("\
   -i, --ignore-environment\n\
-         start with an empty environment\n\
+         ಆರಂಭ with an ಖಾಲಿಗಳು environment\n\
 "));
       oputs (_("\
       --env0-from=FILE\n\
-         read NUL-delimited environment entries from FILE\n\
+         ಪಠ NUL-delimited environment entries from FILE\n\
 "));
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         ಕೊನೆ each output ಸಾಲು with NUL, not newline\n\
 "));
       oputs (_("\
   -u, --unset=NAME\n\
@@ -168,139 +168,139 @@ Set each NAME to VALUE in the environment and run COMMAND.\n\
 "));
       oputs (_("\
   -C, --chdir=DIR\n\
-         change working directory to DIR\n\
+         change working directory ಗಮ್ಯ DIR\n\
 "));
       oputs (_("\
-      --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+      --quoting-style=ಶಬ್ದ\n\
+         use quoting style ಶಬ್ದ ಗಾಗಿ ಹೆಸರುಗಳು and ಮೌಲ್ಯಗಳು:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
       oputs (_("\
-  -S, --split-string=S\n\
-         process and split S into separate arguments;\n\
-         used to pass multiple arguments on shebang lines\n\
+  -S, --ವಿಭಜಿಸು-string=S\n\
+         process and ವಿಭಜಿಸು S into separate arguments;\n\
+         ಬಳಸಿದ ಗಮ್ಯ pass ಅಪವರ್ತ್ಯ arguments on shebang ಸಾಲುಗಳು\n\
 "));
       oputs (_("\
-      --block-signal[=SIG]\n\
-         block delivery of SIG signal(s) to COMMAND\n\
+      --ಖಂಡ-ಸಂಕೇತ[=SIG]\n\
+         ಖಂಡ delivery ದ SIG ಸಂಕೇತ(s) ಗಮ್ಯ COMMAND\n\
 "));
       oputs (_("\
-      --default-signal[=SIG]\n\
-         reset handling of SIG signal(s) to the default\n\
+      --ಪೂರ್ವನಿಯೋಜಿತ-ಸಂಕೇತ[=SIG]\n\
+         reset handling ದ SIG ಸಂಕೇತ(s) ಗಮ್ಯ the ಪೂರ್ವನಿಯೋಜಿತ\n\
 "));
       oputs (_("\
-      --ignore-signal[=SIG]\n\
-         set handling of SIG signal(s) to do nothing\n\
+      --ignore-ಸಂಕೇತ[=SIG]\n\
+         ಗಣ_2 handling ದ SIG ಸಂಕೇತ(s) ಗಮ್ಯ ಮಾಡು nothing\n\
 "));
       oputs (_("\
-      --list-signal-handling\n\
-         list non default signal handling to standard error\n\
+      --list-ಸಂಕೇತ-handling\n\
+         list non ಪೂರ್ವನಿಯೋಜಿತ ಸಂಕೇತ handling ಗಮ್ಯ standard error\n\
 "));
       oputs (_("\
   -v, --debug\n\
-         print verbose information for each processing step\n\
+         print verbose information ಗಾಗಿ each processing ಹೆಜ್ಜೆ\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-A mere - implies -i.  If no COMMAND, print the resulting environment.\n\
+A mere - ಸೂಚಿಸುತ್ತದೆ -i.  If no COMMAND, print the resulting environment.\n\
 "), stdout);
       fputs (_("\
 \n\
-SIG may be a signal name like 'PIPE', or a signal number like '13'.\n\
-Without SIG, all known signals are included.  Multiple signals can be\n\
-comma-separated.  An empty SIG argument is a no-op.\n\
+SIG may be a ಸಂಕೇತ name like 'PIPE', or a ಸಂಕೇತ ಸಂಖ್ಯೆ like '13'.\n\
+Without SIG, all ತಿಳಿದ ಸಂಕೇತಗಳು are included.  ಅಪವರ್ತ್ಯ_2 ಸಂಕೇತಗಳು can be\n\
+comma-separated.  An ಖಾಲಿಗಳು SIG ವಾದ is a no-op.\n\
 "), stdout);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_exec_ಸ್ಥಿತಿ (ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-static void
-append_unset_var (char const *var)
+ಸ್ಥಿರ ಶೂನ್ಯ
+append_unset_var (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *var)
 {
-  if (usvars_used == usvars_alloc)
-    usvars = xpalloc (usvars, &usvars_alloc, 1, -1, sizeof *usvars);
-  usvars[usvars_used++] = var;
+  ಆದರೆ (usvars_ಬಳಸಿದ == usvars_alloc)
+    usvars = xpalloc (usvars, &usvars_alloc, 1, -1, ಗಾತ್ರ *usvars);
+  usvars[usvars_ಬಳಸಿದ++] = var;
 }
 
-static void
-unset_envvars (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+unset_envvars (ಶೂನ್ಯ)
 {
-  for (idx_t i = 0; i < usvars_used; ++i)
+  ಗಾಗಿ (idx_t i = 0; i < usvars_ಬಳಸಿದ; ++i)
     {
       vmsg (_("unsetting: %s\n"), quote (usvars[i]));
 
-      if (unsetenv (usvars[i]))
+      ಆದರೆ (unsetenv (usvars[i]))
         error (EXIT_CANCELED, errno, _("cannot unset %s"),
                quote (usvars[i]));
     }
 }
 
 /* Return true if ENTRY is an assignment whose name is NAME.  */
-static bool
-entry_has_name (char const *entry, char const *name, idx_t name_length)
+ಸ್ಥಿರ bool
+ನಮೂದು_has_name (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ನಮೂದು, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *name, idx_t name_ಉದ್ದಳತೆ)
 {
-  char const *eq = strchr (entry, '=');
-  return (eq && eq - entry == name_length
-          && memeq (entry, name, name_length));
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *eq = strchr (ನಮೂದು, '=');
+  ಹಿಂತಿರುಗಿ (eq && eq - ನಮೂದು == name_ಉದ್ದಳತೆ
+          && memeq (ನಮೂದು, name, name_ಉದ್ದಳತೆ));
 }
 
-#if ! defined _WIN32 || defined __CYGWIN__
+#ಆದರೆ ! defined _WIN32 || defined __CYGWIN__
 /* Hash an environment vector slot by the name in its assignment.  */
-static size_t
-env_vector_slot_hash (void const *x, size_t table_size)
+ಸ್ಥಿರ size_t
+env_ಸದಿಶ_ಸ್ಥಾನ_hash (ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *x, size_t ಕೋಷ್ಟಕ_ಗಾತ್ರ)
 {
-  char *const *slot = x;
-  char const *entry = *slot;
-  char const *eq = strchr (entry, '=');
-  return hash_pjw_bare (entry, eq - entry) % table_size;
+  ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *ಸ್ಥಾನ = x;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ನಮೂದು = *ಸ್ಥಾನ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *eq = strchr (ನಮೂದು, '=');
+  ಹಿಂತಿರುಗಿ hash_pjw_bare (ನಮೂದು, eq - ನಮೂದು) % ಕೋಷ್ಟಕ_ಗಾತ್ರ;
 }
 
-static bool
-env_vector_slot_compare (void const *x, void const *y)
+ಸ್ಥಿರ bool
+env_ಸದಿಶ_ಸ್ಥಾನ_compare (ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *x, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *y)
 {
-  char const *a = * (char *const *) x;
-  char const *b = * (char *const *) y;
-  char const *b_eq = strchr (b, '=');
-  return entry_has_name (a, b, b_eq - b);
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *a = * (ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *) x;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *b = * (ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *) y;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *b_eq = strchr (b, '=');
+  ಹಿಂತಿರುಗಿ ನಮೂದು_has_name (a, b, b_eq - b);
 }
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Remove the requested variables from ENV,
    directly, preserving other raw entries.  */
-static void
-unset_envvars_in_vector (struct env_vector *env)
+ಸ್ಥಿರ ಶೂನ್ಯ
+unset_envvars_ಒಳ_ಸದಿಶ (ರಚನೆ env_ಸದಿಶ *env)
 {
-  for (idx_t i = 0; i < usvars_used; ++i)
+  ಗಾಗಿ (idx_t i = 0; i < usvars_ಬಳಸಿದ; ++i)
     {
-      char const *name = usvars[i];
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *name = usvars[i];
       vmsg (_("unsetting: %s\n"), quote (name));
 
-      if (! *name || strchr (name, '='))
+      ಆದರೆ (! *name || strchr (name, '='))
         error (EXIT_CANCELED, EINVAL, _("cannot unset %s"), quoteaf (name));
 
-      idx_t name_length = strlen (name);
+      idx_t name_ಉದ್ದಳತೆ = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (name);
       idx_t dest = 0;
-      for (idx_t source = 0; source < env->used; ++source)
-        if (! entry_has_name (env->variable[source], name, name_length))
-          env->variable[dest++] = env->variable[source];
+      ಗಾಗಿ (idx_t ಮೂಲ_2 = 0; ಮೂಲ_2 < env->ಬಳಸಿದ; ++ಮೂಲ_2)
+        ಆದರೆ (! ನಮೂದು_has_name (env->variable[ಮೂಲ_2], name, name_ಉದ್ದಳತೆ))
+          env->variable[dest++] = env->variable[ಮೂಲ_2];
 
-      env->used = dest;
-      env->variable[dest] = NULL;
+      env->ಬಳಸಿದ = dest;
+      env->variable[dest] = ಖಾಲಿ;
     }
 }
 
 /* Add ASSIGNMENT to the environment.  EQ points to its '=' byte.  */
-static void
-set_envvar (char *assignment, char *eq)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_envvar (ಅಕ್ಷರ *assignment, ಅಕ್ಷರ *eq)
 {
   vmsg (_("setting:   %s\n"), quote (assignment));
 
-  if (putenv (assignment))
+  ಆದರೆ (putenv (assignment))
     {
       *eq = '\0';
       error (EXIT_CANCELED, errno, _("cannot set %s"), quote (assignment));
@@ -310,163 +310,163 @@ set_envvar (char *assignment, char *eq)
 /* Add ASSIGNMENT to ENV directly, preserving other raw entries.
    EQ points to its '=' byte.  Replace the first existing assignment
    with the same name, as putenv does, or append ASSIGNMENT if none.  */
-static void
-set_envvar_in_vector (struct env_vector *env, char *assignment, char *eq)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_envvar_ಒಳ_ಸದಿಶ (ರಚನೆ env_ಸದಿಶ *env, ಅಕ್ಷರ *assignment, ಅಕ್ಷರ *eq)
 {
   vmsg (_("setting:   %s\n"), quote (assignment));
 
-  idx_t name_length = eq - assignment;
-  for (idx_t i = 0; i < env->used; ++i)
-    if (entry_has_name (env->variable[i], assignment, name_length))
+  idx_t name_ಉದ್ದಳತೆ = eq - assignment;
+  ಗಾಗಿ (idx_t i = 0; i < env->ಬಳಸಿದ; ++i)
+    ಆದರೆ (ನಮೂದು_has_name (env->variable[i], assignment, name_ಉದ್ದಳತೆ))
       {
         env->variable[i] = assignment;
-        return;
+        ಹಿಂತಿರುಗಿ;
       }
 
-  if (env->used + 1 == env->allocated)
+  ಆದರೆ (env->ಬಳಸಿದ + 1 == env->allocated)
     {
       env->variable = xpalloc (env->variable, &env->allocated, 1, -1,
-                               sizeof *env->variable);
+                               ಗಾತ್ರ *env->variable);
       environ = env->variable;
     }
 
-  env->variable[env->used++] = assignment;
-  env->variable[env->used] = NULL;
+  env->variable[env->ಬಳಸಿದ++] = assignment;
+  env->variable[env->ಬಳಸಿದ] = ಖಾಲಿ;
 }
 
 /* Read the NUL-delimited environment entries in FILE.  */
-static size_t
-read_env_file (char const *file)
+ಸ್ಥಿರ size_t
+read_env_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
-  size_t size;
-  if (streq (file, "-"))
+  size_t ಗಾತ್ರ_2;
+  ಆದರೆ (streq (file, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      env0_from_buffer = fread_file (stdin, RF_BINARY, &size);
+      xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDIN_FILENO, O_ದ್ವಿಮಾನ);
+      env0_from_ಬಫರ್ = fread_file (stdin, RF_ದ್ವಿಮಾನ, &ಗಾತ್ರ_2);
     }
-  else
-    env0_from_buffer = read_file (file, RF_BINARY, &size);
+  ಇಲ್ಲದಿದ್ದರೆ
+    env0_from_ಬಫರ್ = read_file (file, RF_ದ್ವಿಮಾನ, &ಗಾತ್ರ_2);
 
-  if (! env0_from_buffer)
+  ಆದರೆ (! env0_from_ಬಫರ್)
     error (EXIT_CANCELED, errno, _("cannot read %s"), quoteaf (file));
-  if (size && env0_from_buffer[size - 1] != '\0')
+  ಆದರೆ (ಗಾತ್ರ_2 && env0_from_ಬಫರ್[ಗಾತ್ರ_2 - 1] != '\0')
     error (EXIT_CANCELED, 0, _("%s: file must end with a NUL byte"),
            quotef (file));
 
-  return size;
+  ಹಿಂತಿರುಗಿ ಗಾತ್ರ_2;
 }
 
 /* Merge the NUL-delimited entries in FILE into the environment.
    Return true if ENV now owns the environment vector.  */
-static bool
-set_envvars_from_file (struct env_vector *env, char const *file)
+ಸ್ಥಿರ bool
+ಗಣ_envvars_from_file (ರಚನೆ env_ಸದಿಶ *env, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
-  size_t size = read_env_file (file);
+  size_t ಗಾತ್ರ_2 = read_env_file (file);
 
-#if defined _WIN32 && ! defined __CYGWIN__
-  (void) env;
+#ಆದರೆ defined _WIN32 && ! defined __CYGWIN__
+  (ಶೂನ್ಯ) env;
   /* On native Windows, _putenv keeps _environ, _wenviron, and the process
      environment block synchronized.  Replacing environ directly would
      conflict with its ownership of those data structures.  */
-  char *assignment = NULL;
-  while ((assignment = argz_next (env0_from_buffer, size, assignment)))
+  ಅಕ್ಷರ *assignment = ಖಾಲಿ;
+  ಆಗ ((assignment = argz_ಮುಂದಿನ (env0_from_ಬಫರ್, ಗಾತ್ರ_2, assignment)))
     {
-      char *eq = strchr (assignment, '=');
-      if (! eq)
+      ಅಕ್ಷರ *eq = strchr (assignment, '=');
+      ಆದರೆ (! eq)
         error (EXIT_CANCELED, 0,
                _("invalid variable specification %s in %s"),
                quoteaf_n (0, assignment), quoteaf_n (1, file));
 
-      set_envvar (assignment, eq);
+      ಗಣ_envvar (assignment, eq);
     }
-  return false;
-#else
+  ಹಿಂತಿರುಗಿ false;
+#ಇಲ್ಲದಿದ್ದರೆ
   /* Construct and index the merged vector, rather than making putenv
      repeatedly scan the growing environment for every assignment.  */
-  idx_t file_count = argz_count (env0_from_buffer, size);
+  idx_t file_ಎಣಿಕೆ = argz_ಎಣಿಕೆ (env0_from_ಬಫರ್, ಗಾತ್ರ_2);
 
-  if (file_count == 0)
-    return false;
+  ಆದರೆ (file_ಎಣಿಕೆ == 0)
+    ಹಿಂತಿರುಗಿ false;
 
-  idx_t inherited_count = 0;
-  while (environ[inherited_count])
-    ++inherited_count;
+  idx_t inherited_ಎಣಿಕೆ = 0;
+  ಆಗ (environ[inherited_ಎಣಿಕೆ])
+    ++inherited_ಎಣಿಕೆ;
 
-  if (IDX_MAX - inherited_count <= file_count)
+  ಆದರೆ (IDX_MAX - inherited_ಎಣಿಕೆ <= file_ಎಣಿಕೆ)
     xalloc_die ();
-  idx_t max_count = inherited_count + file_count;
-  char **merged = xnmalloc (max_count + 1, sizeof *merged);
-  memcpy (merged, environ, inherited_count * sizeof *merged);
-  merged[inherited_count] = NULL;
+  idx_t max_ಎಣಿಕೆ = inherited_ಎಣಿಕೆ + file_ಎಣಿಕೆ;
+  ಅಕ್ಷರ **merged = xnmalloc (max_ಎಣಿಕೆ + 1, ಗಾತ್ರ *merged);
+  ಸ್ಮರಣೆ_ನಕಲು (merged, environ, inherited_ಎಣಿಕೆ * ಗಾತ್ರ *merged);
+  merged[inherited_ಎಣಿಕೆ] = ಖಾಲಿ;
 
-  Hash_table *slot_table
-    = hash_initialize (max_count, NULL, env_vector_slot_hash,
-                       env_vector_slot_compare, NULL);
-  if (! slot_table)
+  Hash_ಕೋಷ್ಟಕ *ಸ್ಥಾನ_ಕೋಷ್ಟಕ
+    = hash_initialize (max_ಎಣಿಕೆ, ಖಾಲಿ, env_ಸದಿಶ_ಸ್ಥಾನ_hash,
+                       env_ಸದಿಶ_ಸ್ಥಾನ_compare, ಖಾಲಿ);
+  ಆದರೆ (! ಸ್ಥಾನ_ಕೋಷ್ಟಕ)
     xalloc_die ();
 
   /* Index only the first occurrence of each inherited name, matching
      putenv's replacement of the first such entry.  */
-  for (idx_t i = 0; i < inherited_count; ++i)
+  ಗಾಗಿ (idx_t i = 0; i < inherited_ಎಣಿಕೆ; ++i)
     {
-      char *eq = strchr (merged[i], '=');
-      if (! eq)
-        continue;
+      ಅಕ್ಷರ *eq = strchr (merged[i], '=');
+      ಆದರೆ (! eq)
+        ಮುಂದುವರಿ;
 
-      if (! hash_insert (slot_table, &merged[i]))
+      ಆದರೆ (! hash_ಸೇರಿಸು (ಸ್ಥಾನ_ಕೋಷ್ಟಕ, &merged[i]))
         xalloc_die ();
     }
 
-  idx_t merged_count = inherited_count;
-  char *assignment = NULL;
-  while ((assignment = argz_next (env0_from_buffer, size, assignment)))
+  idx_t merged_ಎಣಿಕೆ = inherited_ಎಣಿಕೆ;
+  ಅಕ್ಷರ *assignment = ಖಾಲಿ;
+  ಆಗ ((assignment = argz_ಮುಂದಿನ (env0_from_ಬಫರ್, ಗಾತ್ರ_2, assignment)))
     {
-      char *eq = strchr (assignment, '=');
-      if (! eq)
+      ಅಕ್ಷರ *eq = strchr (assignment, '=');
+      ಆದರೆ (! eq)
         {
           vmsg (_("adding:    %s\n"), quote (assignment));
-          merged[merged_count++] = assignment;
+          merged[merged_ಎಣಿಕೆ++] = assignment;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           vmsg (_("setting:   %s\n"), quote (assignment));
 
-          char **slot = hash_lookup (slot_table, &assignment);
-          if (slot)
-            *slot = assignment;
-          else
+          ಅಕ್ಷರ **ಸ್ಥಾನ = hash_lookup (ಸ್ಥಾನ_ಕೋಷ್ಟಕ, &assignment);
+          ಆದರೆ (ಸ್ಥಾನ)
+            *ಸ್ಥಾನ = assignment;
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              merged[merged_count] = assignment;
-              if (! hash_insert (slot_table, &merged[merged_count]))
+              merged[merged_ಎಣಿಕೆ] = assignment;
+              ಆದರೆ (! hash_ಸೇರಿಸು (ಸ್ಥಾನ_ಕೋಷ್ಟಕ, &merged[merged_ಎಣಿಕೆ]))
                 xalloc_die ();
-              ++merged_count;
+              ++merged_ಎಣಿಕೆ;
             }
         }
     }
 
-  merged[merged_count] = NULL;
+  merged[merged_ಎಣಿಕೆ] = ಖಾಲಿ;
   env->variable = merged;
-  env->used = merged_count;
-  env->allocated = max_count + 1;
+  env->ಬಳಸಿದ = merged_ಎಣಿಕೆ;
+  env->allocated = max_ಎಣಿಕೆ + 1;
   environ = merged;
-  hash_free (slot_table);
-  return true;
-#endif
+  hash_free (ಸ್ಥಾನ_ಕೋಷ್ಟಕ);
+  ಹಿಂತಿರುಗಿ true;
+#ಆದರೆ_ಅಂತ್ಯ
 }
 
 /* Replace the environment with the NUL-delimited entries in FILE,
    preserving the entries byte-for-byte and in their original order.  */
-static void
-set_raw_environment_from_file (struct env_vector *env,
-                               char const *file)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_raw_environment_from_file (ರಚನೆ env_ಸದಿಶ *env,
+                               ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
-  size_t size = read_env_file (file);
-  idx_t entry_count = argz_count (env0_from_buffer, size);
+  size_t ಗಾತ್ರ_2 = read_env_file (file);
+  idx_t ನಮೂದು_ಎಣಿಕೆ = argz_ಎಣಿಕೆ (env0_from_ಬಫರ್, ಗಾತ್ರ_2);
 
-  env->allocated = entry_count + 1;
-  env->variable = xnmalloc (env->allocated, sizeof *env->variable);
-  argz_extract (env0_from_buffer, size, env->variable);
-  env->used = entry_count;
+  env->allocated = ನಮೂದು_ಎಣಿಕೆ + 1;
+  env->variable = xnmalloc (env->allocated, ಗಾತ್ರ *env->variable);
+  argz_ಹೊರತೆಗೆ (env0_from_ಬಫರ್, ಗಾತ್ರ_2, env->variable);
+  env->ಬಳಸಿದ = ನಮೂದು_ಎಣಿಕೆ;
   environ = env->variable;
 }
 
@@ -475,20 +475,20 @@ set_raw_environment_from_file (struct env_vector *env,
    First letter in VARNAME must be alpha or underscore,
    rest of letters are alnum or underscore.
    Any other character is an error.  */
-ATTRIBUTE_PURE
-static char const *
-scan_varname (char const *str)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *
+ಪರಿಶೀಲನೆ_varname (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str)
 {
-  if (str[1] == '{' && (c_isalpha (str[2]) || str[2] == '_'))
+  ಆದರೆ (str[1] == '{' && (c_isalpha (str[2]) || str[2] == '_'))
     {
-      char const *end = str + 3;
-      while (c_isalnum (*end) || *end == '_')
-        ++end;
-      if (*end == '}')
-        return end;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಕೊನೆ = str + 3;
+      ಆಗ (c_isalnum (*ಕೊನೆ) || *ಕೊನೆ == '_')
+        ++ಕೊನೆ;
+      ಆದರೆ (*ಕೊನೆ == '}')
+        ಹಿಂತಿರುಗಿ ಕೊನೆ;
     }
 
-  return NULL;
+  ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 }
 
 /* Return a pointer to a static buffer containing the VARNAME as
@@ -496,31 +496,31 @@ scan_varname (char const *str)
    The returned string will be NUL terminated.
    The returned pointer should not be freed.
    Return NULL if not a valid ${VARNAME} syntax.  */
-static char *
-extract_varname (char const *str)
+ಸ್ಥಿರ ಅಕ್ಷರ *
+ಹೊರತೆಗೆ_varname (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str)
 {
-  char const *p = scan_varname (str);
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = ಪರಿಶೀಲನೆ_varname (str);
 
-  if (!p)
-    return NULL;
+  ಆದರೆ (!p)
+    ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 
   /* -2 and +2 (below) account for the '${' prefix.  */
   idx_t i = p - str - 2;
 
-  if (i >= vnlen)
+  ಆದರೆ (i >= vnlen)
     {
-      free (varname);
-      varname = xpalloc (NULL, &vnlen, i + 1 - vnlen, -1, sizeof *varname);
+      ಬಿಡುಗಡೆ (varname);
+      varname = xpalloc (ಖಾಲಿ, &vnlen, i + 1 - vnlen, -1, ಗಾತ್ರ *varname);
     }
 
-  memcpy (varname, str + 2, i);
+  ಸ್ಮರಣೆ_ನಕಲು (varname, str + 2, i);
   varname[i] = 0;
 
-  return varname;
+  ಹಿಂತಿರುಗಿ varname;
 }
 
 /* Temporary buffer used by --split-string processing.  */
-struct splitbuf
+ರಚನೆ splitbuf
 {
   /* Buffer address, arg count, and half the number of elements in the buffer.
      ARGC and ARGV are as in 'main', and ARGC + 1 <= HALF_ALLOC so
@@ -539,12 +539,12 @@ struct splitbuf
 
      During assembly, ARGV[ARGC] contains the offset of the first
      unused string byte (relative to ARGV + HALF_ALLOC).  */
-  char **argv;
-  int argc;
+  ಅಕ್ಷರ **argv;
+  ಪೂರ್ಣಾಂಕ argc;
   idx_t half_alloc;
 
   /* The number of extra argv slots to keep room for.  */
-  int extra_argc;
+  ಪೂರ್ಣಾಂಕ extra_argc;
 
   /* Whether processing should act as if the most recent character
      seen was a separator.  */
@@ -553,37 +553,37 @@ struct splitbuf
 
 /* Expand SS so that it has at least one more argv slot and at least
    one more string byte.  */
-static void
-splitbuf_grow (struct splitbuf *ss)
+ಸ್ಥಿರ ಶೂನ್ಯ
+splitbuf_grow (ರಚನೆ splitbuf *ss)
 {
   idx_t old_half_alloc = ss->half_alloc;
-  idx_t string_bytes = (intptr_t) ss->argv[ss->argc];
+  idx_t string_ಬೈಟುಗಳು = (intptr_t) ss->argv[ss->argc];
   ss->argv = xpalloc (ss->argv, &ss->half_alloc, 1,
-                      MIN (INT_MAX, IDX_MAX), 2 * sizeof *ss->argv);
-  memmove (ss->argv + ss->half_alloc, ss->argv + old_half_alloc, string_bytes);
+                      MIN (ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ, IDX_MAX), 2 * ಗಾತ್ರ *ss->argv);
+  memmove (ss->argv + ss->half_alloc, ss->argv + old_half_alloc, string_ಬೈಟುಗಳು);
 }
 
 /* In SS, append C to the last string.  */
-static void
-splitbuf_append_byte (struct splitbuf *ss, char c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+splitbuf_append_byte (ರಚನೆ splitbuf *ss, ಅಕ್ಷರ c)
 {
-  idx_t string_bytes = (intptr_t) ss->argv[ss->argc];
-  if (ss->half_alloc * sizeof *ss->argv <= string_bytes)
+  idx_t string_ಬೈಟುಗಳು = (intptr_t) ss->argv[ss->argc];
+  ಆದರೆ (ss->half_alloc * ಗಾತ್ರ *ss->argv <= string_ಬೈಟುಗಳು)
     splitbuf_grow (ss);
-  ((char *) (ss->argv + ss->half_alloc))[string_bytes] = c;
-  ss->argv[ss->argc] = (char *) (intptr_t) {string_bytes + 1};
+  ((ಅಕ್ಷರ *) (ss->argv + ss->half_alloc))[string_ಬೈಟುಗಳು] = c;
+  ss->argv[ss->argc] = (ಅಕ್ಷರ *) (intptr_t) {string_ಬೈಟುಗಳು + 1};
 }
 
 /* If SS's most recent character was a separator, finish off its
    previous argument and start a new one.  */
-static void
-check_start_new_arg (struct splitbuf *ss)
+ಸ್ಥಿರ ಶೂನ್ಯ
+check_ಆರಂಭ_new_arg (ರಚನೆ splitbuf *ss)
 {
-  if (ss->sep)
+  ಆದರೆ (ss->sep)
     {
       splitbuf_append_byte (ss, '\0');
-      int argc = ss->argc;
-      if (ss->half_alloc <= argc + ss->extra_argc + 1)
+      ಪೂರ್ಣಾಂಕ argc = ss->argc;
+      ಆದರೆ (ss->half_alloc <= argc + ss->extra_argc + 1)
         splitbuf_grow (ss);
       ss->argv[argc + 1] = ss->argv[argc];
       ss->argc = argc + 1;
@@ -593,15 +593,15 @@ check_start_new_arg (struct splitbuf *ss)
 
 /* All additions to SS have been made.  Convert its offsets to pointers,
    and return the resulting argument vector.  */
-static char **
-splitbuf_finishup (struct splitbuf *ss)
+ಸ್ಥಿರ ಅಕ್ಷರ **
+splitbuf_finishup (ರಚನೆ splitbuf *ss)
 {
-  int argc = ss->argc;
-  char **argv = ss->argv;
-  char *stringbase = (char *) (ss->argv + ss->half_alloc);
-  for (int i = 1; i < argc; i++)
+  ಪೂರ್ಣಾಂಕ argc = ss->argc;
+  ಅಕ್ಷರ **argv = ss->argv;
+  ಅಕ್ಷರ *stringbase = (ಅಕ್ಷರ *) (ss->argv + ss->half_alloc);
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 1; i < argc; i++)
     argv[i] = stringbase + (intptr_t) argv[i];
-  return argv;
+  ಹಿಂತಿರುಗಿ argv;
 }
 
 /* Return a newly-allocated argv-like array,
@@ -629,143 +629,143 @@ splitbuf_finishup (struct splitbuf *ss)
    However, 'env' does not free since it's about to exec or exit anyway
    and the complexity of keeping track of the storage that may have been
    allocated via multiple calls to build_argv is not worth the hassle.  */
-static char **
-build_argv (char const *str, int extra_argc, int *argc)
+ಸ್ಥಿರ ಅಕ್ಷರ **
+build_argv (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str, ಪೂರ್ಣಾಂಕ extra_argc, ಪೂರ್ಣಾಂಕ *argc)
 {
   bool dq = false, sq = false;
-  struct splitbuf ss;
-  ss.argv = xnmalloc (extra_argc + 2, 2 * sizeof *ss.argv);
+  ರಚನೆ splitbuf ss;
+  ss.argv = xnmalloc (extra_argc + 2, 2 * ಗಾತ್ರ *ss.argv);
   ss.argc = 1;
   ss.half_alloc = extra_argc + 2;
   ss.extra_argc = extra_argc;
   ss.sep = true;
-  ss.argv[ss.argc] = NULL;
+  ss.argv[ss.argc] = ಖಾಲಿ;
 
   /* In the following loop,
      'break' causes the character 'newc' to be added to *dest,
      'continue' skips the character.  */
-  while (*str)
+  ಆಗ (*str)
     {
-      char newc = *str; /* Default: add the next character.  */
+      ಅಕ್ಷರ newc = *str; /* Default: add the next character.  */
 
-      switch (*str)
+      ಆಯ್ಕೆ (*str)
         {
-        case '\'':
-          if (dq)
-            break;
+        ಸ್ಥಿತಿ '\'':
+          ಆದರೆ (dq)
+            ನಿಲ್ಲಿಸು;
           sq = !sq;
-          check_start_new_arg (&ss);
+          check_ಆರಂಭ_new_arg (&ss);
           ++str;
-          continue;
+          ಮುಂದುವರಿ;
 
-        case '"':
-          if (sq)
-            break;
+        ಸ್ಥಿತಿ '"':
+          ಆದರೆ (sq)
+            ನಿಲ್ಲಿಸು;
           dq = !dq;
-          check_start_new_arg (&ss);
+          check_ಆರಂಭ_new_arg (&ss);
           ++str;
-          continue;
+          ಮುಂದುವರಿ;
 
-        case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
+        ಸ್ಥಿತಿ ' ': ಸ್ಥಿತಿ '\t': ಸ್ಥಿತಿ '\n': ಸ್ಥಿತಿ '\v': ಸ್ಥಿತಿ '\f': ಸ್ಥಿತಿ '\r':
           /* Start a new argument if outside quotes.  */
-          if (sq || dq)
-            break;
+          ಆದರೆ (sq || dq)
+            ನಿಲ್ಲಿಸು;
           ss.sep = true;
           str += strspn (str, C_ISSPACE_CHARS);
-          continue;
+          ಮುಂದುವರಿ;
 
-        case '#':
-          if (!ss.sep)
-            break;
-          goto eos; /* '#' as first char terminates the string.  */
+        ಸ್ಥಿತಿ '#':
+          ಆದರೆ (!ss.sep)
+            ನಿಲ್ಲಿಸು;
+          ಹೋಗು eos; /* '#' as first char terminates the string.  */
 
-        case '\\':
+        ಸ್ಥಿತಿ '\\':
           /* Backslash inside single-quotes is not special, except \\
              and \'.  */
-          if (sq && str[1] != '\\' && str[1] != '\'')
-            break;
+          ಆದರೆ (sq && str[1] != '\\' && str[1] != '\'')
+            ನಿಲ್ಲಿಸು;
 
           /* Skip the backslash and examine the next character.  */
           newc = *++str;
-          switch (newc)
+          ಆಯ್ಕೆ (newc)
             {
-            case '"': case '#': case '$': case '\'': case '\\':
+            ಸ್ಥಿತಿ '"': ಸ್ಥಿತಿ '#': ಸ್ಥಿತಿ '$': ಸ್ಥಿತಿ '\'': ಸ್ಥಿತಿ '\\':
               /* Pass escaped character as-is.  */
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case '_':
-              if (!dq)
+            ಸ್ಥಿತಿ '_':
+              ಆದರೆ (!dq)
                 {
                   ++str;  /* '\_' outside double-quotes is arg separator.  */
                   ss.sep = true;
-                  continue;
+                  ಮುಂದುವರಿ;
                 }
               newc = ' ';  /* '\_' inside double-quotes is space.  */
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case 'c':
-              if (dq)
+            ಸ್ಥಿತಿ 'c':
+              ಆದರೆ (dq)
                 error (EXIT_CANCELED, 0,
                        _("'\\c' must not appear in double-quoted -S string"));
-              goto eos; /* '\c' terminates the string.  */
+              ಹೋಗು eos; /* '\c' terminates the string.  */
 
-            case 'f': newc = '\f'; break;
-            case 'n': newc = '\n'; break;
-            case 'r': newc = '\r'; break;
-            case 't': newc = '\t'; break;
-            case 'v': newc = '\v'; break;
+            ಸ್ಥಿತಿ 'f': newc = '\f'; ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 'n': newc = '\n'; ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 'r': newc = '\r'; ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 't': newc = '\t'; ನಿಲ್ಲಿಸು;
+            ಸ್ಥಿತಿ 'v': newc = '\v'; ನಿಲ್ಲಿಸು;
 
-            case '\0':
+            ಸ್ಥಿತಿ '\0':
               error (EXIT_CANCELED, 0,
                      _("invalid backslash at end of string in -S"));
 
-            default:
+            ಪೂರ್ವನಿಯೋಜಿತ:
               error (EXIT_CANCELED, 0,
                      _("invalid sequence '\\%c' in -S"), newc);
             }
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '$':
+        ಸ್ಥಿತಿ '$':
           /* ${VARNAME} are not expanded inside single-quotes.  */
-          if (sq)
-            break;
+          ಆದರೆ (sq)
+            ನಿಲ್ಲಿಸು;
 
           /* Store the ${VARNAME} value.  */
           {
-            char *n = extract_varname (str);
-            if (!n)
+            ಅಕ್ಷರ *n = ಹೊರತೆಗೆ_varname (str);
+            ಆದರೆ (!n)
               error (EXIT_CANCELED, 0,
                      _("only ${VARNAME} expansion is supported, error at: %s"),
                      str);
 
-            char *v = getenv (n);
-            if (v)
+            ಅಕ್ಷರ *v = getenv (n);
+            ಆದರೆ (v)
               {
-                check_start_new_arg (&ss);
+                check_ಆರಂಭ_new_arg (&ss);
                 vmsg (_("expanding ${%s} into %s\n"), n, quote (v));
-                for (; *v; v++)
+                ಗಾಗಿ (; *v; v++)
                   splitbuf_append_byte (&ss, *v);
               }
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               vmsg (_("replacing ${%s} with empty string\n"), n);
 
             str = strchr (str, '}') + 1;
-            continue;
+            ಮುಂದುವರಿ;
           }
         }
 
-      check_start_new_arg (&ss);
+      check_ಆರಂಭ_new_arg (&ss);
       splitbuf_append_byte (&ss, newc);
       ++str;
     }
 
-  if (dq || sq)
+  ಆದರೆ (dq || sq)
     error (EXIT_CANCELED, 0, _("no terminating quote in -S string"));
 
  eos:
   splitbuf_append_byte (&ss, '\0');
   *argc = ss.argc;
-  return splitbuf_finishup (&ss);
+  ಹಿಂತಿರುಗಿ splitbuf_finishup (&ss);
 }
 
 /* Process an "-S" string and create the corresponding argv array.
@@ -789,29 +789,29 @@ build_argv (char const *str, int extra_argc, int *argc)
       argv[6] = NULL
    argc will be updated from 4 to 6.
    optind will be reset to 0 to force getopt_long to rescan all arguments.  */
-static void
-parse_split_string (char const *str, int *orig_optind,
-                    int *orig_argc, char ***orig_argv)
+ಸ್ಥಿರ ಶೂನ್ಯ
+parse_ವಿಭಜಿಸು_string (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str, ಪೂರ್ಣಾಂಕ *orig_optind,
+                    ಪೂರ್ಣಾಂಕ *orig_argc, ಅಕ್ಷರ ***orig_argv)
 {
-  int extra_argc = *orig_argc - *orig_optind, newargc;
-  char **newargv = build_argv (str, extra_argc, &newargc);
+  ಪೂರ್ಣಾಂಕ extra_argc = *orig_argc - *orig_optind, newargc;
+  ಅಕ್ಷರ **newargv = build_argv (str, extra_argc, &newargc);
 
   /* Restore argv[0] - the 'env' executable name.  */
   *newargv = (*orig_argv)[0];
 
   /* Print parsed arguments.  */
-  if (dev_debug && 1 < newargc)
+  ಆದರೆ (dev_debug && 1 < newargc)
     {
       vmsg (_("split -S:  %s\n"), quote (str));
       vmsg (_(" into:     %s\n"), quote (newargv[1]));
-      for (int i = 2; i < newargc; i++)
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 2; i < newargc; i++)
         vmsg (_("     &     %s\n"), quote (newargv[i]));
     }
 
   /* Add remaining arguments and terminating null from the original
      command line.  */
-  memcpy (newargv + newargc, *orig_argv + *orig_optind,
-          (extra_argc + 1) * sizeof *newargv);
+  ಸ್ಮರಣೆ_ನಕಲು (newargv + newargc, *orig_argv + *orig_optind,
+          (extra_argc + 1) * ಗಾತ್ರ *newargv);
 
   /* Set new values for original getopt variables.  */
   *orig_argc = newargc + extra_argc;
@@ -819,229 +819,229 @@ parse_split_string (char const *str, int *orig_optind,
   *orig_optind = 0; /* Tell getopt to restart from first argument.  */
 }
 
-static void
-parse_signal_action_params (char const *arg, bool set_default)
+ಸ್ಥಿರ ಶೂನ್ಯ
+parse_signal_action_params (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *arg, bool ಗಣ_default)
 {
-  if (! arg)
+  ಆದರೆ (! arg)
     {
       /* Without an argument, reset all signals.
          Some signals cannot be set to ignore or default (e.g., SIGKILL,
          SIGSTOP on most OSes, and SIGCONT on AIX.) - so ignore errors.  */
-      for (int i = 1 ; i <= SIGNUM_BOUND; i++)
-        signals[i] = set_default ? DEFAULT_NOERR : IGNORE_NOERR;
-      return;
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 1 ; i <= SIGNUM_BOUND; i++)
+        ಸಂಕೇತಗಳು[i] = ಗಣ_default ? DEFAULT_NOERR : IGNORE_NOERR;
+      ಹಿಂತಿರುಗಿ;
     }
 
-  char *optarg_writable = xstrdup (arg);
+  ಅಕ್ಷರ *optarg_writable = xstrdup (arg);
 
-  char *opt_sig = strtok (optarg_writable, ",");
-  while (opt_sig)
+  ಅಕ್ಷರ *opt_sig = strtok (optarg_writable, ",");
+  ಆಗ (opt_sig)
     {
-      int signum = operand2sig (opt_sig);
+      ಪೂರ್ಣಾಂಕ signum = operand2sig (opt_sig);
       /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
-      if (signum == 0)
+      ಆದರೆ (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
-      if (signum <= 0)
+      ಆದರೆ (signum <= 0)
         usage (exit_failure);
 
-      signals[signum] = set_default ? DEFAULT : IGNORE;
+      ಸಂಕೇತಗಳು[signum] = ಗಣ_default ? DEFAULT : IGNORE;
 
-      opt_sig = strtok (NULL, ",");
+      opt_sig = strtok (ಖಾಲಿ, ",");
     }
 
-  free (optarg_writable);
+  ಬಿಡುಗಡೆ (optarg_writable);
 }
 
-static void
-reset_signal_handlers (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+reset_signal_handlers (ಶೂನ್ಯ)
 {
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 1; i <= SIGNUM_BOUND; i++)
     {
-      struct sigaction act;
+      ರಚನೆ sigaction act;
 
-      if (signals[i] == UNCHANGED)
-        continue;
+      ಆದರೆ (ಸಂಕೇತಗಳು[i] == UNCHANGED)
+        ಮುಂದುವರಿ;
 
-      bool ignore_errors = (signals[i] == DEFAULT_NOERR
-                            || signals[i] == IGNORE_NOERR);
+      bool ignore_errors = (ಸಂಕೇತಗಳು[i] == DEFAULT_NOERR
+                            || ಸಂಕೇತಗಳು[i] == IGNORE_NOERR);
 
-      bool set_to_default = (signals[i] == DEFAULT
-                             || signals[i] == DEFAULT_NOERR);
+      bool ಗಣ_ಗಮ್ಯ_default = (ಸಂಕೇತಗಳು[i] == DEFAULT
+                             || ಸಂಕೇತಗಳು[i] == DEFAULT_NOERR);
 
-      int sig_err = sigaction (i, NULL, &act);
+      ಪೂರ್ಣಾಂಕ sig_err = sigaction (i, ಖಾಲಿ, &act);
 
-      if (sig_err && !ignore_errors)
+      ಆದರೆ (sig_err && !ignore_errors)
         error (EXIT_CANCELED, errno,
                _("failed to get signal action for signal %d"), i);
 
-      if (! sig_err)
+      ಆದರೆ (! sig_err)
         {
-          act.sa_handler = set_to_default ? SIG_DFL : SIG_IGN;
-          sig_err = sigaction (i, &act, NULL);
-          if (sig_err && !ignore_errors)
+          act.sa_handler = ಗಣ_ಗಮ್ಯ_default ? SIG_DFL : SIG_IGN;
+          sig_err = sigaction (i, &act, ಖಾಲಿ);
+          ಆದರೆ (sig_err && !ignore_errors)
             error (EXIT_CANCELED, errno,
                    _("failed to set signal action for signal %d"), i);
         }
 
-      if (dev_debug)
+      ಆದರೆ (dev_debug)
         {
-          char signame[SIG2STR_MAX];
-          if (sig2str (i, signame) != 0)
-            snprintf (signame, sizeof signame, "SIG%d", i);
+          ಅಕ್ಷರ signame[SIG2STR_MAX];
+          ಆದರೆ (sig2str (i, signame) != 0)
+            snprintf (signame, ಗಾತ್ರ signame, "SIG%d", i);
           vmsg (_("Reset signal %s (%d) to %s%s\n"),
                   signame, i,
-                  set_to_default ? "DEFAULT" : "IGNORE",
+                  ಗಣ_ಗಮ್ಯ_default ? "DEFAULT" : "IGNORE",
                   sig_err ? _(" (failure ignored)") : "");
         }
     }
 }
 
 
-static void
-parse_block_signal_params (char const *arg, bool block)
+ಸ್ಥಿರ ಶೂನ್ಯ
+parse_ಖಂಡ_signal_params (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *arg, bool ಖಂಡ)
 {
-  if (! arg)
+  ಆದರೆ (! arg)
     {
       /* Without an argument, reset all signals.  */
-      sigfillset (block ? &block_signals : &unblock_signals);
-      sigemptyset (block ? &unblock_signals : &block_signals);
+      sigfillset (ಖಂಡ ? &ಖಂಡ_ಸಂಕೇತಗಳು : &unblock_ಸಂಕೇತಗಳು);
+      sigemptyset (ಖಂಡ ? &unblock_ಸಂಕೇತಗಳು : &ಖಂಡ_ಸಂಕೇತಗಳು);
     }
-  else if (! sig_mask_changed)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (! sig_ಮುಖವಾಡ_ಬದಲಾಯಿತು)
     {
       /* Initialize the sets.  */
-      sigemptyset (&block_signals);
-      sigemptyset (&unblock_signals);
+      sigemptyset (&ಖಂಡ_ಸಂಕೇತಗಳು);
+      sigemptyset (&unblock_ಸಂಕೇತಗಳು);
     }
 
-  sig_mask_changed = true;
+  sig_ಮುಖವಾಡ_ಬದಲಾಯಿತು = true;
 
-  if (! arg)
-    return;
+  ಆದರೆ (! arg)
+    ಹಿಂತಿರುಗಿ;
 
-  char *optarg_writable = xstrdup (arg);
+  ಅಕ್ಷರ *optarg_writable = xstrdup (arg);
 
-  char *opt_sig = strtok (optarg_writable, ",");
-  while (opt_sig)
+  ಅಕ್ಷರ *opt_sig = strtok (optarg_writable, ",");
+  ಆಗ (opt_sig)
     {
-      int signum = operand2sig (opt_sig);
+      ಪೂರ್ಣಾಂಕ signum = operand2sig (opt_sig);
       /* operand2sig accepts signal 0 (EXIT) - but we reject it.  */
-      if (signum == 0)
+      ಆದರೆ (signum == 0)
         error (0, 0, _("%s: invalid signal"), quote (opt_sig));
-      if (signum <= 0)
+      ಆದರೆ (signum <= 0)
         usage (exit_failure);
 
-      if (sigaddset (block ? &block_signals : &unblock_signals, signum) == -1)
+      ಆದರೆ (sigaddset (ಖಂಡ ? &ಖಂಡ_ಸಂಕೇತಗಳು : &unblock_ಸಂಕೇತಗಳು, signum) == -1)
         {
-          if (block)
+          ಆದರೆ (ಖಂಡ)
             error (EXIT_CANCELED, errno,
                    _("failed to block signal %d"), signum);
           /* else diagnosed in parse_signal_action_params().  */
         }
-      else
-        sigdelset (block ? &unblock_signals : &block_signals, signum);
+      ಇಲ್ಲದಿದ್ದರೆ
+        sigdelset (ಖಂಡ ? &unblock_ಸಂಕೇತಗಳು : &ಖಂಡ_ಸಂಕೇತಗಳು, signum);
 
-      opt_sig = strtok (NULL, ",");
+      opt_sig = strtok (ಖಾಲಿ, ",");
     }
 
-  free (optarg_writable);
+  ಬಿಡುಗಡೆ (optarg_writable);
 }
 
-static void
-set_signal_proc_mask (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_signal_proc_ಮುಖವಾಡ (ಶೂನ್ಯ)
 {
   /* Get the existing signal mask */
-  sigset_t set;
+  sigset_t ಗಣ_2;
 
-  sigemptyset (&set);
+  sigemptyset (&ಗಣ_2);
 
-  if (sigprocmask (0, NULL, &set))
+  ಆದರೆ (sigprocmask (0, ಖಾಲಿ, &ಗಣ_2))
     error (EXIT_CANCELED, errno, _("failed to get signal process mask"));
 
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 1; i <= SIGNUM_BOUND; i++)
     {
-      char const *debug_act = NULL;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *debug_act = ಖಾಲಿ;
 
-      if (sigismember (&block_signals, i))
+      ಆದರೆ (sigismember (&ಖಂಡ_ಸಂಕೇತಗಳು, i))
         {
-          sigaddset (&set, i);
+          sigaddset (&ಗಣ_2, i);
           debug_act = "BLOCK";
         }
-      else if (sigismember (&unblock_signals, i))
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (sigismember (&unblock_ಸಂಕೇತಗಳು, i))
         {
-          sigdelset (&set, i);
+          sigdelset (&ಗಣ_2, i);
           debug_act = "UNBLOCK";
         }
 
-      if (dev_debug && debug_act)
+      ಆದರೆ (dev_debug && debug_act)
         {
-          char signame[SIG2STR_MAX];
-          if (sig2str (i, signame) != 0)
-            snprintf (signame, sizeof signame, "SIG%d", i);
+          ಅಕ್ಷರ signame[SIG2STR_MAX];
+          ಆದರೆ (sig2str (i, signame) != 0)
+            snprintf (signame, ಗಾತ್ರ signame, "SIG%d", i);
           vmsg (_("signal %s (%d) mask set to %s\n"),
                   signame, i, debug_act);
         }
     }
 
-  if (sigprocmask (SIG_SETMASK, &set, NULL))
+  ಆದರೆ (sigprocmask (SIG_SETMASK, &ಗಣ_2, ಖಾಲಿ))
     error (EXIT_CANCELED, errno, _("failed to set signal process mask"));
 }
 
-static void
-list_signal_handling (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+list_signal_handling (ಶೂನ್ಯ)
 {
-  sigset_t set;
+  sigset_t ಗಣ_2;
 
-  sigemptyset (&set);
-  if (sigprocmask (0, NULL, &set))
+  sigemptyset (&ಗಣ_2);
+  ಆದರೆ (sigprocmask (0, ಖಾಲಿ, &ಗಣ_2))
     error (EXIT_CANCELED, errno, _("failed to get signal process mask"));
 
-  for (int i = 1; i <= SIGNUM_BOUND; i++)
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 1; i <= SIGNUM_BOUND; i++)
     {
-      struct sigaction act;
-      if (sigaction (i, NULL, &act))
-        continue;
+      ರಚನೆ sigaction act;
+      ಆದರೆ (sigaction (i, ಖಾಲಿ, &act))
+        ಮುಂದುವರಿ;
 
-      char const *ignored = act.sa_handler == SIG_IGN ? "IGNORE" : "";
-      char const *blocked = sigismember (&set, i) ? "BLOCK" : "";
-      char const *connect = *ignored && *blocked ? "," : "";
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ignored = act.sa_handler == SIG_IGN ? "IGNORE" : "";
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *blocked = sigismember (&ಗಣ_2, i) ? "BLOCK" : "";
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *connect = *ignored && *blocked ? "," : "";
 
-      if (! *ignored && ! *blocked)
-        continue;
+      ಆದರೆ (! *ignored && ! *blocked)
+        ಮುಂದುವರಿ;
 
-      char signame[SIG2STR_MAX];
-      if (sig2str (i, signame) != 0)
-        snprintf (signame, sizeof signame, "SIG%d", i);
+      ಅಕ್ಷರ signame[SIG2STR_MAX];
+      ಆದರೆ (sig2str (i, signame) != 0)
+        snprintf (signame, ಗಾತ್ರ signame, "SIG%d", i);
       fprintf (stderr, "%-10s (%2d): %s%s%s\n", signame, i,
                blocked, connect, ignored);
     }
 }
 
-static void
-initialize_signals (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+initialize_ಸಂಕೇತಗಳು (ಶೂನ್ಯ)
 {
-  signals = xmalloc ((sizeof *signals) * (SIGNUM_BOUND + 1));
+  ಸಂಕೇತಗಳು = xmalloc ((ಗಾತ್ರ *ಸಂಕೇತಗಳು) * (SIGNUM_BOUND + 1));
 
-  for (int i = 0 ; i <= SIGNUM_BOUND; i++)
-    signals[i] = UNCHANGED;
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0 ; i <= SIGNUM_BOUND; i++)
+    ಸಂಕೇತಗಳು[i] = UNCHANGED;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   bool ignore_environment = false;
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
-  char const *newdir = NULL;
-  char const *env0_from_file = NULL;
-  char *argv0 = NULL;
-  struct env_vector env_vector;
-#ifdef lint
-  memset (&env_vector, 0, sizeof env_vector);
-  char **initial_environ = environ;
-#endif
+  ಪೂರ್ಣಾಂಕ quoting_style_opt = -1;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *newdir = ಖಾಲಿ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *env0_from_file = ಖಾಲಿ;
+  ಅಕ್ಷರ *argv0 = ಖಾಲಿ;
+  ರಚನೆ env_ಸದಿಶ env_ಸದಿಶ;
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ lint
+  memset (&env_ಸದಿಶ, 0, ಗಾತ್ರ env_ಸದಿಶ);
+  ಅಕ್ಷರ **initial_environ = environ;
+#ಆದರೆ_ಅಂತ್ಯ
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1049,220 +1049,220 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  initialize_signals ();
+  initialize_ಸಂಕೇತಗಳು ();
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ಪೂರ್ಣಾಂಕ optc;
+  ಆಗ ((optc = getopt_long (argc, argv, shortopts, longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'a':
+        ಸ್ಥಿತಿ 'a':
           argv0 = optarg;
-          break;
-        case 'i':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'i':
           ignore_environment = true;
-          break;
-        case 'u':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'u':
           append_unset_var (optarg);
-          break;
-        case 'v':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'v':
           dev_debug = true;
-          break;
-        case '0':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case ENV0_FROM_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ ENV0_FROM_OPTION:
           env0_from_file = optarg;
-          break;
-        case DEFAULT_SIGNAL_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ DEFAULT_SIGNAL_OPTION:
           parse_signal_action_params (optarg, true);
-          parse_block_signal_params (optarg, false);
-          break;
-        case IGNORE_SIGNAL_OPTION:
+          parse_ಖಂಡ_signal_params (optarg, false);
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ IGNORE_SIGNAL_OPTION:
           parse_signal_action_params (optarg, false);
-          break;
-        case BLOCK_SIGNAL_OPTION:
-          parse_block_signal_params (optarg, true);
-          break;
-        case LIST_SIGNAL_HANDLING_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ ಖಂಡ_SIGNAL_OPTION:
+          parse_ಖಂಡ_signal_params (optarg, true);
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ LIST_SIGNAL_HANDLING_OPTION:
           report_signal_handling = true;
-          break;
-        case QUOTING_STYLE_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
-                                         quoting_style_args,
+                                         quoting_style_ವಾದಗಳು,
                                          quoting_style_vals);
-          break;
-        case 'C':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'C':
           newdir = optarg;
-          break;
-        case 'S':
-          parse_split_string (optarg, &optind, &argc, &argv);
-          break;
-        case ' ': case '\t': case '\n': case '\v': case '\f': case '\r':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'S':
+          parse_ವಿಭಜಿಸು_string (optarg, &optind, &argc, &argv);
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ ' ': ಸ್ಥಿತಿ '\t': ಸ್ಥಿತಿ '\n': ಸ್ಥಿತಿ '\v': ಸ್ಥಿತಿ '\f': ಸ್ಥಿತಿ '\r':
           /* These are undocumented options.  Attempt to detect
              incorrect shebang usage with extraneous space, e.g.:
                 #!/usr/bin/env -i command
              In which case argv[1] == "-i command".  */
           {
-            char c = optc;
+            ಅಕ್ಷರ c = optc;
             error (0, 0, _("invalid option -- %s"), quote_mem (&c, 1));
             error (0, 0, _("use -[v]S to pass options in shebang lines"));
             usage (EXIT_CANCELED);
           }
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_CANCELED);
         }
     }
 
-  if (optind < argc && streq (argv[optind], "-"))
+  ಆದರೆ (optind < argc && streq (argv[optind], "-"))
     {
       ignore_environment = true;
       ++optind;
     }
 
-  int program_index = optind;
-  while (program_index < argc && strchr (argv[program_index], '='))
-    program_index++;
-  bool program_specified = program_index < argc;
+  ಪೂರ್ಣಾಂಕ ಕಾರ್ಯಕ್ರಮ_ಸೂಚ್ಯಂಕ = optind;
+  ಆಗ (ಕಾರ್ಯಕ್ರಮ_ಸೂಚ್ಯಂಕ < argc && strchr (argv[ಕಾರ್ಯಕ್ರಮ_ಸೂಚ್ಯಂಕ], '='))
+    ಕಾರ್ಯಕ್ರಮ_ಸೂಚ್ಯಂಕ++;
+  bool ಕಾರ್ಯಕ್ರಮ_specified = ಕಾರ್ಯಕ್ರಮ_ಸೂಚ್ಯಂಕ < argc;
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (! program_specified && qs < 0 && isatty (STDOUT_FILENO))
+  ಪೂರ್ಣಾಂಕ qs = quoting_style_opt;
+  ಆದರೆ (! ಕಾರ್ಯಕ್ರಮ_specified && qs < 0 && isatty (STDOUT_FILENO))
     {
       /* Get the value from $QUOTING_STYLE before unsetting env vars.  */
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      ಆದರೆ (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  ಆದರೆ (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      ಗಣ_quoting_style (ಖಾಲಿ, qs);
       quote_output = true;
     }
 
-  bool env_vector_active = false;
-  if (ignore_environment && env0_from_file)
+  bool env_ಸದಿಶ_ಸಕ್ರಿಯ = false;
+  ಆದರೆ (ignore_environment && env0_from_file)
     {
       vmsg (_("clearing environment\n"));
-      set_raw_environment_from_file (&env_vector, env0_from_file);
-      env_vector_active = true;
+      ಗಣ_raw_environment_from_file (&env_ಸದಿಶ, env0_from_file);
+      env_ಸದಿಶ_ಸಕ್ರಿಯ = true;
     }
-  else if (ignore_environment)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ignore_environment)
     {
       vmsg (_("clearing environment\n"));
-#if defined _WIN32 && ! defined __CYGWIN__
-      static char *dummy_environ[] = { NULL };
+#ಆದರೆ defined _WIN32 && ! defined __CYGWIN__
+      ಸ್ಥಿರ ಅಕ್ಷರ *dummy_environ[] = { ಖಾಲಿ };
       environ = dummy_environ;
-#else
-      env_vector.variable = xnmalloc (1, sizeof *env_vector.variable);
-      env_vector.variable[0] = NULL;
-      env_vector.used = 0;
-      env_vector.allocated = 1;
-      environ = env_vector.variable;
-      env_vector_active = true;
-#endif
+#ಇಲ್ಲದಿದ್ದರೆ
+      env_ಸದಿಶ.variable = xnmalloc (1, ಗಾತ್ರ *env_ಸದಿಶ.variable);
+      env_ಸದಿಶ.variable[0] = ಖಾಲಿ;
+      env_ಸದಿಶ.ಬಳಸಿದ = 0;
+      env_ಸದಿಶ.allocated = 1;
+      environ = env_ಸದಿಶ.variable;
+      env_ಸದಿಶ_ಸಕ್ರಿಯ = true;
+#ಆದರೆ_ಅಂತ್ಯ
     }
-  else if (env0_from_file)
-    env_vector_active = set_envvars_from_file (&env_vector, env0_from_file);
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (env0_from_file)
+    env_ಸದಿಶ_ಸಕ್ರಿಯ = ಗಣ_envvars_from_file (&env_ಸದಿಶ, env0_from_file);
 
-  if (! ignore_environment || env0_from_file)
+  ಆದರೆ (! ignore_environment || env0_from_file)
     {
-      if (env_vector_active)
-        unset_envvars_in_vector (&env_vector);
-      else
+      ಆದರೆ (env_ಸದಿಶ_ಸಕ್ರಿಯ)
+        unset_envvars_ಒಳ_ಸದಿಶ (&env_ಸದಿಶ);
+      ಇಲ್ಲದಿದ್ದರೆ
         unset_envvars ();
     }
 
-  char *eq;
-  while (optind < argc && (eq = strchr (argv[optind], '=')))
+  ಅಕ್ಷರ *eq;
+  ಆಗ (optind < argc && (eq = strchr (argv[optind], '=')))
     {
-      if (env_vector_active)
-        set_envvar_in_vector (&env_vector, argv[optind], eq);
-      else
-        set_envvar (argv[optind], eq);
+      ಆದರೆ (env_ಸದಿಶ_ಸಕ್ರಿಯ)
+        ಗಣ_envvar_ಒಳ_ಸದಿಶ (&env_ಸದಿಶ, argv[optind], eq);
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಗಣ_envvar (argv[optind], eq);
       optind++;
     }
 
-  if (opt_nul_terminate_output && program_specified)
+  ಆದರೆ (opt_nul_terminate_output && ಕಾರ್ಯಕ್ರಮ_specified)
     {
       error (0, 0, _("cannot specify --null (-0) with command"));
       usage (EXIT_CANCELED);
     }
 
-  if (newdir && ! program_specified)
+  ಆದರೆ (newdir && ! ಕಾರ್ಯಕ್ರಮ_specified)
     {
       error (0, 0, _("must specify command with --chdir (-C)"));
       usage (EXIT_CANCELED);
     }
 
-  if (argv0 && ! program_specified)
+  ಆದರೆ (argv0 && ! ಕಾರ್ಯಕ್ರಮ_specified)
     {
       error (0, 0, _("must specify command with --argv0 (-a)"));
       usage (EXIT_CANCELED);
     }
 
-  if (! program_specified)
+  ಆದರೆ (! ಕಾರ್ಯಕ್ರಮ_specified)
     {
-      char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-      if (opt_nul_terminate_output)
-        xset_binary_mode (STDOUT_FILENO, O_BINARY);
+      ಆದರೆ (opt_nul_terminate_output)
+        xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDOUT_FILENO, O_ದ್ವಿಮಾನ);
 
       /* Print the environment and exit.  */
-      for (char *const *e = environ; *e; ++e)
+      ಗಾಗಿ (ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *e = environ; *e; ++e)
         print_envvar (*e, terminator, quote_output);
-#ifdef lint
-      if (env_vector_active)
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ lint
+      ಆದರೆ (env_ಸದಿಶ_ಸಕ್ರಿಯ)
         {
           environ = initial_environ;
-          free (env_vector.variable);
-          free (env0_from_buffer);
+          ಬಿಡುಗಡೆ (env_ಸದಿಶ.variable);
+          ಬಿಡುಗಡೆ (env0_from_ಬಫರ್);
         }
-#endif
-      return EXIT_SUCCESS;
+#ಆದರೆ_ಅಂತ್ಯ
+      ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
     }
 
   reset_signal_handlers ();
-  if (sig_mask_changed)
-    set_signal_proc_mask ();
+  ಆದರೆ (sig_ಮುಖವಾಡ_ಬದಲಾಯಿತು)
+    ಗಣ_signal_proc_ಮುಖವಾಡ ();
 
-  if (report_signal_handling)
+  ಆದರೆ (report_signal_handling)
     list_signal_handling ();
 
-  if (newdir)
+  ಆದರೆ (newdir)
     {
       vmsg (_("change dir: %s\n"), quote (newdir));
 
-      if (chdir (newdir) != 0)
+      ಆದರೆ (chdir (newdir) != 0)
         error (EXIT_CANCELED, errno, _("cannot change directory to %s"),
                quoteaf (newdir));
     }
 
-  char *program = argv[optind];
-  if (argv0)
+  ಅಕ್ಷರ *ಕಾರ್ಯಕ್ರಮ = argv[optind];
+  ಆದರೆ (argv0)
     {
       vmsg ("argv0:     %s\n", quote (argv0));
       argv[optind] = argv0;
     }
 
-  if (dev_debug)
+  ಆದರೆ (dev_debug)
     {
-      vmsg (_("executing: %s\n"), quote (program));
-      for (int i=optind; i<argc; ++i)
+      vmsg (_("executing: %s\n"), quote (ಕಾರ್ಯಕ್ರಮ));
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i=optind; i<argc; ++i)
         vmsg ("   arg[%d]= %s\n", i-optind, quote (argv[i]));
     }
 
-  execvp (program, &argv[optind]);
+  execvp (ಕಾರ್ಯಕ್ರಮ, &argv[optind]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  error (0, errno, "%s", quote (program));
+  ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  error (0, errno, "%s", quote (ಕಾರ್ಯಕ್ರಮ));
 
-  if (exit_status == EXIT_ENOENT && strpbrk (program, C_ISSPACE_CHARS))
+  ಆದರೆ (exit_ಸ್ಥಿತಿ == EXIT_ENOENT && strpbrk (ಕಾರ್ಯಕ್ರಮ, C_ISSPACE_CHARS))
     error (0, 0, _("use -[v]S to pass options in shebang lines"));
 
-  main_exit (exit_status);
+  main_exit (exit_ಸ್ಥಿತಿ);
 }

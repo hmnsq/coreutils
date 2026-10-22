@@ -16,107 +16,107 @@
 
 /* Written by Jim Meyering */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sync"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "sync"
 
-#define AUTHORS                                 \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS                                 \
   proper_name ("Jim Meyering"),                 \
   proper_name ("Giuseppe Scrivano")
 
-#ifndef HAVE_SYNCFS
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ HAVE_SYNCFS
 # define HAVE_SYNCFS 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-enum sync_mode
+ಎಣಿಕೆ sync_ಬಹುಲಕ
 {
-  MODE_FILE,
-  MODE_DATA,
-  MODE_FILE_SYSTEM,
-  MODE_SYNC
+  ಬಹುಲಕ_FILE,
+  ಬಹುಲಕ_ದತ್ತಾಂಶ,
+  ಬಹುಲಕ_FILE_SYSTEM,
+  ಬಹುಲಕ_SYNC
 };
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"data", no_argument, NULL, 'd'},
-  {"file-system", no_argument, NULL, 'f'},
+  {"data", no_ವಾದ, ಖಾಲಿ, 'd'},
+  {"file-system", no_ವಾದ, ಖಾಲಿ, 'f'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION] [FILE]...\n"), program_name);
+      ಬರೆ (_("Usage: %s [OPTION] [FILE]...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Synchronize cached writes to persistent storage\n\
+Synchronize cached writes ಗಮ್ಯ persistent storage\n\
 \n\
-If one or more files are specified, sync only them,\n\
+If one or ಇನ್ನಷ್ಟು files are specified, sync only them,\n\
 or their containing file systems.\n\
 \n\
 "), stdout);
 
       oputs (_("\
-  -d, --data             sync only file data, no unneeded metadata\n\
+  -d, --ದತ್ತಾಂಶ             sync only file ದತ್ತಾಂಶ, no unneeded metadata\n\
 "));
       oputs (_("\
   -f, --file-system      sync the file systems that contain the files\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Sync the specified FILE, or file systems associated with FILE.
    Return 1 on success.  */
 
-static bool
-sync_arg (enum sync_mode mode, char const *file)
+ಸ್ಥಿರ bool
+sync_arg (ಎಣಿಕೆ sync_ಬಹುಲಕ ಬಹುಲಕ_2, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
-  int open_flags = O_RDONLY | O_NONBLOCK;
+  ಪೂರ್ಣಾಂಕ open_flags = O_RDONLY | O_NONBLOCK;
 
-#if defined _AIX || defined __CYGWIN__
+#ಆದರೆ defined _AIX || defined __CYGWIN__
   /* AIX 7.1, CYGWIN 2.9.0, fsync requires write access to file.  */
-  if (mode == MODE_FILE)
+  ಆದರೆ (ಬಹುಲಕ_2 == ಬಹುಲಕ_FILE)
     open_flags = O_WRONLY | O_NONBLOCK;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* Note O_PATH might be supported with syncfs(),
      though as of Linux 3.18 is not.  */
-  int fd = open (file, open_flags);
-  if (fd < 0)
+  ಪೂರ್ಣಾಂಕ fd = open (file, open_flags);
+  ಆದರೆ (fd < 0)
     {
       /* Use the O_RDONLY errno, which is significant
          with directories for example.  */
-      int rd_errno = errno;
-      if (open_flags != (O_WRONLY | O_NONBLOCK))
+      ಪೂರ್ಣಾಂಕ rd_errno = errno;
+      ಆದರೆ (open_flags != (O_WRONLY | O_NONBLOCK))
         fd = open (file, O_WRONLY | O_NONBLOCK);
-      if (fd < 0)
+      ಆದರೆ (fd < 0)
         {
           error (0, rd_errno, _("error opening %s"), quoteaf (file));
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
     }
 
   bool ret = true;
   /* We used O_NONBLOCK above to not hang with fifos,
      so reset that here.  */
-  int fdflags = fcntl (fd, F_GETFL);
-  if (fdflags == -1
+  ಪೂರ್ಣಾಂಕ fdflags = fcntl (fd, F_GETFL);
+  ಆದರೆ (fdflags == -1
       || fcntl (fd, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
     {
       error (0, errno, _("couldn't reset non-blocking mode %s"),
@@ -124,108 +124,108 @@ sync_arg (enum sync_mode mode, char const *file)
       ret = false;
     }
 
-  if (ret)
+  ಆದರೆ (ret)
     {
-      int sync_status = -1;
+      ಪೂರ್ಣಾಂಕ sync_ಸ್ಥಿತಿ = -1;
 
-      switch (mode)
+      ಆಯ್ಕೆ (ಬಹುಲಕ_2)
         {
-        case MODE_DATA:
-          sync_status = fdatasync (fd);
-          break;
+        ಸ್ಥಿತಿ ಬಹುಲಕ_ದತ್ತಾಂಶ:
+          sync_ಸ್ಥಿತಿ = fdatasync (fd);
+          ನಿಲ್ಲಿಸು;
 
-        case MODE_FILE:
-          sync_status = fsync (fd);
-          break;
+        ಸ್ಥಿತಿ ಬಹುಲಕ_FILE:
+          sync_ಸ್ಥಿತಿ = fsync (fd);
+          ನಿಲ್ಲಿಸು;
 
-        case MODE_FILE_SYSTEM:
-#if HAVE_SYNCFS
-          sync_status = syncfs (fd);
-          break;
-#endif
-        case MODE_SYNC: default:
+        ಸ್ಥಿತಿ ಬಹುಲಕ_FILE_SYSTEM:
+#ಆದರೆ HAVE_SYNCFS
+          sync_ಸ್ಥಿತಿ = syncfs (fd);
+          ನಿಲ್ಲಿಸು;
+#ಆದರೆ_ಅಂತ್ಯ
+        ಸ್ಥಿತಿ ಬಹುಲಕ_SYNC: ಪೂರ್ವನಿಯೋಜಿತ:
           affirm (false);
         }
 
-      if (sync_status < 0)
+      ಆದರೆ (sync_ಸ್ಥಿತಿ < 0)
         {
           error (0, errno, _("error syncing %s"), quoteaf (file));
           ret = false;
         }
     }
 
-  if (close (fd) < 0)
+  ಆದರೆ (close (fd) < 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (file));
       ret = false;
     }
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  bool arg_data = false, arg_file_system = false;
+  bool arg_ದತ್ತಾಂಶ = false, arg_file_system = false;
   bool ok = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "df", long_options, NULL))
+  ಪೂರ್ಣಾಂಕ c;
+  ಆಗ ((c = getopt_long (argc, argv, "df", long_options, ಖಾಲಿ))
          != -1)
     {
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'd':
-          arg_data = true;
-          break;
+        ಸ್ಥಿತಿ 'd':
+          arg_ದತ್ತಾಂಶ = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 'f':
+        ಸ್ಥಿತಿ 'f':
           arg_file_system = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  bool args_specified = optind < argc;
+  bool ವಾದಗಳು_specified = optind < argc;
 
-  if (arg_data && arg_file_system)
+  ಆದರೆ (arg_ದತ್ತಾಂಶ && arg_file_system)
     error (EXIT_FAILURE, 0,
            _("cannot specify both --data and --file-system"));
 
-  if (!args_specified && arg_data)
+  ಆದರೆ (!ವಾದಗಳು_specified && arg_ದತ್ತಾಂಶ)
     error (EXIT_FAILURE, 0, _("--data needs at least one argument"));
 
-  enum sync_mode mode;
-  if (! args_specified || (arg_file_system && ! HAVE_SYNCFS))
-    mode = MODE_SYNC;
-  else if (arg_file_system)
-    mode = MODE_FILE_SYSTEM;
-  else if (! arg_data)
-    mode = MODE_FILE;
-  else
-    mode = MODE_DATA;
+  ಎಣಿಕೆ sync_ಬಹುಲಕ ಬಹುಲಕ_2;
+  ಆದರೆ (! ವಾದಗಳು_specified || (arg_file_system && ! HAVE_SYNCFS))
+    ಬಹುಲಕ_2 = ಬಹುಲಕ_SYNC;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (arg_file_system)
+    ಬಹುಲಕ_2 = ಬಹುಲಕ_FILE_SYSTEM;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (! arg_ದತ್ತಾಂಶ)
+    ಬಹುಲಕ_2 = ಬಹುಲಕ_FILE;
+  ಇಲ್ಲದಿದ್ದರೆ
+    ಬಹುಲಕ_2 = ಬಹುಲಕ_ದತ್ತಾಂಶ;
 
-  if (mode == MODE_SYNC)
+  ಆದರೆ (ಬಹುಲಕ_2 == ಬಹುಲಕ_SYNC)
     sync ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      for (; optind < argc; optind++)
-        ok &= sync_arg (mode, argv[optind]);
+      ಗಾಗಿ (; optind < argc; optind++)
+        ok &= sync_arg (ಬಹುಲಕ_2, argv[optind]);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಹಿಂತಿರುಗಿ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

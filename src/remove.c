@@ -16,26 +16,26 @@
 
 /* Extracted from rm.c, librarified, then rewritten twice by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "file-type.h"
-#include "filenamecat.h"
-#include "ignore-value.h"
-#include "remove.h"
-#include "root-dev-ino.h"
-#include "stat-time.h"
-#include "write-any-file.h"
-#include "xfts.h"
-#include "yesno.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "file-type.h"
+#ಅನ್ತರ್ಭಾವ "filenamecat.h"
+#ಅನ್ತರ್ಭಾವ "ignore-value.h"
+#ಅನ್ತರ್ಭಾವ "remove.h"
+#ಅನ್ತರ್ಭಾವ "root-dev-ino.h"
+#ಅನ್ತರ್ಭಾವ "stat-time.h"
+#ಅನ್ತರ್ಭಾವ "write-any-file.h"
+#ಅನ್ತರ್ಭಾವ "xfts.h"
+#ಅನ್ತರ್ಭಾವ "yesno.h"
 
 /* The prompt function may be called twice for a given directory.
    The first time, we ask whether to descend into it, and the
    second time, we ask whether to remove it.  */
-enum Prompt_action
+ಎಣಿಕೆ Prompt_action
   {
     PA_DESCEND_INTO_DIR = 2,
     PA_REMOVE_DIR
@@ -43,7 +43,7 @@ enum Prompt_action
 
 /* D_TYPE(D) is the type of directory entry D if known, DT_UNKNOWN
    otherwise.  */
-#if ! HAVE_STRUCT_DIRENT_D_TYPE
+#ಆದರೆ ! HAVE_STRUCT_DIRENT_D_TYPE
 /* Any int values will do here, so long as they're distinct.
    Undef any existing macros out of the way.  */
 # undef DT_UNKNOWN
@@ -52,57 +52,57 @@ enum Prompt_action
 # define DT_UNKNOWN 0
 # define DT_DIR 1
 # define DT_LNK 2
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Like fstatat, but cache on POSIX-compatible systems.  */
-static int
-cache_fstatat (int fd, char const *file, struct stat *st, int flag)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+cache_fstatat (ಪೂರ್ಣಾಂಕ fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, ರಚನೆ stat *st, ಪೂರ್ಣಾಂಕ flag)
 {
-#if HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
+#ಆದರೆ HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
   /* If ST->st_atim.tv_nsec is -1, the status has not been gotten yet.
      If less than -1, fstatat failed with errno == ST->st_ino.
      Otherwise, the status has already been gotten, so return 0.  */
-  if (0 <= st->st_atim.tv_nsec)
-    return 0;
-  if (st->st_atim.tv_nsec == -1)
+  ಆದರೆ (0 <= st->st_atim.tv_nsec)
+    ಹಿಂತಿರುಗಿ 0;
+  ಆದರೆ (st->st_atim.tv_nsec == -1)
     {
-      if (fstatat (fd, file, st, flag) == 0)
-        return 0;
+      ಆದರೆ (fstatat (fd, file, st, flag) == 0)
+        ಹಿಂತಿರುಗಿ 0;
       st->st_atim.tv_nsec = -2;
       st->st_ino = errno;
     }
   errno = st->st_ino;
-  return -1;
-#else
-  return fstatat (fd, file, st, flag);
-#endif
+  ಹಿಂತಿರುಗಿ -1;
+#ಇಲ್ಲದಿದ್ದರೆ
+  ಹಿಂತಿರುಗಿ fstatat (fd, file, st, flag);
+#ಆದರೆ_ಅಂತ್ಯ
 }
 
 /* Initialize a fstatat cache *ST.  Return ST for convenience.  */
-static inline struct stat *
-cache_stat_init (struct stat *st)
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ ರಚನೆ stat *
+cache_stat_init (ರಚನೆ stat *st)
 {
-#if HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
+#ಆದರೆ HAVE_STRUCT_STAT_ST_ATIM_TV_NSEC
   st->st_atim.tv_nsec = -1;
-#endif
-  return st;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ st;
 }
 
 /* Return 1 if FILE is an unwritable non-symlink,
    0 if it is writable or some other type of file,
    -1 and set errno if there is some problem in determining the answer.
    Set *BUF to the file status.  */
-static int
-write_protected_non_symlink (int fd_cwd,
-                             char const *file,
-                             struct stat *buf)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+write_protected_non_symlink (ಪೂರ್ಣಾಂಕ fd_cwd,
+                             ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file,
+                             ರಚನೆ stat *buf)
 {
-  if (can_write_any_file ())
-    return 0;
-  if (cache_fstatat (fd_cwd, file, buf, AT_SYMLINK_NOFOLLOW) != 0)
-    return -1;
-  if (S_ISLNK (buf->st_mode))
-    return 0;
+  ಆದರೆ (can_write_any_file ())
+    ಹಿಂತಿರುಗಿ 0;
+  ಆದರೆ (cache_fstatat (fd_cwd, file, buf, AT_SYMLINK_NOFOLLOW) != 0)
+    ಹಿಂತಿರುಗಿ -1;
+  ಆದರೆ (S_ISLNK (buf->st_ಬಹುಲಕ))
+    ಹಿಂತಿರುಗಿ 0;
   /* Here, we know FILE is not a symbolic link.  */
 
   /* In order to be reentrant -- i.e., to avoid changing the working
@@ -152,10 +152,10 @@ write_protected_non_symlink (int fd_cwd,
         mess up with long file names). */
 
   {
-    if (faccessat (fd_cwd, file, W_OK, AT_EACCESS) == 0)
-      return 0;
+    ಆದರೆ (faccessat (fd_cwd, file, W_OK, AT_EACCESS) == 0)
+      ಹಿಂತಿರುಗಿ 0;
 
-    return errno == EACCES ? 1 : -1;
+    ಹಿಂತಿರುಗಿ errno == EACCES ? 1 : -1;
   }
 }
 
@@ -164,12 +164,12 @@ write_protected_non_symlink (int fd_cwd,
    and a positive error number if there was trouble determining the status,
    e.g., it is not a directory, or permissions problems, or I/O errors.
    Use *DIR_STATUS as a cache for the status.  */
-static int
-get_dir_status (FTS const *fts, FTSENT const *ent, int *dir_status)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+get_dir_ಸ್ಥಿತಿ (FTS ಸ್ಥಿರಾಂಕ *fts, FTSENT ಸ್ಥಿರಾಂಕ *ent, ಪೂರ್ಣಾಂಕ *dir_ಸ್ಥಿತಿ)
 {
-  if (*dir_status == DS_UNKNOWN)
-    *dir_status = directory_status (fts->fts_cwd_fd, ent->fts_accpath);
-  return *dir_status;
+  ಆದರೆ (*dir_ಸ್ಥಿತಿ == DS_UNKNOWN)
+    *dir_ಸ್ಥಿತಿ = directory_ಸ್ಥಿತಿ (fts->fts_cwd_fd, ent->fts_accpath);
+  ಹಿಂತಿರುಗಿ *dir_ಸ್ಥಿತಿ;
 }
 
 /* Prompt whether to remove FILENAME, if required via a combination of
@@ -185,32 +185,32 @@ get_dir_status (FTS const *fts, FTSENT const *ent, int *dir_status)
    directory FILENAME.  MODE is ignored when FILENAME is not a directory.
    Use and update *DIR_STATUS as needed, via the conventions of
    get_dir_status.  */
-static enum RM_status
-prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
-        struct rm_options const *x, enum Prompt_action mode,
-        int *dir_status)
+ಸ್ಥಿರ ಎಣಿಕೆ RM_ಸ್ಥಿತಿ
+prompt (FTS ಸ್ಥಿರಾಂಕ *fts, FTSENT ಸ್ಥಿರಾಂಕ *ent, bool is_dir,
+        ರಚನೆ rm_options ಸ್ಥಿರಾಂಕ *x, ಎಣಿಕೆ Prompt_action ಬಹುಲಕ_2,
+        ಪೂರ್ಣಾಂಕ *dir_ಸ್ಥಿತಿ)
 {
-  int fd_cwd = fts->fts_cwd_fd;
-  char const *full_name = ent->fts_path;
-  char const *filename = ent->fts_accpath;
-  struct stat st;
-  struct stat *sbuf = &st;
+  ಪೂರ್ಣಾಂಕ fd_cwd = fts->fts_cwd_fd;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ತುಂಬಿದ_name = ent->fts_ಮಾರ್ಗ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename = ent->fts_accpath;
+  ರಚನೆ stat st;
+  ರಚನೆ stat *sbuf = &st;
   cache_stat_init (sbuf);
 
-  int dirent_type = is_dir ? DT_DIR : DT_UNKNOWN;
-  int write_protected = 0;
+  ಪೂರ್ಣಾಂಕ dirent_type = is_dir ? DT_DIR : DT_UNKNOWN;
+  ಪೂರ್ಣಾಂಕ write_protected = 0;
 
   /* When nonzero, this indicates that we failed to remove a child entry,
      either because the user declined an interactive prompt, or due to
      some other failure, like permissions.  */
-  if (ent->fts_number)
-    return RM_USER_DECLINED;
+  ಆದರೆ (ent->fts_ಸಂಖ್ಯೆ)
+    ಹಿಂತಿರುಗಿ RM_USER_DECLINED;
 
-  if (x->interactive == RMI_NEVER)
-    return RM_OK;
+  ಆದರೆ (x->interactive == RMI_NEVER)
+    ಹಿಂತಿರುಗಿ RM_OK;
 
-  int wp_errno = 0;
-  if (!x->ignore_missing_files
+  ಪೂರ್ಣಾಂಕ wp_errno = 0;
+  ಆದರೆ (!x->ignore_missing_files
       && (x->interactive == RMI_ALWAYS || x->stdin_tty)
       && dirent_type != DT_LNK)
     {
@@ -218,19 +218,19 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
       wp_errno = errno;
     }
 
-  if (write_protected || x->interactive == RMI_ALWAYS)
+  ಆದರೆ (write_protected || x->interactive == RMI_ALWAYS)
     {
-      if (0 <= write_protected && dirent_type == DT_UNKNOWN)
+      ಆದರೆ (0 <= write_protected && dirent_type == DT_UNKNOWN)
         {
-          if (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) == 0)
+          ಆದರೆ (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) == 0)
             {
-              if (S_ISLNK (sbuf->st_mode))
+              ಆದರೆ (S_ISLNK (sbuf->st_ಬಹುಲಕ))
                 dirent_type = DT_LNK;
-              else if (S_ISDIR (sbuf->st_mode))
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (S_ISDIR (sbuf->st_ಬಹುಲಕ))
                 dirent_type = DT_DIR;
               /* Otherwise it doesn't matter, so leave it DT_UNKNOWN.  */
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               /* This happens, e.g., with 'rm '''.  */
               write_protected = -1;
@@ -238,52 +238,52 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
             }
         }
 
-      if (0 <= write_protected)
-        switch (dirent_type)
+      ಆದರೆ (0 <= write_protected)
+        ಆಯ್ಕೆ (dirent_type)
           {
-          case DT_LNK:
+          ಸ್ಥಿತಿ DT_LNK:
             /* Using permissions doesn't make sense for symlinks.  */
-            if (x->interactive != RMI_ALWAYS)
-              return RM_OK;
-            break;
+            ಆದರೆ (x->interactive != RMI_ALWAYS)
+              ಹಿಂತಿರುಗಿ RM_OK;
+            ನಿಲ್ಲಿಸು;
 
-          case DT_DIR:
+          ಸ್ಥಿತಿ DT_DIR:
              /* Unless we're either deleting directories or deleting
                 recursively, we want to raise an EISDIR error rather than
                 prompting the user  */
-            if ( ! (x->recursive
-                    || (x->remove_empty_directories
-                        && get_dir_status (fts, ent, dir_status) != 0)))
+            ಆದರೆ ( ! (x->recursive
+                    || (x->remove_ಖಾಲಿಗಳು_directories
+                        && get_dir_ಸ್ಥಿತಿ (fts, ent, dir_ಸ್ಥಿತಿ) != 0)))
               {
                 write_protected = -1;
-                wp_errno = *dir_status <= 0 ? EISDIR : *dir_status;
+                wp_errno = *dir_ಸ್ಥಿತಿ <= 0 ? EISDIR : *dir_ಸ್ಥಿತಿ;
               }
-            break;
+            ನಿಲ್ಲಿಸು;
           }
 
-      char const *quoted_name = quoteaf (full_name);
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *quoted_name = quoteaf (ತುಂಬಿದ_name);
 
-      if (write_protected < 0)
+      ಆದರೆ (write_protected < 0)
         {
           error (0, wp_errno, _("cannot remove %s"), quoted_name);
-          return RM_ERROR;
+          ಹಿಂತಿರುಗಿ RM_ERROR;
         }
 
       /* Issue the prompt.  */
-      if (dirent_type == DT_DIR
-          && mode == PA_DESCEND_INTO_DIR
-          && get_dir_status (fts, ent, dir_status) == DS_NONEMPTY)
+      ಆದರೆ (dirent_type == DT_DIR
+          && ಬಹುಲಕ_2 == PA_DESCEND_INTO_DIR
+          && get_dir_ಸ್ಥಿತಿ (fts, ent, dir_ಸ್ಥಿತಿ) == DS_NONEMPTY)
         fprintf (stderr,
                  (write_protected
                   ? _("%s: descend into write-protected directory %s? ")
                   : _("%s: descend into directory %s? ")),
-                 program_name, quoted_name);
-      else if (0 < *dir_status)
+                 ಕಾರ್ಯಕ್ರಮ_name, quoted_name);
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (0 < *dir_ಸ್ಥಿತಿ)
         {
-          if ( ! (x->remove_empty_directories && *dir_status == EACCES))
+          ಆದರೆ ( ! (x->remove_ಖಾಲಿಗಳು_directories && *dir_ಸ್ಥಿತಿ == EACCES))
             {
-              error (0, *dir_status, _("cannot remove %s"), quoted_name);
-              return RM_ERROR;
+              error (0, *dir_ಸ್ಥಿತಿ, _("cannot remove %s"), quoted_name);
+              ಹಿಂತಿರುಗಿ RM_ERROR;
             }
 
           /* The following code can lead to a successful deletion only with
@@ -291,19 +291,19 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
              inaccessible directory. In the first prompt call for a directory,
              we'd normally ask whether to descend into it, but in this case
              (it's inaccessible), that is not possible, so don't prompt.  */
-          if (mode == PA_DESCEND_INTO_DIR)
-            return RM_OK;
+          ಆದರೆ (ಬಹುಲಕ_2 == PA_DESCEND_INTO_DIR)
+            ಹಿಂತಿರುಗಿ RM_OK;
 
           fprintf (stderr,
                _("%s: attempt removal of inaccessible directory %s? "),
-                   program_name, quoted_name);
+                   ಕಾರ್ಯಕ್ರಮ_name, quoted_name);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          if (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) != 0)
+          ಆದರೆ (cache_fstatat (fd_cwd, filename, sbuf, AT_SYMLINK_NOFOLLOW) != 0)
             {
               error (0, errno, _("cannot remove %s"), quoted_name);
-              return RM_ERROR;
+              ಹಿಂತಿರುಗಿ RM_ERROR;
             }
 
           fprintf (stderr,
@@ -315,19 +315,19 @@ prompt (FTS const *fts, FTSENT const *ent, bool is_dir,
                        is of type '%2$s' -- remove it? ".  */
                     ? _("%s: remove write-protected %s %s? ")
                     : _("%s: remove %s %s? ")),
-                   program_name, file_type (sbuf), quoted_name);
+                   ಕಾರ್ಯಕ್ರಮ_name, file_type (sbuf), quoted_name);
         }
 
-      return yesno () ? RM_USER_ACCEPTED : RM_USER_DECLINED;
+      ಹಿಂತಿರುಗಿ yesno () ? RM_USER_ACCEPTED : RM_USER_DECLINED;
     }
-  return RM_OK;
+  ಹಿಂತಿರುಗಿ RM_OK;
 }
 
 /* When a function like unlink, rmdir, or fstatat fails with an errno
    value of ERRNUM, return true if the specified file system object
    is guaranteed not to exist;  otherwise, return false.  */
-static inline bool
-nonexistent_file_errno (int errnum)
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ bool
+nonexistent_file_errno (ಪೂರ್ಣಾಂಕ errnum)
 {
   /* Do not include ELOOP here, since the specified file may indeed
      exist, but be (in)accessible only via too long a symlink chain.
@@ -341,95 +341,95 @@ nonexistent_file_errno (int errnum)
      https://austingroupbugs.net/view.php?id=293
   */
 
-  switch (errnum)
+  ಆಯ್ಕೆ (errnum)
     {
-    case EILSEQ:
-    case EINVAL:
-    case ENOENT:
-    case ENOTDIR:
-      return true;
-    default:
-      return false;
+    ಸ್ಥಿತಿ EILSEQ:
+    ಸ್ಥಿತಿ EINVAL:
+    ಸ್ಥಿತಿ ENOENT:
+    ಸ್ಥಿತಿ ENOTDIR:
+      ಹಿಂತಿರುಗಿ true;
+    ಪೂರ್ವನಿಯೋಜಿತ:
+      ಹಿಂತಿರುಗಿ false;
     }
 }
 
 /* Encapsulate the test for whether the errno value, ERRNUM, is ignorable.  */
-static inline bool
-ignorable_missing (struct rm_options const *x, int errnum)
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ bool
+ignorable_missing (ರಚನೆ rm_options ಸ್ಥಿರಾಂಕ *x, ಪೂರ್ಣಾಂಕ errnum)
 {
-  return x->ignore_missing_files && nonexistent_file_errno (errnum);
+  ಹಿಂತಿರುಗಿ x->ignore_missing_files && nonexistent_file_errno (errnum);
 }
 
 /* Tell fts not to traverse into the hierarchy at ENT.  */
-static void
-fts_skip_tree (FTS *fts, FTSENT *ent)
+ಸ್ಥಿರ ಶೂನ್ಯ
+fts_skip_ವೃಕ್ಷ (FTS *fts, FTSENT *ent)
 {
-  fts_set (fts, ent, FTS_SKIP);
+  fts_ಗಣ (fts, ent, FTS_SKIP);
   /* Ensure that we do not process ENT a second time.  */
-  ignore_value (fts_read (fts));
+  ignore_ಮೌಲ್ಯ (fts_read (fts));
 }
 
 /* Upon unlink failure, or when the user declines to remove ENT, mark
    each of its ancestor directories, so that we know not to prompt for
    its removal.  */
-static void
+ಸ್ಥಿರ ಶೂನ್ಯ
 mark_ancestor_dirs (FTSENT *ent)
 {
-  for (FTSENT *p = ent->fts_parent; FTS_ROOTLEVEL <= p->fts_level;
-       p = p->fts_parent)
+  ಗಾಗಿ (FTSENT *p = ent->fts_ಪೋಷಕ; FTS_ROOTLEVEL <= p->fts_level;
+       p = p->fts_ಪೋಷಕ)
     {
-      if (p->fts_number)
-        break;
-      p->fts_number = 1;
+      ಆದರೆ (p->fts_ಸಂಖ್ಯೆ)
+        ನಿಲ್ಲಿಸು;
+      p->fts_ಸಂಖ್ಯೆ = 1;
     }
 }
 
 /* Remove the file system object specified by ENT.  IS_DIR specifies
    whether it is expected to be a directory or non-directory.
    Return RM_OK upon success, else RM_ERROR.  */
-static enum RM_status
-excise (FTS *fts, FTSENT *ent, struct rm_options const *x, bool is_dir)
+ಸ್ಥಿರ ಎಣಿಕೆ RM_ಸ್ಥಿತಿ
+excise (FTS *fts, FTSENT *ent, ರಚನೆ rm_options ಸ್ಥಿರಾಂಕ *x, bool is_dir)
 {
-  int flag = is_dir ? AT_REMOVEDIR : 0;
-  if (unlinkat (fts->fts_cwd_fd, ent->fts_accpath, flag) == 0)
+  ಪೂರ್ಣಾಂಕ flag = is_dir ? AT_REMOVEDIR : 0;
+  ಆದರೆ (unlinkat (fts->fts_cwd_fd, ent->fts_accpath, flag) == 0)
     {
-      if (x->verbose)
+      ಆದರೆ (x->verbose)
         {
-          printf ((is_dir
+          ಬರೆ ((is_dir
                    ? _("removed directory %s\n")
-                   : _("removed %s\n")), quoteaf (ent->fts_path));
+                   : _("removed %s\n")), quoteaf (ent->fts_ಮಾರ್ಗ));
         }
-      return RM_OK;
+      ಹಿಂತಿರುಗಿ RM_OK;
     }
 
   /* The unlinkat from kernels like linux-2.6.32 reports EROFS even for
      nonexistent files.  When the file is indeed missing, map that to ENOENT,
      so that rm -f ignores it, as required.  Even without -f, this is useful
      because it makes rm print the more precise diagnostic.  */
-  if (errno == EROFS)
+  ಆದರೆ (errno == EROFS)
     {
-      struct stat st;
-      if ( ! (fstatat (fts->fts_cwd_fd, ent->fts_accpath, &st,
+      ರಚನೆ stat st;
+      ಆದರೆ ( ! (fstatat (fts->fts_cwd_fd, ent->fts_accpath, &st,
                        AT_SYMLINK_NOFOLLOW)
               && errno == ENOENT))
         errno = EROFS;
     }
 
-  if (ignorable_missing (x, errno))
-    return RM_OK;
+  ಆದರೆ (ignorable_missing (x, errno))
+    ಹಿಂತಿರುಗಿ RM_OK;
 
   /* When failing to rmdir an unreadable directory, we see errno values
      like EISDIR or ENOTDIR (or, on Solaris 10, EEXIST), but they would be
      meaningless in a diagnostic.  When that happens, use the earlier, more
      descriptive errno value.  */
-  if (ent->fts_info == FTS_DNR
+  ಆದರೆ (ent->fts_info == FTS_DNR
       && (errno == ENOTEMPTY || errno == EISDIR || errno == ENOTDIR
           || errno == EEXIST)
       && ent->fts_errno != 0)
     errno = ent->fts_errno;
-  error (0, errno, _("cannot remove %s"), quoteaf (ent->fts_path));
+  error (0, errno, _("cannot remove %s"), quoteaf (ent->fts_ಮಾರ್ಗ));
   mark_ancestor_dirs (ent);
-  return RM_ERROR;
+  ಹಿಂತಿರುಗಿ RM_ERROR;
 }
 
 /* This function is called once for every file system object that fts
@@ -438,158 +438,158 @@ excise (FTS *fts, FTSENT *ent, struct rm_options const *x, bool is_dir)
    and later, after all of its entries have been processed, with FTS_DP.
    Return RM_ERROR upon error, RM_USER_DECLINED for a negative response
    to an interactive prompt, and otherwise, RM_OK.  */
-static enum RM_status
-rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
+ಸ್ಥಿರ ಎಣಿಕೆ RM_ಸ್ಥಿತಿ
+rm_fts (FTS *fts, FTSENT *ent, ರಚನೆ rm_options ಸ್ಥಿರಾಂಕ *x)
 {
-  int dir_status = DS_UNKNOWN;
+  ಪೂರ್ಣಾಂಕ dir_ಸ್ಥಿತಿ = DS_UNKNOWN;
 
-  switch (ent->fts_info)
+  ಆಯ್ಕೆ (ent->fts_info)
     {
-    case FTS_D:			/* preorder directory */
-      if (!x->recursive)
+    ಸ್ಥಿತಿ FTS_D:			/* preorder directory */
+      ಆದರೆ (!x->recursive)
         {
           /* Not recursive, so skip contents, and fail now unless
              removing empty directories.  */
-          fts_set (fts, ent, FTS_SKIP);
-          if (x->remove_empty_directories)
-            return RM_OK;
-          error (0, EISDIR, _("cannot remove %s"), quoteaf (ent->fts_path));
-          ignore_value (fts_read (fts));
-          return RM_ERROR;
+          fts_ಗಣ (fts, ent, FTS_SKIP);
+          ಆದರೆ (x->remove_ಖಾಲಿಗಳು_directories)
+            ಹಿಂತಿರುಗಿ RM_OK;
+          error (0, EISDIR, _("cannot remove %s"), quoteaf (ent->fts_ಮಾರ್ಗ));
+          ignore_ಮೌಲ್ಯ (fts_read (fts));
+          ಹಿಂತಿರುಗಿ RM_ERROR;
         }
 
       /* Perform checks that can apply only for command-line arguments.  */
-      if (ent->fts_level == FTS_ROOTLEVEL)
+      ಆದರೆ (ent->fts_level == FTS_ROOTLEVEL)
         {
           /* POSIX says:
              If the basename of a command line argument is "." or "..",
              diagnose it and do nothing more with that argument.  */
-          if (dot_or_dotdot (last_component (ent->fts_accpath)))
+          ಆದರೆ (dot_or_dotdot (ಕೊನೆಯ_component (ent->fts_accpath)))
             {
               error (0, 0,
                      _("refusing to remove %s or %s directory: skipping %s"),
                      quoteaf_n (0, "."), quoteaf_n (1, ".."),
-                     quoteaf_n (2, ent->fts_path));
-              fts_skip_tree (fts, ent);
-              return RM_ERROR;
+                     quoteaf_n (2, ent->fts_ಮಾರ್ಗ));
+              fts_skip_ವೃಕ್ಷ (fts, ent);
+              ಹಿಂತಿರುಗಿ RM_ERROR;
             }
 
           /* POSIX also says:
              If a command line argument resolves to "/" (and --preserve-root
              is in effect -- default) diagnose and skip it.  */
-          if (ROOT_DEV_INO_CHECK (x->root_dev_ino, ent->fts_statp))
+          ಆದರೆ (ಬೇರು_DEV_INO_CHECK (x->ಬೇರು_dev_ino, ent->fts_statp))
             {
-              ROOT_DEV_INO_WARN (ent->fts_path);
-              fts_skip_tree (fts, ent);
-              return RM_ERROR;
+              ಬೇರು_DEV_INO_WARN (ent->fts_ಮಾರ್ಗ);
+              fts_skip_ವೃಕ್ಷ (fts, ent);
+              ಹಿಂತಿರುಗಿ RM_ERROR;
             }
 
           /* If a command line argument is a mount point and
              --preserve-root=all is in effect, diagnose and skip it.
              This doesn't handle "/", but that's handled above.  */
-          if (x->preserve_all_root)
+          ಆದರೆ (x->preserve_all_ಬೇರು)
             {
               bool failed = false;
-              char *parent = file_name_concat (ent->fts_accpath, "..", NULL);
-              struct stat statbuf;
+              ಅಕ್ಷರ *ಪೋಷಕ = file_name_concat (ent->fts_accpath, "..", ಖಾಲಿ);
+              ರಚನೆ stat statbuf;
 
-              if (!parent || lstat (parent, &statbuf))
+              ಆದರೆ (!ಪೋಷಕ || lstat (ಪೋಷಕ, &statbuf))
                 {
                   error (0, 0,
                          _("failed to stat %s: skipping %s"),
-                         quoteaf_n (0, parent),
+                         quoteaf_n (0, ಪೋಷಕ),
                          quoteaf_n (1, ent->fts_accpath));
                   failed = true;
                 }
 
-              free (parent);
+              ಬಿಡುಗಡೆ (ಪೋಷಕ);
 
-              if (failed || fts->fts_dev != statbuf.st_dev)
+              ಆದರೆ (failed || fts->fts_dev != statbuf.st_dev)
                 {
-                  if (! failed)
+                  ಆದರೆ (! failed)
                     {
                       error (0, 0,
                              _("skipping %s, since it's on a different device"),
-                             quoteaf (ent->fts_path));
+                             quoteaf (ent->fts_ಮಾರ್ಗ));
                       error (0, 0, _("and --preserve-root=all is in effect"));
                     }
-                  fts_skip_tree (fts, ent);
-                  return RM_ERROR;
+                  fts_skip_ವೃಕ್ಷ (fts, ent);
+                  ಹಿಂತಿರುಗಿ RM_ERROR;
                 }
             }
         }
 
       {
-        enum RM_status s = prompt (fts, ent, true /*is_dir*/, x,
-                                   PA_DESCEND_INTO_DIR, &dir_status);
+        ಎಣಿಕೆ RM_ಸ್ಥಿತಿ s = prompt (fts, ent, true /*is_dir*/, x,
+                                   PA_DESCEND_INTO_DIR, &dir_ಸ್ಥಿತಿ);
 
-        if (s == RM_USER_ACCEPTED && dir_status == DS_EMPTY)
+        ಆದರೆ (s == RM_USER_ACCEPTED && dir_ಸ್ಥಿತಿ == DS_ಖಾಲಿಗಳು)
           {
             /* When we know (from prompt when in interactive mode)
                that this is an empty directory, don't prompt twice.  */
             s = excise (fts, ent, x, true);
-            if (s == RM_OK)
-              fts_skip_tree (fts, ent);
+            ಆದರೆ (s == RM_OK)
+              fts_skip_ವೃಕ್ಷ (fts, ent);
           }
 
-        if (! (s == RM_OK || s == RM_USER_ACCEPTED))
+        ಆದರೆ (! (s == RM_OK || s == RM_USER_ACCEPTED))
           {
             mark_ancestor_dirs (ent);
-            fts_skip_tree (fts, ent);
+            fts_skip_ವೃಕ್ಷ (fts, ent);
           }
 
-        return s;
+        ಹಿಂತಿರುಗಿ s;
       }
 
-    case FTS_F:			/* regular file */
-    case FTS_NS:		/* stat(2) failed */
-    case FTS_SL:		/* symbolic link */
-    case FTS_SLNONE:		/* symbolic link without target */
-    case FTS_DP:		/* postorder directory */
-    case FTS_DNR:		/* unreadable directory */
-    case FTS_NSOK:		/* e.g., dangling symlink */
-    case FTS_DEFAULT:		/* none of the above */
+    ಸ್ಥಿತಿ FTS_F:			/* regular file */
+    ಸ್ಥಿತಿ FTS_NS:		/* stat(2) failed */
+    ಸ್ಥಿತಿ FTS_SL:		/* symbolic link */
+    ಸ್ಥಿತಿ FTS_SLNONE:		/* symbolic link without target */
+    ಸ್ಥಿತಿ FTS_DP:		/* postorder directory */
+    ಸ್ಥಿತಿ FTS_DNR:		/* unreadable directory */
+    ಸ್ಥಿತಿ FTS_NSOK:		/* e.g., dangling symlink */
+    ಸ್ಥಿತಿ FTS_DEFAULT:		/* none of the above */
       {
         /* With --one-file-system, do not attempt to remove a mount point.
            fts' FTS_XDEV ensures that we don't process any entries under
            the mount point.  */
-        if (ent->fts_info == FTS_DP
+        ಆದರೆ (ent->fts_info == FTS_DP
             && x->one_file_system
             && FTS_ROOTLEVEL < ent->fts_level
             && ent->fts_statp->st_dev != fts->fts_dev)
           {
             mark_ancestor_dirs (ent);
             error (0, 0, _("skipping %s, since it's on a different device"),
-                   quoteaf (ent->fts_path));
-            return RM_ERROR;
+                   quoteaf (ent->fts_ಮಾರ್ಗ));
+            ಹಿಂತಿರುಗಿ RM_ERROR;
           }
 
         bool is_dir = ent->fts_info == FTS_DP || ent->fts_info == FTS_DNR;
-        enum RM_status s = prompt (fts, ent, is_dir, x, PA_REMOVE_DIR,
-                                   &dir_status);
-        if (! (s == RM_OK || s == RM_USER_ACCEPTED))
-          return s;
-        return excise (fts, ent, x, is_dir);
+        ಎಣಿಕೆ RM_ಸ್ಥಿತಿ s = prompt (fts, ent, is_dir, x, PA_REMOVE_DIR,
+                                   &dir_ಸ್ಥಿತಿ);
+        ಆದರೆ (! (s == RM_OK || s == RM_USER_ACCEPTED))
+          ಹಿಂತಿರುಗಿ s;
+        ಹಿಂತಿರುಗಿ excise (fts, ent, x, is_dir);
       }
 
-    case FTS_DC:		/* directory that causes cycles */
-      emit_cycle_warning (ent->fts_path);
-      fts_skip_tree (fts, ent);
-      return RM_ERROR;
+    ಸ್ಥಿತಿ FTS_DC:		/* directory that causes cycles */
+      emit_ಚಕ್ರ_warning (ent->fts_ಮಾರ್ಗ);
+      fts_skip_ವೃಕ್ಷ (fts, ent);
+      ಹಿಂತಿರುಗಿ RM_ERROR;
 
-    case FTS_ERR:
+    ಸ್ಥಿತಿ FTS_ERR:
       /* Various failures, from opendir to ENOMEM, to failure to "return"
          to preceding directory, can provoke this.  */
       error (0, ent->fts_errno, _("traversal failed: %s"),
-             quotef (ent->fts_path));
-      fts_skip_tree (fts, ent);
-      return RM_ERROR;
+             quotef (ent->fts_ಮಾರ್ಗ));
+      fts_skip_ವೃಕ್ಷ (fts, ent);
+      ಹಿಂತಿರುಗಿ RM_ERROR;
 
-    default:
+    ಪೂರ್ವನಿಯೋಜಿತ:
       error (0, 0, _("unexpected failure: fts_info=%d: %s\n"
                      "please report to %s"),
              ent->fts_info,
-             quotef (ent->fts_path),
+             quotef (ent->fts_ಮಾರ್ಗ),
              PACKAGE_BUGREPORT);
       abort ();
     }
@@ -597,49 +597,49 @@ rm_fts (FTS *fts, FTSENT *ent, struct rm_options const *x)
 
 /* Remove FILEs, honoring options specified via X.
    Return RM_OK if successful.  */
-enum RM_status
-rm (char *const *file, struct rm_options const *x)
+ಎಣಿಕೆ RM_ಸ್ಥಿತಿ
+rm (ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *file, ರಚನೆ rm_options ಸ್ಥಿರಾಂಕ *x)
 {
-  enum RM_status rm_status = RM_OK;
+  ಎಣಿಕೆ RM_ಸ್ಥಿತಿ rm_ಸ್ಥಿತಿ = RM_OK;
 
-  if (*file)
+  ಆದರೆ (*file)
     {
-      int bit_flags = (FTS_CWDFD
+      ಪೂರ್ಣಾಂಕ ಬಿಟ್_flags = (FTS_CWDFD
                        | FTS_NOSTAT
                        | FTS_PHYSICAL);
 
-      if (x->one_file_system)
-        bit_flags |= FTS_XDEV;
+      ಆದರೆ (x->one_file_system)
+        ಬಿಟ್_flags |= FTS_XDEV;
 
-      FTS *fts = xfts_open (file, bit_flags, NULL);
+      FTS *fts = xfts_open (file, ಬಿಟ್_flags, ಖಾಲಿ);
 
-      while (true)
+      ಆಗ (true)
         {
           FTSENT *ent;
 
           ent = fts_read (fts);
-          if (ent == NULL)
+          ಆದರೆ (ent == ಖಾಲಿ)
             {
-              if (errno != 0)
+              ಆದರೆ (errno != 0)
                 {
                   error (0, errno, _("fts_read failed"));
-                  rm_status = RM_ERROR;
+                  rm_ಸ್ಥಿತಿ = RM_ERROR;
                 }
-              break;
+              ನಿಲ್ಲಿಸು;
             }
 
-          enum RM_status s = rm_fts (fts, ent, x);
+          ಎಣಿಕೆ RM_ಸ್ಥಿತಿ s = rm_fts (fts, ent, x);
 
-          affirm (VALID_STATUS (s));
-          UPDATE_STATUS (rm_status, s);
+          affirm (VALID_ಸ್ಥಿತಿ (s));
+          UPDATE_ಸ್ಥಿತಿ (rm_ಸ್ಥಿತಿ, s);
         }
 
-      if (fts_close (fts) != 0)
+      ಆದರೆ (fts_close (fts) != 0)
         {
           error (0, errno, _("fts_close failed"));
-          rm_status = RM_ERROR;
+          rm_ಸ್ಥಿತಿ = RM_ERROR;
         }
     }
 
-  return rm_status;
+  ಹಿಂತಿರುಗಿ rm_ಸ್ಥಿತಿ;
 }

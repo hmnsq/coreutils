@@ -16,70 +16,70 @@
 
 /* Written by Paul Rubin, David MacKenzie, and Stuart Kemp. */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <sys/types.h>
-#include <signal.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "close-stream.h"
-#include "fd-reopen.h"
-#include "gethrxtime.h"
-#include "human.h"
-#include "ioblksize.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xtime.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "alignalloc.h"
+#ಅನ್ತರ್ಭಾವ "close-stream.h"
+#ಅನ್ತರ್ಭಾವ "fd-reopen.h"
+#ಅನ್ತರ್ಭಾವ "gethrxtime.h"
+#ಅನ್ತರ್ಭಾವ "human.h"
+#ಅನ್ತರ್ಭಾವ "ioblksize.h"
+#ಅನ್ತರ್ಭಾವ "long-options.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol.h"
+#ಅನ್ತರ್ಭಾವ "xtime.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dd"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "dd"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Stuart Kemp")
 
 /* NonStop circa 2011 lacks SA_RESETHAND; see Bug#9076.  */
-#ifndef SA_RESETHAND
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SA_RESETHAND
 # define SA_RESETHAND 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef SIGINFO
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ SIGINFO
 # define SIGINFO SIGUSR1
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* This may belong in GNULIB's fcntl module instead.
    Define O_CIO to 0 if it is not supported by this OS. */
-#ifndef O_CIO
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ O_CIO
 # define O_CIO 0
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* On AIX 5.1 and AIX 5.2, O_NOCACHE is defined via <fcntl.h>
    and would interfere with our use of that name, below.  */
-#undef O_NOCACHE
+#ವ್ಯಾಖ್ಯಾನ_ರದ್ದು O_NOCACHE
 
-#define output_char(c)				\
-  do						\
+#ವ್ಯಾಖ್ಯಾನಿಸು output_char(c)				\
+  ಮಾಡು						\
     {						\
       obuf[oc++] = (c);				\
-      if (oc >= output_blocksize)		\
+      ಆದರೆ (oc >= output_blocksize)		\
         write_output ();			\
     }						\
-  while (0)
+  ಆಗ (0)
 
 /* Default input and output blocksize. */
-#define DEFAULT_BLOCKSIZE 512
+#ವ್ಯಾಖ್ಯಾನಿಸು DEFAULT_BLOCKSIZE 512
 
 /* Conversions bit masks. */
-enum
+ಎಣಿಕೆ
   {
     C_ASCII = 01,
 
     C_EBCDIC = 02,
     C_IBM = 04,
-    C_BLOCK = 010,
+    C_ಖಂಡ = 010,
     C_UNBLOCK = 020,
     C_LCASE = 040,
     C_UCASE = 0100,
@@ -101,161 +101,161 @@ enum
   };
 
 /* Status levels.  */
-enum
+ಎಣಿಕೆ
   {
-    STATUS_NONE = 1,
-    STATUS_NOXFER = 2,
-    STATUS_DEFAULT = 3,
-    STATUS_PROGRESS = 4
+    ಸ್ಥಿತಿ_NONE = 1,
+    ಸ್ಥಿತಿ_NOXFER = 2,
+    ಸ್ಥಿತಿ_DEFAULT = 3,
+    ಸ್ಥಿತಿ_ಪ್ರಗತಿ = 4
   };
 
 /* The name of the input file, or NULL for the standard input. */
-static char const *input_file = NULL;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಒಳಹರಿವು_file = ಖಾಲಿ;
 
 /* The name of the output file, or NULL for the standard output. */
-static char const *output_file = NULL;
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *output_file = ಖಾಲಿ;
 
 /* The page size on this host.  */
-static idx_t page_size;
+ಸ್ಥಿರ idx_t ಪುಟ_ಗಾತ್ರ;
 
 /* The number of bytes in which atomic reads are done. */
-static idx_t input_blocksize = 0;
+ಸ್ಥಿರ idx_t ಒಳಹರಿವು_blocksize = 0;
 
 /* The number of bytes in which atomic writes are done. */
-static idx_t output_blocksize = 0;
+ಸ್ಥಿರ idx_t output_blocksize = 0;
 
 /* Conversion buffer size, in bytes.  0 prevents conversions. */
-static idx_t conversion_blocksize = 0;
+ಸ್ಥಿರ idx_t conversion_blocksize = 0;
 
 /* Skip this many records of 'input_blocksize' bytes before input. */
-static intmax_t skip_records = 0;
+ಸ್ಥಿರ intmax_t skip_ದಾಖಲೆಗಳು = 0;
 
 /* Skip this many bytes before input in addition of 'skip_records'
    records.  */
-static idx_t skip_bytes = 0;
+ಸ್ಥಿರ idx_t skip_ಬೈಟುಗಳು = 0;
 
 /* Skip this many records of 'output_blocksize' bytes before output. */
-static intmax_t seek_records = 0;
+ಸ್ಥಿರ intmax_t seek_ದಾಖಲೆಗಳು = 0;
 
 /* Skip this many bytes in addition to 'seek_records' records before
    output.  */
-static intmax_t seek_bytes = 0;
+ಸ್ಥಿರ intmax_t seek_ಬೈಟುಗಳು = 0;
 
 /* Whether the final output was done with a seek (rather than a write).  */
-static bool final_op_was_seek;
+ಸ್ಥಿರ bool final_op_was_seek;
 
 /* Copy only this many records.  The default is effectively infinity.  */
-static intmax_t max_records = INTMAX_MAX;
+ಸ್ಥಿರ intmax_t max_ದಾಖಲೆಗಳು = INTMAX_MAX;
 
 /* Copy this many bytes in addition to 'max_records' records.  */
-static idx_t max_bytes = 0;
+ಸ್ಥಿರ idx_t max_ಬೈಟುಗಳು = 0;
 
 /* Bit vector of conversions to apply. */
-static int conversions_mask = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ conversions_ಮುಖವಾಡ = 0;
 
 /* Open flags for the input and output files.  */
-static int input_flags = 0;
-static int output_flags = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಒಳಹರಿವು_flags = 0;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ output_flags = 0;
 
 /* Status flags for what is printed to stderr.  */
-static int status_level = STATUS_DEFAULT;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_level = ಸ್ಥಿತಿ_DEFAULT;
 
 /* If nonzero, filter characters through the translation table.  */
-static bool translation_needed = false;
+ಸ್ಥಿರ bool translation_needed = false;
 
 /* Number of partial blocks written. */
-static intmax_t w_partial = 0;
+ಸ್ಥಿರ intmax_t w_partial = 0;
 
 /* Number of full blocks written. */
-static intmax_t w_full = 0;
+ಸ್ಥಿರ intmax_t w_ತುಂಬಿದ = 0;
 
 /* Number of partial blocks read. */
-static intmax_t r_partial = 0;
+ಸ್ಥಿರ intmax_t r_partial = 0;
 
 /* Number of full blocks read. */
-static intmax_t r_full = 0;
+ಸ್ಥಿರ intmax_t r_ತುಂಬಿದ = 0;
 
 /* Number of bytes written.  */
-static intmax_t w_bytes = 0;
+ಸ್ಥಿರ intmax_t w_ಬೈಟುಗಳು = 0;
 
 /* Last-reported number of bytes written, or negative if never reported.  */
-static intmax_t reported_w_bytes = -1;
+ಸ್ಥಿರ intmax_t reported_w_ಬೈಟುಗಳು = -1;
 
 /* Time that dd started.  */
-static xtime_t start_time;
+ಸ್ಥಿರ xtime_t ಆರಂಭ_ಸಮಯ;
 
 /* Next time to report periodic progress.  */
-static xtime_t next_time;
+ಸ್ಥಿರ xtime_t ಮುಂದಿನ_ಸಮಯ;
 
 /* If positive, the number of bytes output in the current progress line.  */
-static int progress_len;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಪ್ರಗತಿ_len;
 
 /* True if input is seekable.  */
-static bool input_seekable;
+ಸ್ಥಿರ bool ಒಳಹರಿವು_seekable;
 
 /* Error number corresponding to initial attempt to lseek input.
    If ESPIPE, do not issue any more diagnostics about it.  */
-static int input_seek_errno;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಒಳಹರಿವು_seek_errno;
 
 /* File offset of the input, in bytes, or -1 if it overflowed.  */
-static off_t input_offset;
+ಸ್ಥಿರ off_t ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ;
 
 /* True if a partial read should be diagnosed.  */
-static bool warn_partial_read;
+ಸ್ಥಿರ bool warn_partial_read;
 
 /* Records truncated by conv=block. */
-static intmax_t r_truncate = 0;
+ಸ್ಥಿರ intmax_t r_truncate = 0;
 
 /* Output representation of newline and space characters.
    They change if we're converting to EBCDIC.  */
-static char newline_character = '\n';
-static char space_character = ' ';
+ಸ್ಥಿರ ಅಕ್ಷರ newline_character = '\n';
+ಸ್ಥಿರ ಅಕ್ಷರ space_character = ' ';
 
 /* I/O buffers.  */
-static char *ibuf;
-static char *obuf;
+ಸ್ಥಿರ ಅಕ್ಷರ *ibuf;
+ಸ್ಥಿರ ಅಕ್ಷರ *obuf;
 
 /* Current index into 'obuf'. */
-static idx_t oc = 0;
+ಸ್ಥಿರ idx_t oc = 0;
 
 /* Index into current line, for 'conv=block' and 'conv=unblock'.  */
-static idx_t col = 0;
+ಸ್ಥಿರ idx_t ಲಂಬಸಾಲು = 0;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+ಸ್ಥಿರ sigset_t caught_ಸಂಕೇತಗಳು;
 
 /* If nonzero, the value of the pending fatal signal.  */
-static sig_atomic_t volatile interrupt_signal;
+ಸ್ಥಿರ sig_atomic_t ಅಸ್ಥಿರ ಅಡಚಣೆ_signal;
 
 /* A count of the number of pending info signals that have been received.  */
-static sig_atomic_t volatile info_signal_count;
+ಸ್ಥಿರ sig_atomic_t ಅಸ್ಥಿರ info_signal_ಎಣಿಕೆ;
 
 /* Whether to discard cache for input or output.  */
-static bool i_nocache, o_nocache;
+ಸ್ಥಿರ bool i_nocache, o_nocache;
 
 /* Whether to instruct the kernel to discard the complete file.  */
-static bool i_nocache_eof, o_nocache_eof;
+ಸ್ಥಿರ bool i_nocache_eof, o_nocache_eof;
 
 /* Function used for read (to handle iflag=fullblock parameter).  */
-static ssize_t (*iread_fnc) (int fd, char *buf, idx_t size);
+ಸ್ಥಿರ ssize_t (*iread_fnc) (ಪೂರ್ಣಾಂಕ fd, ಅಕ್ಷರ *buf, idx_t ಗಾತ್ರ_2);
 
 /* A longest symbol in the struct symbol_values tables below.  */
-#define LONGEST_SYMBOL "count_bytes"
+#ವ್ಯಾಖ್ಯಾನಿಸು LONGEST_ಚಿಹ್ನೆ "count_bytes"
 
 /* A symbol and the corresponding integer value.  */
-struct symbol_value
+ರಚನೆ ಚಿಹ್ನೆ_ಮೌಲ್ಯ
 {
-  char symbol[sizeof LONGEST_SYMBOL];
-  int value;
+  ಅಕ್ಷರ ಚಿಹ್ನೆ[ಗಾತ್ರ LONGEST_ಚಿಹ್ನೆ];
+  ಪೂರ್ಣಾಂಕ ಮೌಲ್ಯ;
 };
 
 /* Conversion symbols, for conv="...".  */
-static struct symbol_value const conversions[] =
+ಸ್ಥಿರ ರಚನೆ ಚಿಹ್ನೆ_ಮೌಲ್ಯ ಸ್ಥಿರಾಂಕ conversions[] =
 {
   {"ascii", C_ASCII | C_UNBLOCK | C_TWOBUFS},	/* EBCDIC to ASCII. */
-  {"ebcdic", C_EBCDIC | C_BLOCK | C_TWOBUFS},	/* ASCII to EBCDIC. */
-  {"ibm", C_IBM | C_BLOCK | C_TWOBUFS},	/* Different ASCII to EBCDIC. */
-  {"block", C_BLOCK | C_TWOBUFS},	/* Variable to fixed length records. */
+  {"ebcdic", C_EBCDIC | C_ಖಂಡ | C_TWOBUFS},	/* ASCII to EBCDIC. */
+  {"ibm", C_IBM | C_ಖಂಡ | C_TWOBUFS},	/* Different ASCII to EBCDIC. */
+  {"block", C_ಖಂಡ | C_TWOBUFS},	/* Variable to fixed length records. */
   {"unblock", C_UNBLOCK | C_TWOBUFS},	/* Fixed to variable length records. */
   {"lcase", C_LCASE | C_TWOBUFS},	/* Translate upper to lower case. */
   {"ucase", C_UCASE | C_TWOBUFS},	/* Translate lower to upper case. */
@@ -271,16 +271,16 @@ static struct symbol_value const conversions[] =
   {"", 0}
 };
 
-#define FFS_MASK(x) ((x) ^ ((x) & ((x) - 1)))
-enum
+#ವ್ಯಾಖ್ಯಾನಿಸು FFS_ಮುಖವಾಡ(x) ((x) ^ ((x) & ((x) - 1)))
+ಎಣಿಕೆ
   {
     /* Compute a value that's bitwise disjoint from the union
        of all O_ values.  */
     v = ~(0
           | O_APPEND
-          | O_BINARY
+          | O_ದ್ವಿಮಾನ
           | O_CIO
-          | O_DIRECT
+          | O_ನೇರ
           | O_DIRECTORY
           | O_DSYNC
           | O_EXCL
@@ -290,48 +290,48 @@ enum
           | O_NOLINKS
           | O_NONBLOCK
           | O_SYNC
-          | O_TEXT
+          | O_ಪಠ್ಯ
           ),
 
     /* Use its lowest bits for private flags.  */
-    O_FULLBLOCK = FFS_MASK (v),
+    O_FULLBLOCK = FFS_ಮುಖವಾಡ (v),
     v2 = v ^ O_FULLBLOCK,
 
-    O_NOCACHE = FFS_MASK (v2),
+    O_NOCACHE = FFS_ಮುಖವಾಡ (v2),
     v3 = v2 ^ O_NOCACHE,
 
-    O_COUNT_BYTES = FFS_MASK (v3),
-    v4 = v3 ^ O_COUNT_BYTES,
+    O_ಎಣಿಕೆ_ಬೈಟುಗಳು = FFS_ಮುಖವಾಡ (v3),
+    v4 = v3 ^ O_ಎಣಿಕೆ_ಬೈಟುಗಳು,
 
-    O_SKIP_BYTES = FFS_MASK (v4),
-    v5 = v4 ^ O_SKIP_BYTES,
+    O_SKIP_ಬೈಟುಗಳು = FFS_ಮುಖವಾಡ (v4),
+    v5 = v4 ^ O_SKIP_ಬೈಟುಗಳು,
 
-    O_SEEK_BYTES = FFS_MASK (v5)
+    O_SEEK_ಬೈಟುಗಳು = FFS_ಮುಖವಾಡ (v5)
   };
 
 /* Ensure that we got something.  */
 static_assert (O_FULLBLOCK != 0);
 static_assert (O_NOCACHE != 0);
-static_assert (O_COUNT_BYTES != 0);
-static_assert (O_SKIP_BYTES != 0);
-static_assert (O_SEEK_BYTES != 0);
+static_assert (O_ಎಣಿಕೆ_ಬೈಟುಗಳು != 0);
+static_assert (O_SKIP_ಬೈಟುಗಳು != 0);
+static_assert (O_SEEK_ಬೈಟುಗಳು != 0);
 
-#define MULTIPLE_BITS_SET(i) (((i) & ((i) - 1)) != 0)
+#ವ್ಯಾಖ್ಯಾನಿಸು ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ(i) (((i) & ((i) - 1)) != 0)
 
 /* Ensure that this is a single-bit value.  */
-static_assert ( ! MULTIPLE_BITS_SET (O_FULLBLOCK));
-static_assert ( ! MULTIPLE_BITS_SET (O_NOCACHE));
-static_assert ( ! MULTIPLE_BITS_SET (O_COUNT_BYTES));
-static_assert ( ! MULTIPLE_BITS_SET (O_SKIP_BYTES));
-static_assert ( ! MULTIPLE_BITS_SET (O_SEEK_BYTES));
+static_assert ( ! ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ (O_FULLBLOCK));
+static_assert ( ! ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ (O_NOCACHE));
+static_assert ( ! ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ (O_ಎಣಿಕೆ_ಬೈಟುಗಳು));
+static_assert ( ! ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ (O_SKIP_ಬೈಟುಗಳು));
+static_assert ( ! ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ (O_SEEK_ಬೈಟುಗಳು));
 
 /* Flags, for iflag="..." and oflag="...".  */
-static struct symbol_value const flags[] =
+ಸ್ಥಿರ ರಚನೆ ಚಿಹ್ನೆ_ಮೌಲ್ಯ ಸ್ಥಿರಾಂಕ flags[] =
 {
   {"append",	  O_APPEND},
-  {"binary",	  O_BINARY},
+  {"binary",	  O_ದ್ವಿಮಾನ},
   {"cio",	  O_CIO},
-  {"direct",	  O_DIRECT},
+  {"direct",	  O_ನೇರ},
   {"directory",   O_DIRECTORY},
   {"dsync",	  O_DSYNC},
   {"noatime",	  O_NOATIME},
@@ -341,32 +341,32 @@ static struct symbol_value const flags[] =
   {"nolinks",	  O_NOLINKS},
   {"nonblock",	  O_NONBLOCK},
   {"sync",	  O_SYNC},
-  {"text",	  O_TEXT},
+  {"text",	  O_ಪಠ್ಯ},
   {"fullblock",   O_FULLBLOCK}, /* Accumulate full blocks from input.  */
-  {"count_bytes", O_COUNT_BYTES},
-  {"skip_bytes",  O_SKIP_BYTES},
-  {"seek_bytes",  O_SEEK_BYTES},
+  {"count_bytes", O_ಎಣಿಕೆ_ಬೈಟುಗಳು},
+  {"skip_bytes",  O_SKIP_ಬೈಟುಗಳು},
+  {"seek_bytes",  O_SEEK_ಬೈಟುಗಳು},
   {"",		0}
 };
 
 /* Status, for status="...".  */
-static struct symbol_value const statuses[] =
+ಸ್ಥಿರ ರಚನೆ ಚಿಹ್ನೆ_ಮೌಲ್ಯ ಸ್ಥಿರಾಂಕ statuses[] =
 {
-  {"none",	STATUS_NONE},
-  {"noxfer",	STATUS_NOXFER},
-  {"progress",	STATUS_PROGRESS},
+  {"none",	ಸ್ಥಿತಿ_NONE},
+  {"noxfer",	ಸ್ಥಿತಿ_NOXFER},
+  {"progress",	ಸ್ಥಿತಿ_ಪ್ರಗತಿ},
   {"",		0}
 };
 
 /* Translation table formed by applying successive transformations. */
-static unsigned char trans_table[256];
+ಸ್ಥಿರ ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ trans_ಕೋಷ್ಟಕ[256];
 
 /* Standard translation tables, taken from POSIX 1003.1-2013.
    Beware of imitations; there are lots of ASCII<->EBCDIC tables
    floating around the net, perhaps valid for some applications but
    not correct here.  */
 
-static char const ascii_to_ebcdic[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ ascii_ಗಮ್ಯ_ebcdic[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -402,7 +402,7 @@ static char const ascii_to_ebcdic[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ascii_to_ibm[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ ascii_ಗಮ್ಯ_ibm[] =
 {
   '\000', '\001', '\002', '\003', '\067', '\055', '\056', '\057',
   '\026', '\005', '\045', '\013', '\014', '\015', '\016', '\017',
@@ -438,7 +438,7 @@ static char const ascii_to_ibm[] =
   '\356', '\357', '\372', '\373', '\374', '\375', '\376', '\377'
 };
 
-static char const ebcdic_to_ascii[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ ebcdic_ಗಮ್ಯ_ascii[] =
 {
   '\000', '\001', '\002', '\003', '\234', '\011', '\206', '\177',
   '\227', '\215', '\216', '\013', '\014', '\015', '\016', '\017',
@@ -475,7 +475,7 @@ static char const ebcdic_to_ascii[] =
 };
 
 /* True if we need to close the standard output *stream*.  */
-static bool close_stdout_required = true;
+ಸ್ಥಿರ bool close_stdout_required = true;
 
 /* The only reason to close the standard output *stream* is if
    parse_long_options fails (as it does for --help or --version).
@@ -488,12 +488,12 @@ static bool close_stdout_required = true;
    call, once parse_long_options has succeeded.
    Meanwhile, we guarantee that the standard error stream is flushed,
    by inlining the last half of close_stdout as needed.  */
-static void
-maybe_close_stdout (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+maybe_close_stdout (ಶೂನ್ಯ)
 {
-  if (close_stdout_required)
+  ಆದರೆ (close_stdout_required)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (close_ಹರಿವು (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
@@ -501,155 +501,155 @@ maybe_close_stdout (void)
    and do not exit.  */
 
 ATTRIBUTE_FORMAT ((__printf__, 2, 3))
-static void
-diagnose (int errnum, char const *fmt, ...)
+ಸ್ಥಿರ ಶೂನ್ಯ
+diagnose (ಪೂರ್ಣಾಂಕ errnum, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fmt, ...)
 {
-  if (0 < progress_len)
+  ಆದರೆ (0 < ಪ್ರಗತಿ_len)
     {
       fputc ('\n', stderr);
-      progress_len = 0;
+      ಪ್ರಗತಿ_len = 0;
     }
 
   va_list ap;
-  va_start (ap, fmt);
+  va_ಆರಂಭ (ap, fmt);
   verror (0, errnum, fmt, ap);
-  va_end (ap);
+  va_ಕೊನೆ (ap);
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s [OPERAND]...\n\
+      ಬರೆ (_("\
+Usage: %s [ಕಾರ್ಯಾಂಶ]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Copy a file, converting and formatting according to the operands.\n\
+Copy a file, converting and formatting according ಗಮ್ಯ the operands.\n\
 \n\
 "), stdout);
       oputs (_("\
-  bs=BYTES        read and write up to BYTES bytes at a time (default: 512);\n\
+  bs=ಬೈಟುಗಳು_2        ಪಠ and ಲಿಖ ಮೇಲೆ ಗಮ್ಯ ಬೈಟುಗಳು_2 ಬೈಟುಗಳು at a ಸಮಯ (ಪೂರ್ವನಿಯೋಜಿತ: 512);\n\
                   overrides ibs and obs\n\
 "));
       oputs (_("\
-  cbs=BYTES       convert BYTES bytes at a time\n\
+  cbs=ಬೈಟುಗಳು_2       convert ಬೈಟುಗಳು_2 ಬೈಟುಗಳು at a ಸಮಯ\n\
 "));
       oputs (_("\
-  conv=CONVS      convert the file as per the comma separated symbol list\n\
+  conv=CONVS      convert the file as ಪ್ರತಿ the comma separated ಚಿಹ್ನೆ list\n\
 "));
       oputs (_("\
-  count=N         copy only N input blocks\n\
+  ಎಣಿಕೆ_2=N         copy only N ಒಳಹರಿವು ಖಂಡಗಳು\n\
 "));
       oputs (_("\
-  ibs=BYTES       read up to BYTES bytes at a time (default: 512)\n\
+  ibs=ಬೈಟುಗಳು_2       ಪಠ ಮೇಲೆ ಗಮ್ಯ ಬೈಟುಗಳು_2 ಬೈಟುಗಳು at a ಸಮಯ (ಪೂರ್ವನಿಯೋಜಿತ: 512)\n\
 "));
       oputs (_("\
-  if=FILE         read from FILE instead of standard input\n\
+  ಆದರೆ=FILE         ಪಠ from FILE instead ದ standard ಒಳಹರಿವು\n\
 "));
       oputs (_("\
-  iflag=FLAGS     read as per the comma separated symbol list\n\
+  iflag=FLAGS     ಪಠ as ಪ್ರತಿ the comma separated ಚಿಹ್ನೆ list\n\
 "));
       oputs (_("\
-  obs=BYTES       write BYTES bytes at a time (default: 512)\n\
+  obs=ಬೈಟುಗಳು_2       ಲಿಖ ಬೈಟುಗಳು_2 ಬೈಟುಗಳು at a ಸಮಯ (ಪೂರ್ವನಿಯೋಜಿತ: 512)\n\
 "));
       oputs (_("\
-  of=FILE         write to FILE instead of standard output\n\
+  ದ=FILE         ಲಿಖ ಗಮ್ಯ FILE instead ದ standard output\n\
 "));
       oputs (_("\
-  oflag=FLAGS     write as per the comma separated symbol list\n\
+  oflag=FLAGS     ಲಿಖ as ಪ್ರತಿ the comma separated ಚಿಹ್ನೆ list\n\
 "));
       oputs (_("\
-  seek=N          (or oseek=N) skip N obs sized output blocks\n\
+  seek=N          (or oseek=N) skip N obs sized output ಖಂಡಗಳು\n\
 "));
       oputs (_("\
-  skip=N          (or iseek=N) skip N ibs sized input blocks\n\
+  skip=N          (or iseek=N) skip N ibs sized ಒಳಹರಿವು ಖಂಡಗಳು\n\
 "));
       oputs (_("\
-  status=LEVEL    The LEVEL of information to print to standard error;\n\
+  ಸ್ಥಿತಿ_2=LEVEL    The LEVEL ದ information ಗಮ್ಯ print ಗಮ್ಯ standard error;\n\
                   'none' suppresses everything but error messages,\n\
                   'noxfer' suppresses the final transfer statistics,\n\
                   'progress' shows periodic transfer statistics\n\
 "));
       fputs (_("\
 \n\
-N and BYTES may be followed by the following multiplicative suffixes:\n\
+N and ಬೈಟುಗಳು_2 may be followed by the following multiplicative suffixes:\n\
 c=1, w=2, b=512, kB=1000, K=1024, MB=1000*1000, M=1024*1024, xM=M,\n\
-GB=1000*1000*1000, G=1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-If N ends in 'B', it counts bytes not blocks.\n\
+GB=1000*1000*1000, G=1024*1024*1024, and so on ಗಾಗಿ T, P, E, Z, Y, R, Q.\n\
+ದ್ವಿಮಾನ_2 prefixes can be ಬಳಸಿದ, too: KiB=K, MiB=M, and so on.\n\
+If N ತುದಿಗಳು ಒಳ 'B', it counts ಬೈಟುಗಳು not ಖಂಡಗಳು.\n\
 \n\
-Each CONV symbol may be:\n\
+Each CONV ಚಿಹ್ನೆ may be:\n\
 \n\
 "), stdout);
       fputs (_("\
-  ascii     from EBCDIC to ASCII\n\
-  ebcdic    from ASCII to EBCDIC\n\
-  ibm       from ASCII to alternate EBCDIC\n\
-  block     pad newline-terminated records with spaces to cbs-size\n\
-  unblock   replace trailing spaces in cbs-size records with newline\n\
-  lcase     change upper case to lower case\n\
-  ucase     change lower case to upper case\n\
-  sparse    try to seek rather than write all-NUL output blocks\n\
-  swab      swap every pair of input bytes\n\
-  sync      pad every input block with NULs to ibs-size; when used\n\
-            with block or unblock, pad with spaces rather than NULs\n\
+  ascii     from EBCDIC ಗಮ್ಯ ASCII\n\
+  ebcdic    from ASCII ಗಮ್ಯ EBCDIC\n\
+  ibm       from ASCII ಗಮ್ಯ alternate EBCDIC\n\
+  ಖಂಡ     pad newline-terminated ದಾಖಲೆಗಳು with spaces ಗಮ್ಯ cbs-ಗಾತ್ರ_2\n\
+  unblock   replace trailing spaces ಒಳ cbs-ಗಾತ್ರ_2 ದಾಖಲೆಗಳು with newline\n\
+  lcase     change ಊರ್ಧ್ವ ಸ್ಥಿತಿ ಗಮ್ಯ ಅಧೋ ಸ್ಥಿತಿ\n\
+  ucase     change ಅಧೋ ಸ್ಥಿತಿ ಗಮ್ಯ ಊರ್ಧ್ವ ಸ್ಥಿತಿ\n\
+  sparse    try ಗಮ್ಯ seek rather than ಲಿಖ all-NUL output ಖಂಡಗಳು\n\
+  swab      ಅದಲುಬದಲು every pair ದ ಒಳಹರಿವು ಬೈಟುಗಳು\n\
+  sync      pad every ಒಳಹರಿವು ಖಂಡ with NULs ಗಮ್ಯ ibs-ಗಾತ್ರ_2; when ಬಳಸಿದ\n\
+            with ಖಂಡ or unblock, pad with spaces rather than NULs\n\
 "), stdout);
       fputs (_("\
-  excl      fail if the output file already exists\n\
-  nocreat   do not create the output file\n\
-  notrunc   do not truncate the output file\n\
-  noerror   continue after read errors\n\
-  fdatasync  physically write output file data before finishing\n\
-  fsync     likewise, but also write metadata\n\
+  excl      fail ಆದರೆ the output file already exists\n\
+  nocreat   ಮಾಡು not create the output file\n\
+  notrunc   ಮಾಡು not truncate the output file\n\
+  noerror   ಮುಂದುವರಿ after ಪಠ errors\n\
+  fdatasync  physically ಲಿಖ output file ದತ್ತಾಂಶ before finishing\n\
+  fsync     likewise, but also ಲಿಖ metadata\n\
 "), stdout);
       fputs (_("\
 \n\
-Each FLAG symbol may be:\n\
+Each FLAG ಚಿಹ್ನೆ may be:\n\
 \n\
-  append    append mode (makes sense only for output; conv=notrunc suggested)\n\
+  append    append ಬಹುಲಕ_2 (makes sense only ಗಾಗಿ output; conv=notrunc suggested)\n\
 "), stdout);
-      if (O_CIO)
+      ಆದರೆ (O_CIO)
         fputs (_("  cio       use concurrent I/O for data\n"), stdout);
-      if (O_DIRECT)
+      ಆದರೆ (O_ನೇರ)
         fputs (_("  direct    use direct I/O for data\n"), stdout);
       fputs (_("  directory  fail unless a directory\n"), stdout);
-      if (O_DSYNC)
+      ಆದರೆ (O_DSYNC)
         fputs (_("  dsync     use synchronized I/O for data\n"), stdout);
-      if (O_SYNC)
+      ಆದರೆ (O_SYNC)
         fputs (_("  sync      likewise, but also for metadata\n"), stdout);
       fputs (_("  fullblock  accumulate full blocks of input (iflag only)\n"),
              stdout);
-      if (O_NONBLOCK)
+      ಆದರೆ (O_NONBLOCK)
         fputs (_("  nonblock  use non-blocking I/O\n"), stdout);
-      if (O_NOATIME)
+      ಆದರೆ (O_NOATIME)
         fputs (_("  noatime   do not update access time\n"), stdout);
-#if HAVE_POSIX_FADVISE
-      if (O_NOCACHE)
+#ಆದರೆ HAVE_POSIX_FADVISE
+      ಆದರೆ (O_NOCACHE)
         fputs (_("  nocache   Request to drop cache.  See also oflag=sync\n"),
                stdout);
-#endif
-      if (O_NOCTTY)
+#ಆದರೆ_ಅಂತ್ಯ
+      ಆದರೆ (O_NOCTTY)
         fputs (_("  noctty    do not assign controlling terminal from file\n"),
                stdout);
-      if (HAVE_WORKING_O_NOFOLLOW)
+      ಆದರೆ (HAVE_WORKING_O_NOFOLLOW)
         fputs (_("  nofollow  do not follow symlinks\n"), stdout);
-      if (O_NOLINKS)
+      ಆದರೆ (O_NOLINKS)
         fputs (_("  nolinks   fail if multiply-linked\n"), stdout);
-      if (O_BINARY)
+      ಆದರೆ (O_ದ್ವಿಮಾನ)
         fputs (_("  binary    use binary I/O for data\n"), stdout);
-      if (O_TEXT)
+      ಆದರೆ (O_ಪಠ್ಯ)
         fputs (_("  text      use text I/O for data\n"), stdout);
 
       {
-        printf (_("\
+        ಬರೆ (_("\
 \n\
-Sending a %s signal to a running 'dd' process makes it\n\
-print I/O statistics to standard error and then resume copying.\n\
+Sending a %s ಸಂಕೇತ ಗಮ್ಯ a running 'dd' process makes it\n\
+print I/O statistics ಗಮ್ಯ standard error and then resume copying.\n\
 \n\
 Options are:\n\
 \n\
@@ -657,124 +657,124 @@ Options are:\n\
       }
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Common options to use when displaying sizes and rates.  */
 
-enum { human_opts = (human_autoscale | human_round_to_nearest
+ಎಣಿಕೆ { human_opts = (human_autoscale | human_ಸುತ್ತು_ಗಮ್ಯ_ಹತ್ತಿರದ
                      | human_space_before_unit | human_SI | human_B) };
 
 /* Ensure input buffer IBUF is allocated.  */
 
-static void
-alloc_ibuf (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+alloc_ibuf (ಶೂನ್ಯ)
 {
-  if (ibuf)
-    return;
+  ಆದರೆ (ibuf)
+    ಹಿಂತಿರುಗಿ;
 
-  bool extra_byte_for_swab = !!(conversions_mask & C_SWAB);
-  ibuf = alignalloc (page_size, input_blocksize + extra_byte_for_swab);
-  if (!ibuf)
+  bool extra_byte_for_swab = !!(conversions_ಮುಖವಾಡ & C_SWAB);
+  ibuf = alignalloc (ಪುಟ_ಗಾತ್ರ, ಒಳಹರಿವು_blocksize + extra_byte_for_swab);
+  ಆದರೆ (!ibuf)
     {
-      char hbuf[LONGEST_HUMAN_READABLE + 1];
+      ಅಕ್ಷರ hbuf[LONGEST_HUMAN_READABLE + 1];
       error (EXIT_FAILURE, 0,
              _("memory exhausted by input buffer of size %td bytes (%s)"),
-             input_blocksize,
-             human_readable (input_blocksize, hbuf,
-                             human_opts | human_base_1024, 1, 1));
+             ಒಳಹರಿವು_blocksize,
+             human_readable (ಒಳಹರಿವು_blocksize, hbuf,
+                             human_opts | human_ತಳ_1024, 1, 1));
     }
 }
 
 /* Ensure output buffer OBUF is allocated/initialized.  */
 
-static void
-alloc_obuf (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+alloc_obuf (ಶೂನ್ಯ)
 {
-  if (obuf)
-    return;
+  ಆದರೆ (obuf)
+    ಹಿಂತಿರುಗಿ;
 
-  if (conversions_mask & C_TWOBUFS)
+  ಆದರೆ (conversions_ಮುಖವಾಡ & C_TWOBUFS)
     {
-      obuf = alignalloc (page_size, output_blocksize);
-      if (!obuf)
+      obuf = alignalloc (ಪುಟ_ಗಾತ್ರ, output_blocksize);
+      ಆದರೆ (!obuf)
         {
-          char hbuf[LONGEST_HUMAN_READABLE + 1];
+          ಅಕ್ಷರ hbuf[LONGEST_HUMAN_READABLE + 1];
           error (EXIT_FAILURE, 0,
                  _("memory exhausted by output buffer of size %td"
                    " bytes (%s)"),
                  output_blocksize,
                  human_readable (output_blocksize, hbuf,
-                                 human_opts | human_base_1024, 1, 1));
+                                 human_opts | human_ತಳ_1024, 1, 1));
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       alloc_ibuf ();
       obuf = ibuf;
     }
 }
 
-static void
-translate_charset (char const *new_trans)
+ಸ್ಥಿರ ಶೂನ್ಯ
+translate_charset (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *new_trans)
 {
-  for (int i = 0; i < 256; i++)
-    trans_table[i] = new_trans[trans_table[i]];
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0; i < 256; i++)
+    trans_ಕೋಷ್ಟಕ[i] = new_trans[trans_ಕೋಷ್ಟಕ[i]];
   translation_needed = true;
 }
 
 /* Return true if I has more than one bit set.  I must be nonnegative.  */
 
-static inline bool
-multiple_bits_set (int i)
+ಸ್ಥಿರ ಸಾಲೊಳಗೆ bool
+ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (ಪೂರ್ಣಾಂಕ i)
 {
-  return MULTIPLE_BITS_SET (i);
+  ಹಿಂತಿರುಗಿ ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ (i);
 }
 
-static bool
-abbreviation_lacks_prefix (char const *message)
+ಸ್ಥಿರ bool
+abbreviation_lacks_ಪೂರ್ವಪ್ರತ್ಯಯ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸಂದೇಶ_2)
 {
-  return message[strlen (message) - 2] == ' ';
+  ಹಿಂತಿರುಗಿ ಸಂದೇಶ_2[ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (ಸಂದೇಶ_2) - 2] == ' ';
 }
 
 /* Print transfer statistics.  */
 
-static void
-print_xfer_stats (xtime_t progress_time)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_xfer_stats (xtime_t ಪ್ರಗತಿ_ಸಮಯ)
 {
-  xtime_t now = progress_time ? progress_time : gethrxtime ();
-  static char const slash_s[] = "/s";
-  char hbuf[3][LONGEST_HUMAN_READABLE + sizeof slash_s];
-  double delta_s;
-  char const *bytes_per_second;
-  char const *si = human_readable (w_bytes, hbuf[0], human_opts, 1, 1);
-  char const *iec = human_readable (w_bytes, hbuf[1],
-                                    human_opts | human_base_1024, 1, 1);
+  xtime_t now = ಪ್ರಗತಿ_ಸಮಯ ? ಪ್ರಗತಿ_ಸಮಯ : gethrxtime ();
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ slash_s[] = "/s";
+  ಅಕ್ಷರ hbuf[3][LONGEST_HUMAN_READABLE + ಗಾತ್ರ slash_s];
+  ದ್ವಿಗುಣ delta_s;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *si = human_readable (w_ಬೈಟುಗಳು, hbuf[0], human_opts, 1, 1);
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *iec = human_readable (w_ಬೈಟುಗಳು, hbuf[1],
+                                    human_opts | human_ತಳ_1024, 1, 1);
 
   /* Use integer arithmetic to compute the transfer rate,
      since that makes it easy to use SI abbreviations.  */
-  char *bpsbuf = hbuf[2];
-  int bpsbufsize = sizeof hbuf[2];
-  if (start_time < now)
+  ಅಕ್ಷರ *bpsbuf = hbuf[2];
+  ಪೂರ್ಣಾಂಕ bpsbufsize = ಗಾತ್ರ hbuf[2];
+  ಆದರೆ (ಆರಂಭ_ಸಮಯ < now)
     {
-      double XTIME_PRECISIONe0 = XTIME_PRECISION;
-      xtime_t delta_xtime = now - start_time;
+      ದ್ವಿಗುಣ XTIME_PRECISIONe0 = XTIME_PRECISION;
+      xtime_t delta_xtime = now - ಆರಂಭ_ಸಮಯ;
       delta_s = delta_xtime / XTIME_PRECISIONe0;
-      bytes_per_second = human_readable (w_bytes, bpsbuf, human_opts,
+      ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ = human_readable (w_ಬೈಟುಗಳು, bpsbuf, human_opts,
                                          XTIME_PRECISION, delta_xtime);
-      strcat (bytes_per_second - bpsbuf + bpsbuf, slash_s);
+      strcat (ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ - bpsbuf + bpsbuf, slash_s);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       delta_s = 0;
       snprintf (bpsbuf, bpsbufsize, "%s B/s", _("Infinity"));
-      bytes_per_second = bpsbuf;
+      ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ = bpsbuf;
     }
 
-  if (progress_time)
+  ಆದರೆ (ಪ್ರಗತಿ_ಸಮಯ)
     fputc ('\r', stderr);
 
   /* Use full seconds when printing progress, since the progress
@@ -782,26 +782,26 @@ print_xfer_stats (xtime_t progress_time)
      displaying any subsecond jitter.  Use default precision with %g
      otherwise, as this provides more-useful output then.  With long
      transfers %g can generate a number with an exponent; that is OK.  */
-  char delta_s_buf[24];
-  snprintf (delta_s_buf, sizeof delta_s_buf,
-            progress_time ? "%.0f s" : "%g s", delta_s);
+  ಅಕ್ಷರ delta_s_buf[24];
+  snprintf (delta_s_buf, ಗಾತ್ರ delta_s_buf,
+            ಪ್ರಗತಿ_ಸಮಯ ? "%.0f s" : "%g s", delta_s);
 
-  int stats_len
-    = (abbreviation_lacks_prefix (si)
+  ಪೂರ್ಣಾಂಕ stats_len
+    = (abbreviation_lacks_ಪೂರ್ವಪ್ರತ್ಯಯ (si)
        ? fprintf (stderr,
                   ngettext ("%jd byte copied, %s, %s",
                             "%jd bytes copied, %s, %s",
-                            select_plural (w_bytes)),
-                  w_bytes, delta_s_buf, bytes_per_second)
-       : abbreviation_lacks_prefix (iec)
+                            select_plural (w_ಬೈಟುಗಳು)),
+                  w_ಬೈಟುಗಳು, delta_s_buf, ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ)
+       : abbreviation_lacks_ಪೂರ್ವಪ್ರತ್ಯಯ (iec)
        ? fprintf (stderr,
                   _("%jd bytes (%s) copied, %s, %s"),
-                  w_bytes, si, delta_s_buf, bytes_per_second)
+                  w_ಬೈಟುಗಳು, si, delta_s_buf, ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ)
        : fprintf (stderr,
                   _("%jd bytes (%s, %s) copied, %s, %s"),
-                  w_bytes, si, iec, delta_s_buf, bytes_per_second));
+                  w_ಬೈಟುಗಳು, si, iec, delta_s_buf, ಬೈಟುಗಳು_ಪ್ರತಿ_ಎರಡನೇ));
 
-  if (progress_time)
+  ಆದರೆ (ಪ್ರಗತಿ_ಸಮಯ)
     {
       /* Erase any trailing junk on the output line by outputting
          spaces.  In theory this could glitch the display because the
@@ -809,95 +809,95 @@ print_xfer_stats (xtime_t progress_time)
          could consume fewer screen columns than the strlen difference
          from the previously formatted translation.  In practice this
          does not seem to be a problem.  */
-      if (0 <= stats_len && stats_len < progress_len)
-        fprintf (stderr, "%*s", progress_len - stats_len, "");
-      progress_len = stats_len;
+      ಆದರೆ (0 <= stats_len && stats_len < ಪ್ರಗತಿ_len)
+        fprintf (stderr, "%*s", ಪ್ರಗತಿ_len - stats_len, "");
+      ಪ್ರಗತಿ_len = stats_len;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     fputc ('\n', stderr);
 
-  reported_w_bytes = w_bytes;
+  reported_w_ಬೈಟುಗಳು = w_ಬೈಟುಗಳು;
 }
 
-static void
-print_stats (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_stats (ಶೂನ್ಯ)
 {
-  if (status_level == STATUS_NONE)
-    return;
+  ಆದರೆ (ಸ್ಥಿತಿ_level == ಸ್ಥಿತಿ_NONE)
+    ಹಿಂತಿರುಗಿ;
 
-  if (0 < progress_len)
+  ಆದರೆ (0 < ಪ್ರಗತಿ_len)
     {
       fputc ('\n', stderr);
-      progress_len = 0;
+      ಪ್ರಗತಿ_len = 0;
     }
 
   fprintf (stderr,
            _("%jd+%jd records in\n"
              "%jd+%jd records out\n"),
-           r_full, r_partial, w_full, w_partial);
+           r_ತುಂಬಿದ, r_partial, w_ತುಂಬಿದ, w_partial);
 
-  if (r_truncate != 0)
+  ಆದರೆ (r_truncate != 0)
     fprintf (stderr,
              ngettext ("%jd truncated record\n",
                        "%jd truncated records\n",
                        select_plural (r_truncate)),
              r_truncate);
 
-  if (status_level == STATUS_NOXFER)
-    return;
+  ಆದರೆ (ಸ್ಥಿತಿ_level == ಸ್ಥಿತಿ_NOXFER)
+    ಹಿಂತಿರುಗಿ;
 
   print_xfer_stats (0);
 }
 
 /* An ordinary signal was received; arrange for the program to exit.  */
 
-static void
-interrupt_handler (int sig)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಅಡಚಣೆ_handler (ಪೂರ್ಣಾಂಕ sig)
 {
-  if (! SA_RESETHAND)
-    signal (sig, SIG_DFL);
-  interrupt_signal = sig;
+  ಆದರೆ (! SA_RESETHAND)
+    ಸಂಕೇತ (sig, SIG_DFL);
+  ಅಡಚಣೆ_signal = sig;
 }
 
 /* An info signal was received; arrange for the program to print status.  */
 
-static void
-siginfo_handler (MAYBE_UNUSED int sig)
+ಸ್ಥಿರ ಶೂನ್ಯ
+siginfo_handler (MAYBE_ಬಳಸದ ಪೂರ್ಣಾಂಕ sig)
 {
-  info_signal_count++;
+  info_signal_ಎಣಿಕೆ++;
 }
 
 /* Install the signal handlers.  */
 
-static void
-install_signal_handlers (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+install_signal_handlers (ಶೂನ್ಯ)
 {
   bool catch_siginfo = ! (SIGINFO == SIGUSR1 && getenv ("POSIXLY_CORRECT"));
 
-  struct sigaction act;
-  sigemptyset (&caught_signals);
-  if (catch_siginfo)
-    sigaddset (&caught_signals, SIGINFO);
-  sigaction (SIGINT, NULL, &act);
-  if (act.sa_handler != SIG_IGN)
-    sigaddset (&caught_signals, SIGINT);
-  act.sa_mask = caught_signals;
+  ರಚನೆ sigaction act;
+  sigemptyset (&caught_ಸಂಕೇತಗಳು);
+  ಆದರೆ (catch_siginfo)
+    sigaddset (&caught_ಸಂಕೇತಗಳು, SIGINFO);
+  sigaction (SIGINT, ಖಾಲಿ, &act);
+  ಆದರೆ (act.sa_handler != SIG_IGN)
+    sigaddset (&caught_ಸಂಕೇತಗಳು, SIGINT);
+  act.sa_mask = caught_ಸಂಕೇತಗಳು;
 
-  if (sigismember (&caught_signals, SIGINFO))
+  ಆದರೆ (sigismember (&caught_ಸಂಕೇತಗಳು, SIGINFO))
     {
       act.sa_handler = siginfo_handler;
       /* Note we don't use SA_RESTART here and instead
          handle EINTR explicitly in iftruncate etc.
          to avoid blocking on uncommitted read/write calls.  */
       act.sa_flags = 0;
-      sigaction (SIGINFO, &act, NULL);
+      sigaction (SIGINFO, &act, ಖಾಲಿ);
     }
 
-  if (sigismember (&caught_signals, SIGINT))
+  ಆದರೆ (sigismember (&caught_ಸಂಕೇತಗಳು, SIGINT))
     {
-      act.sa_handler = interrupt_handler;
+      act.sa_handler = ಅಡಚಣೆ_handler;
       act.sa_flags = SA_NODEFER | SA_RESETHAND;
-      sigaction (SIGINT, &act, NULL);
+      sigaction (SIGINT, &act, ಖಾಲಿ);
     }
 }
 
@@ -906,38 +906,38 @@ install_signal_handlers (void)
    is in an unspecified state, so keep trying to close FD but do not
    consider EBADF to be an error.  Do not process signals.  This all
    differs somewhat from functions like ifdatasync and ifsync.  */
-static int
-iclose (int fd)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+iclose (ಪೂರ್ಣಾಂಕ fd)
 {
-  if (close (fd) != 0)
-    do
-      if (errno != EINTR)
-        return -1;
-    while (close (fd) != 0 && errno != EBADF);
+  ಆದರೆ (close (fd) != 0)
+    ಮಾಡು
+      ಆದರೆ (errno != EINTR)
+        ಹಿಂತಿರುಗಿ -1;
+    ಆಗ (close (fd) != 0 && errno != EBADF);
 
-  return 0;
+  ಹಿಂತಿರುಗಿ 0;
 }
 
-static int synchronize_output (void);
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ synchronize_output (ಶೂನ್ಯ);
 
-static void
-cleanup (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+cleanup (ಶೂನ್ಯ)
 {
-  if (!interrupt_signal)
+  ಆದರೆ (!ಅಡಚಣೆ_signal)
     {
-      int sync_status = synchronize_output ();
-      if (sync_status)
-        exit (sync_status);
+      ಪೂರ್ಣಾಂಕ sync_ಸ್ಥಿತಿ = synchronize_output ();
+      ಆದರೆ (sync_ಸ್ಥಿತಿ)
+        ನಿರ್ಗಮಿಸು (sync_ಸ್ಥಿತಿ);
     }
 
-  if (iclose (STDIN_FILENO) != 0)
+  ಆದರೆ (iclose (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, _("closing input file %s"),
-           quoteaf (input_file));
+           quoteaf (ಒಳಹರಿವು_file));
 
   /* Don't remove this call to close, even though close_stdout
      closes standard output.  This close is necessary when cleanup
      is called as a consequence of signal handling.  */
-  if (iclose (STDOUT_FILENO) != 0)
+  ಆದರೆ (iclose (STDOUT_FILENO) != 0)
     error (EXIT_FAILURE, errno,
            _("closing output file %s"), quoteaf (output_file));
 }
@@ -946,49 +946,49 @@ cleanup (void)
    should be called periodically.  Ideally there should never be an
    unbounded amount of time when signals are not being processed.  */
 
-static void
-process_signals (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+process_ಸಂಕೇತಗಳು (ಶೂನ್ಯ)
 {
-  while (interrupt_signal || info_signal_count)
+  ಆಗ (ಅಡಚಣೆ_signal || info_signal_ಎಣಿಕೆ)
     {
-      int interrupt;
-      int infos;
+      ಪೂರ್ಣಾಂಕ ಅಡಚಣೆ;
+      ಪೂರ್ಣಾಂಕ infos;
       sigset_t oldset;
 
-      sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
+      sigprocmask (SIG_BLOCK, &caught_ಸಂಕೇತಗಳು, &oldset);
 
       /* Reload interrupt_signal and info_signal_count, in case a new
          signal was handled before sigprocmask took effect.  */
-      interrupt = interrupt_signal;
-      infos = info_signal_count;
+      ಅಡಚಣೆ = ಅಡಚಣೆ_signal;
+      infos = info_signal_ಎಣಿಕೆ;
 
-      if (infos)
-        info_signal_count = infos - 1;
+      ಆದರೆ (infos)
+        info_signal_ಎಣಿಕೆ = infos - 1;
 
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, ಖಾಲಿ);
 
-      if (interrupt)
+      ಆದರೆ (ಅಡಚಣೆ)
         cleanup ();
       print_stats ();
-      if (interrupt)
-        raise (interrupt);
+      ಆದರೆ (ಅಡಚಣೆ)
+        ಎತ್ತು (ಅಡಚಣೆ);
     }
 }
 
-static void
-finish_up (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಮುಕ್ತಾಯ_ಮೇಲೆ (ಶೂನ್ಯ)
 {
   /* Process signals first, so that cleanup is called at most once.  */
-  process_signals ();
+  process_ಸಂಕೇತಗಳು ();
   cleanup ();
   print_stats ();
 }
 
-static void
-quit (int code)
+ಸ್ಥಿರ ಶೂನ್ಯ
+quit (ಪೂರ್ಣಾಂಕ ಸಂಕೇತ_2)
 {
-  finish_up ();
-  exit (code);
+  ಮುಕ್ತಾಯ_ಮೇಲೆ ();
+  ನಿರ್ಗಮಿಸು (ಸಂಕೇತ_2);
 }
 
 /* Return LEN rounded down to a multiple of IO_BUFSIZE
@@ -996,27 +996,27 @@ quit (int code)
    while storing the remainder internally per FD.
    Pass LEN == 0 to get the current remainder.  */
 
-static off_t
-cache_round (int fd, off_t len)
+ಸ್ಥಿರ off_t
+cache_ಸುತ್ತು (ಪೂರ್ಣಾಂಕ fd, off_t len)
 {
-  static off_t i_pending, o_pending;
+  ಸ್ಥಿರ off_t i_pending, o_pending;
   off_t *pending = (fd == STDIN_FILENO ? &i_pending : &o_pending);
 
-  if (len)
+  ಆದರೆ (len)
     {
       intmax_t c_pending;
-      if (ckd_add (&c_pending, *pending, len))
+      ಆದರೆ (ckd_ಕೂಡಿಸು (&c_pending, *pending, len))
         c_pending = INTMAX_MAX;
       *pending = c_pending % IO_BUFSIZE;
-      if (c_pending > *pending)
+      ಆದರೆ (c_pending > *pending)
         len = c_pending - *pending;
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         len = 0;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     len = *pending;
 
-  return len;
+  ಹಿಂತಿರುಗಿ len;
 }
 
 /* Discard the cache from the current offset of either
@@ -1024,49 +1024,49 @@ cache_round (int fd, off_t len)
    Return true on success.
    Return false on failure, with errno set.  */
 
-static bool
-invalidate_cache (int fd, off_t len)
+ಸ್ಥಿರ bool
+invalidate_cache (ಪೂರ್ಣಾಂಕ fd, off_t len)
 {
-  int adv_ret = -1;
-  off_t offset;
+  ಪೂರ್ಣಾಂಕ adv_ret = -1;
+  off_t ಸ್ಥಾನಾಂತರ;
   bool nocache_eof = (fd == STDIN_FILENO ? i_nocache_eof : o_nocache_eof);
 
   /* Minimize syscalls.  */
-  off_t clen = cache_round (fd, len);
-  if (len && !clen)
-    return true; /* Don't advise this time.  */
-  else if (! len && ! clen && ! nocache_eof)
-    return true;
-  off_t pending = len ? cache_round (fd, 0) : 0;
+  off_t clen = cache_ಸುತ್ತು (fd, len);
+  ಆದರೆ (len && !clen)
+    ಹಿಂತಿರುಗಿ true; /* Don't advise this time.  */
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (! len && ! clen && ! nocache_eof)
+    ಹಿಂತಿರುಗಿ true;
+  off_t pending = len ? cache_ಸುತ್ತು (fd, 0) : 0;
 
-  if (fd == STDIN_FILENO)
+  ಆದರೆ (fd == STDIN_FILENO)
     {
-      if (input_seekable)
-        offset = input_offset;
-      else
+      ಆದರೆ (ಒಳಹರಿವು_seekable)
+        ಸ್ಥಾನಾಂತರ = ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ;
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          offset = -1;
+          ಸ್ಥಾನಾಂತರ = -1;
           errno = ESPIPE;
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      static off_t output_offset = -2;
+      ಸ್ಥಿರ off_t output_ಸ್ಥಾನಾಂತರ = -2;
 
-      if (output_offset != -1)
+      ಆದರೆ (output_ಸ್ಥಾನಾಂತರ != -1)
         {
-          if (output_offset < 0)
-            output_offset = lseek (fd, 0, SEEK_CUR);
-          else if (len)
-            output_offset += clen + pending;
+          ಆದರೆ (output_ಸ್ಥಾನಾಂತರ < 0)
+            output_ಸ್ಥಾನಾಂತರ = lseek (fd, 0, SEEK_CUR);
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (len)
+            output_ಸ್ಥಾನಾಂತರ += clen + pending;
         }
 
-      offset = output_offset;
+      ಸ್ಥಾನಾಂತರ = output_ಸ್ಥಾನಾಂತರ;
     }
 
-  if (0 <= offset)
+  ಆದರೆ (0 <= ಸ್ಥಾನಾಂತರ)
    {
-     if (! len && clen && nocache_eof)
+     ಆದರೆ (! len && clen && nocache_eof)
        {
          pending = clen;
          clen = 0;
@@ -1076,57 +1076,57 @@ invalidate_cache (int fd, off_t len)
         we've read, so as not to dump any read ahead cache.
         Note also the kernel is conservative and only invalidates
         full pages in the specified range.  */
-#if HAVE_POSIX_FADVISE
-     offset = offset - clen - pending;
+#ಆದರೆ HAVE_POSIX_FADVISE
+     ಸ್ಥಾನಾಂತರ = ಸ್ಥಾನಾಂತರ - clen - pending;
      /* ensure full page specified when invalidating to eof.  */
-     if (clen == 0)
-       offset -= offset % page_size;
-     adv_ret = posix_fadvise (fd, offset, clen, POSIX_FADV_DONTNEED);
+     ಆದರೆ (clen == 0)
+       ಸ್ಥಾನಾಂತರ -= ಸ್ಥಾನಾಂತರ % ಪುಟ_ಗಾತ್ರ;
+     adv_ret = posix_fadvise (fd, ಸ್ಥಾನಾಂತರ, clen, POSIX_FADV_DONTNEED);
      errno = adv_ret;
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
      errno = ENOTSUP;
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
    }
 
-  return adv_ret == 0;
+  ಹಿಂತಿರುಗಿ adv_ret == 0;
 }
 
 /* Read from FD into the buffer BUF of size SIZE, processing any
    signals that arrive before bytes are read.  Return the number of
    bytes read if successful, -1 (setting errno) on failure.  */
 
-static ssize_t
-iread (int fd, char *buf, idx_t size)
+ಸ್ಥಿರ ssize_t
+iread (ಪೂರ್ಣಾಂಕ fd, ಅಕ್ಷರ *buf, idx_t ಗಾತ್ರ_2)
 {
   ssize_t nread;
-  static ssize_t prev_nread;
+  ಸ್ಥಿರ ssize_t prev_nread;
 
-  do
+  ಮಾಡು
     {
-      process_signals ();
-      nread = read (fd, buf, size);
+      process_ಸಂಕೇತಗಳು ();
+      nread = ಪಠ (fd, buf, ಗಾತ್ರ_2);
       /* Ignore final read error with iflag=direct as that
          returns EINVAL due to the non aligned file offset.  */
-      if (nread == -1 && errno == EINVAL
-          && 0 < prev_nread && prev_nread < size
-          && (input_flags & O_DIRECT))
+      ಆದರೆ (nread == -1 && errno == EINVAL
+          && 0 < prev_nread && prev_nread < ಗಾತ್ರ_2
+          && (ಒಳಹರಿವು_flags & O_ನೇರ))
         {
           errno = 0;
           nread = 0;
         }
     }
-  while (nread < 0 && errno == EINTR);
+  ಆಗ (nread < 0 && errno == EINTR);
 
   /* Short read may be due to received signal.  */
-  if (0 < nread && nread < size)
-    process_signals ();
+  ಆದರೆ (0 < nread && nread < ಗಾತ್ರ_2)
+    process_ಸಂಕೇತಗಳು ();
 
-  if (0 < nread && warn_partial_read)
+  ಆದರೆ (0 < nread && warn_partial_read)
     {
-      if (0 < prev_nread && prev_nread < size)
+      ಆದರೆ (0 < prev_nread && prev_nread < ಗಾತ್ರ_2)
         {
           idx_t prev = prev_nread;
-          if (status_level != STATUS_NONE)
+          ಆದರೆ (ಸ್ಥಿತಿ_level != ಸ್ಥಿತಿ_NONE)
             diagnose (0, ngettext (("warning: partial read (%td byte); "
                                     "suggest iflag=fullblock"),
                                    ("warning: partial read (%td bytes); "
@@ -1138,28 +1138,28 @@ iread (int fd, char *buf, idx_t size)
     }
 
   prev_nread = nread;
-  return nread;
+  ಹಿಂತಿರುಗಿ nread;
 }
 
 /* Wrapper around iread function to accumulate full blocks.  */
-static ssize_t
-iread_fullblock (int fd, char *buf, idx_t size)
+ಸ್ಥಿರ ssize_t
+iread_fullblock (ಪೂರ್ಣಾಂಕ fd, ಅಕ್ಷರ *buf, idx_t ಗಾತ್ರ_2)
 {
   ssize_t nread = 0;
 
-  while (0 < size)
+  ಆಗ (0 < ಗಾತ್ರ_2)
     {
-      ssize_t ncurr = iread (fd, buf, size);
-      if (ncurr < 0)
-        return ncurr;
-      if (ncurr == 0)
-        break;
+      ssize_t ncurr = iread (fd, buf, ಗಾತ್ರ_2);
+      ಆದರೆ (ncurr < 0)
+        ಹಿಂತಿರುಗಿ ncurr;
+      ಆದರೆ (ncurr == 0)
+        ನಿಲ್ಲಿಸು;
       nread += ncurr;
       buf   += ncurr;
-      size  -= ncurr;
+      ಗಾತ್ರ_2  -= ncurr;
     }
 
-  return nread;
+  ಹಿಂತಿರುಗಿ nread;
 }
 
 /* Write to FD the buffer BUF of size SIZE, processing any signals
@@ -1167,16 +1167,16 @@ iread_fullblock (int fd, char *buf, idx_t size)
    this is less than SIZE.  Keep trying if there are partial
    writes.  */
 
-static idx_t
-iwrite (int fd, char const *buf, idx_t size)
+ಸ್ಥಿರ idx_t
+iwrite (ಪೂರ್ಣಾಂಕ fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *buf, idx_t ಗಾತ್ರ_2)
 {
-  idx_t total_written = 0;
+  idx_t ಒಟ್ಟು_written = 0;
 
-  if ((output_flags & O_DIRECT) && size < output_blocksize)
+  ಆದರೆ ((output_flags & O_ನೇರ) && ಗಾತ್ರ_2 < output_blocksize)
     {
-      int old_flags = fcntl (STDOUT_FILENO, F_GETFL);
-      if (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_DIRECT) != 0
-          && status_level != STATUS_NONE)
+      ಪೂರ್ಣಾಂಕ old_flags = fcntl (STDOUT_FILENO, F_GETFL);
+      ಆದರೆ (fcntl (STDOUT_FILENO, F_SETFL, old_flags & ~O_ನೇರ) != 0
+          && ಸ್ಥಿತಿ_level != ಸ್ಥಿತಿ_NONE)
         diagnose (errno, _("failed to turn off O_DIRECT: %s"),
                   quotef (output_file));
 
@@ -1190,197 +1190,197 @@ iwrite (int fd, char const *buf, idx_t size)
 
       /* Attempt to ensure that the final block is committed
          to stable storage as quickly as possible.  */
-      conversions_mask |= C_FSYNC;
+      conversions_ಮುಖವಾಡ |= C_FSYNC;
 
       /* After the subsequent fsync we'll call invalidate_cache
          to attempt to clear all data from the page cache.  */
     }
 
-  while (total_written < size)
+  ಆಗ (ಒಟ್ಟು_written < ಗಾತ್ರ_2)
     {
       ssize_t nwritten = 0;
-      process_signals ();
+      process_ಸಂಕೇತಗಳು ();
 
       /* Perform a seek for a NUL block if sparse output is enabled.  */
       final_op_was_seek = false;
-      if ((conversions_mask & C_SPARSE) && is_nul (buf, size))
+      ಆದರೆ ((conversions_ಮುಖವಾಡ & C_SPARSE) && is_nul (buf, ಗಾತ್ರ_2))
         {
-          if (lseek (fd, size, SEEK_CUR) < 0)
+          ಆದರೆ (lseek (fd, ಗಾತ್ರ_2, SEEK_CUR) < 0)
             {
-              conversions_mask &= ~C_SPARSE;
+              conversions_ಮುಖವಾಡ &= ~C_SPARSE;
               /* Don't warn about the advisory sparse request.  */
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               final_op_was_seek = true;
-              nwritten = size;
+              nwritten = ಗಾತ್ರ_2;
             }
         }
 
-      if (!nwritten)
-        nwritten = write (fd, buf + total_written, size - total_written);
+      ಆದರೆ (!nwritten)
+        nwritten = ಲಿಖ (fd, buf + ಒಟ್ಟು_written, ಗಾತ್ರ_2 - ಒಟ್ಟು_written);
 
-      if (nwritten < 0)
+      ಆದರೆ (nwritten < 0)
         {
-          if (errno != EINTR)
-            break;
+          ಆದರೆ (errno != EINTR)
+            ನಿಲ್ಲಿಸು;
         }
-      else if (nwritten == 0)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (nwritten == 0)
         {
           /* Some buggy drivers return 0 when one tries to write beyond
              a device's end.  (Example: Linux kernel 1.2.13 on /dev/fd0.)
              Set errno to ENOSPC so they get a sensible diagnostic.  */
           errno = ENOSPC;
-          break;
+          ನಿಲ್ಲಿಸು;
         }
-      else
-        total_written += nwritten;
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಒಟ್ಟು_written += nwritten;
     }
 
-  if (o_nocache && total_written)
-    invalidate_cache (fd, total_written);
+  ಆದರೆ (o_nocache && ಒಟ್ಟು_written)
+    invalidate_cache (fd, ಒಟ್ಟು_written);
 
-  return total_written;
+  ಹಿಂತಿರುಗಿ ಒಟ್ಟು_written;
 }
 
 /* Write, then empty, the output buffer 'obuf'. */
 
-static void
-write_output (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+write_output (ಶೂನ್ಯ)
 {
   idx_t nwritten = iwrite (STDOUT_FILENO, obuf, output_blocksize);
-  w_bytes += nwritten;
-  if (nwritten != output_blocksize)
+  w_ಬೈಟುಗಳು += nwritten;
+  ಆದರೆ (nwritten != output_blocksize)
     {
       diagnose (errno, _("writing to %s"), quoteaf (output_file));
-      if (nwritten != 0)
+      ಆದರೆ (nwritten != 0)
         w_partial++;
       quit (EXIT_FAILURE);
     }
-  else
-    w_full++;
+  ಇಲ್ಲದಿದ್ದರೆ
+    w_ತುಂಬಿದ++;
   oc = 0;
 }
 
 /* Restart on EINTR from fdatasync.  */
 
-static int
-ifdatasync (int fd)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+ifdatasync (ಪೂರ್ಣಾಂಕ fd)
 {
-  int ret;
+  ಪೂರ್ಣಾಂಕ ret;
 
-  do
+  ಮಾಡು
     {
-      process_signals ();
+      process_ಸಂಕೇತಗಳು ();
       ret = fdatasync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  ಆಗ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Restart on EINTR from fd_reopen.  */
 
-static int
-ifd_reopen (int desired_fd, char const *file, int flag, mode_t mode)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+ifd_reopen (ಪೂರ್ಣಾಂಕ desired_fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, ಪೂರ್ಣಾಂಕ flag, mode_t ಬಹುಲಕ_2)
 {
-  int ret;
+  ಪೂರ್ಣಾಂಕ ret;
 
-  do
+  ಮಾಡು
     {
-      process_signals ();
-      ret = fd_reopen (desired_fd, file, flag, mode);
+      process_ಸಂಕೇತಗಳು ();
+      ret = fd_reopen (desired_fd, file, flag, ಬಹುಲಕ_2);
     }
-  while (ret < 0 && errno == EINTR);
+  ಆಗ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Restart on EINTR from fstat.  */
 
-static int
-ifstat (int fd, struct stat *st)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+ifstat (ಪೂರ್ಣಾಂಕ fd, ರಚನೆ stat *st)
 {
-  int ret;
+  ಪೂರ್ಣಾಂಕ ret;
 
-  do
+  ಮಾಡು
     {
-      process_signals ();
+      process_ಸಂಕೇತಗಳು ();
       ret = fstat (fd, st);
     }
-  while (ret < 0 && errno == EINTR);
+  ಆಗ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Restart on EINTR from fsync.  */
 
-static int
-ifsync (int fd)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+ifsync (ಪೂರ್ಣಾಂಕ fd)
 {
-  int ret;
+  ಪೂರ್ಣಾಂಕ ret;
 
-  do
+  ಮಾಡು
     {
-      process_signals ();
+      process_ಸಂಕೇತಗಳು ();
       ret = fsync (fd);
     }
-  while (ret < 0 && errno == EINTR);
+  ಆಗ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Restart on EINTR from ftruncate.  */
 
-static int
-iftruncate (int fd, off_t length)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+iftruncate (ಪೂರ್ಣಾಂಕ fd, off_t ಉದ್ದಳತೆ)
 {
-  int ret;
+  ಪೂರ್ಣಾಂಕ ret;
 
-  do
+  ಮಾಡು
     {
-      process_signals ();
-      ret = ftruncate (fd, length);
+      process_ಸಂಕೇತಗಳು ();
+      ret = ftruncate (fd, ಉದ್ದಳತೆ);
     }
-  while (ret < 0 && errno == EINTR);
+  ಆಗ (ret < 0 && errno == EINTR);
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Return true if STR is of the form "PATTERN" or "PATTERNDELIM...".  */
 
-ATTRIBUTE_PURE
-static bool
-operand_matches (char const *str, char const *pattern, char delim)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ bool
+ಕಾರ್ಯಾಂಶ_matches (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ನಮೂನೆ_2, ಅಕ್ಷರ delim)
 {
-  while (*pattern)
-    if (*str++ != *pattern++)
-      return false;
-  return !*str || *str == delim;
+  ಆಗ (*ನಮೂನೆ_2)
+    ಆದರೆ (*str++ != *ನಮೂನೆ_2++)
+      ಹಿಂತಿರುಗಿ false;
+  ಹಿಂತಿರುಗಿ !*str || *str == delim;
 }
 
 /* Interpret one "conv=..." or similar operand STR according to the
    symbols in TABLE, returning the flags specified.  If the operand
    cannot be parsed, use ERROR_MSGID to generate a diagnostic.  */
 
-static int
-parse_symbols (char const *str, struct symbol_value const *table,
-               bool exclusive, char const *error_msgid)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+parse_symbols (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str, ರಚನೆ ಚಿಹ್ನೆ_ಮೌಲ್ಯ ಸ್ಥಿರಾಂಕ *ಕೋಷ್ಟಕ,
+               bool exclusive, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *error_msgid)
 {
-  int value = 0;
+  ಪೂರ್ಣಾಂಕ ಮೌಲ್ಯ = 0;
 
-  while (true)
+  ಆಗ (true)
     {
-      char const *strcomma = strchr (str, ',');
-      struct symbol_value const *entry;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *strcomma = strchr (str, ',');
+      ರಚನೆ ಚಿಹ್ನೆ_ಮೌಲ್ಯ ಸ್ಥಿರಾಂಕ *ನಮೂದು;
 
-      for (entry = table;
-           ! (operand_matches (str, entry->symbol, ',') && entry->value);
-           entry++)
+      ಗಾಗಿ (ನಮೂದು = ಕೋಷ್ಟಕ;
+           ! (ಕಾರ್ಯಾಂಶ_matches (str, ನಮೂದು->ಚಿಹ್ನೆ, ',') && ನಮೂದು->ಮೌಲ್ಯ);
+           ನಮೂದು++)
         {
-          if (! entry->symbol[0])
+          ಆದರೆ (! ನಮೂದು->ಚಿಹ್ನೆ[0])
             {
-              idx_t slen = strcomma ? strcomma - str : strlen (str);
+              idx_t slen = strcomma ? strcomma - str : ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (str);
               diagnose (0, "%s: %s", _(error_msgid),
                         quotearg_n_style_mem (0, locale_quoting_style,
                                               str, slen));
@@ -1388,16 +1388,16 @@ parse_symbols (char const *str, struct symbol_value const *table,
             }
         }
 
-      if (exclusive)
-        value = entry->value;
-      else
-        value |= entry->value;
-      if (!strcomma)
-        break;
+      ಆದರೆ (exclusive)
+        ಮೌಲ್ಯ = ನಮೂದು->ಮೌಲ್ಯ;
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಮೌಲ್ಯ |= ನಮೂದು->ಮೌಲ್ಯ;
+      ಆದರೆ (!strcomma)
+        ನಿಲ್ಲಿಸು;
       str = strcomma + 1;
     }
 
-  return value;
+  ಹಿಂತಿರುಗಿ ಮೌಲ್ಯ;
 }
 
 /* Return the value of STR, interpreted as a non-negative decimal integer,
@@ -1405,143 +1405,143 @@ parse_symbols (char const *str, struct symbol_value const *table,
    Set *INVALID to an appropriate error value and return INTMAX_MAX if
    it is an overflow, an indeterminate value if some other error occurred.  */
 
-static intmax_t
-parse_integer (char const *str, strtol_error *invalid)
+ಸ್ಥಿರ intmax_t
+parse_integer (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str, strtol_error *invalid)
 {
   /* Call xstrtoumax, not xstrtoimax, since we don't want to
      allow strings like " -0".  Initialize N to an indeterminate value;
      calling code should not rely on this function returning 0
      when *INVALID represents a non-overflow error.  */
-  int indeterminate = 0;
-  static char const suffixes[] = "bcEGkKMPQRTwYZ0";
-  intmax_t result = 1;
-  bool overflow = false;
+  ಪೂರ್ಣಾಂಕ indeterminate = 0;
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ suffixes[] = "bcEGkKMPQRTwYZ0";
+  intmax_t ಫಲಿತಾಂಶ = 1;
+  bool ಅತಿಪ್ರವಾಹ = false;
   bool warn_zero_multiplier = false;
   strtol_error e;
 
-  while (true)
+  ಆಗ (true)
     {
       uintmax_t n = indeterminate;
-      char *suffix;
+      ಅಕ್ಷರ *suffix;
       e = xstrtoumax (str, &suffix, 10, &n, suffixes);
 
-      if ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
+      ಆದರೆ ((e & ~LONGINT_ಅತಿಪ್ರವಾಹ) == LONGINT_INVALID_SUFFIX_CHAR
           && *suffix == 'B' && str < suffix && suffix[-1] != 'B')
         {
           suffix++;
-          if (!*suffix)
+          ಆದರೆ (!*suffix)
             e &= ~LONGINT_INVALID_SUFFIX_CHAR;
         }
 
       bool multiply
-        = ((e & ~LONGINT_OVERFLOW) == LONGINT_INVALID_SUFFIX_CHAR
+        = ((e & ~LONGINT_ಅತಿಪ್ರವಾಹ) == LONGINT_INVALID_SUFFIX_CHAR
            && *suffix == 'x');
-      if (multiply)
+      ಆದರೆ (multiply)
         e &= ~LONGINT_INVALID_SUFFIX_CHAR;
 
-      if ((e & ~LONGINT_OVERFLOW) != LONGINT_OK)
+      ಆದರೆ ((e & ~LONGINT_ಅತಿಪ್ರವಾಹ) != LONGINT_OK)
         {
-          if (! (e & LONGINT_OVERFLOW) && n <= INTMAX_MAX)
+          ಆದರೆ (! (e & LONGINT_ಅತಿಪ್ರವಾಹ) && n <= INTMAX_MAX)
             {
               *invalid = e;
-              return indeterminate;
+              ಹಿಂತಿರುಗಿ indeterminate;
             }
-          e = LONGINT_OVERFLOW;
+          e = LONGINT_ಅತಿಪ್ರವಾಹ;
         }
 
-      if (n == 0)
-        result = 0;
-      else if (result != 0)
+      ಆದರೆ (n == 0)
+        ಫಲಿತಾಂಶ = 0;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಫಲಿತಾಂಶ != 0)
         {
-          intmax_t product;
-          if ((e & LONGINT_OVERFLOW)
-              || overflow
-              || ckd_mul (&product, result, n))
-            overflow = true;
-          else
-            result = product;
+          intmax_t ಗುಣಲಬ್ಧ;
+          ಆದರೆ ((e & LONGINT_ಅತಿಪ್ರವಾಹ)
+              || ಅತಿಪ್ರವಾಹ
+              || ckd_mul (&ಗುಣಲಬ್ಧ, ಫಲಿತಾಂಶ, n))
+            ಅತಿಪ್ರವಾಹ = true;
+          ಇಲ್ಲದಿದ್ದರೆ
+            ಫಲಿತಾಂಶ = ಗುಣಲಬ್ಧ;
         }
 
-      if (multiply && STRPREFIX (str, "0x"))
+      ಆದರೆ (multiply && STRPREFIX (str, "0x"))
         warn_zero_multiplier = true;
 
-      if (! multiply)
-        break;
+      ಆದರೆ (! multiply)
+        ನಿಲ್ಲಿಸು;
       str = suffix + 1;
     }
 
-  if (result == 0)
+  ಆದರೆ (ಫಲಿತಾಂಶ == 0)
     {
-      if (warn_zero_multiplier)
+      ಆದರೆ (warn_zero_multiplier)
         diagnose (0, _("warning: %s is a zero multiplier; "
                        "use %s if that is intended"),
                   quote_n (0, "0x"), quote_n (1, "00x"));
       e = LONGINT_OK;
     }
-  else if (overflow)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಅತಿಪ್ರವಾಹ)
     {
-      e = LONGINT_OVERFLOW;
-      result = INTMAX_MAX;
+      e = LONGINT_ಅತಿಪ್ರವಾಹ;
+      ಫಲಿತಾಂಶ = INTMAX_MAX;
     }
 
   *invalid = e;
-  return result;
+  ಹಿಂತಿರುಗಿ ಫಲಿತಾಂಶ;
 }
 
 /* OPERAND is of the form "X=...".  Return true if X is NAME.  */
 
-ATTRIBUTE_PURE
-static bool
-operand_is (char const *operand, char const *name)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ bool
+ಕಾರ್ಯಾಂಶ_is (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಕಾರ್ಯಾಂಶ_2, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *name)
 {
-  return operand_matches (operand, name, '=');
+  ಹಿಂತಿರುಗಿ ಕಾರ್ಯಾಂಶ_matches (ಕಾರ್ಯಾಂಶ_2, name, '=');
 }
 
-static void
-scanargs (int argc, char *const *argv)
+ಸ್ಥಿರ ಶೂನ್ಯ
+scanargs (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *argv)
 {
   idx_t blocksize = 0;
-  intmax_t count = INTMAX_MAX;
+  intmax_t ಎಣಿಕೆ_2 = INTMAX_MAX;
   intmax_t skip = 0;
   intmax_t seek = 0;
-  bool count_B = false, skip_B = false, seek_B = false;
+  bool ಎಣಿಕೆ_B = false, skip_B = false, seek_B = false;
 
-  for (int i = optind; i < argc; i++)
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = optind; i < argc; i++)
     {
-      char const *name = argv[i];
-      char const *val = strchr (name, '=');
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *name = argv[i];
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *val = strchr (name, '=');
 
-      if (val == NULL)
+      ಆದರೆ (val == ಖಾಲಿ)
         {
           diagnose (0, _("unrecognized operand %s"), quoteaf (name));
           usage (EXIT_FAILURE);
         }
       val++;
 
-      if (operand_is (name, "if"))
-        input_file = val;
-      else if (operand_is (name, "of"))
+      ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "if"))
+        ಒಳಹರಿವು_file = val;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "of"))
         output_file = val;
-      else if (operand_is (name, "conv"))
-        conversions_mask |= parse_symbols (val, conversions, false,
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "conv"))
+        conversions_ಮುಖವಾಡ |= parse_symbols (val, conversions, false,
                                            N_("invalid conversion"));
-      else if (operand_is (name, "iflag"))
-        input_flags |= parse_symbols (val, flags, false,
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "iflag"))
+        ಒಳಹರಿವು_flags |= parse_symbols (val, flags, false,
                                       N_("invalid input flag"));
-      else if (operand_is (name, "oflag"))
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "oflag"))
         output_flags |= parse_symbols (val, flags, false,
                                        N_("invalid output flag"));
-      else if (operand_is (name, "status"))
-        status_level = parse_symbols (val, statuses, true,
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "status"))
+        ಸ್ಥಿತಿ_level = parse_symbols (val, statuses, true,
                                       N_("invalid status level"));
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           strtol_error invalid = LONGINT_OK;
           intmax_t n = parse_integer (val, &invalid);
           bool has_B = !!strchr (val, 'B');
           intmax_t n_min = 0;
           intmax_t n_max = INTMAX_MAX;
-          idx_t *converted_idx = NULL;
+          idx_t *converted_idx = ಖಾಲಿ;
 
           /* Maximum blocksize.  Keep it smaller than IDX_MAX, so that
              it fits into blocksize vars even if 1 is added for conv=swab.
@@ -1550,204 +1550,204 @@ scanargs (int argc, char *const *argv)
              benefit of the large-offset seek code.  */
           idx_t max_blocksize = MIN (IDX_MAX - 1, MIN (SSIZE_MAX, OFF_T_MAX));
 
-          if (operand_is (name, "ibs"))
+          ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "ibs"))
             {
               n_min = 1;
               n_max = max_blocksize;
-              converted_idx = &input_blocksize;
+              converted_idx = &ಒಳಹರಿವು_blocksize;
             }
-          else if (operand_is (name, "obs"))
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "obs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &output_blocksize;
             }
-          else if (operand_is (name, "bs"))
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "bs"))
             {
               n_min = 1;
               n_max = max_blocksize;
               converted_idx = &blocksize;
             }
-          else if (operand_is (name, "cbs"))
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "cbs"))
             {
               n_min = 1;
               n_max = MIN (SIZE_MAX, IDX_MAX);
               converted_idx = &conversion_blocksize;
             }
-          else if (operand_is (name, "skip") || operand_is (name, "iseek"))
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "skip") || ಕಾರ್ಯಾಂಶ_is (name, "iseek"))
             {
               skip = n;
               skip_B = has_B;
             }
-          else if (operand_is (name + (*name == 'o'), "seek"))
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name + (*name == 'o'), "seek"))
             {
               seek = n;
               seek_B = has_B;
             }
-          else if (operand_is (name, "count"))
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಕಾರ್ಯಾಂಶ_is (name, "count"))
             {
-              count = n;
-              count_B = has_B;
+              ಎಣಿಕೆ_2 = n;
+              ಎಣಿಕೆ_B = has_B;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               diagnose (0, _("unrecognized operand %s"), quoteaf (name));
               usage (EXIT_FAILURE);
             }
 
-          if (n < n_min)
+          ಆದರೆ (n < n_min)
             invalid = LONGINT_INVALID;
-          else if (n_max < n)
-            invalid = LONGINT_OVERFLOW;
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (n_max < n)
+            invalid = LONGINT_ಅತಿಪ್ರವಾಹ;
 
-          if (invalid != LONGINT_OK)
-            error (EXIT_FAILURE, invalid == LONGINT_OVERFLOW ? EOVERFLOW : 0,
+          ಆದರೆ (invalid != LONGINT_OK)
+            error (EXIT_FAILURE, invalid == LONGINT_ಅತಿಪ್ರವಾಹ ? EOVERFLOW : 0,
                    "%s: %s", _("invalid number"), quoteaf (val));
-          else if (converted_idx)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (converted_idx)
             *converted_idx = n;
         }
     }
 
-  if (blocksize)
-    input_blocksize = output_blocksize = blocksize;
-  else
+  ಆದರೆ (blocksize)
+    ಒಳಹರಿವು_blocksize = output_blocksize = blocksize;
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* POSIX says dd aggregates partial reads into
          output_blocksize if bs= is not specified.  */
-      conversions_mask |= C_TWOBUFS;
+      conversions_ಮುಖವಾಡ |= C_TWOBUFS;
     }
 
-  if (input_blocksize == 0)
-    input_blocksize = DEFAULT_BLOCKSIZE;
-  if (output_blocksize == 0)
+  ಆದರೆ (ಒಳಹರಿವು_blocksize == 0)
+    ಒಳಹರಿವು_blocksize = DEFAULT_BLOCKSIZE;
+  ಆದರೆ (output_blocksize == 0)
     output_blocksize = DEFAULT_BLOCKSIZE;
-  if (conversion_blocksize == 0)
-    conversions_mask &= ~(C_BLOCK | C_UNBLOCK);
+  ಆದರೆ (conversion_blocksize == 0)
+    conversions_ಮುಖವಾಡ &= ~(C_ಖಂಡ | C_UNBLOCK);
 
-  if (input_flags & (O_DSYNC | O_SYNC))
-    input_flags |= O_RSYNC;
+  ಆದರೆ (ಒಳಹರಿವು_flags & (O_DSYNC | O_SYNC))
+    ಒಳಹರಿವು_flags |= O_RSYNC;
 
-  if (output_flags & O_FULLBLOCK)
+  ಆದರೆ (output_flags & O_FULLBLOCK)
     {
       diagnose (0, "%s: %s", _("invalid output flag"), quote ("fullblock"));
       usage (EXIT_FAILURE);
     }
 
-  if (skip_B)
-    input_flags |= O_SKIP_BYTES;
-  if (input_flags & O_SKIP_BYTES && skip != 0)
+  ಆದರೆ (skip_B)
+    ಒಳಹರಿವು_flags |= O_SKIP_ಬೈಟುಗಳು;
+  ಆದರೆ (ಒಳಹರಿವು_flags & O_SKIP_ಬೈಟುಗಳು && skip != 0)
     {
-      skip_records = skip / input_blocksize;
-      skip_bytes = skip % input_blocksize;
+      skip_ದಾಖಲೆಗಳು = skip / ಒಳಹರಿವು_blocksize;
+      skip_ಬೈಟುಗಳು = skip % ಒಳಹರಿವು_blocksize;
     }
-  else if (skip != 0)
-    skip_records = skip;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (skip != 0)
+    skip_ದಾಖಲೆಗಳು = skip;
 
-  if (count_B)
-    input_flags |= O_COUNT_BYTES;
-  if (input_flags & O_COUNT_BYTES && count != INTMAX_MAX)
+  ಆದರೆ (ಎಣಿಕೆ_B)
+    ಒಳಹರಿವು_flags |= O_ಎಣಿಕೆ_ಬೈಟುಗಳು;
+  ಆದರೆ (ಒಳಹರಿವು_flags & O_ಎಣಿಕೆ_ಬೈಟುಗಳು && ಎಣಿಕೆ_2 != INTMAX_MAX)
     {
-      max_records = count / input_blocksize;
-      max_bytes = count % input_blocksize;
+      max_ದಾಖಲೆಗಳು = ಎಣಿಕೆ_2 / ಒಳಹರಿವು_blocksize;
+      max_ಬೈಟುಗಳು = ಎಣಿಕೆ_2 % ಒಳಹರಿವು_blocksize;
     }
-  else if (count != INTMAX_MAX)
-    max_records = count;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಎಣಿಕೆ_2 != INTMAX_MAX)
+    max_ದಾಖಲೆಗಳು = ಎಣಿಕೆ_2;
 
-  if (seek_B)
-    output_flags |= O_SEEK_BYTES;
-  if (output_flags & O_SEEK_BYTES && seek != 0)
+  ಆದರೆ (seek_B)
+    output_flags |= O_SEEK_ಬೈಟುಗಳು;
+  ಆದರೆ (output_flags & O_SEEK_ಬೈಟುಗಳು && seek != 0)
     {
-      seek_records = seek / output_blocksize;
-      seek_bytes = seek % output_blocksize;
+      seek_ದಾಖಲೆಗಳು = seek / output_blocksize;
+      seek_ಬೈಟುಗಳು = seek % output_blocksize;
     }
-  else if (seek != 0)
-    seek_records = seek;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (seek != 0)
+    seek_ದಾಖಲೆಗಳು = seek;
 
   /* Warn about partial reads if bs=SIZE is given and iflag=fullblock
      is not, and if counting or skipping bytes or using direct I/O.
      This helps to avoid confusion with miscounts, and to avoid issues
      with direct I/O on GNU/Linux.  */
   warn_partial_read =
-    (! (conversions_mask & C_TWOBUFS) && ! (input_flags & O_FULLBLOCK)
-     && (skip_records
-         || (0 < max_records && max_records < INTMAX_MAX)
-         || (input_flags | output_flags) & O_DIRECT));
+    (! (conversions_ಮುಖವಾಡ & C_TWOBUFS) && ! (ಒಳಹರಿವು_flags & O_FULLBLOCK)
+     && (skip_ದಾಖಲೆಗಳು
+         || (0 < max_ದಾಖಲೆಗಳು && max_ದಾಖಲೆಗಳು < INTMAX_MAX)
+         || (ಒಳಹರಿವು_flags | output_flags) & O_ನೇರ));
 
-  iread_fnc = ((input_flags & O_FULLBLOCK)
+  iread_fnc = ((ಒಳಹರಿವು_flags & O_FULLBLOCK)
                ? iread_fullblock
                : iread);
-  input_flags &= ~O_FULLBLOCK;
+  ಒಳಹರಿವು_flags &= ~O_FULLBLOCK;
 
-  if (multiple_bits_set (conversions_mask & (C_ASCII | C_EBCDIC | C_IBM)))
+  ಆದರೆ (ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (conversions_ಮುಖವಾಡ & (C_ASCII | C_EBCDIC | C_IBM)))
     error (EXIT_FAILURE, 0, _("cannot combine any two of {ascii,ebcdic,ibm}"));
-  if (multiple_bits_set (conversions_mask & (C_BLOCK | C_UNBLOCK)))
+  ಆದರೆ (ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (conversions_ಮುಖವಾಡ & (C_ಖಂಡ | C_UNBLOCK)))
     error (EXIT_FAILURE, 0, _("cannot combine block and unblock"));
-  if (multiple_bits_set (conversions_mask & (C_LCASE | C_UCASE)))
+  ಆದರೆ (ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (conversions_ಮುಖವಾಡ & (C_LCASE | C_UCASE)))
     error (EXIT_FAILURE, 0, _("cannot combine lcase and ucase"));
-  if (multiple_bits_set (conversions_mask & (C_EXCL | C_NOCREAT)))
+  ಆದರೆ (ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (conversions_ಮುಖವಾಡ & (C_EXCL | C_NOCREAT)))
     error (EXIT_FAILURE, 0, _("cannot combine excl and nocreat"));
-  if (multiple_bits_set (input_flags & (O_DIRECT | O_NOCACHE))
-      || multiple_bits_set (output_flags & (O_DIRECT | O_NOCACHE)))
+  ಆದರೆ (ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (ಒಳಹರಿವು_flags & (O_ನೇರ | O_NOCACHE))
+      || ಅಪವರ್ತ್ಯ_ಬಿಟ್ಟುಗಳು_ಗಣ_2 (output_flags & (O_ನೇರ | O_NOCACHE)))
     error (EXIT_FAILURE, 0, _("cannot combine direct and nocache"));
 
-  if (input_flags & O_NOCACHE)
+  ಆದರೆ (ಒಳಹರಿವು_flags & O_NOCACHE)
     {
       i_nocache = true;
-      i_nocache_eof = (max_records == 0 && max_bytes == 0);
-      input_flags &= ~O_NOCACHE;
+      i_nocache_eof = (max_ದಾಖಲೆಗಳು == 0 && max_ಬೈಟುಗಳು == 0);
+      ಒಳಹರಿವು_flags &= ~O_NOCACHE;
     }
-  if (output_flags & O_NOCACHE)
+  ಆದರೆ (output_flags & O_NOCACHE)
     {
       o_nocache = true;
-      o_nocache_eof = (max_records == 0 && max_bytes == 0);
+      o_nocache_eof = (max_ದಾಖಲೆಗಳು == 0 && max_ಬೈಟುಗಳು == 0);
       output_flags &= ~O_NOCACHE;
     }
 }
 
 /* Fix up translation table. */
 
-static void
-apply_translations (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+apply_translations (ಶೂನ್ಯ)
 {
-  if (conversions_mask & C_ASCII)
-    translate_charset (ebcdic_to_ascii);
+  ಆದರೆ (conversions_ಮುಖವಾಡ & C_ASCII)
+    translate_charset (ebcdic_ಗಮ್ಯ_ascii);
 
-  if (conversions_mask & C_UCASE)
+  ಆದರೆ (conversions_ಮುಖವಾಡ & C_UCASE)
     {
-      for (int i = 0; i < 256; i++)
-        trans_table[i] = toupper (trans_table[i]);
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0; i < 256; i++)
+        trans_ಕೋಷ್ಟಕ[i] = ದೊಡ್ಡ_ಅಕ್ಷರ (trans_ಕೋಷ್ಟಕ[i]);
       translation_needed = true;
     }
-  else if (conversions_mask & C_LCASE)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (conversions_ಮುಖವಾಡ & C_LCASE)
     {
-      for (int i = 0; i < 256; i++)
-        trans_table[i] = tolower (trans_table[i]);
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0; i < 256; i++)
+        trans_ಕೋಷ್ಟಕ[i] = tolower (trans_ಕೋಷ್ಟಕ[i]);
       translation_needed = true;
     }
 
-  if (conversions_mask & C_EBCDIC)
+  ಆದರೆ (conversions_ಮುಖವಾಡ & C_EBCDIC)
     {
-      translate_charset (ascii_to_ebcdic);
-      newline_character = ascii_to_ebcdic['\n'];
-      space_character = ascii_to_ebcdic[' '];
+      translate_charset (ascii_ಗಮ್ಯ_ebcdic);
+      newline_character = ascii_ಗಮ್ಯ_ebcdic['\n'];
+      space_character = ascii_ಗಮ್ಯ_ebcdic[' '];
     }
-  else if (conversions_mask & C_IBM)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (conversions_ಮುಖವಾಡ & C_IBM)
     {
-      translate_charset (ascii_to_ibm);
-      newline_character = ascii_to_ibm['\n'];
-      space_character = ascii_to_ibm[' '];
+      translate_charset (ascii_ಗಮ್ಯ_ibm);
+      newline_character = ascii_ಗಮ್ಯ_ibm['\n'];
+      space_character = ascii_ಗಮ್ಯ_ibm[' '];
     }
 }
 
 /* Apply the character-set translations specified by the user
    to the NREAD bytes in BUF.  */
 
-static void
-translate_buffer (char *buf, idx_t nread)
+ಸ್ಥಿರ ಶೂನ್ಯ
+translate_ಬಫರ್ (ಅಕ್ಷರ *buf, idx_t nread)
 {
-  char *cp = buf;
-  for (idx_t i = nread; i; i--, cp++)
-    *cp = trans_table[to_uchar (*cp)];
+  ಅಕ್ಷರ *cp = buf;
+  ಗಾಗಿ (idx_t i = nread; i; i--, cp++)
+    *cp = trans_ಕೋಷ್ಟಕ[ಗಮ್ಯ_uchar (*cp)];
 }
 
 /* Swap *NREAD bytes in BUF, which should have room for an extra byte
@@ -1757,44 +1757,44 @@ translate_buffer (char *buf, idx_t nread)
    resulting *NREAD even, and set *SAVED_BYTE to -1 otherwise.
    Return the buffer's adjusted start, either BUF or BUF + 1.  */
 
-static char *
-swab_buffer (char *buf, idx_t *nread, int *saved_byte)
+ಸ್ಥಿರ ಅಕ್ಷರ *
+swab_ಬಫರ್ (ಅಕ್ಷರ *buf, idx_t *nread, ಪೂರ್ಣಾಂಕ *saved_byte)
 {
-  if (*nread == 0)
-    return buf;
+  ಆದರೆ (*nread == 0)
+    ಹಿಂತಿರುಗಿ buf;
 
   /* Update *SAVED_BYTE, and set PREV_SAVED to its old value.  */
-  int prev_saved = *saved_byte;
-  if ((prev_saved < 0) == (*nread & 1))
+  ಪೂರ್ಣಾಂಕ prev_saved = *saved_byte;
+  ಆದರೆ ((prev_saved < 0) == (*nread & 1))
     {
-      unsigned char c = buf[--*nread];
+      ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ c = buf[--*nread];
       *saved_byte = c;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     *saved_byte = -1;
 
   /* Do the byte-swapping by moving every other byte two
      positions toward the end, working from the end of the buffer
      toward the beginning.  This way we move only half the data.  */
-  for (idx_t i = *nread; 1 < i; i -= 2)
+  ಗಾಗಿ (idx_t i = *nread; 1 < i; i -= 2)
     buf[i] = buf[i - 2];
 
-  if (prev_saved < 0)
-    return buf + 1;
+  ಆದರೆ (prev_saved < 0)
+    ಹಿಂತಿರುಗಿ buf + 1;
 
   buf[1] = prev_saved;
   ++*nread;
-  return buf;
+  ಹಿಂತಿರುಗಿ buf;
 }
 
 /* Add OFFSET to the input offset, setting the overflow flag if
    necessary.  */
 
-static void
-advance_input_offset (intmax_t offset)
+ಸ್ಥಿರ ಶೂನ್ಯ
+advance_ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ (intmax_t ಸ್ಥಾನಾಂತರ)
 {
-  if (0 <= input_offset && ckd_add (&input_offset, input_offset, offset))
-    input_offset = -1;
+  ಆದರೆ (0 <= ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ && ckd_ಕೂಡಿಸು (&ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ, ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ, ಸ್ಥಾನಾಂತರ))
+    ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ = -1;
 }
 
 /* Throw away RECORDS blocks of BLOCKSIZE bytes plus BYTES bytes on
@@ -1806,60 +1806,60 @@ advance_input_offset (intmax_t offset)
    reached.  If FDESC is STDOUT_FILENO, on return, BYTES is the
    remaining bytes in addition to the remaining records.  */
 
-static intmax_t
-skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
-      idx_t *bytes)
+ಸ್ಥಿರ intmax_t
+skip (ಪೂರ್ಣಾಂಕ fdesc, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, intmax_t ದಾಖಲೆಗಳು, idx_t blocksize,
+      idx_t *ಬೈಟುಗಳು)
 {
   /* Try lseek and if an error indicates it was an inappropriate operation --
      or if the file offset is not representable as an off_t --
      fall back on using read.  */
 
   errno = 0;
-  off_t offset;
-  if (! ckd_mul (&offset, records, blocksize)
-      && ! ckd_add (&offset, offset, *bytes)
-      && 0 <= lseek (fdesc, offset, SEEK_CUR))
+  off_t ಸ್ಥಾನಾಂತರ;
+  ಆದರೆ (! ckd_mul (&ಸ್ಥಾನಾಂತರ, ದಾಖಲೆಗಳು, blocksize)
+      && ! ckd_ಕೂಡಿಸು (&ಸ್ಥಾನಾಂತರ, ಸ್ಥಾನಾಂತರ, *ಬೈಟುಗಳು)
+      && 0 <= lseek (fdesc, ಸ್ಥಾನಾಂತರ, SEEK_CUR))
     {
-      if (fdesc == STDIN_FILENO)
+      ಆದರೆ (fdesc == STDIN_FILENO)
         {
-           struct stat st;
-           if (ifstat (STDIN_FILENO, &st) != 0)
+           ರಚನೆ stat st;
+           ಆದರೆ (ifstat (STDIN_FILENO, &st) != 0)
              error (EXIT_FAILURE, errno, _("cannot fstat %s"), quoteaf (file));
-           if (usable_st_size (&st) && 0 < st.st_size && 0 <= input_offset
-               && st.st_size - input_offset < offset)
+           ಆದರೆ (usable_st_ಗಾತ್ರ (&st) && 0 < st.st_ಗಾತ್ರ && 0 <= ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ
+               && st.st_ಗಾತ್ರ - ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ < ಸ್ಥಾನಾಂತರ)
              {
                /* When skipping past EOF, return the number of _full_ blocks
                 * that are not skipped, and set offset to EOF, so the caller
                 * can determine the requested skip was not satisfied.  */
-               records = ( offset - st.st_size ) / blocksize;
-               offset = st.st_size - input_offset;
+               ದಾಖಲೆಗಳು = ( ಸ್ಥಾನಾಂತರ - st.st_ಗಾತ್ರ ) / blocksize;
+               ಸ್ಥಾನಾಂತರ = st.st_ಗಾತ್ರ - ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ;
              }
-           else
-             records = 0;
-           advance_input_offset (offset);
+           ಇಲ್ಲದಿದ್ದರೆ
+             ದಾಖಲೆಗಳು = 0;
+           advance_ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ (ಸ್ಥಾನಾಂತರ);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          records = 0;
-          *bytes = 0;
+          ದಾಖಲೆಗಳು = 0;
+          *ಬೈಟುಗಳು = 0;
         }
-      return records;
+      ಹಿಂತಿರುಗಿ ದಾಖಲೆಗಳು;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      int lseek_errno = errno;
+      ಪೂರ್ಣಾಂಕ lseek_errno = errno;
 
       /* The seek request may have failed above if it was too big
          (> device size, > max file size, etc.)
          Or it may not have been done at all (> OFF_T_MAX).
          Therefore try to seek to the end of the file,
          to avoid redundant reading.  */
-      if (lseek (fdesc, 0, SEEK_END) >= 0)
+      ಆದರೆ (lseek (fdesc, 0, SEEK_END) >= 0)
         {
           /* File is seekable, and we're at the end of it, and
              size <= OFF_T_MAX. So there's no point using read to advance.  */
 
-          if (!lseek_errno)
+          ಆದರೆ (!lseek_errno)
             {
               /* The original seek was not attempted as offset > OFF_T_MAX.
                  We should error for write as can't get to the desired
@@ -1882,46 +1882,46 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
         }
       /* else file_size && offset > OFF_T_MAX or file ! seekable */
 
-      char *buf;
-      if (fdesc == STDIN_FILENO)
+      ಅಕ್ಷರ *buf;
+      ಆದರೆ (fdesc == STDIN_FILENO)
         {
           alloc_ibuf ();
           buf = ibuf;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           alloc_obuf ();
           buf = obuf;
         }
 
-      do
+      ಮಾಡು
         {
-          ssize_t nread = iread_fnc (fdesc, buf, records ? blocksize : *bytes);
-          if (nread < 0)
+          ssize_t nread = iread_fnc (fdesc, buf, ದಾಖಲೆಗಳು ? blocksize : *ಬೈಟುಗಳು);
+          ಆದರೆ (nread < 0)
             {
-              if (fdesc == STDIN_FILENO)
+              ಆದರೆ (fdesc == STDIN_FILENO)
                 {
                   diagnose (errno, _("error reading %s"), quoteaf (file));
-                  if (conversions_mask & C_NOERROR)
+                  ಆದರೆ (conversions_ಮುಖವಾಡ & C_NOERROR)
                     print_stats ();
                 }
-              else
+              ಇಲ್ಲದಿದ್ದರೆ
                 diagnose (lseek_errno, _("%s: cannot seek"), quotef (file));
               quit (EXIT_FAILURE);
             }
-          else if (nread == 0)
-            break;
-          else if (fdesc == STDIN_FILENO)
-            advance_input_offset (nread);
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (nread == 0)
+            ನಿಲ್ಲಿಸು;
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fdesc == STDIN_FILENO)
+            advance_ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ (nread);
 
-          if (records != 0)
-            records--;
-          else
-            *bytes = 0;
+          ಆದರೆ (ದಾಖಲೆಗಳು != 0)
+            ದಾಖಲೆಗಳು--;
+          ಇಲ್ಲದಿದ್ದರೆ
+            *ಬೈಟುಗಳು = 0;
         }
-      while (records || *bytes);
+      ಆಗ (ದಾಖಲೆಗಳು || *ಬೈಟುಗಳು);
 
-      return records;
+      ಹಿಂತಿರುಗಿ ದಾಖಲೆಗಳು;
     }
 }
 
@@ -1931,92 +1931,92 @@ skip (int fdesc, char const *file, intmax_t records, idx_t blocksize,
    Return true if successful, or if the input is already known to not
    be seekable.  */
 
-static bool
-advance_input_after_read_error (idx_t nbytes)
+ಸ್ಥಿರ bool
+advance_ಒಳಹರಿವು_after_read_error (idx_t nbytes)
 {
-  if (! input_seekable)
+  ಆದರೆ (! ಒಳಹರಿವು_seekable)
     {
-      if (input_seek_errno == ESPIPE)
-        return true;
-      errno = input_seek_errno;
+      ಆದರೆ (ಒಳಹರಿವು_seek_errno == ESPIPE)
+        ಹಿಂತಿರುಗಿ true;
+      errno = ಒಳಹರಿವು_seek_errno;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      off_t offset;
-      advance_input_offset (nbytes);
-      if (input_offset < 0)
+      off_t ಸ್ಥಾನಾಂತರ;
+      advance_ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ (nbytes);
+      ಆದರೆ (ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ < 0)
         {
           diagnose (0, _("offset overflow while reading file %s"),
-                    quoteaf (input_file));
-          return false;
+                    quoteaf (ಒಳಹರಿವು_file));
+          ಹಿಂತಿರುಗಿ false;
         }
-      offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-      if (0 <= offset)
+      ಸ್ಥಾನಾಂತರ = lseek (STDIN_FILENO, 0, SEEK_CUR);
+      ಆದರೆ (0 <= ಸ್ಥಾನಾಂತರ)
         {
           off_t diff;
-          if (offset == input_offset)
-            return true;
-          diff = input_offset - offset;
-          if (! (0 <= diff && diff <= nbytes) && status_level != STATUS_NONE)
+          ಆದರೆ (ಸ್ಥಾನಾಂತರ == ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ)
+            ಹಿಂತಿರುಗಿ true;
+          diff = ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ - ಸ್ಥಾನಾಂತರ;
+          ಆದರೆ (! (0 <= diff && diff <= nbytes) && ಸ್ಥಿತಿ_level != ಸ್ಥಿತಿ_NONE)
             diagnose (0, _("warning: invalid file offset after failed read"));
-          if (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
-            return true;
-          if (errno == 0)
+          ಆದರೆ (0 <= lseek (STDIN_FILENO, diff, SEEK_CUR))
+            ಹಿಂತಿರುಗಿ true;
+          ಆದರೆ (errno == 0)
             diagnose (0, _("cannot work around kernel bug after all"));
         }
     }
 
-  diagnose (errno, _("%s: cannot seek"), quotef (input_file));
-  return false;
+  diagnose (errno, _("%s: cannot seek"), quotef (ಒಳಹರಿವು_file));
+  ಹಿಂತಿರುಗಿ false;
 }
 
 /* Copy NREAD bytes of BUF, with no conversions.  */
 
-static void
-copy_simple (char const *buf, idx_t nread)
+ಸ್ಥಿರ ಶೂನ್ಯ
+copy_simple (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *buf, idx_t nread)
 {
-  char const *start = buf;	/* First uncopied char in BUF.  */
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಆರಂಭ = buf;	/* First uncopied char in BUF.  */
 
-  do
+  ಮಾಡು
     {
       idx_t nfree = MIN (nread, output_blocksize - oc);
 
-      memcpy (obuf + oc, start, nfree);
+      ಸ್ಮರಣೆ_ನಕಲು (obuf + oc, ಆರಂಭ, nfree);
 
       nread -= nfree;		/* Update the number of bytes left to copy. */
-      start += nfree;
+      ಆರಂಭ += nfree;
       oc += nfree;
-      if (oc >= output_blocksize)
+      ಆದರೆ (oc >= output_blocksize)
         write_output ();
     }
-  while (nread != 0);
+  ಆಗ (nread != 0);
 }
 
 /* Copy NREAD bytes of BUF, doing conv=block
    (pad newline-terminated records to 'conversion_blocksize',
    replacing the newline with trailing spaces).  */
 
-static void
-copy_with_block (char const *buf, idx_t nread)
+ಸ್ಥಿರ ಶೂನ್ಯ
+copy_with_ಖಂಡ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *buf, idx_t nread)
 {
-  for (idx_t i = nread; i; i--, buf++)
+  ಗಾಗಿ (idx_t i = nread; i; i--, buf++)
     {
-      if (*buf == newline_character)
+      ಆದರೆ (*buf == newline_character)
         {
-          if (col < conversion_blocksize)
+          ಆದರೆ (ಲಂಬಸಾಲು < conversion_blocksize)
             {
-              for (idx_t j = col; j < conversion_blocksize; j++)
+              ಗಾಗಿ (idx_t j = ಲಂಬಸಾಲು; j < conversion_blocksize; j++)
                 output_char (space_character);
             }
-          col = 0;
+          ಲಂಬಸಾಲು = 0;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          if (col == conversion_blocksize)
+          ಆದರೆ (ಲಂಬಸಾಲು == conversion_blocksize)
             r_truncate++;
-          else if (col < conversion_blocksize)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಲಂಬಸಾಲು < conversion_blocksize)
             output_char (*buf);
-          col++;
+          ಲಂಬಸಾಲು++;
         }
     }
 }
@@ -2025,28 +2025,28 @@ copy_with_block (char const *buf, idx_t nread)
    (replace trailing spaces in 'conversion_blocksize'-sized records
    with a newline).  */
 
-static void
-copy_with_unblock (char const *buf, idx_t nread)
+ಸ್ಥಿರ ಶೂನ್ಯ
+copy_with_unblock (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *buf, idx_t nread)
 {
-  static idx_t pending_spaces = 0;
+  ಸ್ಥಿರ idx_t pending_spaces = 0;
 
-  for (idx_t i = 0; i < nread; i++)
+  ಗಾಗಿ (idx_t i = 0; i < nread; i++)
     {
-      char c = buf[i];
+      ಅಕ್ಷರ c = buf[i];
 
-      if (col++ >= conversion_blocksize)
+      ಆದರೆ (ಲಂಬಸಾಲು++ >= conversion_blocksize)
         {
-          col = pending_spaces = 0; /* Wipe out any pending spaces.  */
+          ಲಂಬಸಾಲು = pending_spaces = 0; /* Wipe out any pending spaces.  */
           i--;			/* Push the char back; get it later. */
           output_char (newline_character);
         }
-      else if (c == space_character)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (c == space_character)
         pending_spaces++;
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* 'c' is the character after a run of spaces that were not
              at the end of the conversion buffer.  Output them.  */
-          while (pending_spaces)
+          ಆಗ (pending_spaces)
             {
               output_char (space_character);
               --pending_spaces;
@@ -2059,34 +2059,34 @@ copy_with_unblock (char const *buf, idx_t nread)
 /* Set the file descriptor flags for FD that correspond to the nonzero bits
    in ADD_FLAGS.  The file's name is NAME.  */
 
-static void
-set_fd_flags (int fd, int add_flags, char const *name)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಗಣ_fd_flags (ಪೂರ್ಣಾಂಕ fd, ಪೂರ್ಣಾಂಕ ಕೂಡಿಸು_flags, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *name)
 {
   /* Ignore file creation flags that are no-ops on file descriptors.  */
-  add_flags &= ~ (O_NOCTTY | O_NOFOLLOW);
+  ಕೂಡಿಸು_flags &= ~ (O_NOCTTY | O_NOFOLLOW);
 
-  if (add_flags)
+  ಆದರೆ (ಕೂಡಿಸು_flags)
     {
-      int old_flags = fcntl (fd, F_GETFL);
-      int new_flags = old_flags | add_flags;
+      ಪೂರ್ಣಾಂಕ old_flags = fcntl (fd, F_GETFL);
+      ಪೂರ್ಣಾಂಕ new_flags = old_flags | ಕೂಡಿಸು_flags;
       bool ok = true;
-      if (old_flags < 0)
+      ಆದರೆ (old_flags < 0)
         ok = false;
-      else if (old_flags != new_flags)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (old_flags != new_flags)
         {
-          if (new_flags & (O_DIRECTORY | O_NOLINKS))
+          ಆದರೆ (new_flags & (O_DIRECTORY | O_NOLINKS))
             {
               /* NEW_FLAGS contains at least one file creation flag that
                  requires some checking of the open file descriptor.  */
-              struct stat st;
-              if (ifstat (fd, &st) != 0)
+              ರಚನೆ stat st;
+              ಆದರೆ (ifstat (fd, &st) != 0)
                 ok = false;
-              else if ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_mode))
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ ((new_flags & O_DIRECTORY) && ! S_ISDIR (st.st_ಬಹುಲಕ))
                 {
                   errno = ENOTDIR;
                   ok = false;
                 }
-              else if ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ ((new_flags & O_NOLINKS) && 1 < st.st_nlink)
                 {
                   errno = EMLINK;
                   ok = false;
@@ -2094,40 +2094,40 @@ set_fd_flags (int fd, int add_flags, char const *name)
               new_flags &= ~ (O_DIRECTORY | O_NOLINKS);
             }
 
-          if (ok && old_flags != new_flags
+          ಆದರೆ (ok && old_flags != new_flags
               && fcntl (fd, F_SETFL, new_flags) == -1)
             ok = false;
         }
 
-      if (!ok)
+      ಆದರೆ (!ok)
         error (EXIT_FAILURE, errno, _("setting flags for %s"), quoteaf (name));
     }
 }
 
 /* The main loop.  */
 
-static int
-dd_copy (void)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+dd_copy (ಶೂನ್ಯ)
 {
-  char *bufstart;		/* Input buffer. */
+  ಅಕ್ಷರ *bufstart;		/* Input buffer. */
   ssize_t nread;		/* Bytes read in the current block.  */
 
   /* If nonzero, then the previously read block was partial and
      PARTREAD was its size.  */
   idx_t partread = 0;
 
-  int exit_status = EXIT_SUCCESS;
-  idx_t n_bytes_read;
+  ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ = EXIT_SUCCESS;
+  idx_t n_ಬೈಟುಗಳು_read;
 
-  if (skip_records != 0 || skip_bytes != 0)
+  ಆದರೆ (skip_ದಾಖಲೆಗಳು != 0 || skip_ಬೈಟುಗಳು != 0)
     {
-      intmax_t us_bytes;
-      bool us_bytes_overflow =
-        (ckd_mul (&us_bytes, skip_records, input_blocksize)
-         || ckd_add (&us_bytes, skip_bytes, us_bytes));
-      off_t input_offset0 = input_offset;
-      intmax_t us_blocks = skip (STDIN_FILENO, input_file,
-                                 skip_records, input_blocksize, &skip_bytes);
+      intmax_t us_ಬೈಟುಗಳು;
+      bool us_ಬೈಟುಗಳು_ಅತಿಪ್ರವಾಹ =
+        (ckd_mul (&us_ಬೈಟುಗಳು, skip_ದಾಖಲೆಗಳು, ಒಳಹರಿವು_blocksize)
+         || ckd_ಕೂಡಿಸು (&us_ಬೈಟುಗಳು, skip_ಬೈಟುಗಳು, us_ಬೈಟುಗಳು));
+      off_t ಒಳಹರಿವು_offset0 = ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ;
+      intmax_t us_ಖಂಡಗಳು = skip (STDIN_FILENO, ಒಳಹರಿವು_file,
+                                 skip_ದಾಖಲೆಗಳು, ಒಳಹರಿವು_blocksize, &skip_ಬೈಟುಗಳು);
 
       /* POSIX doesn't say what to do when dd detects it has been
          asked to skip past EOF, so I assume it's non-fatal.
@@ -2135,249 +2135,249 @@ dd_copy (void)
              1. file is too small
              2. pipe has not enough data
              3. partial reads  */
-      if ((us_blocks
-           || (0 <= input_offset
-               && (us_bytes_overflow
-                   || us_bytes != input_offset - input_offset0)))
-          && status_level != STATUS_NONE)
+      ಆದರೆ ((us_ಖಂಡಗಳು
+           || (0 <= ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ
+               && (us_ಬೈಟುಗಳು_ಅತಿಪ್ರವಾಹ
+                   || us_ಬೈಟುಗಳು != ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ - ಒಳಹರಿವು_offset0)))
+          && ಸ್ಥಿತಿ_level != ಸ್ಥಿತಿ_NONE)
         {
           diagnose (0, _("%s: cannot skip to specified offset"),
-                    quotef (input_file));
+                    quotef (ಒಳಹರಿವು_file));
         }
     }
 
-  if (seek_records != 0 || seek_bytes != 0)
+  ಆದರೆ (seek_ದಾಖಲೆಗಳು != 0 || seek_ಬೈಟುಗಳು != 0)
     {
-      idx_t bytes = seek_bytes;
-      intmax_t write_records = skip (STDOUT_FILENO, output_file,
-                                      seek_records, output_blocksize, &bytes);
+      idx_t ಬೈಟುಗಳು = seek_ಬೈಟುಗಳು;
+      intmax_t write_ದಾಖಲೆಗಳು = skip (STDOUT_FILENO, output_file,
+                                      seek_ದಾಖಲೆಗಳು, output_blocksize, &ಬೈಟುಗಳು);
 
-      if (write_records != 0 || bytes != 0)
+      ಆದರೆ (write_ದಾಖಲೆಗಳು != 0 || ಬೈಟುಗಳು != 0)
         {
-          memset (obuf, 0, write_records ? output_blocksize : bytes);
+          memset (obuf, 0, write_ದಾಖಲೆಗಳು ? output_blocksize : ಬೈಟುಗಳು);
 
-          do
+          ಮಾಡು
             {
-              idx_t size = write_records ? output_blocksize : bytes;
-              if (iwrite (STDOUT_FILENO, obuf, size) != size)
+              idx_t ಗಾತ್ರ_2 = write_ದಾಖಲೆಗಳು ? output_blocksize : ಬೈಟುಗಳು;
+              ಆದರೆ (iwrite (STDOUT_FILENO, obuf, ಗಾತ್ರ_2) != ಗಾತ್ರ_2)
                 {
                   diagnose (errno, _("writing to %s"), quoteaf (output_file));
                   quit (EXIT_FAILURE);
                 }
 
-              if (write_records != 0)
-                write_records--;
-              else
-                bytes = 0;
+              ಆದರೆ (write_ದಾಖಲೆಗಳು != 0)
+                write_ದಾಖಲೆಗಳು--;
+              ಇಲ್ಲದಿದ್ದರೆ
+                ಬೈಟುಗಳು = 0;
             }
-          while (write_records || bytes);
+          ಆಗ (write_ದಾಖಲೆಗಳು || ಬೈಟುಗಳು);
         }
     }
 
-  if (max_records == 0 && max_bytes == 0)
-    return exit_status;
+  ಆದರೆ (max_ದಾಖಲೆಗಳು == 0 && max_ಬೈಟುಗಳು == 0)
+    ಹಿಂತಿರುಗಿ exit_ಸ್ಥಿತಿ;
 
   alloc_ibuf ();
   alloc_obuf ();
-  int saved_byte = -1;
+  ಪೂರ್ಣಾಂಕ saved_byte = -1;
 
-  while (true)
+  ಆಗ (true)
     {
-      if (status_level == STATUS_PROGRESS)
+      ಆದರೆ (ಸ್ಥಿತಿ_level == ಸ್ಥಿತಿ_ಪ್ರಗತಿ)
         {
-          xtime_t progress_time = gethrxtime ();
-          if (next_time <= progress_time)
+          xtime_t ಪ್ರಗತಿ_ಸಮಯ = gethrxtime ();
+          ಆದರೆ (ಮುಂದಿನ_ಸಮಯ <= ಪ್ರಗತಿ_ಸಮಯ)
             {
-              print_xfer_stats (progress_time);
-              next_time += XTIME_PRECISION;
+              print_xfer_stats (ಪ್ರಗತಿ_ಸಮಯ);
+              ಮುಂದಿನ_ಸಮಯ += XTIME_PRECISION;
             }
         }
 
-      if (r_partial + r_full >= max_records + !!max_bytes)
-        break;
+      ಆದರೆ (r_partial + r_ತುಂಬಿದ >= max_ದಾಖಲೆಗಳು + !!max_ಬೈಟುಗಳು)
+        ನಿಲ್ಲಿಸು;
 
       /* Zero the buffer before reading, so that if we get a read error,
          whatever data we are able to read is followed by zeros.
          This minimizes data loss. */
-      if ((conversions_mask & C_SYNC) && (conversions_mask & C_NOERROR))
+      ಆದರೆ ((conversions_ಮುಖವಾಡ & C_SYNC) && (conversions_ಮುಖವಾಡ & C_NOERROR))
         memset (ibuf,
-                (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                input_blocksize);
+                (conversions_ಮುಖವಾಡ & (C_ಖಂಡ | C_UNBLOCK)) ? ' ' : '\0',
+                ಒಳಹರಿವು_blocksize);
 
-      if (r_partial + r_full >= max_records)
-        nread = iread_fnc (STDIN_FILENO, ibuf, max_bytes);
-      else
-        nread = iread_fnc (STDIN_FILENO, ibuf, input_blocksize);
+      ಆದರೆ (r_partial + r_ತುಂಬಿದ >= max_ದಾಖಲೆಗಳು)
+        nread = iread_fnc (STDIN_FILENO, ibuf, max_ಬೈಟುಗಳು);
+      ಇಲ್ಲದಿದ್ದರೆ
+        nread = iread_fnc (STDIN_FILENO, ibuf, ಒಳಹರಿವು_blocksize);
 
-      if (nread > 0)
+      ಆದರೆ (nread > 0)
         {
-          advance_input_offset (nread);
-          if (i_nocache)
+          advance_ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ (nread);
+          ಆದರೆ (i_nocache)
             invalidate_cache (STDIN_FILENO, nread);
         }
-      else if (nread == 0)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (nread == 0)
         {
           i_nocache_eof |= i_nocache;
-          o_nocache_eof |= o_nocache && ! (conversions_mask & C_NOTRUNC);
-          break;			/* EOF.  */
+          o_nocache_eof |= o_nocache && ! (conversions_ಮುಖವಾಡ & C_NOTRUNC);
+          ನಿಲ್ಲಿಸು;			/* EOF.  */
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          if (!(conversions_mask & C_NOERROR) || status_level != STATUS_NONE)
-            diagnose (errno, _("error reading %s"), quoteaf (input_file));
+          ಆದರೆ (!(conversions_ಮುಖವಾಡ & C_NOERROR) || ಸ್ಥಿತಿ_level != ಸ್ಥಿತಿ_NONE)
+            diagnose (errno, _("error reading %s"), quoteaf (ಒಳಹರಿವು_file));
 
-          if (conversions_mask & C_NOERROR)
+          ಆದರೆ (conversions_ಮುಖವಾಡ & C_NOERROR)
             {
               print_stats ();
-              idx_t bad_portion = input_blocksize - partread;
+              idx_t bad_portion = ಒಳಹರಿವು_blocksize - partread;
 
               /* We already know this data is not cached,
                  but call this so that correct offsets are maintained.  */
               invalidate_cache (STDIN_FILENO, bad_portion);
 
               /* Seek past the bad block if possible. */
-              if (!advance_input_after_read_error (bad_portion))
+              ಆದರೆ (!advance_ಒಳಹರಿವು_after_read_error (bad_portion))
                 {
-                  exit_status = EXIT_FAILURE;
+                  exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
 
                   /* Suppress duplicate diagnostics.  */
-                  input_seekable = false;
-                  input_seek_errno = ESPIPE;
+                  ಒಳಹರಿವು_seekable = false;
+                  ಒಳಹರಿವು_seek_errno = ESPIPE;
                 }
-              if ((conversions_mask & C_SYNC) && !partread)
+              ಆದರೆ ((conversions_ಮುಖವಾಡ & C_SYNC) && !partread)
                 /* Replace the missing input with null bytes and
                    proceed normally.  */
                 nread = 0;
-              else
-                continue;
+              ಇಲ್ಲದಿದ್ದರೆ
+                ಮುಂದುವರಿ;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               /* Write any partial block. */
-              exit_status = EXIT_FAILURE;
-              break;
+              exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
+              ನಿಲ್ಲಿಸು;
             }
         }
 
-      n_bytes_read = nread;
+      n_ಬೈಟುಗಳು_read = nread;
 
-      if (n_bytes_read < input_blocksize)
+      ಆದರೆ (n_ಬೈಟುಗಳು_read < ಒಳಹರಿವು_blocksize)
         {
           r_partial++;
-          partread = n_bytes_read;
-          if (conversions_mask & C_SYNC)
+          partread = n_ಬೈಟುಗಳು_read;
+          ಆದರೆ (conversions_ಮುಖವಾಡ & C_SYNC)
             {
-              if (!(conversions_mask & C_NOERROR))
+              ಆದರೆ (!(conversions_ಮುಖವಾಡ & C_NOERROR))
                 /* If C_NOERROR, we zeroed the block before reading. */
-                memset (ibuf + n_bytes_read,
-                        (conversions_mask & (C_BLOCK | C_UNBLOCK)) ? ' ' : '\0',
-                        input_blocksize - n_bytes_read);
-              n_bytes_read = input_blocksize;
+                memset (ibuf + n_ಬೈಟುಗಳು_read,
+                        (conversions_ಮುಖವಾಡ & (C_ಖಂಡ | C_UNBLOCK)) ? ' ' : '\0',
+                        ಒಳಹರಿವು_blocksize - n_ಬೈಟುಗಳು_read);
+              n_ಬೈಟುಗಳು_read = ಒಳಹರಿವು_blocksize;
             }
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          r_full++;
+          r_ತುಂಬಿದ++;
           partread = 0;
         }
 
-      if (ibuf == obuf)		/* If not C_TWOBUFS. */
+      ಆದರೆ (ibuf == obuf)		/* If not C_TWOBUFS. */
         {
-          idx_t nwritten = iwrite (STDOUT_FILENO, obuf, n_bytes_read);
-          w_bytes += nwritten;
-          if (nwritten != n_bytes_read)
+          idx_t nwritten = iwrite (STDOUT_FILENO, obuf, n_ಬೈಟುಗಳು_read);
+          w_ಬೈಟುಗಳು += nwritten;
+          ಆದರೆ (nwritten != n_ಬೈಟುಗಳು_read)
             {
               diagnose (errno, _("error writing %s"), quoteaf (output_file));
-              if (nwritten != 0)
+              ಆದರೆ (nwritten != 0)
                 w_partial++;
-              return EXIT_FAILURE;
+              ಹಿಂತಿರುಗಿ EXIT_FAILURE;
             }
-          else if (n_bytes_read == input_blocksize)
-            w_full++;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (n_ಬೈಟುಗಳು_read == ಒಳಹರಿವು_blocksize)
+            w_ತುಂಬಿದ++;
+          ಇಲ್ಲದಿದ್ದರೆ
             w_partial++;
-          continue;
+          ಮುಂದುವರಿ;
         }
 
       /* Do any translations on the whole buffer at once.  */
 
-      if (translation_needed)
-        translate_buffer (ibuf, n_bytes_read);
+      ಆದರೆ (translation_needed)
+        translate_ಬಫರ್ (ibuf, n_ಬೈಟುಗಳು_read);
 
-      if (conversions_mask & C_SWAB)
-        bufstart = swab_buffer (ibuf, &n_bytes_read, &saved_byte);
-      else
+      ಆದರೆ (conversions_ಮುಖವಾಡ & C_SWAB)
+        bufstart = swab_ಬಫರ್ (ibuf, &n_ಬೈಟುಗಳು_read, &saved_byte);
+      ಇಲ್ಲದಿದ್ದರೆ
         bufstart = ibuf;
 
-      if (conversions_mask & C_BLOCK)
-        copy_with_block (bufstart, n_bytes_read);
-      else if (conversions_mask & C_UNBLOCK)
-        copy_with_unblock (bufstart, n_bytes_read);
-      else
-        copy_simple (bufstart, n_bytes_read);
+      ಆದರೆ (conversions_ಮುಖವಾಡ & C_ಖಂಡ)
+        copy_with_ಖಂಡ (bufstart, n_ಬೈಟುಗಳು_read);
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (conversions_ಮುಖವಾಡ & C_UNBLOCK)
+        copy_with_unblock (bufstart, n_ಬೈಟುಗಳು_read);
+      ಇಲ್ಲದಿದ್ದರೆ
+        copy_simple (bufstart, n_ಬೈಟುಗಳು_read);
     }
 
   /* If we have a char left as a result of conv=swab, output it.  */
-  if (0 <= saved_byte)
+  ಆದರೆ (0 <= saved_byte)
     {
-      char saved_char = saved_byte;
-      if (conversions_mask & C_BLOCK)
-        copy_with_block (&saved_char, 1);
-      else if (conversions_mask & C_UNBLOCK)
+      ಅಕ್ಷರ saved_char = saved_byte;
+      ಆದರೆ (conversions_ಮುಖವಾಡ & C_ಖಂಡ)
+        copy_with_ಖಂಡ (&saved_char, 1);
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (conversions_ಮುಖವಾಡ & C_UNBLOCK)
         copy_with_unblock (&saved_char, 1);
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         output_char (saved_char);
     }
 
-  if ((conversions_mask & C_BLOCK) && col > 0)
+  ಆದರೆ ((conversions_ಮುಖವಾಡ & C_ಖಂಡ) && ಲಂಬಸಾಲು > 0)
     {
       /* If the final input line didn't end with a '\n', pad
          the output block to 'conversion_blocksize' chars.  */
-      for (idx_t i = col; i < conversion_blocksize; i++)
+      ಗಾಗಿ (idx_t i = ಲಂಬಸಾಲು; i < conversion_blocksize; i++)
         output_char (space_character);
     }
 
-  if (col && (conversions_mask & C_UNBLOCK))
+  ಆದರೆ (ಲಂಬಸಾಲು && (conversions_ಮುಖವಾಡ & C_UNBLOCK))
     {
       /* If there was any output, add a final '\n'.  */
       output_char (newline_character);
     }
 
   /* Write out the last block. */
-  if (oc != 0)
+  ಆದರೆ (oc != 0)
     {
       idx_t nwritten = iwrite (STDOUT_FILENO, obuf, oc);
-      w_bytes += nwritten;
-      if (nwritten != 0)
+      w_ಬೈಟುಗಳು += nwritten;
+      ಆದರೆ (nwritten != 0)
         w_partial++;
-      if (nwritten != oc)
+      ಆದರೆ (nwritten != oc)
         {
           diagnose (errno, _("error writing %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          ಹಿಂತಿರುಗಿ EXIT_FAILURE;
         }
     }
 
   /* If the last write was converted to a seek, then for a regular file
      or shared memory object, ftruncate to extend the size.  */
-  if (final_op_was_seek)
+  ಆದರೆ (final_op_was_seek)
     {
-      struct stat stdout_stat;
-      if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+      ರಚನೆ stat stdout_stat;
+      ಆದರೆ (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
         {
           diagnose (errno, _("cannot fstat %s"), quoteaf (output_file));
-          return EXIT_FAILURE;
+          ಹಿಂತಿರುಗಿ EXIT_FAILURE;
         }
-      if (S_ISREG (stdout_stat.st_mode) || S_TYPEISSHM (&stdout_stat))
+      ಆದರೆ (S_ISREG (stdout_stat.st_ಬಹುಲಕ) || S_TYPEISSHM (&stdout_stat))
         {
-          off_t output_offset = lseek (STDOUT_FILENO, 0, SEEK_CUR);
-          if (0 <= output_offset && stdout_stat.st_size < output_offset)
+          off_t output_ಸ್ಥಾನಾಂತರ = lseek (STDOUT_FILENO, 0, SEEK_CUR);
+          ಆದರೆ (0 <= output_ಸ್ಥಾನಾಂತರ && stdout_stat.st_ಗಾತ್ರ < output_ಸ್ಥಾನಾಂತರ)
             {
-              if (iftruncate (STDOUT_FILENO, output_offset) != 0)
+              ಆದರೆ (iftruncate (STDOUT_FILENO, output_ಸ್ಥಾನಾಂತರ) != 0)
                 {
                   diagnose (errno, _("failed to truncate to %jd bytes"
                                      " in output file %s"),
-                            (intmax_t) {output_offset}, quoteaf (output_file));
-                  return EXIT_FAILURE;
+                            (intmax_t) {output_ಸ್ಥಾನಾಂತರ}, quoteaf (output_file));
+                  ಹಿಂತಿರುಗಿ EXIT_FAILURE;
                 }
             }
         }
@@ -2385,12 +2385,12 @@ dd_copy (void)
 
   /* fdatasync/fsync can take a long time, so issue a final progress
      indication now if progress has been made since the previous indication.  */
-  if (conversions_mask & (C_FDATASYNC | C_FSYNC)
-      && status_level == STATUS_PROGRESS
-      && 0 <= reported_w_bytes && reported_w_bytes < w_bytes)
+  ಆದರೆ (conversions_ಮುಖವಾಡ & (C_FDATASYNC | C_FSYNC)
+      && ಸ್ಥಿತಿ_level == ಸ್ಥಿತಿ_ಪ್ರಗತಿ
+      && 0 <= reported_w_ಬೈಟುಗಳು && reported_w_ಬೈಟುಗಳು < w_ಬೈಟುಗಳು)
     print_xfer_stats (0);
 
-  return exit_status;
+  ಹಿಂತಿರುಗಿ exit_ಸ್ಥಿತಿ;
 }
 
 /* Synchronize output according to conversions_mask.
@@ -2399,41 +2399,41 @@ dd_copy (void)
    Clear bits in conversions_mask so that synchronization is done only once.
    Return zero if successful, an exit status otherwise.  */
 
-static int
-synchronize_output (void)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+synchronize_output (ಶೂನ್ಯ)
 {
-  int exit_status = 0;
-  int mask = conversions_mask;
-  conversions_mask &= ~ (C_FDATASYNC | C_FSYNC);
+  ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ = 0;
+  ಪೂರ್ಣಾಂಕ ಮುಖವಾಡ = conversions_ಮುಖವಾಡ;
+  conversions_ಮುಖವಾಡ &= ~ (C_FDATASYNC | C_FSYNC);
 
-  if ((mask & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
+  ಆದರೆ ((ಮುಖವಾಡ & C_FDATASYNC) && ifdatasync (STDOUT_FILENO) != 0)
     {
-      if (errno != ENOSYS && errno != EINVAL)
+      ಆದರೆ (errno != ENOSYS && errno != EINVAL)
         {
           diagnose (errno, _("fdatasync failed for %s"), quoteaf (output_file));
-          exit_status = EXIT_FAILURE;
+          exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
         }
-      mask |= C_FSYNC;
+      ಮುಖವಾಡ |= C_FSYNC;
     }
 
-  if ((mask & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
+  ಆದರೆ ((ಮುಖವಾಡ & C_FSYNC) && ifsync (STDOUT_FILENO) != 0)
     {
       diagnose (errno, _("fsync failed for %s"), quoteaf (output_file));
-      return EXIT_FAILURE;
+      ಹಿಂತಿರುಗಿ EXIT_FAILURE;
     }
 
-  return exit_status;
+  ಹಿಂತಿರುಗಿ exit_ಸ್ಥಿತಿ;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  off_t offset;
+  off_t ಸ್ಥಾನಾಂತರ;
 
   install_signal_handlers ();
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -2441,92 +2441,92 @@ main (int argc, char **argv)
   /* Arrange to close stdout if parse_long_options exits.  */
   atexit (maybe_close_stdout);
 
-  page_size = getpagesize ();
+  ಪುಟ_ಗಾತ್ರ = getpagesize ();
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE, Version,
+  parse_gnu_standard_options_only (argc, argv, ಕಾರ್ಯಕ್ರಮ_NAME, PACKAGE, ಆವೃತ್ತಿ,
                                    true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *) ಖಾಲಿ);
   close_stdout_required = false;
 
   /* Initialize translation table to identity translation. */
-  for (int i = 0; i < 256; i++)
-    trans_table[i] = i;
+  ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = 0; i < 256; i++)
+    trans_ಕೋಷ್ಟಕ[i] = i;
 
   /* Decode arguments. */
   scanargs (argc, argv);
 
   apply_translations ();
 
-  if (input_file == NULL)
+  ಆದರೆ (ಒಳಹರಿವು_file == ಖಾಲಿ)
     {
-      input_file = _("standard input");
-      set_fd_flags (STDIN_FILENO, input_flags, input_file);
+      ಒಳಹರಿವು_file = _("standard input");
+      ಗಣ_fd_flags (STDIN_FILENO, ಒಳಹರಿವು_flags, ಒಳಹರಿವು_file);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      if (ifd_reopen (STDIN_FILENO, input_file, O_RDONLY | input_flags, 0) < 0)
+      ಆದರೆ (ifd_reopen (STDIN_FILENO, ಒಳಹರಿವು_file, O_RDONLY | ಒಳಹರಿವು_flags, 0) < 0)
         error (EXIT_FAILURE, errno, _("failed to open %s"),
-               quoteaf (input_file));
+               quoteaf (ಒಳಹರಿವು_file));
     }
 
-  offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  input_seekable = (0 <= offset);
-  input_offset = MAX (0, offset);
-  input_seek_errno = errno;
+  ಸ್ಥಾನಾಂತರ = lseek (STDIN_FILENO, 0, SEEK_CUR);
+  ಒಳಹರಿವು_seekable = (0 <= ಸ್ಥಾನಾಂತರ);
+  ಒಳಹರಿವು_ಸ್ಥಾನಾಂತರ = MAX (0, ಸ್ಥಾನಾಂತರ);
+  ಒಳಹರಿವು_seek_errno = errno;
 
-  if (output_file == NULL)
+  ಆದರೆ (output_file == ಖಾಲಿ)
     {
       output_file = _("standard output");
-      set_fd_flags (STDOUT_FILENO, output_flags, output_file);
+      ಗಣ_fd_flags (STDOUT_FILENO, output_flags, output_file);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      mode_t perms = MODE_RW_UGO;
-      int opts
+      mode_t perms = ಬಹುಲಕ_RW_UGO;
+      ಪೂರ್ಣಾಂಕ opts
         = (output_flags
-           | (conversions_mask & C_NOCREAT ? 0 : O_CREAT)
-           | (conversions_mask & C_EXCL ? O_EXCL : 0)
-           | (seek_records || (conversions_mask & C_NOTRUNC) ? 0 : O_TRUNC));
+           | (conversions_ಮುಖವಾಡ & C_NOCREAT ? 0 : O_CREAT)
+           | (conversions_ಮುಖವಾಡ & C_EXCL ? O_EXCL : 0)
+           | (seek_ದಾಖಲೆಗಳು || (conversions_ಮುಖವಾಡ & C_NOTRUNC) ? 0 : O_TRUNC));
 
-      off_t size;
-      if ((ckd_mul (&size, seek_records, output_blocksize)
-           || ckd_add (&size, seek_bytes, size))
-          && !(conversions_mask & C_NOTRUNC))
+      off_t ಗಾತ್ರ_2;
+      ಆದರೆ ((ckd_mul (&ಗಾತ್ರ_2, seek_ದಾಖಲೆಗಳು, output_blocksize)
+           || ckd_ಕೂಡಿಸು (&ಗಾತ್ರ_2, seek_ಬೈಟುಗಳು, ಗಾತ್ರ_2))
+          && !(conversions_ಮುಖವಾಡ & C_NOTRUNC))
         error (EXIT_FAILURE, 0,
                _("offset too large: "
                  "cannot truncate to a length of seek=%jd"
                  " (%td-byte) blocks"),
-               seek_records, output_blocksize);
+               seek_ದಾಖಲೆಗಳು, output_blocksize);
 
       /* Open the output file with *read* access only if we might
          need to read to satisfy a 'seek=' request.  If we can't read
          the file, go ahead with write-only access; it might work.  */
-      if ((! seek_records
+      ಆದರೆ ((! seek_ದಾಖಲೆಗಳು
            || ifd_reopen (STDOUT_FILENO, output_file, O_RDWR | opts, perms) < 0)
           && (ifd_reopen (STDOUT_FILENO, output_file, O_WRONLY | opts, perms)
               < 0))
         error (EXIT_FAILURE, errno, _("failed to open %s"),
                quoteaf (output_file));
 
-      if (seek_records != 0 && !(conversions_mask & C_NOTRUNC))
+      ಆದರೆ (seek_ದಾಖಲೆಗಳು != 0 && !(conversions_ಮುಖವಾಡ & C_NOTRUNC))
         {
-          if (iftruncate (STDOUT_FILENO, size) != 0)
+          ಆದರೆ (iftruncate (STDOUT_FILENO, ಗಾತ್ರ_2) != 0)
             {
               /* Complain only when ftruncate fails on a regular file, a
                  directory, or a shared memory object, as POSIX 1003.1-2004
                  specifies ftruncate's behavior only for these file types.
                  For example, do not complain when Linux kernel 2.4 ftruncate
                  fails on /dev/fd0.  */
-              int ftruncate_errno = errno;
-              struct stat stdout_stat;
-              if (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
+              ಪೂರ್ಣಾಂಕ ftruncate_errno = errno;
+              ರಚನೆ stat stdout_stat;
+              ಆದರೆ (ifstat (STDOUT_FILENO, &stdout_stat) != 0)
                 error (EXIT_FAILURE, errno, _("cannot fstat %s"),
                        quoteaf (output_file));
-              else if (S_ISREG (stdout_stat.st_mode)
-                       || S_ISDIR (stdout_stat.st_mode)
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (S_ISREG (stdout_stat.st_ಬಹುಲಕ)
+                       || S_ISDIR (stdout_stat.st_ಬಹುಲಕ)
                        || S_TYPEISSHM (&stdout_stat))
                 {
-                  intmax_t isize = size;
+                  intmax_t isize = ಗಾತ್ರ_2;
                   error (EXIT_FAILURE, ftruncate_errno,
                          _("failed to truncate to %jd bytes"
                            " in output file %s"),
@@ -2536,38 +2536,38 @@ main (int argc, char **argv)
         }
     }
 
-  start_time = gethrxtime ();
-  next_time = start_time + XTIME_PRECISION;
+  ಆರಂಭ_ಸಮಯ = gethrxtime ();
+  ಮುಂದಿನ_ಸಮಯ = ಆರಂಭ_ಸಮಯ + XTIME_PRECISION;
 
-  int copy_status = dd_copy ();
-  int sync_status = synchronize_output ();
-  int exit_status = copy_status | sync_status;
+  ಪೂರ್ಣಾಂಕ copy_ಸ್ಥಿತಿ = dd_copy ();
+  ಪೂರ್ಣಾಂಕ sync_ಸ್ಥಿತಿ = synchronize_output ();
+  ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ = copy_ಸ್ಥಿತಿ | sync_ಸ್ಥಿತಿ;
 
-  if (max_records == 0 && max_bytes == 0)
+  ಆದರೆ (max_ದಾಖಲೆಗಳು == 0 && max_ಬೈಟುಗಳು == 0)
     {
       /* Special case to invalidate cache to end of file.  */
-      if (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
+      ಆದರೆ (i_nocache && !invalidate_cache (STDIN_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
-                    quotef (input_file));
-          exit_status = EXIT_FAILURE;
+                    quotef (ಒಳಹರಿವು_file));
+          exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
         }
-      if (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
+      ಆದರೆ (o_nocache && !invalidate_cache (STDOUT_FILENO, 0))
         {
           diagnose (errno, _("failed to discard cache for: %s"),
                     quotef (output_file));
-          exit_status = EXIT_FAILURE;
+          exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
         }
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* Invalidate any pending region or to EOF if appropriate.  */
-      if (i_nocache || i_nocache_eof)
+      ಆದರೆ (i_nocache || i_nocache_eof)
         invalidate_cache (STDIN_FILENO, 0);
-      if (o_nocache || o_nocache_eof)
+      ಆದರೆ (o_nocache || o_nocache_eof)
         invalidate_cache (STDOUT_FILENO, 0);
     }
 
-  finish_up ();
-  main_exit (exit_status);
+  ಮುಕ್ತಾಯ_ಮೇಲೆ ();
+  main_exit (exit_ಸ್ಥಿತಿ);
 }

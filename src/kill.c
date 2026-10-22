@@ -16,93 +16,93 @@
 
 /* Written by Paul Eggert.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <signal.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "sig2str.h"
-#include "operand2sig.h"
-#include "quote.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "sig2str.h"
+#ಅನ್ತರ್ಭಾವ "operand2sig.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "kill"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "kill"
 
-#define AUTHORS proper_name ("Paul Eggert")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("Paul Eggert")
 
-static char const short_options[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ short_options[] =
   "0::1::2::3::4::5::6::7::8::9::"
   "A::B::C::D::E::F::G::H::I::J::K::M::"
   "N::O::P::Q::R::S::T::U::V::W::X::Y::Z::"
   "Lln:s:t";
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"list", no_argument, NULL, 'l'},
-  {"signal", required_argument, NULL, 's'},
-  {"table", no_argument, NULL, 't'},
+  {"list", no_ವಾದ, ಖಾಲಿ, 'l'},
+  {"signal", required_ವಾದ, ಖಾಲಿ, 's'},
+  {"table", no_ವಾದ, ಖಾಲಿ, 't'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [-s SIGNAL | -SIGNAL] PID...\n\
   or:  %s -l [SIGNAL]...\n\
   or:  %s -t [SIGNAL]...\n\
 "),
-              program_name, program_name, program_name);
+              ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Send signals to processes, or list signals.\n\
+Send ಸಂಕೇತಗಳು ಗಮ್ಯ processes, or list ಸಂಕೇತಗಳು.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -s, --signal=SIGNAL, -SIGNAL\n\
-         specify the name or number of the signal to be sent\n\
+  -s, --ಸಂಕೇತ=SIGNAL, -SIGNAL\n\
+         specify the name or ಸಂಖ್ಯೆ ದ the ಸಂಕೇತ ಗಮ್ಯ be ಕಳುಹಿಸಿದ\n\
 "));
       oputs (_("\
   -l, --list\n\
-         list signal names, or convert signal names to/from numbers\n\
+         list ಸಂಕೇತ ಹೆಸರುಗಳು, or convert ಸಂಕೇತ ಹೆಸರುಗಳು ಗಮ್ಯ/from numbers\n\
 "));
       oputs (_("\
-  -t, --table\n\
-         print a table of signal information\n\
+  -t, --ಕೋಷ್ಟಕ\n\
+         print a ಕೋಷ್ಟಕ ದ ಸಂಕೇತ information\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\n\
-SIGNAL may be a signal name like 'HUP', or a signal number like '1',\n\
-or the exit status of a process terminated by a signal.\n\
-PID is an integer; if negative it identifies a process group.\n\
+SIGNAL may be a ಸಂಕೇತ name like 'HUP', or a ಸಂಕೇತ ಸಂಖ್ಯೆ like '1',\n\
+or the ನಿರ್ಗಮಿಸು ಸ್ಥಿತಿ_2 ದ a process terminated by a ಸಂಕೇತ.\n\
+PID is an integer; ಆದರೆ negative it identifies a process ಗುಂಪು.\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      ಬರೆ (USAGE_BUILTIN_WARNING, ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Print a row of 'kill -t' output.  NUM_WIDTH is the maximum signal
    number width, and SIGNUM is the signal number to print.  The
    maximum name width is NAME_WIDTH, and SIGNAME is the name to print.  */
 
-static void
-print_table_row (int num_width, int signum,
-                 int name_width, char const *signame)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_ಕೋಷ್ಟಕ_ಅಡ್ಡಸಾಲು (ಪೂರ್ಣಾಂಕ ಅಂಕೆ_ಅಗಲ, ಪೂರ್ಣಾಂಕ signum,
+                 ಪೂರ್ಣಾಂಕ name_ಅಗಲ, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *signame)
 {
-  char const *description = strsignal (signum);
-  printf ("%*d %-*s %s\n", num_width, signum, name_width, signame,
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *description = strsignal (signum);
+  ಬರೆ ("%*d %-*s %s\n", ಅಂಕೆ_ಅಗಲ, signum, name_ಅಗಲ, signame,
           description ? description : "?");
 }
 
@@ -110,201 +110,201 @@ print_table_row (int num_width, int signum,
    Print the names specified by ARGV if nonzero; otherwise,
    print all known names.  Return a suitable exit status.  */
 
-static int
-list_signals (bool table, char *const *argv)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+list_ಸಂಕೇತಗಳು (bool ಕೋಷ್ಟಕ, ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *argv)
 {
-  int status = EXIT_SUCCESS;
-  char signame[SIG2STR_MAX];
+  ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2 = EXIT_SUCCESS;
+  ಅಕ್ಷರ signame[SIG2STR_MAX];
 
-  if (table)
+  ಆದರೆ (ಕೋಷ್ಟಕ)
     {
-      int name_width = 0;
+      ಪೂರ್ಣಾಂಕ name_ಅಗಲ = 0;
 
       /* Compute the maximum width of a signal number.  */
-      int num_width = 1;
-      for (int signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
-        num_width++;
+      ಪೂರ್ಣಾಂಕ ಅಂಕೆ_ಅಗಲ = 1;
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ signum = 1; signum <= SIGNUM_BOUND / 10; signum *= 10)
+        ಅಂಕೆ_ಅಗಲ++;
 
       /* Compute the maximum width of a signal name.  */
-      for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-        if (sig2str (signum, signame) == 0)
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ signum = 0; signum <= SIGNUM_BOUND; signum++)
+        ಆದರೆ (sig2str (signum, signame) == 0)
           {
-            idx_t len = strlen (signame);
-            if (name_width < len)
-              name_width = len;
+            idx_t len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (signame);
+            ಆದರೆ (name_ಅಗಲ < len)
+              name_ಅಗಲ = len;
           }
 
-      if (argv)
-        for (; *argv; argv++)
+      ಆದರೆ (argv)
+        ಗಾಗಿ (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else
+            ಪೂರ್ಣಾಂಕ signum = operand2sig (*argv);
+            ಆದರೆ (signum < 0)
+              ಸ್ಥಿತಿ_2 = EXIT_FAILURE;
+            ಇಲ್ಲದಿದ್ದರೆ
               {
-                if (sig2str (signum, signame) != 0)
-                  snprintf (signame, sizeof signame, "SIG%d", signum);
-                print_table_row (num_width, signum, name_width, signame);
+                ಆದರೆ (sig2str (signum, signame) != 0)
+                  snprintf (signame, ಗಾತ್ರ signame, "SIG%d", signum);
+                print_ಕೋಷ್ಟಕ_ಅಡ್ಡಸಾಲು (ಅಂಕೆ_ಅಗಲ, signum, name_ಅಗಲ, signame);
               }
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
-            print_table_row (num_width, signum, name_width, signame);
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಗಾಗಿ (ಪೂರ್ಣಾಂಕ signum = 0; signum <= SIGNUM_BOUND; signum++)
+          ಆದರೆ (sig2str (signum, signame) == 0)
+            print_ಕೋಷ್ಟಕ_ಅಡ್ಡಸಾಲು (ಅಂಕೆ_ಅಗಲ, signum, name_ಅಗಲ, signame);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      if (argv)
-        for (; *argv; argv++)
+      ಆದರೆ (argv)
+        ಗಾಗಿ (; *argv; argv++)
           {
-            int signum = operand2sig (*argv);
-            if (signum < 0)
-              status = EXIT_FAILURE;
-            else if (c_isdigit (**argv))
+            ಪೂರ್ಣಾಂಕ signum = operand2sig (*argv);
+            ಆದರೆ (signum < 0)
+              ಸ್ಥಿತಿ_2 = EXIT_FAILURE;
+            ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (c_isdigit (**argv))
               {
-                if (sig2str (signum, signame) == 0)
+                ಆದರೆ (sig2str (signum, signame) == 0)
                   puts (signame);
-                else
-                  printf ("%d\n", signum);
+                ಇಲ್ಲದಿದ್ದರೆ
+                  ಬರೆ ("%d\n", signum);
               }
-            else
-              printf ("%d\n", signum);
+            ಇಲ್ಲದಿದ್ದರೆ
+              ಬರೆ ("%d\n", signum);
           }
-      else
-        for (int signum = 0; signum <= SIGNUM_BOUND; signum++)
-          if (sig2str (signum, signame) == 0)
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಗಾಗಿ (ಪೂರ್ಣಾಂಕ signum = 0; signum <= SIGNUM_BOUND; signum++)
+          ಆದರೆ (sig2str (signum, signame) == 0)
             puts (signame);
     }
 
-  return status;
+  ಹಿಂತಿರುಗಿ ಸ್ಥಿತಿ_2;
 }
 
 /* Send signal SIGNUM to all the processes or process groups specified
    by ARGV.  Return a suitable exit status.  */
 
-static int
-send_signals (int signum, char *const *argv)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+send_ಸಂಕೇತಗಳು (ಪೂರ್ಣಾಂಕ signum, ಅಕ್ಷರ *ಸ್ಥಿರಾಂಕ *argv)
 {
-  int status = EXIT_SUCCESS;
-  char const *arg = *argv;
+  ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2 = EXIT_SUCCESS;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *arg = *argv;
 
-  do
+  ಮಾಡು
     {
-      char *endp;
+      ಅಕ್ಷರ *endp;
       intmax_t n = (errno = 0, strtoimax (arg, &endp, 10));
       pid_t pid;
 
-      if (errno == ERANGE || ckd_add (&pid, n, 0)
+      ಆದರೆ (errno == ERANGE || ckd_ಕೂಡಿಸು (&pid, n, 0)
           || arg == endp || *endp)
         {
           error (0, 0, _("%s: invalid process id"), quote (arg));
-          status = EXIT_FAILURE;
+          ಸ್ಥಿತಿ_2 = EXIT_FAILURE;
         }
-      else if (kill (pid, signum) != 0)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (kill (pid, signum) != 0)
         {
-          if (errno == EINVAL)
+          ಆದರೆ (errno == EINVAL)
             error (0, errno, "%d", signum);
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             error (0, errno, "%s", quote (arg));
-          status = EXIT_FAILURE;
+          ಸ್ಥಿತಿ_2 = EXIT_FAILURE;
         }
     }
-  while ((arg = *++argv));
+  ಆಗ ((arg = *++argv));
 
-  return status;
+  ಹಿಂತಿರುಗಿ ಸ್ಥಿತಿ_2;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int optc;
+  ಪೂರ್ಣಾಂಕ optc;
   bool list = false;
-  bool table = false;
-  int signum = -1;
+  bool ಕೋಷ್ಟಕ = false;
+  ಪೂರ್ಣಾಂಕ signum = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, short_options, long_options, NULL))
+  ಆಗ ((optc = getopt_long (argc, argv, short_options, long_options, ಖಾಲಿ))
          != -1)
-    switch (optc)
+    ಆಯ್ಕೆ (optc)
       {
-      case '0': case '1': case '2': case '3': case '4':
-      case '5': case '6': case '7': case '8': case '9':
-        if (optind != 2)
+      ಸ್ಥಿತಿ '0': ಸ್ಥಿತಿ '1': ಸ್ಥಿತಿ '2': ಸ್ಥಿತಿ '3': ಸ್ಥಿತಿ '4':
+      ಸ್ಥಿತಿ '5': ಸ್ಥಿತಿ '6': ಸ್ಥಿತಿ '7': ಸ್ಥಿತಿ '8': ಸ್ಥಿತಿ '9':
+        ಆದರೆ (optind != 2)
           {
             /* This option is actually a process-id.  */
             optind--;
-            goto no_more_options;
+            ಹೋಗು no_ಇನ್ನಷ್ಟು_options;
           }
         FALLTHROUGH;
-      case 'A': case 'B': case 'C': case 'D': case 'E':
-      case 'F': case 'G': case 'H': case 'I': case 'J':
-      case 'K': /*case 'L':*/ case 'M': case 'N': case 'O':
-      case 'P': case 'Q': case 'R': case 'S': case 'T':
-      case 'U': case 'V': case 'W': case 'X': case 'Y':
-      case 'Z':
-        if (! optarg)
-          optarg = argv[optind - 1] + strlen (argv[optind - 1]);
-        if (optarg != argv[optind - 1] + 2)
+      ಸ್ಥಿತಿ 'A': ಸ್ಥಿತಿ 'B': ಸ್ಥಿತಿ 'C': ಸ್ಥಿತಿ 'D': ಸ್ಥಿತಿ 'E':
+      ಸ್ಥಿತಿ 'F': ಸ್ಥಿತಿ 'G': ಸ್ಥಿತಿ 'H': ಸ್ಥಿತಿ 'I': ಸ್ಥಿತಿ 'J':
+      ಸ್ಥಿತಿ 'K': /*case 'L':*/ ಸ್ಥಿತಿ 'M': ಸ್ಥಿತಿ 'N': ಸ್ಥಿತಿ 'O':
+      ಸ್ಥಿತಿ 'P': ಸ್ಥಿತಿ 'Q': ಸ್ಥಿತಿ 'R': ಸ್ಥಿತಿ 'S': ಸ್ಥಿತಿ 'T':
+      ಸ್ಥಿತಿ 'U': ಸ್ಥಿತಿ 'V': ಸ್ಥಿತಿ 'W': ಸ್ಥಿತಿ 'X': ಸ್ಥಿತಿ 'Y':
+      ಸ್ಥಿತಿ 'Z':
+        ಆದರೆ (! optarg)
+          optarg = argv[optind - 1] + ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (argv[optind - 1]);
+        ಆದರೆ (optarg != argv[optind - 1] + 2)
           {
             error (0, 0, _("invalid option -- %c"), optc);
             usage (EXIT_FAILURE);
           }
         optarg--;
         FALLTHROUGH;
-      case 'n': /* -n is not documented, but is for Bash compatibility.  */
-      case 's':
-        if (0 <= signum)
+      ಸ್ಥಿತಿ 'n': /* -n is not documented, but is for Bash compatibility.  */
+      ಸ್ಥಿತಿ 's':
+        ಆದರೆ (0 <= signum)
           {
             error (0, 0, _("%s: multiple signals specified"), quote (optarg));
             usage (EXIT_FAILURE);
           }
         signum = operand2sig (optarg);
-        if (signum < 0)
+        ಆದರೆ (signum < 0)
           usage (EXIT_FAILURE);
-        break;
+        ನಿಲ್ಲಿಸು;
 
-      case 'L': /* -L is not documented, but is for procps compatibility.  */
-      case 't':
-        table = true;
+      ಸ್ಥಿತಿ 'L': /* -L is not documented, but is for procps compatibility.  */
+      ಸ್ಥಿತಿ 't':
+        ಕೋಷ್ಟಕ = true;
         FALLTHROUGH;
-      case 'l':
-        if (list)
+      ಸ್ಥಿತಿ 'l':
+        ಆದರೆ (list)
           {
             error (0, 0, _("multiple -l or -t options specified"));
             usage (EXIT_FAILURE);
           }
         list = true;
-        break;
+        ನಿಲ್ಲಿಸು;
 
       case_GETOPT_HELP_CHAR;
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+      ಪೂರ್ವನಿಯೋಜಿತ:
         usage (EXIT_FAILURE);
       }
- no_more_options:
+ no_ಇನ್ನಷ್ಟು_options:
 
-  if (signum < 0)
+  ಆದರೆ (signum < 0)
     signum = SIGTERM;
-  else if (list)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (list)
     {
       error (0, 0, _("cannot combine signal with -l or -t"));
       usage (EXIT_FAILURE);
     }
 
-  if ( ! list && argc <= optind)
+  ಆದರೆ ( ! list && argc <= optind)
     {
       error (0, 0, _("no process ID specified"));
       usage (EXIT_FAILURE);
     }
 
-  return (list
-          ? list_signals (table, optind < argc ? argv + optind : NULL)
-          : send_signals (signum, argv + optind));
+  ಹಿಂತಿರುಗಿ (list
+          ? list_ಸಂಕೇತಗಳು (ಕೋಷ್ಟಕ, optind < argc ? argv + optind : ಖಾಲಿ)
+          : send_ಸಂಕೇತಗಳು (signum, argv + optind));
 }

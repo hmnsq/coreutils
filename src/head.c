@@ -23,53 +23,53 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
 
-#include "assure.h"
-#include "c-ctype.h"
-#include "full-read.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "full-read.h"
+#ಅನ್ತರ್ಭಾವ "stat-size.h"
+#ಅನ್ತರ್ಭಾವ "xbinary-io.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "head"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "head"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* Number of lines/chars/blocks to head. */
-#define DEFAULT_NUMBER 10
+#ವ್ಯಾಖ್ಯಾನಿಸು DEFAULT_ಸಂಖ್ಯೆ 10
 
 /* Useful only when eliding tail bytes or lines.
    If true, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+ಸ್ಥಿರ bool presume_ಒಳಹರಿವು_pipe;
 
 /* If true, print filename headers. */
-static bool print_headers;
+ಸ್ಥಿರ bool print_ಶೀರ್ಷಿಕೆಗಳು;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+ಸ್ಥಿರ ಅಕ್ಷರ ಸಾಲು_ಕೊನೆ = '\n';
 
 /* When to print the filename banners. */
-enum header_mode
+ಎಣಿಕೆ ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ
 {
-  multiple_files, always, never
+  ಅಪವರ್ತ್ಯ_files, always, never
 };
 
 /* Have we ever read standard input?  */
-static bool have_read_stdin;
+ಸ್ಥಿರ bool have_read_stdin;
 
-enum Copy_fd_status
+ಎಣಿಕೆ Copy_fd_ಸ್ಥಿತಿ
   {
     COPY_FD_OK = 0,
     COPY_FD_READ_ERROR,
@@ -78,119 +78,119 @@ enum Copy_fd_status
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಎಣಿಕೆ
 {
-  PRESUME_INPUT_PIPE_OPTION = CHAR_MAX + 1
+  PRESUME_ಒಳಹರಿವು_PIPE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"bytes", required_argument, NULL, 'c'},
-  {"lines", required_argument, NULL, 'n'},
-  {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 'q'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_ವಾದ, ಖಾಲಿ, 'c'},
+  {"lines", required_ವಾದ, ಖಾಲಿ, 'n'},
+  {"-presume-input-pipe", no_ವಾದ, ಖಾಲಿ,
+   PRESUME_ಒಳಹರಿವು_PIPE_OPTION}, /* do not document */
+  {"quiet", no_ವಾದ, ಖಾಲಿ, 'q'},
+  {"silent", no_ವಾದ, ಖಾಲಿ, 'q'},
+  {"verbose", no_ವಾದ, ಖಾಲಿ, 'v'},
+  {"zero-terminated", no_ವಾದ, ಖಾಲಿ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
-      printf (_("\
-Print the first %d lines of each FILE to standard output.\n\
-With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_NUMBER);
+              ಕಾರ್ಯಕ್ರಮ_name);
+      ಬರೆ (_("\
+Print the ಮೊದಲ %d ಸಾಲುಗಳು ದ each FILE ಗಮ್ಯ standard output.\n\
+With ಇನ್ನಷ್ಟು than one FILE, precede each with a ಶೀರ್ಷಿಕೆ giving the file name.\n\
+"), DEFAULT_ಸಂಖ್ಯೆ);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --bytes=[-]NUM\n\
-         print the first NUM bytes of each file;\n\
-         with the leading '-', print all but the last NUM bytes of each file\n\
+  -c, --ಬೈಟುಗಳು=[-]ಅಂಕೆ_2\n\
+         print the ಮೊದಲ ಅಂಕೆ_2 ಬೈಟುಗಳು ದ each file;\n\
+         with the leading '-', print all but the ಕೊನೆಯ ಅಂಕೆ_2 ಬೈಟುಗಳು ದ each file\n\
 "));
       oprintf (_("\
-  -n, --lines=[-]NUM\n\
-         print the first NUM lines instead of the first %d;\n\
-         with the leading '-', print all but the last NUM lines of each file\n\
-"), DEFAULT_NUMBER);
+  -n, --ಸಾಲುಗಳು=[-]ಅಂಕೆ_2\n\
+         print the ಮೊದಲ ಅಂಕೆ_2 ಸಾಲುಗಳು instead ದ the ಮೊದಲ %d;\n\
+         with the leading '-', print all but the ಕೊನೆಯ ಅಂಕೆ_2 ಸಾಲುಗಳು ದ each file\n\
+"), DEFAULT_ಸಂಖ್ಯೆ);
       oputs (_("\
   -q, --quiet, --silent\n\
-         never print headers giving file names\n\
+         never print ಶೀರ್ಷಿಕೆಗಳು giving file ಹೆಸರುಗಳು\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         always print headers giving file names\n\
+         always print ಶೀರ್ಷಿಕೆಗಳು giving file ಹೆಸರುಗಳು\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         ಸಾಲು delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+ಅಂಕೆ_2 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
-GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB 1000*1000*1000, G 1024*1024*1024, and so on ಗಾಗಿ T, P, E, Z, Y, R, Q.\n\
+ದ್ವಿಮಾನ_2 prefixes can be ಬಳಸಿದ, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-static void
-diagnose_read_failure (char const *filename)
+ಸ್ಥಿರ ಶೂನ್ಯ
+diagnose_read_failure (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename)
 {
   error (0, errno, _("error reading %s"), quoteaf (filename));
 }
 
-static void
-diagnose_copy_fd_failure (enum Copy_fd_status err, char const *filename)
+ಸ್ಥಿರ ಶೂನ್ಯ
+diagnose_copy_fd_failure (ಎಣಿಕೆ Copy_fd_ಸ್ಥಿತಿ err, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename)
 {
-  switch (err)
+  ಆಯ್ಕೆ (err)
     {
-    case COPY_FD_READ_ERROR:
+    ಸ್ಥಿತಿ COPY_FD_READ_ERROR:
       diagnose_read_failure (filename);
-      break;
-    case COPY_FD_UNEXPECTED_EOF:
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ COPY_FD_UNEXPECTED_EOF:
       error (0, errno, _("%s: file has shrunk too much"), quotef (filename));
-      break;
-    case COPY_FD_OK: default:
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ COPY_FD_OK: ಪೂರ್ವನಿಯೋಜಿತ:
       affirm (false);
     }
 }
 
-static void
-write_header (char const *filename)
+ಸ್ಥಿರ ಶೂನ್ಯ
+write_ಶೀರ್ಷಿಕೆ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename)
 {
-  static bool first_file = true;
+  ಸ್ಥಿರ bool ಮೊದಲ_file = true;
 
-  printf ("%s==> %s <==\n", (first_file ? "" : "\n"), quotef (filename));
-  first_file = false;
+  ಬರೆ ("%s==> %s <==\n", (ಮೊದಲ_file ? "" : "\n"), quotef (filename));
+  ಮೊದಲ_file = false;
 }
 
 /* Write N_BYTES from BUFFER to stdout.
    Exit immediately on error with a single diagnostic.  */
 
-static void
-xwrite_stdout (char const *buffer, size_t n_bytes)
+ಸ್ಥಿರ ಶೂನ್ಯ
+xwrite_stdout (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಬಫರ್, size_t n_ಬೈಟುಗಳು)
 {
-  if (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
+  ಆದರೆ (n_ಬೈಟುಗಳು > 0 && fwrite (ಬಫರ್, 1, n_ಬೈಟುಗಳು, stdout) < n_ಬೈಟುಗಳು)
     {
       clearerr (stdout); /* To avoid redundant close_stdout diagnostic.  */
       fpurge (stdout);
@@ -202,35 +202,35 @@ xwrite_stdout (char const *buffer, size_t n_bytes)
 /* Copy no more than N_BYTES from file descriptor SRC_FD to stdout.
    Return an appropriate indication of success or read failure.  */
 
-static enum Copy_fd_status
-copy_fd (int src_fd, uintmax_t n_bytes)
+ಸ್ಥಿರ ಎಣಿಕೆ Copy_fd_ಸ್ಥಿತಿ
+copy_fd (ಪೂರ್ಣಾಂಕ src_fd, uintmax_t n_ಬೈಟುಗಳು)
 {
-  char buf[BUFSIZ];
+  ಅಕ್ಷರ buf[BUFSIZ];
 
   /* Copy the file contents.  */
-  while (0 < n_bytes)
+  ಆಗ (0 < n_ಬೈಟುಗಳು)
     {
-      idx_t n_to_read = MIN (n_bytes, sizeof buf);
-      ssize_t n_read = read (src_fd, buf, n_to_read);
-      if (n_read < 0)
-        return COPY_FD_READ_ERROR;
+      idx_t n_ಗಮ್ಯ_read = MIN (n_ಬೈಟುಗಳು, ಗಾತ್ರ buf);
+      ssize_t n_read = ಪಠ (src_fd, buf, n_ಗಮ್ಯ_read);
+      ಆದರೆ (n_read < 0)
+        ಹಿಂತಿರುಗಿ COPY_FD_READ_ERROR;
 
-      n_bytes -= n_read;
+      n_ಬೈಟುಗಳು -= n_read;
 
-      if (n_read == 0 && n_bytes != 0)
-        return COPY_FD_UNEXPECTED_EOF;
+      ಆದರೆ (n_read == 0 && n_ಬೈಟುಗಳು != 0)
+        ಹಿಂತಿರುಗಿ COPY_FD_UNEXPECTED_EOF;
 
       xwrite_stdout (buf, n_read);
     }
 
-  return COPY_FD_OK;
+  ಹಿಂತಿರುಗಿ COPY_FD_OK;
 }
 
 /* Report an lseek failure at OFFSET compared to WHENCE, for FILENAME.  */
-static void
-elseek_diagnostic (off_t offset, int whence, char const *filename)
+ಸ್ಥಿರ ಶೂನ್ಯ
+elseek_diagnostic (off_t ಸ್ಥಾನಾಂತರ, ಪೂರ್ಣಾಂಕ whence, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename)
 {
-  intmax_t off = offset;
+  intmax_t off = ಸ್ಥಾನಾಂತರ;
   error (0, errno,
          _(whence == SEEK_SET
            ? N_("%s: cannot seek to offset %jd")
@@ -243,15 +243,15 @@ elseek_diagnostic (off_t offset, int whence, char const *filename)
    SEEK_CUR.  Return the resulting offset.  Give a diagnostic and
    return -1 if lseek fails.  */
 
-static off_t
-elseek (int fd, off_t offset, int whence, char const *filename)
+ಸ್ಥಿರ off_t
+elseek (ಪೂರ್ಣಾಂಕ fd, off_t ಸ್ಥಾನಾಂತರ, ಪೂರ್ಣಾಂಕ whence, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename)
 {
-  off_t new_offset = lseek (fd, offset, whence);
+  off_t new_ಸ್ಥಾನಾಂತರ = lseek (fd, ಸ್ಥಾನಾಂತರ, whence);
 
-  if (new_offset < 0)
-    elseek_diagnostic (offset, whence, filename);
+  ಆದರೆ (new_ಸ್ಥಾನಾಂತರ < 0)
+    elseek_diagnostic (ಸ್ಥಾನಾಂತರ, whence, filename);
 
-  return new_offset;
+  ಹಿಂತಿರುಗಿ new_ಸ್ಥಾನಾಂತರ;
 }
 
 /* For an input file with name FILENAME and descriptor FD,
@@ -261,29 +261,29 @@ elseek (int fd, off_t offset, int whence, char const *filename)
    just before the elided bytes before returning.
    Return true upon success.
    Give a diagnostic and return false upon error.  */
-static bool
-elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
+ಸ್ಥಿರ bool
+elide_ಬಾಲ_ಬೈಟುಗಳು_pipe (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t n_elide,
                        off_t current_pos)
 {
   uintmax_t desired_pos = current_pos;
   bool ok = true;
 
-#ifndef HEAD_TAIL_PIPE_READ_BUFSIZE
-# define HEAD_TAIL_PIPE_READ_BUFSIZE BUFSIZ
-#endif
-#define READ_BUFSIZE HEAD_TAIL_PIPE_READ_BUFSIZE
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ ತಲೆ_ಬಾಲ_PIPE_READ_BUFSIZE
+# define ತಲೆ_ಬಾಲ_PIPE_READ_BUFSIZE BUFSIZ
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿಸು READ_BUFSIZE ತಲೆ_ಬಾಲ_PIPE_READ_BUFSIZE
 
   /* If we're eliding no more than this many bytes, then it's ok to allocate
      more memory in order to use a more time-efficient algorithm.
      FIXME: use a fraction of available memory instead, as in sort.
      FIXME: is this even worthwhile?  */
-#ifndef HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD
-# define HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD 1024 * 1024
-#endif
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ ತಲೆ_ಬಾಲ_PIPE_BYTECOUNT_ಮಿತಿ
+# define ತಲೆ_ಬಾಲ_PIPE_BYTECOUNT_ಮಿತಿ 1024 * 1024
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD < 2 * READ_BUFSIZE
+#ಆದರೆ ತಲೆ_ಬಾಲ_PIPE_BYTECOUNT_ಮಿತಿ < 2 * READ_BUFSIZE
 # error "HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD must be at least 2 * READ_BUFSIZE"
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
   /* Two cases to consider...
      1) n_elide is small enough that we can afford to double-buffer:
@@ -297,42 +297,42 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
      a ridiculous amount, but when given only a small input.  */
 
   static_assert (READ_BUFSIZE <= IDX_MAX);
-  static_assert (HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD <= IDX_MAX - READ_BUFSIZE);
-  if (n_elide <= HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD)
+  static_assert (ತಲೆ_ಬಾಲ_PIPE_BYTECOUNT_ಮಿತಿ <= IDX_MAX - READ_BUFSIZE);
+  ಆದರೆ (n_elide <= ತಲೆ_ಬಾಲ_PIPE_BYTECOUNT_ಮಿತಿ)
     {
-      idx_t in_elide = n_elide;
-      bool first = true;
+      idx_t ಒಳ_elide = n_elide;
+      bool ಮೊದಲ = true;
       bool eof = false;
-      idx_t n_to_read = READ_BUFSIZE + n_elide;
-      char *b[2];
-      b[0] = xnmalloc (2, n_to_read);
-      b[1] = b[0] + n_to_read;
+      idx_t n_ಗಮ್ಯ_read = READ_BUFSIZE + n_elide;
+      ಅಕ್ಷರ *b[2];
+      b[0] = xnmalloc (2, n_ಗಮ್ಯ_read);
+      b[1] = b[0] + n_ಗಮ್ಯ_read;
 
-      for (bool i = false; ! eof ; i = !i)
+      ಗಾಗಿ (bool i = false; ! eof ; i = !i)
         {
-          idx_t n_read = full_read (fd, b[i], n_to_read);
+          idx_t n_read = ತುಂಬಿದ_read (fd, b[i], n_ಗಮ್ಯ_read);
           idx_t delta = 0;
-          if (n_read < n_to_read)
+          ಆದರೆ (n_read < n_ಗಮ್ಯ_read)
             {
-              if (errno != 0)
+              ಆದರೆ (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  break;
+                  ನಿಲ್ಲಿಸು;
                 }
 
               /* reached EOF */
-              if (n_read <= in_elide)
+              ಆದರೆ (n_read <= ಒಳ_elide)
                 {
-                  if (first)
+                  ಆದರೆ (ಮೊದಲ)
                     {
                       /* The input is no larger than the number of bytes
                          to elide.  So there's nothing to output, and
                          we're done.  */
                     }
-                  else
+                  ಇಲ್ಲದಿದ್ದರೆ
                     {
-                      delta = in_elide - n_read;
+                      delta = ಒಳ_elide - n_read;
                     }
                 }
               eof = true;
@@ -340,30 +340,30 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
           /* Output any (but maybe just part of the) elided data from
              the previous round.  */
-          if (! first)
+          ಆದರೆ (! ಮೊದಲ)
             {
-              desired_pos += in_elide - delta;
-              xwrite_stdout (b[!i] + READ_BUFSIZE, in_elide - delta);
+              desired_pos += ಒಳ_elide - delta;
+              xwrite_stdout (b[!i] + READ_BUFSIZE, ಒಳ_elide - delta);
             }
-          first = false;
+          ಮೊದಲ = false;
 
-          if (in_elide < n_read)
+          ಆದರೆ (ಒಳ_elide < n_read)
             {
-              desired_pos += n_read - in_elide;
-              xwrite_stdout (b[i], n_read - in_elide);
+              desired_pos += n_read - ಒಳ_elide;
+              xwrite_stdout (b[i], n_read - ಒಳ_elide);
             }
         }
 
-      free (b[0]);
+      ಬಿಡುಗಡೆ (b[0]);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* Read blocks of size READ_BUFSIZE, until we've read at least n_elide
          bytes.  Then, for each new buffer we read, also write an old one.  */
 
       bool eof = false;
       idx_t n_read;
-      char **b = NULL;
+      ಅಕ್ಷರ **b = ಖಾಲಿ;
 
       idx_t remainder = n_elide % READ_BUFSIZE;
       /* The number of buffers needed to hold n_elide bytes plus one
@@ -374,57 +374,57 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
       idx_t n_array_alloc = 0;
 
       bool buffered_enough = false;
-      idx_t i, i_next;
-      for (i = 0, i_next = 1; !eof; i = i_next, i_next = (i_next + 1) % n_bufs)
+      idx_t i, i_ಮುಂದಿನ;
+      ಗಾಗಿ (i = 0, i_ಮುಂದಿನ = 1; !eof; i = i_ಮುಂದಿನ, i_ಮುಂದಿನ = (i_ಮುಂದಿನ + 1) % n_bufs)
         {
-          if (n_array_alloc == i)
+          ಆದರೆ (n_array_alloc == i)
             b = xpalloc (b, &n_array_alloc, 1, MIN (n_bufs, PTRDIFF_MAX),
-                         sizeof *b);
+                         ಗಾತ್ರ *b);
 
-          if (! buffered_enough)
+          ಆದರೆ (! buffered_enough)
             {
               b[i] = xmalloc (READ_BUFSIZE);
               n_alloc = i + 1;
             }
-          n_read = full_read (fd, b[i], READ_BUFSIZE);
-          if (n_read < READ_BUFSIZE)
+          n_read = ತುಂಬಿದ_read (fd, b[i], READ_BUFSIZE);
+          ಆದರೆ (n_read < READ_BUFSIZE)
             {
-              if (errno != 0)
+              ಆದರೆ (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  goto free_mem;
+                  ಹೋಗು free_mem;
                 }
               eof = true;
             }
 
-          if (i + 1 == n_bufs)
+          ಆದರೆ (i + 1 == n_bufs)
             buffered_enough = true;
 
-          if (buffered_enough)
+          ಆದರೆ (buffered_enough)
             {
               desired_pos += n_read;
-              xwrite_stdout (b[i_next], n_read);
+              xwrite_stdout (b[i_ಮುಂದಿನ], n_read);
             }
         }
 
       /* Output the remainder: rem bytes from b[i] + n_read.  */
       idx_t rem = READ_BUFSIZE - remainder;
-      if (buffered_enough)
+      ಆದರೆ (buffered_enough)
         {
-          idx_t n_bytes_left_in_b_i = READ_BUFSIZE - n_read;
+          idx_t n_ಬೈಟುಗಳು_ಎಡ_ಒಳ_b_i = READ_BUFSIZE - n_read;
           desired_pos += rem;
-          if (rem < n_bytes_left_in_b_i)
+          ಆದರೆ (rem < n_ಬೈಟುಗಳು_ಎಡ_ಒಳ_b_i)
             {
               xwrite_stdout (b[i] + n_read, rem);
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              xwrite_stdout (b[i] + n_read, n_bytes_left_in_b_i);
-              xwrite_stdout (b[i_next], rem - n_bytes_left_in_b_i);
+              xwrite_stdout (b[i] + n_read, n_ಬೈಟುಗಳು_ಎಡ_ಒಳ_b_i);
+              xwrite_stdout (b[i_ಮುಂದಿನ], rem - n_ಬೈಟುಗಳು_ಎಡ_ಒಳ_b_i);
             }
         }
-      else if (i + 1 == n_bufs)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (i + 1 == n_bufs)
         {
           /* This happens when
              n_elide < file_size < (n_bufs - 1) * READ_BUFSIZE.
@@ -442,18 +442,18 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
           idx_t y = READ_BUFSIZE - rem;
           idx_t x = n_read - y;
           desired_pos += x;
-          xwrite_stdout (b[i_next], x);
+          xwrite_stdout (b[i_ಮುಂದಿನ], x);
         }
 
     free_mem:
-      for (i = 0; i < n_alloc; i++)
-        free (b[i]);
-      free (b);
+      ಗಾಗಿ (i = 0; i < n_alloc; i++)
+        ಬಿಡುಗಡೆ (b[i]);
+      ಬಿಡುಗಡೆ (b);
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  ಆದರೆ (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* For the file FILENAME with descriptor FD, output all but the last N_ELIDE
@@ -464,29 +464,29 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 /* NOTE: if the input file shrinks by more than N_ELIDE bytes between
    the length determination and the actual reading, then head fails.  */
 
-static bool
-elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+ಸ್ಥಿರ bool
+elide_ಬಾಲ_ಬೈಟುಗಳು_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t n_elide,
+                       ರಚನೆ stat ಸ್ಥಿರಾಂಕ *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_bytes_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t ಗಾತ್ರ_2 = st->st_ಗಾತ್ರ;
+  ಆದರೆ (current_pos < 0 || ಗಾತ್ರ_2 <= STP_BLKSIZE (st))
+    ಹಿಂತಿರುಗಿ elide_ಬಾಲ_ಬೈಟುಗಳು_pipe (filename, fd, n_elide, current_pos);
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* Be careful here.  The current position may actually be
          beyond the end of the file.  */
-      off_t diff = size - current_pos;
-      off_t bytes_remaining = diff < 0 ? 0 : diff;
+      off_t diff = ಗಾತ್ರ_2 - current_pos;
+      off_t ಬೈಟುಗಳು_ಉಳಿದ = diff < 0 ? 0 : diff;
 
-      if (bytes_remaining <= n_elide)
-        return true;
+      ಆದರೆ (ಬೈಟುಗಳು_ಉಳಿದ <= n_elide)
+        ಹಿಂತಿರುಗಿ true;
 
-      enum Copy_fd_status err = copy_fd (fd, bytes_remaining - n_elide);
-      if (err == COPY_FD_OK)
-        return true;
+      ಎಣಿಕೆ Copy_fd_ಸ್ಥಿತಿ err = copy_fd (fd, ಬೈಟುಗಳು_ಉಳಿದ - n_elide);
+      ಆದರೆ (err == COPY_FD_OK)
+        ಹಿಂತಿರುಗಿ true;
 
       diagnose_copy_fd_failure (err, filename);
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 }
 
@@ -497,143 +497,143 @@ elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
    Buffer the specified number of lines as a linked list of LBUFFERs,
    adding them as needed.  Return true if successful.  */
 
-static bool
-elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
+ಸ್ಥಿರ bool
+elide_ಬಾಲ_ಸಾಲುಗಳು_pipe (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t n_elide,
                        off_t current_pos)
 {
-  struct linebuffer
+  ರಚನೆ linebuffer
   {
-    char buffer[BUFSIZ + 1];
+    ಅಕ್ಷರ ಬಫರ್[BUFSIZ + 1];
     size_t nbytes;
     size_t nlines;
-    struct linebuffer *next;
+    ರಚನೆ linebuffer *ಮುಂದಿನ;
   };
   off_t desired_pos = current_pos;
-  typedef struct linebuffer LBUFFER;
-  LBUFFER *first, *last, *tmp;
-  size_t total_lines = 0;	/* Total number of newlines in all buffers.  */
+  ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ linebuffer LBUFFER;
+  LBUFFER *ಮೊದಲ, *ಕೊನೆಯ, *tmp;
+  size_t ಒಟ್ಟು_ಸಾಲುಗಳು = 0;	/* Total number of newlines in all buffers.  */
   bool ok = true;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
-  first = last = xmalloc (sizeof (LBUFFER));
-  first->nbytes = first->nlines = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (LBUFFER));
+  ಮೊದಲ = ಕೊನೆಯ = xmalloc (ಗಾತ್ರ (LBUFFER));
+  ಮೊದಲ->nbytes = ಮೊದಲ->nlines = 0;
+  ಮೊದಲ->ಮುಂದಿನ = ಖಾಲಿ;
+  tmp = xmalloc (ಗಾತ್ರ (LBUFFER));
 
   /* Always read into a fresh buffer.
      Read, (producing no output) until we've accumulated at least
      n_elide newlines, or until EOF, whichever comes first.  */
-  while (true)
+  ಆಗ (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = ಪಠ (fd, tmp->ಬಫರ್, BUFSIZ);
+      ಆದರೆ (n_read <= 0)
+        ನಿಲ್ಲಿಸು;
 
-      if (! n_elide)
+      ಆದರೆ (! n_elide)
         {
           desired_pos += n_read;
-          xwrite_stdout (tmp->buffer, n_read);
-          continue;
+          xwrite_stdout (tmp->ಬಫರ್, n_read);
+          ಮುಂದುವರಿ;
         }
 
       tmp->nbytes = n_read;
       tmp->nlines = 0;
-      tmp->next = NULL;
+      tmp->ಮುಂದಿನ = ಖಾಲಿ;
 
       /* Count the number of newlines just read.  */
       {
-        char *buffer_end = tmp->buffer + n_read;
-        *buffer_end = line_end;
-        char const *p = tmp->buffer;
-        while ((p = rawmemchr (p, line_end)) < buffer_end)
+        ಅಕ್ಷರ *ಬಫರ್_ಕೊನೆ = tmp->ಬಫರ್ + n_read;
+        *ಬಫರ್_ಕೊನೆ = ಸಾಲು_ಕೊನೆ;
+        ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = tmp->ಬಫರ್;
+        ಆಗ ((p = rawmemchr (p, ಸಾಲು_ಕೊನೆ)) < ಬಫರ್_ಕೊನೆ)
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      ಒಟ್ಟು_ಸಾಲುಗಳು += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      ಆದರೆ (tmp->nbytes + ಕೊನೆಯ->nbytes < BUFSIZ)
         {
-          memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
-          last->nbytes += tmp->nbytes;
-          last->nlines += tmp->nlines;
+          ಸ್ಮರಣೆ_ನಕಲು (&ಕೊನೆಯ->ಬಫರ್[ಕೊನೆಯ->nbytes], tmp->ಬಫರ್, tmp->nbytes);
+          ಕೊನೆಯ->nbytes += tmp->nbytes;
+          ಕೊನೆಯ->nlines += tmp->nlines;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
              read if that would leave enough lines, or else malloc a new one.
              Some compaction mechanism is possible but probably not
              worthwhile.  */
-          last = last->next = tmp;
-          if (n_elide < total_lines - first->nlines)
+          ಕೊನೆಯ = ಕೊನೆಯ->ಮುಂದಿನ = tmp;
+          ಆದರೆ (n_elide < ಒಟ್ಟು_ಸಾಲುಗಳು - ಮೊದಲ->nlines)
             {
-              desired_pos += first->nbytes;
-              xwrite_stdout (first->buffer, first->nbytes);
-              tmp = first;
-              total_lines -= first->nlines;
-              first = first->next;
+              desired_pos += ಮೊದಲ->nbytes;
+              xwrite_stdout (ಮೊದಲ->ಬಫರ್, ಮೊದಲ->nbytes);
+              tmp = ಮೊದಲ;
+              ಒಟ್ಟು_ಸಾಲುಗಳು -= ಮೊದಲ->nlines;
+              ಮೊದಲ = ಮೊದಲ->ಮುಂದಿನ;
             }
-          else
-            tmp = xmalloc (sizeof (LBUFFER));
+          ಇಲ್ಲದಿದ್ದರೆ
+            tmp = xmalloc (ಗಾತ್ರ (LBUFFER));
         }
     }
 
-  free (tmp);
+  ಬಿಡುಗಡೆ (tmp);
 
-  if (n_read < 0)
+  ಆದರೆ (n_read < 0)
     {
       diagnose_read_failure (filename);
       ok = false;
-      goto free_lbuffers;
+      ಹೋಗು free_lbuffers;
     }
 
   /* If we read any bytes at all, count the incomplete line
      on files that don't end with a newline.  */
-  if (last->nbytes && last->buffer[last->nbytes - 1] != line_end)
+  ಆದರೆ (ಕೊನೆಯ->nbytes && ಕೊನೆಯ->ಬಫರ್[ಕೊನೆಯ->nbytes - 1] != ಸಾಲು_ಕೊನೆ)
     {
-      ++last->nlines;
-      ++total_lines;
+      ++ಕೊನೆಯ->nlines;
+      ++ಒಟ್ಟು_ಸಾಲುಗಳು;
     }
 
-  for (tmp = first; n_elide < total_lines - tmp->nlines; tmp = tmp->next)
+  ಗಾಗಿ (tmp = ಮೊದಲ; n_elide < ಒಟ್ಟು_ಸಾಲುಗಳು - tmp->nlines; tmp = tmp->ಮುಂದಿನ)
     {
       desired_pos += tmp->nbytes;
-      xwrite_stdout (tmp->buffer, tmp->nbytes);
-      total_lines -= tmp->nlines;
+      xwrite_stdout (tmp->ಬಫರ್, tmp->nbytes);
+      ಒಟ್ಟು_ಸಾಲುಗಳು -= tmp->nlines;
     }
 
   /* Print the first 'total_lines - n_elide' lines of tmp->buffer.  */
-  if (n_elide < total_lines)
+  ಆದರೆ (n_elide < ಒಟ್ಟು_ಸಾಲುಗಳು)
     {
-      size_t n = total_lines - n_elide;
-      char const *buffer_end = tmp->buffer + tmp->nbytes;
-      char const *p = tmp->buffer;
-      while (n && (p = memchr (p, line_end, buffer_end - p)))
+      size_t n = ಒಟ್ಟು_ಸಾಲುಗಳು - n_elide;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಬಫರ್_ಕೊನೆ = tmp->ಬಫರ್ + tmp->nbytes;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = tmp->ಬಫರ್;
+      ಆಗ (n && (p = memchr (p, ಸಾಲು_ಕೊನೆ, ಬಫರ್_ಕೊನೆ - p)))
         {
           ++p;
           ++tmp->nlines;
           --n;
         }
-      desired_pos += p - tmp->buffer;
-      xwrite_stdout (tmp->buffer, p - tmp->buffer);
+      desired_pos += p - tmp->ಬಫರ್;
+      xwrite_stdout (tmp->ಬಫರ್, p - tmp->ಬಫರ್);
     }
 
 free_lbuffers:
-  while (first)
+  ಆಗ (ಮೊದಲ)
     {
-      tmp = first->next;
-      free (first);
-      first = tmp;
+      tmp = ಮೊದಲ->ಮುಂದಿನ;
+      ಬಿಡುಗಡೆ (ಮೊದಲ);
+      ಮೊದಲ = tmp;
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  ಆದರೆ (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Output all but the last N_LINES lines of the input stream defined by
@@ -647,105 +647,105 @@ free_lbuffers:
    NOTE: this code is very similar to that of tail.c's file_lines function.
    Unfortunately, factoring out some common core looks like it'd result
    in a less efficient implementation or a messy interface.  */
-static bool
-elide_tail_lines_seekable (char const *pretty_filename, int fd,
-                           uintmax_t n_lines,
-                           off_t start_pos, off_t size)
+ಸ್ಥಿರ bool
+elide_ಬಾಲ_ಸಾಲುಗಳು_seekable (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *pretty_filename, ಪೂರ್ಣಾಂಕ fd,
+                           uintmax_t n_ಸಾಲುಗಳು,
+                           off_t ಆರಂಭ_pos, off_t ಗಾತ್ರ_2)
 {
-  char buffer[BUFSIZ];
-  ssize_t bytes_read;
-  off_t pos = size;
+  ಅಕ್ಷರ ಬಫರ್[BUFSIZ];
+  ssize_t ಬೈಟುಗಳು_read;
+  off_t pos = ಗಾತ್ರ_2;
 
   /* Set 'bytes_read' to the size of the last, probably partial, buffer;
      0 < 'bytes_read' <= 'BUFSIZ'.  */
-  bytes_read = (pos - start_pos) % BUFSIZ;
-  if (bytes_read == 0)
-    bytes_read = BUFSIZ;
+  ಬೈಟುಗಳು_read = (pos - ಆರಂಭ_pos) % BUFSIZ;
+  ಆದರೆ (ಬೈಟುಗಳು_read == 0)
+    ಬೈಟುಗಳು_read = BUFSIZ;
   /* Make 'pos' a multiple of 'BUFSIZ' (0 if the file is short), so that all
      reads will be on block boundaries, which might increase efficiency.  */
-  pos -= bytes_read;
-  if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-    return false;
-  bytes_read = read (fd, buffer, bytes_read);
-  if (bytes_read < 0)
+  pos -= ಬೈಟುಗಳು_read;
+  ಆದರೆ (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+    ಹಿಂತಿರುಗಿ false;
+  ಬೈಟುಗಳು_read = ಪಠ (fd, ಬಫರ್, ಬೈಟುಗಳು_read);
+  ಆದರೆ (ಬೈಟುಗಳು_read < 0)
     {
       diagnose_read_failure (pretty_filename);
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
   /* n_lines == 0 case needs special treatment. */
-  const bool all_lines = !n_lines;
+  ಸ್ಥಿರಾಂಕ bool all_ಸಾಲುಗಳು = !n_ಸಾಲುಗಳು;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (n_lines && bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  ಆದರೆ (n_ಸಾಲುಗಳು && ಬೈಟುಗಳು_read && ಬಫರ್[ಬೈಟುಗಳು_read - 1] != ಸಾಲು_ಕೊನೆ)
+    --n_ಸಾಲುಗಳು;
 
-  while (true)
+  ಆಗ (true)
     {
       /* Scan backward, counting the newlines in this bufferfull.  */
 
-      idx_t n = bytes_read;
-      while (n)
+      idx_t n = ಬೈಟುಗಳು_read;
+      ಆಗ (n)
         {
-          if (all_lines)
+          ಆದರೆ (all_ಸಾಲುಗಳು)
             n -= 1;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              char const *nl;
-              nl = memrchr (buffer, line_end, n);
-              if (nl == NULL)
-                break;
-              n = nl - buffer;
+              ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *nl;
+              nl = memrchr (ಬಫರ್, ಸಾಲು_ಕೊನೆ, n);
+              ಆದರೆ (nl == ಖಾಲಿ)
+                ನಿಲ್ಲಿಸು;
+              n = nl - ಬಫರ್;
             }
-          if (n_lines-- == 0)
+          ಆದರೆ (n_ಸಾಲುಗಳು-- == 0)
             {
               /* Found it.  */
               /* If necessary, restore the file pointer and copy
                  input to output up to position, POS.  */
-              if (start_pos < pos)
+              ಆದರೆ (ಆರಂಭ_pos < pos)
                 {
-                  enum Copy_fd_status err;
-                  if (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
-                    return false;
+                  ಎಣಿಕೆ Copy_fd_ಸ್ಥಿತಿ err;
+                  ಆದರೆ (elseek (fd, ಆರಂಭ_pos, SEEK_SET, pretty_filename) < 0)
+                    ಹಿಂತಿರುಗಿ false;
 
-                  err = copy_fd (fd, pos - start_pos);
-                  if (err != COPY_FD_OK)
+                  err = copy_fd (fd, pos - ಆರಂಭ_pos);
+                  ಆದರೆ (err != COPY_FD_OK)
                     {
                       diagnose_copy_fd_failure (err, pretty_filename);
-                      return false;
+                      ಹಿಂತಿರುಗಿ false;
                     }
                 }
 
               /* Output the initial portion of the buffer
                  in which we found the desired newline byte.  */
-              xwrite_stdout (buffer, n + 1);
+              xwrite_stdout (ಬಫರ್, n + 1);
 
               /* Set file pointer to the byte after what we've output.  */
-              return 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
+              ಹಿಂತಿರುಗಿ 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
             }
         }
 
       /* Not enough newlines in that bufferfull.  */
-      if (pos == start_pos)
+      ಆದರೆ (pos == ಆರಂಭ_pos)
         {
           /* Not enough lines in the file.  */
-          return true;
+          ಹಿಂತಿರುಗಿ true;
         }
       pos -= BUFSIZ;
-      if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-        return false;
+      ಆದರೆ (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+        ಹಿಂತಿರುಗಿ false;
 
-      bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read < 0)
+      ಬೈಟುಗಳು_read = ಪಠ (fd, ಬಫರ್, BUFSIZ);
+      ಆದರೆ (ಬೈಟುಗಳು_read < 0)
         {
           diagnose_read_failure (pretty_filename);
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
 
       /* FIXME: is this dead code?
          Consider the test, pos == start_pos, above. */
-      if (bytes_read == 0)
-        return true;
+      ಆದರೆ (ಬೈಟುಗಳು_read == 0)
+        ಹಿಂತಿರುಗಿ true;
     }
 }
 
@@ -754,144 +754,144 @@ elide_tail_lines_seekable (char const *pretty_filename, int fd,
    at CURRENT_POS.  The file's status is ST.  Return true on success.
    Give a diagnostic and return false upon error.  */
 
-static bool
-elide_tail_lines_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+ಸ್ಥಿರ bool
+elide_ಬಾಲ_ಸಾಲುಗಳು_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t n_elide,
+                       ರಚನೆ stat ಸ್ಥಿರಾಂಕ *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_lines_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t ಗಾತ್ರ_2 = st->st_ಗಾತ್ರ;
+  ಆದರೆ (current_pos < 0 || ಗಾತ್ರ_2 <= STP_BLKSIZE (st))
+    ಹಿಂತಿರುಗಿ elide_ಬಾಲ_ಸಾಲುಗಳು_pipe (filename, fd, n_elide, current_pos);
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* Find the offset, OFF, of the Nth newline from the end,
          but not counting the last byte of the file.
          If found, write from current position to OFF, inclusive.
          Otherwise, just return true.  */
 
-      return (size <= current_pos
-              || elide_tail_lines_seekable (filename, fd, n_elide,
-                                            current_pos, size));
+      ಹಿಂತಿರುಗಿ (ಗಾತ್ರ_2 <= current_pos
+              || elide_ಬಾಲ_ಸಾಲುಗಳು_seekable (filename, fd, n_elide,
+                                            current_pos, ಗಾತ್ರ_2));
     }
 }
 
-static bool
-head_bytes (char const *filename, int fd, uintmax_t bytes_to_write)
+ಸ್ಥಿರ bool
+ತಲೆ_ಬೈಟುಗಳು (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t ಬೈಟುಗಳು_ಗಮ್ಯ_write)
 {
-  if (copy_fd (fd, bytes_to_write) == COPY_FD_READ_ERROR)
+  ಆದರೆ (copy_fd (fd, ಬೈಟುಗಳು_ಗಮ್ಯ_write) == COPY_FD_READ_ERROR)
     {
       diagnose_read_failure (filename);
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
-static bool
-head_lines (char const *filename, int fd, uintmax_t lines_to_write)
+ಸ್ಥಿರ bool
+ತಲೆ_ಸಾಲುಗಳು (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t ಸಾಲುಗಳು_ಗಮ್ಯ_write)
 {
-  char buffer[BUFSIZ];
+  ಅಕ್ಷರ ಬಫರ್[BUFSIZ];
 
-  while (lines_to_write)
+  ಆಗ (ಸಾಲುಗಳು_ಗಮ್ಯ_write)
     {
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
-      idx_t bytes_to_write = 0;
+      ssize_t ಬೈಟುಗಳು_read = ಪಠ (fd, ಬಫರ್, BUFSIZ);
+      idx_t ಬೈಟುಗಳು_ಗಮ್ಯ_write = 0;
 
-      if (bytes_read < 0)
+      ಆದರೆ (ಬೈಟುಗಳು_read < 0)
         {
           diagnose_read_failure (filename);
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
-      if (bytes_read == 0)
-        break;
-      while (bytes_to_write < bytes_read)
-        if (buffer[bytes_to_write++] == line_end && --lines_to_write == 0)
+      ಆದರೆ (ಬೈಟುಗಳು_read == 0)
+        ನಿಲ್ಲಿಸು;
+      ಆಗ (ಬೈಟುಗಳು_ಗಮ್ಯ_write < ಬೈಟುಗಳು_read)
+        ಆದರೆ (ಬಫರ್[ಬೈಟುಗಳು_ಗಮ್ಯ_write++] == ಸಾಲು_ಕೊನೆ && --ಸಾಲುಗಳು_ಗಮ್ಯ_write == 0)
           {
-            off_t n_bytes_past_EOL = bytes_read - bytes_to_write;
+            off_t n_ಬೈಟುಗಳು_past_EOL = ಬೈಟುಗಳು_read - ಬೈಟುಗಳು_ಗಮ್ಯ_write;
             /* If we have read more data than that on the specified number
                of lines, try to seek back to the position we would have
                gotten to had we been reading one byte at a time.  */
-            if (lseek (fd, -n_bytes_past_EOL, SEEK_CUR) < 0)
+            ಆದರೆ (lseek (fd, -n_ಬೈಟುಗಳು_past_EOL, SEEK_CUR) < 0)
               {
-                struct stat st;
-                if (fstat (fd, &st) != 0 || S_ISREG (st.st_mode))
-                  elseek_diagnostic (-n_bytes_past_EOL, SEEK_CUR, filename);
+                ರಚನೆ stat st;
+                ಆದರೆ (fstat (fd, &st) != 0 || S_ISREG (st.st_ಬಹುಲಕ))
+                  elseek_diagnostic (-n_ಬೈಟುಗಳು_past_EOL, SEEK_CUR, filename);
               }
-            break;
+            ನಿಲ್ಲಿಸು;
           }
-      xwrite_stdout (buffer, bytes_to_write);
+      xwrite_stdout (ಬಫರ್, ಬೈಟುಗಳು_ಗಮ್ಯ_write);
     }
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
-static bool
-head (char const *filename, int fd, uintmax_t n_units, bool count_lines,
-      bool elide_from_end)
+ಸ್ಥಿರ bool
+ತಲೆ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ fd, uintmax_t n_units, bool ಎಣಿಕೆ_ಸಾಲುಗಳು,
+      bool elide_from_ಕೊನೆ)
 {
-  if (print_headers)
-    write_header (filename);
+  ಆದರೆ (print_ಶೀರ್ಷಿಕೆಗಳು)
+    write_ಶೀರ್ಷಿಕೆ (filename);
 
-  if (elide_from_end)
+  ಆದರೆ (elide_from_ಕೊನೆ)
     {
       /* Optimize for "infinite" elisions.  */
-      if (n_units == UINTMAX_MAX)
-        return true;
+      ಆದರೆ (n_units == UINTMAX_MAX)
+        ಹಿಂತಿರುಗಿ true;
 
       off_t current_pos = -1;
-      struct stat st;
-      if (fstat (fd, &st) != 0)
+      ರಚನೆ stat st;
+      ಆದರೆ (fstat (fd, &st) != 0)
         {
           error (0, errno, _("cannot fstat %s"),
                  quoteaf (filename));
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
-      if (! presume_input_pipe && S_ISREG (st.st_mode))
+      ಆದರೆ (! presume_ಒಳಹರಿವು_pipe && S_ISREG (st.st_ಬಹುಲಕ))
         {
           current_pos = elseek (fd, 0, SEEK_CUR, filename);
-          if (current_pos < 0)
-            return false;
+          ಆದರೆ (current_pos < 0)
+            ಹಿಂತಿರುಗಿ false;
         }
-      if (count_lines)
-        return elide_tail_lines_file (filename, fd, n_units, &st, current_pos);
-      else
-        return elide_tail_bytes_file (filename, fd, n_units, &st, current_pos);
+      ಆದರೆ (ಎಣಿಕೆ_ಸಾಲುಗಳು)
+        ಹಿಂತಿರುಗಿ elide_ಬಾಲ_ಸಾಲುಗಳು_file (filename, fd, n_units, &st, current_pos);
+      ಇಲ್ಲದಿದ್ದರೆ
+        ಹಿಂತಿರುಗಿ elide_ಬಾಲ_ಬೈಟುಗಳು_file (filename, fd, n_units, &st, current_pos);
     }
-  if (count_lines)
-    return head_lines (filename, fd, n_units);
-  else
-    return head_bytes (filename, fd, n_units);
+  ಆದರೆ (ಎಣಿಕೆ_ಸಾಲುಗಳು)
+    ಹಿಂತಿರುಗಿ ತಲೆ_ಸಾಲುಗಳು (filename, fd, n_units);
+  ಇಲ್ಲದಿದ್ದರೆ
+    ಹಿಂತಿರುಗಿ ತಲೆ_ಬೈಟುಗಳು (filename, fd, n_units);
 }
 
-static bool
-head_file (char const *filename, uintmax_t n_units, bool count_lines,
-           bool elide_from_end)
+ಸ್ಥಿರ bool
+ತಲೆ_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, uintmax_t n_units, bool ಎಣಿಕೆ_ಸಾಲುಗಳು,
+           bool elide_from_ಕೊನೆ)
 {
-  int fd;
+  ಪೂರ್ಣಾಂಕ fd;
   bool ok;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  ಆದರೆ (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDIN_FILENO, O_ದ್ವಿಮಾನ);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_ದ್ವಿಮಾನ);
+      ಆದರೆ (fd < 0)
         {
           error (0, errno, _("cannot open %s for reading"), quoteaf (filename));
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
     }
 
-  ok = head (filename, fd, n_units, count_lines, elide_from_end);
-  if (!is_stdin && close (fd) != 0)
+  ok = ತಲೆ (filename, fd, n_units, ಎಣಿಕೆ_ಸಾಲುಗಳು, elide_from_ಕೊನೆ);
+  ಆದರೆ (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (filename));
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Convert a string of decimal digits, N_STRING, with an optional suffix
@@ -901,97 +901,97 @@ head_file (char const *filename, uintmax_t n_units, bool count_lines,
    COUNT_LINES indicates whether N_STRING is a number of bytes or a number
    of lines.  It is used solely to give a more specific diagnostic.  */
 
-static uintmax_t
-string_to_integer (bool count_lines, char const *n_string)
+ಸ್ಥಿರ uintmax_t
+string_ಗಮ್ಯ_integer (bool ಎಣಿಕೆ_ಸಾಲುಗಳು, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *n_string)
 {
-  return xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
-                     (count_lines
+  ಹಿಂತಿರುಗಿ xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
+                     (ಎಣಿಕೆ_ಸಾಲುಗಳು
                       ? _("invalid number of lines")
                       : _("invalid number of bytes")),
                      0, XTOINT_MAX_QUIET);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  enum header_mode header_mode = multiple_files;
+  ಎಣಿಕೆ ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = ಅಪವರ್ತ್ಯ_files;
   bool ok = true;
-  int c;
+  ಪೂರ್ಣಾಂಕ c;
 
   /* Number of items to output, or to elide from the end.
      UINTMAX_MAX stands for an essentially unlimited number.  */
-  uintmax_t n_units = DEFAULT_NUMBER;
+  uintmax_t n_units = DEFAULT_ಸಂಖ್ಯೆ;
 
   /* If true, interpret the numeric argument as the number of lines.
      Otherwise, interpret it as the number of bytes.  */
-  bool count_lines = true;
+  bool ಎಣಿಕೆ_ಸಾಲುಗಳು = true;
 
   /* Elide the specified number of lines or bytes, counting from
      the end of the file.  */
-  bool elide_from_end = false;
+  bool elide_from_ಕೊನೆ = false;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file_list;
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ default_file_list[] = {"-", ಖಾಲಿ};
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ *file_list;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  if (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  ಆದರೆ (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
-      char *a = argv[1];
-      char *n_string = ++a;
-      char *end_n_string;
-      char multiplier_char = 0;
+      ಅಕ್ಷರ *a = argv[1];
+      ಅಕ್ಷರ *n_string = ++a;
+      ಅಕ್ಷರ *ಕೊನೆ_n_string;
+      ಅಕ್ಷರ multiplier_char = 0;
 
       /* Old option syntax; a dash, one or more digits, and one or
          more option letters.  Move past the number. */
-      do ++a;
-      while (c_isdigit (*a));
+      ಮಾಡು ++a;
+      ಆಗ (c_isdigit (*a));
 
       /* Pointer to the byte after the last digit.  */
-      end_n_string = a;
+      ಕೊನೆ_n_string = a;
 
       /* Parse any appended option letters. */
-      for (; *a; a++)
+      ಗಾಗಿ (; *a; a++)
         {
-          switch (*a)
+          ಆಯ್ಕೆ (*a)
             {
-            case 'c':
-              count_lines = false;
+            ಸ್ಥಿತಿ 'c':
+              ಎಣಿಕೆ_ಸಾಲುಗಳು = false;
               multiplier_char = 0;
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case 'b':
-            case 'k':
-            case 'm':
-              count_lines = false;
+            ಸ್ಥಿತಿ 'b':
+            ಸ್ಥಿತಿ 'k':
+            ಸ್ಥಿತಿ 'm':
+              ಎಣಿಕೆ_ಸಾಲುಗಳು = false;
               multiplier_char = *a;
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case 'l':
-              count_lines = true;
-              break;
+            ಸ್ಥಿತಿ 'l':
+              ಎಣಿಕೆ_ಸಾಲುಗಳು = true;
+              ನಿಲ್ಲಿಸು;
 
-            case 'q':
-              header_mode = never;
-              break;
+            ಸ್ಥಿತಿ 'q':
+              ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = never;
+              ನಿಲ್ಲಿಸು;
 
-            case 'v':
-              header_mode = always;
-              break;
+            ಸ್ಥಿತಿ 'v':
+              ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = always;
+              ನಿಲ್ಲಿಸು;
 
-            case 'z':
-              line_end = '\0';
-              break;
+            ಸ್ಥಿತಿ 'z':
+              ಸಾಲು_ಕೊನೆ = '\0';
+              ನಿಲ್ಲಿಸು;
 
-            default:
+            ಪೂರ್ವನಿಯೋಜಿತ:
               error (0, 0, _("invalid trailing option -- %c"), *a);
               usage (EXIT_FAILURE);
             }
@@ -999,11 +999,11 @@ main (int argc, char **argv)
 
       /* Append the multiplier character (if any) onto the end of
          the digit string.  Then add NUL byte if necessary.  */
-      *end_n_string = multiplier_char;
-      if (multiplier_char)
-        *(++end_n_string) = 0;
+      *ಕೊನೆ_n_string = multiplier_char;
+      ಆದರೆ (multiplier_char)
+        *(++ಕೊನೆ_n_string) = 0;
 
-      n_units = string_to_integer (count_lines, n_string);
+      n_units = string_ಗಮ್ಯ_integer (ಎಣಿಕೆ_ಸಾಲುಗಳು, n_string);
 
       /* Make the options we just parsed invisible to getopt. */
       argv[1] = argv[0];
@@ -1011,70 +1011,70 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
-                           long_options, NULL))
+  ಆಗ ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
+                           long_options, ಖಾಲಿ))
          != -1)
     {
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
-          break;
+        ಸ್ಥಿತಿ PRESUME_ಒಳಹರಿವು_PIPE_OPTION:
+          presume_ಒಳಹರಿವು_pipe = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 'c':
-          count_lines = false;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        ಸ್ಥಿತಿ 'c':
+          ಎಣಿಕೆ_ಸಾಲುಗಳು = false;
+          elide_from_ಕೊನೆ = (*optarg == '-');
+          ಆದರೆ (elide_from_ಕೊನೆ)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_ಗಮ್ಯ_integer (ಎಣಿಕೆ_ಸಾಲುಗಳು, optarg);
+          ನಿಲ್ಲಿಸು;
 
-        case 'n':
-          count_lines = true;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        ಸ್ಥಿತಿ 'n':
+          ಎಣಿಕೆ_ಸಾಲುಗಳು = true;
+          elide_from_ಕೊನೆ = (*optarg == '-');
+          ಆದರೆ (elide_from_ಕೊನೆ)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_ಗಮ್ಯ_integer (ಎಣಿಕೆ_ಸಾಲುಗಳು, optarg);
+          ನಿಲ್ಲಿಸು;
 
-        case 'q':
-          header_mode = never;
-          break;
+        ಸ್ಥಿತಿ 'q':
+          ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = never;
+          ನಿಲ್ಲಿಸು;
 
-        case 'v':
-          header_mode = always;
-          break;
+        ಸ್ಥಿತಿ 'v':
+          ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = always;
+          ನಿಲ್ಲಿಸು;
 
-        case 'z':
-          line_end = '\0';
-          break;
+        ಸ್ಥಿತಿ 'z':
+          ಸಾಲು_ಕೊನೆ = '\0';
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
-          if (c_isdigit (c))
+        ಪೂರ್ವನಿಯೋಜಿತ:
+          ಆದರೆ (c_isdigit (c))
             error (0, 0, _("invalid trailing option -- %c"), c);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (header_mode == always
-      || (header_mode == multiple_files && optind < argc - 1))
-    print_headers = true;
+  ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == always
+      || (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == ಅಪವರ್ತ್ಯ_files && optind < argc - 1))
+    print_ಶೀರ್ಷಿಕೆಗಳು = true;
 
   file_list = (optind < argc
-               ? (char const *const *) &argv[optind]
+               ? (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ *) &argv[optind]
                : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDOUT_FILENO, O_ದ್ವಿಮಾನ);
 
-  for (size_t i = 0; file_list[i]; ++i)
-    ok &= head_file (file_list[i], n_units, count_lines, elide_from_end);
+  ಗಾಗಿ (size_t i = 0; file_list[i]; ++i)
+    ok &= ತಲೆ_file (file_list[i], n_units, ಎಣಿಕೆ_ಸಾಲುಗಳು, elide_from_ಕೊನೆ);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ಆದರೆ (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಹಿಂತಿರುಗಿ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

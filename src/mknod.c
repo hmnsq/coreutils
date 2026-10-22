@@ -16,148 +16,148 @@
 
 /* Written by David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
-#include "xstrtol.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "modechange.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "selinux.h"
+#ಅನ್ತರ್ಭಾವ "smack.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mknod"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "mknod"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_ವಾದ, ಖಾಲಿ, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
-              program_name);
+      ಬರೆ (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Create the special file NAME of the given TYPE.\n\
+Create the special file NAME ದ the given TYPE.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --ಬಹುಲಕ_2=ಬಹುಲಕ\n\
+         ಗಣ_2 file permission ಬಿಟ್ಟುಗಳು_2 ಗಮ್ಯ ಬಹುಲಕ, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         ಗಣ_2 the SELinux security context ಗಮ್ಯ ಪೂರ್ವನಿಯೋಜಿತ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ಆದರೆ CTX is specified then ಗಣ_2 the\n\
+         SELinux or SMACK security context ಗಮ್ಯ CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Both MAJOR and MINOR must be specified when TYPE is b, c, or u, and they\n\
 must be omitted when TYPE is p.  If MAJOR or MINOR begins with 0x or 0X,\n\
-it is interpreted as hexadecimal; otherwise, if it begins with 0, as octal;\n\
+it is interpreted as hexadecimal; otherwise, ಆದರೆ it begins with 0, as octal;\n\
 otherwise, as decimal.  TYPE may be:\n\
 "), stdout);
       fputs (_("\
 \n\
-  b      create a block (buffered) special file\n\
+  b      create a ಖಂಡ (buffered) special file\n\
   c, u   create a character (unbuffered) special file\n\
   p      create a FIFO\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      ಬರೆ (USAGE_BUILTIN_WARNING, ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *specified_ಬಹುಲಕ = ಖಾಲಿ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *scontext = ಖಾಲಿ;
+  ರಚನೆ selabel_handle *ಗಣ_security_context = ಖಾಲಿ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  ಪೂರ್ಣಾಂಕ optc;
+  ಆಗ ((optc = getopt_long (argc, argv, "m:Z", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        ಸ್ಥಿತಿ 'm':
+          specified_ಬಹುಲಕ = optarg;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'Z':
+          ಆದರೆ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ಆದರೆ (optarg)
                 scontext = optarg;
-              else
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  ಗಣ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       ಖಾಲಿ, 0);
+                  ಆದರೆ (! ಗಣ_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ನಿಲ್ಲಿಸು;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = ಬಹುಲಕ_RW_UGO;
+  ಆದರೆ (specified_ಬಹುಲಕ)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      ರಚನೆ ಬಹುಲಕ_change *change = ಬಹುಲಕ_compile (specified_ಬಹುಲಕ);
+      ಆದರೆ (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_ಮೌಲ್ಯ = umask (0);
+      umask (umask_ಮೌಲ್ಯ);
+      newmode = ಬಹುಲಕ_adjust (newmode, false, umask_ಮೌಲ್ಯ, change, ಖಾಲಿ);
+      ಬಿಡುಗಡೆ (change);
+      ಆದರೆ (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
@@ -165,41 +165,41 @@ main (int argc, char **argv)
   /* If the number of arguments is 0 or 1,
      or (if it's 2 or more and the second one starts with 'p'), then there
      must be exactly two operands.  Otherwise, there must be four.  */
-  int expected_operands = (argc <= optind
+  ಪೂರ್ಣಾಂಕ expected_operands = (argc <= optind
                            || (optind + 1 < argc && argv[optind + 1][0] == 'p')
                            ? 2 : 4);
 
-  if (argc - optind < expected_operands)
+  ಆದರೆ (argc - optind < expected_operands)
     {
-      if (argc <= optind)
+      ಆದರೆ (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      if (expected_operands == 4 && argc - optind == 2)
+      ಆದರೆ (expected_operands == 4 && argc - optind == 2)
         fprintf (stderr, "%s\n",
                  _("Special files require major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (expected_operands < argc - optind)
+  ಆದರೆ (expected_operands < argc - optind)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[optind + expected_operands]));
-      if (expected_operands == 2 && argc - optind == 4)
+      ಆದರೆ (expected_operands == 2 && argc - optind == 4)
         fprintf (stderr, "%s\n",
                  _("Fifos do not have major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  ಆದರೆ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      ಪೂರ್ಣಾಂಕ ret = 0;
+      ಆದರೆ (is_smack_enabled ())
+        ret = smack_ಗಣ_label_for_self (scontext);
+      ಇಲ್ಲದಿದ್ದರೆ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ಆದರೆ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
@@ -208,72 +208,72 @@ main (int argc, char **argv)
   /* Only check the first character, to allow mnemonic usage like
      'mknod /dev/rst0 character 18 0'. */
 
-  mode_t node_type;
-  switch (argv[optind + 1][0])
+  mode_t ಗಂಟು_type;
+  ಆಯ್ಕೆ (argv[optind + 1][0])
     {
-    case 'b':			/* 'block' or 'buffered' */
-#ifndef S_IFBLK
+    ಸ್ಥಿತಿ 'b':			/* 'block' or 'buffered' */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ S_IFBLK
       error (EXIT_FAILURE, 0, _("block special files not supported"));
-#else
-      node_type = S_IFBLK;
-#endif
-      goto block_or_character;
+#ಇಲ್ಲದಿದ್ದರೆ
+      ಗಂಟು_type = S_IFBLK;
+#ಆದರೆ_ಅಂತ್ಯ
+      ಹೋಗು ಖಂಡ_or_character;
 
-    case 'c':			/* 'character' */
-    case 'u':			/* 'unbuffered' */
-#ifndef S_IFCHR
+    ಸ್ಥಿತಿ 'c':			/* 'character' */
+    ಸ್ಥಿತಿ 'u':			/* 'unbuffered' */
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ S_IFCHR
       error (EXIT_FAILURE, 0, _("character special files not supported"));
-#else
-      node_type = S_IFCHR;
-#endif
-      goto block_or_character;
+#ಇಲ್ಲದಿದ್ದರೆ
+      ಗಂಟು_type = S_IFCHR;
+#ಆದರೆ_ಅಂತ್ಯ
+      ಹೋಗು ಖಂಡ_or_character;
 
-    block_or_character:
+    ಖಂಡ_or_character:
       {
-        char const *s_major = argv[optind + 2];
+        ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s_major = argv[optind + 2];
         uintmax_t i_major;
-        if (xstrtoumax (s_major, NULL, 0, &i_major, "") != LONGINT_OK
+        ಆದರೆ (xstrtoumax (s_major, ಖಾಲಿ, 0, &i_major, "") != LONGINT_OK
             || i_major != (major_t) i_major)
           error (EXIT_FAILURE, 0,
                  _("invalid major device number %s"), quote (s_major));
 
-        char const *s_minor = argv[optind + 3];
+        ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s_minor = argv[optind + 3];
         uintmax_t i_minor;
-        if (xstrtoumax (s_minor, NULL, 0, &i_minor, "") != LONGINT_OK
+        ಆದರೆ (xstrtoumax (s_minor, ಖಾಲಿ, 0, &i_minor, "") != LONGINT_OK
             || i_minor != (minor_t) i_minor)
           error (EXIT_FAILURE, 0,
                  _("invalid minor device number %s"), quote (s_minor));
 
         dev_t device = makedev (i_major, i_minor);
-#ifdef NODEV
-        if (device == NODEV)
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ NODEV
+        ಆದರೆ (device == NODEV)
           error (EXIT_FAILURE, 0, _("invalid device %s %s"),
                  s_major, s_minor);
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-        if (set_security_context)
-          defaultcon (set_security_context, argv[optind], node_type);
+        ಆದರೆ (ಗಣ_security_context)
+          defaultcon (ಗಣ_security_context, argv[optind], ಗಂಟು_type);
 
-        if (mknod (argv[optind], newmode | node_type, device) != 0)
+        ಆದರೆ (mknod (argv[optind], newmode | ಗಂಟು_type, device) != 0)
           error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       }
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    case 'p':			/* 'pipe' */
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+    ಸ್ಥಿತಿ 'p':			/* 'pipe' */
+      ಆದರೆ (ಗಣ_security_context)
+        defaultcon (ಗಣ_security_context, argv[optind], S_IFIFO);
+      ಆದರೆ (mkfifo (argv[optind], newmode) != 0)
         error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    default:
+    ಪೂರ್ವನಿಯೋಜಿತ:
       error (0, 0, _("invalid device type %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (specified_mode && lchmod (argv[optind], newmode) != 0)
+  ಆದರೆ (specified_ಬಹುಲಕ && lchmod (argv[optind], newmode) != 0)
     error (EXIT_FAILURE, errno, _("cannot set permissions of %s"),
            quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
 }

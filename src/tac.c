@@ -34,227 +34,227 @@
 tac -r -s '.\|
 ' file */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ "system.h"
 
-#include <regex.h>
+#ಅನ್ತರ್ಭಾವ <regex.h>
 
-#include "filenamecat.h"
-#include "full-read.h"
-#include "full-write.h"
-#include "temp-stream.h"
-#include "xbinary-io.h"
+#ಅನ್ತರ್ಭಾವ "filenamecat.h"
+#ಅನ್ತರ್ಭಾವ "full-read.h"
+#ಅನ್ತರ್ಭಾವ "full-write.h"
+#ಅನ್ತರ್ಭಾವ "temp-stream.h"
+#ಅನ್ತರ್ಭಾವ "xbinary-io.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tac"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "tac"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Jay Lepreau"), \
   proper_name ("David MacKenzie")
 
 
 /* The number of bytes per atomic read. */
-#define INITIAL_READSIZE 8192
+#ವ್ಯಾಖ್ಯಾನಿಸು INITIAL_READSIZE 8192
 
 /* The number of bytes per atomic write. */
-#define WRITESIZE 8192
+#ವ್ಯಾಖ್ಯಾನಿಸು WRITESIZE 8192
 
 /* The string that separates the records of the file. */
-static char const *separator = "\n";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *separator = "\n";
 
 /* True if we have ever read standard input.  */
-static bool have_read_stdin = false;
+ಸ್ಥಿರ bool have_read_stdin = false;
 
 /* If true, print 'separator' along with the record preceding it
    in the file; otherwise with the record following it. */
-static bool separator_ends_record = true;
+ಸ್ಥಿರ bool separator_ತುದಿಗಳು_ದಾಖಲೆ = true;
 
 /* 0 if 'separator' is to be matched as a regular expression;
    otherwise, the length of 'separator', used as a sentinel to
    stop the search. */
-static size_t sentinel_length = 1;
+ಸ್ಥಿರ size_t sentinel_ಉದ್ದಳತೆ = 1;
 
 /* The length of a match with 'separator'.  If 'sentinel_length' is 0,
    'match_length' is computed every time a match succeeds;
    otherwise, it is simply the length of 'separator'. */
-static size_t match_length;
+ಸ್ಥಿರ size_t ಹೊಂದಿಕೆ_ಉದ್ದಳತೆ;
 
 /* The input buffer. */
-static char *G_buffer;
+ಸ್ಥಿರ ಅಕ್ಷರ *G_ಬಫರ್;
 
 /* The number of bytes to read at once into 'buffer'. */
-static size_t read_size;
+ಸ್ಥಿರ size_t read_ಗಾತ್ರ;
 
 /* The size of 'buffer'.  This is read_size * 2 + sentinel_length + 2.
    The extra 2 bytes allow 'past_end' to have a value beyond the
    end of 'G_buffer' and 'match_start' to run off the front of 'G_buffer'. */
-static size_t G_buffer_size;
+ಸ್ಥಿರ size_t G_ಬಫರ್_ಗಾತ್ರ;
 
 /* The compiled regular expression representing 'separator'. */
-static struct re_pattern_buffer compiled_separator;
-static char compiled_separator_fastmap[UCHAR_MAX + 1];
-static struct re_registers regs;
+ಸ್ಥಿರ ರಚನೆ re_ನಮೂನೆ_ಬಫರ್ compiled_separator;
+ಸ್ಥಿರ ಅಕ್ಷರ compiled_separator_fastmap[UCHAR_MAX + 1];
+ಸ್ಥಿರ ರಚನೆ re_registers regs;
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"before", no_argument, NULL, 'b'},
-  {"regex", no_argument, NULL, 'r'},
-  {"separator", required_argument, NULL, 's'},
+  {"before", no_ವಾದ, ಖಾಲಿ, 'b'},
+  {"regex", no_ವಾದ, ಖಾಲಿ, 'r'},
+  {"separator", required_ವಾದ, ಖಾಲಿ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Write each FILE to standard output, last line first.\n\
+Write each FILE ಗಮ್ಯ standard output, ಕೊನೆಯ ಸಾಲು ಮೊದಲ.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --before             attach the separator before instead of after\n\
+  -b, --before             attach the separator before instead ದ after\n\
 "));
       oputs (_("\
-  -r, --regex              interpret the separator as a regular expression\n\
+  -r, --regex              interpret the separator as a regular ಅಭಿವ್ಯಕ್ತಿ_2\n\
 "));
       oputs (_("\
-  -s, --separator=STRING   use STRING as the separator instead of newline\n\
+  -s, --separator=STRING   use STRING as the separator instead ದ newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\n\
-Non-seekable input is buffered to $TMPDIR, defaulting to /tmp.\n\
+Non-seekable ಒಳಹರಿವು is buffered ಗಮ್ಯ $TMPDIR, defaulting ಗಮ್ಯ /tmp.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Print the characters from START to PAST_END - 1.
    If START is null, just flush the buffer. */
 
-static void
-output (char const *start, char const *past_end)
+ಸ್ಥಿರ ಶೂನ್ಯ
+output (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಆರಂಭ, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *past_ಕೊನೆ)
 {
-  static char buffer[WRITESIZE];
-  static size_t bytes_in_buffer = 0;
-  size_t bytes_to_add = past_end - start;
-  size_t bytes_available = WRITESIZE - bytes_in_buffer;
+  ಸ್ಥಿರ ಅಕ್ಷರ ಬಫರ್[WRITESIZE];
+  ಸ್ಥಿರ size_t ಬೈಟುಗಳು_ಒಳ_ಬಫರ್ = 0;
+  size_t ಬೈಟುಗಳು_ಗಮ್ಯ_ಕೂಡಿಸು = past_ಕೊನೆ - ಆರಂಭ;
+  size_t ಬೈಟುಗಳು_ಲಭ್ಯ = WRITESIZE - ಬೈಟುಗಳು_ಒಳ_ಬಫರ್;
 
-  if (!start)
+  ಆದರೆ (!ಆರಂಭ)
     {
-      if (full_write (STDOUT_FILENO, buffer, bytes_in_buffer)
-          != bytes_in_buffer)
+      ಆದರೆ (ತುಂಬಿದ_write (STDOUT_FILENO, ಬಫರ್, ಬೈಟುಗಳು_ಒಳ_ಬಫರ್)
+          != ಬೈಟುಗಳು_ಒಳ_ಬಫರ್)
         write_error ();
-      bytes_in_buffer = 0;
-      return;
+      ಬೈಟುಗಳು_ಒಳ_ಬಫರ್ = 0;
+      ಹಿಂತಿರುಗಿ;
     }
 
   /* Write out as many full buffers as possible. */
-  while (bytes_to_add >= bytes_available)
+  ಆಗ (ಬೈಟುಗಳು_ಗಮ್ಯ_ಕೂಡಿಸು >= ಬೈಟುಗಳು_ಲಭ್ಯ)
     {
-      memcpy (buffer + bytes_in_buffer, start, bytes_available);
-      bytes_to_add -= bytes_available;
-      start += bytes_available;
-      if (full_write (STDOUT_FILENO, buffer, WRITESIZE) != WRITESIZE)
+      ಸ್ಮರಣೆ_ನಕಲು (ಬಫರ್ + ಬೈಟುಗಳು_ಒಳ_ಬಫರ್, ಆರಂಭ, ಬೈಟುಗಳು_ಲಭ್ಯ);
+      ಬೈಟುಗಳು_ಗಮ್ಯ_ಕೂಡಿಸು -= ಬೈಟುಗಳು_ಲಭ್ಯ;
+      ಆರಂಭ += ಬೈಟುಗಳು_ಲಭ್ಯ;
+      ಆದರೆ (ತುಂಬಿದ_write (STDOUT_FILENO, ಬಫರ್, WRITESIZE) != WRITESIZE)
         write_error ();
-      bytes_in_buffer = 0;
-      bytes_available = WRITESIZE;
+      ಬೈಟುಗಳು_ಒಳ_ಬಫರ್ = 0;
+      ಬೈಟುಗಳು_ಲಭ್ಯ = WRITESIZE;
     }
 
-  memcpy (buffer + bytes_in_buffer, start, bytes_to_add);
-  bytes_in_buffer += bytes_to_add;
+  ಸ್ಮರಣೆ_ನಕಲು (ಬಫರ್ + ಬೈಟುಗಳು_ಒಳ_ಬಫರ್, ಆರಂಭ, ಬೈಟುಗಳು_ಗಮ್ಯ_ಕೂಡಿಸು);
+  ಬೈಟುಗಳು_ಒಳ_ಬಫರ್ += ಬೈಟುಗಳು_ಗಮ್ಯ_ಕೂಡಿಸು;
 }
 
 /* Print in reverse the file open on descriptor FD for reading FILE.
    The file is already positioned at FILE_POS, which should be near its end.
    Return true if successful.  */
 
-static bool
-tac_seekable (int input_fd, char const *file, off_t file_pos)
+ಸ್ಥಿರ bool
+tac_seekable (ಪೂರ್ಣಾಂಕ ಒಳಹರಿವು_fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, off_t file_pos)
 {
   /* Pointer to the location in 'G_buffer' where the search for
      the next separator will begin. */
-  char *match_start;
+  ಅಕ್ಷರ *ಹೊಂದಿಕೆ_ಆರಂಭ;
 
   /* Pointer to one past the rightmost character in 'G_buffer' that
      has not been printed yet. */
-  char *past_end;
+  ಅಕ್ಷರ *past_ಕೊನೆ;
 
   /* Length of the record growing in 'G_buffer'. */
-  ptrdiff_t saved_record_size;
+  ptrdiff_t saved_ದಾಖಲೆ_ಗಾತ್ರ;
 
   /* True if 'output' has not been called yet for any file.
      Only used when the separator is attached to the preceding record. */
-  bool first_time = true;
-  char first_char = *separator;	/* Speed optimization, non-regexp. */
-  char const *separator1 = separator + 1; /* Speed optimization, non-regexp. */
-  size_t match_length1 = match_length - 1; /* Speed optimization, non-regexp. */
+  bool ಮೊದಲ_ಸಮಯ = true;
+  ಅಕ್ಷರ ಮೊದಲ_char = *separator;	/* Speed optimization, non-regexp. */
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *separator1 = separator + 1; /* Speed optimization, non-regexp. */
+  size_t ಹೊಂದಿಕೆ_length1 = ಹೊಂದಿಕೆ_ಉದ್ದಳತೆ - 1; /* Speed optimization, non-regexp. */
 
   /* Arrange for the first read to lop off enough to leave the rest of the
      file a multiple of 'read_size'.  Since 'read_size' can change, this may
      not always hold during the program run, but since it usually will, leave
      it here for i/o efficiency (page/sector boundaries and all that).
      Note: the efficiency gain has not been verified. */
-  size_t remainder = file_pos % read_size;
-  if (remainder != 0)
+  size_t remainder = file_pos % read_ಗಾತ್ರ;
+  ಆದರೆ (remainder != 0)
     {
       file_pos -= remainder;
-      if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+      ಆದರೆ (lseek (ಒಳಹರಿವು_fd, file_pos, SEEK_SET) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
     }
 
   /* Scan backward, looking for end of file.  This caters to proc-like
      file systems where the file size is just an estimate.  */
-  while ((saved_record_size = read (input_fd, G_buffer, read_size)) == 0
+  ಆಗ ((saved_ದಾಖಲೆ_ಗಾತ್ರ = ಪಠ (ಒಳಹರಿವು_fd, G_ಬಫರ್, read_ಗಾತ್ರ)) == 0
          && file_pos != 0)
     {
-      off_t rsize = read_size;
-      if (lseek (input_fd, -rsize, SEEK_CUR) < 0)
+      off_t rsize = read_ಗಾತ್ರ;
+      ಆದರೆ (lseek (ಒಳಹರಿವು_fd, -rsize, SEEK_CUR) < 0)
         error (0, errno, _("%s: seek failed"), quotef (file));
-      file_pos -= read_size;
+      file_pos -= read_ಗಾತ್ರ;
     }
 
   /* Now scan forward, looking for end of file.  */
-  while (saved_record_size == read_size)
+  ಆಗ (saved_ದಾಖಲೆ_ಗಾತ್ರ == read_ಗಾತ್ರ)
     {
-      ssize_t nread = read (input_fd, G_buffer, read_size);
-      if (nread == 0)
-        break;
-      saved_record_size = nread;
-      if (saved_record_size < 0)
-        break;
+      ssize_t nread = ಪಠ (ಒಳಹರಿವು_fd, G_ಬಫರ್, read_ಗಾತ್ರ);
+      ಆದರೆ (nread == 0)
+        ನಿಲ್ಲಿಸು;
+      saved_ದಾಖಲೆ_ಗಾತ್ರ = nread;
+      ಆದರೆ (saved_ದಾಖಲೆ_ಗಾತ್ರ < 0)
+        ನಿಲ್ಲಿಸು;
       file_pos += nread;
     }
 
-  if (saved_record_size < 0)
+  ಆದರೆ (saved_ದಾಖಲೆ_ಗಾತ್ರ < 0)
     {
       error (0, errno, _("%s: read error"), quotef (file));
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
-  match_start = past_end = G_buffer + saved_record_size;
+  ಹೊಂದಿಕೆ_ಆರಂಭ = past_ಕೊನೆ = G_ಬಫರ್ + saved_ದಾಖಲೆ_ಗಾತ್ರ;
   /* For non-regexp search, move past impossible positions for a match. */
-  if (sentinel_length)
-    match_start -= match_length1;
+  ಆದರೆ (sentinel_ಉದ್ದಳತೆ)
+    ಹೊಂದಿಕೆ_ಆರಂಭ -= ಹೊಂದಿಕೆ_length1;
 
-  while (true)
+  ಆಗ (true)
     {
       /* Search backward from 'match_start' - 1 to 'G_buffer' for a match
          with 'separator'; for speed, use strncmp if 'separator' contains no
@@ -262,120 +262,120 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
          If the match succeeds, set 'match_start' to point to the start of
          the match and 'match_length' to the length of the match.
          Otherwise, make 'match_start' < 'G_buffer'. */
-      if (sentinel_length == 0)
+      ಆದರೆ (sentinel_ಉದ್ದಳತೆ == 0)
         {
-          size_t i = match_start - G_buffer;
+          size_t i = ಹೊಂದಿಕೆ_ಆರಂಭ - G_ಬಫರ್;
           regoff_t ri = i;
           regoff_t range = 1 - ri;
           regoff_t ret;
 
-          if (1 < range)
+          ಆದರೆ (1 < range)
             error (EXIT_FAILURE, 0, _("record too large"));
 
-          if (range == 1
-              || ((ret = re_search (&compiled_separator, G_buffer,
+          ಆದರೆ (range == 1
+              || ((ret = re_ಹುಡುಕು (&compiled_separator, G_ಬಫರ್,
                                     i, i - 1, range, &regs))
                   == -1))
-            match_start = G_buffer - 1;
-          else if (ret == -2)
+            ಹೊಂದಿಕೆ_ಆರಂಭ = G_ಬಫರ್ - 1;
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ret == -2)
             error (EXIT_FAILURE, 0,
                    _("error in regular expression search"));
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              match_start = G_buffer + regs.start[0];
-              match_length = regs.end[0] - regs.start[0];
+              ಹೊಂದಿಕೆ_ಆರಂಭ = G_ಬಫರ್ + regs.ಆರಂಭ[0];
+              ಹೊಂದಿಕೆ_ಉದ್ದಳತೆ = regs.ಕೊನೆ[0] - regs.ಆರಂಭ[0];
             }
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* 'match_length' is constant for non-regexp boundaries. */
-          while (*--match_start != first_char
-                 || (match_length1 && !STREQ_LEN (match_start + 1, separator1,
-                                                  match_length1)))
+          ಆಗ (*--ಹೊಂದಿಕೆ_ಆರಂಭ != ಮೊದಲ_char
+                 || (ಹೊಂದಿಕೆ_length1 && !STREQ_LEN (ಹೊಂದಿಕೆ_ಆರಂಭ + 1, separator1,
+                                                  ಹೊಂದಿಕೆ_length1)))
             /* Do nothing. */ ;
         }
 
       /* Check whether we backed off the front of 'G_buffer' without finding
          a match for 'separator'. */
-      if (match_start < G_buffer)
+      ಆದರೆ (ಹೊಂದಿಕೆ_ಆರಂಭ < G_ಬಫರ್)
         {
-          if (file_pos == 0)
+          ಆದರೆ (file_pos == 0)
             {
               /* Hit the beginning of the file; print the remaining record. */
-              output (G_buffer, past_end);
-              return true;
+              output (G_ಬಫರ್, past_ಕೊನೆ);
+              ಹಿಂತಿರುಗಿ true;
             }
 
-          saved_record_size = past_end - G_buffer;
-          if (saved_record_size > read_size)
+          saved_ದಾಖಲೆ_ಗಾತ್ರ = past_ಕೊನೆ - G_ಬಫರ್;
+          ಆದರೆ (saved_ದಾಖಲೆ_ಗಾತ್ರ > read_ಗಾತ್ರ)
             {
               /* 'G_buffer_size' is about twice 'read_size', so since
                  we want to read in another 'read_size' bytes before
                  the data already in 'G_buffer', we need to increase
                  'G_buffer_size'. */
-              char *newbuffer;
-              size_t offset = sentinel_length ? sentinel_length : 1;
-              size_t old_G_buffer_size = G_buffer_size;
+              ಅಕ್ಷರ *newbuffer;
+              size_t ಸ್ಥಾನಾಂತರ = sentinel_ಉದ್ದಳತೆ ? sentinel_ಉದ್ದಳತೆ : 1;
+              size_t old_G_ಬಫರ್_ಗಾತ್ರ = G_ಬಫರ್_ಗಾತ್ರ;
 
-              read_size *= 2;
-              G_buffer_size = read_size * 2 + sentinel_length + 2;
-              if (G_buffer_size < old_G_buffer_size)
+              read_ಗಾತ್ರ *= 2;
+              G_ಬಫರ್_ಗಾತ್ರ = read_ಗಾತ್ರ * 2 + sentinel_ಉದ್ದಳತೆ + 2;
+              ಆದರೆ (G_ಬಫರ್_ಗಾತ್ರ < old_G_ಬಫರ್_ಗಾತ್ರ)
                 xalloc_die ();
-              newbuffer = xrealloc (G_buffer - offset, G_buffer_size);
-              newbuffer += offset;
-              G_buffer = newbuffer;
+              newbuffer = xrealloc (G_ಬಫರ್ - ಸ್ಥಾನಾಂತರ, G_ಬಫರ್_ಗಾತ್ರ);
+              newbuffer += ಸ್ಥಾನಾಂತರ;
+              G_ಬಫರ್ = newbuffer;
             }
 
           /* Back up to the start of the next bufferfull of the file.  */
-          if (file_pos >= read_size)
-            file_pos -= read_size;
-          else
+          ಆದರೆ (file_pos >= read_ಗಾತ್ರ)
+            file_pos -= read_ಗಾತ್ರ;
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              read_size = file_pos;
+              read_ಗಾತ್ರ = file_pos;
               file_pos = 0;
             }
-          if (lseek (input_fd, file_pos, SEEK_SET) < 0)
+          ಆದರೆ (lseek (ಒಳಹರಿವು_fd, file_pos, SEEK_SET) < 0)
             error (0, errno, _("%s: seek failed"), quotef (file));
 
           /* Shift the pending record data right to make room for the new.
              The source and destination regions probably overlap.  */
-          memmove (G_buffer + read_size, G_buffer, saved_record_size);
-          past_end = G_buffer + read_size + saved_record_size;
+          memmove (G_ಬಫರ್ + read_ಗಾತ್ರ, G_ಬಫರ್, saved_ದಾಖಲೆ_ಗಾತ್ರ);
+          past_ಕೊನೆ = G_ಬಫರ್ + read_ಗಾತ್ರ + saved_ದಾಖಲೆ_ಗಾತ್ರ;
           /* For non-regexp searches, avoid unnecessary scanning. */
-          if (sentinel_length)
-            match_start = G_buffer + read_size;
-          else
-            match_start = past_end;
+          ಆದರೆ (sentinel_ಉದ್ದಳತೆ)
+            ಹೊಂದಿಕೆ_ಆರಂಭ = G_ಬಫರ್ + read_ಗಾತ್ರ;
+          ಇಲ್ಲದಿದ್ದರೆ
+            ಹೊಂದಿಕೆ_ಆರಂಭ = past_ಕೊನೆ;
 
-          if (full_read (input_fd, G_buffer, read_size) != read_size)
+          ಆದರೆ (ತುಂಬಿದ_read (ಒಳಹರಿವು_fd, G_ಬಫರ್, read_ಗಾತ್ರ) != read_ಗಾತ್ರ)
             {
               error (0, errno, _("%s: read error"), quotef (file));
-              return false;
+              ಹಿಂತಿರುಗಿ false;
             }
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* Found a match of 'separator'. */
-          if (separator_ends_record)
+          ಆದರೆ (separator_ತುದಿಗಳು_ದಾಖಲೆ)
             {
-              char *match_end = match_start + match_length;
+              ಅಕ್ಷರ *ಹೊಂದಿಕೆ_ಕೊನೆ = ಹೊಂದಿಕೆ_ಆರಂಭ + ಹೊಂದಿಕೆ_ಉದ್ದಳತೆ;
 
               /* If this match of 'separator' isn't at the end of the
                  file, print the record. */
-              if (!first_time || match_end != past_end)
-                output (match_end, past_end);
-              past_end = match_end;
-              first_time = false;
+              ಆದರೆ (!ಮೊದಲ_ಸಮಯ || ಹೊಂದಿಕೆ_ಕೊನೆ != past_ಕೊನೆ)
+                output (ಹೊಂದಿಕೆ_ಕೊನೆ, past_ಕೊನೆ);
+              past_ಕೊನೆ = ಹೊಂದಿಕೆ_ಕೊನೆ;
+              ಮೊದಲ_ಸಮಯ = false;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              output (match_start, past_end);
-              past_end = match_start;
+              output (ಹೊಂದಿಕೆ_ಆರಂಭ, past_ಕೊನೆ);
+              past_ಕೊನೆ = ಹೊಂದಿಕೆ_ಆರಂಭ;
             }
 
           /* For non-regex matching, we can back up.  */
-          if (sentinel_length > 0)
-            match_start -= match_length - 1;
+          ಆದರೆ (sentinel_ಉದ್ದಳತೆ > 0)
+            ಹೊಂದಿಕೆ_ಆರಂಭ -= ಹೊಂದಿಕೆ_ಉದ್ದಳತೆ - 1;
         }
     }
 }
@@ -384,205 +384,205 @@ tac_seekable (int input_fd, char const *file, off_t file_pos)
    a temporary file, and set *G_TMP and *G_TEMPFILE to the resulting stream
    and file name.  Return the number of bytes copied, or -1 on error.  */
 
-static off_t
-copy_to_temp (FILE **g_tmp, char **g_tempfile, int input_fd, char const *file)
+ಸ್ಥಿರ off_t
+copy_ಗಮ್ಯ_ತಾತ್ಕಾಲಿಕ (FILE **g_tmp, ಅಕ್ಷರ **g_tempfile, ಪೂರ್ಣಾಂಕ ಒಳಹರಿವು_fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
   FILE *fp;
-  char *file_name;
-  uintmax_t bytes_copied = 0;
-  if (!temp_stream (&fp, &file_name))
-    return -1;
+  ಅಕ್ಷರ *file_name;
+  uintmax_t ಬೈಟುಗಳು_copied = 0;
+  ಆದರೆ (!ತಾತ್ಕಾಲಿಕ_ಹರಿವು (&fp, &file_name))
+    ಹಿಂತಿರುಗಿ -1;
 
-  while (true)
+  ಆಗ (true)
     {
-      ssize_t bytes_read = read (input_fd, G_buffer, read_size);
-      if (bytes_read == 0)
-        break;
-      if (bytes_read < 0)
+      ssize_t ಬೈಟುಗಳು_read = ಪಠ (ಒಳಹರಿವು_fd, G_ಬಫರ್, read_ಗಾತ್ರ);
+      ಆದರೆ (ಬೈಟುಗಳು_read == 0)
+        ನಿಲ್ಲಿಸು;
+      ಆದರೆ (ಬೈಟುಗಳು_read < 0)
         {
           error (0, errno, _("%s: read error"), quotef (file));
-          return -1;
+          ಹಿಂತಿರುಗಿ -1;
         }
 
-      if (fwrite (G_buffer, 1, bytes_read, fp) != bytes_read)
+      ಆದರೆ (fwrite (G_ಬಫರ್, 1, ಬೈಟುಗಳು_read, fp) != ಬೈಟುಗಳು_read)
         {
           error (0, errno, _("%s: write error"), quotef (file_name));
-          return -1;
+          ಹಿಂತಿರುಗಿ -1;
         }
 
       /* Implicitly <= OFF_T_MAX due to preceding fwrite(),
          but unsigned type used to avoid compiler warnings
          not aware of this fact.  */
-      bytes_copied += bytes_read;
+      ಬೈಟುಗಳು_copied += ಬೈಟುಗಳು_read;
     }
 
-  if (fflush (fp) != 0)
+  ಆದರೆ (fflush (fp) != 0)
     {
       error (0, errno, _("%s: write error"), quotef (file_name));
-      return -1;
+      ಹಿಂತಿರುಗಿ -1;
     }
 
   *g_tmp = fp;
   *g_tempfile = file_name;
-  return bytes_copied;
+  ಹಿಂತಿರುಗಿ ಬೈಟುಗಳು_copied;
 }
 
 /* Copy INPUT_FD to a temporary, then tac that file.
    Return true if successful.  */
 
-static bool
-tac_nonseekable (int input_fd, char const *file)
+ಸ್ಥಿರ bool
+tac_nonseekable (ಪೂರ್ಣಾಂಕ ಒಳಹರಿವು_fd, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file)
 {
-  FILE *tmp_stream;
-  char *tmp_file;
-  off_t bytes_copied = copy_to_temp (&tmp_stream, &tmp_file, input_fd, file);
-  if (bytes_copied < 0)
-    return false;
+  FILE *tmp_ಹರಿವು;
+  ಅಕ್ಷರ *tmp_file;
+  off_t ಬೈಟುಗಳು_copied = copy_ಗಮ್ಯ_ತಾತ್ಕಾಲಿಕ (&tmp_ಹರಿವು, &tmp_file, ಒಳಹರಿವು_fd, file);
+  ಆದರೆ (ಬೈಟುಗಳು_copied < 0)
+    ಹಿಂತಿರುಗಿ false;
 
-  bool ok = tac_seekable (fileno (tmp_stream), tmp_file, bytes_copied);
-  return ok;
+  bool ok = tac_seekable (fileno (tmp_ಹರಿವು), tmp_file, ಬೈಟುಗಳು_copied);
+  ಹಿಂತಿರುಗಿ ok;
 }
 
 /* Print FILE in reverse, copying it to a temporary
    file first if it is not seekable.
    Return true if successful.  */
 
-static bool
-tac_file (char const *filename)
+ಸ್ಥಿರ bool
+tac_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename)
 {
   bool ok;
-  off_t file_size;
-  int fd;
+  off_t file_ಗಾತ್ರ;
+  ಪೂರ್ಣಾಂಕ fd;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  ಆದರೆ (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDIN_FILENO, O_ದ್ವಿಮಾನ);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_ದ್ವಿಮಾನ);
+      ಆದರೆ (fd < 0)
         {
           error (0, errno, _("failed to open %s for reading"),
                  quoteaf (filename));
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
     }
 
-  file_size = lseek (fd, 0, SEEK_END);
+  file_ಗಾತ್ರ = lseek (fd, 0, SEEK_END);
 
-  ok = (file_size < 0 || isatty (fd)
+  ok = (file_ಗಾತ್ರ < 0 || isatty (fd)
         ? tac_nonseekable (fd, filename)
-        : tac_seekable (fd, filename, file_size));
+        : tac_seekable (fd, filename, file_ಗಾತ್ರ));
 
-  if (!is_stdin && close (fd) != 0)
+  ಆದರೆ (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("%s: read error"), quotef (filename));
       ok = false;
     }
-  return ok;
+  ಹಿಂತಿರುಗಿ ok;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  char const *error_message;	/* Return value from re_compile_pattern. */
-  int optc;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *error_ಸಂದೇಶ_2;	/* Return value from re_compile_pattern. */
+  ಪೂರ್ಣಾಂಕ optc;
   bool ok;
-  size_t half_buffer_size;
+  size_t half_ಬಫರ್_ಗಾತ್ರ;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file;
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ default_file_list[] = {"-", ಖಾಲಿ};
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ *file;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "brs:", longopts, NULL)) != -1)
+  ಆಗ ((optc = getopt_long (argc, argv, "brs:", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'b':
-          separator_ends_record = false;
-          break;
-        case 'r':
-          sentinel_length = 0;
-          break;
-        case 's':
+        ಸ್ಥಿತಿ 'b':
+          separator_ತುದಿಗಳು_ದಾಖಲೆ = false;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'r':
+          sentinel_ಉದ್ದಳತೆ = 0;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 's':
           separator = optarg;
-          break;
+          ನಿಲ್ಲಿಸು;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (sentinel_length == 0)
+  ಆದರೆ (sentinel_ಉದ್ದಳತೆ == 0)
     {
-      if (*separator == 0)
+      ಆದರೆ (*separator == 0)
         error (EXIT_FAILURE, 0, _("separator cannot be empty"));
 
-      compiled_separator.buffer = NULL;
+      compiled_separator.ಬಫರ್ = ಖಾಲಿ;
       compiled_separator.allocated = 0;
       compiled_separator.fastmap = compiled_separator_fastmap;
-      compiled_separator.translate = NULL;
-      error_message = re_compile_pattern (separator, strlen (separator),
+      compiled_separator.translate = ಖಾಲಿ;
+      error_ಸಂದೇಶ_2 = re_compile_ನಮೂನೆ (separator, ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (separator),
                                           &compiled_separator);
-      if (error_message)
-        error (EXIT_FAILURE, 0, "%s", (error_message));
+      ಆದರೆ (error_ಸಂದೇಶ_2)
+        error (EXIT_FAILURE, 0, "%s", (error_ಸಂದೇಶ_2));
     }
-  else
-    match_length = sentinel_length = *separator ? strlen (separator) : 1;
+  ಇಲ್ಲದಿದ್ದರೆ
+    ಹೊಂದಿಕೆ_ಉದ್ದಳತೆ = sentinel_ಉದ್ದಳತೆ = *separator ? ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (separator) : 1;
 
-  read_size = INITIAL_READSIZE;
-  while (sentinel_length >= read_size / 2)
+  read_ಗಾತ್ರ = INITIAL_READSIZE;
+  ಆಗ (sentinel_ಉದ್ದಳತೆ >= read_ಗಾತ್ರ / 2)
     {
-      if (SIZE_MAX / 2 < read_size)
+      ಆದರೆ (SIZE_MAX / 2 < read_ಗಾತ್ರ)
         xalloc_die ();
-      read_size *= 2;
+      read_ಗಾತ್ರ *= 2;
     }
-  half_buffer_size = read_size + sentinel_length + 1;
-  G_buffer_size = 2 * half_buffer_size;
-  if (! (read_size < half_buffer_size && half_buffer_size < G_buffer_size))
+  half_ಬಫರ್_ಗಾತ್ರ = read_ಗಾತ್ರ + sentinel_ಉದ್ದಳತೆ + 1;
+  G_ಬಫರ್_ಗಾತ್ರ = 2 * half_ಬಫರ್_ಗಾತ್ರ;
+  ಆದರೆ (! (read_ಗಾತ್ರ < half_ಬಫರ್_ಗಾತ್ರ && half_ಬಫರ್_ಗಾತ್ರ < G_ಬಫರ್_ಗಾತ್ರ))
     xalloc_die ();
-  G_buffer = xmalloc (G_buffer_size);
-  if (sentinel_length)
+  G_ಬಫರ್ = xmalloc (G_ಬಫರ್_ಗಾತ್ರ);
+  ಆದರೆ (sentinel_ಉದ್ದಳತೆ)
     {
-      memcpy (G_buffer, separator, sentinel_length + !!*separator);
-      G_buffer += sentinel_length;
+      ಸ್ಮರಣೆ_ನಕಲು (G_ಬಫರ್, separator, sentinel_ಉದ್ದಳತೆ + !!*separator);
+      G_ಬಫರ್ += sentinel_ಉದ್ದಳತೆ;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      ++G_buffer;
+      ++G_ಬಫರ್;
     }
 
   file = (optind < argc
-          ? (char const *const *) &argv[optind]
+          ? (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ *) &argv[optind]
           : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDOUT_FILENO, O_ದ್ವಿಮಾನ);
 
   {
     ok = true;
-    for (size_t i = 0; file[i]; ++i)
+    ಗಾಗಿ (size_t i = 0; file[i]; ++i)
       ok &= tac_file (file[i]);
   }
 
   /* Flush the output buffer. */
-  output ((char *) NULL, (char *) NULL);
+  output ((ಅಕ್ಷರ *) ಖಾಲಿ, (ಅಕ್ಷರ *) ಖಾಲಿ);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  ಆದರೆ (have_read_stdin && close (STDIN_FILENO) < 0)
     {
       error (0, errno, "-");
       ok = false;

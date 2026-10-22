@@ -1,8 +1,8 @@
-enum Algorithm
+ಎಣಿಕೆ Algorithm
 {
   bsd,
   sysv,
-  crc,
+  ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ,
   crc32b,
   md5,
   sha1,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+ಬಾಹ್ಯ ಎಣಿಕೆ Algorithm cksum_algorithm;

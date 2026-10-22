@@ -16,127 +16,127 @@
 
 /* Written by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "xdectoint.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "fadvise.h"
+#ಅನ್ತರ್ಭಾವ "ioblksize.h"
+#ಅನ್ತರ್ಭಾವ "mcel.h"
+#ಅನ್ತರ್ಭಾವ "mbbuf.h"
+#ಅನ್ತರ್ಭಾವ "xdectoint.h"
 
-#define TAB_WIDTH 8
+#ವ್ಯಾಖ್ಯಾನಿಸು TAB_ಅಗಲ 8
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "fold"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "fold"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
 /* If nonzero, try to break on whitespace. */
-static bool break_spaces;
+ಸ್ಥಿರ bool break_spaces;
 
 /* Mode to operate in.  */
-static enum
+ಸ್ಥಿರ ಎಣಿಕೆ
   {
-    COUNT_COLUMNS,
-    COUNT_BYTES,
-    COUNT_CHARACTERS
-  } counting_mode = COUNT_COLUMNS;
+    ಎಣಿಕೆ_COLUMNS,
+    ಎಣಿಕೆ_ಬೈಟುಗಳು,
+    ಎಣಿಕೆ_CHARACTERS
+  } counting_ಬಹುಲಕ = ಎಣಿಕೆ_COLUMNS;
 
 /* If nonzero, at least one of the files we read was standard input. */
-static bool have_read_stdin;
+ಸ್ಥಿರ bool have_read_stdin;
 
-static char const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"bytes", no_argument, NULL, 'b'},
-  {"characters", no_argument, NULL, 'c'},
-  {"spaces", no_argument, NULL, 's'},
-  {"width", required_argument, NULL, 'w'},
+  {"bytes", no_ವಾದ, ಖಾಲಿ, 'b'},
+  {"characters", no_ವಾದ, ಖಾಲಿ, 'c'},
+  {"spaces", no_ವಾದ, ಖಾಲಿ, 's'},
+  {"width", required_ವಾದ, ಖಾಲಿ, 'w'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Wrap input lines in each FILE, writing to standard output.\n\
+Wrap ಒಳಹರಿವು ಸಾಲುಗಳು ಒಳ each FILE, writing ಗಮ್ಯ standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --bytes\n\
-         count bytes rather than columns\n\
+  -b, --ಬೈಟುಗಳು\n\
+         ಎಣಿಕೆ_2 ಬೈಟುಗಳು rather than columns\n\
 "));
       oputs (_("\
   -c, --characters\n\
-         count characters rather than columns\n\
+         ಎಣಿಕೆ_2 characters rather than columns\n\
 "));
       oputs (_("\
   -s, --spaces\n\
-         break after blanks, or in words greater than WIDTH\n\
+         ನಿಲ್ಲಿಸು after blanks, or ಒಳ ಪದಗಳು greater than ಅಗಲ_2\n\
 "));
       oputs (_("\
-  -w, --width=WIDTH\n\
-         use WIDTH columns instead of 80\n\
+  -w, --ಅಗಲ=ಅಗಲ_2\n\
+         use ಅಗಲ_2 columns instead ದ 80\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Assuming the current column is COLUMN, return the column that
    printing C will move the cursor to.
    The first column is 0. */
 
-static size_t
-adjust_column (size_t column, mcel_t g)
+ಸ್ಥಿರ size_t
+adjust_ಸ್ತಂಭ (size_t ಸ್ತಂಭ, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  ಆದರೆ (counting_ಬಹುಲಕ != ಎಣಿಕೆ_ಬೈಟುಗಳು)
     {
-      if (g.ch == '\b')
-        column -= !!column;
-      else if (g.ch == '\r')
-        column = 0;
-      else if (g.ch == '\t')
-        column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      ಆದರೆ (g.ch == '\b')
+        ಸ್ತಂಭ -= !!ಸ್ತಂಭ;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (g.ch == '\r')
+        ಸ್ತಂಭ = 0;
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (g.ch == '\t')
+        ಸ್ತಂಭ += TAB_ಅಗಲ - ಸ್ತಂಭ % TAB_ಅಗಲ;
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          ಪೂರ್ಣಾಂಕ ಅಗಲ = (counting_ಬಹುಲಕ == ಎಣಿಕೆ_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
-          column += width < 0 ? 1 : width;
+          ಸ್ತಂಭ += ಅಗಲ < 0 ? 1 : ಅಗಲ;
         }
     }
-  else
-    column += g.len;
-  return column;
+  ಇಲ್ಲದಿದ್ದರೆ
+    ಸ್ತಂಭ += g.len;
+  ಹಿಂತಿರುಗಿ ಸ್ತಂಭ;
 }
 
-static void
-write_out (char const *line, size_t line_len, bool newline)
+ಸ್ಥಿರ ಶೂನ್ಯ
+write_ಹೊರಹೋಗು (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸಾಲು, size_t ಸಾಲು_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
-      || (newline && putchar ('\n') < 0))
+  ಆದರೆ (fwrite (ಸಾಲು, ಗಾತ್ರ (ಅಕ್ಷರ), ಸಾಲು_len, stdout) != ಸಾಲು_len
+      || (newline && ಅಕ್ಷರ_ಬರೆ ('\n') < 0))
     write_error ();
 }
 
@@ -144,206 +144,206 @@ write_out (char const *line, size_t line_len, bool newline)
    to stdout, with maximum line length WIDTH.
    Return true if successful.  */
 
-static bool
-fold_file (char const *filename, size_t width)
+ಸ್ಥಿರ bool
+fold_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, size_t ಅಗಲ)
 {
   FILE *istream;
-  size_t column = 0;		/* Screen column where next char will go. */
-  idx_t offset_out = 0;		/* Index in 'line_out' for next char. */
-  static char line_out[IO_BUFSIZE];
-  static char line_in[IO_BUFSIZE];
+  size_t ಸ್ತಂಭ = 0;		/* Screen column where next char will go. */
+  idx_t ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು = 0;		/* Index in 'line_out' for next char. */
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸಾಲು_ಹೊರಹೋಗು[IO_BUFSIZE];
+  ಸ್ಥಿರ ಅಕ್ಷರ ಸಾಲು_ಒಳ[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  ಪೂರ್ಣಾಂಕ saved_errno;
 
-  if (streq (filename, "-"))
+  ಆದರೆ (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  ಆದರೆ (istream == ಖಾಲಿ)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
+  mbbuf_init (&mbbuf, ಸಾಲು_ಒಳ, ಗಾತ್ರ ಸಾಲು_ಒಳ, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  ಆಗ ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      ಆದರೆ (g.ch == '\n')
         {
-          write_out (line_out, offset_out, /*newline=*/ true);
-          column = offset_out = 0;
-          continue;
+          write_ಹೊರಹೋಗು (ಸಾಲು_ಹೊರಹೋಗು, ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು, /*newline=*/ true);
+          ಸ್ತಂಭ = ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು = 0;
+          ಮುಂದುವರಿ;
         }
     rescan:
-      column = adjust_column (column, g);
+      ಸ್ತಂಭ = adjust_ಸ್ತಂಭ (ಸ್ತಂಭ, g);
 
-      if (column > width)
+      ಆದರೆ (ಸ್ತಂಭ > ಅಗಲ)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          ಆದರೆ (break_spaces)
             {
-              int space_length = 0;
-              idx_t logical_end = offset_out;
-              char *logical_p = line_out;
-              char *logical_lim = logical_p + logical_end;
+              ಪೂರ್ಣಾಂಕ space_ಉದ್ದಳತೆ = 0;
+              idx_t logical_ಕೊನೆ = ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು;
+              ಅಕ್ಷರ *logical_p = ಸಾಲು_ಹೊರಹೋಗು;
+              ಅಕ್ಷರ *logical_lim = logical_p + logical_ಕೊನೆ;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              ಗಾಗಿ (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
-                  g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  g2 = mcel_ಪರಿಶೀಲನೆ (logical_p, logical_lim);
+                  ಆದರೆ (c32issep (g2.ch))
                     {
-                      space_length = g2.len;
-                      logical_end = logical_p - line_out;
+                      space_ಉದ್ದಳತೆ = g2.len;
+                      logical_ಕೊನೆ = logical_p - ಸಾಲು_ಹೊರಹೋಗು;
                     }
                 }
 
-              if (space_length)
+              ಆದರೆ (space_ಉದ್ದಳತೆ)
                 {
-                  logical_end += space_length;
+                  logical_ಕೊನೆ += space_ಉದ್ದಳತೆ;
                   /* Found a blank.  Don't output the part after it. */
-                  write_out (line_out, logical_end, /*newline=*/ true);
+                  write_ಹೊರಹೋಗು (ಸಾಲು_ಹೊರಹೋಗು, logical_ಕೊನೆ, /*newline=*/ true);
                   /* Move the remainder to the beginning of the next line.
                      The areas being copied here might overlap. */
-                  memmove (line_out, line_out + logical_end,
-                           offset_out - logical_end);
-                  offset_out -= logical_end;
-                  column = 0;
-                  char *printed_p = line_out;
-                  char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  memmove (ಸಾಲು_ಹೊರಹೋಗು, ಸಾಲು_ಹೊರಹೋಗು + logical_ಕೊನೆ,
+                           ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು - logical_ಕೊನೆ);
+                  ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು -= logical_ಕೊನೆ;
+                  ಸ್ತಂಭ = 0;
+                  ಅಕ್ಷರ *printed_p = ಸಾಲು_ಹೊರಹೋಗು;
+                  ಅಕ್ಷರ *printed_lim = printed_p + ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು;
+                  ಗಾಗಿ (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
-                      g2 = mcel_scan (printed_p, printed_lim);
-                      column = adjust_column (column, g2);
+                      g2 = mcel_ಪರಿಶೀಲನೆ (printed_p, printed_lim);
+                      ಸ್ತಂಭ = adjust_ಸ್ತಂಭ (ಸ್ತಂಭ, g2);
                     }
-                  goto rescan;
+                  ಹೋಗು rescan;
                 }
             }
 
-          if (offset_out == 0)
+          ಆದರೆ (ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು == 0)
             {
-              memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
-              offset_out += g.len;
-              continue;
+              ಸ್ಮರಣೆ_ನಕಲು (ಸಾಲು_ಹೊರಹೋಗು, mbbuf_char_ಸ್ಥಾನಾಂತರ (&mbbuf, g), g.len);
+              ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು += g.len;
+              ಮುಂದುವರಿ;
             }
 
-          write_out (line_out, offset_out, /*newline=*/ true);
-          column = offset_out = 0;
-          goto rescan;
+          write_ಹೊರಹೋಗು (ಸಾಲು_ಹೊರಹೋಗು, ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು, /*newline=*/ true);
+          ಸ್ತಂಭ = ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು = 0;
+          ಹೋಗು rescan;
         }
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      ಆದರೆ (ಗಾತ್ರ ಸಾಲು_ಹೊರಹೋಗು <= ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು + g.len)
         {
-          write_out (line_out, offset_out, /*newline=*/ false);
-          offset_out = 0;
+          write_ಹೊರಹೋಗು (ಸಾಲು_ಹೊರಹೋಗು, ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು, /*newline=*/ false);
+          ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು = 0;
         }
 
-      memcpy (line_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
-      offset_out += g.len;
+      ಸ್ಮರಣೆ_ನಕಲು (ಸಾಲು_ಹೊರಹೋಗು + ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು, mbbuf_char_ಸ್ಥಾನಾಂತರ (&mbbuf, g), g.len);
+      ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು += g.len;
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  ಆದರೆ (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
-    write_out (line_out, offset_out, /*newline=*/ false);
+  ಆದರೆ (ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು)
+    write_ಹೊರಹೋಗು (ಸಾಲು_ಹೊರಹೋಗು, ಸ್ಥಾನಾಂತರ_ಹೊರಹೋಗು, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  ಆದರೆ (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  ಆದರೆ (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  size_t width = 80;
-  int optc;
+  size_t ಅಗಲ = 80;
+  ಪೂರ್ಣಾಂಕ optc;
   bool ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  ಆಗ ((optc = getopt_long (argc, argv, shortopts, longopts, ಖಾಲಿ)) != -1)
     {
-      char optargbuf[2];
+      ಅಕ್ಷರ optargbuf[2];
 
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'b':		/* Count bytes rather than columns. */
-          counting_mode = COUNT_BYTES;
-          break;
+        ಸ್ಥಿತಿ 'b':		/* Count bytes rather than columns. */
+          counting_ಬಹುಲಕ = ಎಣಿಕೆ_ಬೈಟುಗಳು;
+          ನಿಲ್ಲಿಸು;
 
-        case 'c':               /* Count characters rather than columns. */
-          counting_mode = COUNT_CHARACTERS;
-          break;
+        ಸ್ಥಿತಿ 'c':               /* Count characters rather than columns. */
+          counting_ಬಹುಲಕ = ಎಣಿಕೆ_CHARACTERS;
+          ನಿಲ್ಲಿಸು;
 
-        case 's':		/* Break at word boundaries. */
+        ಸ್ಥಿತಿ 's':		/* Break at word boundaries. */
           break_spaces = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        ಸ್ಥಿತಿ '0': ಸ್ಥಿತಿ '1': ಸ್ಥಿತಿ '2': ಸ್ಥಿತಿ '3': ಸ್ಥಿತಿ '4':
+        ಸ್ಥಿತಿ '5': ಸ್ಥಿತಿ '6': ಸ್ಥಿತಿ '7': ಸ್ಥಿತಿ '8': ಸ್ಥಿತಿ '9':
+          ಆದರೆ (optarg)
             optarg--;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
               optarg = optargbuf;
             }
           FALLTHROUGH;
-        case 'w':		/* Line width. */
-          width = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_WIDTH - 1, "",
+        ಸ್ಥಿತಿ 'w':		/* Line width. */
+          ಅಗಲ = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_ಅಗಲ - 1, "",
                               _("invalid number of columns"), 0,
                               XTOINT_MIN_RANGE | XTOINT_MAX_RANGE);
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc == optind)
-    ok = fold_file ("-", width);
-  else
+  ಆದರೆ (argc == optind)
+    ok = fold_file ("-", ಅಗಲ);
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
-        ok &= fold_file (argv[i], width);
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = optind; i < argc; i++)
+        ok &= fold_file (argv[i], ಅಗಲ);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ಆದರೆ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಹಿಂತಿರುಗಿ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

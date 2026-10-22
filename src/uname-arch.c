@@ -1,2 +1,2 @@
-#include "uname.h"
-enum uname_modes uname_mode = UNAME_ARCH;
+#ಅನ್ತರ್ಭಾವ "uname.h"
+ಎಣಿಕೆ uname_modes uname_ಬಹುಲಕ = UNAME_ARCH;

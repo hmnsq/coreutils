@@ -16,76 +16,76 @@
 
 /* Written by Dmitry V. Levin */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "areadlink.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "canonicalize.h"
+#ಅನ್ತರ್ಭಾವ "areadlink.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "readlink"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "readlink"
 
-#define AUTHORS proper_name ("Dmitry V. Levin")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("Dmitry V. Levin")
 
 /* If true, do not output the trailing newline.  */
-static bool no_newline;
+ಸ್ಥಿರ bool no_newline;
 
 /* If true, report error messages.  */
-static bool verbose;
+ಸ್ಥಿರ bool verbose;
 
 /* If true, quote output according to the selected quoting style.  */
-static bool quote_output;
+ಸ್ಥಿರ bool quote_output;
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'f'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"no-newline", no_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 's'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero", no_argument, NULL, 'z'},
+  {"canonicalize", no_ವಾದ, ಖಾಲಿ, 'f'},
+  {"canonicalize-existing", no_ವಾದ, ಖಾಲಿ, 'e'},
+  {"canonicalize-missing", no_ವಾದ, ಖಾಲಿ, 'm'},
+  {"no-newline", no_ವಾದ, ಖಾಲಿ, 'n'},
+  {"quiet", no_ವಾದ, ಖಾಲಿ, 'q'},
+  {"silent", no_ವಾದ, ಖಾಲಿ, 's'},
+  {"verbose", no_ವಾದ, ಖಾಲಿ, 'v'},
+  {"zero", no_ವಾದ, ಖಾಲಿ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      ಬರೆ (_("Usage: %s [OPTION]... FILE...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("Print value of a symbolic link or canonical file name\n\n"),
              stdout);
       oputs (_("\
   -f, --canonicalize\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
-         all but the last component must exist\n\
+         ಒಳ every component ದ the given name recursively;\n\
+         all but the ಕೊನೆಯ component must exist\n\
 "));
       oputs (_("\
   -e, --canonicalize-existing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively;\n\
+         ಒಳ every component ದ the given name recursively;\n\
          all components must exist\n\
 "));
       oputs (_("\
   -m, --canonicalize-missing\n\
          canonicalize by following every symlink\n\
-         in every component of the given name recursively,\n\
+         ಒಳ every component ದ the given name recursively,\n\
          without requirements on components existence\n\
 "));
       oputs (_("\
   -n, --no-newline\n\
-         do not output the trailing delimiter\n\
+         ಮಾಡು not output the trailing delimiter\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -93,126 +93,126 @@ usage (int status)
       oputs (_("\
   -s, --silent\n\
          suppress most error messages\n\
-         (on by default if POSIXLY_CORRECT is not set)\n\
+         (on by ಪೂರ್ವನಿಯೋಜಿತ ಆದರೆ POSIXLY_CORRECT is not ಗಣ_2)\n\
 "));
       oputs (_("\
   -v, --verbose\n\
          report error messages\n\
-         (on by default if POSIXLY_CORRECT is set)\n\
+         (on by ಪೂರ್ವನಿಯೋಜಿತ ಆದರೆ POSIXLY_CORRECT is ಗಣ_2)\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         ಕೊನೆ each output ಸಾಲು with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   /* If not -1, use this method to canonicalize.  */
-  int can_mode = -1;
-  int status = EXIT_SUCCESS;
-  int optc;
+  ಪೂರ್ಣಾಂಕ can_ಬಹುಲಕ = -1;
+  ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2 = EXIT_SUCCESS;
+  ಪೂರ್ಣಾಂಕ optc;
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, NULL)) != -1)
+  ಆಗ ((optc = getopt_long (argc, argv, "efmnqsvz", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'e':
-          can_mode = CAN_EXISTING;
-          break;
-        case 'f':
-          can_mode = CAN_ALL_BUT_LAST;
-          break;
-        case 'm':
-          can_mode = CAN_MISSING;
-          break;
-        case 'n':
+        ಸ್ಥಿತಿ 'e':
+          can_ಬಹುಲಕ = CAN_EXISTING;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'f':
+          can_ಬಹುಲಕ = CAN_ALL_BUT_ಕೊನೆಯ;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'm':
+          can_ಬಹುಲಕ = CAN_MISSING;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'n':
           no_newline = true;
-          break;
-        case 'q':
-        case 's':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'q':
+        ಸ್ಥಿತಿ 's':
           verbose = false;
-          break;
-        case 'v':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'v':
           verbose = true;
-          break;
-        case 'z':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'z':
           use_nuls = true;
-          break;
+          ನಿಲ್ಲಿಸು;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  ಆದರೆ (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (argc - optind > 1)
+  ಆದರೆ (argc - optind > 1)
     {
-      if (no_newline)
+      ಆದರೆ (no_newline)
         error (0, 0, _("ignoring --no-newline with multiple arguments"));
       no_newline = false;
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  ಆದರೆ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ಪೂರ್ಣಾಂಕ qs = getenv_quoting_style ();
+      ಆದರೆ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ಆದರೆ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          ಗಣ_quoting_style (ಖಾಲಿ, qs);
           quote_output = true;
         }
     }
 
   /* POSIX requires a diagnostic message written to standard error and a
      non-zero exit status when given a file that is not a symbolic link.  */
-  if (getenv ("POSIXLY_CORRECT") != NULL)
+  ಆದರೆ (getenv ("POSIXLY_CORRECT") != ಖಾಲಿ)
     verbose = true;
 
-  for (; optind < argc; ++optind)
+  ಗಾಗಿ (; optind < argc; ++optind)
     {
-      char const *fname = argv[optind];
-      char *value = (can_mode != -1
-                     ? canonicalize_filename_mode (fname, can_mode)
-                     : areadlink_with_size (fname, 63));
-      if (value)
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fname = argv[optind];
+      ಅಕ್ಷರ *ಮೌಲ್ಯ = (can_ಬಹುಲಕ != -1
+                     ? canonicalize_filename_ಬಹುಲಕ (fname, can_ಬಹುಲಕ)
+                     : areadlink_with_ಗಾತ್ರ (fname, 63));
+      ಆದರೆ (ಮೌಲ್ಯ)
         {
-          fputs (quote_output ? quoteN (value) : value, stdout);
-          if (! no_newline)
-            putchar (use_nuls ? '\0' : '\n');
-          free (value);
-          if (ferror (stdout))
+          fputs (quote_output ? quoteN (ಮೌಲ್ಯ) : ಮೌಲ್ಯ, stdout);
+          ಆದರೆ (! no_newline)
+            ಅಕ್ಷರ_ಬರೆ (use_nuls ? '\0' : '\n');
+          ಬಿಡುಗಡೆ (ಮೌಲ್ಯ);
+          ಆದರೆ (ferror (stdout))
             write_error ();
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          status = EXIT_FAILURE;
-          if (verbose)
+          ಸ್ಥಿತಿ_2 = EXIT_FAILURE;
+          ಆದರೆ (verbose)
             error (0, errno, "%s", quotef (fname));
         }
     }
 
-  return status;
+  ಹಿಂತಿರುಗಿ ಸ್ಥಿತಿ_2;
 }

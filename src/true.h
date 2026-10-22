@@ -1,4 +1,4 @@
-enum true_modes
+ಎಣಿಕೆ true_modes
 {
   /* This is for the 'true' program.  */
   TRUE_TRUE,
@@ -7,4 +7,4 @@ enum true_modes
   TRUE_FALSE
 };
 
-extern enum true_modes true_mode;
+ಬಾಹ್ಯ ಎಣಿಕೆ true_modes true_ಬಹುಲಕ;

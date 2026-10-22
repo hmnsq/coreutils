@@ -16,64 +16,64 @@
 
 /* David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
 
-#if ! HAVE_NICE
+#ಆದರೆ ! HAVE_NICE
 /* Include this after "system.h" so we're sure to have definitions
    (from time.h or sys/time.h) required for e.g. the ru_utime member.  */
 # include <sys/resource.h>
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#include "c-ctype.h"
-#include "quote.h"
-#include "xstrtol.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "nice"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "nice"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
-#if HAVE_NICE
+#ಆದರೆ HAVE_NICE
 # define GET_NICENESS() nice (0)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define GET_NICENESS() getpriority (PRIO_PROCESS, 0)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#ifndef NZERO
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ NZERO
 # define NZERO 20
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* This is required for Darwin Kernel Version 7.7.0.  */
-#if NZERO == 0
+#ಆದರೆ NZERO == 0
 # undef  NZERO
 # define NZERO 20
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"adjustment", required_argument, NULL, 'n'},
+  {"adjustment", required_ವಾದ, ಖಾಲಿ, 'n'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), program_name);
-      printf (_("\
-Run COMMAND with an adjusted niceness, which affects process scheduling.\n\
-With no COMMAND, print the current niceness.  Niceness values range from\n\
-%d (most favorable to the process) to %d (least favorable to the process).\n\
+      ಬರೆ (_("Usage: %s [OPTION] [COMMAND [ARG]...]\n"), ಕಾರ್ಯಕ್ರಮ_name);
+      ಬರೆ (_("\
+ಸತತ COMMAND with an adjusted niceness, which affects process scheduling.\n\
+With no COMMAND, print the current niceness.  Niceness ಮೌಲ್ಯಗಳು range from\n\
+%d (most favorable ಗಮ್ಯ the process) ಗಮ್ಯ %d (ಕನಿಷ್ಠ favorable ಗಮ್ಯ the process).\n\
 "),
               - NZERO, NZERO - 1);
 
@@ -81,34 +81,34 @@ With no COMMAND, print the current niceness.  Niceness values range from\n\
 
       oputs (_("\
   -n, --adjustment=N\n\
-         add integer N to the niceness (default 10)\n\
+         ಕೂಡಿಸು integer N ಗಮ್ಯ the niceness (ಪೂರ್ವನಿಯೋಜಿತ 10)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_exec_status (PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      ಬರೆ (USAGE_BUILTIN_WARNING, ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_exec_ಸ್ಥಿತಿ (ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-static bool
-perm_related_errno (int err)
+ಸ್ಥಿರ bool
+perm_related_errno (ಪೂರ್ಣಾಂಕ err)
 {
-  return err == EACCES || err == EPERM;
+  ಹಿಂತಿರುಗಿ err == EACCES || err == EPERM;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int current_niceness;
-  int adjustment = 10;
-  char const *adjustment_given = NULL;
+  ಪೂರ್ಣಾಂಕ current_niceness;
+  ಪೂರ್ಣಾಂಕ adjustment = 10;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *adjustment_given = ಖಾಲಿ;
   bool ok;
-  int i;
+  ಪೂರ್ಣಾಂಕ i;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -116,20 +116,20 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  for (i = 1; i < argc; /* empty */)
+  ಗಾಗಿ (i = 1; i < argc; /*ಖಾಲಿಗಳು*/)
     {
-      char const *s = argv[i];
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s = argv[i];
 
-      if (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
+      ಆದರೆ (s[0] == '-' && c_isdigit (s[1 + (s[1] == '-' || s[1] == '+')]))
         {
           adjustment_given = s + 1;
           ++i;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          int c;
-          int fake_argc = argc - (i - 1);
-          char **fake_argv = argv + (i - 1);
+          ಪೂರ್ಣಾಂಕ c;
+          ಪೂರ್ಣಾಂಕ fake_argc = argc - (i - 1);
+          ಅಕ್ಷರ **fake_argv = argv + (i - 1);
 
           /* Ensure that any getopt diagnostics use the right name.  */
           fake_argv[0] = argv[0];
@@ -137,82 +137,82 @@ main (int argc, char **argv)
           /* Initialize getopt_long's internal state.  */
           optind = 0;
 
-          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, NULL);
+          c = getopt_long (fake_argc, fake_argv, "+n:", longopts, ಖಾಲಿ);
           i += optind - 1;
 
-          switch (c)
+          ಆಯ್ಕೆ (c)
             {
-            case 'n':
+            ಸ್ಥಿತಿ 'n':
               adjustment_given = optarg;
-              break;
+              ನಿಲ್ಲಿಸು;
 
-            case -1:
-              break;
+            ಸ್ಥಿತಿ -1:
+              ನಿಲ್ಲಿಸು;
 
             case_GETOPT_HELP_CHAR;
 
-            case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+            case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-            default:
+            ಪೂರ್ವನಿಯೋಜಿತ:
               usage (EXIT_CANCELED);
-              break;
+              ನಿಲ್ಲಿಸು;
             }
 
-          if (c == -1)
-            break;
+          ಆದರೆ (c == -1)
+            ನಿಲ್ಲಿಸು;
         }
     }
 
-  if (adjustment_given)
+  ಆದರೆ (adjustment_given)
     {
       /* If the requested adjustment is outside the valid range,
          silently bring it to just within range; this mimics what
          "setpriority" and "nice" do.  */
-#if (defined __gnu_hurd__                                               \
+#ಆದರೆ (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) only supported 0 to (2 * NZERO - 2) niceness
          until glibc 2.43.  */
-      enum { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
-#else
-      enum { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
-#endif
-      long int tmp;
-      if (LONGINT_OVERFLOW < xstrtol (adjustment_given, NULL, 10, &tmp, ""))
+      ಎಣಿಕೆ { MIN_ADJUSTMENT = 0, MAX_ADJUSTMENT = 2 * NZERO - 2 };
+#ಇಲ್ಲದಿದ್ದರೆ
+      ಎಣಿಕೆ { MIN_ADJUSTMENT = 1 - 2 * NZERO, MAX_ADJUSTMENT = 2 * NZERO - 1 };
+#ಆದರೆ_ಅಂತ್ಯ
+      ದೀರ್ಘ ಪೂರ್ಣಾಂಕ tmp;
+      ಆದರೆ (LONGINT_ಅತಿಪ್ರವಾಹ < xstrtol (adjustment_given, ಖಾಲಿ, 10, &tmp, ""))
         error (EXIT_CANCELED, 0, _("invalid adjustment %s"),
                quote (adjustment_given));
-#if (defined __gnu_hurd__                                               \
+#ಆದರೆ (defined __gnu_hurd__                                               \
      && (__GLIBC__ < 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ < 43)))
       /* GNU/Hurd's nice(2) also did not clamp the new niceness into the
          supported range until glibc 2.43.
          See <https://sourceware.org/PR33614>.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      ಆದರೆ (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      if (tmp < 0)
+      ಆದರೆ (tmp < 0)
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || sum < MIN_ADJUSTMENT)
+          ಪೂರ್ಣಾಂಕ ಮೊತ್ತ;
+          ಆದರೆ (ckd_ಕೂಡಿಸು (&ಮೊತ್ತ, current_niceness, tmp) || ಮೊತ್ತ < MIN_ADJUSTMENT)
             adjustment = MIN_ADJUSTMENT - current_niceness;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             adjustment = tmp;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          int sum;
-          if (ckd_add (&sum, current_niceness, tmp) || MAX_ADJUSTMENT < sum)
+          ಪೂರ್ಣಾಂಕ ಮೊತ್ತ;
+          ಆದರೆ (ckd_ಕೂಡಿಸು (&ಮೊತ್ತ, current_niceness, tmp) || MAX_ADJUSTMENT < ಮೊತ್ತ)
             adjustment = MAX_ADJUSTMENT - current_niceness;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             adjustment = tmp;
         }
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
       adjustment = MAX (MIN_ADJUSTMENT, MIN (tmp, MAX_ADJUSTMENT));
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
     }
 
-  if (i == argc)
+  ಆದರೆ (i == argc)
     {
-      if (adjustment_given)
+      ಆದರೆ (adjustment_given)
         {
           error (0, 0, _("a command must be given with an adjustment"));
           usage (EXIT_CANCELED);
@@ -220,22 +220,22 @@ main (int argc, char **argv)
       /* No command given; print the niceness.  */
       errno = 0;
       current_niceness = GET_NICENESS ();
-      if (current_niceness == -1 && errno != 0)
+      ಆದರೆ (current_niceness == -1 && errno != 0)
         error (EXIT_CANCELED, errno, _("cannot get niceness"));
-      printf ("%d\n", current_niceness);
-      return EXIT_SUCCESS;
+      ಬರೆ ("%d\n", current_niceness);
+      ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
     }
 
   errno = 0;
-#if HAVE_NICE
+#ಆದರೆ HAVE_NICE
   ok = (nice (adjustment) != -1 || errno == 0);
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
   current_niceness = GET_NICENESS ();
-  if (current_niceness == -1 && errno != 0)
+  ಆದರೆ (current_niceness == -1 && errno != 0)
     error (EXIT_CANCELED, errno, _("cannot get niceness"));
   ok = (setpriority (PRIO_PROCESS, 0, current_niceness + adjustment) == 0);
-#endif
-  if (!ok)
+#ಆದರೆ_ಅಂತ್ಯ
+  ಆದರೆ (!ok)
     {
       error (perm_related_errno (errno) ? 0
              : EXIT_CANCELED, errno, _("cannot set niceness"));
@@ -244,13 +244,13 @@ main (int argc, char **argv)
          close_stdout, but execvp() gets in the way.  If stderr
          encountered a write failure, there is no need to try calling
          error() again.  */
-      if (ferror (stderr))
-        return EXIT_CANCELED;
+      ಆದರೆ (ferror (stderr))
+        ಹಿಂತಿರುಗಿ EXIT_CANCELED;
     }
 
   execvp (argv[i], &argv[i]);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[i]));
-  return exit_status;
+  ಹಿಂತಿರುಗಿ exit_ಸ್ಥಿತಿ;
 }

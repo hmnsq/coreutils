@@ -16,35 +16,35 @@
 
    Written by Carl Edquist in collaboration with Arsen Arsenović.  */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
 /* poll(2) is needed on AIX (where 'select' gives a readable
    event immediately) and Solaris (where 'select' never gave
    a readable event).  Also use poll(2) on systems we know work
    and/or are already using poll (linux).  On macOS we know poll()
    doesn't work on 10.5, while it does work on >= 11 at least. */
-#if defined _AIX || defined __sun \
+#ಆದರೆ defined _AIX || defined __sun \
     || defined __linux__ || defined __ANDROID__ \
     || __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 110000
-# define IOPOLL_USES_POLL 1
+# define IOPOLL_ಬಳಸುತ್ತದೆ_POLL 1
   /* Check we've not enabled gnulib's poll module
      as that will emulate poll() in a way not
      currently compatible with our usage.  */
-# if defined HAVE_POLL
+# ಆದರೆ defined HAVE_POLL
 #  error "gnulib's poll() replacement is currently incompatible"
 # endif
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#if IOPOLL_USES_POLL
+#ಆದರೆ IOPOLL_ಬಳಸುತ್ತದೆ_POLL
 # include <poll.h>
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # include <sys/select.h>
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#include "system.h"
-#include "assure.h"
-#include "iopoll.h"
-#include "isapipe.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "iopoll.h"
+#ಅನ್ತರ್ಭಾವ "isapipe.h"
 
 
 /* BROKEN_OUTPUT selects the mode of operation of this function.
@@ -58,46 +58,46 @@
    FDOUT becomes a broken pipe. If !BROKEN_OUTPUT return 0 if FDOUT writable.
    Otherwise return IOPOLL_ERROR if there is a poll() or select() error.  */
 
-static int
-iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+iopoll_ಆಂತರಿಕ (ಪೂರ್ಣಾಂಕ fdin, ಪೂರ್ಣಾಂಕ fdout, bool ಖಂಡ, bool broken_output)
 {
   affirm (fdin != -1 || fdout != -1);
 
-#if IOPOLL_USES_POLL
-  struct pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
+#ಆದರೆ IOPOLL_ಬಳಸುತ್ತದೆ_POLL
+  ರಚನೆ pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
     { .fd = fdin,  .events = POLLIN | POLLRDBAND, .revents = 0 },
     { .fd = fdout, .events = POLLRDBAND, .revents = 0 },
   };
-  int check_out_events = POLLERR | POLLHUP | POLLNVAL;
-  int ret = 0;
+  ಪೂರ್ಣಾಂಕ check_ಹೊರಹೋಗು_events = POLLERR | POLLHUP | POLLNVAL;
+  ಪೂರ್ಣಾಂಕ ret = 0;
 
-  if (! broken_output)
+  ಆದರೆ (! broken_output)
     {
       pfds[0].events = pfds[1].events = POLLOUT;
-      check_out_events = POLLOUT;
+      check_ಹೊರಹೋಗು_events = POLLOUT;
     }
 
-  while (0 <= ret || errno == EINTR)
+  ಆಗ (0 <= ret || errno == EINTR)
     {
-      ret = poll (pfds, 2, block ? -1 : 0);
+      ret = poll (pfds, 2, ಖಂಡ ? -1 : 0);
 
-      if (ret < 0)
-        continue;
-      if (ret == 0 && ! block)
-        return 0;
+      ಆದರೆ (ret < 0)
+        ಮುಂದುವರಿ;
+      ಆದರೆ (ret == 0 && ! ಖಂಡ)
+        ಹಿಂತಿರುಗಿ 0;
       affirm (0 < ret);
-      if (pfds[0].revents) /* input available or pipe closed indicating EOF; */
-        return 0;          /* should now be able to read() without blocking  */
-      if (pfds[1].revents & check_out_events)
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      ಆದರೆ (pfds[0].revents) /* input available or pipe closed indicating EOF; */
+        ಹಿಂತಿರುಗಿ 0;          /* should now be able to read() without blocking  */
+      ಆದರೆ (pfds[1].revents & check_ಹೊರಹೋಗು_events)
+        ಹಿಂತಿರುಗಿ broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
-#else  /* fall back to select()-based implementation */
+#ಇಲ್ಲದಿದ್ದರೆ  /* fall back to select()-based implementation */
 
-  int nfds = (fdin > fdout ? fdin : fdout) + 1;
-  int ret = 0;
+  ಪೂರ್ಣಾಂಕ nfds = (fdin > fdout ? fdin : fdout) + 1;
+  ಪೂರ್ಣಾಂಕ ret = 0;
 
-  if (FD_SETSIZE < nfds)
+  ಆದರೆ (FD_SETSIZE < nfds)
     {
       errno = EINVAL;
       ret = -1;
@@ -105,40 +105,40 @@ iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
 
   /* If fdout has an error condition (like a broken pipe) it will be seen
      as ready for reading.  Assumes fdout is not actually readable.  */
-  while (0 <= ret || errno == EINTR)
+  ಆಗ (0 <= ret || errno == EINTR)
     {
       fd_set fds;
       FD_ZERO (&fds);
-      if (0 <= fdin)
+      ಆದರೆ (0 <= fdin)
         FD_SET (fdin, &fds);
-      if (0 <= fdout)
+      ಆದರೆ (0 <= fdout)
         FD_SET (fdout, &fds);
 
-      struct timeval delay = {0};
+      ರಚನೆ timeval delay = {0};
       ret = select (nfds,
-                    broken_output ? &fds : NULL,
-                    broken_output ? NULL : &fds,
-                    NULL, block ? NULL : &delay);
+                    broken_output ? &fds : ಖಾಲಿ,
+                    broken_output ? ಖಾಲಿ : &fds,
+                    ಖಾಲಿ, ಖಂಡ ? ಖಾಲಿ : &delay);
 
-      if (ret < 0)
-        continue;
-      if (ret == 0 && ! block)
-        return 0;
+      ಆದರೆ (ret < 0)
+        ಮುಂದುವರಿ;
+      ಆದರೆ (ret == 0 && ! ಖಂಡ)
+        ಹಿಂತಿರುಗಿ 0;
       affirm (0 < ret);
-      if (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
-        return 0;          /* should now be able to read() without blocking */
-      if (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      ಆದರೆ (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
+        ಹಿಂತಿರುಗಿ 0;          /* should now be able to read() without blocking */
+      ಆದರೆ (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
+        ಹಿಂತಿರುಗಿ broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
-#endif
-  return IOPOLL_ERROR;
+#ಆದರೆ_ಅಂತ್ಯ
+  ಹಿಂತಿರುಗಿ IOPOLL_ERROR;
 }
 
-extern int
-iopoll (int fdin, int fdout, bool block)
+ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ
+iopoll (ಪೂರ್ಣಾಂಕ fdin, ಪೂರ್ಣಾಂಕ fdout, bool ಖಂಡ)
 {
-  return iopoll_internal (fdin, fdout, block, true);
+  ಹಿಂತಿರುಗಿ iopoll_ಆಂತರಿಕ (fdin, fdout, ಖಂಡ, true);
 }
 
 
@@ -147,97 +147,97 @@ iopoll (int fdin, int fdout, bool block)
    An fd is not relevant for iopoll() if it is always ready for reading,
    which is the case for a regular file or block device.  */
 
-extern bool
-iopoll_input_ok (int fdin)
+ಬಾಹ್ಯ bool
+iopoll_ಒಳಹರಿವು_ok (ಪೂರ್ಣಾಂಕ fdin)
 {
-  struct stat st;
+  ರಚನೆ stat st;
   bool always_ready = fstat (fdin, &st) == 0
-                      && (S_ISREG (st.st_mode)
-                          || S_ISBLK (st.st_mode));
-  return ! always_ready;
+                      && (S_ISREG (st.st_ಬಹುಲಕ)
+                          || S_ISBLK (st.st_ಬಹುಲಕ));
+  ಹಿಂತಿರುಗಿ ! always_ready;
 }
 
 /* Return true if fdout is suitable for iopoll().
    Namely, fdout refers to a pipe.  */
 
-extern bool
-iopoll_output_ok (int fdout)
+ಬಾಹ್ಯ bool
+iopoll_output_ok (ಪೂರ್ಣಾಂಕ fdout)
 {
-  return isapipe (fdout) > 0;
+  ಹಿಂತಿರುಗಿ isapipe (fdout) > 0;
 }
 
-#ifdef EWOULDBLOCK
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ EWOULDBLOCK
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN || (errcode) == EWOULDBLOCK)
-#else
+#ಇಲ್ಲದಿದ್ದರೆ
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN)
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Inspect the errno of the previous syscall.
    On EAGAIN, wait for the underlying file descriptor to become writable.
    Return true, if EAGAIN has been successfully handled. */
 
-static bool
-wait_for_nonblocking_write (int fd)
+ಸ್ಥಿರ bool
+wait_for_nonblocking_write (ಪೂರ್ಣಾಂಕ fd)
 {
-  if (! IS_EAGAIN (errno))
+  ಆದರೆ (! IS_EAGAIN (errno))
     /* non-recoverable write error */
-    return false;
+    ಹಿಂತಿರುಗಿ false;
 
   /* wait for the file descriptor to become writable */
-  if (iopoll_internal (-1, fd, true, false) != 0)
+  ಆದರೆ (iopoll_ಆಂತರಿಕ (-1, fd, true, false) != 0)
     {
       errno = EAGAIN;
-      return false;
+      ಹಿಂತಿರುಗಿ false;
     }
 
   /* successfully waited for the descriptor to become writable */
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
 /* wrapper for write() that also waits for FD if non blocking.  */
 
-extern bool
-write_wait (int fd, void const *buffer, size_t size)
+ಬಾಹ್ಯ bool
+write_wait (ಪೂರ್ಣಾಂಕ fd, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *ಬಫರ್, size_t ಗಾತ್ರ_2)
 {
-  unsigned char const *buf = buffer;
+  ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *buf = ಬಫರ್;
 
-  do
+  ಮಾಡು
     {
-      const ssize_t written = write (fd, buf, size);
+      ಸ್ಥಿರಾಂಕ ssize_t written = ಲಿಖ (fd, buf, ಗಾತ್ರ_2);
       /* POSIX says that calling write with SIZE of zero may detect and
          return errors.  If no error occurs, or write makes no attempt
          to detect errors, then write returns zero with no other
          results.  write_fail will return successfully in this case.  */
-      if (written == 0)
+      ಆದರೆ (written == 0)
         {
-          if (size == 0)
-            return true;
-          else
+          ಆದರೆ (ಗಾತ್ರ_2 == 0)
+            ಹಿಂತಿರುಗಿ true;
+          ಇಲ್ಲದಿದ್ದರೆ
             {
               /* If SIZE is greater than zero and write returns zero,
                  treat it as an error.  Some buggy drivers behave this
                  way.  See src/dd.c and Gnulib's lib/full-write.c for
                  more details.  */
               errno = ENOSPC;
-              return false;
+              ಹಿಂತಿರುಗಿ false;
             }
         }
 
-      if (written < 0)
+      ಆದರೆ (written < 0)
         {
           /* Return an error if write detected one with a SIZE of zero.
              Otherwise, if SIZE is greater than zero, fail if it does
              not become writable.  */
-          if (size == 0 || ! wait_for_nonblocking_write (fd))
-            return false;
+          ಆದರೆ (ಗಾತ್ರ_2 == 0 || ! wait_for_nonblocking_write (fd))
+            ಹಿಂತಿರುಗಿ false;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           buf += written;
-          size -= written;
+          ಗಾತ್ರ_2 -= written;
         }
     }
-  while (0 < size);
+  ಆಗ (0 < ಗಾತ್ರ_2);
 
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }

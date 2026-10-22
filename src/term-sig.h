@@ -1,9 +1,9 @@
-#ifndef TERM_SIG_H
-# define TERM_SIG_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ ಪದ_SIG_H
+# define ಪದ_SIG_H
 
 # include <signal.h>
 
-static int const term_sig[] =
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ ಸ್ಥಿರಾಂಕ ಪದ_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */
@@ -47,4 +47,4 @@ static int const term_sig[] =
 # endif
   };
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ

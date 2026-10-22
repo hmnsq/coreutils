@@ -27,82 +27,82 @@
 
    David MacKenzie and Richard Mlynarik */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "printenv.h"
-#include "xbinary-io.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "printenv.h"
+#ಅನ್ತರ್ಭಾವ "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+ಎಣಿಕೆ { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printenv"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "printenv"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Richard Mlynarik")
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಎಣಿಕೆ
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"null", no_argument, NULL, '0'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
+  {"null", no_ವಾದ, ಖಾಲಿ, '0'},
+  {"quoting-style", required_ವಾದ, ಖಾಲಿ, QUOTING_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+Print the ಮೌಲ್ಯಗಳು ದ the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, print name and ಮೌಲ್ಯ ಜೋಡಿಗಳು ಗಾಗಿ them all.\n\
 \n\
 "),
-              program_name);
+              ಕಾರ್ಯಕ್ರಮ_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         ಕೊನೆ each output ಸಾಲು with NUL, not newline\n\
 "));
       oputs (_("\
-      --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+      --quoting-style=ಶಬ್ದ\n\
+         use quoting style ಶಬ್ದ ಗಾಗಿ ಹೆಸರುಗಳು and ಮೌಲ್ಯಗಳು:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      ಬರೆ (USAGE_BUILTIN_WARNING, ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  ಪೂರ್ಣಾಂಕ quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -110,79 +110,79 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  ಪೂರ್ಣಾಂಕ optc;
+  ಆಗ ((optc = getopt_long (argc, argv, "+0", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case '0':
+        ಸ್ಥಿತಿ '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
-                                         quoting_style_args,
+                                         quoting_style_ವಾದಗಳು,
                                          quoting_style_vals);
-          break;
+          ನಿಲ್ಲಿಸು;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (PRINTENV_FAILURE);
         }
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  ಪೂರ್ಣಾಂಕ qs = quoting_style_opt;
+  ಆದರೆ (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      ಆದರೆ (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  ಆದರೆ (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      ಗಣ_quoting_style (ಖಾಲಿ, qs);
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t ಸ್ಥಿರಾಂಕ n_ವಾದಗಳು = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  ಆದರೆ (opt_nul_terminate_output)
+    xset_ದ್ವಿಮಾನ_ಬಹುಲಕ (STDOUT_FILENO, O_ದ್ವಿಮಾನ);
 
-  if (n_args <= 0)
+  ಆದರೆ (n_ವಾದಗಳು <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      ಗಾಗಿ (ಅಕ್ಷರ **env = environ; *env != ಖಾಲಿ; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      int matches = 0;
+      ಪೂರ್ಣಾಂಕ matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
-            continue;
+          ಆದರೆ (strchr (argv[i], '='))
+            ಮುಂದುವರಿ;
 
-          for (char **env = environ; *env; ++env)
+          ಗಾಗಿ (ಅಕ್ಷರ **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ep = *env;
+              ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ap = argv[i];
+              ಆಗ (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  ಆದರೆ (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
-                      putchar (terminator);
+                      ಅಕ್ಷರ_ಬರೆ (terminator);
                       matched = true;
-                      break;
+                      ನಿಲ್ಲಿಸು;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ಹಿಂತಿರುಗಿ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

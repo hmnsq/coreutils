@@ -14,37 +14,37 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef __CKSUM_CRC_H__
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ __CKSUM_CRC_H__
 # define __CKSUM_CRC_H__
 
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+ಬಾಹ್ಯ bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ
+ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ_ಮೊತ್ತ_ಹರಿವು (FILE *ಹರಿವು, ಶೂನ್ಯ *resstream, intmax_t *ಉದ್ದಳತೆ);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+ಬಾಹ್ಯ ಪೂರ್ಣಾಂಕ
+crc32b_ಮೊತ್ತ_ಹರಿವು (FILE *ಹರಿವು, ಶೂನ್ಯ *resstream, intmax_t *ಉದ್ದಳತೆ);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+ಬಾಹ್ಯ ಶೂನ್ಯ
+output_ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, ಪೂರ್ಣಾಂಕ ದ್ವಿಮಾನ_file, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *digest, bool raw,
+            bool tagged, ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ delim, bool ವಾದಗಳು, intmax_t ಉದ್ದಳತೆ)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
-cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ಬಾಹ್ಯ bool
+cksum_vmull (FILE *fp, uint_fast32_t *ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ_ಹೊರಹೋಗು, intmax_t *ಉದ್ದಳತೆ_ಹೊರಹೋಗು);
 
-extern bool
-cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ಬಾಹ್ಯ bool
+cksum_pclmul (FILE *fp, uint_fast32_t *ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ_ಹೊರಹೋಗು, intmax_t *ಉದ್ದಳತೆ_ಹೊರಹೋಗು);
 
-extern bool
-cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ಬಾಹ್ಯ bool
+cksum_avx2 (FILE *fp, uint_fast32_t *ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ_ಹೊರಹೋಗು, intmax_t *ಉದ್ದಳತೆ_ಹೊರಹೋಗು);
 
-extern bool
-cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
+ಬಾಹ್ಯ bool
+cksum_avx512 (FILE *fp, uint_fast32_t *ಚಕ್ರೀಯ_ಪರೀಕ್ಷೆ_ಹೊರಹೋಗು, intmax_t *ಉದ್ದಳತೆ_ಹೊರಹೋಗು);
 
-extern uint_fast32_t const crctab[8][256];
+ಬಾಹ್ಯ uint_fast32_t ಸ್ಥಿರಾಂಕ crctab[8][256];
 
-#endif
+#ಆದರೆ_ಅಂತ್ಯ

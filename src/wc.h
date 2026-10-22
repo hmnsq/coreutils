@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#ಅನ್ತರ್ಭಾವ <stdint.h>
+ರಚನೆ wc_ಸಾಲುಗಳು { ಪೂರ್ಣಾಂಕ err; intmax_t ಸಾಲುಗಳು; intmax_t ಬೈಟುಗಳು; };
+ರಚನೆ wc_ಸಾಲುಗಳು wc_ಸಾಲುಗಳು_avx2 (ಪೂರ್ಣಾಂಕ);
+ರಚನೆ wc_ಸಾಲುಗಳು wc_ಸಾಲುಗಳು_avx512 (ಪೂರ್ಣಾಂಕ);
+ರಚನೆ wc_ಸಾಲುಗಳು wc_ಸಾಲುಗಳು_neon (ಪೂರ್ಣಾಂಕ fd);

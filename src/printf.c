@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <wchar.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <wchar.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "unicodeio.h"
-#include "xprintf.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "cl-strtod.h"
+#ಅನ್ತರ್ಭಾವ "octhexdigits.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "unicodeio.h"
+#ಅನ್ತರ್ಭಾವ "xprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printf"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "printf"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
-static bool posixly_correct;
+ಸ್ಥಿರ bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ cfcc_ಸಂದೇಶ =
  N_("warning: %s: character(s) following character constant have been ignored");
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s FORMAT [ARGUMENT]...\n\
+      ಬರೆ (_("\
+Usage: %s FORMAT [ವಾದ_2]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
+Print ವಾದ_2(s) according ಗಮ್ಯ FORMAT, or execute according ಗಮ್ಯ OPTION:\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
+FORMAT controls the output as ಒಳ C ಬರೆ.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
+  \\\"      ದ್ವಿಗುಣ quote\n\
 "), stdout);
       fputs (_("\
   \\\\      backslash\n\
@@ -74,38 +74,38 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new ಸಾಲು\n\
+  \\r      carriage ಹಿಂತಿರುಗಿ\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
       fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
+  \\NNN    byte with octal ಮೌಲ್ಯ NNN (1 ಗಮ್ಯ 3 digits)\n\
+  \\xHH    byte with hexadecimal ಮೌಲ್ಯ HH (1 ಗಮ್ಯ 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex ಮೌಲ್ಯ HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex ಮೌಲ್ಯ HHHHHHHH (8 digits)\n\
 "), stdout);
       fputs (_("\
 \n\
   %%      a single %\n\
-  %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
+  %b      ವಾದ_2 as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      ವಾದ_2 is printed ಒಳ a format that can be reused as shell ಒಳಹರಿವು,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
-and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
-with ARGUMENTs converted to proper type first.\n\
+and all C ಬರೆ(3) format specifications ending with one ದ diouxXfaAeEgGcs,\n\
+with ARGUMENTs converted ಗಮ್ಯ proper type ಮೊದಲ.\n\
 "), stdout);
       fputs (_("\
-FORMAT is reused to convert all specified arguments.\n\
+FORMAT is reused ಗಮ್ಯ convert all specified arguments.\n\
 "), stdout);
       fputs (_("\
-The following table shows supported conversion specifiers,\n\
-with examples including usage of width, precision, and flags.\n\
+The following ಕೋಷ್ಟಕ shows supported conversion specifiers,\n\
+with examples including usage ದ ಅಗಲ, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  ಎಡ pad]\n\
+  %s          '[%-10s]' 'right pad'       [ಬಲ pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -120,56 +120,56 @@ with examples including usage of width, precision, and flags.\n\
   %b          '%bfoo' 'bar\\cbaz' qux      bar\n\
   %q          '%q ' 'a' \\;b $'c\\n'        a ';b' 'c'$'\\n'\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      ಬರೆ (USAGE_BUILTIN_WARNING, ಕಾರ್ಯಕ್ರಮ_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-static void
-verify_numeric (char const *s, char const *end)
+ಸ್ಥಿರ ಶೂನ್ಯ
+verify_numeric (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಕೊನೆ)
 {
-  if (s == end)
+  ಆದರೆ (s == ಕೊನೆ)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
     }
-  else if (errno)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (errno)
     {
       error (0, errno, "%s", quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
     }
-  else if (*end)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (*ಕೊನೆ)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
-static TYPE								 \
-FUNC_NAME (char const *s)						 \
+#ವ್ಯಾಖ್ಯಾನಿಸು STRTOX(TYPE, FUNC_NAME, LIB_FUNC_ಅಭಿವ್ಯಕ್ತಿ)				 \
+ಸ್ಥಿರ TYPE								 \
+FUNC_NAME (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s)						 \
 {									 \
-  char *end;								 \
+  ಅಕ್ಷರ *ಕೊನೆ;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  ಆದರೆ ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      ಆದರೆ (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
-          size_t slen = strlen (s);					 \
-          ssize_t bytes;						 \
+          size_t slen = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (s);					 \
+          ssize_t ಬೈಟುಗಳು;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
-          bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          ಬೈಟುಗಳು = mbrtowc (&wc, s, slen, &mbstate);			 \
+          ಆದರೆ (0 < ಬೈಟುಗಳು)						 \
             {								 \
               val = wc;							 \
-              s += bytes - 1;						 \
+              s += ಬೈಟುಗಳು - 1;						 \
             }								 \
         }								 \
                                                                          \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+      ಆದರೆ (*++s != 0 && !posixly_correct)				 \
+        error (0, 0, _(cfcc_ಸಂದೇಶ), s);					 \
     }									 \
-  else									 \
+  ಇಲ್ಲದಿದ್ದರೆ									 \
     {									 \
       errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
-      verify_numeric (s, end);						 \
+      val = (LIB_FUNC_ಅಭಿವ್ಯಕ್ತಿ);						 \
+      verify_numeric (s, ಕೊನೆ);						 \
     }									 \
-  return val;								 \
+  ಹಿಂತಿರುಗಿ val;								 \
 }									 \
 
-STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
-STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &ಕೊನೆ, 0))
+STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &ಕೊನೆ, 0))
+STRTOX (ದೀರ್ಘ ದ್ವಿಗುಣ, vstrtold,   cl_strtold (s, &ಕೊನೆ))
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_esc_char (ಅಕ್ಷರ c)
 {
-  switch (c)
+  ಆಯ್ಕೆ (c)
     {
-    case 'a':			/* Alert. */
-      putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
-      putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
-      exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
-      putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
-      putchar ('\f');
-      break;
-    case 'n':			/* New line. */
-      putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
-      putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
-      putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
-      putchar ('\v');
-      break;
-    default:
-      putchar (c);
-      break;
+    ಸ್ಥಿತಿ 'a':			/* Alert. */
+      ಅಕ್ಷರ_ಬರೆ ('\a');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'b':			/* Backspace. */
+      ಅಕ್ಷರ_ಬರೆ ('\b');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'c':			/* Cancel the rest of the output. */
+      ನಿರ್ಗಮಿಸು (EXIT_SUCCESS);
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'e':			/* Escape. */
+      ಅಕ್ಷರ_ಬರೆ ('\x1B');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'f':			/* Form feed. */
+      ಅಕ್ಷರ_ಬರೆ ('\f');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'n':			/* New line. */
+      ಅಕ್ಷರ_ಬರೆ ('\n');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'r':			/* Carriage return. */
+      ಅಕ್ಷರ_ಬರೆ ('\r');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 't':			/* Horizontal tab. */
+      ಅಕ್ಷರ_ಬರೆ ('\t');
+      ನಿಲ್ಲಿಸು;
+    ಸ್ಥಿತಿ 'v':			/* Vertical tab. */
+      ಅಕ್ಷರ_ಬರೆ ('\v');
+      ನಿಲ್ಲಿಸು;
+    ಪೂರ್ವನಿಯೋಜಿತ:
+      ಅಕ್ಷರ_ಬರೆ (c);
+      ನಿಲ್ಲಿಸು;
     }
 }
 
@@ -239,82 +239,82 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+print_esc (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = escstart + 1;
+  ಪೂರ್ಣಾಂಕ esc_ಮೌಲ್ಯ = 0;		/* Value of \nnn escape. */
+  ಪೂರ್ಣಾಂಕ esc_ಉದ್ದಳತೆ;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  ಆದರೆ (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
-           esc_length < 2 && c_isxdigit (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      ಗಾಗಿ (esc_ಉದ್ದಳತೆ = 0, ++p;
+           esc_ಉದ್ದಳತೆ < 2 && c_isxdigit (*p);
+           ++esc_ಉದ್ದಳತೆ, ++p)
+        esc_ಮೌಲ್ಯ = esc_ಮೌಲ್ಯ * 16 + fromhex (*p);
+      ಆದರೆ (esc_ಉದ್ದಳತೆ == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+      ಅಕ್ಷರ_ಬರೆ (esc_ಮೌಲ್ಯ);
     }
-  else if (isoct (*p))
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
-           esc_length < 3 && isoct (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+      ಗಾಗಿ (esc_ಉದ್ದಳತೆ = 0, p += octal_0 && *p == '0';
+           esc_ಉದ್ದಳತೆ < 3 && isoct (*p);
+           ++esc_ಉದ್ದಳತೆ, ++p)
+        esc_ಮೌಲ್ಯ = esc_ಮೌಲ್ಯ * 8 + fromoct (*p);
+      ಅಕ್ಷರ_ಬರೆ (esc_ಮೌಲ್ಯ);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      ಅಕ್ಷರ esc_char = *p;
+      ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ uni_ಮೌಲ್ಯ;
 
-      uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
-           esc_length > 0;
-           --esc_length, ++p)
+      uni_ಮೌಲ್ಯ = 0;
+      ಗಾಗಿ (esc_ಉದ್ದಳತೆ = (esc_char == 'u' ? 4 : 8), ++p;
+           esc_ಉದ್ದಳತೆ > 0;
+           --esc_ಉದ್ದಳತೆ, ++p)
         {
-          if (! c_isxdigit (*p))
+          ಆದರೆ (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          uni_ಮೌಲ್ಯ = uni_ಮೌಲ್ಯ * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      ಆದರೆ (uni_ಮೌಲ್ಯ >= 0xd800 && uni_ಮೌಲ್ಯ <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_ಮೌಲ್ಯ);
 
-      print_unicode_char (stdout, uni_value, 0);
+      print_unicode_char (stdout, uni_ಮೌಲ್ಯ, 0);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      putchar ('\\');
-      if (*p)
+      ಅಕ್ಷರ_ಬರೆ ('\\');
+      ಆದರೆ (*p)
         {
-          putchar (*p);
+          ಅಕ್ಷರ_ಬರೆ (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  ಹಿಂತಿರುಗಿ p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
-static void
-print_esc_string (char const *str)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_esc_string (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  ಗಾಗಿ (; *str; str++)
+    ಆದರೆ (*str == '\\')
       str += print_esc (str, true);
-    else
-      putchar (*str);
+    ಇಲ್ಲದಿದ್ದರೆ
+      ಅಕ್ಷರ_ಬರೆ (*str);
 }
 
 /* Evaluate a printf conversion specification.  START is the start of
@@ -323,196 +323,196 @@ print_esc_string (char const *str)
    values, if HAVE_FIELD_WIDTH and HAVE_PRECISION are true, respectively.
    ARGUMENT is the argument to be formatted.  */
 
-static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_direc (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಆರಂಭ, ಅಕ್ಷರ conversion,
+             bool have_ಕ್ಷೇತ್ರ_ಅಗಲ, ಪೂರ್ಣಾಂಕ ಕ್ಷೇತ್ರ_ಅಗಲ,
+             bool have_precision, ಪೂರ್ಣಾಂಕ precision,
+             ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ವಾದ)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  ಅಕ್ಷರ *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
-    size_t length_modifier_len;
+    ಅಕ್ಷರ *q;
+    ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಉದ್ದಳತೆ_modifier;
+    size_t ಉದ್ದಳತೆ_modifier_len;
 
-    switch (conversion)
+    ಆಯ್ಕೆ (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-        length_modifier = "j";
-        length_modifier_len = 1;
-        break;
+      ಸ್ಥಿತಿ 'd': ಸ್ಥಿತಿ 'i': ಸ್ಥಿತಿ 'o': ಸ್ಥಿತಿ 'u': ಸ್ಥಿತಿ 'x': ಸ್ಥಿತಿ 'X':
+        ಉದ್ದಳತೆ_modifier = "j";
+        ಉದ್ದಳತೆ_modifier_len = 1;
+        ನಿಲ್ಲಿಸು;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
-        length_modifier = "L";
-        length_modifier_len = 1;
-        break;
+      ಸ್ಥಿತಿ 'a': ಸ್ಥಿತಿ 'e': ಸ್ಥಿತಿ 'f': ಸ್ಥಿತಿ 'g':
+      ಸ್ಥಿತಿ 'A': ಸ್ಥಿತಿ 'E': ಸ್ಥಿತಿ 'F': ಸ್ಥಿತಿ 'G':
+        ಉದ್ದಳತೆ_modifier = "L";
+        ಉದ್ದಳತೆ_modifier_len = 1;
+        ನಿಲ್ಲಿಸು;
 
-      default:
-        length_modifier = start;  /* Any valid pointer will do.  */
-        length_modifier_len = 0;
-        break;
+      ಪೂರ್ವನಿಯೋಜಿತ:
+        ಉದ್ದಳತೆ_modifier = ಆರಂಭ;  /* Any valid pointer will do.  */
+        ಉದ್ದಳತೆ_modifier_len = 0;
+        ನಿಲ್ಲಿಸು;
       }
 
-    size_t length = strlen (start);
-    p = xmalloc (length + length_modifier_len + 2);
-    q = mempcpy (p, start, length);
-    q = mempcpy (q, length_modifier, length_modifier_len);
+    size_t ಉದ್ದಳತೆ = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (ಆರಂಭ);
+    p = xmalloc (ಉದ್ದಳತೆ + ಉದ್ದಳತೆ_modifier_len + 2);
+    q = mempcpy (p, ಆರಂಭ, ಉದ್ದಳತೆ);
+    q = mempcpy (q, ಉದ್ದಳತೆ_modifier, ಉದ್ದಳತೆ_modifier_len);
     *q++ = conversion;
     *q = '\0';
   }
 
-  switch (conversion)
+  ಆಯ್ಕೆ (conversion)
     {
-    case 'd':
-    case 'i':
+    ಸ್ಥಿತಿ 'd':
+    ಸ್ಥಿತಿ 'i':
       {
-        intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        intmax_t arg = ವಾದ ? vstrtoimax (ವಾದ) : 0;
+        ಆದರೆ (!have_ಕ್ಷೇತ್ರ_ಅಗಲ)
           {
-            if (!have_precision)
+            ಆದರೆ (!have_precision)
               xprintf (p, arg);
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               xprintf (p, precision, arg);
           }
-        else
+        ಇಲ್ಲದಿದ್ದರೆ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ಆದರೆ (!have_precision)
+              xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, arg);
+            ಇಲ್ಲದಿದ್ದರೆ
+              xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, precision, arg);
           }
       }
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    ಸ್ಥಿತಿ 'o':
+    ಸ್ಥಿತಿ 'u':
+    ಸ್ಥಿತಿ 'x':
+    ಸ್ಥಿತಿ 'X':
       {
-        uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        uintmax_t arg = ವಾದ ? vstrtoumax (ವಾದ) : 0;
+        ಆದರೆ (!have_ಕ್ಷೇತ್ರ_ಅಗಲ)
           {
-            if (!have_precision)
+            ಆದರೆ (!have_precision)
               xprintf (p, arg);
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               xprintf (p, precision, arg);
           }
-        else
+        ಇಲ್ಲದಿದ್ದರೆ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ಆದರೆ (!have_precision)
+              xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, arg);
+            ಇಲ್ಲದಿದ್ದರೆ
+              xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, precision, arg);
           }
       }
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    ಸ್ಥಿತಿ 'a':
+    ಸ್ಥಿತಿ 'A':
+    ಸ್ಥಿತಿ 'e':
+    ಸ್ಥಿತಿ 'E':
+    ಸ್ಥಿತಿ 'f':
+    ಸ್ಥಿತಿ 'F':
+    ಸ್ಥಿತಿ 'g':
+    ಸ್ಥಿತಿ 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        ದೀರ್ಘ ದ್ವಿಗುಣ arg = ವಾದ ? vstrtold (ವಾದ) : 0;
+        ಆದರೆ (!have_ಕ್ಷೇತ್ರ_ಅಗಲ)
           {
-            if (!have_precision)
+            ಆದರೆ (!have_precision)
               xprintf (p, arg);
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               xprintf (p, precision, arg);
           }
-        else
+        ಇಲ್ಲದಿದ್ದರೆ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            ಆದರೆ (!have_precision)
+              xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, arg);
+            ಇಲ್ಲದಿದ್ದರೆ
+              xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, precision, arg);
           }
       }
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    case 'c':
+    ಸ್ಥಿತಿ 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        ಅಕ್ಷರ c = ವಾದ ? *ವಾದ : '\0';
+        ಆದರೆ (!have_ಕ್ಷೇತ್ರ_ಅಗಲ)
           xprintf (p, c);
-        else
-          xprintf (p, field_width, c);
+        ಇಲ್ಲದಿದ್ದರೆ
+          xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, c);
       }
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    case 's':
-      if (!argument)
-        argument = "";
-      if (!have_field_width)
+    ಸ್ಥಿತಿ 's':
+      ಆದರೆ (!ವಾದ)
+        ವಾದ = "";
+      ಆದರೆ (!have_ಕ್ಷೇತ್ರ_ಅಗಲ)
         {
-          if (!have_precision)
-            xprintf (p, argument);
-          else
-            xprintf (p, precision, argument);
+          ಆದರೆ (!have_precision)
+            xprintf (p, ವಾದ);
+          ಇಲ್ಲದಿದ್ದರೆ
+            xprintf (p, precision, ವಾದ);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          if (!have_precision)
-            xprintf (p, field_width, argument);
-          else
-            xprintf (p, field_width, precision, argument);
+          ಆದರೆ (!have_precision)
+            xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, ವಾದ);
+          ಇಲ್ಲದಿದ್ದರೆ
+            xprintf (p, ಕ್ಷೇತ್ರ_ಅಗಲ, precision, ವಾದ);
         }
-      break;
+      ನಿಲ್ಲಿಸು;
     }
 
-  free (p);
+  ಬಿಡುಗಡೆ (p);
 }
 
 /* Set curr_arg from indexed %i$ or otherwise next in sequence.
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+ರಚನೆ arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *f;	/* Pointer into 'format'.  */
+  ಪೂರ್ಣಾಂಕ curr_arg;		/* Current offset.  */
+  ಪೂರ್ಣಾಂಕ curr_s_arg;	/* Current sequential offset.  */
+  ಪೂರ್ಣಾಂಕ ಕೊನೆ_arg;		/* End arg processed.  */
+  ಪೂರ್ಣಾಂಕ direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_ಶುದ್ಧ ಸ್ಥಿರ ರಚನೆ arg_cursor
+get_curr_arg (ಪೂರ್ಣಾಂಕ pos, ರಚನೆ arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  ಪೂರ್ಣಾಂಕ arg = 0;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *f = ac.f;
+  ಆದರೆ (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      ಪೂರ್ಣಾಂಕ a = *f++ - '0';
+      ಗಾಗಿ (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
-          v |= ckd_add (&a, a, *f - '0');
+          v |= ckd_ಕೂಡಿಸು (&a, a, *f - '0');
         }
-      if (*f == '$')
-        arg = v ? INT_MAX : a;
+      ಆದರೆ (*f == '$')
+        arg = v ? ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ : a;
     }
 
-  if (0 < arg)
+  ಆದರೆ (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      ಆದರೆ (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,237 +520,237 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  ಆದರೆ (0 <= arg)
     {
       ac.curr_arg = arg;
-      ac.end_arg = MAX (ac.end_arg, arg);
+      ac.ಕೊನೆ_arg = MAX (ac.ಕೊನೆ_arg, arg);
     }
-  return ac;
+  ಹಿಂತಿರುಗಿ ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+print_formatted (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *format, ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  struct arg_cursor ac;
-  ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
-  bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  ರಚನೆ arg_cursor ac;
+  ac.curr_arg = ac.curr_s_arg = ac.ಕೊನೆ_arg = ac.direc_arg = -1;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *direc_ಆರಂಭ;	/* Start of % directive.  */
+  ಅಕ್ಷರ *direc;			/* Generated % directive.  */
+  ಅಕ್ಷರ *pdirec;			/* Pointer to current end of directive.  */
+  bool have_ಕ್ಷೇತ್ರ_ಅಗಲ;	/* True if FIELD_WIDTH is valid.  */
+  ಪೂರ್ಣಾಂಕ ಕ್ಷೇತ್ರ_ಅಗಲ = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  ಪೂರ್ಣಾಂಕ precision = 0;		/* Arg to second '*'.  */
+  ಅಕ್ಷರ ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
-  direc = xmalloc (strlen (format) + 1);
+  direc = xmalloc (ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  ಗಾಗಿ (ac.f = format; *ac.f; ac.f++)
     {
-      switch (*ac.f)
+      ಆಯ್ಕೆ (*ac.f)
         {
-        case '%':
-          direc_start = ac.f;
+        ಸ್ಥಿತಿ '%':
+          direc_ಆರಂಭ = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
-          have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          have_ಕ್ಷೇತ್ರ_ಅಗಲ = have_precision = false;
+          ಆದರೆ (*ac.f == '%')
             {
-              putchar ('%');
-              break;
+              ಅಕ್ಷರ_ಬರೆ ('%');
+              ನಿಲ್ಲಿಸು;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          ಆದರೆ (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              ಆದರೆ (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              ನಿಲ್ಲಿಸು;
             }
 
-          if (*ac.f == 'q')
+          ಆದರೆ (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              ಆದರೆ (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
                 }
-              break;
+              ನಿಲ್ಲಿಸು;
             }
 
-          memset (ok, 0, sizeof ok);
+          memset (ok, 0, ಗಾತ್ರ ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          ಗಾಗಿ (;; ac.f++)
             {
-              switch (*ac.f)
+              ಆಯ್ಕೆ (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
-#endif
-                case '\'':
+#ಆದರೆ (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                ಸ್ಥಿತಿ 'I':
+#ಆದರೆ_ಅಂತ್ಯ
+                ಸ್ಥಿತಿ '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  ನಿಲ್ಲಿಸು;
+                ಸ್ಥಿತಿ '-': ಸ್ಥಿತಿ '+': ಸ್ಥಿತಿ ' ':
+                  ನಿಲ್ಲಿಸು;
+                ಸ್ಥಿತಿ '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  ನಿಲ್ಲಿಸು;
+                ಸ್ಥಿತಿ '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
-                default:
-                  goto no_more_flag_characters;
+                  ನಿಲ್ಲಿಸು;
+                ಪೂರ್ವನಿಯೋಜಿತ:
+                  ಹೋಗು no_ಇನ್ನಷ್ಟು_flag_characters;
                 }
               *pdirec++ = *ac.f;
             }
-        no_more_flag_characters:
+        no_ಇನ್ನಷ್ಟು_flag_characters:
 
-          if (*ac.f == '*')
+          ಆದರೆ (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              ಆದರೆ (ac.curr_arg < argc)
                 {
-                  intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
-                    field_width = width;
-                  else
+                  intmax_t ಅಗಲ = vstrtoimax (argv[ac.curr_arg]);
+                  ಆದರೆ (INT_MIN <= ಅಗಲ && ಅಗಲ <= ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ)
+                    ಕ್ಷೇತ್ರ_ಅಗಲ = ಅಗಲ;
+                  ಇಲ್ಲದಿದ್ದರೆ
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
-                field_width = 0;
-              have_field_width = true;
+              ಇಲ್ಲದಿದ್ದರೆ
+                ಕ್ಷೇತ್ರ_ಅಗಲ = 0;
+              have_ಕ್ಷೇತ್ರ_ಅಗಲ = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          ಇಲ್ಲದಿದ್ದರೆ
+            ಆಗ (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          ಆದರೆ (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              ಆದರೆ (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  ಆದರೆ (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      ಆದರೆ (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      ಇಲ್ಲದಿದ್ದರೆ
                         precision = prec;
                     }
-                  else
+                  ಇಲ್ಲದಿದ್ದರೆ
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              ಇಲ್ಲದಿದ್ದರೆ
+                ಆಗ (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          ಆಗ (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ conversion = *ac.f;
+            ಪೂರ್ಣಾಂಕ speclen = MIN (ac.f + 1 - direc_ಆರಂಭ, ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ);
+            ಆದರೆ (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
-                     speclen, direc_start);
+                     speclen, direc_ಆರಂಭ);
           }
 
           ac = get_curr_arg (3, ac);
 
           print_direc (direc, *ac.f,
-                       have_field_width, field_width,
+                       have_ಕ್ಷೇತ್ರ_ಅಗಲ, ಕ್ಷೇತ್ರ_ಅಗಲ,
                        have_precision, precision,
-                       ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
+                       ac.curr_arg < argc ? argv[ac.curr_arg] : ಖಾಲಿ);
 
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '\\':
+        ಸ್ಥಿತಿ '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        default:
-          putchar (*ac.f);
+        ಪೂರ್ವನಿಯೋಜಿತ:
+          ಅಕ್ಷರ_ಬರೆ (*ac.f);
         }
     }
 
-  free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  ಬಿಡುಗಡೆ (direc);
+  ಹಿಂತಿರುಗಿ MIN (argc, ac.ಕೊನೆ_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  char *format;
-  int args_used;
+  ಅಕ್ಷರ *format;
+  ಪೂರ್ಣಾಂಕ ವಾದಗಳು_ಬಳಸಿದ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != ಖಾಲಿ);
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  ಆದರೆ (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      ಆದರೆ (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      ಆದರೆ (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          ಆವೃತ್ತಿ_etc (stdout, ಕಾರ್ಯಕ್ರಮ_NAME, PACKAGE_NAME, ಆವೃತ್ತಿ, AUTHORS,
+                       (ಅಕ್ಷರ *) ಖಾಲಿ);
+          ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  ಆದರೆ (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  ಆದರೆ (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -760,18 +760,18 @@ main (int argc, char **argv)
   argc -= 2;
   argv += 2;
 
-  do
+  ಮಾಡು
     {
-      args_used = print_formatted (format, argc, argv);
-      argc -= args_used;
-      argv += args_used;
+      ವಾದಗಳು_ಬಳಸಿದ = print_formatted (format, argc, argv);
+      argc -= ವಾದಗಳು_ಬಳಸಿದ;
+      argv += ವಾದಗಳು_ಬಳಸಿದ;
     }
-  while (args_used > 0 && argc > 0);
+  ಆಗ (ವಾದಗಳು_ಬಳಸಿದ > 0 && argc > 0);
 
-  if (argc > 0)
+  ಆದರೆ (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  ಹಿಂತಿರುಗಿ exit_ಸ್ಥಿತಿ;
 }

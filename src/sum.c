@@ -18,212 +18,212 @@
 
 /* Written by Kayvan Aghaiepour and David MacKenzie. */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <endian.h>
-#include "system.h"
-#include "human.h"
-#include "sum.h"
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <endian.h>
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "human.h"
+#ಅನ್ತರ್ಭಾವ "sum.h"
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ಪೂರ್ಣಾಂಕ
+bsd_ಮೊತ್ತ_ಹರಿವು (FILE *ಹರಿವು, ಶೂನ್ಯ *resstream, intmax_t *ಉದ್ದಳತೆ)
 {
-  int ret = -1;
-  idx_t sum;
-  int checksum = 0;	/* The checksum mod 2^16. */
-  intmax_t total_bytes = 0;	/* The number of bytes. */
-  enum { buffer_length = 32768 };
-  uint8_t *buffer = malloc (buffer_length);
+  ಪೂರ್ಣಾಂಕ ret = -1;
+  idx_t ಮೊತ್ತ;
+  ಪೂರ್ಣಾಂಕ checksum = 0;	/* The checksum mod 2^16. */
+  intmax_t ಒಟ್ಟು_ಬೈಟುಗಳು = 0;	/* The number of bytes. */
+  ಎಣಿಕೆ { ಬಫರ್_ಉದ್ದಳತೆ = 32768 };
+  uint8_t *ಬಫರ್ = ಸ್ಮರಣೆ_ಕೊಡು (ಬಫರ್_ಉದ್ದಳತೆ);
 
-  if (! buffer)
-    return -1;
+  ಆದರೆ (! ಬಫರ್)
+    ಹಿಂತಿರುಗಿ -1;
 
   /* Process file */
-  while (true)
+  ಆಗ (true)
   {
-    sum = 0;
+    ಮೊತ್ತ = 0;
 
     /* Read block */
-    while (true)
+    ಆಗ (true)
     {
-      size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      size_t n = fread (ಬಫರ್ + ಮೊತ್ತ, 1, ಬಫರ್_ಉದ್ದಳತೆ - ಮೊತ್ತ, ಹರಿವು);
+      ಆದರೆ (n == 0)
         {
-          if (ferror (stream))
-            goto cleanup_buffer;
-          goto final_process;
+          ಆದರೆ (ferror (ಹರಿವು))
+            ಹೋಗು cleanup_ಬಫರ್;
+          ಹೋಗು final_process;
         }
 
-      sum += n;
+      ಮೊತ್ತ += n;
 
-      if (buffer_length == sum)
-        break;
+      ಆದರೆ (ಬಫರ್_ಉದ್ದಳತೆ == ಮೊತ್ತ)
+        ನಿಲ್ಲಿಸು;
 
-      if (feof (stream))
-        goto final_process;
+      ಆದರೆ (feof (ಹರಿವು))
+        ಹೋಗು final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
+    ಗಾಗಿ (size_t i = 0; i < ಮೊತ್ತ; i++)
       {
         checksum = (checksum >> 1) + ((checksum & 1) << 15);
-        checksum += buffer[i];
+        checksum += ಬಫರ್[i];
         checksum &= 0xffff;	/* Keep it within bounds. */
       }
-    if (ckd_add (&total_bytes, total_bytes, sum))
+    ಆದರೆ (ckd_ಕೂಡಿಸು (&ಒಟ್ಟು_ಬೈಟುಗಳು, ಒಟ್ಟು_ಬೈಟುಗಳು, ಮೊತ್ತ))
       {
         errno = EOVERFLOW;
-        goto cleanup_buffer;
+        ಹೋಗು cleanup_ಬಫರ್;
       }
   }
 
 final_process:;
 
-  for (idx_t i = 0; i < sum; i++)
+  ಗಾಗಿ (idx_t i = 0; i < ಮೊತ್ತ; i++)
     {
       checksum = (checksum >> 1) + ((checksum & 1) << 15);
-      checksum += buffer[i];
+      checksum += ಬಫರ್[i];
       checksum &= 0xffff;	/* Keep it within bounds. */
     }
-  if (ckd_add (&total_bytes, total_bytes, sum))
+  ಆದರೆ (ckd_ಕೂಡಿಸು (&ಒಟ್ಟು_ಬೈಟುಗಳು, ಒಟ್ಟು_ಬೈಟುಗಳು, ಮೊತ್ತ))
     {
       errno = EOVERFLOW;
-      goto cleanup_buffer;
+      ಹೋಗು cleanup_ಬಫರ್;
     }
 
-  memcpy (resstream, &checksum, sizeof checksum);
-  *length = total_bytes;
+  ಸ್ಮರಣೆ_ನಕಲು (resstream, &checksum, ಗಾತ್ರ checksum);
+  *ಉದ್ದಳತೆ = ಒಟ್ಟು_ಬೈಟುಗಳು;
   ret = 0;
-cleanup_buffer:
-  free (buffer);
-  return ret;
+cleanup_ಬಫರ್:
+  ಬಿಡುಗಡೆ (ಬಫರ್);
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Calculate the checksum and the size in bytes of stream STREAM.
    Return -1 on error, 0 on success.  */
 
-int
-sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length)
+ಪೂರ್ಣಾಂಕ
+sysv_ಮೊತ್ತ_ಹರಿವು (FILE *ಹರಿವು, ಶೂನ್ಯ *resstream, intmax_t *ಉದ್ದಳತೆ)
 {
-  int ret = -1;
-  idx_t sum;
-  intmax_t total_bytes = 0;
-  enum { buffer_length = 32768 };
-  uint8_t *buffer = malloc (buffer_length);
+  ಪೂರ್ಣಾಂಕ ret = -1;
+  idx_t ಮೊತ್ತ;
+  intmax_t ಒಟ್ಟು_ಬೈಟುಗಳು = 0;
+  ಎಣಿಕೆ { ಬಫರ್_ಉದ್ದಳತೆ = 32768 };
+  uint8_t *ಬಫರ್ = ಸ್ಮರಣೆ_ಕೊಡು (ಬಫರ್_ಉದ್ದಳತೆ);
 
-  if (! buffer)
-    return -1;
+  ಆದರೆ (! ಬಫರ್)
+    ಹಿಂತಿರುಗಿ -1;
 
   /* The sum of all the input bytes, modulo (UINT_MAX + 1).  */
-  unsigned int s = 0;
+  ಚಿಹ್ನೆರಹಿತ ಪೂರ್ಣಾಂಕ s = 0;
 
   /* Process file */
-  while (true)
+  ಆಗ (true)
   {
-    sum = 0;
+    ಮೊತ್ತ = 0;
 
     /* Read block */
-    while (true)
+    ಆಗ (true)
     {
-      size_t n = fread (buffer + sum, 1, buffer_length - sum, stream);
-      if (n == 0)
+      size_t n = fread (ಬಫರ್ + ಮೊತ್ತ, 1, ಬಫರ್_ಉದ್ದಳತೆ - ಮೊತ್ತ, ಹರಿವು);
+      ಆದರೆ (n == 0)
         {
-          if (ferror (stream))
-            goto cleanup_buffer;
-          goto final_process;
+          ಆದರೆ (ferror (ಹರಿವು))
+            ಹೋಗು cleanup_ಬಫರ್;
+          ಹೋಗು final_process;
         }
 
-      sum += n;
+      ಮೊತ್ತ += n;
 
-      if (buffer_length == sum)
-        break;
+      ಆದರೆ (ಬಫರ್_ಉದ್ದಳತೆ == ಮೊತ್ತ)
+        ನಿಲ್ಲಿಸು;
 
-      if (feof (stream))
-        goto final_process;
+      ಆದರೆ (feof (ಹರಿವು))
+        ಹೋಗು final_process;
     }
 
-    for (size_t i = 0; i < sum; i++)
-      s += buffer[i];
-    if (total_bytes + sum < total_bytes)
+    ಗಾಗಿ (size_t i = 0; i < ಮೊತ್ತ; i++)
+      s += ಬಫರ್[i];
+    ಆದರೆ (ಒಟ್ಟು_ಬೈಟುಗಳು + ಮೊತ್ತ < ಒಟ್ಟು_ಬೈಟುಗಳು)
       {
         errno = EOVERFLOW;
-        goto cleanup_buffer;
+        ಹೋಗು cleanup_ಬಫರ್;
       }
-    total_bytes += sum;
+    ಒಟ್ಟು_ಬೈಟುಗಳು += ಮೊತ್ತ;
   }
 
 final_process:;
 
-  for (size_t i = 0; i < sum; i++)
-    s += buffer[i];
-  if (total_bytes + sum < total_bytes)
+  ಗಾಗಿ (size_t i = 0; i < ಮೊತ್ತ; i++)
+    s += ಬಫರ್[i];
+  ಆದರೆ (ಒಟ್ಟು_ಬೈಟುಗಳು + ಮೊತ್ತ < ಒಟ್ಟು_ಬೈಟುಗಳು)
     {
       errno = EOVERFLOW;
-      goto cleanup_buffer;
+      ಹೋಗು cleanup_ಬಫರ್;
     }
-  total_bytes += sum;
+  ಒಟ್ಟು_ಬೈಟುಗಳು += ಮೊತ್ತ;
 
-  int r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
-  int checksum = (r & 0xffff) + (r >> 16);
+  ಪೂರ್ಣಾಂಕ r = (s & 0xffff) + ((s & 0xffffffff) >> 16);
+  ಪೂರ್ಣಾಂಕ checksum = (r & 0xffff) + (r >> 16);
 
-  memcpy (resstream, &checksum, sizeof checksum);
-  *length = total_bytes;
+  ಸ್ಮರಣೆ_ನಕಲು (resstream, &checksum, ಗಾತ್ರ checksum);
+  *ಉದ್ದಳತೆ = ಒಟ್ಟು_ಬೈಟುಗಳು;
   ret = 0;
-cleanup_buffer:
-  free (buffer);
-  return ret;
+cleanup_ಬಫರ್:
+  ಬಿಡುಗಡೆ (ಬಫರ್);
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* Print the checksum and size (in 1024 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_bsd (char const *file, MAYBE_UNUSED int binary_file, void const *digest,
-            bool raw, MAYBE_UNUSED bool tagged, unsigned char delim, bool args,
-            intmax_t length)
+ಶೂನ್ಯ
+output_bsd (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, MAYBE_ಬಳಸದ ಪೂರ್ಣಾಂಕ ದ್ವಿಮಾನ_file, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *digest,
+            bool raw, MAYBE_ಬಳಸದ bool tagged, ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ delim, bool ವಾದಗಳು,
+            intmax_t ಉದ್ದಳತೆ)
 {
-  if (raw)
+  ಆದರೆ (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
-      out_int = htobe16 (out_int);
-      fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      uint16_t ಹೊರಹೋಗು_int = *(ಪೂರ್ಣಾಂಕ *)digest;
+      ಹೊರಹೋಗು_int = htobe16 (ಹೊರಹೋಗು_int);
+      fwrite (&ಹೊರಹೋಗು_int, 1, 16/8, stdout);
+      ಹಿಂತಿರುಗಿ;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%05d %5s", *(int *)digest,
-          human_readable (length, hbuf, human_ceiling, 1, 1024));
-  if (args)
-    printf (" %s", file);
-  putchar (delim);
+  ಅಕ್ಷರ hbuf[LONGEST_HUMAN_READABLE + 1];
+  ಬರೆ ("%05d %5s", *(ಪೂರ್ಣಾಂಕ *)digest,
+          human_readable (ಉದ್ದಳತೆ, hbuf, human_ceiling, 1, 1024));
+  ಆದರೆ (ವಾದಗಳು)
+    ಬರೆ (" %s", file);
+  ಅಕ್ಷರ_ಬರೆ (delim);
 }
 
 /* Print the checksum and size (in 512 byte blocks) to stdout.
    If ARGS is true, also print the FILE name.  */
 
-void
-output_sysv (char const *file, MAYBE_UNUSED int binary_file,
-             void const *digest, bool raw, MAYBE_UNUSED bool tagged,
-             unsigned char delim, bool args, intmax_t length)
+ಶೂನ್ಯ
+output_sysv (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, MAYBE_ಬಳಸದ ಪೂರ್ಣಾಂಕ ದ್ವಿಮಾನ_file,
+             ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *digest, bool raw, MAYBE_ಬಳಸದ bool tagged,
+             ಚಿಹ್ನೆರಹಿತ ಅಕ್ಷರ delim, bool ವಾದಗಳು, intmax_t ಉದ್ದಳತೆ)
 {
-  if (raw)
+  ಆದರೆ (raw)
     {
       /* Output in network byte order (big endian).  */
-      uint16_t out_int = *(int *)digest;
-      out_int = htobe16 (out_int);
-      fwrite (&out_int, 1, 16/8, stdout);
-      return;
+      uint16_t ಹೊರಹೋಗು_int = *(ಪೂರ್ಣಾಂಕ *)digest;
+      ಹೊರಹೋಗು_int = htobe16 (ಹೊರಹೋಗು_int);
+      fwrite (&ಹೊರಹೋಗು_int, 1, 16/8, stdout);
+      ಹಿಂತಿರುಗಿ;
     }
 
-  char hbuf[LONGEST_HUMAN_READABLE + 1];
-  printf ("%d %s", *(int *)digest,
-          human_readable (length, hbuf, human_ceiling, 1, 512));
-  if (args)
-    printf (" %s", file);
-  putchar (delim);
+  ಅಕ್ಷರ hbuf[LONGEST_HUMAN_READABLE + 1];
+  ಬರೆ ("%d %s", *(ಪೂರ್ಣಾಂಕ *)digest,
+          human_readable (ಉದ್ದಳತೆ, hbuf, human_ceiling, 1, 512));
+  ಆದರೆ (ವಾದಗಳು)
+    ಬರೆ (" %s", file);
+  ಅಕ್ಷರ_ಬರೆ (delim);
 }

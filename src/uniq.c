@@ -16,63 +16,63 @@
 
 /* Written by Richard M. Stallman and David MacKenzie. */
 
-#include <config.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "mcel.h"
-#include "posixver.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xstrtol.h"
-#include "memcasecmp.h"
-#include "quote.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "linebuffer.h"
+#ಅನ್ತರ್ಭಾವ "fadvise.h"
+#ಅನ್ತರ್ಭಾವ "mcel.h"
+#ಅನ್ತರ್ಭಾವ "posixver.h"
+#ಅನ್ತರ್ಭಾವ "skipchars.h"
+#ಅನ್ತರ್ಭಾವ "stdio--.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol.h"
+#ಅನ್ತರ್ಭಾವ "memcasecmp.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "uniq"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "uniq"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಅದಲುಬದಲು_ಸಾಲುಗಳು (ರಚನೆ linebuffer **a, ರಚನೆ linebuffer **b)
 {
-  struct linebuffer *tmp = *a;
+  ರಚನೆ linebuffer *tmp = *a;
   *a = *b;
   *b = tmp;
 }
 
 /* Number of fields to skip on each line when doing comparisons. */
-static idx_t skip_fields = false;
+ಸ್ಥಿರ idx_t skip_fields = false;
 
 /* Number of chars to skip after skipping any fields. */
-static idx_t skip_chars = false;
+ಸ್ಥಿರ idx_t skip_chars = false;
 
 /* Number of chars to compare. */
-static idx_t check_chars = IDX_MAX;
+ಸ್ಥಿರ idx_t check_chars = IDX_MAX;
 
 /* Whether to precede the output lines with a count of the number of
    times they occurred in the input. */
-static bool count_occurrences = false;
+ಸ್ಥಿರ bool ಎಣಿಕೆ_occurrences = false;
 
 /* Which lines to output: unique lines, the first of a group of
    repeated lines, and the second and subsequent of a group of
    repeated lines.  */
-static bool output_unique = true;
-static bool output_first_repeated = true;
-static bool output_later_repeated = false;
+ಸ್ಥಿರ bool output_unique = true;
+ಸ್ಥಿರ bool output_ಮೊದಲ_repeated = true;
+ಸ್ಥಿರ bool output_later_repeated = false;
 
 /* If true, ignore case when comparing.  */
-static bool ignore_case;
+ಸ್ಥಿರ bool ignore_case;
 
-enum delimit_method
+ಎಣಿಕೆ delimit_ವಿಧಾನ
 {
   /* No delimiters output.  --all-repeated[=none] */
   DM_NONE,
@@ -84,20 +84,20 @@ enum delimit_method
   DM_SEPARATE
 };
 
-static char const *const delimit_method_string[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ delimit_ವಿಧಾನ_string[] =
 {
-  "none", "prepend", "separate", NULL
+  "none", "prepend", "separate", ಖಾಲಿ
 };
 
-static enum delimit_method const delimit_method_map[] =
+ಸ್ಥಿರ ಎಣಿಕೆ delimit_ವಿಧಾನ ಸ್ಥಿರಾಂಕ delimit_ವಿಧಾನ_map[] =
 {
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
 /* Select whether/how to delimit groups of duplicate lines.  */
-static enum delimit_method delimit_groups = DM_NONE;
+ಸ್ಥಿರ ಎಣಿಕೆ delimit_ವಿಧಾನ delimit_groups = DM_NONE;
 
-enum grouping_method
+ಎಣಿಕೆ grouping_ವಿಧಾನ
 {
   /* No grouping, when "--group" isn't used */
   GM_NONE,
@@ -115,184 +115,184 @@ enum grouping_method
   GM_BOTH
 };
 
-static char const *const grouping_method_string[] =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸ್ಥಿರಾಂಕ grouping_ವಿಧಾನ_string[] =
 {
-  "prepend", "append", "separate", "both", NULL
+  "prepend", "append", "separate", "both", ಖಾಲಿ
 };
 
-static enum grouping_method const grouping_method_map[] =
+ಸ್ಥಿರ ಎಣಿಕೆ grouping_ವಿಧಾನ ಸ್ಥಿರಾಂಕ grouping_ವಿಧಾನ_map[] =
 {
   GM_PREPEND, GM_APPEND, GM_SEPARATE, GM_BOTH
 };
 
-static enum grouping_method grouping = GM_NONE;
+ಸ್ಥಿರ ಎಣಿಕೆ grouping_ವಿಧಾನ grouping = GM_NONE;
 
-enum
+ಎಣಿಕೆ
 {
-  GROUP_OPTION = CHAR_MAX + 1
+  ಗುಂಪು_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"count", no_argument, NULL, 'c'},
-  {"repeated", no_argument, NULL, 'd'},
-  {"all-repeated", optional_argument, NULL, 'D'},
-  {"group", optional_argument, NULL, GROUP_OPTION},
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"unique", no_argument, NULL, 'u'},
-  {"skip-fields", required_argument, NULL, 'f'},
-  {"skip-chars", required_argument, NULL, 's'},
-  {"check-chars", required_argument, NULL, 'w'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"count", no_ವಾದ, ಖಾಲಿ, 'c'},
+  {"repeated", no_ವಾದ, ಖಾಲಿ, 'd'},
+  {"all-repeated", optional_ವಾದ, ಖಾಲಿ, 'D'},
+  {"group", optional_ವಾದ, ಖಾಲಿ, ಗುಂಪು_OPTION},
+  {"ignore-case", no_ವಾದ, ಖಾಲಿ, 'i'},
+  {"unique", no_ವಾದ, ಖಾಲಿ, 'u'},
+  {"skip-fields", required_ವಾದ, ಖಾಲಿ, 'f'},
+  {"skip-chars", required_ವಾದ, ಖಾಲಿ, 's'},
+  {"check-chars", required_ವಾದ, ಖಾಲಿ, 'w'},
+  {"zero-terminated", no_ವಾದ, ಖಾಲಿ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
+      ಬರೆ (_("\
+Usage: %s [OPTION]... [ಒಳಹರಿವು_2 [OUTPUT]]\n\
 "),
-              program_name);
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Filter adjacent matching lines from INPUT (or standard input),\n\
-writing to OUTPUT (or standard output).\n\
+Filter adjacent matching ಸಾಲುಗಳು from ಒಳಹರಿವು_2 (or standard ಒಳಹರಿವು),\n\
+writing ಗಮ್ಯ OUTPUT (or standard output).\n\
 \n\
-With no options, matching lines are merged to the first occurrence.\n\
+With no options, matching ಸಾಲುಗಳು are merged ಗಮ್ಯ the ಮೊದಲ occurrence.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --count\n\
-         prefix lines by the number of occurrences\n\
+  -c, --ಎಣಿಕೆ_2\n\
+         ಪೂರ್ವಪ್ರತ್ಯಯ ಸಾಲುಗಳು by the ಸಂಖ್ಯೆ ದ occurrences\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only print duplicate ಸಾಲುಗಳು, one ಗಾಗಿ each ಗುಂಪು\n\
 "));
      oputs (_("\
   -D\n\
-         print all duplicate lines\n\
+         print all duplicate ಸಾಲುಗಳು\n\
 "));
      oputs (_("\
-      --all-repeated[=METHOD]\n\
-         like -D, but allow separating groups with an empty line;\n\
-         METHOD={none(default),prepend,separate}\n\
+      --all-repeated[=ವಿಧಾನ]\n\
+         like -D, but allow separating groups with an ಖಾಲಿಗಳು ಸಾಲು;\n\
+         ವಿಧಾನ={none(ಪೂರ್ವನಿಯೋಜಿತ),prepend,separate}\n\
 "));
      oputs (_("\
   -f, --skip-fields=N\n\
-         avoid comparing the first N fields\n\
+         avoid comparing the ಮೊದಲ N fields\n\
 "));
      oputs (_("\
-      --group[=METHOD]\n\
-         show all items, separating groups with an empty line;\n\
-         METHOD={separate(default),prepend,append,both}\n\
+      --ಗುಂಪು[=ವಿಧಾನ]\n\
+         show all ವಸ್ತುಗಳು, separating groups with an ಖಾಲಿಗಳು ಸಾಲು;\n\
+         ವಿಧಾನ={separate(ಪೂರ್ವನಿಯೋಜಿತ),prepend,append,both}\n\
 "));
      oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing\n\
+  -i, --ignore-ಸ್ಥಿತಿ\n\
+         ignore differences ಒಳ ಸ್ಥಿತಿ when comparing\n\
 "));
      oputs (_("\
   -s, --skip-chars=N\n\
-         avoid comparing the first N characters\n\
+         avoid comparing the ಮೊದಲ N characters\n\
 "));
      oputs (_("\
   -u, --unique\n\
-         only print unique lines\n\
+         only print unique ಸಾಲುಗಳು\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         ಸಾಲು delimiter is NUL, not newline\n\
 "));
      oputs (_("\
   -w, --check-chars=N\n\
-         compare no more than N characters in lines\n\
+         compare no ಇನ್ನಷ್ಟು than N characters ಒಳ ಸಾಲುಗಳು\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
-     oputs (VERSION_OPTION_DESCRIPTION);
+     oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
      fputs (_("\
 \n\
-A field is a run of blanks (usually spaces and/or TABs), then non-blank\n\
+A ಕ್ಷೇತ್ರ is a ಸತತ_2 ದ blanks (usually spaces and/or TABs), then non-blank\n\
 characters.  Fields are skipped before chars.\n\
 "), stdout);
      fputs (_("\
 \n\
-'uniq' does not detect repeated lines unless they are adjacent.\n\
-You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
+'uniq' does not detect repeated ಸಾಲುಗಳು unless they are adjacent.\n\
+You may want ಗಮ್ಯ ವಿಂಗಡಿಸು the ಒಳಹರಿವು ಮೊದಲ, or use 'sort -u' without 'uniq'.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-static bool
-strict_posix2 (void)
+ಸ್ಥಿರ bool
+strict_posix2 (ಶೂನ್ಯ)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  ಪೂರ್ಣಾಂಕ posix_ver = posix2_ಆವೃತ್ತಿ ();
+  ಹಿಂತಿರುಗಿ 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
    invalid.  Silently convert too-large values to IDX_MAX.  */
 
-static idx_t
-size_opt (char const *opt, char const *msgid)
+ಸ್ಥಿರ idx_t
+ಗಾತ್ರ_opt (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *opt, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *msgid)
 {
-  intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
-      || size < 0)
+  intmax_t ಗಾತ್ರ_2;
+  ಆದರೆ (LONGINT_ಅತಿಪ್ರವಾಹ < xstrtoimax (opt, ಖಾಲಿ, 10, &ಗಾತ್ರ_2, "")
+      || ಗಾತ್ರ_2 < 0)
     error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+  ಹಿಂತಿರುಗಿ MIN (ಗಾತ್ರ_2, IDX_MAX);
 }
 
-static bool
+ಸ್ಥಿರ bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  ಹಿಂತಿರುಗಿ g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
    return a pointer to the beginning of the line's field to be compared.
    Store into *PLEN the length in bytes of FIELD.  */
 
-static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+ಸ್ಥಿರ ಅಕ್ಷರ *
+ಕಂಡುಹಿಡಿ_ಕ್ಷೇತ್ರ (ರಚನೆ linebuffer ಸ್ಥಿರಾಂಕ *ಸಾಲು, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  ಅಕ್ಷರ *lp = ಸಾಲು->ಬಫರ್;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *lim = lp + ಸಾಲು->ಉದ್ದಳತೆ - 1;
 
-  for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
+  ಗಾಗಿ (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
       lp = skip_buf_matching (lp, lim, newline_or_blank, true);
       lp = skip_buf_matching (lp, lim, newline_or_blank, false);
     }
 
-  for (idx_t i = skip_chars; 0 < i && lp < lim; i--)
-    lp += mcel_scan (lp, lim).len;
+  ಗಾಗಿ (idx_t i = skip_chars; 0 < i && lp < lim; i--)
+    lp += mcel_ಪರಿಶೀಲನೆ (lp, lim).len;
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  ಆದರೆ (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      char *ep = lp;
-      for (idx_t i = check_chars; 0 < i && ep < lim; i--)
-        ep += mcel_scan (ep, lim).len;
+      ಅಕ್ಷರ *ep = lp;
+      ಗಾಗಿ (idx_t i = check_chars; 0 < i && ep < lim; i--)
+        ep += mcel_ಪರಿಶೀಲನೆ (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  ಹಿಂತಿರುಗಿ lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -300,13 +300,13 @@ find_field (struct linebuffer const *line, idx_t *plen)
    but rather to the beginnings of the fields to compare.
    OLDLEN and NEWLEN are their lengths. */
 
-static bool
-different (char *old, char *new, idx_t oldlen, idx_t newlen)
+ಸ್ಥಿರ bool
+different (ಅಕ್ಷರ *old, ಅಕ್ಷರ *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  ಆದರೆ (ignore_case)
+    ಹಿಂತಿರುಗಿ oldlen != newlen || memcasecmp (old, new, oldlen);
+  ಇಲ್ಲದಿದ್ದರೆ
+    ಹಿಂತಿರುಗಿ oldlen != newlen || memcmp (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -315,51 +315,51 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    If requested, print the number of times it occurred, as well;
    LINECOUNT + 1 is the number of times that the line occurred. */
 
-static void
-writeline (struct linebuffer const *line,
-           bool match, intmax_t linecount)
+ಸ್ಥಿರ ಶೂನ್ಯ
+writeline (ರಚನೆ linebuffer ಸ್ಥಿರಾಂಕ *ಸಾಲು,
+           bool ಹೊಂದಿಕೆ, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
-         : !match ? output_first_repeated
+  ಆದರೆ (! (linecount == 0 ? output_unique
+         : !ಹೊಂದಿಕೆ ? output_ಮೊದಲ_repeated
          : output_later_repeated))
-    return;
+    ಹಿಂತಿರುಗಿ;
 
-  if (count_occurrences)
+  ಆದರೆ (ಎಣಿಕೆ_occurrences)
     {
-      char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
-      char *end = buf + sizeof buf;
-      char *p = end;
+      ಅಕ್ಷರ buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
+      ಅಕ್ಷರ *ಕೊನೆ = buf + ಗಾತ್ರ buf;
+      ಅಕ್ಷರ *p = ಕೊನೆ;
       *--p = ' ';
       intmax_t i = linecount + 1;
       affirm (0 < i);
-      do
+      ಮಾಡು
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      ಆಗ ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      ಆಗ (ಕೊನೆ - p < 8)
         *--p = ' ';
-      const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      ಸ್ಥಿರಾಂಕ idx_t nbytes = ಕೊನೆ - p;
+      ಆದರೆ (fwrite (p, ಗಾತ್ರ (ಅಕ್ಷರ), nbytes, stdout) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
-      != line->length)
+  ಆದರೆ (fwrite (ಸಾಲು->ಬಫರ್, ಗಾತ್ರ (ಅಕ್ಷರ), ಸಾಲು->ಉದ್ದಳತೆ, stdout)
+      != ಸಾಲು->ಉದ್ದಳತೆ)
     write_error ();
 }
 
 /* Process input file INFILE with output to OUTFILE.
    If either is "-", use the standard I/O stream for it instead. */
 
-static void
-check_file (char const *infile, char const *outfile, char delimiter)
+ಸ್ಥಿರ ಶೂನ್ಯ
+check_file (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *infile, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *outfile, ಅಕ್ಷರ delimiter)
 {
-  struct linebuffer lb1, lb2;
-  struct linebuffer *thisline, *prevline;
+  ರಚನೆ linebuffer lb1, lb2;
+  ರಚನೆ linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
+  ಆದರೆ (! (streq (infile, "-") || freopen (infile, "r", stdin)))
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
+  ಆದರೆ (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
@@ -385,267 +385,267 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  ಆದರೆ (output_unique && output_ಮೊದಲ_repeated && !ಎಣಿಕೆ_occurrences)
     {
-      char *prevfield = NULL;
+      ಅಕ್ಷರ *prevfield = ಖಾಲಿ;
       idx_t prevlen;
-      bool first_group_printed = false;
+      bool ಮೊದಲ_ಗುಂಪು_printed = false;
 
-      while (!feof (stdin)
+      ಆಗ (!feof (stdin)
              && readlinebuffer_delim (thisline, stdin, delimiter))
         {
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
-          bool new_group = (!prevfield
+          ಅಕ್ಷರ *thisfield = ಕಂಡುಹಿಡಿ_ಕ್ಷೇತ್ರ (thisline, &thislen);
+          bool new_ಗುಂಪು = (!prevfield
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          ಆದರೆ (new_ಗುಂಪು && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
-                  || (first_group_printed && (grouping == GM_APPEND
+                  || (ಮೊದಲ_ಗುಂಪು_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
-            putchar (delimiter);
+            ಅಕ್ಷರ_ಬರೆ (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          ಆದರೆ (new_ಗುಂಪು || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
-                  stdout) != thisline->length)
+              ಆದರೆ (fwrite (thisline->ಬಫರ್, ಗಾತ್ರ (ಅಕ್ಷರ), thisline->ಉದ್ದಳತೆ,
+                  stdout) != thisline->ಉದ್ದಳತೆ)
                 write_error ();
 
-              swap_lines (&prevline, &thisline);
+              ಅದಲುಬದಲು_ಸಾಲುಗಳು (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              first_group_printed = true;
+              ಮೊದಲ_ಗುಂಪು_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
-        putchar (delimiter);
+      ಆದರೆ ((grouping == GM_BOTH || grouping == GM_APPEND) && ಮೊದಲ_ಗುಂಪು_printed)
+        ಅಕ್ಷರ_ಬರೆ (delimiter);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
-        goto closefiles;
+      ಆದರೆ (!readlinebuffer_delim (prevline, stdin, delimiter))
+        ಹೋಗು closefiles;
 
       idx_t prevlen;
-      char *prevfield = find_field (prevline, &prevlen);
-      intmax_t match_count = 0;
-      bool first_delimiter = true;
+      ಅಕ್ಷರ *prevfield = ಕಂಡುಹಿಡಿ_ಕ್ಷೇತ್ರ (prevline, &prevlen);
+      intmax_t ಹೊಂದಿಕೆ_ಎಣಿಕೆ = 0;
+      bool ಮೊದಲ_delimiter = true;
 
-      while (!feof (stdin))
+      ಆಗ (!feof (stdin))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          ಆದರೆ (!readlinebuffer_delim (thisline, stdin, delimiter))
             {
-              if (ferror (stdin))
-                goto closefiles;
-              break;
+              ಆದರೆ (ferror (stdin))
+                ಹೋಗು closefiles;
+              ನಿಲ್ಲಿಸು;
             }
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
-          bool match = !different (thisfield, prevfield, thislen, prevlen);
-          match_count += match;
+          ಅಕ್ಷರ *thisfield = ಕಂಡುಹಿಡಿ_ಕ್ಷೇತ್ರ (thisline, &thislen);
+          bool ಹೊಂದಿಕೆ = !different (thisfield, prevfield, thislen, prevlen);
+          ಹೊಂದಿಕೆ_ಎಣಿಕೆ += ಹೊಂದಿಕೆ;
 
-          if (match_count == INTMAX_MAX)
+          ಆದರೆ (ಹೊಂದಿಕೆ_ಎಣಿಕೆ == INTMAX_MAX)
             {
-              if (count_occurrences)
+              ಆದರೆ (ಎಣಿಕೆ_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
-              match_count--;
+              ಹೊಂದಿಕೆ_ಎಣಿಕೆ--;
             }
 
-          if (delimit_groups != DM_NONE)
+          ಆದರೆ (delimit_groups != DM_NONE)
             {
-              if (!match)
+              ಆದರೆ (!ಹೊಂದಿಕೆ)
                 {
-                  if (match_count) /* a previous match */
-                    first_delimiter = false; /* Only used when DM_SEPARATE */
+                  ಆದರೆ (ಹೊಂದಿಕೆ_ಎಣಿಕೆ) /* a previous match */
+                    ಮೊದಲ_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಹೊಂದಿಕೆ_ಎಣಿಕೆ == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  ಆದರೆ ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
-                          && !first_delimiter))
-                    putchar (delimiter);
+                          && !ಮೊದಲ_delimiter))
+                    ಅಕ್ಷರ_ಬರೆ (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          ಆದರೆ (!ಹೊಂದಿಕೆ || output_later_repeated)
             {
-              writeline (prevline, match, match_count);
-              swap_lines (&prevline, &thisline);
+              writeline (prevline, ಹೊಂದಿಕೆ, ಹೊಂದಿಕೆ_ಎಣಿಕೆ);
+              ಅದಲುಬದಲು_ಸಾಲುಗಳು (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
-                match_count = 0;
+              ಆದರೆ (!ಹೊಂದಿಕೆ)
+                ಹೊಂದಿಕೆ_ಎಣಿಕೆ = 0;
             }
         }
 
-      writeline (prevline, false, match_count);
+      writeline (prevline, false, ಹೊಂದಿಕೆ_ಎಣಿಕೆ);
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
+  ಆದರೆ (ferror (stdin) || fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
 
-  free (lb1.buffer);
-  free (lb2.buffer);
+  ಬಿಡುಗಡೆ (lb1.ಬಫರ್);
+  ಬಿಡುಗಡೆ (lb2.ಬಫರ್);
 }
 
-enum Skip_field_option_type
+ಎಣಿಕೆ Skip_ಕ್ಷೇತ್ರ_option_type
   {
     SFO_NONE,
     SFO_OBSOLETE,
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  int optc = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
-  char const *file[2];
-  char delimiter = '\n';	/* change with --zero-terminated, -z */
-  bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
+  ಪೂರ್ಣಾಂಕ optc = 0;
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != ಖಾಲಿ);
+  ಎಣಿಕೆ Skip_ಕ್ಷೇತ್ರ_option_type skip_ಕ್ಷೇತ್ರ_option_type = SFO_NONE;
+  ಪೂರ್ಣಾಂಕ nfiles = 0;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file[2];
+  ಅಕ್ಷರ delimiter = '\n';	/* change with --zero-terminated, -z */
+  bool output_option_ಬಳಸಿದ = false;   /* if true, one of -u/-d/-D/-c was used */
 
   file[0] = file[1] = "-";
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  ಆಗ (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      ಆದರೆ (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
-                                   longopts, NULL))
+                                   longopts, ಖಾಲಿ))
               == -1))
         {
-          if (argc <= optind)
-            break;
-          if (nfiles == 2)
+          ಆದರೆ (argc <= optind)
+            ನಿಲ್ಲಿಸು;
+          ಆದರೆ (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
               usage (EXIT_FAILURE);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      ಇಲ್ಲದಿದ್ದರೆ ಆಯ್ಕೆ (optc)
         {
-        case 1:
+        ಸ್ಥಿತಿ 1:
           {
-            intmax_t size;
-            if (optarg[0] == '+'
+            intmax_t ಗಾತ್ರ_2;
+            ಆದರೆ (optarg[0] == '+'
                 && ! strict_posix2 ()
-                && (xstrtoimax (optarg, NULL, 10, &size, "")
-                    <= LONGINT_OVERFLOW))
-              skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+                && (xstrtoimax (optarg, ಖಾಲಿ, 10, &ಗಾತ್ರ_2, "")
+                    <= LONGINT_ಅತಿಪ್ರವಾಹ))
+              skip_chars = MIN (ಗಾತ್ರ_2, IDX_MAX);
+            ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
                 usage (EXIT_FAILURE);
               }
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               file[nfiles++] = optarg;
           }
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        ಸ್ಥಿತಿ '0':
+        ಸ್ಥಿತಿ '1':
+        ಸ್ಥಿತಿ '2':
+        ಸ್ಥಿತಿ '3':
+        ಸ್ಥಿತಿ '4':
+        ಸ್ಥಿತಿ '5':
+        ಸ್ಥಿತಿ '6':
+        ಸ್ಥಿತಿ '7':
+        ಸ್ಥಿತಿ '8':
+        ಸ್ಥಿತಿ '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            ಆದರೆ (skip_ಕ್ಷೇತ್ರ_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            ಆದರೆ (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
-            skip_field_option_type = SFO_OBSOLETE;
+            skip_ಕ್ಷೇತ್ರ_option_type = SFO_OBSOLETE;
           }
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'c':
-          count_occurrences = true;
-          output_option_used = true;
-          break;
+        ಸ್ಥಿತಿ 'c':
+          ಎಣಿಕೆ_occurrences = true;
+          output_option_ಬಳಸಿದ = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 'd':
+        ಸ್ಥಿತಿ 'd':
           output_unique = false;
-          output_option_used = true;
-          break;
+          output_option_ಬಳಸಿದ = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 'D':
+        ಸ್ಥಿತಿ 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          ಆದರೆ (optarg == ಖಾಲಿ)
             delimit_groups = DM_NONE;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
-                                        delimit_method_string,
-                                        delimit_method_map);
-          output_option_used = true;
-          break;
+                                        delimit_ವಿಧಾನ_string,
+                                        delimit_ವಿಧಾನ_map);
+          output_option_ಬಳಸಿದ = true;
+          ನಿಲ್ಲಿಸು;
 
-        case GROUP_OPTION:
-          if (optarg == NULL)
+        ಸ್ಥಿತಿ ಗುಂಪು_OPTION:
+          ಆದರೆ (optarg == ಖಾಲಿ)
             grouping = GM_SEPARATE;
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             grouping = XARGMATCH ("--group", optarg,
-                                  grouping_method_string,
-                                  grouping_method_map);
-          break;
+                                  grouping_ವಿಧಾನ_string,
+                                  grouping_ವಿಧಾನ_map);
+          ನಿಲ್ಲಿಸು;
 
-        case 'f':
-          skip_field_option_type = SFO_NEW;
-          skip_fields = size_opt (optarg,
+        ಸ್ಥಿತಿ 'f':
+          skip_ಕ್ಷೇತ್ರ_option_type = SFO_NEW;
+          skip_fields = ಗಾತ್ರ_opt (optarg,
                                   N_("invalid number of fields to skip"));
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'i':
+        ಸ್ಥಿತಿ 'i':
           ignore_case = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 's':
-          skip_chars = size_opt (optarg,
+        ಸ್ಥಿತಿ 's':
+          skip_chars = ಗಾತ್ರ_opt (optarg,
                                  N_("invalid number of bytes to skip"));
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'u':
-          output_first_repeated = false;
-          output_option_used = true;
-          break;
+        ಸ್ಥಿತಿ 'u':
+          output_ಮೊದಲ_repeated = false;
+          output_option_ಬಳಸಿದ = true;
+          ನಿಲ್ಲಿಸು;
 
-        case 'w':
-          check_chars = size_opt (optarg,
+        ಸ್ಥಿತಿ 'w':
+          check_chars = ಗಾತ್ರ_opt (optarg,
                                   N_("invalid number of bytes to compare"));
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'z':
+        ಸ್ಥಿತಿ 'z':
           delimiter = '\0';
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
@@ -654,20 +654,20 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  ಆದರೆ (grouping != GM_NONE && output_option_ಬಳಸಿದ)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  ಆದರೆ (grouping != GM_NONE && ಎಣಿಕೆ_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  ಆದರೆ (ಎಣಿಕೆ_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
@@ -676,5 +676,5 @@ main (int argc, char **argv)
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-enum uname_modes
+ಎಣಿಕೆ uname_modes
 {
   /* This is for the 'uname' program.  */
   UNAME_UNAME,
@@ -7,4 +7,4 @@ enum uname_modes
   UNAME_ARCH
 };
 
-extern enum uname_modes uname_mode;
+ಬಾಹ್ಯ ಎಣಿಕೆ uname_modes uname_ಬಹುಲಕ;

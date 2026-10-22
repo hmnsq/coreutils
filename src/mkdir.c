@@ -16,87 +16,87 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <selinux/label.h>
 
-#include "system.h"
-#include "mkdir-p.h"
-#include "modechange.h"
-#include "prog-fprintf.h"
-#include "quote.h"
-#include "savewd.h"
-#include "selinux.h"
-#include "smack.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "mkdir-p.h"
+#ಅನ್ತರ್ಭಾವ "modechange.h"
+#ಅನ್ತರ್ಭಾವ "prog-fprintf.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "savewd.h"
+#ಅನ್ತರ್ಭಾವ "selinux.h"
+#ಅನ್ತರ್ಭಾವ "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkdir"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "mkdir"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
-  {"parents", no_argument, NULL, 'p'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"mode", required_ವಾದ, ಖಾಲಿ, 'm'},
+  {"parents", no_ವಾದ, ಖಾಲಿ, 'p'},
+  {"verbose", no_ವಾದ, ಖಾಲಿ, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
+      ಬರೆ (_("Usage: %s [OPTION]... DIRECTORY...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Create the DIRECTORY(ies), if they do not already exist.\n\
+Create the DIRECTORY(ies), ಆದರೆ they ಮಾಡು not already exist.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file mode (as in chmod), not a=rwx - umask\n\
+  -m, --ಬಹುಲಕ_2=ಬಹುಲಕ\n\
+         ಗಣ_2 file ಬಹುಲಕ_2 (as ಒಳ chmod), not a=rwx - umask\n\
 "));
       oputs (_("\
   -p, --parents\n\
-         no error if existing, make parent directories as needed,\n\
+         no error ಆದರೆ existing, make ಪೋಷಕ directories as needed,\n\
          with their file modes unaffected by any -m option\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print a message for each created directory\n\
+         print a ಸಂದೇಶ_2 ಗಾಗಿ each created directory\n\
 "));
       oputs (_("\
   -Z\n\
-         set SELinux security context of each created directory\n\
-         to the default type\n\
+         ಗಣ_2 SELinux security context ದ each created directory\n\
+         ಗಮ್ಯ the ಪೂರ್ವನಿಯೋಜಿತ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or ಆದರೆ CTX is specified then ಗಣ_2 the\n\
+         SELinux or SMACK security context ಗಮ್ಯ CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* Options passed to subsidiary functions.  */
-struct mkdir_options
+ರಚನೆ mkdir_options
 {
   /* Function to make an ancestor, or NULL if ancestors should not be
      made.  */
-  int (*make_ancestor_function) (char const *, char const *, void *);
+  ಪೂರ್ಣಾಂಕ (*make_ancestor_function) (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *, ಶೂನ್ಯ *);
 
   /* Umask value for when making an ancestor.  */
   mode_t umask_ancestor;
@@ -105,24 +105,24 @@ struct mkdir_options
   mode_t umask_self;
 
   /* Mode for directory itself.  */
-  mode_t mode;
+  mode_t ಬಹುಲಕ_2;
 
   /* File mode bits affected by MODE.  */
-  mode_t mode_bits;
+  mode_t ಬಹುಲಕ_ಬಿಟ್ಟುಗಳು;
 
   /* Set the SELinux File Context.  */
-  struct selabel_handle *set_security_context;
+  ರಚನೆ selabel_handle *ಗಣ_security_context;
 
   /* If not null, format to use when reporting newly made directories.  */
-  char const *created_directory_format;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *created_directory_format;
 };
 
 /* Report that directory DIR was made, if OPTIONS requests this.  */
-static void
-announce_mkdir (char const *dir, void *options)
+ಸ್ಥಿರ ಶೂನ್ಯ
+announce_mkdir (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *dir, ಶೂನ್ಯ *options)
 {
-  struct mkdir_options const *o = options;
-  if (o->created_directory_format)
+  ರಚನೆ mkdir_options ಸ್ಥಿರಾಂಕ *o = options;
+  ಆದರೆ (o->created_directory_format)
     prog_fprintf (stdout, o->created_directory_format, quoteaf (dir));
 }
 
@@ -131,53 +131,53 @@ announce_mkdir (char const *dir, void *options)
    parent.  Return 0 if successful and the resulting directory is
    readable, 1 if successful but the resulting directory is not
    readable, -1 (setting errno) otherwise.  */
-static int
-make_ancestor (char const *dir, char const *component, void *options)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+make_ancestor (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *dir, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *component, ಶೂನ್ಯ *options)
 {
-  struct mkdir_options const *o = options;
+  ರಚನೆ mkdir_options ಸ್ಥಿರಾಂಕ *o = options;
 
-  if (o->set_security_context
-      && defaultcon (o->set_security_context, component, S_IFDIR) < 0
+  ಆದರೆ (o->ಗಣ_security_context
+      && defaultcon (o->ಗಣ_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  if (o->umask_ancestor != o->umask_self)
+  ಆದರೆ (o->umask_ancestor != o->umask_self)
     umask (o->umask_ancestor);
-  int r = mkdir (component, S_IRWXUGO);
-  if (o->umask_ancestor != o->umask_self)
+  ಪೂರ್ಣಾಂಕ r = mkdir (component, S_IRWXUGO);
+  ಆದರೆ (o->umask_ancestor != o->umask_self)
     {
-      int mkdir_errno = errno;
+      ಪೂರ್ಣಾಂಕ mkdir_errno = errno;
       umask (o->umask_self);
       errno = mkdir_errno;
     }
-  if (r == 0)
+  ಆದರೆ (r == 0)
     {
       r = (o->umask_ancestor & S_IRUSR) != 0;
       announce_mkdir (dir, options);
     }
-  return r;
+  ಹಿಂತಿರುಗಿ r;
 }
 
 /* Process a command-line file name.  */
-static int
-process_dir (char *dir, struct savewd *wd, void *options)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+process_dir (ಅಕ್ಷರ *dir, ರಚನೆ savewd *wd, ಶೂನ್ಯ *options)
 {
-  struct mkdir_options const *o = options;
+  ರಚನೆ mkdir_options ಸ್ಥಿರಾಂಕ *o = options;
 
   /* If possible set context before DIR created.  */
-  if (o->set_security_context)
+  ಆದರೆ (o->ಗಣ_security_context)
     {
-      if (! o->make_ancestor_function
-          && defaultcon (o->set_security_context, dir, S_IFDIR) < 0
+      ಆದರೆ (! o->make_ancestor_function
+          && defaultcon (o->ಗಣ_security_context, dir, S_IFDIR) < 0
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to set default creation context for %s"),
                quoteaf (dir));
     }
 
-  int ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
-                               o->mode, announce_mkdir,
-                               o->mode_bits, (uid_t) -1, (gid_t) -1, true)
+  ಪೂರ್ಣಾಂಕ ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
+                               o->ಬಹುಲಕ_2, announce_mkdir,
+                               o->ಬಹುಲಕ_ಬಿಟ್ಟುಗಳು, (uid_t) -1, (gid_t) -1, true)
              ? EXIT_SUCCESS
              : EXIT_FAILURE);
 
@@ -186,86 +186,86 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && o->set_security_context
+  ಆದರೆ (ret == EXIT_SUCCESS && o->ಗಣ_security_context
       && o->make_ancestor_function)
     {
-      if (! restorecon (o->set_security_context, last_component (dir), false)
+      ಆದರೆ (! restorecon (o->ಗಣ_security_context, ಕೊನೆಯ_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  char const *specified_mode = NULL;
-  int optc;
-  char const *scontext = NULL;
-  struct mkdir_options options;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *specified_ಬಹುಲಕ = ಖಾಲಿ;
+  ಪೂರ್ಣಾಂಕ optc;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *scontext = ಖಾಲಿ;
+  ರಚನೆ mkdir_options options;
 
-  options.make_ancestor_function = NULL;
-  options.mode = S_IRWXUGO;
-  options.mode_bits = 0;
-  options.created_directory_format = NULL;
-  options.set_security_context = NULL;
+  options.make_ancestor_function = ಖಾಲಿ;
+  options.ಬಹುಲಕ_2 = S_IRWXUGO;
+  options.ಬಹುಲಕ_ಬಿಟ್ಟುಗಳು = 0;
+  options.created_directory_format = ಖಾಲಿ;
+  options.ಗಣ_security_context = ಖಾಲಿ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "pm:vZ", longopts, NULL)) != -1)
+  ಆಗ ((optc = getopt_long (argc, argv, "pm:vZ", longopts, ಖಾಲಿ)) != -1)
     {
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'p':
+        ಸ್ಥಿತಿ 'p':
           options.make_ancestor_function = make_ancestor;
-          break;
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'v': /* --verbose  */
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'm':
+          specified_ಬಹುಲಕ = optarg;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'v': /* --verbose  */
           options.created_directory_format = _("created directory %s");
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'Z':
+          ಆದರೆ (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              ಆದರೆ (optarg)
                 scontext = optarg;
-              else
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
-                  options.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                               NULL, 0);
-                  if (! options.set_security_context)
+                  options.ಗಣ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                               ಖಾಲಿ, 0);
+                  ಆದರೆ (! options.ಗಣ_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          ನಿಲ್ಲಿಸು;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  ಆದರೆ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -274,46 +274,46 @@ main (int argc, char **argv)
   /* FIXME: This assumes mkdir() is done in the same process.
      If that's not always the case we would need to call this
      like we do when options.set_security_context.  */
-  if (scontext)
+  ಆದರೆ (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      ಪೂರ್ಣಾಂಕ ret = 0;
+      ಆದರೆ (is_smack_enabled ())
+        ret = smack_ಗಣ_label_for_self (scontext);
+      ಇಲ್ಲದಿದ್ದರೆ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      ಆದರೆ (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
 
-  if (options.make_ancestor_function || specified_mode)
+  ಆದರೆ (options.make_ancestor_function || specified_ಬಹುಲಕ)
     {
-      mode_t umask_value = umask (0);
-      options.umask_ancestor = umask_value & ~(S_IWUSR | S_IXUSR);
+      mode_t umask_ಮೌಲ್ಯ = umask (0);
+      options.umask_ancestor = umask_ಮೌಲ್ಯ & ~(S_IWUSR | S_IXUSR);
 
-      if (specified_mode)
+      ಆದರೆ (specified_ಬಹುಲಕ)
         {
-          struct mode_change *change = mode_compile (specified_mode);
-          if (!change)
+          ರಚನೆ ಬಹುಲಕ_change *change = ಬಹುಲಕ_compile (specified_ಬಹುಲಕ);
+          ಆದರೆ (!change)
             error (EXIT_FAILURE, 0, _("invalid mode %s"),
-                   quote (specified_mode));
-          options.mode = mode_adjust (S_IRWXUGO, true, umask_value, change,
-                                      &options.mode_bits);
-          options.umask_self = umask_value & ~options.mode;
-          free (change);
+                   quote (specified_ಬಹುಲಕ));
+          options.ಬಹುಲಕ_2 = ಬಹುಲಕ_adjust (S_IRWXUGO, true, umask_ಮೌಲ್ಯ, change,
+                                      &options.ಬಹುಲಕ_ಬಿಟ್ಟುಗಳು);
+          options.umask_self = umask_ಮೌಲ್ಯ & ~options.ಬಹುಲಕ_2;
+          ಬಿಡುಗಡೆ (change);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
-          options.mode = S_IRWXUGO;
-          options.umask_self = umask_value;
+          options.ಬಹುಲಕ_2 = S_IRWXUGO;
+          options.umask_self = umask_ಮೌಲ್ಯ;
         }
 
       umask (options.umask_self);
     }
 
-  return savewd_process_files (argc - optind, argv + optind,
+  ಹಿಂತಿರುಗಿ savewd_process_files (argc - optind, argv + optind,
                                process_dir, &options);
 }

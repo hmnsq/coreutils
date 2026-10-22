@@ -16,155 +16,155 @@
 
 /* Written by Ulrich Drepper.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "full-write.h"
-#include "quote.h"
-#include "xstrtod.h"
-#include "xvasprintf.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "c-ctype.h"
+#ಅನ್ತರ್ಭಾವ "cl-strtod.h"
+#ಅನ್ತರ್ಭಾವ "full-write.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "xstrtod.h"
+#ಅನ್ತರ್ಭಾವ "xvasprintf.h"
 
 /* Roll our own isfinite/isnan rather than using <math.h>, so that we don't
    have to worry about linking -lm just for isfinite.  */
-#ifndef isfinite
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ isfinite
 # define isfinite(x) ((x) * 0 == 0)
-#endif
-#ifndef isnan
+#ಆದರೆ_ಅಂತ್ಯ
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ isnan
 # define isnan(x) ((x) != (x))
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* Limit below which seq_fast has more throughput.
    Determined with: seq 0 200 inf | pv > /dev/null  */
-#define SEQ_FAST_STEP_LIMIT 200  /* Keep in sync with texinfo description.  */
-#define SEQ_FAST_STEP_LIMIT_DIGITS 3
+#ವ್ಯಾಖ್ಯಾನಿಸು SEQ_FAST_ಹೆಜ್ಜೆ_ಎಲ್ಲೆ 200  /* Keep in sync with texinfo description.  */
+#ವ್ಯಾಖ್ಯಾನಿಸು SEQ_FAST_ಹೆಜ್ಜೆ_ಎಲ್ಲೆ_DIGITS 3
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "seq"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "seq"
 
-#define AUTHORS proper_name ("Ulrich Drepper")
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS proper_name ("Ulrich Drepper")
 
 /* True if the locale settings were honored.  */
-static bool locale_ok;
+ಸ್ಥಿರ bool locale_ok;
 
 /* If true print all number with equal width.  */
-static bool equal_width;
+ಸ್ಥಿರ bool equal_ಅಗಲ;
 
 /* The string used to separate two numbers.  */
-static char const *separator = "\n";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *separator = "\n";
 
 /* The string output after all numbers have been output.
    Usually "\n" or "\0".  */
-static char const terminator[] = "\n";
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ terminator[] = "\n";
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  { "equal-width", no_argument, NULL, 'w'},
-  { "format", required_argument, NULL, 'f'},
-  { "separator", required_argument, NULL, 's'},
+  { "equal-width", no_ವಾದ, ಖಾಲಿ, 'w'},
+  { "format", required_ವಾದ, ಖಾಲಿ, 'f'},
+  { "separator", required_ವಾದ, ಖಾಲಿ, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  { NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  { ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s [OPTION]... LAST\n\
-  or:  %s [OPTION]... FIRST LAST\n\
-  or:  %s [OPTION]... FIRST INCREMENT LAST\n\
-"), program_name, program_name, program_name);
+      ಬರೆ (_("\
+Usage: %s [OPTION]... ಕೊನೆಯ_3\n\
+  or:  %s [OPTION]... ಮೊದಲ_3 ಕೊನೆಯ_3\n\
+  or:  %s [OPTION]... ಮೊದಲ_3 INCREMENT ಕೊನೆಯ_3\n\
+"), ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Print numbers from FIRST to LAST, in steps of INCREMENT.\n\
+Print numbers from ಮೊದಲ_3 ಗಮ್ಯ ಕೊನೆಯ_3, ಒಳ ಹೆಜ್ಜೆಗಳು ದ INCREMENT.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -f, --format=FORMAT\n\
-         use printf style floating-point FORMAT\n\
+         use ಬರೆ style floating-ಬಿಂದು FORMAT\n\
 "));
       oputs (_("\
   -s, --separator=STRING\n\
-         use STRING to separate numbers (default: \\n)\n\
+         use STRING ಗಮ್ಯ separate numbers (ಪೂರ್ವನಿಯೋಜಿತ: \\n)\n\
 "));
       oputs (_("\
-  -w, --equal-width\n\
-         equalize width by padding with leading zeroes\n\
+  -w, --equal-ಅಗಲ\n\
+         equalize ಅಗಲ by padding with leading zeroes\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FIRST or INCREMENT is omitted, it defaults to 1.  That is, an\n\
-omitted INCREMENT defaults to 1 even when LAST is smaller than FIRST.\n\
-The sequence of numbers ends when the sum of the current number and\n\
-INCREMENT would become greater than LAST.\n\
-FIRST, INCREMENT, and LAST are interpreted as floating point values.\n\
-INCREMENT is usually positive if FIRST is smaller than LAST, and\n\
-INCREMENT is usually negative if FIRST is greater than LAST.\n\
-INCREMENT must not be 0; none of FIRST, INCREMENT and LAST may be NaN.\n\
+If ಮೊದಲ_3 or INCREMENT is omitted, it defaults ಗಮ್ಯ 1.  That is, an\n\
+omitted INCREMENT defaults ಗಮ್ಯ 1 even when ಕೊನೆಯ_3 is smaller than ಮೊದಲ_3.\n\
+The sequence ದ numbers ತುದಿಗಳು when the ಮೊತ್ತ ದ the current ಸಂಖ್ಯೆ and\n\
+INCREMENT would become greater than ಕೊನೆಯ_3.\n\
+ಮೊದಲ_3, INCREMENT, and ಕೊನೆಯ_3 are interpreted as floating ಬಿಂದು ಮೌಲ್ಯಗಳು.\n\
+INCREMENT is usually ಧನಾತ್ಮಕ ಆದರೆ ಮೊದಲ_3 is smaller than ಕೊನೆಯ_3, and\n\
+INCREMENT is usually negative ಆದರೆ ಮೊದಲ_3 is greater than ಕೊನೆಯ_3.\n\
+INCREMENT must not be 0; none ದ ಮೊದಲ_3, INCREMENT and ಕೊನೆಯ_3 may be NaN.\n\
 "), stdout);
       fputs (_("\
-FORMAT must be suitable for printing one argument of type 'double';\n\
-it defaults to %.PRECf if FIRST, INCREMENT, and LAST are all fixed point\n\
-decimal numbers with maximum precision PREC, and to %g otherwise.\n\
+FORMAT must be suitable ಗಾಗಿ printing one ವಾದ ದ type 'double';\n\
+it defaults ಗಮ್ಯ %.PRECf ಆದರೆ ಮೊದಲ_3, INCREMENT, and ಕೊನೆಯ_3 are all fixed ಬಿಂದು\n\
+decimal numbers with ಗರಿಷ್ಠ precision PREC, and ಗಮ್ಯ %g otherwise.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
 /* A command-line operand.  */
-struct operand
+ರಚನೆ ಕಾರ್ಯಾಂಶ_2
 {
   /* Its value, converted to 'long double'.  */
-  long double value;
+  ದೀರ್ಘ ದ್ವಿಗುಣ ಮೌಲ್ಯ;
 
   /* Its print width, if it were printed out in a form similar to its
      input form.  An input like "-.1" is treated like "-0.1", and an
      input like "1." is treated like "1", but otherwise widths are
      left alone.  */
-  size_t width;
+  size_t ಅಗಲ;
 
   /* Number of digits after the decimal point, or INT_MAX if the
      number can't easily be expressed as a fixed-point number.  */
-  int precision;
+  ಪೂರ್ಣಾಂಕ precision;
 };
-typedef struct operand operand;
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ರಚನೆ ಕಾರ್ಯಾಂಶ_2 ಕಾರ್ಯಾಂಶ_2;
 
 /* Description of what a number-generating format will generate.  */
-struct layout
+ರಚನೆ layout
 {
   /* Number of bytes before and after the number.  */
-  size_t prefix_len;
+  size_t ಪೂರ್ವಪ್ರತ್ಯಯ_len;
   size_t suffix_len;
 };
 
 /* Read a long double value from the command line.
    Return if the string is correct else signal error.  */
 
-static operand
-scan_arg (char const *arg)
+ಸ್ಥಿರ ಕಾರ್ಯಾಂಶ_2
+ಪರಿಶೀಲನೆ_arg (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *arg)
 {
-  operand ret;
+  ಕಾರ್ಯಾಂಶ_2 ret;
 
-  if (! xstrtold (arg, NULL, &ret.value, cl_strtold))
+  ಆದರೆ (! xstrtold (arg, ಖಾಲಿ, &ret.ಮೌಲ್ಯ, cl_strtold))
     {
       error (0, 0, _("invalid floating point argument: %s"), quote (arg));
       usage (EXIT_FAILURE);
     }
 
-  if (isnan (ret.value))
+  ಆದರೆ (isnan (ret.ಮೌಲ್ಯ))
     {
       error (0, 0, _("invalid %s argument: %s"), quote_n (0, "not-a-number"),
              quote_n (1, arg));
@@ -172,67 +172,67 @@ scan_arg (char const *arg)
     }
 
   /* We don't output spaces or '+' so don't include in width */
-  while (isspace (to_uchar (*arg)) || *arg == '+')
+  ಆಗ (ಖಾಲಿಯೇ (ಗಮ್ಯ_uchar (*arg)) || *arg == '+')
     arg++;
 
   /* Default to auto width and precision.  */
-  ret.width = 0;
-  ret.precision = INT_MAX;
+  ret.ಅಗಲ = 0;
+  ret.precision = ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ;
 
   /* Use no precision (and possibly fast generation) for integers.  */
-  char const *decimal_point = strchr (arg, '.');
-  if (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *decimal_ಬಿಂದು = strchr (arg, '.');
+  ಆದರೆ (! decimal_ಬಿಂದು && ! strchr (arg, 'p') /* not a hex float */)
     ret.precision = 0;
 
   /* auto set width and precision for decimal inputs.  */
-  if (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
+  ಆದರೆ (! arg[strcspn (arg, "xX")] && isfinite (ret.ಮೌಲ್ಯ))
     {
       size_t fraction_len = 0;
-      ret.width = strlen (arg);
+      ret.ಅಗಲ = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (arg);
 
-      if (decimal_point)
+      ಆದರೆ (decimal_ಬಿಂದು)
         {
-          fraction_len = strcspn (decimal_point + 1, "eE");
-          if (fraction_len <= INT_MAX)
+          fraction_len = strcspn (decimal_ಬಿಂದು + 1, "eE");
+          ಆದರೆ (fraction_len <= ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ)
             ret.precision = fraction_len;
-          ret.width += (fraction_len == 0                       /* #.  -> #   */
+          ret.ಅಗಲ += (fraction_len == 0                       /* #.  -> #   */
                         ? -1
-                        : (decimal_point == arg                 /* .#  -> 0.# */
-                           || !c_isdigit (decimal_point[-1]))); /* -.# -> 0.# */
+                        : (decimal_ಬಿಂದು == arg                 /* .#  -> 0.# */
+                           || !c_isdigit (decimal_ಬಿಂದು[-1]))); /* -.# -> 0.# */
         }
-      char const *e = strchr (arg, 'e');
-      if (! e)
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *e = strchr (arg, 'e');
+      ಆದರೆ (! e)
         e = strchr (arg, 'E');
-      if (e)
+      ಆದರೆ (e)
         {
-          long exponent = MAX (strtol (e + 1, NULL, 10), -LONG_MAX);
+          ದೀರ್ಘ exponent = MAX (strtol (e + 1, ಖಾಲಿ, 10), -LONG_MAX);
           ret.precision += exponent < 0 ? -exponent
                                         : - MIN (ret.precision, exponent);
           /* Don't account for e.... in the width since this is not output.  */
-          ret.width -= strlen (arg) - (e - arg);
+          ret.ಅಗಲ -= ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (arg) - (e - arg);
           /* Adjust the width as per the exponent.  */
-          if (exponent < 0)
+          ಆದರೆ (exponent < 0)
             {
-              if (decimal_point)
+              ಆದರೆ (decimal_ಬಿಂದು)
                 {
-                  if (e == decimal_point + 1) /* undo #. -> # above  */
-                    ret.width++;
+                  ಆದರೆ (e == decimal_ಬಿಂದು + 1) /* undo #. -> # above  */
+                    ret.ಅಗಲ++;
                 }
-              else
-                ret.width++;
+              ಇಲ್ಲದಿದ್ದರೆ
+                ret.ಅಗಲ++;
               exponent = -exponent;
             }
-          else
+          ಇಲ್ಲದಿದ್ದರೆ
             {
-              if (decimal_point && ret.precision == 0 && fraction_len)
-                ret.width--; /* discount space for '.'  */
+              ಆದರೆ (decimal_ಬಿಂದು && ret.precision == 0 && fraction_len)
+                ret.ಅಗಲ--; /* discount space for '.'  */
               exponent -= MIN (fraction_len, exponent);
             }
-          ret.width += exponent;
+          ret.ಅಗಲ += exponent;
         }
     }
 
-  return ret;
+  ಹಿಂತಿರುಗಿ ret;
 }
 
 /* If FORMAT is a valid printf format for a double argument, return
@@ -240,87 +240,87 @@ scan_arg (char const *arg)
    store into *LAYOUT a description of the output layout; otherwise,
    report an error and exit.  */
 
-static char const *
-long_double_format (char const *fmt, struct layout *layout)
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *
+long_double_format (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fmt, ರಚನೆ layout *layout)
 {
   size_t i;
-  size_t prefix_len = 0;
+  size_t ಪೂರ್ವಪ್ರತ್ಯಯ_len = 0;
 
-  for (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  ಗಾಗಿ (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      ಆದರೆ (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
-      prefix_len++;
+      ಪೂರ್ವಪ್ರತ್ಯಯ_len++;
     }
 
   i++;
   i += strspn (fmt + i, "-+#0 '");
   i += strspn (fmt + i, "0123456789");
-  if (fmt[i] == '.')
+  ಆದರೆ (fmt[i] == '.')
     {
       i++;
       i += strspn (fmt + i, "0123456789");
     }
 
-  size_t length_modifier_offset = i;
+  size_t ಉದ್ದಳತೆ_modifier_ಸ್ಥಾನಾಂತರ = i;
   bool has_L = (fmt[i] == 'L');
   i += has_L;
-  if (fmt[i] == '\0')
+  ಆದರೆ (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
-  if (! strchr ("efgaEFGA", fmt[i]))
+  ಆದರೆ (! strchr ("efgaEFGA", fmt[i]))
     error (EXIT_FAILURE, 0,
            _("format %s has unknown %%%c directive"), quote (fmt), fmt[i]);
 
   size_t suffix_len = 0;
-  for (i++; ; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  ಗಾಗಿ (i++; ; i += (fmt[i] == '%') + 1)
+    ಆದರೆ (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
-    else if (fmt[i])
+    ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (fmt[i])
       suffix_len++;
-    else
+    ಇಲ್ಲದಿದ್ದರೆ
       {
-        size_t format_size = i + 1;
-        char *ldfmt = xmalloc (format_size + 1);
-        memcpy (ldfmt, fmt, length_modifier_offset);
-        ldfmt[length_modifier_offset] = 'L';
-        strcpy (ldfmt + length_modifier_offset + 1,
-                fmt + length_modifier_offset + has_L);
-        layout->prefix_len = prefix_len;
+        size_t format_ಗಾತ್ರ = i + 1;
+        ಅಕ್ಷರ *ldfmt = xmalloc (format_ಗಾತ್ರ + 1);
+        ಸ್ಮರಣೆ_ನಕಲು (ldfmt, fmt, ಉದ್ದಳತೆ_modifier_ಸ್ಥಾನಾಂತರ);
+        ldfmt[ಉದ್ದಳತೆ_modifier_ಸ್ಥಾನಾಂತರ] = 'L';
+        strcpy (ldfmt + ಉದ್ದಳತೆ_modifier_ಸ್ಥಾನಾಂತರ + 1,
+                fmt + ಉದ್ದಳತೆ_modifier_ಸ್ಥಾನಾಂತರ + has_L);
+        layout->ಪೂರ್ವಪ್ರತ್ಯಯ_len = ಪೂರ್ವಪ್ರತ್ಯಯ_len;
         layout->suffix_len = suffix_len;
-        return ldfmt;
+        ಹಿಂತಿರುಗಿ ldfmt;
       }
 }
 
 /* Actually print the sequence of numbers in the specified range, with the
    given or default stepping and format.  */
 
-static void
-print_numbers (char const *fmt, struct layout layout,
-               long double first, long double step, long double last)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_numbers (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fmt, ರಚನೆ layout layout,
+               ದೀರ್ಘ ದ್ವಿಗುಣ ಮೊದಲ, ದೀರ್ಘ ದ್ವಿಗುಣ ಹೆಜ್ಜೆ, ದೀರ್ಘ ದ್ವಿಗುಣ ಕೊನೆಯ)
 {
-  bool out_of_range = (step < 0 ? first < last : last < first);
+  bool ಹೊರಹೋಗು_ದ_range = (ಹೆಜ್ಜೆ < 0 ? ಮೊದಲ < ಕೊನೆಯ : ಕೊನೆಯ < ಮೊದಲ);
 
-  if (! out_of_range)
+  ಆದರೆ (! ಹೊರಹೋಗು_ದ_range)
     {
-      long double x = first;
+      ದೀರ್ಘ ದ್ವಿಗುಣ x = ಮೊದಲ;
 
-      for (long double i = 1; ; i++)
+      ಗಾಗಿ (ದೀರ್ಘ ದ್ವಿಗುಣ i = 1; ; i++)
         {
-          long double x0 = x;
-          if (printf (fmt, x) < 0)
+          ದೀರ್ಘ ದ್ವಿಗುಣ x0 = x;
+          ಆದರೆ (ಬರೆ (fmt, x) < 0)
             write_error ();
-          if (out_of_range)
-            break;
+          ಆದರೆ (ಹೊರಹೋಗು_ದ_range)
+            ನಿಲ್ಲಿಸು;
 
           /* Mathematically equivalent to 'x += step;', and typically
              less subject to rounding error.  */
-          x = first + i * step;
+          x = ಮೊದಲ + i * ಹೆಜ್ಜೆ;
 
-          out_of_range = (step < 0 ? x < last : last < x);
+          ಹೊರಹೋಗು_ದ_range = (ಹೆಜ್ಜೆ < 0 ? x < ಕೊನೆಯ : ಕೊನೆಯ < x);
 
-          if (out_of_range)
+          ಆದರೆ (ಹೊರಹೋಗು_ದ_range)
             {
               /* If the number just past LAST prints as a value equal
                  to LAST, and prints differently from the previous
@@ -329,176 +329,176 @@ print_numbers (char const *fmt, struct layout layout,
                  "seq 0 0.000001 0.000003" to print 0.000003 instead
                  of stopping at 0.000002.  */
 
-              bool print_extra_number = false;
-              if (locale_ok)
+              bool print_extra_ಸಂಖ್ಯೆ = false;
+              ಆದರೆ (locale_ok)
                 setlocale (LC_NUMERIC, "C");
-              char *x_str;
-              int x_strlen = asprintf (&x_str, fmt, x);
-              if (locale_ok)
+              ಅಕ್ಷರ *x_str;
+              ಪೂರ್ಣಾಂಕ x_strlen = asprintf (&x_str, fmt, x);
+              ಆದರೆ (locale_ok)
                 setlocale (LC_NUMERIC, "");
-              if (x_strlen < 0)
+              ಆದರೆ (x_strlen < 0)
                 xalloc_die ();
               x_str[x_strlen - layout.suffix_len] = '\0';
 
-              long double x_val;
-              if (xstrtold (x_str + layout.prefix_len, NULL,
+              ದೀರ್ಘ ದ್ವಿಗುಣ x_val;
+              ಆದರೆ (xstrtold (x_str + layout.ಪೂರ್ವಪ್ರತ್ಯಯ_len, ಖಾಲಿ,
                             &x_val, cl_strtold)
-                  && x_val == last)
+                  && x_val == ಕೊನೆಯ)
                 {
-                  char *x0_str = NULL;
-                  int x0_strlen = asprintf (&x0_str, fmt, x0);
-                  if (x0_strlen < 0)
+                  ಅಕ್ಷರ *x0_str = ಖಾಲಿ;
+                  ಪೂರ್ಣಾಂಕ x0_strlen = asprintf (&x0_str, fmt, x0);
+                  ಆದರೆ (x0_strlen < 0)
                     xalloc_die ();
                   x0_str[x0_strlen - layout.suffix_len] = '\0';
-                  print_extra_number = !streq (x0_str, x_str);
-                  free (x0_str);
+                  print_extra_ಸಂಖ್ಯೆ = !streq (x0_str, x_str);
+                  ಬಿಡುಗಡೆ (x0_str);
                 }
 
-              free (x_str);
-              if (! print_extra_number)
-                break;
+              ಬಿಡುಗಡೆ (x_str);
+              ಆದರೆ (! print_extra_ಸಂಖ್ಯೆ)
+                ನಿಲ್ಲಿಸು;
             }
 
-          if (fputs (separator, stdout) == EOF)
+          ಆದರೆ (fputs (separator, stdout) == EOF)
             write_error ();
         }
 
-      if (fputs (terminator, stdout) == EOF)
+      ಆದರೆ (fputs (terminator, stdout) == EOF)
         write_error ();
     }
 }
 
 /* Return the default format given FIRST, STEP, and LAST.  */
-static char const *
-get_default_format (operand first, operand step, operand last)
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *
+get_default_format (ಕಾರ್ಯಾಂಶ_2 ಮೊದಲ, ಕಾರ್ಯಾಂಶ_2 ಹೆಜ್ಜೆ, ಕಾರ್ಯಾಂಶ_2 ಕೊನೆಯ)
 {
-  static char format_buf[sizeof "%0.Lf" + 2 * INT_STRLEN_BOUND (int)];
+  ಸ್ಥಿರ ಅಕ್ಷರ format_buf[ಗಾತ್ರ "%0.Lf" + 2 * INT_STRLEN_BOUND (ಪೂರ್ಣಾಂಕ)];
 
-  int prec = MAX (first.precision, step.precision);
+  ಪೂರ್ಣಾಂಕ prec = MAX (ಮೊದಲ.precision, ಹೆಜ್ಜೆ.precision);
 
-  if (prec != INT_MAX && last.precision != INT_MAX)
+  ಆದರೆ (prec != ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ && ಕೊನೆಯ.precision != ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ)
     {
-      if (equal_width)
+      ಆದರೆ (equal_ಅಗಲ)
         {
           /* increase first_width by any increased precision in step */
-          size_t first_width = first.width + (prec - first.precision);
+          size_t ಮೊದಲ_ಅಗಲ = ಮೊದಲ.ಅಗಲ + (prec - ಮೊದಲ.precision);
           /* adjust last_width to use precision from first/step */
-          size_t last_width = last.width + (prec - last.precision);
-          if (last.precision && prec == 0)
-            last_width--;  /* don't include space for '.' */
-          if (last.precision == 0 && prec)
-            last_width++;  /* include space for '.' */
-          if (first.precision == 0 && prec)
-            first_width++;  /* include space for '.' */
-          size_t width = MAX (first_width, last_width);
-          if (width <= INT_MAX)
+          size_t ಕೊನೆಯ_ಅಗಲ = ಕೊನೆಯ.ಅಗಲ + (prec - ಕೊನೆಯ.precision);
+          ಆದರೆ (ಕೊನೆಯ.precision && prec == 0)
+            ಕೊನೆಯ_ಅಗಲ--;  /* don't include space for '.' */
+          ಆದರೆ (ಕೊನೆಯ.precision == 0 && prec)
+            ಕೊನೆಯ_ಅಗಲ++;  /* include space for '.' */
+          ಆದರೆ (ಮೊದಲ.precision == 0 && prec)
+            ಮೊದಲ_ಅಗಲ++;  /* include space for '.' */
+          size_t ಅಗಲ = MAX (ಮೊದಲ_ಅಗಲ, ಕೊನೆಯ_ಅಗಲ);
+          ಆದರೆ (ಅಗಲ <= ಗರಿಷ್ಠ_ಪೂರ್ಣಾಂಕ)
             {
-              int w = width;
+              ಪೂರ್ಣಾಂಕ w = ಅಗಲ;
               sprintf (format_buf, "%%0%d.%dLf", w, prec);
-              return format_buf;
+              ಹಿಂತಿರುಗಿ format_buf;
             }
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           sprintf (format_buf, "%%.%dLf", prec);
-          return format_buf;
+          ಹಿಂತಿರುಗಿ format_buf;
         }
     }
 
-  return "%Lg";
+  ಹಿಂತಿರುಗಿ "%Lg";
 }
 
 /* The nonempty char array P represents a valid non-negative decimal integer.
    ENDP points just after the last char in P.
    Adjust the array to describe the next-larger integer and return
    whether this grows the array by one on the left.  */
-static bool
-incr_grows (char *p, char *endp)
+ಸ್ಥಿರ bool
+incr_grows (ಅಕ್ಷರ *p, ಅಕ್ಷರ *endp)
 {
-  do
+  ಮಾಡು
     {
       endp--;
-      if (*endp < '9')
+      ಆದರೆ (*endp < '9')
         {
           (*endp)++;
-          return false;
+          ಹಿಂತಿರುಗಿ false;
         }
       *endp = '0';
     }
-  while (p < endp);
+  ಆಗ (p < endp);
 
   p[-1] = '1';
-  return true;
+  ಹಿಂತಿರುಗಿ true;
 }
 
 /* Compare A and B with lengths A_LEN and B_LEN.  A and B are integers
    represented by nonempty arrays of digits without redundant leading '0'.
    Return negative if A < B, 0 if A = B, positive if A > B.  */
-static int
-cmp (char const *a, idx_t a_len, char const *b, idx_t b_len)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+cmp (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *a, idx_t a_len, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *b, idx_t b_len)
 {
-  return a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
+  ಹಿಂತಿರುಗಿ a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
 }
 
 /* Trim leading 0's from S, but if S is all 0's, leave one.
    Return a pointer to the trimmed string.  */
-ATTRIBUTE_PURE
-static char const *
-trim_leading_zeros (char const *s)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *
+trim_leading_zeros (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s)
 {
-  char const *p = s;
-  while (*s == '0')
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *p = s;
+  ಆಗ (*s == '0')
     ++s;
 
   /* If there were only 0's, back up, to leave one.  */
-  if (!*s && s != p)
+  ಆದರೆ (!*s && s != p)
     --s;
-  return s;
+  ಹಿಂತಿರುಗಿ s;
 }
 
 /* Print all whole numbers from A to B, inclusive -- to stdout, each
    followed by a newline.  Then exit.  */
-static void
-seq_fast (char const *a, char const *b, uintmax_t step)
+ಸ್ಥಿರ ಶೂನ್ಯ
+seq_fast (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *a, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *b, uintmax_t ಹೆಜ್ಜೆ)
 {
   /* Skip past any redundant leading '0's.  Without this, our naive cmp
      function would declare 000 to be larger than 99.  */
   a = trim_leading_zeros (a);
   b = trim_leading_zeros (b);
 
-  idx_t p_len = strlen (a);
-  idx_t b_len = strlen (b);
+  idx_t p_len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (a);
+  idx_t b_len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (b);
   bool inf = b_len == 3 && memeq (b, "inf", 4);
 
   /* Allow for at least 31 digits without realloc.
      1 more than p_len is needed for the inf case.  */
-  enum { INITIAL_ALLOC_DIGITS = 31 };
-  idx_t inc_size = MAX (MAX (p_len + 1, b_len), INITIAL_ALLOC_DIGITS);
+  ಎಣಿಕೆ { INITIAL_ALLOC_DIGITS = 31 };
+  idx_t inc_ಗಾತ್ರ = MAX (MAX (p_len + 1, b_len), INITIAL_ALLOC_DIGITS);
   /* Ensure we only increase by at most 1 digit at buffer boundaries.  */
-  static_assert (SEQ_FAST_STEP_LIMIT_DIGITS < INITIAL_ALLOC_DIGITS - 1);
+  static_assert (SEQ_FAST_ಹೆಜ್ಜೆ_ಎಲ್ಲೆ_DIGITS < INITIAL_ALLOC_DIGITS - 1);
 
   /* Copy A (sans NUL) to end of new buffer.  */
-  char *p0 = xmalloc (inc_size);
-  char *endp = p0 + inc_size;
-  char *p = memcpy (endp - p_len, a, p_len);
+  ಅಕ್ಷರ *p0 = xmalloc (inc_ಗಾತ್ರ);
+  ಅಕ್ಷರ *endp = p0 + inc_ಗಾತ್ರ;
+  ಅಕ್ಷರ *p = ಸ್ಮರಣೆ_ನಕಲು (endp - p_len, a, p_len);
 
   /* Reduce number of write calls which is seen to
      give a speed-up of more than 2x over naive stdio code
      when printing the first 10^9 integers.  */
-  char buf[BUFSIZ];
-  char *buf_end = buf + sizeof buf;
-  char *bufp = buf;
+  ಅಕ್ಷರ buf[BUFSIZ];
+  ಅಕ್ಷರ *buf_ಕೊನೆ = buf + ಗಾತ್ರ buf;
+  ಅಕ್ಷರ *bufp = buf;
 
-  while (inf || cmp (p, endp - p, b, b_len) <= 0)
+  ಆಗ (inf || cmp (p, endp - p, b, b_len) <= 0)
     {
       /* Append number, flushing output buffer while the number's
          digits do not fit with room for a separator or terminator.  */
-      char *pp = p;
-      while (buf_end - bufp <= endp - pp)
+      ಅಕ್ಷರ *pp = p;
+      ಆಗ (buf_ಕೊನೆ - bufp <= endp - pp)
         {
-          memcpy (bufp, pp, buf_end - bufp);
-          pp += buf_end - bufp;
-          if (full_write (STDOUT_FILENO, buf, sizeof buf) != sizeof buf)
+          ಸ್ಮರಣೆ_ನಕಲು (bufp, pp, buf_ಕೊನೆ - bufp);
+          pp += buf_ಕೊನೆ - bufp;
+          ಆದರೆ (ತುಂಬಿದ_write (STDOUT_FILENO, buf, ಗಾತ್ರ buf) != ಗಾತ್ರ buf)
             write_error ();
           bufp = buf;
         }
@@ -509,51 +509,51 @@ seq_fast (char const *a, char const *b, uintmax_t step)
       *bufp++ = *separator;
 
       /* Grow number buffer if needed for the inf case.  */
-      if (p == p0)
+      ಆದರೆ (p == p0)
         {
-          char *new_p0 = xpalloc (NULL, &inc_size, 1, -1, 1);
+          ಅಕ್ಷರ *new_p0 = xpalloc (ಖಾಲಿ, &inc_ಗಾತ್ರ, 1, -1, 1);
           idx_t saved_p_len = endp - p;
-          endp = new_p0 + inc_size;
-          p = memcpy (endp - saved_p_len, p0, saved_p_len);
-          free (p0);
+          endp = new_p0 + inc_ಗಾತ್ರ;
+          p = ಸ್ಮರಣೆ_ನಕಲು (endp - saved_p_len, p0, saved_p_len);
+          ಬಿಡುಗಡೆ (p0);
           p0 = new_p0;
         }
 
       /* Compute next number.  */
-      for (uintmax_t n_incr = step; n_incr; n_incr--)
+      ಗಾಗಿ (uintmax_t n_incr = ಹೆಜ್ಜೆ; n_incr; n_incr--)
         p -= incr_grows (p, endp);
     }
 
   /* Write the remaining buffered output with a terminator instead of
      a separator.  */
-  idx_t remaining = bufp - buf;
-  if (remaining)
+  idx_t ಉಳಿದ = bufp - buf;
+  ಆದರೆ (ಉಳಿದ)
     {
       bufp[-1] = *terminator;
-      if (full_write (STDOUT_FILENO, buf, remaining) != remaining)
+      ಆದರೆ (ತುಂಬಿದ_write (STDOUT_FILENO, buf, ಉಳಿದ) != ಉಳಿದ)
         write_error ();
     }
 
-  exit (EXIT_SUCCESS);
+  ನಿರ್ಗಮಿಸು (EXIT_SUCCESS);
 }
 
 /* Return true if S consists of at least one digit and no non-digits.  */
-ATTRIBUTE_PURE
-static bool
-all_digits_p (char const *s)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ bool
+all_digits_p (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s)
 {
-  size_t n = strlen (s);
-  return c_isdigit (s[0]) && n == strspn (s, "0123456789");
+  size_t n = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (s);
+  ಹಿಂತಿರುಗಿ c_isdigit (s[0]) && n == strspn (s, "0123456789");
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   /* The printf(3) format used for output.  */
-  char const *format_str = NULL;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *format_str = ಖಾಲಿ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   locale_ok = !!setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -563,68 +563,68 @@ main (int argc, char **argv)
   /* We have to handle negative numbers in the command line but this
      conflicts with the command line arguments.  So explicitly check first
      whether the next argument looks like a negative number.  */
-  while (optind < argc)
+  ಆಗ (optind < argc)
     {
-      int optc;
-      if (argv[optind][0] == '-'
+      ಪೂರ್ಣಾಂಕ optc;
+      ಆದರೆ (argv[optind][0] == '-'
           && ((optc = argv[optind][1]) == '.' || c_isdigit (optc)))
         {
           /* means negative number */
-          break;
+          ನಿಲ್ಲಿಸು;
         }
 
-      optc = getopt_long (argc, argv, "+f:s:w", long_options, NULL);
-      if (optc == -1)
-        break;
+      optc = getopt_long (argc, argv, "+f:s:w", long_options, ಖಾಲಿ);
+      ಆದರೆ (optc == -1)
+        ನಿಲ್ಲಿಸು;
 
-      switch (optc)
+      ಆಯ್ಕೆ (optc)
         {
-        case 'f':
+        ಸ್ಥಿತಿ 'f':
           format_str = optarg;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 's':
+        ಸ್ಥಿತಿ 's':
           separator = optarg;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'w':
-          equal_width = true;
-          break;
+        ಸ್ಥಿತಿ 'w':
+          equal_ಅಗಲ = true;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_args = argc - optind;
-  if (n_args < 1)
+  ಪೂರ್ಣಾಂಕ n_ವಾದಗಳು = argc - optind;
+  ಆದರೆ (n_ವಾದಗಳು < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (3 < n_args)
+  ಆದರೆ (3 < n_ವಾದಗಳು)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 3]));
       usage (EXIT_FAILURE);
     }
 
-  struct layout layout = { 0, 0 };
-  if (format_str)
+  ರಚನೆ layout layout = { 0, 0 };
+  ಆದರೆ (format_str)
     format_str = long_double_format (format_str, &layout);
 
-  if (format_str != NULL && equal_width)
+  ಆದರೆ (format_str != ಖಾಲಿ && equal_ಅಗಲ)
     {
       error (0, 0, _("format string may not be specified"
                      " when printing equal width strings"));
       usage (EXIT_FAILURE);
     }
 
-  char const *user_start = n_args == 1 ? "1" : argv[optind];
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *user_ಆರಂಭ = n_ವಾದಗಳು == 1 ? "1" : argv[optind];
 
   /* If the following hold:
      - no format string, [FIXME: relax this, eventually]
@@ -633,72 +633,72 @@ main (int argc, char **argv)
      - integer increment <= SEQ_FAST_STEP_LIMIT
      then use the much more efficient integer-only code,
      operating on arbitrarily large numbers.  */
-  operand step = { 1, 1, 0 };
-  bool fast_step_ok = false;
-  if (n_args != 3
+  ಕಾರ್ಯಾಂಶ_2 ಹೆಜ್ಜೆ = { 1, 1, 0 };
+  bool fast_ಹೆಜ್ಜೆ_ok = false;
+  ಆದರೆ (n_ವಾದಗಳು != 3
       || (all_digits_p (argv[optind + 1])
-          && xstrtold (argv[optind + 1], NULL, &step.value, cl_strtold)
-          && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT))
-    fast_step_ok = true;
+          && xstrtold (argv[optind + 1], ಖಾಲಿ, &ಹೆಜ್ಜೆ.ಮೌಲ್ಯ, cl_strtold)
+          && 0 < ಹೆಜ್ಜೆ.ಮೌಲ್ಯ && ಹೆಜ್ಜೆ.ಮೌಲ್ಯ <= SEQ_FAST_ಹೆಜ್ಜೆ_ಎಲ್ಲೆ))
+    fast_ಹೆಜ್ಜೆ_ok = true;
 
-  if (all_digits_p (argv[optind])
-      && (n_args == 1 || all_digits_p (argv[optind + 1]))
-      && (n_args < 3 || (fast_step_ok
+  ಆದರೆ (all_digits_p (argv[optind])
+      && (n_ವಾದಗಳು == 1 || all_digits_p (argv[optind + 1]))
+      && (n_ವಾದಗಳು < 3 || (fast_ಹೆಜ್ಜೆ_ok
                          && all_digits_p (argv[optind + 2])))
-      && !equal_width && !format_str && strlen (separator) == 1)
+      && !equal_ಅಗಲ && !format_str && ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (separator) == 1)
     {
-      char const *s1 = user_start;
-      char const *s2 = argv[optind + (n_args - 1)];
-      seq_fast (s1, s2, step.value);
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s1 = user_ಆರಂಭ;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s2 = argv[optind + (n_ವಾದಗಳು - 1)];
+      seq_fast (s1, s2, ಹೆಜ್ಜೆ.ಮೌಲ್ಯ);
     }
 
-  operand first = { 1, 1, 0 };
-  operand last = scan_arg (argv[optind++]);
+  ಕಾರ್ಯಾಂಶ_2 ಮೊದಲ = { 1, 1, 0 };
+  ಕಾರ್ಯಾಂಶ_2 ಕೊನೆಯ = ಪರಿಶೀಲನೆ_arg (argv[optind++]);
 
-  if (optind < argc)
+  ಆದರೆ (optind < argc)
     {
-      first = last;
-      last = scan_arg (argv[optind++]);
+      ಮೊದಲ = ಕೊನೆಯ;
+      ಕೊನೆಯ = ಪರಿಶೀಲನೆ_arg (argv[optind++]);
 
-      if (optind < argc)
+      ಆದರೆ (optind < argc)
         {
-          step = last;
-          if (step.value == 0)
+          ಹೆಜ್ಜೆ = ಕೊನೆಯ;
+          ಆದರೆ (ಹೆಜ್ಜೆ.ಮೌಲ್ಯ == 0)
             {
               error (0, 0, _("invalid Zero increment value: %s"),
                      quote (argv[optind - 1]));
               usage (EXIT_FAILURE);
             }
 
-          last = scan_arg (argv[optind++]);
+          ಕೊನೆಯ = ಪರಿಶೀಲನೆ_arg (argv[optind++]);
         }
     }
 
   /* Try the fast method again, for integers of the form 1e1 etc.,
      or "inf" end value.  */
-  if (first.precision == 0 && step.precision == 0 && last.precision == 0
-      && isfinite (first.value) && 0 <= first.value && 0 <= last.value
-      && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT
-      && !equal_width && !format_str && strlen (separator) == 1)
+  ಆದರೆ (ಮೊದಲ.precision == 0 && ಹೆಜ್ಜೆ.precision == 0 && ಕೊನೆಯ.precision == 0
+      && isfinite (ಮೊದಲ.ಮೌಲ್ಯ) && 0 <= ಮೊದಲ.ಮೌಲ್ಯ && 0 <= ಕೊನೆಯ.ಮೌಲ್ಯ
+      && 0 < ಹೆಜ್ಜೆ.ಮೌಲ್ಯ && ಹೆಜ್ಜೆ.ಮೌಲ್ಯ <= SEQ_FAST_ಹೆಜ್ಜೆ_ಎಲ್ಲೆ
+      && !equal_ಅಗಲ && !format_str && ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (separator) == 1)
     {
-      char *s1 = (all_digits_p (user_start)
-                  ? xstrdup (user_start) : xasprintf ("%0.Lf", first.value));
+      ಅಕ್ಷರ *s1 = (all_digits_p (user_ಆರಂಭ)
+                  ? xstrdup (user_ಆರಂಭ) : xasprintf ("%0.Lf", ಮೊದಲ.ಮೌಲ್ಯ));
       /* Ensure "inf" is used.  */
-      char *s2 = (! isfinite (last.value)
-                  ? xstrdup ("inf") : xasprintf ("%0.Lf", last.value));
+      ಅಕ್ಷರ *s2 = (! isfinite (ಕೊನೆಯ.ಮೌಲ್ಯ)
+                  ? xstrdup ("inf") : xasprintf ("%0.Lf", ಕೊನೆಯ.ಮೌಲ್ಯ));
 
-      if (*s1 != '-' && *s2 != '-')
-        seq_fast (s1, s2, step.value);
+      ಆದರೆ (*s1 != '-' && *s2 != '-')
+        seq_fast (s1, s2, ಹೆಜ್ಜೆ.ಮೌಲ್ಯ);
 
-      free (s1);
-      free (s2);
+      ಬಿಡುಗಡೆ (s1);
+      ಬಿಡುಗಡೆ (s2);
       /* Upon any failure, let the more general code deal with it.  */
     }
 
-  if (format_str == NULL)
-    format_str = get_default_format (first, step, last);
+  ಆದರೆ (format_str == ಖಾಲಿ)
+    format_str = get_default_format (ಮೊದಲ, ಹೆಜ್ಜೆ, ಕೊನೆಯ);
 
-  print_numbers (format_str, layout, first.value, step.value, last.value);
+  print_numbers (format_str, layout, ಮೊದಲ.ಮೌಲ್ಯ, ಹೆಜ್ಜೆ.ಮೌಲ್ಯ, ಕೊನೆಯ.ಮೌಲ್ಯ);
 
   main_exit (EXIT_SUCCESS);
 }

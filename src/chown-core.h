@@ -15,13 +15,13 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef CHOWN_CORE_H
+#ವ್ಯಾಖ್ಯಾನಿತವಾಗದಿದ್ದರೆ CHOWN_CORE_H
 # define CHOWN_CORE_H
 
 # include "dev-ino.h"
 # include <stdlib.h>
 
-enum Change_status
+ಎಣಿಕೆ Change_ಸ್ಥಿತಿ
 {
   CH_NOT_APPLIED = 1,
   CH_SUCCEEDED,
@@ -29,10 +29,10 @@ enum Change_status
   CH_NO_CHANGE_REQUESTED
 };
 
-enum Verbosity
+ಎಣಿಕೆ Verbosity
 {
   /* Print a message for each file that is processed.  */
-  V_high,
+  V_ಮೇಲಿನ,
 
   /* Print a message for each file whose attributes we change.  */
   V_changes_only,
@@ -41,17 +41,17 @@ enum Verbosity
   V_off
 };
 
-struct Chown_option
+ರಚನೆ Chown_option
 {
   /* Level of verbosity.  */
-  enum Verbosity verbosity;
+  ಎಣಿಕೆ Verbosity verbosity;
 
   /* If nonzero, change the ownership of directories recursively. */
   bool recurse;
 
   /* Pointer to the device and inode numbers of '/', when --recursive.
      Need not be freed.  Otherwise NULL.  */
-  struct dev_ino *root_dev_ino;
+  ರಚನೆ dev_ino *ಬೇರು_dev_ino;
 
   /* This corresponds to the --dereference (opposite of -h) option.  */
   bool affect_symlink_referent;
@@ -60,33 +60,33 @@ struct Chown_option
   bool force_silent;
 
   /* The name of the user to which ownership of the files is being given. */
-  char *user_name;
+  ಅಕ್ಷರ *user_name;
 
   /* The name of the group to which ownership of the files is being given. */
-  char *group_name;
+  ಅಕ್ಷರ *ಗುಂಪು_name;
 };
 
-void
-chopt_init (struct Chown_option *);
+ಶೂನ್ಯ
+chopt_init (ರಚನೆ Chown_option *);
 
-void
-chopt_free (struct Chown_option *);
+ಶೂನ್ಯ
+chopt_free (ರಚನೆ Chown_option *);
 
-char *
-gid_to_name (gid_t)
+ಅಕ್ಷರ *
+gid_ಗಮ್ಯ_name (gid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
-char *
-uid_to_name (uid_t)
+ಅಕ್ಷರ *
+uid_ಗಮ್ಯ_name (uid_t)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE
   _GL_ATTRIBUTE_RETURNS_NONNULL;
 
 bool
-chown_files (char **files, int bit_flags,
+chown_files (ಅಕ್ಷರ **files, ಪೂರ್ಣಾಂಕ ಬಿಟ್_flags,
              uid_t uid, gid_t gid,
              uid_t required_uid, gid_t required_gid,
-             struct Chown_option const *chopt)
+             ರಚನೆ Chown_option ಸ್ಥಿರಾಂಕ *chopt)
   _GL_ATTRIBUTE_NONNULL ();
 
-#endif /* CHOWN_CORE_H */
+#ಆದರೆ_ಅಂತ್ಯ /* CHOWN_CORE_H */

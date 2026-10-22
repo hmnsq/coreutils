@@ -17,138 +17,138 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ಅನ್ತರ್ಭಾವ "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "dirname"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "dirname"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+ಸ್ಥಿರ bool quote_output;
 
-static struct option const longopts[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_ವಾದ, ಖಾಲಿ, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
+      ಬರೆ (_("\
 Usage: %s [OPTION] NAME...\n\
 "),
-              program_name);
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+Output each NAME with its ಕೊನೆಯ non-slash component and trailing slashes\n\
+removed; ಆದರೆ NAME ಒಳಗೊಂಡಿದೆ no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         ಕೊನೆ each output ಸಾಲು with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (_("\
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      ಬರೆ (_("\
 \n\
 Examples:\n\
   %s /usr/bin/          -> \"/usr\"\n\
   %s dir1/str dir2/str  -> \"dir1\" followed by \"dir2\"\n\
   %s stdio.h            -> \".\"\n\
 "),
-              program_name, program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name, ಕಾರ್ಯಕ್ರಮ_name);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   bool use_nuls = false;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  ಆಗ (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      ಪೂರ್ಣಾಂಕ c = getopt_long (argc, argv, "z", longopts, ಖಾಲಿ);
 
-      if (c == -1)
-        break;
+      ಆದರೆ (c == -1)
+        ನಿಲ್ಲಿಸು;
 
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'z':
+        ಸ್ಥಿತಿ 'z':
           use_nuls = true;
-          break;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  ಆದರೆ (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  ಆದರೆ (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      ಪೂರ್ಣಾಂಕ qs = getenv_quoting_style ();
+      ಆದರೆ (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      ಆದರೆ (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          ಗಣ_quoting_style (ಖಾಲಿ, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  ಗಾಗಿ (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
-      idx_t len = dir_len (result);
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಫಲಿತಾಂಶ = argv[optind];
+      idx_t len = dir_len (ಫಲಿತಾಂಶ);
 
-      if (! len)
+      ಆದರೆ (! len)
         {
-          static char const dot = '.';
-          result = &dot;
+          ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ dot = '.';
+          ಫಲಿತಾಂಶ = &dot;
           len = 1;
         }
-      if (quote_output)
+      ಆದರೆ (quote_output)
         {
-          result = quoteN_mem (result, len);
-          len = strlen (result);
+          ಫಲಿತಾಂಶ = quoteN_mem (ಫಲಿತಾಂಶ, len);
+          len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (ಫಲಿತಾಂಶ);
         }
-      fwrite (result, 1, len, stdout);
-      putchar (use_nuls ? '\0' :'\n');
+      fwrite (ಫಲಿತಾಂಶ, 1, len, stdout);
+      ಅಕ್ಷರ_ಬರೆ (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
 }

@@ -19,128 +19,128 @@
 
    Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#if HAVE_PRCTL
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಆದರೆ HAVE_PRCTL
 # include <sys/prctl.h>
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-#include "system.h"
-#include "quote.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
 
-#ifdef SINGLE_BINARY
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SINGLE_ದ್ವಿಮಾನ
 /* Declare the main function on each one of the selected tools.  This name
    needs to match the one passed as CFLAGS on single-binary.mk (generated
    by gen-single-binary.sh). */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  int single_binary_main_##main_name (int, char **);
+# define SINGLE_ದ್ವಿಮಾನ_ಕಾರ್ಯಕ್ರಮ(prog_name_str, main_name) \
+  ಪೂರ್ಣಾಂಕ single_ದ್ವಿಮಾನ_main##main_name (ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ **);
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
-#endif
+# undef SINGLE_ದ್ವಿಮಾನ_ಕಾರ್ಯಕ್ರಮ
+#ಆದರೆ_ಅಂತ್ಯ
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "coreutils"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "coreutils"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Alex Deymo")
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("\
-Usage: %s --coreutils-prog=PROGRAM_NAME [PARAMETERS]... \n"),
-              program_name);
+      ಬರೆ (_("\
+Usage: %s --coreutils-prog=ಕಾರ್ಯಕ್ರಮ_NAME [PARAMETERS]... \n"),
+              ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
-Execute the PROGRAM_NAME built-in program with the given PARAMETERS.\n\
+Execute the ಕಾರ್ಯಕ್ರಮ_NAME built-ಒಳ ಕಾರ್ಯಕ್ರಮ with the given PARAMETERS.\n\
 \n"), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
 
-#ifdef SINGLE_BINARY
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SINGLE_ದ್ವಿಮಾನ
 /* XXX: Ideally we'd like to present "install" here, not "ginstall".  */
-      char const *prog_name_list =
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) " " prog_name_str
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *prog_name_list =
+# define SINGLE_ದ್ವಿಮಾನ_ಕಾರ್ಯಕ್ರಮ(prog_name_str, main_name) " " prog_name_str
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_ದ್ವಿಮಾನ_ಕಾರ್ಯಕ್ರಮ
       ;
-      printf ("\n\
-Built-in programs:\n\
+      ಬರೆ ("\n\
+Built-ಒಳ programs:\n\
 %s\n", prog_name_list);
-#endif
+#ಆದರೆ_ಅಂತ್ಯ
 
-      printf (_("\
+      ಬರೆ (_("\
 \n\
-Use: '%s --coreutils-prog=PROGRAM_NAME --help' for individual program help.\n"),
-              program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+Use: '%s --coreutils-prog=PROGRAM_NAME --help' ಗಾಗಿ individual ಕಾರ್ಯಕ್ರಮ help.\n"),
+              ಕಾರ್ಯಕ್ರಮ_name);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-static void
-launch_program (char const *prog_name, int prog_argc, char **prog_argv)
+ಸ್ಥಿರ ಶೂನ್ಯ
+launch_ಕಾರ್ಯಕ್ರಮ (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *prog_name, ಪೂರ್ಣಾಂಕ prog_argc, ಅಕ್ಷರ **prog_argv)
 {
-  int (*prog_main) (int, char **) = NULL;
+  ಪೂರ್ಣಾಂಕ (*prog_main) (ಪೂರ್ಣಾಂಕ, ಅಕ್ಷರ **) = ಖಾಲಿ;
 
   /* Ensure that at least one parameter was passed.  */
-  if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
-    return;
+  ಆದರೆ (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
+    ಹಿಂತಿರುಗಿ;
 
-#ifdef SINGLE_BINARY
-  if (false);
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ SINGLE_ದ್ವಿಮಾನ
+  ಆದರೆ (false);
   /* Look up the right main program.  */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  else if (streq (prog_name_str, prog_name)) \
-    prog_main = single_binary_main_##main_name;
+# define SINGLE_ದ್ವಿಮಾನ_ಕಾರ್ಯಕ್ರಮ(prog_name_str, main_name) \
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (streq (prog_name_str, prog_name)) \
+    prog_main = single_ದ್ವಿಮಾನ_main##main_name;
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
-#endif
+# undef SINGLE_ದ್ವಿಮಾನ_ಕಾರ್ಯಕ್ರಮ
+#ಆದರೆ_ಅಂತ್ಯ
 
-  if (! prog_main)
-    return;
+  ಆದರೆ (! prog_main)
+    ಹಿಂತಿರುಗಿ;
 
-#if HAVE_PRCTL && defined PR_SET_NAME
+#ಆದರೆ HAVE_PRCTL && defined PR_ಗಣ_NAME
   /* Not being able to set the program name is not a fatal error.  */
-  prctl (PR_SET_NAME, last_component (prog_argv[0]));
-#endif
-#if HAVE_PRCTL && defined PR_SET_MM_ARG_START
+  prctl (PR_ಗಣ_NAME, ಕೊನೆಯ_component (prog_argv[0]));
+#ಆದರೆ_ಅಂತ್ಯ
+#ಆದರೆ HAVE_PRCTL && defined PR_ಗಣ_MM_ARG_ಆರಂಭ
   /* Shift the beginning of the command line to prog_argv[0] (if set) so
      /proc/$pid/cmdline reflects a more specific value.  Note one needs
      CAP_SYS_RESOURCE or root privileges for this to succeed.  */
-  prctl (PR_SET_MM, PR_SET_MM_ARG_START, prog_argv[0], 0, 0);
-#endif
+  prctl (PR_ಗಣ_MM, PR_ಗಣ_MM_ARG_ಆರಂಭ, prog_argv[0], 0, 0);
+#ಆದರೆ_ಅಂತ್ಯ
 
-  exit (prog_main (prog_argc, prog_argv));
+  ನಿರ್ಗಮಿಸು (prog_main (prog_argc, prog_argv));
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  char *prog_name = last_component (argv[0]);
-  int optc;
+  ಅಕ್ಷರ *prog_name = ಕೊನೆಯ_component (argv[0]);
+  ಪೂರ್ಣಾಂಕ optc;
 
   /* Map external name to internal name.  */
-  char ginstall[] = "ginstall";
-  if (streq (prog_name, "install"))
+  ಅಕ್ಷರ ginstall[] = "ginstall";
+  ಆದರೆ (streq (prog_name, "install"))
     prog_name = ginstall;
 
   /* If this program is called directly as "coreutils" or if the value of
      argv[0] is an unknown tool (which "coreutils" is), we proceed and parse
      the options.  */
-  launch_program (prog_name, argc, argv);
+  launch_ಕಾರ್ಯಕ್ರಮ (prog_name, argc, argv);
 
   /* No known program was selected via argv[0].  Try parsing the first
      argument as --coreutils-prog=PROGRAM to determine the program.  The
@@ -149,57 +149,57 @@ main (int argc, char **argv)
      The third argument is what the program will see as argv[0].  */
 
   size_t nskip = 0;
-  if (argc >= 2)
+  ಆದರೆ (argc >= 2)
     {
-      char *arg_name = NULL;
+      ಅಕ್ಷರ *arg_name = ಖಾಲಿ;
 
       /* If calling coreutils directly, the "script" name isn't passed.
          Distinguish the two cases with a -shebang suffix.  */
-      if (STRPREFIX (argv[1], "--coreutils-prog="))
+      ಆದರೆ (STRPREFIX (argv[1], "--coreutils-prog="))
         {
           nskip = 1;
-          arg_name = prog_name = argv[1] + strlen ("--coreutils-prog=");
+          arg_name = prog_name = argv[1] + ಅಕ್ಷರಸರಣಿ_ಉದ್ದ ("--coreutils-prog=");
         }
-      else if (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
         {
           nskip = 2;
-          prog_name = argv[1] + strlen ("--coreutils-prog-shebang=");
-          if (argc >= 3)
-            arg_name = last_component (argv[2]);
-          else
+          prog_name = argv[1] + ಅಕ್ಷರಸರಣಿ_ಉದ್ದ ("--coreutils-prog-shebang=");
+          ಆದರೆ (argc >= 3)
+            arg_name = ಕೊನೆಯ_component (argv[2]);
+          ಇಲ್ಲದಿದ್ದರೆ
             arg_name = prog_name;
         }
 
-      if (nskip)
+      ಆದರೆ (nskip)
         {
           argv[nskip] = arg_name; /* XXX: Discards any specified path.  */
-          launch_program (prog_name, argc - nskip, argv + nskip);
+          launch_ಕಾರ್ಯಕ್ರಮ (prog_name, argc - nskip, argv + nskip);
         }
     }
 
   /* Only process options if calling multi-call binary directly,
      otherwise `foo --version` would succeed.  */
-  if (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
+  ಆದರೆ (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
     {
       fprintf (stderr, _("%s: unknown program %s\n"),
-               PROGRAM_NAME, quote (prog_name));
-      exit (EXIT_FAILURE);
+               ಕಾರ್ಯಕ್ರಮ_NAME, quote (prog_name));
+      ನಿರ್ಗಮಿಸು (EXIT_FAILURE);
     }
 
   /* From here on, we behave like any other coreutils program.  */
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   atexit (close_stdout);
 
-  if ((optc = getopt_long (argc, argv, "", long_options, NULL)) != -1)
-    switch (optc)
+  ಆದರೆ ((optc = getopt_long (argc, argv, "", long_options, ಖಾಲಿ)) != -1)
+    ಆಯ್ಕೆ (optc)
       {
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
       }
 
   usage (EXIT_FAILURE);

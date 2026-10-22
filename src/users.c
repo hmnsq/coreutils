@@ -16,44 +16,44 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#ಅನ್ತರ್ಭಾವ "long-options.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "users"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "users"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+userid_compare (ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *v_a, ಸ್ಥಿರಾಂಕ ಶೂನ್ಯ *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  ಅಕ್ಷರ **a = (ಅಕ್ಷರ **) v_a;
+  ಅಕ್ಷರ **b = (ಅಕ್ಷರ **) v_b;
+  ಹಿಂತಿರುಗಿ strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+ಸ್ಥಿರ ಶೂನ್ಯ
+list_entries_users (idx_t n, STRUCT_UTMP ಸ್ಥಿರಾಂಕ *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  ಅಕ್ಷರ **u = xinmalloc (n, ಗಾತ್ರ *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  ಆಗ (n--)
     {
-      if (IS_USER_PROCESS (this))
+      ಆದರೆ (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          ಅಕ್ಷರ *trimmed_name;
 
-          trimmed_name = extract_trimmed_name (this);
+          trimmed_name = ಹೊರತೆಗೆ_trimmed_name (this);
 
           u[n_entries] = trimmed_name;
           ++n_entries;
@@ -61,87 +61,87 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, ಗಾತ್ರ (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  ಗಾಗಿ (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      ಅಕ್ಷರ c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
-      putchar (c);
+      ಅಕ್ಷರ_ಬರೆ (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  ಗಾಗಿ (idx_t i = 0; i < n_entries; i++)
+    ಬಿಡುಗಡೆ (u[i]);
+  ಬಿಡುಗಡೆ (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+ಸ್ಥಿರ ಶೂನ್ಯ
+users (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *filename, ಪೂರ್ಣಾಂಕ options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  ಆದರೆ (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  ಬಿಡುಗಡೆ (utmp_buf);
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
-      printf (_("\
-Output who is currently logged in according to FILE.\n\
+      ಬರೆ (_("Usage: %s [OPTION]... [FILE]\n"), ಕಾರ್ಯಕ್ರಮ_name);
+      ಬರೆ (_("\
+Output who is currently logged ಒಳ according ಗಮ್ಯ FILE.\n\
 If FILE is not specified, use %s.  %s as FILE is common.\n\
 \n\
 "),
               UTMP_FILE, WTMP_FILE);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, ಕಾರ್ಯಕ್ರಮ_NAME, PACKAGE_NAME,
+                                   ಆವೃತ್ತಿ, true, usage, AUTHORS,
+                                   (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *) ಖಾಲಿ);
 
-  switch (argc - optind)
+  ಆಯ್ಕೆ (argc - optind)
     {
-    case 0:			/* users */
+    ಸ್ಥಿತಿ 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    case 1:			/* users <utmp file> */
+    ಸ್ಥಿತಿ 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    default:			/* lose */
+    ಪೂರ್ವನಿಯೋಜಿತ:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  ಹಿಂತಿರುಗಿ EXIT_SUCCESS;
 }

@@ -18,81 +18,81 @@
    --human-readable option added by lm@sgi.com.
    --si and large file support added by eggert@twinsun.com.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <c-ctype.h>
+#ಅನ್ತರ್ಭಾವ <config.h>
+#ಅನ್ತರ್ಭಾವ <stdio.h>
+#ಅನ್ತರ್ಭಾವ <sys/types.h>
+#ಅನ್ತರ್ಭಾವ <getopt.h>
+#ಅನ್ತರ್ಭಾವ <c-ctype.h>
 
-#include "system.h"
-#include "assure.h"
-#include "canonicalize.h"
-#include "fsusage.h"
-#include "human.h"
-#include "mbswidth.h"
-#include "mountlist.h"
-#include "quote.h"
-#include "find-mount-point.h"
-#include "hash.h"
-#include "xstrtol-error.h"
-#include "xvasprintf.h"
+#ಅನ್ತರ್ಭಾವ "system.h"
+#ಅನ್ತರ್ಭಾವ "assure.h"
+#ಅನ್ತರ್ಭಾವ "canonicalize.h"
+#ಅನ್ತರ್ಭಾವ "fsusage.h"
+#ಅನ್ತರ್ಭಾವ "human.h"
+#ಅನ್ತರ್ಭಾವ "mbswidth.h"
+#ಅನ್ತರ್ಭಾವ "mountlist.h"
+#ಅನ್ತರ್ಭಾವ "quote.h"
+#ಅನ್ತರ್ಭಾವ "find-mount-point.h"
+#ಅನ್ತರ್ಭಾವ "hash.h"
+#ಅನ್ತರ್ಭಾವ "xstrtol-error.h"
+#ಅನ್ತರ್ಭಾವ "xvasprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "df"
+#ವ್ಯಾಖ್ಯಾನಿಸು ಕಾರ್ಯಕ್ರಮ_NAME "df"
 
-#define AUTHORS \
+#ವ್ಯಾಖ್ಯಾನಿಸು AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert")
 
-struct devlist
+ರಚನೆ devlist
 {
-  dev_t dev_num;
-  struct mount_entry *me;
-  struct devlist *next;
-  struct devlist *next_same_dev;
-  struct devlist *seen_last; /* valid for hashed devlist entries only */
+  dev_t dev_ಅಂಕೆ;
+  ರಚನೆ mount_ನಮೂದು *me;
+  ರಚನೆ devlist *ಮುಂದಿನ;
+  ರಚನೆ devlist *ಮುಂದಿನ_same_dev;
+  ರಚನೆ devlist *ನೋಡಿದ_ಕೊನೆಯ; /* valid for hashed devlist entries only */
 };
 
 /* Filled with device numbers of examined file systems to avoid
    duplicates in output.  */
-static Hash_table *devlist_table;
+ಸ್ಥಿರ Hash_ಕೋಷ್ಟಕ *devlist_ಕೋಷ್ಟಕ;
 
 /* If true, show even file systems with zero size or
    uninteresting types.  */
-static bool show_all_fs;
+ಸ್ಥಿರ bool show_all_fs;
 
 /* If true, show only local file systems.  */
-static bool show_local_fs;
+ಸ್ಥಿರ bool show_local_fs;
 
 /* If true, output data for each file system corresponding to a
    command line argument -- even if it's a dummy (automounter) entry.  */
-static bool show_listed_fs;
+ಸ್ಥಿರ bool show_listed_fs;
 
 /* Human-readable options for output.  */
-static int human_output_opts = -1;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ human_output_opts = -1;
 
 /* The units to use when printing sizes.  */
-static uintmax_t output_block_size;
+ಸ್ಥಿರ uintmax_t output_ಖಂಡ_ಗಾತ್ರ;
 
 /* True if a file system has been processed for output.  */
-static bool file_systems_processed;
+ಸ್ಥಿರ bool file_systems_processed;
 
 /* If true, invoke the 'sync' system call before getting any usage data.
    Using this option can make df very slow, especially with many or very
    busy file systems.  This may make a difference on some systems --
    SunOS 4.1.3, for one.  It is *not* necessary on GNU/Linux.  */
-static bool require_sync;
+ಸ್ಥಿರ bool require_sync;
 
 /* Desired exit status.  */
-static int exit_status;
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ exit_ಸ್ಥಿತಿ;
 
 /* A file system type to display.  */
 
-struct fs_type_list
+ರಚನೆ fs_type_list
 {
-  char *fs_name;
-  struct fs_type_list *fs_next;
+  ಅಕ್ಷರ *fs_name;
+  ರಚನೆ fs_type_list *fs_ಮುಂದಿನ;
 };
 
 /* Linked list of file system types to display.
@@ -106,117 +106,117 @@ struct fs_type_list
    Some file system types:
    4.2 4.3 ufs nfs swap ignore io vm efs dbg */
 
-static struct fs_type_list *fs_select_list;
+ಸ್ಥಿರ ರಚನೆ fs_type_list *fs_select_list;
 
 /* Linked list of file system types to omit.
    If the list is empty, don't exclude any types.  */
 
-static struct fs_type_list *fs_exclude_list;
+ಸ್ಥಿರ ರಚನೆ fs_type_list *fs_exclude_list;
 
 /* Linked list of mounted file systems.  */
-static struct mount_entry *mount_list;
+ಸ್ಥಿರ ರಚನೆ mount_ನಮೂದು *mount_list;
 
 /* If true, print file system type as well.  */
-static bool print_type;
+ಸ್ಥಿರ bool print_type;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total;
+ಸ್ಥಿರ bool print_grand_ಒಟ್ಟು;
 
 /* Grand total data.  */
-static struct fs_usage grand_fsu = { .fsu_blocksize = 1 };
+ಸ್ಥಿರ ರಚನೆ fs_usage grand_fsu = { .fsu_blocksize = 1 };
 
 /* Display modes.  */
-static enum
+ಸ್ಥಿರ ಎಣಿಕೆ
 {
-  DEFAULT_MODE,
-  INODES_MODE,
-  HUMAN_MODE,
-  POSIX_MODE,
-  OUTPUT_MODE
-} header_mode = DEFAULT_MODE;
+  DEFAULT_ಬಹುಲಕ,
+  INODES_ಬಹುಲಕ,
+  HUMAN_ಬಹುಲಕ,
+  POSIX_ಬಹುಲಕ,
+  OUTPUT_ಬಹುಲಕ
+} ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = DEFAULT_ಬಹುಲಕ;
 
 /* Displayable fields.  */
-typedef enum
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಎಣಿಕೆ
 {
-  SOURCE_FIELD, /* file system */
-  FSTYPE_FIELD, /* FS type */
-  SIZE_FIELD,   /* FS size */
-  USED_FIELD,   /* FS size used  */
-  AVAIL_FIELD,  /* FS size available */
-  PCENT_FIELD,  /* percent used */
-  ITOTAL_FIELD, /* inode total */
-  IUSED_FIELD,  /* inodes used */
-  IAVAIL_FIELD, /* inodes available */
-  IPCENT_FIELD, /* inodes used in percent */
-  TARGET_FIELD, /* mount point */
-  FILE_FIELD,   /* specified file name */
-  INVALID_FIELD /* validation marker */
-} display_field_t;
+  ಮೂಲ_ಕ್ಷೇತ್ರ, /* file system */
+  FSTYPE_ಕ್ಷೇತ್ರ, /* FS type */
+  ಗಾತ್ರ_ಕ್ಷೇತ್ರ,   /* FS size */
+  ಬಳಸಿದ_ಕ್ಷೇತ್ರ,   /* FS size used  */
+  AVAIL_ಕ್ಷೇತ್ರ,  /* FS size available */
+  PCENT_ಕ್ಷೇತ್ರ,  /* percent used */
+  ITOTAL_ಕ್ಷೇತ್ರ, /* inode total */
+  IUSED_ಕ್ಷೇತ್ರ,  /* inodes used */
+  IAVAIL_ಕ್ಷೇತ್ರ, /* inodes available */
+  IPCENT_ಕ್ಷೇತ್ರ, /* inodes used in percent */
+  ಗುರಿ_ಕ್ಷೇತ್ರ, /* mount point */
+  FILE_ಕ್ಷೇತ್ರ,   /* specified file name */
+  INVALID_ಕ್ಷೇತ್ರ /* validation marker */
+} display_ಕ್ಷೇತ್ರ_t;
 
 /* Flag if a field contains a block, an inode or another value.  */
-typedef enum
+ಪ್ರಕಾರವ್ಯಾಖ್ಯೆ ಎಣಿಕೆ
 {
-  BLOCK_FLD, /* Block values field */
+  ಖಂಡ_FLD, /* Block values field */
   INODE_FLD, /* Inode values field */
   OTHER_FLD  /* Neutral field, e.g. target */
-} field_type_t;
+} ಕ್ಷೇತ್ರ_type_t;
 
 /* Attributes of a display field.  */
-struct field_data_t
+ರಚನೆ ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_t
 {
-  display_field_t field;
-  char const *arg;
-  field_type_t field_type;
-  char const *caption;/* NULL means use default header of this field.  */
-  int width;          /* Auto adjusted (up) widths used to align columns.  */
-  bool align_right;   /* Whether to right-align columns, not left-align.  */
-  bool used;
+  display_ಕ್ಷೇತ್ರ_t ಕ್ಷೇತ್ರ;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *arg;
+  ಕ್ಷೇತ್ರ_type_t ಕ್ಷೇತ್ರ_type;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *caption;/* NULL means use default header of this field.  */
+  ಪೂರ್ಣಾಂಕ ಅಗಲ;          /* Auto adjusted (up) widths used to align columns.  */
+  bool align_ಬಲ;   /* Whether to right-align columns, not left-align.  */
+  bool ಬಳಸಿದ;
 };
 
 /* Header strings, minimum width and alignment for the above fields.  */
-static struct field_data_t field_data[] = {
-  [SOURCE_FIELD] = { SOURCE_FIELD,
+ಸ್ಥಿರ ರಚನೆ ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_t ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[] = {
+  [ಮೂಲ_ಕ್ಷೇತ್ರ] = { ಮೂಲ_ಕ್ಷೇತ್ರ,
     "source", OTHER_FLD, N_("Filesystem"), 14, false,  false },
 
-  [FSTYPE_FIELD] = { FSTYPE_FIELD,
+  [FSTYPE_ಕ್ಷೇತ್ರ] = { FSTYPE_ಕ್ಷೇತ್ರ,
     "fstype", OTHER_FLD, N_("Type"),        4, false,  false },
 
-  [SIZE_FIELD] = { SIZE_FIELD,
-    "size",   BLOCK_FLD, N_("blocks"),      5, true, false },
+  [ಗಾತ್ರ_ಕ್ಷೇತ್ರ] = { ಗಾತ್ರ_ಕ್ಷೇತ್ರ,
+    "size",   ಖಂಡ_FLD, N_("blocks"),      5, true, false },
 
-  [USED_FIELD] = { USED_FIELD,
-    "used",   BLOCK_FLD, N_("Used"),        5, true, false },
+  [ಬಳಸಿದ_ಕ್ಷೇತ್ರ] = { ಬಳಸಿದ_ಕ್ಷೇತ್ರ,
+    "used",   ಖಂಡ_FLD, N_("Used"),        5, true, false },
 
-  [AVAIL_FIELD] = { AVAIL_FIELD,
-    "avail",  BLOCK_FLD, N_("Available"),   5, true, false },
+  [AVAIL_ಕ್ಷೇತ್ರ] = { AVAIL_ಕ್ಷೇತ್ರ,
+    "avail",  ಖಂಡ_FLD, N_("Available"),   5, true, false },
 
-  [PCENT_FIELD] = { PCENT_FIELD,
-    "pcent",  BLOCK_FLD, N_("Use%"),        4, true, false },
+  [PCENT_ಕ್ಷೇತ್ರ] = { PCENT_ಕ್ಷೇತ್ರ,
+    "pcent",  ಖಂಡ_FLD, N_("Use%"),        4, true, false },
 
-  [ITOTAL_FIELD] = { ITOTAL_FIELD,
+  [ITOTAL_ಕ್ಷೇತ್ರ] = { ITOTAL_ಕ್ಷೇತ್ರ,
     "itotal", INODE_FLD, N_("Inodes"),      5, true, false },
 
-  [IUSED_FIELD] = { IUSED_FIELD,
+  [IUSED_ಕ್ಷೇತ್ರ] = { IUSED_ಕ್ಷೇತ್ರ,
     "iused",  INODE_FLD, N_("IUsed"),       5, true, false },
 
-  [IAVAIL_FIELD] = { IAVAIL_FIELD,
+  [IAVAIL_ಕ್ಷೇತ್ರ] = { IAVAIL_ಕ್ಷೇತ್ರ,
     "iavail", INODE_FLD, N_("IFree"),       5, true, false },
 
-  [IPCENT_FIELD] = { IPCENT_FIELD,
+  [IPCENT_ಕ್ಷೇತ್ರ] = { IPCENT_ಕ್ಷೇತ್ರ,
     "ipcent", INODE_FLD, N_("IUse%"),       4, true, false },
 
-  [TARGET_FIELD] = { TARGET_FIELD,
+  [ಗುರಿ_ಕ್ಷೇತ್ರ] = { ಗುರಿ_ಕ್ಷೇತ್ರ,
     "target", OTHER_FLD, N_("Mounted on"),  0, false,  false },
 
-  [FILE_FIELD] = { FILE_FIELD,
+  [FILE_ಕ್ಷೇತ್ರ] = { FILE_ಕ್ಷೇತ್ರ,
     "file",   OTHER_FLD, N_("File"),        0, false,  false }
 };
 
-static char const *all_args_string =
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *all_ವಾದಗಳು_string =
   "source,fstype,itotal,iused,iavail,ipcent,size,"
   "used,avail,pcent,file,target";
 
-static struct
+ಸ್ಥಿರ ರಚನೆ
 {
   /* The current number of processed rows (including header).  */
   idx_t nrows;
@@ -225,7 +225,7 @@ static struct
   idx_t nrows_alloc;
 
   /* Storage for pointers for each string (cell of table).  */
-  char ***rows COUNTED_BY (nrows);
+  ಅಕ್ಷರ ***ಅಡ್ಡಸಾಲುಗಳು COUNTED_BY (nrows);
 
   /* The current number of output columns.  */
   idx_t ncolumns;
@@ -234,88 +234,88 @@ static struct
   idx_t ncolumns_alloc;
 
   /* Storage for the definition of output columns.  */
-  struct field_data_t **columns COUNTED_BY (ncolumns);
-} table;
+  ರಚನೆ ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_t **columns COUNTED_BY (ncolumns);
+} ಕೋಷ್ಟಕ;
 
 /* Field values.  */
-struct field_values_t
+ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t
 {
-  uintmax_t input_units;
+  uintmax_t ಒಳಹರಿವು_units;
   uintmax_t output_units;
-  uintmax_t total;
-  uintmax_t available;
-  bool negate_available;
-  uintmax_t available_to_root;
-  uintmax_t used;
-  bool negate_used;
+  uintmax_t ಒಟ್ಟು;
+  uintmax_t ಲಭ್ಯ;
+  bool negate_ಲಭ್ಯ;
+  uintmax_t ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು;
+  uintmax_t ಬಳಸಿದ;
+  bool negate_ಬಳಸಿದ;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ಎಣಿಕೆ
 {
   NO_SYNC_OPTION = CHAR_MAX + 1,
   SYNC_OPTION,
-  TOTAL_OPTION,
+  ಒಟ್ಟು_OPTION,
   OUTPUT_OPTION
 };
 
-static struct option const long_options[] =
+ಸ್ಥಿರ ರಚನೆ option ಸ್ಥಿರಾಂಕ long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"block-size", required_argument, NULL, 'B'},
-  {"inodes", no_argument, NULL, 'i'},
-  {"human-readable", no_argument, NULL, 'h'},
-  {"si", no_argument, NULL, 'H'},
-  {"local", no_argument, NULL, 'l'},
-  {"output", optional_argument, NULL, OUTPUT_OPTION},
-  {"portability", no_argument, NULL, 'P'},
-  {"print-type", no_argument, NULL, 'T'},
-  {"sync", no_argument, NULL, SYNC_OPTION},
-  {"no-sync", no_argument, NULL, NO_SYNC_OPTION},
-  {"total", no_argument, NULL, TOTAL_OPTION},
-  {"type", required_argument, NULL, 't'},
-  {"exclude-type", required_argument, NULL, 'x'},
+  {"all", no_ವಾದ, ಖಾಲಿ, 'a'},
+  {"block-size", required_ವಾದ, ಖಾಲಿ, 'B'},
+  {"inodes", no_ವಾದ, ಖಾಲಿ, 'i'},
+  {"human-readable", no_ವಾದ, ಖಾಲಿ, 'h'},
+  {"si", no_ವಾದ, ಖಾಲಿ, 'H'},
+  {"local", no_ವಾದ, ಖಾಲಿ, 'l'},
+  {"output", optional_ವಾದ, ಖಾಲಿ, OUTPUT_OPTION},
+  {"portability", no_ವಾದ, ಖಾಲಿ, 'P'},
+  {"print-type", no_ವಾದ, ಖಾಲಿ, 'T'},
+  {"sync", no_ವಾದ, ಖಾಲಿ, SYNC_OPTION},
+  {"no-sync", no_ವಾದ, ಖಾಲಿ, NO_SYNC_OPTION},
+  {"total", no_ವಾದ, ಖಾಲಿ, ಒಟ್ಟು_OPTION},
+  {"type", required_ವಾದ, ಖಾಲಿ, 't'},
+  {"exclude-type", required_ವಾದ, ಖಾಲಿ, 'x'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_ಆವೃತ್ತಿ_OPTION_DECL},
+  {ಖಾಲಿ, 0, ಖಾಲಿ, 0}
 };
 
 /* Stat FILE and put the results into *ST.  Return 0 if successful, an
    error number otherwise.  Try to open FILE before statting, to
    trigger automounts.  */
 
-static int
-automount_stat_err (char const *file, struct stat *st)
+ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ
+automount_stat_err (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file, ರಚನೆ stat *st)
 {
-  int fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
-  if (fd < 0)
+  ಪೂರ್ಣಾಂಕ fd = open (file, O_RDONLY | O_NOCTTY | O_NONBLOCK);
+  ಆದರೆ (fd < 0)
     {
-      if (errno == ENOENT || errno == ENOTDIR)
-        return errno;
-      return stat (file, st) == 0 ? 0 : errno;
+      ಆದರೆ (errno == ENOENT || errno == ENOTDIR)
+        ಹಿಂತಿರುಗಿ errno;
+      ಹಿಂತಿರುಗಿ stat (file, st) == 0 ? 0 : errno;
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      int err = fstat (fd, st) == 0 ? 0 : errno;
+      ಪೂರ್ಣಾಂಕ err = fstat (fd, st) == 0 ? 0 : errno;
       close (fd);
-      return err;
+      ಹಿಂತಿರುಗಿ err;
     }
 }
 
-enum { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
+ಎಣಿಕೆ { MBSWIDTH_FLAGS = MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE };
 
 /* Replace problematic chars with '?'.
    Since only control characters are currently considered,
    this should work in all encodings.  */
 
-static void
-replace_control_chars (char *cell)
+ಸ್ಥಿರ ಶೂನ್ಯ
+replace_control_chars (ಅಕ್ಷರ *cell)
 {
-  char *p = cell;
-  while (*p)
+  ಅಕ್ಷರ *p = cell;
+  ಆಗ (*p)
     {
-      if (c_iscntrl (*p))
+      ಆದರೆ (c_iscntrl (*p))
         *p = '?';
       p++;
     }
@@ -323,32 +323,32 @@ replace_control_chars (char *cell)
 
 /* Replace problematic chars with '?'.  */
 
-static void
-replace_invalid_chars (char *cell)
+ಸ್ಥಿರ ಶೂನ್ಯ
+replace_invalid_chars (ಅಕ್ಷರ *cell)
 {
-  char *srcend = cell + strlen (cell);
-  char *dst = cell;
+  ಅಕ್ಷರ *srcend = cell + ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (cell);
+  ಅಕ್ಷರ *dst = cell;
   mbstate_t mbstate; mbszero (&mbstate);
   size_t n;
 
-  for (char *src = cell; src != srcend; src += n)
+  ಗಾಗಿ (ಅಕ್ಷರ *src = cell; src != srcend; src += n)
     {
       char32_t wc;
       size_t srcbytes = srcend - src;
       n = mbrtoc32 (&wc, src, srcbytes, &mbstate);
       bool ok = n <= srcbytes;
 
-      if (ok)
+      ಆದರೆ (ok)
         ok = !c32iscntrl (wc);
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         n = 1;
 
-      if (ok)
+      ಆದರೆ (ok)
         {
           memmove (dst, src, n);
           dst += n;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           *dst++ = '?';
           mbszero (&mbstate);
@@ -358,353 +358,353 @@ replace_invalid_chars (char *cell)
   *dst = '\0';
 }
 
-static void
-replace_problematic_chars (char *cell)
+ಸ್ಥಿರ ಶೂನ್ಯ
+replace_problematic_chars (ಅಕ್ಷರ *cell)
 {
-  static int tty_out = -1;
-  if (tty_out < 0)
-    tty_out = isatty (STDOUT_FILENO);
+  ಸ್ಥಿರ ಪೂರ್ಣಾಂಕ tty_ಹೊರಹೋಗು = -1;
+  ಆದರೆ (tty_ಹೊರಹೋಗು < 0)
+    tty_ಹೊರಹೋಗು = isatty (STDOUT_FILENO);
 
-  (tty_out ? replace_invalid_chars : replace_control_chars) (cell) ;
+  (tty_ಹೊರಹೋಗು ? replace_invalid_chars : replace_control_chars) (cell) ;
 }
 
 
 /* Dynamically allocate a row of pointers in TABLE.ROWS, which
    can then be accessed with standard 2D array notation.  */
 
-static void
-alloc_table_row (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+alloc_ಕೋಷ್ಟಕ_ಅಡ್ಡಸಾಲು (ಶೂನ್ಯ)
 {
-  if (table.nrows == table.nrows_alloc)
-    table.rows = xpalloc (table.rows, &table.nrows_alloc, 1, -1,
-                          sizeof *table.rows);
-  idx_t const row_idx = table.nrows++;
-  table.rows[row_idx] = xinmalloc (table.ncolumns, sizeof *table.rows[0]);
+  ಆದರೆ (ಕೋಷ್ಟಕ.nrows == ಕೋಷ್ಟಕ.nrows_alloc)
+    ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು = xpalloc (ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು, &ಕೋಷ್ಟಕ.nrows_alloc, 1, -1,
+                          ಗಾತ್ರ *ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು);
+  idx_t ಸ್ಥಿರಾಂಕ ಅಡ್ಡಸಾಲು_idx = ಕೋಷ್ಟಕ.nrows++;
+  ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು[ಅಡ್ಡಸಾಲು_idx] = xinmalloc (ಕೋಷ್ಟಕ.ncolumns, ಗಾತ್ರ *ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು[0]);
 }
 
 /* Output each cell in the table, accounting for the
    alignment and max width of each column.  */
 
-static void
-print_table (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+print_ಕೋಷ್ಟಕ (ಶೂನ್ಯ)
 {
-  for (idx_t row = 0; row < table.nrows; row++)
+  ಗಾಗಿ (idx_t ಅಡ್ಡಸಾಲು = 0; ಅಡ್ಡಸಾಲು < ಕೋಷ್ಟಕ.nrows; ಅಡ್ಡಸಾಲು++)
     {
-      for (idx_t col = 0; col < table.ncolumns; col++)
+      ಗಾಗಿ (idx_t ಲಂಬಸಾಲು = 0; ಲಂಬಸಾಲು < ಕೋಷ್ಟಕ.ncolumns; ಲಂಬಸಾಲು++)
         {
-          char *cell = table.rows[row][col];
+          ಅಕ್ಷರ *cell = ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು[ಅಡ್ಡಸಾಲು][ಲಂಬಸಾಲು];
 
           /* Note the SOURCE_FIELD used to be displayed on it's own line
              if (!posix_format && mbswidth (cell) > 20), but that
              functionality was probably more problematic than helpful,
              hence changed in commit v8.10-40-g99679ff.  */
-          if (col != 0)
-            putchar (' ');
+          ಆದರೆ (ಲಂಬಸಾಲು != 0)
+            ಅಕ್ಷರ_ಬರೆ (' ');
 
-          int width = mbswidth (cell, MBSWIDTH_FLAGS);
-          int fill = width < 0 ? 0 : table.columns[col]->width - width;
-          if (table.columns[col]->align_right)
-            for (; 0 < fill; fill--)
-              putchar (' ');
+          ಪೂರ್ಣಾಂಕ ಅಗಲ = mbswidth (cell, MBSWIDTH_FLAGS);
+          ಪೂರ್ಣಾಂಕ fill = ಅಗಲ < 0 ? 0 : ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಅಗಲ - ಅಗಲ;
+          ಆದರೆ (ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->align_ಬಲ)
+            ಗಾಗಿ (; 0 < fill; fill--)
+              ಅಕ್ಷರ_ಬರೆ (' ');
           fputs (cell, stdout);
-          if (col + 1 < table.ncolumns)
-            for (; 0 < fill; fill--)
-              putchar (' ');
+          ಆದರೆ (ಲಂಬಸಾಲು + 1 < ಕೋಷ್ಟಕ.ncolumns)
+            ಗಾಗಿ (; 0 < fill; fill--)
+              ಅಕ್ಷರ_ಬರೆ (' ');
         }
-      putchar ('\n');
+      ಅಕ್ಷರ_ಬರೆ ('\n');
     }
 }
 
 /* Dynamically allocate a struct field_t in TABLE.COLUMNS, which
    can then be accessed with standard array notation.  */
 
-static void
-alloc_field (int f, char const *c)
+ಸ್ಥಿರ ಶೂನ್ಯ
+alloc_ಕ್ಷೇತ್ರ (ಪೂರ್ಣಾಂಕ f, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *c)
 {
-  if (table.ncolumns == table.ncolumns_alloc)
-    table.columns = xpalloc (table.columns, &table.ncolumns_alloc, 1, -1,
-                             sizeof *table.columns);
-  idx_t const column_idx = table.ncolumns++;
-  table.columns[column_idx] = &field_data[f];
-  if (c != NULL)
-    field_data[f].caption = c;
+  ಆದರೆ (ಕೋಷ್ಟಕ.ncolumns == ಕೋಷ್ಟಕ.ncolumns_alloc)
+    ಕೋಷ್ಟಕ.columns = xpalloc (ಕೋಷ್ಟಕ.columns, &ಕೋಷ್ಟಕ.ncolumns_alloc, 1, -1,
+                             ಗಾತ್ರ *ಕೋಷ್ಟಕ.columns);
+  idx_t ಸ್ಥಿರಾಂಕ ಸ್ತಂಭ_idx = ಕೋಷ್ಟಕ.ncolumns++;
+  ಕೋಷ್ಟಕ.columns[ಸ್ತಂಭ_idx] = &ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[f];
+  ಆದರೆ (c != ಖಾಲಿ)
+    ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[f].caption = c;
 
-  affirm (!field_data[f].used);
+  affirm (!ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[f].ಬಳಸಿದ);
 
   /* Mark field as used.  */
-  field_data[f].used = true;
+  ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[f].ಬಳಸಿದ = true;
 }
 
 
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --output option, add the appropriate fields to columns.  */
-static void
-decode_output_arg (char const *arg)
+ಸ್ಥಿರ ಶೂನ್ಯ
+decode_output_arg (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *arg)
 {
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
-  do
+  ಅಕ್ಷರ *arg_writable = xstrdup (arg);
+  ಅಕ್ಷರ *s = arg_writable;
+  ಮಾಡು
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
+      ಅಕ್ಷರ *comma = strchr (s, ',');
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      ಆದರೆ (comma)
         *comma++ = 0;
 
       /* process S.  */
-      display_field_t field = INVALID_FIELD;
-      for (idx_t i = 0; i < countof (field_data); i++)
+      display_ಕ್ಷೇತ್ರ_t ಕ್ಷೇತ್ರ = INVALID_ಕ್ಷೇತ್ರ;
+      ಗಾಗಿ (idx_t i = 0; i < countof (ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2); i++)
         {
-          if (streq (field_data[i].arg, s))
+          ಆದರೆ (streq (ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[i].arg, s))
             {
-              field = i;
-              break;
+              ಕ್ಷೇತ್ರ = i;
+              ನಿಲ್ಲಿಸು;
             }
         }
-      if (field == INVALID_FIELD)
+      ಆದರೆ (ಕ್ಷೇತ್ರ == INVALID_ಕ್ಷೇತ್ರ)
         {
           error (0, 0, _("option --output: field %s unknown"), quote (s));
           usage (EXIT_FAILURE);
         }
 
-      if (field_data[field].used)
+      ಆದರೆ (ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[ಕ್ಷೇತ್ರ].ಬಳಸಿದ)
         {
           /* Prevent the fields from being used more than once.  */
           error (0, 0, _("option --output: field %s used more than once"),
-                 quote (field_data[field].arg));
+                 quote (ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[ಕ್ಷೇತ್ರ].arg));
           usage (EXIT_FAILURE);
         }
 
-      switch (field)
+      ಆಯ್ಕೆ (ಕ್ಷೇತ್ರ)
         {
-        case SOURCE_FIELD:
-        case FSTYPE_FIELD:
-        case USED_FIELD:
-        case PCENT_FIELD:
-        case ITOTAL_FIELD:
-        case IUSED_FIELD:
-        case IAVAIL_FIELD:
-        case IPCENT_FIELD:
-        case TARGET_FIELD:
-        case FILE_FIELD:
-          alloc_field (field, NULL);
-          break;
+        ಸ್ಥಿತಿ ಮೂಲ_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ FSTYPE_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ ಬಳಸಿದ_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ PCENT_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ ITOTAL_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ IUSED_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ IAVAIL_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ IPCENT_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ ಗುರಿ_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ FILE_ಕ್ಷೇತ್ರ:
+          alloc_ಕ್ಷೇತ್ರ (ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+          ನಿಲ್ಲಿಸು;
 
-        case SIZE_FIELD:
-          alloc_field (field, N_("Size"));
-          break;
+        ಸ್ಥಿತಿ ಗಾತ್ರ_ಕ್ಷೇತ್ರ:
+          alloc_ಕ್ಷೇತ್ರ (ಕ್ಷೇತ್ರ, N_("Size"));
+          ನಿಲ್ಲಿಸು;
 
-        case AVAIL_FIELD:
-          alloc_field (field, N_("Avail"));
-          break;
+        ಸ್ಥಿತಿ AVAIL_ಕ್ಷೇತ್ರ:
+          alloc_ಕ್ಷೇತ್ರ (ಕ್ಷೇತ್ರ, N_("Avail"));
+          ನಿಲ್ಲಿಸು;
 
-        case INVALID_FIELD:
-        default:
+        ಸ್ಥಿತಿ INVALID_ಕ್ಷೇತ್ರ:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           affirm (!"invalid field");
         }
       s = comma;
     }
-  while (s);
+  ಆಗ (s);
 
-  free (arg_writable);
+  ಬಿಡುಗಡೆ (arg_writable);
 }
 
 /* Get the appropriate columns for the mode.  */
-static void
-get_field_list (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_ಕ್ಷೇತ್ರ_list (ಶೂನ್ಯ)
 {
-  switch (header_mode)
+  ಆಯ್ಕೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ)
     {
-    case DEFAULT_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (SIZE_FIELD,   NULL);
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  NULL);
-      alloc_field (PCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+    ಸ್ಥಿತಿ DEFAULT_ಬಹುಲಕ:
+      alloc_ಕ್ಷೇತ್ರ (ಮೂಲ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ಆದರೆ (print_type)
+        alloc_ಕ್ಷೇತ್ರ (FSTYPE_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಗಾತ್ರ_ಕ್ಷೇತ್ರ,   ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಬಳಸಿದ_ಕ್ಷೇತ್ರ,   ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (AVAIL_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (PCENT_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಗುರಿ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ನಿಲ್ಲಿಸು;
 
-    case HUMAN_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
+    ಸ್ಥಿತಿ HUMAN_ಬಹುಲಕ:
+      alloc_ಕ್ಷೇತ್ರ (ಮೂಲ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ಆದರೆ (print_type)
+        alloc_ಕ್ಷೇತ್ರ (FSTYPE_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
 
-      alloc_field (SIZE_FIELD,   N_("Size"));
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  N_("Avail"));
-      alloc_field (PCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+      alloc_ಕ್ಷೇತ್ರ (ಗಾತ್ರ_ಕ್ಷೇತ್ರ,   N_("Size"));
+      alloc_ಕ್ಷೇತ್ರ (ಬಳಸಿದ_ಕ್ಷೇತ್ರ,   ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (AVAIL_ಕ್ಷೇತ್ರ,  N_("Avail"));
+      alloc_ಕ್ಷೇತ್ರ (PCENT_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಗುರಿ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ನಿಲ್ಲಿಸು;
 
-    case INODES_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (ITOTAL_FIELD,  NULL);
-      alloc_field (IUSED_FIELD,   NULL);
-      alloc_field (IAVAIL_FIELD,  NULL);
-      alloc_field (IPCENT_FIELD,  NULL);
-      alloc_field (TARGET_FIELD,  NULL);
-      break;
+    ಸ್ಥಿತಿ INODES_ಬಹುಲಕ:
+      alloc_ಕ್ಷೇತ್ರ (ಮೂಲ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ಆದರೆ (print_type)
+        alloc_ಕ್ಷೇತ್ರ (FSTYPE_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ITOTAL_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (IUSED_ಕ್ಷೇತ್ರ,   ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (IAVAIL_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (IPCENT_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಗುರಿ_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      ನಿಲ್ಲಿಸು;
 
-    case POSIX_MODE:
-      alloc_field (SOURCE_FIELD, NULL);
-      if (print_type)
-        alloc_field (FSTYPE_FIELD, NULL);
-      alloc_field (SIZE_FIELD,   NULL);
-      alloc_field (USED_FIELD,   NULL);
-      alloc_field (AVAIL_FIELD,  NULL);
-      alloc_field (PCENT_FIELD,  N_("Capacity"));
-      alloc_field (TARGET_FIELD, NULL);
-      break;
+    ಸ್ಥಿತಿ POSIX_ಬಹುಲಕ:
+      alloc_ಕ್ಷೇತ್ರ (ಮೂಲ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ಆದರೆ (print_type)
+        alloc_ಕ್ಷೇತ್ರ (FSTYPE_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಗಾತ್ರ_ಕ್ಷೇತ್ರ,   ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (ಬಳಸಿದ_ಕ್ಷೇತ್ರ,   ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (AVAIL_ಕ್ಷೇತ್ರ,  ಖಾಲಿ);
+      alloc_ಕ್ಷೇತ್ರ (PCENT_ಕ್ಷೇತ್ರ,  N_("Capacity"));
+      alloc_ಕ್ಷೇತ್ರ (ಗುರಿ_ಕ್ಷೇತ್ರ, ಖಾಲಿ);
+      ನಿಲ್ಲಿಸು;
 
-    case OUTPUT_MODE:
-      if (!table.ncolumns)
+    ಸ್ಥಿತಿ OUTPUT_ಬಹುಲಕ:
+      ಆದರೆ (!ಕೋಷ್ಟಕ.ncolumns)
         {
           /* Add all fields if --output was given without a field list.  */
-          decode_output_arg (all_args_string);
+          decode_output_arg (all_ವಾದಗಳು_string);
         }
-      break;
+      ನಿಲ್ಲಿಸು;
 
-    default:
+    ಪೂರ್ವನಿಯೋಜಿತ:
       unreachable ();
     }
 }
 
 /* Obtain the appropriate header entries.  */
 
-static void
-get_header (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_ಶೀರ್ಷಿಕೆ (ಶೂನ್ಯ)
 {
-  alloc_table_row ();
+  alloc_ಕೋಷ್ಟಕ_ಅಡ್ಡಸಾಲು ();
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  ಗಾಗಿ (idx_t ಲಂಬಸಾಲು = 0; ಲಂಬಸಾಲು < ಕೋಷ್ಟಕ.ncolumns; ಲಂಬಸಾಲು++)
     {
-      char *cell;
-      char const *header = _(table.columns[col]->caption);
+      ಅಕ್ಷರ *cell;
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಶೀರ್ಷಿಕೆ = _(ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->caption);
 
-      if (table.columns[col]->field == SIZE_FIELD
-          && (header_mode == DEFAULT_MODE
-              || (header_mode == OUTPUT_MODE
+      ಆದರೆ (ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಕ್ಷೇತ್ರ == ಗಾತ್ರ_ಕ್ಷೇತ್ರ
+          && (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == DEFAULT_ಬಹುಲಕ
+              || (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == OUTPUT_ಬಹುಲಕ
                   && !(human_output_opts & human_autoscale))))
         {
-          char buf[LONGEST_HUMAN_READABLE + 1];
+          ಅಕ್ಷರ buf[LONGEST_HUMAN_READABLE + 1];
 
-          int opts = (human_suppress_point_zero
+          ಪೂರ್ಣಾಂಕ opts = (human_suppress_ಬಿಂದು_zero
                       | human_autoscale | human_SI
                       | (human_output_opts
-                         & (human_group_digits | human_base_1024 | human_B)));
+                         & (human_ಗುಂಪು_digits | human_ತಳ_1024 | human_B)));
 
           /* Prefer the base that makes the human-readable value more exact,
              if there is a difference.  */
 
-          uintmax_t q1000 = output_block_size;
-          uintmax_t q1024 = output_block_size;
+          uintmax_t q1000 = output_ಖಂಡ_ಗಾತ್ರ;
+          uintmax_t q1024 = output_ಖಂಡ_ಗಾತ್ರ;
           bool divisible_by_1000;
           bool divisible_by_1024;
 
-          do
+          ಮಾಡು
             {
               divisible_by_1000 = q1000 % 1000 == 0;  q1000 /= 1000;
               divisible_by_1024 = q1024 % 1024 == 0;  q1024 /= 1024;
             }
-          while (divisible_by_1000 & divisible_by_1024);
+          ಆಗ (divisible_by_1000 & divisible_by_1024);
 
-          if (divisible_by_1000 < divisible_by_1024)
-            opts |= human_base_1024;
-          if (divisible_by_1024 < divisible_by_1000)
-            opts &= ~human_base_1024;
-          if (! (opts & human_base_1024))
+          ಆದರೆ (divisible_by_1000 < divisible_by_1024)
+            opts |= human_ತಳ_1024;
+          ಆದರೆ (divisible_by_1024 < divisible_by_1000)
+            opts &= ~human_ತಳ_1024;
+          ಆದರೆ (! (opts & human_ತಳ_1024))
             opts |= human_B;
 
-          char *num = human_readable (output_block_size, buf, opts, 1, 1);
+          ಅಕ್ಷರ *ಅಂಕೆ = human_readable (output_ಖಂಡ_ಗಾತ್ರ, buf, opts, 1, 1);
 
           /* Reset the header back to the default in OUTPUT_MODE.  */
-          header = _("blocks");
+          ಶೀರ್ಷಿಕೆ = _("blocks");
 
           /* TRANSLATORS: this is the "1K-blocks" header in "df" output.  */
-          cell = xasprintf (_("%s-%s"), num, header);
+          cell = xasprintf (_("%s-%s"), ಅಂಕೆ, ಶೀರ್ಷಿಕೆ);
         }
-      else if (header_mode == POSIX_MODE
-               && table.columns[col]->field == SIZE_FIELD)
+      ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == POSIX_ಬಹುಲಕ
+               && ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಕ್ಷೇತ್ರ == ಗಾತ್ರ_ಕ್ಷೇತ್ರ)
         {
           /* TRANSLATORS: this is the "1024-blocks" header in "df -P".  */
-          cell = xasprintf (_("%ju-%s"), output_block_size, header);
+          cell = xasprintf (_("%ju-%s"), output_ಖಂಡ_ಗಾತ್ರ, ಶೀರ್ಷಿಕೆ);
         }
-      else
-        cell = xstrdup (header);
+      ಇಲ್ಲದಿದ್ದರೆ
+        cell = xstrdup (ಶೀರ್ಷಿಕೆ);
 
       replace_problematic_chars (cell);
 
-      table.rows[table.nrows - 1][col] = cell;
+      ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು[ಕೋಷ್ಟಕ.nrows - 1][ಲಂಬಸಾಲು] = cell;
 
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
-      table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
+      ಪೂರ್ಣಾಂಕ cell_ಅಗಲ = mbswidth (cell, MBSWIDTH_FLAGS);
+      ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಅಗಲ = MAX (ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಅಗಲ, cell_ಅಗಲ);
     }
 }
 
 /* Is FSTYPE a type of file system that should be listed?  */
 
-ATTRIBUTE_PURE
-static bool
-selected_fstype (char const *fstype)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ bool
+selected_fstype (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fstype)
 {
-  if (fs_select_list == NULL || fstype == NULL)
-    return true;
-  for (const struct fs_type_list *fsp = fs_select_list; fsp;
-       fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+  ಆದರೆ (fs_select_list == ಖಾಲಿ || fstype == ಖಾಲಿ)
+    ಹಿಂತಿರುಗಿ true;
+  ಗಾಗಿ (ಸ್ಥಿರಾಂಕ ರಚನೆ fs_type_list *fsp = fs_select_list; fsp;
+       fsp = fsp->fs_ಮುಂದಿನ)
+    ಆದರೆ (streq (fstype, fsp->fs_name))
+      ಹಿಂತಿರುಗಿ true;
+  ಹಿಂತಿರುಗಿ false;
 }
 
 /* Is FSTYPE a type of file system that should be omitted?  */
 
-ATTRIBUTE_PURE
-static bool
-excluded_fstype (char const *fstype)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ bool
+excluded_fstype (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fstype)
 {
-  if (fs_exclude_list == NULL || fstype == NULL)
-    return false;
-  for (const struct fs_type_list *fsp = fs_exclude_list; fsp;
-       fsp = fsp->fs_next)
-    if (streq (fstype, fsp->fs_name))
-      return true;
-  return false;
+  ಆದರೆ (fs_exclude_list == ಖಾಲಿ || fstype == ಖಾಲಿ)
+    ಹಿಂತಿರುಗಿ false;
+  ಗಾಗಿ (ಸ್ಥಿರಾಂಕ ರಚನೆ fs_type_list *fsp = fs_exclude_list; fsp;
+       fsp = fsp->fs_ಮುಂದಿನ)
+    ಆದರೆ (streq (fstype, fsp->fs_name))
+      ಹಿಂತಿರುಗಿ true;
+  ಹಿಂತಿರುಗಿ false;
 }
 
-static size_t
-devlist_hash (void const *x, size_t table_size)
+ಸ್ಥಿರ size_t
+devlist_hash (ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *x, size_t ಕೋಷ್ಟಕ_ಗಾತ್ರ)
 {
-  struct devlist const *p = x;
-  return (uintmax_t) {p->dev_num} % table_size;
+  ರಚನೆ devlist ಸ್ಥಿರಾಂಕ *p = x;
+  ಹಿಂತಿರುಗಿ (uintmax_t) {p->dev_ಅಂಕೆ} % ಕೋಷ್ಟಕ_ಗಾತ್ರ;
 }
 
-static bool
-devlist_compare (void const *x, void const *y)
+ಸ್ಥಿರ bool
+devlist_compare (ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *x, ಶೂನ್ಯ ಸ್ಥಿರಾಂಕ *y)
 {
-  struct devlist const *a = x;
-  struct devlist const *b = y;
-  return a->dev_num == b->dev_num;
+  ರಚನೆ devlist ಸ್ಥಿರಾಂಕ *a = x;
+  ರಚನೆ devlist ಸ್ಥಿರಾಂಕ *b = y;
+  ಹಿಂತಿರುಗಿ a->dev_ಅಂಕೆ == b->dev_ಅಂಕೆ;
 }
 
-static struct devlist *
+ಸ್ಥಿರ ರಚನೆ devlist *
 devlist_for_dev (dev_t dev)
 {
-  if (devlist_table == NULL)
-    return NULL;
-  struct devlist dev_entry;
-  dev_entry.dev_num = dev;
+  ಆದರೆ (devlist_ಕೋಷ್ಟಕ == ಖಾಲಿ)
+    ಹಿಂತಿರುಗಿ ಖಾಲಿ;
+  ರಚನೆ devlist dev_ನಮೂದು;
+  dev_ನಮೂದು.dev_ಅಂಕೆ = dev;
 
-  struct devlist *found = hash_lookup (devlist_table, &dev_entry);
-  if (found == NULL)
-    return NULL;
+  ರಚನೆ devlist *ಸಿಕ್ಕಿತು = hash_lookup (devlist_ಕೋಷ್ಟಕ, &dev_ನಮೂದು);
+  ಆದರೆ (ಸಿಕ್ಕಿತು == ಖಾಲಿ)
+    ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 
   /* Return the last devlist entry we have seen with this dev_num */
-  return found->seen_last;
+  ಹಿಂತಿರುಗಿ ಸಿಕ್ಕಿತು->ನೋಡಿದ_ಕೊನೆಯ;
 }
 
 /* Filter mount list by skipping duplicate entries.
@@ -714,32 +714,32 @@ devlist_for_dev (dev_t dev)
    me_mountdir wins.  If DEVICES_ONLY is true (set with df -a), only update
    the global devlist_table, rather than filtering the global mount_list.  */
 
-static void
+ಸ್ಥಿರ ಶೂನ್ಯ
 filter_mount_list (bool devices_only)
 {
   /* Temporary list to keep entries ordered.  */
-  struct devlist *device_list = NULL;
-  int mount_list_size = 0;
+  ರಚನೆ devlist *device_list = ಖಾಲಿ;
+  ಪೂರ್ಣಾಂಕ mount_list_ಗಾತ್ರ = 0;
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
-    mount_list_size++;
+  ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು *me = mount_list; me; me = me->me_ಮುಂದಿನ)
+    mount_list_ಗಾತ್ರ++;
 
-  devlist_table = hash_initialize (mount_list_size, NULL,
-                                   devlist_hash, devlist_compare, NULL);
-  if (devlist_table == NULL)
+  devlist_ಕೋಷ್ಟಕ = hash_initialize (mount_list_ಗಾತ್ರ, ಖಾಲಿ,
+                                   devlist_hash, devlist_compare, ಖಾಲಿ);
+  ಆದರೆ (devlist_ಕೋಷ್ಟಕ == ಖಾಲಿ)
     xalloc_die ();
 
   /* Sort all 'wanted' entries into the list device_list.  */
-  for (struct mount_entry *me = mount_list; me;)
+  ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು *me = mount_list; me;)
     {
-      struct stat buf;
-      struct mount_entry *discard_me = NULL;
-      struct devlist *last_seen_dev = NULL, *seen_dev = NULL;
+      ರಚನೆ stat buf;
+      ರಚನೆ mount_ನಮೂದು *discard_me = ಖಾಲಿ;
+      ರಚನೆ devlist *ಕೊನೆಯ_ನೋಡಿದ_dev = ಖಾಲಿ, *ನೋಡಿದ_dev = ಖಾಲಿ;
 
       /* Avoid stating remote file systems as that may hang.
          On Linux we probably have me_dev populated from /proc/self/mountinfo,
          however we still stat() in case another device was mounted later.  */
-      if ((me->me_remote && show_local_fs)
+      ಆದರೆ ((me->me_remote && show_local_fs)
           || (me->me_dummy && !show_all_fs && !show_listed_fs)
           || (!selected_fstype (me->me_type) || excluded_fstype (me->me_type))
           || -1 == stat (me->me_mountdir, &buf))
@@ -749,48 +749,48 @@ filter_mount_list (bool devices_only)
              If stat failed; add ME to be able to complain about it later.  */
           buf.st_dev = me->me_dev;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* If we've already seen this device...  */
-          last_seen_dev = seen_dev = devlist_for_dev (buf.st_dev);
+          ಕೊನೆಯ_ನೋಡಿದ_dev = ನೋಡಿದ_dev = devlist_for_dev (buf.st_dev);
 
-          for (; seen_dev && ! discard_me; seen_dev = seen_dev->next_same_dev)
+          ಗಾಗಿ (; ನೋಡಿದ_dev && ! discard_me; ನೋಡಿದ_dev = ನೋಡಿದ_dev->ಮುಂದಿನ_same_dev)
             {
-              bool target_nearer_root = strlen (seen_dev->me->me_mountdir)
-                                        > strlen (me->me_mountdir);
+              bool ಗುರಿ_nearer_ಬೇರು = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (ನೋಡಿದ_dev->me->me_mountdir)
+                                        > ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (me->me_mountdir);
               /* With bind mounts, prefer items nearer the root of the source */
-              bool source_below_root = seen_dev->me->me_mntroot != NULL
-                                       && me->me_mntroot != NULL
-                                       && (strlen (seen_dev->me->me_mntroot)
-                                           < strlen (me->me_mntroot));
-              if (! print_grand_total
-                  && me->me_remote && seen_dev->me->me_remote
-                  && ! streq (seen_dev->me->me_devname, me->me_devname))
+              bool ಮೂಲ_ಕೆಳಗೆ_ಬೇರು = ನೋಡಿದ_dev->me->me_mntroot != ಖಾಲಿ
+                                       && me->me_mntroot != ಖಾಲಿ
+                                       && (ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (ನೋಡಿದ_dev->me->me_mntroot)
+                                           < ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (me->me_mntroot));
+              ಆದರೆ (! print_grand_ಒಟ್ಟು
+                  && me->me_remote && ನೋಡಿದ_dev->me->me_remote
+                  && ! streq (ನೋಡಿದ_dev->me->me_devname, me->me_devname))
                 {
                   /* Don't discard remote entries with different locations,
                      as these are more likely to be explicitly mounted.
                      However avoid this when producing a total to give
                      a more accurate value in that case.  */
                 }
-              else if ((strchr (me->me_devname, '/')
+              ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ ((strchr (me->me_devname, '/')
                        /* let "real" devices with '/' in the name win.  */
-                        && ! strchr (seen_dev->me->me_devname, '/'))
+                        && ! strchr (ನೋಡಿದ_dev->me->me_devname, '/'))
                        /* let points towards the root of the device win.  */
-                       || (target_nearer_root && ! source_below_root)
+                       || (ಗುರಿ_nearer_ಬೇರು && ! ಮೂಲ_ಕೆಳಗೆ_ಬೇರು)
                        /* let an entry overmounted on a new device win...  */
-                       || (! streq (seen_dev->me->me_devname, me->me_devname)
+                       || (! streq (ನೋಡಿದ_dev->me->me_devname, me->me_devname)
                            /* ... but only when matching an existing mnt point,
                               to avoid problematic replacement when given
                               inaccurate mount lists, seen with some chroot
                               environments for example.  */
                            && streq (me->me_mountdir,
-                                     seen_dev->me->me_mountdir)))
+                                     ನೋಡಿದ_dev->me->me_mountdir)))
                 {
                   /* Discard mount entry for existing device.  */
-                  discard_me = seen_dev->me;
-                  seen_dev->me = me;
+                  discard_me = ನೋಡಿದ_dev->me;
+                  ನೋಡಿದ_dev->me = me;
                 }
-              else
+              ಇಲ್ಲದಿದ್ದರೆ
                 {
                   /* Discard mount entry currently being processed.  */
                   discard_me = me;
@@ -799,48 +799,48 @@ filter_mount_list (bool devices_only)
             }
         }
 
-      if (discard_me)
+      ಆದರೆ (discard_me)
         {
-          me = me->me_next;
-          if (! devices_only)
-            free_mount_entry (discard_me);
+          me = me->me_ಮುಂದಿನ;
+          ಆದರೆ (! devices_only)
+            free_mount_ನಮೂದು (discard_me);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           /* Add the device number to the device_table.  */
-          struct devlist *devlist = xmalloc (sizeof *devlist);
+          ರಚನೆ devlist *devlist = xmalloc (ಗಾತ್ರ *devlist);
           devlist->me = me;
-          devlist->dev_num = buf.st_dev;
-          devlist->next_same_dev = last_seen_dev;
-          devlist->next = device_list;
+          devlist->dev_ಅಂಕೆ = buf.st_dev;
+          devlist->ಮುಂದಿನ_same_dev = ಕೊನೆಯ_ನೋಡಿದ_dev;
+          devlist->ಮುಂದಿನ = device_list;
           device_list = devlist;
 
-          struct devlist *hash_entry = hash_insert (devlist_table, devlist);
-          if (hash_entry == NULL)
+          ರಚನೆ devlist *hash_ನಮೂದು = hash_ಸೇರಿಸು (devlist_ಕೋಷ್ಟಕ, devlist);
+          ಆದರೆ (hash_ನಮೂದು == ಖಾಲಿ)
             xalloc_die ();
           /* Ensure lookups use this latest devlist.  */
-          hash_entry->seen_last = devlist;
+          hash_ನಮೂದು->ನೋಡಿದ_ಕೊನೆಯ = devlist;
 
-          me = me->me_next;
+          me = me->me_ಮುಂದಿನ;
         }
     }
 
   /* Finally rebuild the mount_list from the devlist.  */
-  if (! devices_only)
+  ಆದರೆ (! devices_only)
     {
-      mount_list = NULL;
-      while (device_list)
+      mount_list = ಖಾಲಿ;
+      ಆಗ (device_list)
         {
           /* Add the mount entry.  */
-          struct mount_entry *me = device_list->me;
-          me->me_next = mount_list;
+          ರಚನೆ mount_ನಮೂದು *me = device_list->me;
+          me->me_ಮುಂದಿನ = mount_list;
           mount_list = me;
-          struct devlist *next = device_list->next;
-          free (device_list);
-          device_list = next;
+          ರಚನೆ devlist *ಮುಂದಿನ = device_list->ಮುಂದಿನ;
+          ಬಿಡುಗಡೆ (device_list);
+          device_list = ಮುಂದಿನ;
         }
-      hash_free (devlist_table);
-      devlist_table = NULL;
+      hash_free (devlist_ಕೋಷ್ಟಕ);
+      devlist_ಕೋಷ್ಟಕ = ಖಾಲಿ;
     }
 }
 
@@ -848,25 +848,25 @@ filter_mount_list (bool devices_only)
 /* Search a mount entry list for device id DEV.
    Return the corresponding mount entry if found or NULL if not.  */
 
-ATTRIBUTE_PURE
-static struct mount_entry const *
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ *
 me_for_dev (dev_t dev)
 {
-  struct devlist *dl = devlist_for_dev (dev);
-  if (dl)
-        return dl->me;
+  ರಚನೆ devlist *dl = devlist_for_dev (dev);
+  ಆದರೆ (dl)
+        ಹಿಂತಿರುಗಿ dl->me;
 
-  return NULL;
+  ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 }
 
 /* Return true if N is a known integer value.  On many file systems,
    UINTMAX_MAX represents an unknown value; on AIX, UINTMAX_MAX - 1
    represents unknown.  Use a rule that works on AIX file systems, and
    that almost-always works on other types.  */
-static bool
-known_value (uintmax_t n)
+ಸ್ಥಿರ bool
+ತಿಳಿದ_ಮೌಲ್ಯ (uintmax_t n)
 {
-  return n < UINTMAX_MAX - 1;
+  ಹಿಂತಿರುಗಿ n < UINTMAX_MAX - 1;
 }
 
 /* Like human_readable (N, BUF, human_output_opts, INPUT_UNITS, OUTPUT_UNITS),
@@ -876,19 +876,19 @@ known_value (uintmax_t n)
       expressed in two's complement.
     - Otherwise, return "-" if N is unknown.  */
 
-static char const *
-df_readable (bool negative, uintmax_t n, char *buf,
-             uintmax_t input_units, uintmax_t output_units)
+ಸ್ಥಿರ ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *
+df_readable (bool negative, uintmax_t n, ಅಕ್ಷರ *buf,
+             uintmax_t ಒಳಹರಿವು_units, uintmax_t output_units)
 {
-  if (! known_value (n) && !negative)
-    return "-";
-  else
+  ಆದರೆ (! ತಿಳಿದ_ಮೌಲ್ಯ (n) && !negative)
+    ಹಿಂತಿರುಗಿ "-";
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      char *p = human_readable (negative ? -n : n, buf + negative,
-                                human_output_opts, input_units, output_units);
-      if (negative)
+      ಅಕ್ಷರ *p = human_readable (negative ? -n : n, buf + negative,
+                                human_output_opts, ಒಳಹರಿವು_units, output_units);
+      ಆದರೆ (negative)
         *--p = '-';
-      return p;
+      ಹಿಂತಿರುಗಿ p;
     }
 }
 
@@ -896,103 +896,103 @@ df_readable (bool negative, uintmax_t n, char *buf,
    negation flag.  It adds value of SRC and SRC_NEG to DEST and DEST_NEG.
    The result will be in DEST and DEST_NEG.  See df_readable to understand
    how the negation flag is used.  */
-static void
-add_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಕೂಡಿಸು_uint_with_neg_flag (uintmax_t *dest, bool *dest_neg,
                         uintmax_t src, bool src_neg)
 {
-  if (*dest_neg == src_neg)
+  ಆದರೆ (*dest_neg == src_neg)
     {
       *dest += src;
-      return;
+      ಹಿಂತಿರುಗಿ;
     }
 
-  if (*dest_neg)
+  ಆದರೆ (*dest_neg)
     *dest = -*dest;
 
-  if (src_neg)
+  ಆದರೆ (src_neg)
     src = -src;
 
-  if (src < *dest)
+  ಆದರೆ (src < *dest)
     *dest -= src;
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       *dest = src - *dest;
       *dest_neg = src_neg;
     }
 
-  if (*dest_neg)
+  ಆದರೆ (*dest_neg)
     *dest = -*dest;
 }
 
 /* Return true if S ends in a string that may be a 36-byte UUID,
    i.e., of the form HHHHHHHH-HHHH-HHHH-HHHH-HHHHHHHHHHHH, where
    each H is an upper or lower case hexadecimal digit.  */
-ATTRIBUTE_PURE
-static bool
-has_uuid_suffix (char const *s)
+ATTRIBUTE_ಶುದ್ಧ
+ಸ್ಥಿರ bool
+has_uuid_suffix (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *s)
 {
-  size_t len = strlen (s);
-  return (36 < len
+  size_t len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (s);
+  ಹಿಂತಿರುಗಿ (36 < len
           && strspn (s + len - 36, "-0123456789abcdefABCDEF") == 36);
 }
 
 /* Obtain the block values BV and inode values IV
    from the file system usage FSU.  */
-static void
-get_field_values (struct field_values_t *bv,
-                  struct field_values_t *iv,
-                  const struct fs_usage *fsu)
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು (ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t *bv,
+                  ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t *iv,
+                  ಸ್ಥಿರಾಂಕ ರಚನೆ fs_usage *fsu)
 {
   /* Inode values.  */
-  iv->input_units = iv->output_units = 1;
-  iv->total = fsu->fsu_files;
-  iv->available = iv->available_to_root = fsu->fsu_ffree;
-  iv->negate_available = false;
+  iv->ಒಳಹರಿವು_units = iv->output_units = 1;
+  iv->ಒಟ್ಟು = fsu->fsu_files;
+  iv->ಲಭ್ಯ = iv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು = fsu->fsu_ffree;
+  iv->negate_ಲಭ್ಯ = false;
 
-  iv->used = UINTMAX_MAX;
-  iv->negate_used = false;
-  if (known_value (iv->total) && known_value (iv->available_to_root))
+  iv->ಬಳಸಿದ = UINTMAX_MAX;
+  iv->negate_ಬಳಸಿದ = false;
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (iv->ಒಟ್ಟು) && ತಿಳಿದ_ಮೌಲ್ಯ (iv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು))
     {
-      iv->used = iv->total - iv->available_to_root;
-      iv->negate_used = (iv->total < iv->available_to_root);
+      iv->ಬಳಸಿದ = iv->ಒಟ್ಟು - iv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು;
+      iv->negate_ಬಳಸಿದ = (iv->ಒಟ್ಟು < iv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು);
     }
 
   /* Block values.  */
-  bv->input_units = fsu->fsu_blocksize;
-  bv->output_units = output_block_size;
-  bv->total = fsu->fsu_blocks;
-  bv->available = fsu->fsu_bavail;
-  bv->available_to_root = fsu->fsu_bfree;
-  bv->negate_available = (fsu->fsu_bavail_top_bit_set
-                         && known_value (fsu->fsu_bavail));
+  bv->ಒಳಹರಿವು_units = fsu->fsu_blocksize;
+  bv->output_units = output_ಖಂಡ_ಗಾತ್ರ;
+  bv->ಒಟ್ಟು = fsu->fsu_ಖಂಡಗಳು;
+  bv->ಲಭ್ಯ = fsu->fsu_bavail;
+  bv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು = fsu->fsu_bfree;
+  bv->negate_ಲಭ್ಯ = (fsu->fsu_bavail_ತುದಿ_ಬಿಟ್_ಗಣ
+                         && ತಿಳಿದ_ಮೌಲ್ಯ (fsu->fsu_bavail));
 
-  bv->used = UINTMAX_MAX;
-  bv->negate_used = false;
-  if (known_value (bv->total) && known_value (bv->available_to_root))
+  bv->ಬಳಸಿದ = UINTMAX_MAX;
+  bv->negate_ಬಳಸಿದ = false;
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (bv->ಒಟ್ಟು) && ತಿಳಿದ_ಮೌಲ್ಯ (bv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು))
     {
-      bv->used = bv->total - bv->available_to_root;
-      bv->negate_used = (bv->total < bv->available_to_root);
+      bv->ಬಳಸಿದ = bv->ಒಟ್ಟು - bv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು;
+      bv->negate_ಬಳಸಿದ = (bv->ಒಟ್ಟು < bv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು);
     }
 }
 
 /* Add block and inode values to grand total.  */
-static void
-add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಕೂಡಿಸು_ಗಮ್ಯ_grand_ಒಟ್ಟು (ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t *bv, ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t *iv)
 {
-  if (known_value (iv->total))
-    grand_fsu.fsu_files += iv->total;
-  if (known_value (iv->available))
-    grand_fsu.fsu_ffree += iv->available;
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (iv->ಒಟ್ಟು))
+    grand_fsu.fsu_files += iv->ಒಟ್ಟು;
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (iv->ಲಭ್ಯ))
+    grand_fsu.fsu_ffree += iv->ಲಭ್ಯ;
 
-  if (known_value (bv->total))
-    grand_fsu.fsu_blocks += bv->input_units * bv->total;
-  if (known_value (bv->available_to_root))
-    grand_fsu.fsu_bfree += bv->input_units * bv->available_to_root;
-  if (known_value (bv->available))
-    add_uint_with_neg_flag (&grand_fsu.fsu_bavail,
-                            &grand_fsu.fsu_bavail_top_bit_set,
-                            bv->input_units * bv->available,
-                            bv->negate_available);
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (bv->ಒಟ್ಟು))
+    grand_fsu.fsu_ಖಂಡಗಳು += bv->ಒಳಹರಿವು_units * bv->ಒಟ್ಟು;
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (bv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು))
+    grand_fsu.fsu_bfree += bv->ಒಳಹರಿವು_units * bv->ಲಭ್ಯ_ಗಮ್ಯ_ಬೇರು;
+  ಆದರೆ (ತಿಳಿದ_ಮೌಲ್ಯ (bv->ಲಭ್ಯ))
+    ಕೂಡಿಸು_uint_with_neg_flag (&grand_fsu.fsu_bavail,
+                            &grand_fsu.fsu_bavail_ತುದಿ_ಬಿಟ್_ಗಣ,
+                            bv->ಒಳಹರಿವು_units * bv->ಲಭ್ಯ,
+                            bv->negate_ಲಭ್ಯ);
 }
 
 /* Obtain a space listing for the device with absolute file name DEVICE.
@@ -1010,92 +1010,92 @@ add_to_grand_total (struct field_values_t *bv, struct field_values_t *iv)
    Caller must set PROCESS_ALL to true when iterating over all entries, as
    when df is invoked with no non-option argument.  See below for details.  */
 
-static void
-get_dev (char const *device, char const *mount_point, char const *file,
-         char const *stat_file, char const *fstype,
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_dev (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *device, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *mount_ಬಿಂದು, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file,
+         ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *stat_file, ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fstype,
          bool me_dummy, bool me_remote,
-         const struct fs_usage *force_fsu,
+         ಸ್ಥಿರಾಂಕ ರಚನೆ fs_usage *force_fsu,
          bool process_all)
 {
-  if (me_remote && show_local_fs)
-    return;
+  ಆದರೆ (me_remote && show_local_fs)
+    ಹಿಂತಿರುಗಿ;
 
-  if (me_dummy && !show_all_fs && !show_listed_fs)
-    return;
+  ಆದರೆ (me_dummy && !show_all_fs && !show_listed_fs)
+    ಹಿಂತಿರುಗಿ;
 
-  if (!selected_fstype (fstype) || excluded_fstype (fstype))
-    return;
+  ಆದರೆ (!selected_fstype (fstype) || excluded_fstype (fstype))
+    ಹಿಂತಿರುಗಿ;
 
   /* Ignore relative MOUNT_POINTs, which are present for example
      in /proc/mounts on Linux with network namespaces.  */
-  if (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_point))
-    return;
+  ಆದರೆ (!force_fsu && ! IS_ABSOLUTE_FILE_NAME (mount_ಬಿಂದು))
+    ಹಿಂತಿರುಗಿ;
 
-  if (!stat_file)
-    stat_file = mount_point;
+  ಆದರೆ (!stat_file)
+    stat_file = mount_ಬಿಂದು;
 
-  struct fs_usage fsu;
-  if (force_fsu)
+  ರಚನೆ fs_usage fsu;
+  ಆದರೆ (force_fsu)
     fsu = *force_fsu;
-  else if (get_fs_usage (stat_file, device, &fsu))
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (get_fs_usage (stat_file, device, &fsu))
     {
       /* If we can't access a system provided entry due
          to it not being present (now), or due to permissions,
          just output placeholder values rather than failing.  */
-      if (process_all && (errno == EACCES || errno == ENOENT))
+      ಆದರೆ (process_all && (errno == EACCES || errno == ENOENT))
         {
-          if (! show_all_fs)
-            return;
+          ಆದರೆ (! show_all_fs)
+            ಹಿಂತಿರುಗಿ;
 
           fstype = "-";
-          fsu.fsu_bavail_top_bit_set = false;
-          fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
+          fsu.fsu_bavail_ತುದಿ_ಬಿಟ್_ಗಣ = false;
+          fsu.fsu_blocksize = fsu.fsu_ಖಂಡಗಳು = fsu.fsu_bfree =
           fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         {
           error (0, errno, "%s", quotef (stat_file));
-          exit_status = EXIT_FAILURE;
-          return;
+          exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
+          ಹಿಂತಿರುಗಿ;
         }
     }
-  else if (process_all && show_all_fs)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (process_all && show_all_fs)
     {
       /* Ensure we don't output incorrect stats for over-mounted directories.
          Discard stats when the device name doesn't match.  Though don't
          discard when used and current mount entries are both remote due
          to the possibility of aliased host names or exports.  */
-      struct stat sb;
-      if (stat (stat_file, &sb) == 0)
+      ರಚನೆ stat sb;
+      ಆದರೆ (stat (stat_file, &sb) == 0)
         {
-          struct mount_entry const * dev_me = me_for_dev (sb.st_dev);
-          if (dev_me && ! streq (dev_me->me_devname, device)
+          ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ * dev_me = me_for_dev (sb.st_dev);
+          ಆದರೆ (dev_me && ! streq (dev_me->me_devname, device)
               && (! dev_me->me_remote || ! me_remote))
             {
               fstype = "-";
-              fsu.fsu_bavail_top_bit_set = false;
-              fsu.fsu_blocksize = fsu.fsu_blocks = fsu.fsu_bfree =
+              fsu.fsu_bavail_ತುದಿ_ಬಿಟ್_ಗಣ = false;
+              fsu.fsu_blocksize = fsu.fsu_ಖಂಡಗಳು = fsu.fsu_bfree =
               fsu.fsu_bavail = fsu.fsu_files = fsu.fsu_ffree = UINTMAX_MAX;
             }
         }
     }
 
-  if (fsu.fsu_blocks == 0 && !show_all_fs && !show_listed_fs)
-    return;
+  ಆದರೆ (fsu.fsu_ಖಂಡಗಳು == 0 && !show_all_fs && !show_listed_fs)
+    ಹಿಂತಿರುಗಿ;
 
-  if (! force_fsu)
+  ಆದರೆ (! force_fsu)
     file_systems_processed = true;
 
-  alloc_table_row ();
+  alloc_ಕೋಷ್ಟಕ_ಅಡ್ಡಸಾಲು ();
 
-  if (! device)
+  ಆದರೆ (! device)
     device = "-";		/* unknown */
 
-  if (! file)
+  ಆದರೆ (! file)
     file = "-";			/* unspecified */
 
-  char *dev_name = xstrdup (device);
-  char *resolved_dev;
+  ಅಕ್ಷರ *dev_name = xstrdup (device);
+  ಅಕ್ಷರ *resolved_dev;
 
   /* On some systems, dev_name is a long-named symlink like
      /dev/disk/by-uuid/828fc648-9f30-43d8-a0b1-f7196a2edb66 pointing to a
@@ -1103,311 +1103,311 @@ get_dev (char const *device, char const *mount_point, char const *file,
      like /dev/mapper/luks-828fc648-9f30-43d8-a0b1-f7196a2edb66 and point to
      /dev/dm-0.  When process_all is true and dev_name is a symlink whose
      name ends with a UUID use the resolved name instead.  */
-  if (process_all
+  ಆದರೆ (process_all
       && has_uuid_suffix (dev_name)
-      && (resolved_dev = canonicalize_filename_mode (dev_name, CAN_EXISTING)))
+      && (resolved_dev = canonicalize_filename_ಬಹುಲಕ (dev_name, CAN_EXISTING)))
     {
-      free (dev_name);
+      ಬಿಡುಗಡೆ (dev_name);
       dev_name = resolved_dev;
     }
 
-  if (! fstype)
+  ಆದರೆ (! fstype)
     fstype = "-";		/* unknown */
 
-  struct field_values_t block_values;
-  struct field_values_t inode_values;
-  get_field_values (&block_values, &inode_values, &fsu);
+  ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t ಖಂಡ_ಮೌಲ್ಯಗಳು;
+  ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t inode_ಮೌಲ್ಯಗಳು;
+  get_ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು (&ಖಂಡ_ಮೌಲ್ಯಗಳು, &inode_ಮೌಲ್ಯಗಳು, &fsu);
 
   /* Add to grand total unless processing grand total line.  */
-  if (print_grand_total && ! force_fsu)
-    add_to_grand_total (&block_values, &inode_values);
+  ಆದರೆ (print_grand_ಒಟ್ಟು && ! force_fsu)
+    ಕೂಡಿಸು_ಗಮ್ಯ_grand_ಒಟ್ಟು (&ಖಂಡ_ಮೌಲ್ಯಗಳು, &inode_ಮೌಲ್ಯಗಳು);
 
-  for (idx_t col = 0; col < table.ncolumns; col++)
+  ಗಾಗಿ (idx_t ಲಂಬಸಾಲು = 0; ಲಂಬಸಾಲು < ಕೋಷ್ಟಕ.ncolumns; ಲಂಬಸಾಲು++)
     {
-      char buf[LONGEST_HUMAN_READABLE + 2];
-      char *cell;
+      ಅಕ್ಷರ buf[LONGEST_HUMAN_READABLE + 2];
+      ಅಕ್ಷರ *cell;
 
-      struct field_values_t *v;
-      switch (table.columns[col]->field_type)
+      ರಚನೆ ಕ್ಷೇತ್ರ_ಮೌಲ್ಯಗಳು_t *v;
+      ಆಯ್ಕೆ (ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಕ್ಷೇತ್ರ_type)
         {
-        case BLOCK_FLD:
-          v = &block_values;
-          break;
-        case INODE_FLD:
-          v = &inode_values;
-          break;
-        case OTHER_FLD:
-          v = NULL;
-          break;
-        default:
+        ಸ್ಥಿತಿ ಖಂಡ_FLD:
+          v = &ಖಂಡ_ಮೌಲ್ಯಗಳು;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ INODE_FLD:
+          v = &inode_ಮೌಲ್ಯಗಳು;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ OTHER_FLD:
+          v = ಖಾಲಿ;
+          ನಿಲ್ಲಿಸು;
+        ಪೂರ್ವನಿಯೋಜಿತ:
           affirm (!"bad field_type");
         }
 
-      switch (table.columns[col]->field)
+      ಆಯ್ಕೆ (ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಕ್ಷೇತ್ರ)
         {
-        case SOURCE_FIELD:
+        ಸ್ಥಿತಿ ಮೂಲ_ಕ್ಷೇತ್ರ:
           cell = xstrdup (dev_name);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case FSTYPE_FIELD:
+        ಸ್ಥಿತಿ FSTYPE_ಕ್ಷೇತ್ರ:
           cell = xstrdup (fstype);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case SIZE_FIELD:
-        case ITOTAL_FIELD:
-          cell = xstrdup (df_readable (false, v->total, buf,
-                                       v->input_units, v->output_units));
-          break;
+        ಸ್ಥಿತಿ ಗಾತ್ರ_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ ITOTAL_ಕ್ಷೇತ್ರ:
+          cell = xstrdup (df_readable (false, v->ಒಟ್ಟು, buf,
+                                       v->ಒಳಹರಿವು_units, v->output_units));
+          ನಿಲ್ಲಿಸು;
 
-        case USED_FIELD:
-        case IUSED_FIELD:
-          cell = xstrdup (df_readable (v->negate_used, v->used, buf,
-                                       v->input_units, v->output_units));
-          break;
+        ಸ್ಥಿತಿ ಬಳಸಿದ_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ IUSED_ಕ್ಷೇತ್ರ:
+          cell = xstrdup (df_readable (v->negate_ಬಳಸಿದ, v->ಬಳಸಿದ, buf,
+                                       v->ಒಳಹರಿವು_units, v->output_units));
+          ನಿಲ್ಲಿಸು;
 
-        case AVAIL_FIELD:
-        case IAVAIL_FIELD:
-          cell = xstrdup (df_readable (v->negate_available, v->available, buf,
-                                       v->input_units, v->output_units));
-          break;
+        ಸ್ಥಿತಿ AVAIL_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ IAVAIL_ಕ್ಷೇತ್ರ:
+          cell = xstrdup (df_readable (v->negate_ಲಭ್ಯ, v->ಲಭ್ಯ, buf,
+                                       v->ಒಳಹರಿವು_units, v->output_units));
+          ನಿಲ್ಲಿಸು;
 
-        case PCENT_FIELD:
-        case IPCENT_FIELD:
+        ಸ್ಥಿತಿ PCENT_ಕ್ಷೇತ್ರ:
+        ಸ್ಥಿತಿ IPCENT_ಕ್ಷೇತ್ರ:
           {
-            double pct = -1;
-            if (! known_value (v->used) || ! known_value (v->available))
+            ದ್ವಿಗುಣ pct = -1;
+            ಆದರೆ (! ತಿಳಿದ_ಮೌಲ್ಯ (v->ಬಳಸಿದ) || ! ತಿಳಿದ_ಮೌಲ್ಯ (v->ಲಭ್ಯ))
               ;
-            else if (!v->negate_used
-                     && v->used <= UINTMAX_MAX / 100
-                     && v->used + v->available != 0
-                     && (v->used + v->available < v->used)
-                     == v->negate_available)
+            ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (!v->negate_ಬಳಸಿದ
+                     && v->ಬಳಸಿದ <= UINTMAX_MAX / 100
+                     && v->ಬಳಸಿದ + v->ಲಭ್ಯ != 0
+                     && (v->ಬಳಸಿದ + v->ಲಭ್ಯ < v->ಬಳಸಿದ)
+                     == v->negate_ಲಭ್ಯ)
               {
-                uintmax_t u100 = v->used * 100;
-                uintmax_t nonroot_total = v->used + v->available;
-                pct = u100 / nonroot_total + (u100 % nonroot_total != 0);
+                uintmax_t u100 = v->ಬಳಸಿದ * 100;
+                uintmax_t nonroot_ಒಟ್ಟು = v->ಬಳಸಿದ + v->ಲಭ್ಯ;
+                pct = u100 / nonroot_ಒಟ್ಟು + (u100 % nonroot_ಒಟ್ಟು != 0);
               }
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               {
                 /* The calculation cannot be done easily with integer
                    arithmetic.  Fall back on floating point.  This can suffer
                    from minor rounding errors, but doing it exactly requires
                    multiple precision arithmetic, and it's not worth the
                    aggravation.  */
-                double u = v->negate_used ? - (double) - v->used : v->used;
-                double a = v->negate_available
-                           ? - (double) - v->available : v->available;
-                double nonroot_total = u + a;
-                if (nonroot_total)
+                ದ್ವಿಗುಣ u = v->negate_ಬಳಸಿದ ? - (ದ್ವಿಗುಣ) - v->ಬಳಸಿದ : v->ಬಳಸಿದ;
+                ದ್ವಿಗುಣ a = v->negate_ಲಭ್ಯ
+                           ? - (ದ್ವಿಗುಣ) - v->ಲಭ್ಯ : v->ಲಭ್ಯ;
+                ದ್ವಿಗುಣ nonroot_ಒಟ್ಟು = u + a;
+                ಆದರೆ (nonroot_ಒಟ್ಟು)
                   {
-                    long int lipct = pct = u * 100 / nonroot_total;
-                    double ipct = lipct;
+                    ದೀರ್ಘ ಪೂರ್ಣಾಂಕ lipct = pct = u * 100 / nonroot_ಒಟ್ಟು;
+                    ದ್ವಿಗುಣ ipct = lipct;
 
                     /* Like 'pct = ceil (dpct);', but avoid ceil so that
                        the math library needn't be linked.  */
-                    if (ipct - 1 < pct && pct <= ipct + 1)
+                    ಆದರೆ (ipct - 1 < pct && pct <= ipct + 1)
                       pct = ipct + (ipct < pct);
                   }
               }
 
             cell = pct < 0 ? xstrdup ("-") : xasprintf ("%.0f%%", pct);
-            break;
+            ನಿಲ್ಲಿಸು;
           }
 
-        case FILE_FIELD:
+        ಸ್ಥಿತಿ FILE_ಕ್ಷೇತ್ರ:
           cell = xstrdup (file);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case TARGET_FIELD:
-#ifdef HIDE_AUTOMOUNT_PREFIX
+        ಸ್ಥಿತಿ ಗುರಿ_ಕ್ಷೇತ್ರ:
+#ವ್ಯಾಖ್ಯಾನಿತವಾದರೆ HIDE_AUTOMOUNT_ಪೂರ್ವಪ್ರತ್ಯಯ
           /* Don't print the first directory name in MOUNT_POINT if it's an
              artifact of an automounter.  This is a bit too aggressive to be
              the default.  */
-          if (STRNCMP_LIT (mount_point, "/auto/") == 0)
-            mount_point += 5;
-          else if (STRNCMP_LIT (mount_point, "/tmp_mnt/") == 0)
-            mount_point += 8;
-#endif
-          cell = xstrdup (mount_point);
-          break;
+          ಆದರೆ (STRNCMP_LIT (mount_ಬಿಂದು, "/auto/") == 0)
+            mount_ಬಿಂದು += 5;
+          ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (STRNCMP_LIT (mount_ಬಿಂದು, "/tmp_mnt/") == 0)
+            mount_ಬಿಂದು += 8;
+#ಆದರೆ_ಅಂತ್ಯ
+          cell = xstrdup (mount_ಬಿಂದು);
+          ನಿಲ್ಲಿಸು;
 
-        case INVALID_FIELD:
-        default:
+        ಸ್ಥಿತಿ INVALID_ಕ್ಷೇತ್ರ:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           affirm (!"unhandled field");
         }
 
       affirm (cell);
 
       replace_problematic_chars (cell);
-      int cell_width = mbswidth (cell, MBSWIDTH_FLAGS);
-      table.columns[col]->width = MAX (table.columns[col]->width, cell_width);
-      table.rows[table.nrows - 1][col] = cell;
+      ಪೂರ್ಣಾಂಕ cell_ಅಗಲ = mbswidth (cell, MBSWIDTH_FLAGS);
+      ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಅಗಲ = MAX (ಕೋಷ್ಟಕ.columns[ಲಂಬಸಾಲು]->ಅಗಲ, cell_ಅಗಲ);
+      ಕೋಷ್ಟಕ.ಅಡ್ಡಸಾಲುಗಳು[ಕೋಷ್ಟಕ.nrows - 1][ಲಂಬಸಾಲು] = cell;
     }
-  free (dev_name);
+  ಬಿಡುಗಡೆ (dev_name);
 }
 
 /* Scan the mount list returning the _last_ device found for MOUNT.
    NULL is returned if MOUNT not found.  The result is malloced.  */
-static char *
-last_device_for_mount (char const *mount)
+ಸ್ಥಿರ ಅಕ್ಷರ *
+ಕೊನೆಯ_device_for_mount (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *mount)
 {
-  struct mount_entry const *le = NULL;
+  ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ *le = ಖಾಲಿ;
 
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ *me = mount_list; me; me = me->me_ಮುಂದಿನ)
     {
-      if (streq (me->me_mountdir, mount))
+      ಆದರೆ (streq (me->me_mountdir, mount))
         le = me;
     }
 
-  if (le)
+  ಆದರೆ (le)
     {
-      char *devname = le->me_devname;
-      char *canon_dev = canonicalize_file_name (devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
-        return canon_dev;
-      free (canon_dev);
-      return xstrdup (le->me_devname);
+      ಅಕ್ಷರ *devname = le->me_devname;
+      ಅಕ್ಷರ *canon_dev = canonicalize_file_name (devname);
+      ಆದರೆ (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+        ಹಿಂತಿರುಗಿ canon_dev;
+      ಬಿಡುಗಡೆ (canon_dev);
+      ಹಿಂತಿರುಗಿ xstrdup (le->me_devname);
     }
-  else
-    return NULL;
+  ಇಲ್ಲದಿದ್ದರೆ
+    ಹಿಂತಿರುಗಿ ಖಾಲಿ;
 }
 
 /* If DEVICE corresponds to a mount point, show its usage
    and return true.  Otherwise, return false.  */
-static bool
-get_device (char const *device)
+ಸ್ಥಿರ bool
+get_device (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *device)
 {
-  struct mount_entry const *best_match = NULL;
-  bool best_match_accessible = false;
+  ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ *ಉತ್ತಮ_ಹೊಂದಿಕೆ = ಖಾಲಿ;
+  bool ಉತ್ತಮ_ಹೊಂದಿಕೆ_accessible = false;
   bool eclipsed_device = false;
-  char const *file = device;
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *file = device;
 
-  char *resolved = canonicalize_file_name (device);
-  if (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
+  ಅಕ್ಷರ *resolved = canonicalize_file_name (device);
+  ಆದರೆ (resolved && IS_ABSOLUTE_FILE_NAME (resolved))
     device = resolved;
 
-  size_t best_match_len = SIZE_MAX;
-  for (struct mount_entry const *me = mount_list; me; me = me->me_next)
+  size_t ಉತ್ತಮ_ಹೊಂದಿಕೆ_len = SIZE_MAX;
+  ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ *me = mount_list; me; me = me->me_ಮುಂದಿನ)
     {
       /* TODO: Should cache canon_dev in the mount_entry struct.  */
-      char *devname = me->me_devname;
-      char *canon_dev = canonicalize_file_name (me->me_devname);
-      if (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
+      ಅಕ್ಷರ *devname = me->me_devname;
+      ಅಕ್ಷರ *canon_dev = canonicalize_file_name (me->me_devname);
+      ಆದರೆ (canon_dev && IS_ABSOLUTE_FILE_NAME (canon_dev))
         devname = canon_dev;
 
-      if (streq (device, devname))
+      ಆದರೆ (streq (device, devname))
         {
-          char *last_device = last_device_for_mount (me->me_mountdir);
-          eclipsed_device = last_device && ! streq (last_device, devname);
-          size_t len = strlen (me->me_mountdir);
+          ಅಕ್ಷರ *ಕೊನೆಯ_device = ಕೊನೆಯ_device_for_mount (me->me_mountdir);
+          eclipsed_device = ಕೊನೆಯ_device && ! streq (ಕೊನೆಯ_device, devname);
+          size_t len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (me->me_mountdir);
 
-          if (! eclipsed_device
-              && (! best_match_accessible || len < best_match_len))
+          ಆದರೆ (! eclipsed_device
+              && (! ಉತ್ತಮ_ಹೊಂದಿಕೆ_accessible || len < ಉತ್ತಮ_ಹೊಂದಿಕೆ_len))
             {
-              struct stat device_stats;
-              bool this_match_accessible = false;
+              ರಚನೆ stat device_stats;
+              bool this_ಹೊಂದಿಕೆ_accessible = false;
 
-              if (stat (me->me_mountdir, &device_stats) == 0)
-                best_match_accessible = this_match_accessible = true;
+              ಆದರೆ (stat (me->me_mountdir, &device_stats) == 0)
+                ಉತ್ತಮ_ಹೊಂದಿಕೆ_accessible = this_ಹೊಂದಿಕೆ_accessible = true;
 
-              if (this_match_accessible
-                  || (! best_match_accessible && len < best_match_len))
+              ಆದರೆ (this_ಹೊಂದಿಕೆ_accessible
+                  || (! ಉತ್ತಮ_ಹೊಂದಿಕೆ_accessible && len < ಉತ್ತಮ_ಹೊಂದಿಕೆ_len))
                 {
-                  best_match = me;
-                  if (len == 1) /* Traditional root.  */
+                  ಉತ್ತಮ_ಹೊಂದಿಕೆ = me;
+                  ಆದರೆ (len == 1) /* Traditional root.  */
                     {
-                      free (last_device);
-                      free (canon_dev);
-                      break;
+                      ಬಿಡುಗಡೆ (ಕೊನೆಯ_device);
+                      ಬಿಡುಗಡೆ (canon_dev);
+                      ನಿಲ್ಲಿಸು;
                     }
-                  else
-                    best_match_len = len;
+                  ಇಲ್ಲದಿದ್ದರೆ
+                    ಉತ್ತಮ_ಹೊಂದಿಕೆ_len = len;
                 }
             }
 
-          free (last_device);
+          ಬಿಡುಗಡೆ (ಕೊನೆಯ_device);
         }
 
-      free (canon_dev);
+      ಬಿಡುಗಡೆ (canon_dev);
     }
 
-  free (resolved);
+  ಬಿಡುಗಡೆ (resolved);
 
-  if (best_match)
+  ಆದರೆ (ಉತ್ತಮ_ಹೊಂದಿಕೆ)
     {
-      get_dev (best_match->me_devname, best_match->me_mountdir, file, NULL,
-               best_match->me_type, best_match->me_dummy,
-               best_match->me_remote, NULL, false);
-      return true;
+      get_dev (ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_devname, ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_mountdir, file, ಖಾಲಿ,
+               ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_type, ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_dummy,
+               ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_remote, ಖಾಲಿ, false);
+      ಹಿಂತಿರುಗಿ true;
     }
-  else if (eclipsed_device)
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (eclipsed_device)
     {
       error (0, 0, _("cannot access %s: over-mounted by another device"),
              quoteaf (file));
-      exit_status = EXIT_FAILURE;
-      return true;
+      exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
+      ಹಿಂತಿರುಗಿ true;
     }
 
-  return false;
+  ಹಿಂತಿರುಗಿ false;
 }
 
 /* Figure out which device file or directory POINT is mounted on
    and show its device usage.
    STATP must be the result of 'stat (POINT, STATP)'.  */
-static void
-get_point (char const *point, const struct stat *statp)
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_ಬಿಂದು (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಬಿಂದು, ಸ್ಥಿರಾಂಕ ರಚನೆ stat *statp)
 {
-  struct stat device_stats;
-  struct mount_entry const *best_match = NULL;
+  ರಚನೆ stat device_stats;
+  ರಚನೆ mount_ನಮೂದು ಸ್ಥಿರಾಂಕ *ಉತ್ತಮ_ಹೊಂದಿಕೆ = ಖಾಲಿ;
 
   /* Calculate the real absolute file name for POINT, and use that to find
      the mount point.  This avoids statting unavailable mount points,
      which can hang df.  */
-  char *resolved = canonicalize_file_name (point);
-  if (resolved && resolved[0] == '/')
+  ಅಕ್ಷರ *resolved = canonicalize_file_name (ಬಿಂದು);
+  ಆದರೆ (resolved && resolved[0] == '/')
     {
-      size_t resolved_len = strlen (resolved);
-      size_t best_match_len = 0;
+      size_t resolved_len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (resolved);
+      size_t ಉತ್ತಮ_ಹೊಂದಿಕೆ_len = 0;
 
-      for (struct mount_entry *me = mount_list; me; me = me->me_next)
+      ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು *me = mount_list; me; me = me->me_ಮುಂದಿನ)
         {
-          if (!streq (me->me_type, "lofs")
-              && (!best_match || best_match->me_dummy || !me->me_dummy))
+          ಆದರೆ (!streq (me->me_type, "lofs")
+              && (!ಉತ್ತಮ_ಹೊಂದಿಕೆ || ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_dummy || !me->me_dummy))
             {
-              size_t len = strlen (me->me_mountdir);
-              if (best_match_len <= len && len <= resolved_len
+              size_t len = ಅಕ್ಷರಸರಣಿ_ಉದ್ದ (me->me_mountdir);
+              ಆದರೆ (ಉತ್ತಮ_ಹೊಂದಿಕೆ_len <= len && len <= resolved_len
                   && (len == 1 /* root file system */
                       || ((len == resolved_len || resolved[len] == '/')
                           && STREQ_LEN (me->me_mountdir, resolved, len))))
                 {
-                  best_match = me;
-                  best_match_len = len;
+                  ಉತ್ತಮ_ಹೊಂದಿಕೆ = me;
+                  ಉತ್ತಮ_ಹೊಂದಿಕೆ_len = len;
                 }
             }
         }
     }
-  free (resolved);
-  if (best_match
-      && (stat (best_match->me_mountdir, &device_stats) != 0
+  ಬಿಡುಗಡೆ (resolved);
+  ಆದರೆ (ಉತ್ತಮ_ಹೊಂದಿಕೆ
+      && (stat (ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_mountdir, &device_stats) != 0
           || device_stats.st_dev != statp->st_dev))
-    best_match = NULL;
+    ಉತ್ತಮ_ಹೊಂದಿಕೆ = ಖಾಲಿ;
 
-  if (! best_match)
-    for (struct mount_entry *me = mount_list; me; me = me->me_next)
+  ಆದರೆ (! ಉತ್ತಮ_ಹೊಂದಿಕೆ)
+    ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು *me = mount_list; me; me = me->me_ಮುಂದಿನ)
       {
-        if (me->me_dev == (dev_t) -1)
+        ಆದರೆ (me->me_dev == (dev_t) -1)
           {
-            if (stat (me->me_mountdir, &device_stats) == 0)
+            ಆದರೆ (stat (me->me_mountdir, &device_stats) == 0)
               me->me_dev = device_stats.st_dev;
-            else
+            ಇಲ್ಲದಿದ್ದರೆ
               {
                 /* Report only I/O errors.  Other errors might be
                    caused by shadowed mount points, which means POINT
                    can't possibly be on this file system.  */
-                if (errno == EIO)
+                ಆದರೆ (errno == EIO)
                   {
                     error (0, errno, "%s", quotef (me->me_mountdir));
-                    exit_status = EXIT_FAILURE;
+                    exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
                   }
 
                 /* So we won't try and fail repeatedly.  */
@@ -1415,36 +1415,36 @@ get_point (char const *point, const struct stat *statp)
               }
           }
 
-        if (statp->st_dev == me->me_dev
+        ಆದರೆ (statp->st_dev == me->me_dev
             && !streq (me->me_type, "lofs")
-            && (!best_match || best_match->me_dummy || !me->me_dummy))
+            && (!ಉತ್ತಮ_ಹೊಂದಿಕೆ || ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_dummy || !me->me_dummy))
           {
             /* Skip bogus mtab entries.  */
-            if (stat (me->me_mountdir, &device_stats) != 0
+            ಆದರೆ (stat (me->me_mountdir, &device_stats) != 0
                 || device_stats.st_dev != me->me_dev)
               me->me_dev = (dev_t) -2;
-            else
-              best_match = me;
+            ಇಲ್ಲದಿದ್ದರೆ
+              ಉತ್ತಮ_ಹೊಂದಿಕೆ = me;
           }
       }
 
-  if (best_match)
-    get_dev (best_match->me_devname, best_match->me_mountdir, point, point,
-             best_match->me_type, best_match->me_dummy, best_match->me_remote,
-             NULL, false);
-  else
+  ಆದರೆ (ಉತ್ತಮ_ಹೊಂದಿಕೆ)
+    get_dev (ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_devname, ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_mountdir, ಬಿಂದು, ಬಿಂದು,
+             ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_type, ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_dummy, ಉತ್ತಮ_ಹೊಂದಿಕೆ->me_remote,
+             ಖಾಲಿ, false);
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* We couldn't find the mount entry corresponding to POINT.  Go ahead and
          print as much info as we can; methods that require the device to be
          present will fail at a later point.  */
 
       /* Find the actual mount point.  */
-      char *mp = find_mount_point (point, statp);
-      if (mp)
+      ಅಕ್ಷರ *mp = ಕಂಡುಹಿಡಿ_mount_ಬಿಂದು (ಬಿಂದು, statp);
+      ಆದರೆ (mp)
         {
-          get_dev (NULL, mp, point, NULL, NULL,
-                   false, false, NULL, false);
-          free (mp);
+          get_dev (ಖಾಲಿ, mp, ಬಿಂದು, ಖಾಲಿ, ಖಾಲಿ,
+                   false, false, ಖಾಲಿ, false);
+          ಬಿಡುಗಡೆ (mp);
         }
     }
 }
@@ -1452,66 +1452,66 @@ get_point (char const *point, const struct stat *statp)
 /* Determine what kind of node NAME is and show the device usage
    for it.  STATP is the results of 'stat' on NAME.  */
 
-static void
-get_entry (char const *name, struct stat const *statp)
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_ನಮೂದು (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *name, ರಚನೆ stat ಸ್ಥಿರಾಂಕ *statp)
 {
-  if ((S_ISBLK (statp->st_mode) || S_ISCHR (statp->st_mode))
+  ಆದರೆ ((S_ISBLK (statp->st_ಬಹುಲಕ) || S_ISCHR (statp->st_ಬಹುಲಕ))
       && get_device (name))
-    return;
+    ಹಿಂತಿರುಗಿ;
 
-  get_point (name, statp);
+  get_ಬಿಂದು (name, statp);
 }
 
 /* Show all mounted file systems, except perhaps those that are of
    an unselected type or are empty.  */
 
-static void
-get_all_entries (void)
+ಸ್ಥಿರ ಶೂನ್ಯ
+get_all_entries (ಶೂನ್ಯ)
 {
   filter_mount_list (show_all_fs);
 
-  for (struct mount_entry *me = mount_list; me; me = me->me_next)
-    get_dev (me->me_devname, me->me_mountdir, NULL, NULL, me->me_type,
-             me->me_dummy, me->me_remote, NULL, true);
+  ಗಾಗಿ (ರಚನೆ mount_ನಮೂದು *me = mount_list; me; me = me->me_ಮುಂದಿನ)
+    get_dev (me->me_devname, me->me_mountdir, ಖಾಲಿ, ಖಾಲಿ, me->me_type,
+             me->me_dummy, me->me_remote, ಖಾಲಿ, true);
 }
 
 /* Add FSTYPE to the list of file system types to display.  */
 
-static void
-add_fs_type (char const *fstype)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಕೂಡಿಸು_fs_type (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fstype)
 {
-  struct fs_type_list *fsp;
+  ರಚನೆ fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
-  fsp->fs_next = fs_select_list;
+  fsp = xmalloc (ಗಾತ್ರ *fsp);
+  fsp->fs_name = (ಅಕ್ಷರ *) fstype;
+  fsp->fs_ಮುಂದಿನ = fs_select_list;
   fs_select_list = fsp;
 }
 
 /* Add FSTYPE to the list of file system types to be omitted.  */
 
-static void
-add_excluded_fs_type (char const *fstype)
+ಸ್ಥಿರ ಶೂನ್ಯ
+ಕೂಡಿಸು_excluded_fs_type (ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *fstype)
 {
-  struct fs_type_list *fsp;
+  ರಚನೆ fs_type_list *fsp;
 
-  fsp = xmalloc (sizeof *fsp);
-  fsp->fs_name = (char *) fstype;
-  fsp->fs_next = fs_exclude_list;
+  fsp = xmalloc (ಗಾತ್ರ *fsp);
+  fsp->fs_name = (ಅಕ್ಷರ *) fstype;
+  fsp->fs_ಮುಂದಿನ = fs_exclude_list;
   fs_exclude_list = fsp;
 }
 
-void
-usage (int status)
+ಶೂನ್ಯ
+usage (ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2)
 {
-  if (status != EXIT_SUCCESS)
+  ಆದರೆ (ಸ್ಥಿತಿ_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
-      printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
+      ಬರೆ (_("Usage: %s [OPTION]... [FILE]...\n"), ಕಾರ್ಯಕ್ರಮ_name);
       fputs (_("\
 Show information about the file system on which each FILE resides,\n\
-or all file systems by default.\n\
+or all file systems by ಪೂರ್ವನಿಯೋಜಿತ.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1523,38 +1523,38 @@ or all file systems by default.\n\
          include pseudo, duplicate, inaccessible file systems\n\
 "));
       oputs (_("\
-  -B, --block-size=SIZE\n\
-         scale sizes by SIZE before printing them; see SIZE format below;\n\
-         E.g., '-BM' prints sizes in units of 1,048,576 bytes\n\
+  -B, --ಖಂಡ-ಗಾತ್ರ_2=ಗಾತ್ರ_3\n\
+         scale sizes by ಗಾತ್ರ_3 before printing them; see ಗಾತ್ರ_3 format ಕೆಳಗೆ;\n\
+         E.g., '-BM' prints sizes ಒಳ units ದ 1,048,576 ಬೈಟುಗಳು\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in powers of 1024 (e.g., 1023M)\n\
+         print sizes ಒಳ powers ದ 1024 (e.g., 1023M)\n\
 "));
       oputs (_("\
   -H, --si\n\
-         print sizes in powers of 1000 (e.g., 1.1G)\n\
+         print sizes ಒಳ powers ದ 1000 (e.g., 1.1G)\n\
 "));
       oputs (_("\
   -i, --inodes\n\
-         list inode information instead of block usage\n\
+         list inode information instead ದ ಖಂಡ usage\n\
 "));
       oputs (_("\
   -k\n\
-         like --block-size=1K\n\
+         like --ಖಂಡ-ಗಾತ್ರ_2=1K\n\
 "));
       oputs (_("\
   -l, --local\n\
-         limit listing to local file systems\n\
+         ಎಲ್ಲೆ listing ಗಮ್ಯ local file systems\n\
 "));
       oputs (_("\
       --no-sync\n\
-         do not invoke sync before getting usage info (default)\n\
+         ಮಾಡು not invoke sync before getting usage info (ಪೂರ್ವನಿಯೋಜಿತ)\n\
 "));
       oputs (_("\
-      --output[=FIELD_LIST]\n\
-         use the output format defined by FIELD_LIST,\n\
-         or print all fields if FIELD_LIST is omitted\n\
+      --output[=ಕ್ಷೇತ್ರ_LIST]\n\
+         use the output format defined by ಕ್ಷೇತ್ರ_LIST,\n\
+         or print all fields ಆದರೆ ಕ್ಷೇತ್ರ_LIST is omitted\n\
 "));
       oputs (_("\
   -P, --portability\n\
@@ -1565,13 +1565,13 @@ or all file systems by default.\n\
          invoke sync before getting usage info\n\
 "));
       oputs (_("\
-      --total\n\
-         elide all entries insignificant to available space,\n\
-         and produce a grand total\n\
+      --ಒಟ್ಟು\n\
+         elide all entries insignificant ಗಮ್ಯ ಲಭ್ಯ space,\n\
+         and produce a grand ಒಟ್ಟು\n\
 "));
       oputs (_("\
   -t, --type=TYPE\n\
-         limit listing to file systems of type TYPE\n\
+         ಎಲ್ಲೆ listing ಗಮ್ಯ file systems ದ type TYPE\n\
 "));
       oputs (_("\
   -T, --print-type\n\
@@ -1579,33 +1579,33 @@ or all file systems by default.\n\
 "));
       oputs (_("\
   -x, --exclude-type=TYPE\n\
-         limit listing to file systems not of type TYPE\n\
+         ಎಲ್ಲೆ listing ಗಮ್ಯ file systems not ದ type TYPE\n\
 "));
       oputs (_("\
   -v\n\
          (ignored)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (ಆವೃತ್ತಿ_OPTION_DESCRIPTION);
       emit_blocksize_note ("DF");
-      emit_size_note ();
+      emit_ಗಾತ್ರ_note ();
       fputs (_("\n\
-FIELD_LIST is a comma-separated list of columns to be included.  Valid\n\
-field names are: 'source', 'fstype', 'itotal', 'iused', 'iavail', 'ipcent',\n\
-'size', 'used', 'avail', 'pcent', 'file' and 'target' (see info page).\n\
+ಕ್ಷೇತ್ರ_LIST is a comma-separated list ದ columns ಗಮ್ಯ be included.  Valid\n\
+ಕ್ಷೇತ್ರ ಹೆಸರುಗಳು are: 'source', 'fstype', 'itotal', 'iused', 'iavail', 'ipcent',\n\
+'size', 'used', 'avail', 'pcent', 'file' and 'target' (see info ಪುಟ).\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (ಕಾರ್ಯಕ್ರಮ_NAME);
     }
-  exit (status);
+  ನಿರ್ಗಮಿಸು (ಸ್ಥಿತಿ_2);
 }
 
-int
-main (int argc, char **argv)
+ಪೂರ್ಣಾಂಕ
+ಮುಖ್ಯ (ಪೂರ್ಣಾಂಕ argc, ಅಕ್ಷರ **argv)
 {
-  struct stat *stats = NULL;
+  ರಚನೆ stat *stats = ಖಾಲಿ;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  ಗಣ_ಕಾರ್ಯಕ್ರಮ_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -1615,246 +1615,246 @@ main (int argc, char **argv)
   /* If true, use the POSIX output format.  */
   bool posix_format = false;
 
-  char const *msg_mut_excl = _("options %s and %s are mutually exclusive");
+  ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *ಸಂದೇಶ_mut_excl = _("options %s and %s are mutually exclusive");
 
-  while (true)
+  ಆಗ (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
+      ಪೂರ್ಣಾಂಕ oi = -1;
+      ಪೂರ್ಣಾಂಕ c = getopt_long (argc, argv, "aB:iF:hHklmPTt:vx:", long_options,
                            &oi);
-      if (c == -1)
-        break;
+      ಆದರೆ (c == -1)
+        ನಿಲ್ಲಿಸು;
 
-      switch (c)
+      ಆಯ್ಕೆ (c)
         {
-        case 'a':
+        ಸ್ಥಿತಿ 'a':
           show_all_fs = true;
-          break;
-        case 'B':
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
-                                                 &output_block_size);
-            if (e != LONGINT_OK)
+            ಎಣಿಕೆ strtol_error e = human_options (optarg, &human_output_opts,
+                                                 &output_ಖಂಡ_ಗಾತ್ರ);
+            ಆದರೆ (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
-        case 'i':
-          if (header_mode == OUTPUT_MODE)
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'i':
+          ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == OUTPUT_ಬಹುಲಕ)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, ಸಂದೇಶ_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
-          header_mode = INODES_MODE;
-          break;
-        case 'h':
-          human_output_opts = human_autoscale | human_SI | human_base_1024;
-          output_block_size = 1;
-          break;
-        case 'H':
+          ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = INODES_ಬಹುಲಕ;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'h':
+          human_output_opts = human_autoscale | human_SI | human_ತಳ_1024;
+          output_ಖಂಡ_ಗಾತ್ರ = 1;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'H':
           human_output_opts = human_autoscale | human_SI;
-          output_block_size = 1;
-          break;
-        case 'k':
+          output_ಖಂಡ_ಗಾತ್ರ = 1;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'k':
           human_output_opts = 0;
-          output_block_size = 1024;
-          break;
-        case 'l':
+          output_ಖಂಡ_ಗಾತ್ರ = 1024;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'l':
           show_local_fs = true;
-          break;
-        case 'm': /* obsolescent, exists for BSD compatibility */
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'm': /* obsolescent, exists for BSD compatibility */
           human_output_opts = 0;
-          output_block_size = 1024 * 1024;
-          break;
-        case 'T':
-          if (header_mode == OUTPUT_MODE)
+          output_ಖಂಡ_ಗಾತ್ರ = 1024 * 1024;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'T':
+          ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == OUTPUT_ಬಹುಲಕ)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, ಸಂದೇಶ_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
           print_type = true;
-          break;
-        case 'P':
-          if (header_mode == OUTPUT_MODE)
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'P':
+          ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == OUTPUT_ಬಹುಲಕ)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, ಸಂದೇಶ_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
           posix_format = true;
-          break;
-        case SYNC_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ SYNC_OPTION:
           require_sync = true;
-          break;
-        case NO_SYNC_OPTION:
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ NO_SYNC_OPTION:
           require_sync = false;
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case 'F':
+        ಸ್ಥಿತಿ 'F':
           /* Accept -F as a synonym for -t for compatibility with Solaris.  */
-        case 't':
-          add_fs_type (optarg);
-          break;
+        ಸ್ಥಿತಿ 't':
+          ಕೂಡಿಸು_fs_type (optarg);
+          ನಿಲ್ಲಿಸು;
 
-        case 'v':		/* For SysV compatibility.  */
+        ಸ್ಥಿತಿ 'v':		/* For SysV compatibility.  */
           /* ignore */
-          break;
-        case 'x':
-          add_excluded_fs_type (optarg);
-          break;
+          ನಿಲ್ಲಿಸು;
+        ಸ್ಥಿತಿ 'x':
+          ಕೂಡಿಸು_excluded_fs_type (optarg);
+          ನಿಲ್ಲಿಸು;
 
-        case OUTPUT_OPTION:
-          if (header_mode == INODES_MODE)
+        ಸ್ಥಿತಿ OUTPUT_OPTION:
+          ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == INODES_ಬಹುಲಕ)
             {
-              error (0, 0, msg_mut_excl, "-i", "--output");
+              error (0, 0, ಸಂದೇಶ_mut_excl, "-i", "--output");
               usage (EXIT_FAILURE);
             }
-          if (posix_format && header_mode == DEFAULT_MODE)
+          ಆದರೆ (posix_format && ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == DEFAULT_ಬಹುಲಕ)
             {
-              error (0, 0, msg_mut_excl, "-P", "--output");
+              error (0, 0, ಸಂದೇಶ_mut_excl, "-P", "--output");
               usage (EXIT_FAILURE);
             }
-          if (print_type)
+          ಆದರೆ (print_type)
             {
-              error (0, 0, msg_mut_excl, "-T", "--output");
+              error (0, 0, ಸಂದೇಶ_mut_excl, "-T", "--output");
               usage (EXIT_FAILURE);
             }
-          header_mode = OUTPUT_MODE;
-          if (optarg)
+          ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = OUTPUT_ಬಹುಲಕ;
+          ಆದರೆ (optarg)
             decode_output_arg (optarg);
-          break;
+          ನಿಲ್ಲಿಸು;
 
-        case TOTAL_OPTION:
-          print_grand_total = true;
-          break;
+        ಸ್ಥಿತಿ ಒಟ್ಟು_OPTION:
+          print_grand_ಒಟ್ಟು = true;
+          ನಿಲ್ಲಿಸು;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_ಆವೃತ್ತಿ_CHAR (ಕಾರ್ಯಕ್ರಮ_NAME, AUTHORS);
 
-        default:
+        ಪೂರ್ವನಿಯೋಜಿತ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (human_output_opts == -1)
+  ಆದರೆ (human_output_opts == -1)
     {
-      if (posix_format)
+      ಆದರೆ (posix_format)
         {
           human_output_opts = 0;
-          output_block_size = (getenv ("POSIXLY_CORRECT") ? 512 : 1024);
+          output_ಖಂಡ_ಗಾತ್ರ = (getenv ("POSIXLY_CORRECT") ? 512 : 1024);
         }
-      else
+      ಇಲ್ಲದಿದ್ದರೆ
         human_options (getenv ("DF_BLOCK_SIZE"),
-                       &human_output_opts, &output_block_size);
+                       &human_output_opts, &output_ಖಂಡ_ಗಾತ್ರ);
     }
 
-  if (header_mode == INODES_MODE || header_mode == OUTPUT_MODE)
+  ಆದರೆ (ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == INODES_ಬಹುಲಕ || ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ == OUTPUT_ಬಹುಲಕ)
     ;
-  else if (human_output_opts & human_autoscale)
-    header_mode = HUMAN_MODE;
-  else if (posix_format)
-    header_mode = POSIX_MODE;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (human_output_opts & human_autoscale)
+    ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = HUMAN_ಬಹುಲಕ;
+  ಇಲ್ಲದಿದ್ದರೆ ಆದರೆ (posix_format)
+    ಶೀರ್ಷಿಕೆ_ಬಹುಲಕ = POSIX_ಬಹುಲಕ;
 
   /* Fail if the same file system type was both selected and excluded.  */
   {
-    bool match = false;
-    for (struct fs_type_list *fs_incl = fs_select_list; fs_incl;
-         fs_incl = fs_incl->fs_next)
+    bool ಹೊಂದಿಕೆ = false;
+    ಗಾಗಿ (ರಚನೆ fs_type_list *fs_incl = fs_select_list; fs_incl;
+         fs_incl = fs_incl->fs_ಮುಂದಿನ)
       {
-        for (struct fs_type_list *fs_excl = fs_exclude_list; fs_excl;
-             fs_excl = fs_excl->fs_next)
+        ಗಾಗಿ (ರಚನೆ fs_type_list *fs_excl = fs_exclude_list; fs_excl;
+             fs_excl = fs_excl->fs_ಮುಂದಿನ)
           {
-            if (streq (fs_incl->fs_name, fs_excl->fs_name))
+            ಆದರೆ (streq (fs_incl->fs_name, fs_excl->fs_name))
               {
                 error (0, 0,
                        _("file system type %s both selected and excluded"),
                        quote (fs_incl->fs_name));
-                match = true;
-                break;
+                ಹೊಂದಿಕೆ = true;
+                ನಿಲ್ಲಿಸು;
               }
           }
       }
-    if (match)
-      return EXIT_FAILURE;
+    ಆದರೆ (ಹೊಂದಿಕೆ)
+      ಹಿಂತಿರುಗಿ EXIT_FAILURE;
   }
 
-  if (optind < argc)
+  ಆದರೆ (optind < argc)
     {
       /* stat each of the given entries to make sure any corresponding
          partition is automounted.  This must be done before reading the
          file system table.  */
-      stats = xnmalloc (argc - optind, sizeof *stats);
-      for (int i = optind; i < argc; ++i)
+      stats = xnmalloc (argc - optind, ಗಾತ್ರ *stats);
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = optind; i < argc; ++i)
         {
-          int err = automount_stat_err (argv[i], &stats[i - optind]);
-          if (err != 0)
+          ಪೂರ್ಣಾಂಕ err = automount_stat_err (argv[i], &stats[i - optind]);
+          ಆದರೆ (err != 0)
             {
               error (0, err, "%s", quotef (argv[i]));
-              exit_status = EXIT_FAILURE;
-              argv[i] = NULL;
+              exit_ಸ್ಥಿತಿ = EXIT_FAILURE;
+              argv[i] = ಖಾಲಿ;
             }
         }
     }
 
   mount_list =
-    read_file_system_list ((fs_select_list != NULL
-                            || fs_exclude_list != NULL
+    read_file_system_list ((fs_select_list != ಖಾಲಿ
+                            || fs_exclude_list != ಖಾಲಿ
                             || print_type
-                            || field_data[FSTYPE_FIELD].used
+                            || ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[FSTYPE_ಕ್ಷೇತ್ರ].ಬಳಸಿದ
                             || show_local_fs));
 
-  if (mount_list == NULL)
+  ಆದರೆ (mount_list == ಖಾಲಿ)
     {
       /* Couldn't read the table of mounted file systems.
          Fail if df was invoked with no file name arguments,
          or when either of -a, -l, -t or -x is used with file name
          arguments.  Otherwise, merely give a warning and proceed.  */
-      int status = 0;
-      if ( ! (optind < argc)
+      ಪೂರ್ಣಾಂಕ ಸ್ಥಿತಿ_2 = 0;
+      ಆದರೆ ( ! (optind < argc)
            || (show_all_fs
                || show_local_fs
-               || fs_select_list != NULL
-               || fs_exclude_list != NULL))
+               || fs_select_list != ಖಾಲಿ
+               || fs_exclude_list != ಖಾಲಿ))
         {
-          status = EXIT_FAILURE;
+          ಸ್ಥಿತಿ_2 = EXIT_FAILURE;
         }
-      char const *warning = (status == 0 ? _("Warning: ") : "");
-      error (status, errno, "%s%s", warning,
+      ಅಕ್ಷರ ಸ್ಥಿರಾಂಕ *warning = (ಸ್ಥಿತಿ_2 == 0 ? _("Warning: ") : "");
+      error (ಸ್ಥಿತಿ_2, errno, "%s%s", warning,
              _("cannot read table of mounted file systems"));
     }
 
-  if (require_sync)
+  ಆದರೆ (require_sync)
     sync ();
 
-  get_field_list ();
-  get_header ();
+  get_ಕ್ಷೇತ್ರ_list ();
+  get_ಶೀರ್ಷಿಕೆ ();
 
-  if (stats)
+  ಆದರೆ (stats)
     {
       /* Display explicitly requested empty file systems.  */
       show_listed_fs = true;
 
-      for (int i = optind; i < argc; ++i)
-        if (argv[i])
-          get_entry (argv[i], &stats[i - optind]);
+      ಗಾಗಿ (ಪೂರ್ಣಾಂಕ i = optind; i < argc; ++i)
+        ಆದರೆ (argv[i])
+          get_ನಮೂದು (argv[i], &stats[i - optind]);
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     get_all_entries ();
 
-  if (file_systems_processed)
+  ಆದರೆ (file_systems_processed)
     {
-      if (print_grand_total)
+      ಆದರೆ (print_grand_ಒಟ್ಟು)
         get_dev ("total",
-                 (field_data[SOURCE_FIELD].used ? "-" : "total"),
-                 NULL, NULL, NULL, false, false, &grand_fsu, false);
+                 (ಕ್ಷೇತ್ರ_ದತ್ತಾಂಶ_2[ಮೂಲ_ಕ್ಷೇತ್ರ].ಬಳಸಿದ ? "-" : "total"),
+                 ಖಾಲಿ, ಖಾಲಿ, ಖಾಲಿ, false, false, &grand_fsu, false);
 
-      print_table ();
+      print_ಕೋಷ್ಟಕ ();
     }
-  else
+  ಇಲ್ಲದಿದ್ದರೆ
     {
       /* Print the "no FS processed" diagnostic only if there was no preceding
          diagnostic, e.g., if all have been excluded.  */
-      if (exit_status == EXIT_SUCCESS)
+      ಆದರೆ (exit_ಸ್ಥಿತಿ == EXIT_SUCCESS)
         error (EXIT_FAILURE, 0, _("no file systems processed"));
     }
 
-  main_exit (exit_status);
+  main_exit (exit_ಸ್ಥಿತಿ);
 }
