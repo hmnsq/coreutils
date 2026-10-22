@@ -17,25 +17,25 @@
 
    Written by Paul Eggert.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <sys/types.h>
-#include <getopt.h>
-#include "system.h"
+#شامل <sys/types.h>
+#شامل <getopt.h>
+#شامل "system.h"
 
-#include "fadvise.h"
-#include "linebuffer.h"
-#include "quote.h"
-#include "randint.h"
-#include "randperm.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#شامل "fadvise.h"
+#شامل "linebuffer.h"
+#شامل "quote.h"
+#شامل "randint.h"
+#شامل "randperm.h"
+#شامل "read-file.h"
+#شامل "stdio--.h"
+#شامل "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "shuf"
+#تعریف_کرو پروگرام_NAME "shuf"
 
-#define AUTHORS proper_name ("Paul Eggert")
+#تعریف_کرو AUTHORS proper_name ("Paul Eggert")
 
 /* reservoir-sampling introduces CPU overhead for small inputs.
    So only enable it for inputs >= this limit.
@@ -43,168 +43,168 @@
      $ for p in $(seq 7); do src/seq $((10**$p)) > 10p$p.in; done
      $ for p in $(seq 7); do time shuf-nores -n10 10p$p.in >/dev/null; done
      $ for p in $(seq 7); do time shuf -n10 10p$p.in >/dev/null; done  .*/
-enum { RESERVOIR_MIN_INPUT = 8192 * 1024 };
+شمار { RESERVOIR_MIN_داخلہ = 8192 * 1024 };
 
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]\n\
   or:  %s -e [OPTION]... [ARG]...\n\
   or:  %s -i LO-HI [OPTION]...\n\
 "),
-              program_name, program_name, program_name);
+              پروگرام_name, پروگرام_name, پروگرام_name);
       fputs (_("\
-Write a random permutation of the input lines to standard output.\n\
+Write a random permutation کا the داخلہ سطریں مقصد standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -e, --echo                treat each ARG as an input line\n\
+  -e, --echo                treat each ARG as an داخلہ سطر\n\
 "));
       oputs (_("\
-  -i, --input-range=LO-HI   treat each number LO through HI as an input line\n\
+  -i, --داخلہ-range=LO-HI   treat each نمبر LO through HI as an داخلہ سطر\n\
 "));
       oputs (_("\
-  -n, --head-count=COUNT    output at most COUNT lines\n\
+  -n, --سر-گنتی=گنتی_2    output at most گنتی_2 سطریں\n\
 "));
       oputs (_("\
-  -o, --output=FILE         write result to FILE instead of standard output\n\
+  -o, --output=FILE         اكتب نتیجہ مقصد FILE instead کا standard output\n\
 "));
       oputs (_("\
-      --random-source=FILE  get random bytes from FILE\n\
+      --random-ماخذ_2=FILE  get random بائٹیں from FILE\n\
 "));
       oputs (_("\
-  -r, --repeat              output lines can be repeated\n\
+  -r, --repeat              output سطریں can be repeated\n\
 "));
       oputs (_("\
-  -z, --zero-terminated     line delimiter is NUL, not newline\n\
+  -z, --zero-terminated     سطر delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
 
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
-  RANDOM_SOURCE_OPTION = CHAR_MAX + 1
+  RANDOM_ماخذ_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_opts[] =
+ساکن ساخت option ثابت long_opts[] =
 {
-  {"echo", no_argument, NULL, 'e'},
-  {"input-range", required_argument, NULL, 'i'},
-  {"head-count", required_argument, NULL, 'n'},
-  {"output", required_argument, NULL, 'o'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"repeat", no_argument, NULL, 'r'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"echo", no_دلیل, تہی, 'e'},
+  {"input-range", required_دلیل, تہی, 'i'},
+  {"head-count", required_دلیل, تہی, 'n'},
+  {"output", required_دلیل, تہی, 'o'},
+  {"random-source", required_دلیل, تہی, RANDOM_ماخذ_OPTION},
+  {"repeat", no_دلیل, تہی, 'r'},
+  {"zero-terminated", no_دلیل, تہی, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0},
 };
 
-static void
-input_from_argv (char **operand, int n_operands, char eolbyte)
+ساکن خالی
+داخلہ_from_argv (حرف **عملیہ_2, صحیح n_operands, حرف eolbyte)
 {
-  char *p;
-  size_t size = n_operands;
-  int i;
+  حرف *p;
+  size_t سائز = n_operands;
+  صحیح i;
 
-  for (i = 0; i < n_operands; i++)
-    size += strlen (operand[i]);
-  p = xmalloc (size);
+  برائے (i = 0; i < n_operands; i++)
+    سائز += لڑی_لمبائی (عملیہ_2[i]);
+  p = xmalloc (سائز);
 
-  for (i = 0; i < n_operands; i++)
+  برائے (i = 0; i < n_operands; i++)
     {
-      char *p1 = stpcpy (p, operand[i]);
-      operand[i] = p;
+      حرف *p1 = stpcpy (p, عملیہ_2[i]);
+      عملیہ_2[i] = p;
       p = p1;
       *p++ = eolbyte;
     }
 
-  operand[n_operands] = p;
+  عملیہ_2[n_operands] = p;
 }
 
 /* Return the start of the next line after LINE, which is guaranteed
    to end in EOLBYTE.  */
 
-static char *
-next_line (char *line, char eolbyte)
+ساکن حرف *
+اگلا_سطر (حرف *سطر, حرف eolbyte)
 {
-  char *p = rawmemchr (line, eolbyte);
-  return p + 1;
+  حرف *p = rawmemchr (سطر, eolbyte);
+  واپس p + 1;
 }
 
 /* Return the size of the input if possible or OFF_T_MAX if not.  */
 
-static off_t
-input_size (void)
+ساکن off_t
+داخلہ_سائز (خالی)
 {
-  off_t file_size;
+  off_t file_سائز;
 
-  struct stat stat_buf;
-  if (fstat (STDIN_FILENO, &stat_buf) != 0)
-    return OFF_T_MAX;
-  if (usable_st_size (&stat_buf))
-    file_size = stat_buf.st_size;
-  else
-    return OFF_T_MAX;
+  ساخت stat stat_buf;
+  اگر (fstat (STDIN_FILENO, &stat_buf) != 0)
+    واپس OFF_T_MAX;
+  اگر (usable_st_سائز (&stat_buf))
+    file_سائز = stat_buf.st_سائز;
+  ورنہ
+    واپس OFF_T_MAX;
 
-  off_t input_offset = lseek (STDIN_FILENO, 0, SEEK_CUR);
-  if (input_offset < 0)
-    return OFF_T_MAX;
+  off_t داخلہ_انحراف = lseek (STDIN_FILENO, 0, SEEK_CUR);
+  اگر (داخلہ_انحراف < 0)
+    واپس OFF_T_MAX;
 
-  file_size -= input_offset;
+  file_سائز -= داخلہ_انحراف;
 
-  return file_size;
+  واپس file_سائز;
 }
 
 /* Read all lines and store up to K permuted lines in *OUT_RSRV.
    Return the number of lines read, up to a maximum of K.  */
 
-static idx_t
-read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
-                               struct randint_source *s,
-                               struct linebuffer **out_rsrv)
+ساکن idx_t
+read_داخلہ_reservoir_sampling (FILE *اندر, حرف eolbyte, idx_t k,
+                               ساخت randint_ماخذ *s,
+                               ساخت linebuffer **برآمد_rsrv)
 {
-  randint n_lines = 0;
-  idx_t n_alloc_lines = 0;
-  struct linebuffer *line = NULL;
-  struct linebuffer *rsrv = NULL;
+  randint n_سطریں = 0;
+  idx_t n_alloc_سطریں = 0;
+  ساخت linebuffer *سطر = تہی;
+  ساخت linebuffer *rsrv = تہی;
 
   /* Fill the first K lines, directly into the reservoir.  */
-  for (n_lines = 0; n_lines < k; n_lines++)
+  برائے (n_سطریں = 0; n_سطریں < k; n_سطریں++)
     {
       /* Enlarge reservoir if needed.  */
-      if (n_lines == n_alloc_lines)
+      اگر (n_سطریں == n_alloc_سطریں)
         {
-          idx_t old = n_alloc_lines;
-          rsrv = xpalloc (rsrv, &n_alloc_lines, 1, k, sizeof *rsrv);
-          memset (&rsrv[n_lines], 0, (n_alloc_lines - old) * sizeof *rsrv);
+          idx_t old = n_alloc_سطریں;
+          rsrv = xpalloc (rsrv, &n_alloc_سطریں, 1, k, حجم *rsrv);
+          memset (&rsrv[n_سطریں], 0, (n_alloc_سطریں - old) * حجم *rsrv);
         }
 
-      line = readlinebuffer_delim (&rsrv[n_lines], in, eolbyte);
-      if (!line)
-        break;
+      سطر = readlinebuffer_delim (&rsrv[n_سطریں], اندر, eolbyte);
+      اگر (!سطر)
+        توڑو;
     }
 
   /* last line wasn't null - so there may be more lines to read.  */
-  if (line != NULL)
+  اگر (سطر != تہی)
     {
-      struct linebuffer dummy;
+      ساخت linebuffer dummy;
       initbuffer (&dummy);  /* space for lines not put in reservoir.  */
 
       /* Choose the fate of the next line, with decreasing probability (as
@@ -216,39 +216,39 @@ read_input_reservoir_sampling (FILE *in, char eolbyte, idx_t k,
          With 'struct linebuffer', storing into existing buffer will reduce
          re-allocations (will only re-allocate if the new line is longer than
          the currently allocated space).  */
-      do
+      کرو
         {
-          randint j = randint_choose (s, n_lines + 1);  /* 0 .. n_lines.  */
-          line = (j < k) ? (&rsrv[j]) : (&dummy);
+          randint j = randint_انتخاب (s, n_سطریں + 1);  /* 0 .. n_lines.  */
+          سطر = (j < k) ? (&rsrv[j]) : (&dummy);
         }
-      while (readlinebuffer_delim (line, in, eolbyte) != NULL && n_lines++);
+      جب (readlinebuffer_delim (سطر, اندر, eolbyte) != تہی && n_سطریں++);
 
-      if (! n_lines)
+      اگر (! n_سطریں)
         error (EXIT_FAILURE, EOVERFLOW, _("too many input lines"));
 
       freebuffer (&dummy);
     }
 
   /* no more input lines, or an input error.  */
-  if (ferror (in))
+  اگر (ferror (اندر))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  *out_rsrv = rsrv;
-  return MIN (k, n_lines);
+  *برآمد_rsrv = rsrv;
+  واپس MIN (k, n_سطریں);
 }
 
-static int
-write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
-                                 size_t const *permutation)
+ساکن صحیح
+write_permuted_output_reservoir (size_t n_سطریں, ساخت linebuffer *سطریں,
+                                 size_t ثابت *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  برائے (size_t i = 0; i < n_سطریں; i++)
     {
-      const struct linebuffer *p = &lines[permutation[i]];
-      if (fwrite (p->buffer, sizeof (char), p->length, stdout) != p->length)
-        return -1;
+      ثابت ساخت linebuffer *p = &سطریں[permutation[i]];
+      اگر (fwrite (p->بفر, حجم (حرف), p->لمبائی, stdout) != p->لمبائی)
+        واپس -1;
     }
 
-  return 0;
+  واپس 0;
 }
 
 /* Read data from file IN.  Input lines are delimited by EOLBYTE;
@@ -257,15 +257,15 @@ write_permuted_output_reservoir (size_t n_lines, struct linebuffer *lines,
    Return the number of lines read.  Report an error and exit on
    failure.  */
 
-static size_t
-read_input (FILE *in, char eolbyte, char ***pline)
+ساکن size_t
+read_داخلہ (FILE *اندر, حرف eolbyte, حرف ***pline)
 {
-  char *p;
-  char *buf = NULL;
-  size_t used;
-  char *lim;
-  char **line;
-  size_t n_lines;
+  حرف *p;
+  حرف *buf = تہی;
+  size_t مستعمل;
+  حرف *lim;
+  حرف **سطر;
+  size_t n_سطریں;
 
   /* TODO: We should limit the amount of data read here,
      to less than RESERVOIR_MIN_INPUT.  I.e., adjust fread_file() to support
@@ -276,349 +276,349 @@ read_input (FILE *in, char eolbyte, char ***pline)
      or if none left, stdin.  Doing that would give better performance by
      avoiding the reservoir CPU overhead when reading < RESERVOIR_MIN_INPUT
      from a pipe, and allow us to dispense with the input_size() function.  */
-  if (!(buf = fread_file (in, 0, &used)))
+  اگر (!(buf = fread_file (اندر, 0, &مستعمل)))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (used && buf[used - 1] != eolbyte)
-    buf[used++] = eolbyte;
+  اگر (مستعمل && buf[مستعمل - 1] != eolbyte)
+    buf[مستعمل++] = eolbyte;
 
-  lim = buf + used;
+  lim = buf + مستعمل;
 
-  n_lines = 0;
-  for (p = buf; p < lim; p = next_line (p, eolbyte))
-    n_lines++;
+  n_سطریں = 0;
+  برائے (p = buf; p < lim; p = اگلا_سطر (p, eolbyte))
+    n_سطریں++;
 
-  *pline = line = xnmalloc (n_lines + 1, sizeof *line);
+  *pline = سطر = xnmalloc (n_سطریں + 1, حجم *سطر);
 
-  line[0] = p = buf;
-  for (size_t i = 1; i <= n_lines; i++)
-    line[i] = p = next_line (p, eolbyte);
+  سطر[0] = p = buf;
+  برائے (size_t i = 1; i <= n_سطریں; i++)
+    سطر[i] = p = اگلا_سطر (p, eolbyte);
 
-  return n_lines;
+  واپس n_سطریں;
 }
 
 /* Output N_LINES lines to stdout from LINE array,
    chosen by the indices in PERMUTATION.
    PERMUTATION and LINE must have at least N_LINES elements.
    Strings in LINE must include the line-terminator character.  */
-static int
-write_permuted_lines (size_t n_lines, char *const *line,
-                      size_t const *permutation)
+ساکن صحیح
+write_permuted_سطریں (size_t n_سطریں, حرف *ثابت *سطر,
+                      size_t ثابت *permutation)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  برائے (size_t i = 0; i < n_سطریں; i++)
     {
-      char *const *p = line + permutation[i];
+      حرف *ثابت *p = سطر + permutation[i];
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      اگر (fwrite (p[0], حجم *p[0], len, stdout) != len)
+        واپس -1;
     }
 
-  return 0;
+  واپس 0;
 }
 
 /* Print NUMBER followed by EOLBYTE to standard output.
    Return false on failure, true on success.  */
-static bool
-print_number (unsigned long int number, char eolbyte)
+ساکن bool
+print_نمبر (غیرعلامتی طویل صحیح نمبر, حرف eolbyte)
 {
-  char buf[INT_BUFSIZE_BOUND (unsigned long int)];
-  char *p = buf + INT_STRLEN_BOUND (unsigned long int);
+  حرف buf[INT_BUFSIZE_BOUND (غیرعلامتی طویل صحیح)];
+  حرف *p = buf + INT_STRLEN_BOUND (غیرعلامتی طویل صحیح);
   *p = eolbyte;
-  do
-    *--p = '0' + number % 10;
-  while ((number /= 10) != 0);
-  idx_t len = buf + sizeof buf - p;
-  return fwrite (p, 1, len, stdout) == len;
+  کرو
+    *--p = '0' + نمبر % 10;
+  جب ((نمبر /= 10) != 0);
+  idx_t len = buf + حجم buf - p;
+  واپس fwrite (p, 1, len, stdout) == len;
 }
 
 /* Output N_LINES of numbers to stdout, from PERMUTATION array.
    PERMUTATION must have at least N_LINES elements.  */
-static int
-write_permuted_numbers (size_t n_lines, size_t lo_input,
-                        size_t const *permutation, char eolbyte)
+ساکن صحیح
+write_permuted_numbers (size_t n_سطریں, size_t lo_داخلہ,
+                        size_t ثابت *permutation, حرف eolbyte)
 {
-  for (size_t i = 0; i < n_lines; i++)
+  برائے (size_t i = 0; i < n_سطریں; i++)
     {
-      unsigned long int n = lo_input + permutation[i];
-      if (! print_number (n, eolbyte))
-        return -1;
+      غیرعلامتی طویل صحیح n = lo_داخلہ + permutation[i];
+      اگر (! print_نمبر (n, eolbyte))
+        واپس -1;
     }
 
-  return 0;
+  واپس 0;
 }
 
 /* Output COUNT numbers to stdout, chosen randomly from range
    LO_INPUT through HI_INPUT.  */
-static int
-write_random_numbers (struct randint_source *s, size_t count,
-                      size_t lo_input, size_t hi_input, char eolbyte)
+ساکن صحیح
+write_random_numbers (ساخت randint_ماخذ *s, size_t گنتی,
+                      size_t lo_داخلہ, size_t hi_داخلہ, حرف eolbyte)
 {
-  const randint range = hi_input - lo_input + 1;
+  ثابت randint range = hi_داخلہ - lo_داخلہ + 1;
 
-  for (size_t i = 0; i < count; i++)
+  برائے (size_t i = 0; i < گنتی; i++)
     {
-      unsigned long int j = lo_input + randint_choose (s, range);
-      if (! print_number (j, eolbyte))
-        return -1;
+      غیرعلامتی طویل صحیح j = lo_داخلہ + randint_انتخاب (s, range);
+      اگر (! print_نمبر (j, eolbyte))
+        واپس -1;
     }
 
-  return 0;
+  واپس 0;
 }
 
 /* Output COUNT lines to stdout from LINES array.
    LINES must have at least N_LINES elements in it.
    Strings in LINES_ must include the line-terminator character.  */
-static int
-write_random_lines (struct randint_source *s, size_t count,
-                    char *const *lines, size_t n_lines)
+ساکن صحیح
+write_random_سطریں (ساخت randint_ماخذ *s, size_t گنتی,
+                    حرف *ثابت *سطریں, size_t n_سطریں)
 {
-  for (size_t i = 0; i < count; i++)
+  برائے (size_t i = 0; i < گنتی; i++)
     {
-      const randint j = randint_choose (s, n_lines);
-      char *const *p = lines + j;
+      ثابت randint j = randint_انتخاب (s, n_سطریں);
+      حرف *ثابت *p = سطریں + j;
       size_t len = p[1] - p[0];
-      if (fwrite (p[0], sizeof *p[0], len, stdout) != len)
-        return -1;
+      اگر (fwrite (p[0], حجم *p[0], len, stdout) != len)
+        واپس -1;
     }
 
-  return 0;
+  واپس 0;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   bool echo = false;
-  bool input_range = false;
-  size_t lo_input = SIZE_MAX;
-  size_t hi_input = 0;
-  idx_t head_lines = MIN (IDX_MAX, SIZE_MAX);
-  char const *outfile = NULL;
-  char *random_source = NULL;
-  char eolbyte = '\n';
-  char **input_lines = NULL;
+  bool داخلہ_range = false;
+  size_t lo_داخلہ = SIZE_MAX;
+  size_t hi_داخلہ = 0;
+  idx_t سر_سطریں = MIN (IDX_MAX, SIZE_MAX);
+  حرف ثابت *outfile = تہی;
+  حرف *random_ماخذ = تہی;
+  حرف eolbyte = '\n';
+  حرف **داخلہ_سطریں = تہی;
   bool use_reservoir_sampling = false;
   bool repeat = false;
 
-  int optc;
-  int n_operands;
-  char **operand;
-  size_t n_lines;
-  char **line = NULL;
-  struct linebuffer *reservoir = NULL;
-  struct randint_source *randint_source;
-  size_t *permutation = NULL;
-  int i;
+  صحیح optc;
+  صحیح n_operands;
+  حرف **عملیہ_2;
+  size_t n_سطریں;
+  حرف **سطر = تہی;
+  ساخت linebuffer *reservoir = تہی;
+  ساخت randint_ماخذ *randint_ماخذ;
+  size_t *permutation = تہی;
+  صحیح i;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, NULL))
+  جب ((optc = getopt_long (argc, argv, "ei:n:o:rz", long_opts, تہی))
          != -1)
-    switch (optc)
+    انتخاب (optc)
       {
-      case 'e':
+      حالت 'e':
         echo = true;
-        break;
+        توڑو;
 
-      case 'i':
+      حالت 'i':
         {
-          if (input_range)
+          اگر (داخلہ_range)
             error (EXIT_FAILURE, 0, _("multiple -i options specified"));
-          input_range = true;
+          داخلہ_range = true;
 
           uintmax_t u;
-          char *lo_end;
-          strtol_error err = xstrtoumax (optarg, &lo_end, 10, &u, NULL);
-          if (err == LONGINT_OK)
+          حرف *lo_انتہا;
+          strtol_error err = xstrtoumax (optarg, &lo_انتہا, 10, &u, تہی);
+          اگر (err == LONGINT_OK)
             {
-              lo_input = u;
-              if (lo_input != u)
-                err = LONGINT_OVERFLOW;
-              else if (*lo_end != '-')
+              lo_داخلہ = u;
+              اگر (lo_داخلہ != u)
+                err = LONGINT_حد_سے_تجاوز;
+              ورنہ اگر (*lo_انتہا != '-')
                 err = LONGINT_INVALID;
-              else
+              ورنہ
                 {
-                  err = xstrtoumax (lo_end + 1, NULL, 10, &u, "");
-                  if (err == LONGINT_OK)
+                  err = xstrtoumax (lo_انتہا + 1, تہی, 10, &u, "");
+                  اگر (err == LONGINT_OK)
                     {
-                      hi_input = u;
-                      if (hi_input != u)
-                        err = LONGINT_OVERFLOW;
+                      hi_داخلہ = u;
+                      اگر (hi_داخلہ != u)
+                        err = LONGINT_حد_سے_تجاوز;
                     }
                 }
             }
 
-          n_lines = hi_input - lo_input + 1;
+          n_سطریں = hi_داخلہ - lo_داخلہ + 1;
 
-          if (err != LONGINT_OK || (lo_input <= hi_input) == (n_lines == 0))
-            error (EXIT_FAILURE, err == LONGINT_OVERFLOW ? EOVERFLOW : 0,
+          اگر (err != LONGINT_OK || (lo_داخلہ <= hi_داخلہ) == (n_سطریں == 0))
+            error (EXIT_FAILURE, err == LONGINT_حد_سے_تجاوز ? EOVERFLOW : 0,
                    "%s: %s", _("invalid input range"), quote (optarg));
         }
-        break;
+        توڑو;
 
-      case 'n':
+      حالت 'n':
         {
           uintmax_t argval;
-          strtol_error e = xstrtoumax (optarg, NULL, 10, &argval, "");
+          strtol_error e = xstrtoumax (optarg, تہی, 10, &argval, "");
 
-          if (e == LONGINT_OK)
-            head_lines = MIN (head_lines, argval);
-          else if (e != LONGINT_OVERFLOW)
+          اگر (e == LONGINT_OK)
+            سر_سطریں = MIN (سر_سطریں, argval);
+          ورنہ اگر (e != LONGINT_حد_سے_تجاوز)
             error (EXIT_FAILURE, 0, _("invalid line count: %s"),
                    quote (optarg));
         }
-        break;
+        توڑو;
 
-      case 'o':
-        if (outfile && !streq (outfile, optarg))
+      حالت 'o':
+        اگر (outfile && !streq (outfile, optarg))
           error (EXIT_FAILURE, 0, _("multiple output files specified"));
         outfile = optarg;
-        break;
+        توڑو;
 
-      case RANDOM_SOURCE_OPTION:
-        if (random_source && !streq (random_source, optarg))
+      حالت RANDOM_ماخذ_OPTION:
+        اگر (random_ماخذ && !streq (random_ماخذ, optarg))
           error (EXIT_FAILURE, 0, _("multiple random sources specified"));
-        random_source = optarg;
-        break;
+        random_ماخذ = optarg;
+        توڑو;
 
-      case 'r':
+      حالت 'r':
         repeat = true;
-        break;
+        توڑو;
 
-      case 'z':
+      حالت 'z':
         eolbyte = '\0';
-        break;
+        توڑو;
 
       case_GETOPT_HELP_CHAR;
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-      default:
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+      طےشدہ:
         usage (EXIT_FAILURE);
       }
 
   n_operands = argc - optind;
-  operand = argv + optind;
+  عملیہ_2 = argv + optind;
 
   /* Check invalid usage.  */
-  if (echo && input_range)
+  اگر (echo && داخلہ_range)
     {
       error (0, 0, _("cannot combine -e and -i options"));
       usage (EXIT_FAILURE);
     }
-  if (input_range ? 0 < n_operands : !echo && 1 < n_operands)
+  اگر (داخلہ_range ? 0 < n_operands : !echo && 1 < n_operands)
     {
-      error (0, 0, _("extra operand %s"), quote (operand[!input_range]));
+      error (0, 0, _("extra operand %s"), quote (عملیہ_2[!داخلہ_range]));
       usage (EXIT_FAILURE);
     }
 
   /* Prepare input.  */
-  if (head_lines == 0)
+  اگر (سر_سطریں == 0)
     {
-      n_lines = 0;
-      line = NULL;
+      n_سطریں = 0;
+      سطر = تہی;
     }
-  else if (echo)
+  ورنہ اگر (echo)
     {
-      input_from_argv (operand, n_operands, eolbyte);
-      n_lines = n_operands;
-      line = operand;
+      داخلہ_from_argv (عملیہ_2, n_operands, eolbyte);
+      n_سطریں = n_operands;
+      سطر = عملیہ_2;
     }
-  else if (input_range)
+  ورنہ اگر (داخلہ_range)
     {
-      IF_LINT (n_lines = hi_input - lo_input + 1); /* Avoid GCC 10 warning.  */
-      line = NULL;
+      IF_LINT (n_سطریں = hi_داخلہ - lo_داخلہ + 1); /* Avoid GCC 10 warning.  */
+      سطر = تہی;
     }
-  else
+  ورنہ
     {
       /* If an input file is specified, re-open it as stdin.  */
-      if (n_operands == 1
-          && ! (streq (operand[0], "-")
-                || freopen (operand[0], "r", stdin)))
-        error (EXIT_FAILURE, errno, "%s", quotef (operand[0]));
+      اگر (n_operands == 1
+          && ! (streq (عملیہ_2[0], "-")
+                || freopen (عملیہ_2[0], "r", stdin)))
+        error (EXIT_FAILURE, errno, "%s", quotef (عملیہ_2[0]));
 
       fadvise (stdin, FADVISE_SEQUENTIAL);
 
-      if (repeat || head_lines == MIN (IDX_MAX, SIZE_MAX)
-          || input_size () <= RESERVOIR_MIN_INPUT)
+      اگر (repeat || سر_سطریں == MIN (IDX_MAX, SIZE_MAX)
+          || داخلہ_سائز () <= RESERVOIR_MIN_داخلہ)
         {
-          n_lines = read_input (stdin, eolbyte, &input_lines);
-          line = input_lines;
+          n_سطریں = read_داخلہ (stdin, eolbyte, &داخلہ_سطریں);
+          سطر = داخلہ_سطریں;
         }
-      else
+      ورنہ
         {
           use_reservoir_sampling = true;
-          n_lines = SIZE_MAX;   /* unknown number of input lines, for now.  */
+          n_سطریں = SIZE_MAX;   /* unknown number of input lines, for now.  */
         }
     }
 
   /* The adjusted head line count; can be less than HEAD_LINES if the
      input is small and if not repeating.  */
-  idx_t ahead_lines = repeat || head_lines < n_lines ? head_lines : n_lines;
+  idx_t ahead_سطریں = repeat || سر_سطریں < n_سطریں ? سر_سطریں : n_سطریں;
 
-  randint_source = randint_all_new (random_source,
+  randint_ماخذ = randint_all_new (random_ماخذ,
                                     (use_reservoir_sampling || repeat
                                      ? SIZE_MAX
-                                     : randperm_bound (ahead_lines, n_lines)));
-  if (! randint_source)
+                                     : randperm_bound (ahead_سطریں, n_سطریں)));
+  اگر (! randint_ماخذ)
     error (EXIT_FAILURE, errno, "%s",
-           quotef (random_source ? random_source : "getrandom"));
+           quotef (random_ماخذ ? random_ماخذ : "getrandom"));
 
-  if (use_reservoir_sampling)
+  اگر (use_reservoir_sampling)
     {
       /* Instead of reading the entire file into 'line',
          use reservoir-sampling to store just AHEAD_LINES random lines.  */
-      n_lines = read_input_reservoir_sampling (stdin, eolbyte, ahead_lines,
-                                               randint_source, &reservoir);
-      ahead_lines = n_lines;
+      n_سطریں = read_داخلہ_reservoir_sampling (stdin, eolbyte, ahead_سطریں,
+                                               randint_ماخذ, &reservoir);
+      ahead_سطریں = n_سطریں;
     }
 
   /* Close stdin now, rather than earlier, so that randint_all_new
      doesn't have to worry about opening something other than
      stdin.  */
-  if (! (head_lines == 0 || echo || input_range || fclose (stdin) == 0))
+  اگر (! (سر_سطریں == 0 || echo || داخلہ_range || fclose (stdin) == 0))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  if (!repeat)
-    permutation = randperm_new (randint_source, ahead_lines, n_lines);
+  اگر (!repeat)
+    permutation = randperm_new (randint_ماخذ, ahead_سطریں, n_سطریں);
 
-  if (outfile && ! freopen (outfile, "w", stdout))
+  اگر (outfile && ! freopen (outfile, "w", stdout))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   /* Generate output according to requested method */
-  if (repeat)
+  اگر (repeat)
     {
-      if (head_lines == 0)
+      اگر (سر_سطریں == 0)
         i = 0;
-      else
+      ورنہ
         {
-          if (n_lines == 0)
+          اگر (n_سطریں == 0)
             error (EXIT_FAILURE, 0, _("no lines to repeat"));
-          if (input_range)
-            i = write_random_numbers (randint_source, ahead_lines,
-                                      lo_input, hi_input, eolbyte);
-          else
-            i = write_random_lines (randint_source, ahead_lines, line, n_lines);
+          اگر (داخلہ_range)
+            i = write_random_numbers (randint_ماخذ, ahead_سطریں,
+                                      lo_داخلہ, hi_داخلہ, eolbyte);
+          ورنہ
+            i = write_random_سطریں (randint_ماخذ, ahead_سطریں, سطر, n_سطریں);
         }
     }
-  else
+  ورنہ
     {
-      if (use_reservoir_sampling)
-        i = write_permuted_output_reservoir (n_lines, reservoir, permutation);
-      else if (input_range)
-        i = write_permuted_numbers (ahead_lines, lo_input,
+      اگر (use_reservoir_sampling)
+        i = write_permuted_output_reservoir (n_سطریں, reservoir, permutation);
+      ورنہ اگر (داخلہ_range)
+        i = write_permuted_numbers (ahead_سطریں, lo_داخلہ,
                                     permutation, eolbyte);
-      else
-        i = write_permuted_lines (ahead_lines, line, permutation);
+      ورنہ
+        i = write_permuted_سطریں (ahead_سطریں, سطر, permutation);
     }
 
-  if (i != 0)
+  اگر (i != 0)
     write_error ();
 
-  IF_LINT (randint_all_free (randint_source));  /* For older valgrind.  */
+  IF_LINT (randint_all_free (randint_ماخذ));  /* For older valgrind.  */
 
   main_exit (EXIT_SUCCESS);
 }

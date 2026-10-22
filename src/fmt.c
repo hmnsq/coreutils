@@ -16,38 +16,38 @@
 
 /* Written by Ross Paterson <rap@doc.ic.ac.uk>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <getopt.h>
 
 /* Redefine.  Otherwise, systems (Unicos for one) with headers that define
    it to be a type get syntax errors for the variable declaration below.  */
-#define word unused_word_type
+#تعریف_کرو لفظ_2 غیر_مستعمل_لفظ_type
 
-#include "c-ctype.h"
-#include "system.h"
-#include "fadvise.h"
-#include "xdectoint.h"
+#شامل "c-ctype.h"
+#شامل "system.h"
+#شامل "fadvise.h"
+#شامل "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "fmt"
+#تعریف_کرو پروگرام_NAME "fmt"
 
-#define AUTHORS proper_name ("Ross Paterson")
+#تعریف_کرو AUTHORS proper_name ("Ross Paterson")
 
 /* The following parameters represent the program's idea of what is
    "best".  Adjust to taste, subject to the caveats given.  */
 
 /* Default longest permitted line length (max_width).  */
-#define WIDTH	75
+#تعریف_کرو چوڑائی_2	75
 
 /* Prefer lines to be LEEWAY % shorter than the maximum width, giving
    room for optimization.  */
-#define LEEWAY	7
+#تعریف_کرو LEEWAY	7
 
 /* The default secondary indent of tagged paragraph used for unindented
    one-line paragraphs not preceded by any multi-line paragraphs.  */
-#define DEF_INDENT 3
+#تعریف_کرو DEF_INDENT 3
 
 /* Costs and bonuses are expressed as the equivalent departure from the
    optimal line length, multiplied by 10.  e.g. assigning something a
@@ -60,48 +60,48 @@
    a floating-point type.  There are other problems besides COST,
    though; see MAXWORDS below.  */
 
-typedef long int COST;
+قسمتعریف طویل صحیح لاگت;
 
-#define MAXCOST	TYPE_MAXIMUM (COST)
+#تعریف_کرو MAXCOST	TYPE_زیادہ_سے_زیادہ (لاگت)
 
-#define SQR(n)		((n) * (n))
-#define EQUIV(n)	SQR ((COST) (n))
+#تعریف_کرو SQR(n)		((n) * (n))
+#تعریف_کرو EQUIV(n)	SQR ((لاگت) (n))
 
 /* Cost of a filled line n chars longer or shorter than goal_width.  */
-#define SHORT_COST(n)	EQUIV ((n) * 10)
+#تعریف_کرو SHORT_لاگت(n)	EQUIV ((n) * 10)
 
 /* Cost of the difference between adjacent filled lines.  */
-#define RAGGED_COST(n)	(SHORT_COST (n) / 2)
+#تعریف_کرو RAGGED_لاگت(n)	(SHORT_لاگت (n) / 2)
 
 /* Basic cost per line.  */
-#define LINE_COST	EQUIV (70)
+#تعریف_کرو سطر_لاگت	EQUIV (70)
 
 /* Cost of breaking a line after the first word of a sentence, where
    the length of the word is N.  */
-#define WIDOW_COST(n)	(EQUIV (200) / ((n) + 2))
+#تعریف_کرو WIDOW_لاگت(n)	(EQUIV (200) / ((n) + 2))
 
 /* Cost of breaking a line before the last word of a sentence, where
    the length of the word is N.  */
-#define ORPHAN_COST(n)	(EQUIV (150) / ((n) + 2))
+#تعریف_کرو ORPHAN_لاگت(n)	(EQUIV (150) / ((n) + 2))
 
 /* Bonus for breaking a line at the end of a sentence.  */
-#define SENTENCE_BONUS	EQUIV (50)
+#تعریف_کرو SENTENCE_BONUS	EQUIV (50)
 
 /* Cost of breaking a line after a period not marking end of a sentence.
    With the definition of sentence we are using (borrowed from emacs, see
    get_line()) such a break would then look like a sentence break.  Hence
    we assign a very high cost -- it should be avoided unless things are
    really bad.  */
-#define NOBREAK_COST	EQUIV (600)
+#تعریف_کرو NOBREAK_لاگت	EQUIV (600)
 
 /* Bonus for breaking a line before open parenthesis.  */
-#define PAREN_BONUS	EQUIV (40)
+#تعریف_کرو PAREN_BONUS	EQUIV (40)
 
 /* Bonus for breaking a line after other punctuation.  */
-#define PUNCT_BONUS	EQUIV(40)
+#تعریف_کرو PUNCT_BONUS	EQUIV(40)
 
 /* Credit for breaking a long paragraph one line later.  */
-#define LINE_CREDIT	EQUIV(3)
+#تعریف_کرو سطر_CREDIT	EQUIV(3)
 
 /* Size of paragraph buffer, in words and characters.  Longer paragraphs
    are handled neatly (cf. flush_paragraph()), so long as these values
@@ -110,134 +110,134 @@ typedef long int COST;
    and/or cause more overflows in cost calculations.  FIXME: Remove these
    arbitrary limits.  */
 
-#define MAXWORDS	1000
-#define MAXCHARS	5000
+#تعریف_کرو MAXWORDS	1000
+#تعریف_کرو MAXCHARS	5000
 
 /* Extra ctype(3)-style macros.  */
 
-#define isopen(c)	(strchr ("(['`\"", c) != NULL)
-#define isclose(c)	(strchr (")]'\"", c) != NULL)
-#define isperiod(c)	(strchr (".?!", c) != NULL)
+#تعریف_کرو isopen(c)	(strchr ("(['`\"", c) != تہی)
+#تعریف_کرو isclose(c)	(strchr (")]'\"", c) != تہی)
+#تعریف_کرو isperiod(c)	(strchr (".?!", c) != تہی)
 
 /* Size of a tab stop, for expansion on input and re-introduction on
    output.  */
-#define TABWIDTH	8
+#تعریف_کرو TABWIDTH	8
 
 /* Word descriptor structure.  */
 
-typedef struct Word WORD;
+قسمتعریف ساخت لفظ_3 لفظ;
 
-struct Word
+ساخت لفظ_3
   {
 
     /* Static attributes determined during input.  */
 
-    char const *text;		/* the text of the word */
-    int length;			/* length of this word */
-    int space;			/* the size of the following space */
-    unsigned int paren:1;	/* starts with open paren */
-    unsigned int period:1;	/* ends in [.?!])* */
-    unsigned int punct:1;	/* ends in punctuation */
-    unsigned int final:1;	/* end of sentence */
+    حرف ثابت *متن;		/* the text of the word */
+    صحیح لمبائی;			/* length of this word */
+    صحیح space;			/* the size of the following space */
+    غیرعلامتی صحیح paren:1;	/* starts with open paren */
+    غیرعلامتی صحیح period:1;	/* ends in [.?!])* */
+    غیرعلامتی صحیح punct:1;	/* ends in punctuation */
+    غیرعلامتی صحیح final:1;	/* end of sentence */
 
     /* The remaining fields are computed during the optimization.  */
 
-    int line_length;		/* length of the best line starting here */
-    COST best_cost;		/* cost of best paragraph starting here */
-    WORD *next_break;		/* break which achieves best_cost */
+    صحیح سطر_لمبائی;		/* length of the best line starting here */
+    لاگت بہترین_لاگت;		/* cost of best paragraph starting here */
+    لفظ *اگلا_break;		/* break which achieves best_cost */
   };
 
 /* Forward declarations.  */
 
-static void set_prefix (char *p);
-static bool fmt (FILE *f, char const *);
-static bool get_paragraph (FILE *f);
-static int get_line (FILE *f, int c);
-static int get_prefix (FILE *f);
-static int get_space (FILE *f, int c);
-static int copy_rest (FILE *f, int c);
-static bool same_para (int c);
-static void flush_paragraph (void);
-static void fmt_paragraph (void);
-static void check_punctuation (WORD *w);
-static COST base_cost (WORD *this);
-static COST line_cost (WORD *next, int len);
-static void put_paragraph (WORD *finish);
-static void put_line (WORD *w, int indent);
-static void put_word (WORD *w);
-static void put_space (int space);
+ساکن خالی سیٹ_سابقہ (حرف *p);
+ساکن bool fmt (FILE *f, حرف ثابت *);
+ساکن bool get_paragraph (FILE *f);
+ساکن صحیح get_سطر (FILE *f, صحیح c);
+ساکن صحیح get_سابقہ (FILE *f);
+ساکن صحیح get_space (FILE *f, صحیح c);
+ساکن صحیح copy_rest (FILE *f, صحیح c);
+ساکن bool same_para (صحیح c);
+ساکن خالی flush_paragraph (خالی);
+ساکن خالی fmt_paragraph (خالی);
+ساکن خالی check_punctuation (لفظ *w);
+ساکن لاگت بنیاد_لاگت (لفظ *this);
+ساکن لاگت سطر_لاگت_2 (لفظ *اگلا, صحیح len);
+ساکن خالی put_paragraph (لفظ *اختتام);
+ساکن خالی put_سطر (لفظ *w, صحیح indent);
+ساکن خالی put_لفظ (لفظ *w);
+ساکن خالی put_space (صحیح space);
 
 /* Option values.  */
 
 /* If true, first 2 lines may have different indent (default false).  */
-static bool crown;
+ساکن bool crown;
 
 /* If true, first 2 lines _must_ have different indent (default false).  */
-static bool tagged;
+ساکن bool tagged;
 
 /* If true, each line is a paragraph on its own (default false).  */
-static bool split;
+ساکن bool بانٹو;
 
 /* If true, don't preserve inter-word spacing (default false).  */
-static bool uniform;
+ساکن bool یکساں;
 
 /* Prefix minus leading and trailing spaces (default "").  */
-static char const *prefix = "";
+ساکن حرف ثابت *سابقہ = "";
 
 /* User-supplied maximum line width (default WIDTH).  The only output
    lines longer than this will each comprise a single word.  */
-static int max_width = WIDTH;
+ساکن صحیح max_چوڑائی = چوڑائی_2;
 
 /* Values derived from the option values.  */
 
 /* The length of prefix minus leading space.  */
-static int prefix_full_length;
+ساکن صحیح سابقہ_بھرا_لمبائی;
 
 /* The length of the leading space trimmed from the prefix.  */
-static int prefix_lead_space;
+ساکن صحیح سابقہ_lead_space;
 
 /* The length of prefix minus leading and trailing space.  */
-static int prefix_length;
+ساکن صحیح سابقہ_لمبائی;
 
 /* The preferred width of text lines, set to LEEWAY % less than max_width.  */
-static int goal_width;
+ساکن صحیح goal_چوڑائی;
 
 /* Dynamic variables.  */
 
 /* Start column of the character most recently read from the input file.  */
-static int in_column;
+ساکن صحیح اندر_عمود;
 
 /* Start column of the next character to be written to stdout.  */
-static int out_column;
+ساکن صحیح برآمد_عمود;
 
 /* Space for the paragraph text -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static char parabuf[MAXCHARS];
+ساکن حرف parabuf[MAXCHARS];
 
 /* A pointer into parabuf, indicating the first unused character position.  */
-static char *wptr;
+ساکن حرف *wptr;
 
 /* The words of a paragraph -- longer paragraphs are handled neatly
    (cf. flush_paragraph()).  */
-static WORD word[MAXWORDS];
+ساکن لفظ لفظ_2[MAXWORDS];
 
 /* A pointer into the above word array, indicating the first position
    after the last complete word.  Sometimes it will point at an incomplete
    word.  */
-static WORD *word_limit;
+ساکن لفظ *لفظ_حد_بندی;
 
 /* If true, current input file contains tab characters, and so tabs can be
    used for white space on output.  */
-static bool tabs;
+ساکن bool tabs;
 
 /* Space before trimmed prefix on each line of the current paragraph.  */
-static int prefix_indent;
+ساکن صحیح سابقہ_indent;
 
 /* Indentation of the first line of the current paragraph.  */
-static int first_indent;
+ساکن صحیح پہلا_indent;
 
 /* Indentation of other lines of the current paragraph */
-static int other_indent;
+ساکن صحیح other_indent;
 
 /* To detect the end of a paragraph, we need to look ahead to the first
    non-blank character after the prefix on the next line, or the first
@@ -247,28 +247,28 @@ static int other_indent;
    prefix (next_prefix_indent).  See get_paragraph() and copy_rest().  */
 
 /* The last character read from the input file.  */
-static int next_char;
+ساکن صحیح اگلا_char;
 
 /* The space before the trimmed prefix (or part of it) on the next line
    after the current paragraph.  */
-static int next_prefix_indent;
+ساکن صحیح اگلا_سابقہ_indent;
 
 /* If nonzero, the length of the last line output in the current
    paragraph, used to charge for raggedness at the split point for long
    paragraphs chosen by fmt_paragraph().  */
-static int last_line_length;
+ساکن صحیح آخری_سطر_لمبائی;
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), program_name);
+      لکھو (_("Usage: %s [-WIDTH] [OPTION]... [FILE]...\n"), پروگرام_name);
       fputs (_("\
-Reformat each paragraph in the FILE(s), writing to standard output.\n\
-The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
+Reformat each paragraph اندر the FILE(s), writing مقصد standard output.\n\
+The option -چوڑائی_2 is an abbreviated form کا --چوڑائی=DIGITS.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -276,78 +276,78 @@ The option -WIDTH is an abbreviated form of --width=DIGITS.\n\
 
       oputs (_("\
   -c, --crown-margin\n\
-         preserve indentation of first two lines\n\
+         preserve indentation کا پہلا two سطریں\n\
 "));
       oputs (_("\
-  -p, --prefix=STRING\n\
-         reformat only lines beginning with STRING,\n\
-         reattaching the prefix to reformatted lines\n\
+  -p, --سابقہ=STRING\n\
+         reformat only سطریں beginning with STRING,\n\
+         reattaching the سابقہ مقصد reformatted سطریں\n\
 "));
       oputs (_("\
-  -s, --split-only\n\
-         split long lines, but do not refill\n\
+  -s, --بانٹو-only\n\
+         بانٹو طویل سطریں, but کرو not refill\n\
 "));
       oputs (_("\
   -t, --tagged-paragraph\n\
-         indentation of first line different from second\n\
+         indentation کا پہلا سطر different from دوسرا\n\
 "));
       oputs (_("\
-  -u, --uniform-spacing\n\
-         one space between words, two after sentences\n\
+  -u, --یکساں-spacing\n\
+         one space between الفاظ, two after sentences\n\
 "));
       oputs (_("\
-  -w, --width=WIDTH\n\
-         maximum line width (default of 75 columns)\n\
+  -w, --چوڑائی=چوڑائی_2\n\
+         زیادہ_سے_زیادہ سطر چوڑائی (طےشدہ کا 75 columns)\n\
 "));
       /* Tell xgettext that the "% o" below is not a printf-style
          format string:  xgettext:no-c-format */
       oputs (_("\
-  -g, --goal=WIDTH\n\
-         goal width (default of 93% of width)\n\
+  -g, --goal=چوڑائی_2\n\
+         goal چوڑائی (طےشدہ کا 93% کا چوڑائی)\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* Decode options and launch execution.  */
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"crown-margin", no_argument, NULL, 'c'},
-  {"prefix", required_argument, NULL, 'p'},
-  {"split-only", no_argument, NULL, 's'},
-  {"tagged-paragraph", no_argument, NULL, 't'},
-  {"uniform-spacing", no_argument, NULL, 'u'},
-  {"width", required_argument, NULL, 'w'},
-  {"goal", required_argument, NULL, 'g'},
+  {"crown-margin", no_دلیل, تہی, 'c'},
+  {"prefix", required_دلیل, تہی, 'p'},
+  {"split-only", no_دلیل, تہی, 's'},
+  {"tagged-paragraph", no_دلیل, تہی, 't'},
+  {"uniform-spacing", no_دلیل, تہی, 'u'},
+  {"width", required_دلیل, تہی, 'w'},
+  {"goal", required_دلیل, تہی, 'g'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0},
 };
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  int optchar;
+  صحیح optchar;
   bool ok = true;
-  char const *max_width_option = NULL;
-  char const *goal_width_option = NULL;
+  حرف ثابت *max_چوڑائی_option = تہی;
+  حرف ثابت *goal_چوڑائی_option = تہی;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  if (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  اگر (argc > 1 && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
       /* Old option syntax; a dash followed by one or more digits.  */
-      max_width_option = argv[1] + 1;
+      max_چوڑائی_option = argv[1] + 1;
 
       /* Make the option we just parsed invisible to getopt.  */
       argv[1] = argv[0];
@@ -355,97 +355,97 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
-                                 long_options, NULL))
+  جب ((optchar = getopt_long (argc, argv, "0123456789cstuw:p:g:",
+                                 long_options, تہی))
          != -1)
-    switch (optchar)
+    انتخاب (optchar)
       {
-      default:
-        if (c_isdigit (optchar))
-          error (0, 0, _("invalid option -- %c; -WIDTH is recognized\
- only when it is the first\noption; use -w N instead"),
+      طےشدہ:
+        اگر (c_isdigit (optchar))
+          error (0, 0, _("invalid option -- %c; -چوڑائی_2 is recognized\
+ only when it is the پہلا\noption; use -w N instead"),
                  optchar);
         usage (EXIT_FAILURE);
 
-      case 'c':
+      حالت 'c':
         crown = true;
-        break;
+        توڑو;
 
-      case 's':
-        split = true;
-        break;
+      حالت 's':
+        بانٹو = true;
+        توڑو;
 
-      case 't':
+      حالت 't':
         tagged = true;
-        break;
+        توڑو;
 
-      case 'u':
-        uniform = true;
-        break;
+      حالت 'u':
+        یکساں = true;
+        توڑو;
 
-      case 'w':
-        max_width_option = optarg;
-        break;
+      حالت 'w':
+        max_چوڑائی_option = optarg;
+        توڑو;
 
-      case 'g':
-        goal_width_option = optarg;
-        break;
+      حالت 'g':
+        goal_چوڑائی_option = optarg;
+        توڑو;
 
-      case 'p':
-        set_prefix (optarg);
-        break;
+      حالت 'p':
+        سیٹ_سابقہ (optarg);
+        توڑو;
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
       }
 
-  if (max_width_option)
+  اگر (max_چوڑائی_option)
     {
       /* Limit max_width to MAXCHARS / 2; otherwise, the resulting
          output can be quite ugly.  */
-      max_width = xnumtoumax (max_width_option, 10, 0, MAXCHARS / 2, "",
+      max_چوڑائی = xnumtoumax (max_چوڑائی_option, 10, 0, MAXCHARS / 2, "",
                               _("invalid width"), 0, XTOINT_MAX_RANGE);
     }
 
-  if (goal_width_option)
+  اگر (goal_چوڑائی_option)
     {
       /* Limit goal_width to max_width.  */
-      goal_width = xdectoumax (goal_width_option, 0, max_width, "",
+      goal_چوڑائی = xdectoumax (goal_چوڑائی_option, 0, max_چوڑائی, "",
                                _("invalid goal"), 0);
-      if (max_width_option == NULL)
-        max_width = goal_width + 10;
+      اگر (max_چوڑائی_option == تہی)
+        max_چوڑائی = goal_چوڑائی + 10;
     }
-  else
+  ورنہ
     {
-      goal_width = max_width * (2 * (100 - LEEWAY) + 1) / 200;
+      goal_چوڑائی = max_چوڑائی * (2 * (100 - LEEWAY) + 1) / 200;
     }
 
   bool have_read_stdin = false;
 
-  if (optind == argc)
+  اگر (optind == argc)
     {
       have_read_stdin = true;
       ok = fmt (stdin, "-");
     }
-  else
+  ورنہ
     {
-      for (; optind < argc; optind++)
+      برائے (; optind < argc; optind++)
         {
-          char *file = argv[optind];
-          if (streq (file, "-"))
+          حرف *file = argv[optind];
+          اگر (streq (file, "-"))
             {
               ok &= fmt (stdin, file);
               have_read_stdin = true;
             }
-          else
+          ورنہ
             {
-              FILE *in_stream;
-              in_stream = fopen (file, "r");
-              if (in_stream != NULL)
-                ok &= fmt (in_stream, file);
-              else
+              FILE *اندر_دھارا;
+              اندر_دھارا = fopen (file, "r");
+              اگر (اندر_دھارا != تہی)
+                ok &= fmt (اندر_دھارا, file);
+              ورنہ
                 {
                   error (0, errno, _("cannot open %s for reading"),
                          quoteaf (file));
@@ -455,33 +455,33 @@ main (int argc, char **argv)
         }
     }
 
-  if (have_read_stdin && fclose (stdin) != 0)
+  اگر (have_read_stdin && fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s", _("closing standard input"));
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Trim space from the front and back of the string P, yielding the prefix,
    and record the lengths of the prefix and the space trimmed.  */
 
-static void
-set_prefix (char *p)
+ساکن خالی
+سیٹ_سابقہ (حرف *p)
 {
-  char *s;
+  حرف *s;
 
-  prefix_lead_space = 0;
-  while (*p == ' ')
+  سابقہ_lead_space = 0;
+  جب (*p == ' ')
     {
-      prefix_lead_space++;
+      سابقہ_lead_space++;
       p++;
     }
-  prefix = p;
-  prefix_full_length = strlen (p);
-  s = p + prefix_full_length;
-  while (s > p && s[-1] == ' ')
+  سابقہ = p;
+  سابقہ_بھرا_لمبائی = لڑی_لمبائی (p);
+  s = p + سابقہ_بھرا_لمبائی;
+  جب (s > p && s[-1] == ' ')
     s--;
   *s = '\0';
-  prefix_length = s - p;
+  سابقہ_لمبائی = s - p;
 }
 
 /* Read F and send formatted output to stdout.
@@ -489,52 +489,52 @@ set_prefix (char *p)
    If !F, assume F resulted from an fopen failure and diagnose that.
    Return true if successful.  */
 
-static bool
-fmt (FILE *f, char const *file)
+ساکن bool
+fmt (FILE *f, حرف ثابت *file)
 {
   fadvise (f, FADVISE_SEQUENTIAL);
   tabs = false;
   other_indent = 0;
-  next_char = get_prefix (f);
-  while (get_paragraph (f))
+  اگلا_char = get_سابقہ (f);
+  جب (get_paragraph (f))
     {
       fmt_paragraph ();
-      put_paragraph (word_limit);
+      put_paragraph (لفظ_حد_بندی);
     }
 
-  int err = ferror (f) ? 0 : -1;
+  صحیح err = ferror (f) ? 0 : -1;
   /* err < 0 means success.  */
-  if (f == stdin)
+  اگر (f == stdin)
     clearerr (f);
-  else if (fclose (f) != 0 && err < 0)
+  ورنہ اگر (fclose (f) != 0 && err < 0)
     err = errno;
-  if (0 <= err)
+  اگر (0 <= err)
     {
-      if (f == stdin)
+      اگر (f == stdin)
         error (0, errno, _("read error"));
-      else
+      ورنہ
         error (0, errno, _("error reading %s"), quoteaf (file));
     }
-  return err < 0;
+  واپس err < 0;
 }
 
 /* Set the global variable 'other_indent' according to SAME_PARAGRAPH
    and other global variables.  */
 
-static void
-set_other_indent (bool same_paragraph)
+ساکن خالی
+سیٹ_other_indent (bool same_paragraph)
 {
-  if (split)
-    other_indent = first_indent;
-  else if (crown)
+  اگر (بانٹو)
+    other_indent = پہلا_indent;
+  ورنہ اگر (crown)
     {
-      other_indent = (same_paragraph ? in_column : first_indent);
+      other_indent = (same_paragraph ? اندر_عمود : پہلا_indent);
     }
-  else if (tagged)
+  ورنہ اگر (tagged)
     {
-      if (same_paragraph && in_column != first_indent)
+      اگر (same_paragraph && اندر_عمود != پہلا_indent)
         {
-          other_indent = in_column;
+          other_indent = اندر_عمود;
         }
 
       /* Only one line: use the secondary indent from last time if it
@@ -542,12 +542,12 @@ set_other_indent (bool same_paragraph)
          input so far.  But if these rules make the two indents the same,
          pick a new secondary indent.  */
 
-      else if (other_indent == first_indent)
-        other_indent = first_indent == 0 ? DEF_INDENT : 0;
+      ورنہ اگر (other_indent == پہلا_indent)
+        other_indent = پہلا_indent == 0 ? DEF_INDENT : 0;
     }
-  else
+  ورنہ
     {
-      other_indent = first_indent;
+      other_indent = پہلا_indent;
     }
 }
 
@@ -566,76 +566,76 @@ set_other_indent (bool same_paragraph)
    Return false if end-of-file was encountered before the start of a
    paragraph, else true.  */
 
-static bool
+ساکن bool
 get_paragraph (FILE *f)
 {
-  int c;
+  صحیح c;
 
-  last_line_length = 0;
-  c = next_char;
+  آخری_سطر_لمبائی = 0;
+  c = اگلا_char;
 
   /* Scan (and copy) blank lines, and lines not introduced by the prefix.  */
 
-  while (c == '\n' || c == EOF
-         || next_prefix_indent < prefix_lead_space
-         || in_column < next_prefix_indent + prefix_full_length)
+  جب (c == '\n' || c == EOF
+         || اگلا_سابقہ_indent < سابقہ_lead_space
+         || اندر_عمود < اگلا_سابقہ_indent + سابقہ_بھرا_لمبائی)
     {
       c = copy_rest (f, c);
-      if (c == EOF)
+      اگر (c == EOF)
         {
-          next_char = EOF;
-          return false;
+          اگلا_char = EOF;
+          واپس false;
         }
-      putchar ('\n');
-      c = get_prefix (f);
+      حرف_لکھو ('\n');
+      c = get_سابقہ (f);
     }
 
   /* Got a suitable first line for a paragraph.  */
 
-  prefix_indent = next_prefix_indent;
-  first_indent = in_column;
+  سابقہ_indent = اگلا_سابقہ_indent;
+  پہلا_indent = اندر_عمود;
   wptr = parabuf;
-  word_limit = word;
-  c = get_line (f, c);
-  set_other_indent (same_para (c));
+  لفظ_حد_بندی = لفظ_2;
+  c = get_سطر (f, c);
+  سیٹ_other_indent (same_para (c));
 
   /* Read rest of paragraph (unless split is specified).  */
 
-  if (split)
+  اگر (بانٹو)
     {
-      /* empty */
+      /*خالی_خانے*/
     }
-  else if (crown)
+  ورنہ اگر (crown)
     {
-      if (same_para (c))
+      اگر (same_para (c))
         {
-          do
+          کرو
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_سطر (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          جب (same_para (c) && اندر_عمود == other_indent);
         }
     }
-  else if (tagged)
+  ورنہ اگر (tagged)
     {
-      if (same_para (c) && in_column != first_indent)
+      اگر (same_para (c) && اندر_عمود != پہلا_indent)
         {
-          do
+          کرو
             {			/* for each line till the end of the para */
-              c = get_line (f, c);
+              c = get_سطر (f, c);
             }
-          while (same_para (c) && in_column == other_indent);
+          جب (same_para (c) && اندر_عمود == other_indent);
         }
     }
-  else
+  ورنہ
     {
-      while (same_para (c) && in_column == other_indent)
-        c = get_line (f, c);
+      جب (same_para (c) && اندر_عمود == other_indent)
+        c = get_سطر (f, c);
     }
 
-  (word_limit - 1)->period = (word_limit - 1)->final = true;
-  next_char = c;
-  return true;
+  (لفظ_حد_بندی - 1)->period = (لفظ_حد_بندی - 1)->final = true;
+  اگلا_char = c;
+  واپس true;
 }
 
 /* Copy to the output a line that failed to match the prefix, or that
@@ -643,37 +643,37 @@ get_paragraph (FILE *f)
    that failed to match the prefix.  In the latter, C is \n or EOF.
    Return the character (\n or EOF) ending the line.  */
 
-static int
-copy_rest (FILE *f, int c)
+ساکن صحیح
+copy_rest (FILE *f, صحیح c)
 {
-  out_column = 0;
-  if (in_column > next_prefix_indent || (c != '\n' && c != EOF))
+  برآمد_عمود = 0;
+  اگر (اندر_عمود > اگلا_سابقہ_indent || (c != '\n' && c != EOF))
     {
-      put_space (next_prefix_indent);
-      for (char const *s = prefix; out_column != in_column && *s; out_column++)
-        putchar (*s++);
-      if (c != EOF && c != '\n')
-        put_space (in_column - out_column);
-      if (c == EOF && in_column >= next_prefix_indent + prefix_length)
-        putchar ('\n');
+      put_space (اگلا_سابقہ_indent);
+      برائے (حرف ثابت *s = سابقہ; برآمد_عمود != اندر_عمود && *s; برآمد_عمود++)
+        حرف_لکھو (*s++);
+      اگر (c != EOF && c != '\n')
+        put_space (اندر_عمود - برآمد_عمود);
+      اگر (c == EOF && اندر_عمود >= اگلا_سابقہ_indent + سابقہ_لمبائی)
+        حرف_لکھو ('\n');
     }
-  while (c != '\n' && c != EOF)
+  جب (c != '\n' && c != EOF)
     {
-      putchar (c);
+      حرف_لکھو (c);
       c = getc (f);
     }
-  return c;
+  واپس c;
 }
 
 /* Return true if a line whose first non-blank character after the
    prefix (if any) is C could belong to the current paragraph,
    otherwise false.  */
 
-static bool
-same_para (int c)
+ساکن bool
+same_para (صحیح c)
 {
-  return (next_prefix_indent == prefix_indent
-          && in_column >= next_prefix_indent + prefix_full_length
+  واپس (اگلا_سابقہ_indent == سابقہ_indent
+          && اندر_عمود >= اگلا_سابقہ_indent + سابقہ_بھرا_لمبائی
           && c != '\n' && c != EOF);
 }
 
@@ -685,144 +685,144 @@ same_para (int c)
 
    Return the first non-blank character of the next line.  */
 
-static int
-get_line (FILE *f, int c)
+ساکن صحیح
+get_سطر (FILE *f, صحیح c)
 {
-  int start;
-  char *end_of_parabuf;
-  WORD *end_of_word;
+  صحیح آغاز;
+  حرف *انتہا_کا_parabuf;
+  لفظ *انتہا_کا_لفظ;
 
-  end_of_parabuf = &parabuf[MAXCHARS];
-  end_of_word = &word[MAXWORDS - 2];
+  انتہا_کا_parabuf = &parabuf[MAXCHARS];
+  انتہا_کا_لفظ = &لفظ_2[MAXWORDS - 2];
 
-  do
+  کرو
     {				/* for each word in a line */
 
       /* Scan word.  */
 
-      word_limit->text = wptr;
-      do
+      لفظ_حد_بندی->متن = wptr;
+      کرو
         {
-          if (wptr == end_of_parabuf)
+          اگر (wptr == انتہا_کا_parabuf)
             {
-              set_other_indent (true);
+              سیٹ_other_indent (true);
               flush_paragraph ();
             }
           *wptr++ = c;
           c = getc (f);
         }
-      while (c != EOF && !c_isspace (c));
-      in_column += word_limit->length = wptr - word_limit->text;
-      check_punctuation (word_limit);
+      جب (c != EOF && !c_isspace (c));
+      اندر_عمود += لفظ_حد_بندی->لمبائی = wptr - لفظ_حد_بندی->متن;
+      check_punctuation (لفظ_حد_بندی);
 
       /* Scan inter-word space.  */
 
-      start = in_column;
+      آغاز = اندر_عمود;
       c = get_space (f, c);
-      word_limit->space = in_column - start;
-      word_limit->final = (c == EOF
-                           || (word_limit->period
-                               && (c == '\n' || word_limit->space > 1)));
-      if (c == '\n' || c == EOF || uniform)
-        word_limit->space = word_limit->final ? 2 : 1;
-      if (word_limit == end_of_word)
+      لفظ_حد_بندی->space = اندر_عمود - آغاز;
+      لفظ_حد_بندی->final = (c == EOF
+                           || (لفظ_حد_بندی->period
+                               && (c == '\n' || لفظ_حد_بندی->space > 1)));
+      اگر (c == '\n' || c == EOF || یکساں)
+        لفظ_حد_بندی->space = لفظ_حد_بندی->final ? 2 : 1;
+      اگر (لفظ_حد_بندی == انتہا_کا_لفظ)
         {
-          set_other_indent (true);
+          سیٹ_other_indent (true);
           flush_paragraph ();
         }
-      word_limit++;
+      لفظ_حد_بندی++;
     }
-  while (c != '\n' && c != EOF);
-  return get_prefix (f);
+  جب (c != '\n' && c != EOF);
+  واپس get_سابقہ (f);
 }
 
 /* Read a prefix from input file F.  Return either first non-matching
    character, or first non-blank character after the prefix.  */
 
-static int
-get_prefix (FILE *f)
+ساکن صحیح
+get_سابقہ (FILE *f)
 {
-  int c;
+  صحیح c;
 
-  in_column = 0;
+  اندر_عمود = 0;
   c = get_space (f, getc (f));
-  if (prefix_length == 0)
-    next_prefix_indent = prefix_lead_space < in_column ?
-      prefix_lead_space : in_column;
-  else
+  اگر (سابقہ_لمبائی == 0)
+    اگلا_سابقہ_indent = سابقہ_lead_space < اندر_عمود ?
+      سابقہ_lead_space : اندر_عمود;
+  ورنہ
     {
-      next_prefix_indent = in_column;
-      for (char const *p = prefix; *p != '\0'; p++)
+      اگلا_سابقہ_indent = اندر_عمود;
+      برائے (حرف ثابت *p = سابقہ; *p != '\0'; p++)
         {
-          unsigned char pc = *p;
-          if (c != pc)
-            return c;
-          in_column++;
+          غیرعلامتی حرف pc = *p;
+          اگر (c != pc)
+            واپس c;
+          اندر_عمود++;
           c = getc (f);
         }
       c = get_space (f, c);
     }
-  return c;
+  واپس c;
 }
 
 /* Read blank characters from input file F, starting with C, and keeping
    in_column up-to-date.  Return first non-blank character.  */
 
-static int
-get_space (FILE *f, int c)
+ساکن صحیح
+get_space (FILE *f, صحیح c)
 {
-  while (true)
+  جب (true)
     {
-      if (c == ' ')
-        in_column++;
-      else if (c == '\t')
+      اگر (c == ' ')
+        اندر_عمود++;
+      ورنہ اگر (c == '\t')
         {
           tabs = true;
-          in_column = (in_column / TABWIDTH + 1) * TABWIDTH;
+          اندر_عمود = (اندر_عمود / TABWIDTH + 1) * TABWIDTH;
         }
-      else
-        return c;
+      ورنہ
+        واپس c;
       c = getc (f);
     }
 }
 
 /* Set extra fields in word W describing any attached punctuation.  */
 
-static void
-check_punctuation (WORD *w)
+ساکن خالی
+check_punctuation (لفظ *w)
 {
-  char const *start = w->text;
-  char const *finish = start + (w->length - 1);
-  unsigned char fin = *finish;
+  حرف ثابت *آغاز = w->متن;
+  حرف ثابت *اختتام = آغاز + (w->لمبائی - 1);
+  غیرعلامتی حرف fin = *اختتام;
 
-  w->paren = isopen (*start);
+  w->paren = isopen (*آغاز);
   w->punct = !! ispunct (fin);
-  while (start < finish && isclose (*finish))
-    finish--;
-  w->period = isperiod (*finish);
+  جب (آغاز < اختتام && isclose (*اختتام))
+    اختتام--;
+  w->period = isperiod (*اختتام);
 }
 
 /* Flush part of the paragraph to make room.  This function is called on
    hitting the limit on the number of words or characters.  */
 
-static void
-flush_paragraph (void)
+ساکن خالی
+flush_paragraph (خالی)
 {
-  WORD *split_point;
-  WORD *w;
-  int shift;
-  COST best_break;
+  لفظ *بانٹو_نقطہ;
+  لفظ *w;
+  صحیح سرکاؤ;
+  لاگت بہترین_break;
 
   /* In the special case where it's all one word, just flush it.  */
 
-  if (word_limit == word)
+  اگر (لفظ_حد_بندی == لفظ_2)
     {
-      size_t to_write = wptr - parabuf;
-      if (fwrite (parabuf, 1, to_write, stdout) != to_write)
+      size_t مقصد_write = wptr - parabuf;
+      اگر (fwrite (parabuf, 1, مقصد_write, stdout) != مقصد_write)
         write_error ();
 
       wptr = parabuf;
-      return;
+      واپس;
     }
 
   /* Otherwise:
@@ -835,226 +835,226 @@ flush_paragraph (void)
 
   /* Choose a good split point.  */
 
-  split_point = word_limit;
-  best_break = MAXCOST;
-  for (w = word->next_break; w != word_limit; w = w->next_break)
+  بانٹو_نقطہ = لفظ_حد_بندی;
+  بہترین_break = MAXCOST;
+  برائے (w = لفظ_2->اگلا_break; w != لفظ_حد_بندی; w = w->اگلا_break)
     {
-      if (w->best_cost - w->next_break->best_cost < best_break)
+      اگر (w->بہترین_لاگت - w->اگلا_break->بہترین_لاگت < بہترین_break)
         {
-          split_point = w;
-          best_break = w->best_cost - w->next_break->best_cost;
+          بانٹو_نقطہ = w;
+          بہترین_break = w->بہترین_لاگت - w->اگلا_break->بہترین_لاگت;
         }
-      if (best_break <= MAXCOST - LINE_CREDIT)
-        best_break += LINE_CREDIT;
+      اگر (بہترین_break <= MAXCOST - سطر_CREDIT)
+        بہترین_break += سطر_CREDIT;
     }
-  put_paragraph (split_point);
+  put_paragraph (بانٹو_نقطہ);
 
   /* Copy text of words down to start of parabuf -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (parabuf, split_point->text, wptr - split_point->text);
-  shift = split_point->text - parabuf;
-  wptr -= shift;
+  memmove (parabuf, بانٹو_نقطہ->متن, wptr - بانٹو_نقطہ->متن);
+  سرکاؤ = بانٹو_نقطہ->متن - parabuf;
+  wptr -= سرکاؤ;
 
   /* Adjust text pointers.  */
 
-  for (w = split_point; w <= word_limit; w++)
-    w->text -= shift;
+  برائے (w = بانٹو_نقطہ; w <= لفظ_حد_بندی; w++)
+    w->متن -= سرکاؤ;
 
   /* Copy words from split_point down to word -- we use memmove because
      the source and target may overlap.  */
 
-  memmove (word, split_point, (word_limit - split_point + 1) * sizeof *word);
-  word_limit -= split_point - word;
+  memmove (لفظ_2, بانٹو_نقطہ, (لفظ_حد_بندی - بانٹو_نقطہ + 1) * حجم *لفظ_2);
+  لفظ_حد_بندی -= بانٹو_نقطہ - لفظ_2;
 }
 
 /* Compute the optimal formatting for the whole paragraph by computing
    and remembering the optimal formatting for each suffix from the empty
    one to the whole paragraph.  */
 
-static void
-fmt_paragraph (void)
+ساکن خالی
+fmt_paragraph (خالی)
 {
-  WORD *w;
-  int len;
-  COST wcost, best;
-  int saved_length;
+  لفظ *w;
+  صحیح len;
+  لاگت wcost, بہترین;
+  صحیح saved_لمبائی;
 
-  word_limit->best_cost = 0;
-  saved_length = word_limit->length;
-  word_limit->length = max_width;	/* sentinel */
+  لفظ_حد_بندی->بہترین_لاگت = 0;
+  saved_لمبائی = لفظ_حد_بندی->لمبائی;
+  لفظ_حد_بندی->لمبائی = max_چوڑائی;	/* sentinel */
 
-  for (WORD *start = word_limit - 1; start >= word; start--)
+  برائے (لفظ *آغاز = لفظ_حد_بندی - 1; آغاز >= لفظ_2; آغاز--)
     {
-      best = MAXCOST;
-      len = start == word ? first_indent : other_indent;
+      بہترین = MAXCOST;
+      len = آغاز == لفظ_2 ? پہلا_indent : other_indent;
 
       /* At least one word, however long, in the line.  */
 
-      w = start;
-      len += w->length;
-      do
+      w = آغاز;
+      len += w->لمبائی;
+      کرو
         {
           w++;
 
           /* Consider breaking before w.  */
 
-          wcost = line_cost (w, len) + w->best_cost;
-          if (start == word && last_line_length > 0)
-            wcost += RAGGED_COST (len - last_line_length);
-          if (wcost < best)
+          wcost = سطر_لاگت_2 (w, len) + w->بہترین_لاگت;
+          اگر (آغاز == لفظ_2 && آخری_سطر_لمبائی > 0)
+            wcost += RAGGED_لاگت (len - آخری_سطر_لمبائی);
+          اگر (wcost < بہترین)
             {
-              best = wcost;
-              start->next_break = w;
-              start->line_length = len;
+              بہترین = wcost;
+              آغاز->اگلا_break = w;
+              آغاز->سطر_لمبائی = len;
             }
 
           /* This is a kludge to keep us from computing 'len' as the
              sum of the sentinel length and some non-zero number.
              Since the sentinel w->length may be INT_MAX, adding
              to that would give a negative result.  */
-          if (w == word_limit)
-            break;
+          اگر (w == لفظ_حد_بندی)
+            توڑو;
 
-          len += (w - 1)->space + w->length;	/* w > start >= word */
+          len += (w - 1)->space + w->لمبائی;	/* w > start >= word */
         }
-      while (len <= max_width);
-      start->best_cost = best + base_cost (start);
+      جب (len <= max_چوڑائی);
+      آغاز->بہترین_لاگت = بہترین + بنیاد_لاگت (آغاز);
     }
 
-  word_limit->length = saved_length;
+  لفظ_حد_بندی->لمبائی = saved_لمبائی;
 }
 
 /* Work around <https://gcc.gnu.org/PR109628>.  */
-#if __GNUC__ == 13
+#اگر __GNUC__ == 13
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
+#اگر_ختم
 
 /* Return the constant component of the cost of breaking before the
    word THIS.  */
 
-static COST
-base_cost (WORD *this)
+ساکن لاگت
+بنیاد_لاگت (لفظ *this)
 {
-  COST cost;
+  لاگت لاگت_2;
 
-  cost = LINE_COST;
+  لاگت_2 = سطر_لاگت;
 
-  if (this > word)
+  اگر (this > لفظ_2)
     {
-      if ((this - 1)->period)
+      اگر ((this - 1)->period)
         {
-          if ((this - 1)->final)
-            cost -= SENTENCE_BONUS;
-          else
-            cost += NOBREAK_COST;
+          اگر ((this - 1)->final)
+            لاگت_2 -= SENTENCE_BONUS;
+          ورنہ
+            لاگت_2 += NOBREAK_لاگت;
         }
-      else if ((this - 1)->punct)
-        cost -= PUNCT_BONUS;
-      else if (this > word + 1 && (this - 2)->final)
-        cost += WIDOW_COST ((this - 1)->length);
+      ورنہ اگر ((this - 1)->punct)
+        لاگت_2 -= PUNCT_BONUS;
+      ورنہ اگر (this > لفظ_2 + 1 && (this - 2)->final)
+        لاگت_2 += WIDOW_لاگت ((this - 1)->لمبائی);
     }
 
-  if (this->paren)
-    cost -= PAREN_BONUS;
-  else if (this->final)
-    cost += ORPHAN_COST (this->length);
+  اگر (this->paren)
+    لاگت_2 -= PAREN_BONUS;
+  ورنہ اگر (this->final)
+    لاگت_2 += ORPHAN_لاگت (this->لمبائی);
 
-  return cost;
+  واپس لاگت_2;
 }
 
 /* Return the component of the cost of breaking before word NEXT that
    depends on LEN, the length of the line beginning there.  */
 
-static COST
-line_cost (WORD *next, int len)
+ساکن لاگت
+سطر_لاگت_2 (لفظ *اگلا, صحیح len)
 {
-  int n;
-  COST cost;
+  صحیح n;
+  لاگت لاگت_2;
 
-  if (next == word_limit)
-    return 0;
-  n = goal_width - len;
-  cost = SHORT_COST (n);
-  if (next->next_break != word_limit)
+  اگر (اگلا == لفظ_حد_بندی)
+    واپس 0;
+  n = goal_چوڑائی - len;
+  لاگت_2 = SHORT_لاگت (n);
+  اگر (اگلا->اگلا_break != لفظ_حد_بندی)
     {
-      n = len - next->line_length;
-      cost += RAGGED_COST (n);
+      n = len - اگلا->سطر_لمبائی;
+      لاگت_2 += RAGGED_لاگت (n);
     }
-  return cost;
+  واپس لاگت_2;
 }
 
 /* Output to stdout a paragraph from word up to (but not including)
    FINISH, which must be in the next_break chain from word.  */
 
-static void
-put_paragraph (WORD *finish)
+ساکن خالی
+put_paragraph (لفظ *اختتام)
 {
-  put_line (word, first_indent);
-  for (WORD *w = word->next_break; w != finish; w = w->next_break)
-    put_line (w, other_indent);
+  put_سطر (لفظ_2, پہلا_indent);
+  برائے (لفظ *w = لفظ_2->اگلا_break; w != اختتام; w = w->اگلا_break)
+    put_سطر (w, other_indent);
 }
 
 /* Output to stdout the line beginning with word W, beginning in column
    INDENT, including the prefix (if any).  */
 
-static void
-put_line (WORD *w, int indent)
+ساکن خالی
+put_سطر (لفظ *w, صحیح indent)
 {
-  WORD *endline;
+  لفظ *endline;
 
-  out_column = 0;
-  put_space (prefix_indent);
-  fputs (prefix, stdout);
-  out_column += prefix_length;
-  put_space (indent - out_column);
+  برآمد_عمود = 0;
+  put_space (سابقہ_indent);
+  fputs (سابقہ, stdout);
+  برآمد_عمود += سابقہ_لمبائی;
+  put_space (indent - برآمد_عمود);
 
-  endline = w->next_break - 1;
-  for (; w != endline; w++)
+  endline = w->اگلا_break - 1;
+  برائے (; w != endline; w++)
     {
-      put_word (w);
+      put_لفظ (w);
       put_space (w->space);
     }
-  put_word (w);
-  last_line_length = out_column;
-  putchar ('\n');
+  put_لفظ (w);
+  آخری_سطر_لمبائی = برآمد_عمود;
+  حرف_لکھو ('\n');
 
-  if (ferror (stdout))
+  اگر (ferror (stdout))
     write_error ();
 }
 
 /* Output to stdout the word W.  */
 
-static void
-put_word (WORD *w)
+ساکن خالی
+put_لفظ (لفظ *w)
 {
-  char const *s = w->text;
-  for (int n = w->length; n != 0; n--)
-    putchar (*s++);
-  out_column += w->length;
+  حرف ثابت *s = w->متن;
+  برائے (صحیح n = w->لمبائی; n != 0; n--)
+    حرف_لکھو (*s++);
+  برآمد_عمود += w->لمبائی;
 }
 
 /* Output to stdout SPACE spaces, or equivalent tabs.  */
 
-static void
-put_space (int space)
+ساکن خالی
+put_space (صحیح space)
 {
-  int space_target, tab_target;
+  صحیح space_ہدف, tab_ہدف;
 
-  space_target = out_column + space;
-  if (tabs)
+  space_ہدف = برآمد_عمود + space;
+  اگر (tabs)
     {
-      tab_target = space_target / TABWIDTH * TABWIDTH;
-      if (out_column + 1 < tab_target)
-        while (out_column < tab_target)
+      tab_ہدف = space_ہدف / TABWIDTH * TABWIDTH;
+      اگر (برآمد_عمود + 1 < tab_ہدف)
+        جب (برآمد_عمود < tab_ہدف)
           {
-            putchar ('\t');
-            out_column = (out_column / TABWIDTH + 1) * TABWIDTH;
+            حرف_لکھو ('\t');
+            برآمد_عمود = (برآمد_عمود / TABWIDTH + 1) * TABWIDTH;
           }
     }
-  while (out_column < space_target)
+  جب (برآمد_عمود < space_ہدف)
     {
-      putchar (' ');
-      out_column++;
+      حرف_لکھو (' ');
+      برآمد_عمود++;
     }
 }

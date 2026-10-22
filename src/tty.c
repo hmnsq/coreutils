@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#شامل "system.h"
+#شامل "quote.h"
 
 /* Exit statuses.  */
-enum
+شمار
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -39,52 +39,52 @@ enum
   };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "tty"
+#تعریف_کرو پروگرام_NAME "tty"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+ساکن bool silent;
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_دلیل, تہی, 's'},
+  {"quiet", no_دلیل, تہی, 's'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      لکھو (_("Usage: %s [OPTION]...\n"), پروگرام_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name کا the terminal connected مقصد standard داخلہ.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only واپس an باہر_نکلو حالت_2\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  int optc;
+  صحیح optc;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  جب ((optc = getopt_long (argc, argv, "s", longopts, تہی)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 's':
+        حالت 's':
           silent = true;
-          break;
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        طےشدہ:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  اگر (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  اگر (silent)
+    واپس isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  صحیح حالت_2;
+  حرف ثابت *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
-    status = EXIT_SUCCESS;
-  else
+  اگر (tty)
+    حالت_2 = EXIT_SUCCESS;
+  ورنہ
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      صحیح ttyname_err = errno;
+      اگر (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
-      status = TTY_STDIN_NOTTY;
+      حالت_2 = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  واپس حالت_2;
 }

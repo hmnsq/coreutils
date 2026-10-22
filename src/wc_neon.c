@@ -16,34 +16,34 @@
 
 /* Written by Collin Funk <collin.funk1@gmail.com>, 2026.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#شامل "wc.h"
+#شامل "system.h"
+#شامل "ioblksize.h"
 
-#include <arm_neon.h>
+#شامل <arm_neon.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_neon (int fd)
+خارجی ساخت wc_سطریں
+wc_سطریں_neon (صحیح fd)
 {
-  intmax_t lines = 0;
-  intmax_t bytes = 0;
+  intmax_t سطریں = 0;
+  intmax_t بائٹیں = 0;
 
-  const uint8x16_t endlines = vdupq_n_u8 ('\n');
+  ثابت uint8x16_t endlines = vdupq_n_u8 ('\n');
 
-  while (true)
+  جب (true)
     {
-      unsigned char alignas (16) neon_buf[IO_BUFSIZE];
-      ssize_t bytes_read = read (fd, neon_buf, sizeof neon_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      غیرعلامتی حرف alignas (16) neon_buf[IO_BUFSIZE];
+      ssize_t بائٹیں_read = اقرأ (fd, neon_buf, حجم neon_buf);
+      اگر (بائٹیں_read <= 0)
+        واپس (ساخت wc_سطریں) { بائٹیں_read == 0 ? 0 : errno, سطریں, بائٹیں };
 
-      bytes += bytes_read;
-      unsigned char *datap = neon_buf;
+      بائٹیں += بائٹیں_read;
+      غیرعلامتی حرف *datap = neon_buf;
 
-      while (8192 <= bytes_read)
+      جب (8192 <= بائٹیں_read)
         {
           /* Accumulator.  */
           int8x16_t acc0 = vdupq_n_s8 (0);
@@ -52,7 +52,7 @@ wc_lines_neon (int fd)
           int8x16_t acc3 = vdupq_n_s8 (0);
 
           /* Process all 8192 bytes in 64 byte chunks.  */
-          for (int i = 0; i < 128; ++i)
+          برائے (صحیح i = 0; i < 128; ++i)
             {
               /* Load 64 bytes from DATAP.  */
               uint8x16_t v0 = vld1q_u8 (datap);
@@ -93,17 +93,17 @@ wc_lines_neon (int fd)
           /* Extract the lane sums.  Since each newline was counted as -1, we
              subtract the sum of them from LINES to get the total number of
              lines.  */
-          lines -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
+          سطریں -= (vgetq_lane_s64 (c0, 0) + vgetq_lane_s64 (c0, 1)
                     + vgetq_lane_s64 (c1, 0) + vgetq_lane_s64 (c1, 1)
                     + vgetq_lane_s64 (c2, 0) + vgetq_lane_s64 (c2, 1)
                     + vgetq_lane_s64 (c3, 0) + vgetq_lane_s64 (c3, 1));
 
-          bytes_read -= 8192;
+          بائٹیں_read -= 8192;
         }
 
       /* Finish up any left over bytes.  */
-      unsigned char *end = (unsigned char *) datap + bytes_read;
-      for (unsigned char *p = (unsigned char *) datap; p < end; p++)
-        lines += *p == '\n';
+      غیرعلامتی حرف *انتہا = (غیرعلامتی حرف *) datap + بائٹیں_read;
+      برائے (غیرعلامتی حرف *p = (غیرعلامتی حرف *) datap; p < انتہا; p++)
+        سطریں += *p == '\n';
     }
 }

@@ -16,329 +16,329 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <getopt.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "canonicalize.h"
-#include "relpath.h"
+#شامل "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#شامل "system.h"
+#شامل "canonicalize.h"
+#شامل "relpath.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "realpath"
+#تعریف_کرو پروگرام_NAME "realpath"
 
-#define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
+#تعریف_کرو AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-enum
+شمار
 {
-  RELATIVE_TO_OPTION = CHAR_MAX + 1,
-  RELATIVE_BASE_OPTION
+  RELATIVE_مقصد_OPTION = CHAR_MAX + 1,
+  RELATIVE_بنیاد_OPTION
 };
 
-static bool verbose = true;
-static bool logical;
-static bool use_nuls;
-static bool quote_output;
-static char const *can_relative_to;
-static char const *can_relative_base;
+ساکن bool verbose = true;
+ساکن bool logical;
+ساکن bool use_nuls;
+ساکن bool quote_output;
+ساکن حرف ثابت *can_relative_مقصد;
+ساکن حرف ثابت *can_relative_بنیاد;
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
-  {"canonicalize", no_argument, NULL, 'E'},
-  {"canonicalize-existing", no_argument, NULL, 'e'},
-  {"canonicalize-missing", no_argument, NULL, 'm'},
-  {"relative-to", required_argument, NULL, RELATIVE_TO_OPTION},
-  {"relative-base", required_argument, NULL, RELATIVE_BASE_OPTION},
-  {"quiet", no_argument, NULL, 'q'},
-  {"strip", no_argument, NULL, 's'},
-  {"no-symlinks", no_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"canonicalize", no_دلیل, تہی, 'E'},
+  {"canonicalize-existing", no_دلیل, تہی, 'e'},
+  {"canonicalize-missing", no_دلیل, تہی, 'm'},
+  {"relative-to", required_دلیل, تہی, RELATIVE_مقصد_OPTION},
+  {"relative-base", required_دلیل, تہی, RELATIVE_بنیاد_OPTION},
+  {"quiet", no_دلیل, تہی, 'q'},
+  {"strip", no_دلیل, تہی, 's'},
+  {"no-symlinks", no_دلیل, تہی, 's'},
+  {"zero", no_دلیل, تہی, 'z'},
+  {"logical", no_دلیل, تہی, 'L'},
+  {"physical", no_دلیل, تہی, 'P'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]... FILE...\n"), program_name);
+      لکھو (_("Usage: %s [OPTION]... FILE...\n"), پروگرام_name);
       fputs (_("\
 Print the resolved absolute file name.\n\
 "), stdout);
       oputs (_("\
-  -E, --canonicalize           all but the last component must exist (default)\
+  -E, --canonicalize           all but the آخری component must exist (طےشدہ)\
 \n\
 "));
       oputs (_("\
-  -e, --canonicalize-existing  all components of the path must exist\n\
+  -e, --canonicalize-existing  all components کا the راستہ must exist\n\
 "));
       oputs (_("\
-  -m, --canonicalize-missing   no path components need exist or be a directory\
+  -m, --canonicalize-missing   no راستہ components need exist or be a directory\
 \n\
 "));
       oputs (_("\
   -L, --logical                resolve '..' components before symlinks\n\
 "));
       oputs (_("\
-  -P, --physical               resolve symlinks as encountered (default)\n\
+  -P, --physical               resolve symlinks as encountered (طےشدہ)\n\
 "));
       oputs (_("\
   -q, --quiet                  suppress most error messages\n\
 "));
       oputs (_("\
-      --relative-to=DIR        print the resolved path relative to DIR\n\
+      --relative-مقصد=DIR        print the resolved راستہ relative مقصد DIR\n\
 "));
       oputs (_("\
-      --relative-base=DIR      print absolute paths unless paths below DIR\n\
+      --relative-بنیاد_2=DIR      print absolute paths unless paths نیچے DIR\n\
 "));
       oputs (_("\
   -s, --strip, --no-symlinks   don't expand symlinks\n\
 "));
       oputs (_("\
-  -z, --zero                   end each output line with NUL, not newline\n\
+  -z, --zero                   انتہا each output سطر with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* A wrapper around canonicalize_filename_mode(),
    to call it twice when in LOGICAL mode.  */
-static char *
-realpath_canon (char const *fname, int can_mode)
+ساکن حرف *
+realpath_canon (حرف ثابت *fname, صحیح can_منوال)
 {
-  char *can_fname = canonicalize_filename_mode (fname, can_mode);
-  if (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
+  حرف *can_fname = canonicalize_filename_منوال (fname, can_منوال);
+  اگر (logical && can_fname)  /* canonicalize again to resolve symlinks.  */
     {
-      can_mode &= ~CAN_NOLINKS;
-      char *can_fname2 = canonicalize_filename_mode (can_fname, can_mode);
-      free (can_fname);
-      return can_fname2;
+      can_منوال &= ~CAN_NOLINKS;
+      حرف *can_fname2 = canonicalize_filename_منوال (can_fname, can_منوال);
+      آزاد (can_fname);
+      واپس can_fname2;
     }
-  return can_fname;
+  واپس can_fname;
 }
 
 /* Test whether canonical prefix is parent or match of path.  */
-ATTRIBUTE_PURE
-static bool
-path_prefix (char const *prefix, char const *path)
+ATTRIBUTE_خالص
+ساکن bool
+راستہ_سابقہ (حرف ثابت *سابقہ, حرف ثابت *راستہ)
 {
   /* We already know prefix[0] and path[0] are '/'.  */
-  prefix++;
-  path++;
+  سابقہ++;
+  راستہ++;
 
   /* '/' is the prefix of everything except '//' (since we know '//'
      is only present after canonicalization if it is distinct).  */
-  if (!*prefix)
-    return *path != '/';
+  اگر (!*سابقہ)
+    واپس *راستہ != '/';
 
   /* Likewise, '//' is a prefix of any double-slash path.  */
-  if (*prefix == '/' && !prefix[1])
-    return *path == '/';
+  اگر (*سابقہ == '/' && !سابقہ[1])
+    واپس *راستہ == '/';
 
   /* Any other prefix has a non-slash portion.  */
-  while (*prefix && *path)
+  جب (*سابقہ && *راستہ)
     {
-      if (*prefix != *path)
-        break;
-      prefix++;
-      path++;
+      اگر (*سابقہ != *راستہ)
+        توڑو;
+      سابقہ++;
+      راستہ++;
     }
-  return (!*prefix && (*path == '/' || !*path));
+  واپس (!*سابقہ && (*راستہ == '/' || !*راستہ));
 }
 
-static bool
-isdir (char const *path)
+ساکن bool
+isdir (حرف ثابت *راستہ)
 {
-  struct stat sb;
-  if (stat (path, &sb) != 0)
-    error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (path));
-  return S_ISDIR (sb.st_mode);
+  ساخت stat sb;
+  اگر (stat (راستہ, &sb) != 0)
+    error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (راستہ));
+  واپس S_ISDIR (sb.st_منوال);
 }
 
-static void
-print_path (char const *path)
+ساکن خالی
+print_راستہ (حرف ثابت *راستہ)
 {
-  fputs (quote_output ? quoteN (path) : path, stdout);
+  fputs (quote_output ? quoteN (راستہ) : راستہ, stdout);
 }
 
 /* Print CAN_FNAME relative to can_relative_to, quoting the complete
    relative file name when appropriate.  */
-static bool
-print_relative_path (char const *can_fname)
+ساکن bool
+print_relative_راستہ (حرف ثابت *can_fname)
 {
-  if (!quote_output)
-    return relpath (can_fname, can_relative_to, NULL, 0);
+  اگر (!quote_output)
+    واپس relpath (can_fname, can_relative_مقصد, تہی, 0);
 
-  size_t size;
-  if (ckd_mul (&size, strlen (can_relative_to), 2)
-      || ckd_add (&size, size, strlen (can_fname))
-      || ckd_add (&size, size, 1))
+  size_t سائز;
+  اگر (ckd_mul (&سائز, لڑی_لمبائی (can_relative_مقصد), 2)
+      || ckd_جوڑو (&سائز, سائز, لڑی_لمبائی (can_fname))
+      || ckd_جوڑو (&سائز, سائز, 1))
     xalloc_die ();
 
-  char *relative_path = xmalloc (size);
-  bool success = relpath (can_fname, can_relative_to, relative_path, size);
-  if (success)
-    print_path (relative_path);
-  free (relative_path);
-  return success;
+  حرف *relative_راستہ = xmalloc (سائز);
+  bool success = relpath (can_fname, can_relative_مقصد, relative_راستہ, سائز);
+  اگر (success)
+    print_راستہ (relative_راستہ);
+  آزاد (relative_راستہ);
+  واپس success;
 }
 
-static bool
-process_path (char const *fname, int can_mode)
+ساکن bool
+process_راستہ (حرف ثابت *fname, صحیح can_منوال)
 {
-  char *can_fname = realpath_canon (fname, can_mode);
-  if (!can_fname)
+  حرف *can_fname = realpath_canon (fname, can_منوال);
+  اگر (!can_fname)
     {
-      if (verbose)
+      اگر (verbose)
         error (0, errno, "%s", quotef (fname));
-      return false;
+      واپس false;
     }
 
-  if (!can_relative_to
-      || (can_relative_base && !path_prefix (can_relative_base, can_fname))
-      || (can_relative_to && !print_relative_path (can_fname)))
-    print_path (can_fname);
+  اگر (!can_relative_مقصد
+      || (can_relative_بنیاد && !راستہ_سابقہ (can_relative_بنیاد, can_fname))
+      || (can_relative_مقصد && !print_relative_راستہ (can_fname)))
+    print_راستہ (can_fname);
 
-  putchar (use_nuls ? '\0' : '\n');
+  حرف_لکھو (use_nuls ? '\0' : '\n');
 
-  free (can_fname);
+  آزاد (can_fname);
 
-  if (ferror (stdout))
+  اگر (ferror (stdout))
     write_error ();
 
-  return true;
+  واپس true;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   bool ok = true;
-  int can_mode = CAN_ALL_BUT_LAST;
-  char const *relative_to = NULL;
-  char const *relative_base = NULL;
+  صحیح can_منوال = CAN_ALL_BUT_آخری;
+  حرف ثابت *relative_مقصد = تہی;
+  حرف ثابت *relative_بنیاد = تہی;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (true)
+  جب (true)
     {
-      int c = getopt_long (argc, argv, "EeLmPqsz", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      صحیح c = getopt_long (argc, argv, "EeLmPqsz", longopts, تہی);
+      اگر (c == -1)
+        توڑو;
+      انتخاب (c)
         {
-        case 'E':
-          can_mode &= ~CAN_MODE_MASK;
-          can_mode |= CAN_ALL_BUT_LAST;
-          break;
-        case 'e':
-          can_mode &= ~CAN_MODE_MASK;
-          can_mode |= CAN_EXISTING;
-          break;
-        case 'm':
-          can_mode &= ~CAN_MODE_MASK;
-          can_mode |= CAN_MISSING;
-          break;
-        case 'L':
-          can_mode |= CAN_NOLINKS;
+        حالت 'E':
+          can_منوال &= ~CAN_منوال_نقاب;
+          can_منوال |= CAN_ALL_BUT_آخری;
+          توڑو;
+        حالت 'e':
+          can_منوال &= ~CAN_منوال_نقاب;
+          can_منوال |= CAN_EXISTING;
+          توڑو;
+        حالت 'm':
+          can_منوال &= ~CAN_منوال_نقاب;
+          can_منوال |= CAN_MISSING;
+          توڑو;
+        حالت 'L':
+          can_منوال |= CAN_NOLINKS;
           logical = true;
-          break;
-        case 's':
-          can_mode |= CAN_NOLINKS;
+          توڑو;
+        حالت 's':
+          can_منوال |= CAN_NOLINKS;
           logical = false;
-          break;
-        case 'P':
-          can_mode &= ~CAN_NOLINKS;
+          توڑو;
+        حالت 'P':
+          can_منوال &= ~CAN_NOLINKS;
           logical = false;
-          break;
-        case 'q':
+          توڑو;
+        حالت 'q':
           verbose = false;
-          break;
-        case 'z':
+          توڑو;
+        حالت 'z':
           use_nuls = true;
-          break;
-        case RELATIVE_TO_OPTION:
-          relative_to = optarg;
-          break;
-        case RELATIVE_BASE_OPTION:
-          relative_base = optarg;
-          break;
+          توڑو;
+        حالت RELATIVE_مقصد_OPTION:
+          relative_مقصد = optarg;
+          توڑو;
+        حالت RELATIVE_بنیاد_OPTION:
+          relative_بنیاد = optarg;
+          توڑو;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind >= argc)
+  اگر (optind >= argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! use_nuls && isatty (STDOUT_FILENO))
+  اگر (! use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحیح qs = getenv_quoting_style ();
+      اگر (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      اگر (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          سیٹ_quoting_style (تہی, qs);
           quote_output = true;
         }
     }
 
-  if (relative_base && !relative_to)
-    relative_to = relative_base;
+  اگر (relative_بنیاد && !relative_مقصد)
+    relative_مقصد = relative_بنیاد;
 
-  bool need_dir = (can_mode & CAN_MODE_MASK) == CAN_EXISTING;
-  if (relative_to)
+  bool need_dir = (can_منوال & CAN_منوال_نقاب) == CAN_EXISTING;
+  اگر (relative_مقصد)
     {
-      can_relative_to = realpath_canon (relative_to, can_mode);
-      if (!can_relative_to)
-        error (EXIT_FAILURE, errno, "%s", quotef (relative_to));
-      if (need_dir && !isdir (can_relative_to))
-        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_to));
+      can_relative_مقصد = realpath_canon (relative_مقصد, can_منوال);
+      اگر (!can_relative_مقصد)
+        error (EXIT_FAILURE, errno, "%s", quotef (relative_مقصد));
+      اگر (need_dir && !isdir (can_relative_مقصد))
+        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_مقصد));
     }
-  if (relative_base == relative_to)
-    can_relative_base = can_relative_to;
-  else if (relative_base)
+  اگر (relative_بنیاد == relative_مقصد)
+    can_relative_بنیاد = can_relative_مقصد;
+  ورنہ اگر (relative_بنیاد)
     {
-      char *base = realpath_canon (relative_base, can_mode);
-      if (!base)
-        error (EXIT_FAILURE, errno, "%s", quotef (relative_base));
-      if (need_dir && !isdir (base))
-        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_base));
+      حرف *بنیاد_2 = realpath_canon (relative_بنیاد, can_منوال);
+      اگر (!بنیاد_2)
+        error (EXIT_FAILURE, errno, "%s", quotef (relative_بنیاد));
+      اگر (need_dir && !isdir (بنیاد_2))
+        error (EXIT_FAILURE, ENOTDIR, "%s", quotef (relative_بنیاد));
       /* --relative-to is a no-op if it does not have --relative-base
            as a prefix */
-      if (path_prefix (base, can_relative_to))
-        can_relative_base = base;
-      else
+      اگر (راستہ_سابقہ (بنیاد_2, can_relative_مقصد))
+        can_relative_بنیاد = بنیاد_2;
+      ورنہ
         {
-          free (base);
-          can_relative_base = can_relative_to;
-          can_relative_to = NULL;
+          آزاد (بنیاد_2);
+          can_relative_بنیاد = can_relative_مقصد;
+          can_relative_مقصد = تہی;
         }
     }
 
-  for (; optind < argc; ++optind)
-    ok &= process_path (argv[optind], can_mode);
+  برائے (; optind < argc; ++optind)
+    ok &= process_راستہ (argv[optind], can_منوال);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

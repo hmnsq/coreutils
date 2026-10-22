@@ -1,2 +1,2 @@
-#include "chown.h"
-enum chown_modes chown_mode = CHOWN_CHGRP;
+#شامل "chown.h"
+شمار chown_modes chown_منوال = CHOWN_CHGRP;

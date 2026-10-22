@@ -27,186 +27,186 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#شامل <config.h>
 
-#ifdef TERMIOS_NEEDS_XOPEN_SOURCE
-# define _XOPEN_SOURCE
-#endif
+#اگر_تعریف_شدہ TERMIOS_NEEDS_XOPEN_ماخذ
+# define XOPEN_ماخذ
+#اگر_ختم
 
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
-#include <termios.h>
-#if HAVE_STROPTS_H
+#شامل <termios.h>
+#اگر HAVE_STROPTS_H
 # include <stropts.h>
-#endif
-#include <sys/ioctl.h>
+#اگر_ختم
+#شامل <sys/ioctl.h>
 
-#ifdef WINSIZE_IN_PTEM
+#اگر_تعریف_شدہ WINSIZE_اندر_PTEM
 # include <sys/stream.h>
 # include <sys/ptem.h>
-#endif
-#ifdef GWINSZ_IN_SYS_PTY
+#اگر_ختم
+#اگر_تعریف_شدہ GWINSZ_اندر_SYS_PTY
 # include <sys/tty.h>
 # include <sys/pty.h>
-#endif
-#include <getopt.h>
-#include <stdarg.h>
+#اگر_ختم
+#شامل <getopt.h>
+#شامل <stdarg.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#شامل "system.h"
+#شامل "assure.h"
+#شامل "c-ctype.h"
+#شامل "fd-reopen.h"
+#شامل "quote.h"
+#شامل "xdectoint.h"
+#شامل "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "stty"
+#تعریف_کرو پروگرام_NAME "stty"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
-#ifndef _POSIX_VDISABLE
+#اگر_غیر_تعریف_شدہ _POSIX_VDISABLE
 # define _POSIX_VDISABLE 0
-#endif
+#اگر_ختم
 
-#define Control(c) ((c) & 0x1f)
+#تعریف_کرو Control(c) ((c) & 0x1f)
 /* Canonical values for control characters. */
-#ifndef CINTR
+#اگر_غیر_تعریف_شدہ CINTR
 # define CINTR Control ('c')
-#endif
-#ifndef CQUIT
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CQUIT
 # define CQUIT 28
-#endif
-#ifndef CERASE
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CERASE
 # define CERASE 127
-#endif
-#ifndef CKILL
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CKILL
 # define CKILL Control ('u')
-#endif
-#ifndef CEOF
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CEOF
 # define CEOF Control ('d')
-#endif
-#ifndef CEOL
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CEOL
 # define CEOL _POSIX_VDISABLE
-#endif
-#ifndef CSTART
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CSTART
 # define CSTART Control ('q')
-#endif
-#ifndef CSTOP
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CSTOP
 # define CSTOP Control ('s')
-#endif
-#ifndef CSUSP
+#اگر_ختم
+#اگر_غیر_تعریف_شدہ CSUSP
 # define CSUSP Control ('z')
-#endif
-#if defined VEOL2 && !defined CEOL2
+#اگر_ختم
+#اگر defined VEOL2 && !defined CEOL2
 # define CEOL2 _POSIX_VDISABLE
-#endif
+#اگر_ختم
 /* Some platforms have VSWTC, others VSWTCH.  In both cases, this control
    character is initialized by CSWTCH, if present.  */
-#if defined VSWTC && !defined VSWTCH
+#اگر defined VSWTC && !defined VSWTCH
 # define VSWTCH VSWTC
-#endif
+#اگر_ختم
 /* ISC renamed swtch to susp for termios, but we'll accept either name.  */
-#if defined VSUSP && !defined VSWTCH
+#اگر defined VSUSP && !defined VSWTCH
 # define VSWTCH VSUSP
-# if defined CSUSP && !defined CSWTCH
+# اگر defined CSUSP && !defined CSWTCH
 #  define CSWTCH CSUSP
 # endif
-#endif
-#if defined VSWTCH && !defined CSWTCH
+#اگر_ختم
+#اگر defined VSWTCH && !defined CSWTCH
 # define CSWTCH _POSIX_VDISABLE
-#endif
+#اگر_ختم
 
 /* SunOS >= 5.3 loses (^Z doesn't work) if 'swtch' is the same as 'susp'.
    So the default is to disable 'swtch.'  */
-#if defined __sun
+#اگر defined __sun
 # undef CSWTCH
 # define CSWTCH _POSIX_VDISABLE
-#endif
+#اگر_ختم
 
-#if defined VWERSE && !defined VWERASE	/* AIX-3.2.5 */
+#اگر defined VWERSE && !defined VWERASE	/* AIX-3.2.5 */
 # define VWERASE VWERSE
-#endif
-#if defined VDSUSP && !defined CDSUSP
+#اگر_ختم
+#اگر defined VDSUSP && !defined CDSUSP
 # define CDSUSP Control ('y')
-#endif
-#if defined VREPRINT && !defined CRPRNT
+#اگر_ختم
+#اگر defined VREPRINT && !defined CRPRNT
 # define CRPRNT Control ('r')
-#endif
-#if defined CREPRINT && !defined CRPRNT
+#اگر_ختم
+#اگر defined CREPRINT && !defined CRPRNT
 # define CRPRNT Control ('r')
-#endif
-#if defined VWERASE && !defined CWERASE
+#اگر_ختم
+#اگر defined VWERASE && !defined CWERASE
 # define CWERASE Control ('w')
-#endif
-#if defined VLNEXT && !defined CLNEXT
+#اگر_ختم
+#اگر defined VLNEXT && !defined CLNEXT
 # define CLNEXT Control ('v')
-#endif
-#if defined VDISCARD && !defined VFLUSHO
+#اگر_ختم
+#اگر defined VDISCARD && !defined VFLUSHO
 # define VFLUSHO VDISCARD
-#endif
-#if defined VFLUSH && !defined VFLUSHO	/* Ultrix 4.2 */
+#اگر_ختم
+#اگر defined VFLUSH && !defined VFLUSHO	/* Ultrix 4.2 */
 # define VFLUSHO VFLUSH
-#endif
-#if defined CTLECH && !defined ECHOCTL	/* Ultrix 4.3 */
+#اگر_ختم
+#اگر defined CTLECH && !defined ECHOCTL	/* Ultrix 4.3 */
 # define ECHOCTL CTLECH
-#endif
-#if defined TCTLECH && !defined ECHOCTL	/* Ultrix 4.2 */
+#اگر_ختم
+#اگر defined TCTLECH && !defined ECHOCTL	/* Ultrix 4.2 */
 # define ECHOCTL TCTLECH
-#endif
-#if defined CRTKIL && !defined ECHOKE	/* Ultrix 4.2 and 4.3 */
+#اگر_ختم
+#اگر defined CRTKIL && !defined ECHOKE	/* Ultrix 4.2 and 4.3 */
 # define ECHOKE CRTKIL
-#endif
-#if defined VFLUSHO && !defined CFLUSHO
+#اگر_ختم
+#اگر defined VFLUSHO && !defined CFLUSHO
 # define CFLUSHO Control ('o')
-#endif
-#if defined VSTATUS && !defined CSTATUS
+#اگر_ختم
+#اگر defined VSTATUS && !defined CSTATUS
 # define CSTATUS Control ('t')
-#endif
+#اگر_ختم
 
 /* Which speeds to set.  */
-enum speed_setting
+شمار رفتار_setting
   {
-    input_speed, output_speed, both_speeds
+    داخلہ_رفتار, output_رفتار, both_speeds
   };
 
 /* What to output and how.  */
-enum output_type
+شمار output_type
   {
-    changed, all, recoverable	/* Default, -a, -g.  */
+    بدلا, all, recoverable	/* Default, -a, -g.  */
   };
 
 /* Which member(s) of 'struct termios' a mode uses.  */
-enum mode_type
+شمار منوال_type
   {
-    control, input, output, local, combination
+    control, داخلہ, output, local, combination
   };
 
 /* Flags for 'struct mode_info'. */
-#define SANE_SET 1		/* Set in 'sane' mode. */
-#define SANE_UNSET 2		/* Unset in 'sane' mode. */
-#define REV 4			/* Can be turned off by prepending '-'. */
-#define OMIT 8			/* Don't display value. */
-#define NO_SETATTR 16		/* tcsetattr not used to set mode bits.  */
+#تعریف_کرو SANE_سیٹ 1		/* Set in 'sane' mode. */
+#تعریف_کرو SANE_UNSET 2		/* Unset in 'sane' mode. */
+#تعریف_کرو REV 4			/* Can be turned off by prepending '-'. */
+#تعریف_کرو OMIT 8			/* Don't display value. */
+#تعریف_کرو NO_SETATTR 16		/* tcsetattr not used to set mode bits.  */
 
 /* Each mode.  */
-struct mode_info
+ساخت منوال_info
   {
-    char const *name;		/* Name given on command line.  */
-    enum mode_type type;	/* Which structure element to change. */
-    char flags;			/* Setting and display options.  */
-    unsigned long bits;		/* Bits to set for this mode.  */
-    unsigned long mask;		/* Other bits to turn off for this mode.  */
+    حرف ثابت *name;		/* Name given on command line.  */
+    شمار منوال_type type;	/* Which structure element to change. */
+    حرف flags;			/* Setting and display options.  */
+    غیرعلامتی طویل بٹ_2;		/* Bits to set for this mode.  */
+    غیرعلامتی طویل نقاب;		/* Other bits to turn off for this mode.  */
   };
 
-static struct mode_info const mode_info[] =
+ساکن ساخت منوال_info ثابت منوال_info[] =
 {
   {"parenb", control, REV, PARENB, 0},
   {"parodd", control, REV, PARODD, 0},
-#ifdef CMSPAR
+#اگر_تعریف_شدہ CMSPAR
   {"cmspar", control, REV, CMSPAR, 0},
-#endif
+#اگر_ختم
   {"cs5", control, 0, CS5, CSIZE},
   {"cs6", control, 0, CS6, CSIZE},
   {"cs7", control, 0, CS7, CSIZE},
@@ -214,73 +214,73 @@ static struct mode_info const mode_info[] =
   {"hupcl", control, REV, HUPCL, 0},
   {"hup", control, REV | OMIT, HUPCL, 0},
   {"cstopb", control, REV, CSTOPB, 0},
-  {"cread", control, SANE_SET | REV, CREAD, 0},
+  {"cread", control, SANE_سیٹ | REV, CREAD, 0},
   {"clocal", control, REV, CLOCAL, 0},
-#ifdef CRTSCTS
+#اگر_تعریف_شدہ CRTSCTS
   {"crtscts", control, REV, CRTSCTS, 0},
-#endif
-#ifdef CDTRDSR
+#اگر_ختم
+#اگر_تعریف_شدہ CDTRDSR
   {"cdtrdsr", control, REV, CDTRDSR, 0},
-#endif
+#اگر_ختم
 
-  {"ignbrk", input, SANE_UNSET | REV, IGNBRK, 0},
-  {"brkint", input, SANE_SET | REV, BRKINT, 0},
-  {"ignpar", input, REV, IGNPAR, 0},
-  {"parmrk", input, REV, PARMRK, 0},
-  {"inpck", input, REV, INPCK, 0},
-  {"istrip", input, REV, ISTRIP, 0},
-  {"inlcr", input, SANE_UNSET | REV, INLCR, 0},
-  {"igncr", input, SANE_UNSET | REV, IGNCR, 0},
-  {"icrnl", input, SANE_SET | REV, ICRNL, 0},
-  {"ixon", input, REV, IXON, 0},
-  {"ixoff", input, SANE_UNSET | REV, IXOFF, 0},
-  {"tandem", input, REV | OMIT, IXOFF, 0},
-#ifdef IUCLC
-  {"iuclc", input, SANE_UNSET | REV, IUCLC, 0},
-#endif
-#ifdef IXANY
-  {"ixany", input, SANE_UNSET | REV, IXANY, 0},
-#endif
-#ifdef IMAXBEL
-  {"imaxbel", input, SANE_SET | REV, IMAXBEL, 0},
-#endif
-#ifdef IUTF8
-  {"iutf8", input, SANE_UNSET | REV, IUTF8, 0},
-#endif
+  {"ignbrk", داخلہ, SANE_UNSET | REV, IGNBRK, 0},
+  {"brkint", داخلہ, SANE_سیٹ | REV, BRKINT, 0},
+  {"ignpar", داخلہ, REV, IGNPAR, 0},
+  {"parmrk", داخلہ, REV, PARMRK, 0},
+  {"inpck", داخلہ, REV, INPCK, 0},
+  {"istrip", داخلہ, REV, ISTRIP, 0},
+  {"inlcr", داخلہ, SANE_UNSET | REV, INLCR, 0},
+  {"igncr", داخلہ, SANE_UNSET | REV, IGNCR, 0},
+  {"icrnl", داخلہ, SANE_سیٹ | REV, ICRNL, 0},
+  {"ixon", داخلہ, REV, IXON, 0},
+  {"ixoff", داخلہ, SANE_UNSET | REV, IXOFF, 0},
+  {"tandem", داخلہ, REV | OMIT, IXOFF, 0},
+#اگر_تعریف_شدہ IUCLC
+  {"iuclc", داخلہ, SANE_UNSET | REV, IUCLC, 0},
+#اگر_ختم
+#اگر_تعریف_شدہ IXANY
+  {"ixany", داخلہ, SANE_UNSET | REV, IXANY, 0},
+#اگر_ختم
+#اگر_تعریف_شدہ IMAXBEL
+  {"imaxbel", داخلہ, SANE_سیٹ | REV, IMAXBEL, 0},
+#اگر_ختم
+#اگر_تعریف_شدہ IUTF8
+  {"iutf8", داخلہ, SANE_UNSET | REV, IUTF8, 0},
+#اگر_ختم
 
-  {"opost", output, SANE_SET | REV, OPOST, 0},
-#ifdef OLCUC
+  {"opost", output, SANE_سیٹ | REV, OPOST, 0},
+#اگر_تعریف_شدہ OLCUC
   {"olcuc", output, SANE_UNSET | REV, OLCUC, 0},
-#endif
-#ifdef OCRNL
+#اگر_ختم
+#اگر_تعریف_شدہ OCRNL
   {"ocrnl", output, SANE_UNSET | REV, OCRNL, 0},
-#endif
-#ifdef ONLCR
-  {"onlcr", output, SANE_SET | REV, ONLCR, 0},
-#endif
-#ifdef ONOCR
+#اگر_ختم
+#اگر_تعریف_شدہ ONLCR
+  {"onlcr", output, SANE_سیٹ | REV, ONLCR, 0},
+#اگر_ختم
+#اگر_تعریف_شدہ ONOCR
   {"onocr", output, SANE_UNSET | REV, ONOCR, 0},
-#endif
-#ifdef ONLRET
+#اگر_ختم
+#اگر_تعریف_شدہ ONLRET
   {"onlret", output, SANE_UNSET | REV, ONLRET, 0},
-#endif
-#ifdef OFILL
+#اگر_ختم
+#اگر_تعریف_شدہ OFILL
   {"ofill", output, SANE_UNSET | REV, OFILL, 0},
-#endif
-#ifdef OFDEL
+#اگر_ختم
+#اگر_تعریف_شدہ OFDEL
   {"ofdel", output, SANE_UNSET | REV, OFDEL, 0},
-#endif
-#ifdef NLDLY
+#اگر_ختم
+#اگر_تعریف_شدہ NLDLY
   {"nl1", output, SANE_UNSET, NL1, NLDLY},
-  {"nl0", output, SANE_SET, NL0, NLDLY},
-#endif
-#ifdef CRDLY
+  {"nl0", output, SANE_سیٹ, NL0, NLDLY},
+#اگر_ختم
+#اگر_تعریف_شدہ CRDLY
   {"cr3", output, SANE_UNSET, CR3, CRDLY},
   {"cr2", output, SANE_UNSET, CR2, CRDLY},
   {"cr1", output, SANE_UNSET, CR1, CRDLY},
-  {"cr0", output, SANE_SET, CR0, CRDLY},
-#endif
-#ifdef TABDLY
+  {"cr0", output, SANE_سیٹ, CR0, CRDLY},
+#اگر_ختم
+#اگر_تعریف_شدہ TABDLY
 # ifdef TAB3
   {"tab3", output, SANE_UNSET, TAB3, TABDLY},
 # endif
@@ -291,63 +291,63 @@ static struct mode_info const mode_info[] =
   {"tab1", output, SANE_UNSET, TAB1, TABDLY},
 # endif
 # ifdef TAB0
-  {"tab0", output, SANE_SET, TAB0, TABDLY},
+  {"tab0", output, SANE_سیٹ, TAB0, TABDLY},
 # endif
-#else
+#ورنہ
 # ifdef OXTABS
   {"tab3", output, SANE_UNSET, OXTABS, 0},
 # endif
-#endif
-#ifdef BSDLY
+#اگر_ختم
+#اگر_تعریف_شدہ BSDLY
   {"bs1", output, SANE_UNSET, BS1, BSDLY},
-  {"bs0", output, SANE_SET, BS0, BSDLY},
-#endif
-#ifdef VTDLY
+  {"bs0", output, SANE_سیٹ, BS0, BSDLY},
+#اگر_ختم
+#اگر_تعریف_شدہ VTDLY
   {"vt1", output, SANE_UNSET, VT1, VTDLY},
-  {"vt0", output, SANE_SET, VT0, VTDLY},
-#endif
-#ifdef FFDLY
+  {"vt0", output, SANE_سیٹ, VT0, VTDLY},
+#اگر_ختم
+#اگر_تعریف_شدہ FFDLY
   {"ff1", output, SANE_UNSET, FF1, FFDLY},
-  {"ff0", output, SANE_SET, FF0, FFDLY},
-#endif
+  {"ff0", output, SANE_سیٹ, FF0, FFDLY},
+#اگر_ختم
 
-  {"isig", local, SANE_SET | REV, ISIG, 0},
-  {"icanon", local, SANE_SET | REV, ICANON, 0},
-#ifdef IEXTEN
-  {"iexten", local, SANE_SET | REV, IEXTEN, 0},
-#endif
-  {"echo", local, SANE_SET | REV, ECHO, 0},
-  {"echoe", local, SANE_SET | REV, ECHOE, 0},
+  {"isig", local, SANE_سیٹ | REV, ISIG, 0},
+  {"icanon", local, SANE_سیٹ | REV, ICANON, 0},
+#اگر_تعریف_شدہ IEXTEN
+  {"iexten", local, SANE_سیٹ | REV, IEXTEN, 0},
+#اگر_ختم
+  {"echo", local, SANE_سیٹ | REV, ECHO, 0},
+  {"echoe", local, SANE_سیٹ | REV, ECHOE, 0},
   {"crterase", local, REV | OMIT, ECHOE, 0},
-  {"echok", local, SANE_SET | REV, ECHOK, 0},
+  {"echok", local, SANE_سیٹ | REV, ECHOK, 0},
   {"echonl", local, SANE_UNSET | REV, ECHONL, 0},
   {"noflsh", local, SANE_UNSET | REV, NOFLSH, 0},
-#ifdef XCASE
+#اگر_تعریف_شدہ XCASE
   {"xcase", local, SANE_UNSET | REV, XCASE, 0},
-#endif
-#ifdef TOSTOP
+#اگر_ختم
+#اگر_تعریف_شدہ TOSTOP
   {"tostop", local, SANE_UNSET | REV, TOSTOP, 0},
-#endif
-#ifdef ECHOPRT
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOPRT
   {"echoprt", local, SANE_UNSET | REV, ECHOPRT, 0},
   {"prterase", local, REV | OMIT, ECHOPRT, 0},
-#endif
-#ifdef ECHOCTL
-  {"echoctl", local, SANE_SET | REV, ECHOCTL, 0},
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOCTL
+  {"echoctl", local, SANE_سیٹ | REV, ECHOCTL, 0},
   {"ctlecho", local, REV | OMIT, ECHOCTL, 0},
-#endif
-#ifdef ECHOKE
-  {"echoke", local, SANE_SET | REV, ECHOKE, 0},
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOKE
+  {"echoke", local, SANE_سیٹ | REV, ECHOKE, 0},
   {"crtkill", local, REV | OMIT, ECHOKE, 0},
-#endif
-#ifdef FLUSHO
+#اگر_ختم
+#اگر_تعریف_شدہ FLUSHO
   {"flusho", local, SANE_UNSET | REV, FLUSHO, 0},
-#endif
-#if defined TIOCEXT
+#اگر_ختم
+#اگر defined TIOCEXT
   {"extproc", local, SANE_UNSET | REV | NO_SETATTR, EXTPROC, 0},
-#elif defined EXTPROC
+#وگرنہ_اگر defined EXTPROC
   {"extproc", local, SANE_UNSET | REV, EXTPROC, 0},
-#endif
+#اگر_ختم
 
   {"evenp", combination, REV | OMIT, 0, 0},
   {"parity", combination, REV | OMIT, 0, 0},
@@ -360,33 +360,33 @@ static struct mode_info const mode_info[] =
   {"pass8", combination, REV | OMIT, 0, 0},
   {"litout", combination, REV | OMIT, 0, 0},
   {"cbreak", combination, REV | OMIT, 0, 0},
-#ifdef IXANY
+#اگر_تعریف_شدہ IXANY
   {"decctlq", combination, REV | OMIT, 0, 0},
-#endif
-#if defined TABDLY || defined OXTABS
+#اگر_ختم
+#اگر defined TABDLY || defined OXTABS
   {"tabs", combination, REV | OMIT, 0, 0},
-#endif
-#if defined XCASE && defined IUCLC && defined OLCUC
+#اگر_ختم
+#اگر defined XCASE && defined IUCLC && defined OLCUC
   {"lcase", combination, REV | OMIT, 0, 0},
   {"LCASE", combination, REV | OMIT, 0, 0},
-#endif
+#اگر_ختم
   {"crt", combination, OMIT, 0, 0},
   {"dec", combination, OMIT, 0, 0},
 
-  {NULL, control, 0, 0, 0}
+  {تہی, control, 0, 0, 0}
 };
 
 /* Control character settings.  */
-struct control_info
+ساخت control_info
   {
-    char const *name;		/* Name given on command line.  */
+    حرف ثابت *name;		/* Name given on command line.  */
     cc_t saneval;		/* Value to set for 'stty sane'.  */
-    size_t offset;		/* Offset in c_cc.  */
+    size_t انحراف;		/* Offset in c_cc.  */
   };
 
 /* Control characters. */
 
-static struct control_info const control_info[] =
+ساکن ساخت control_info ثابت control_info[] =
 {
   {"intr", CINTR, VINTR},
   {"quit", CQUIT, VQUIT},
@@ -394,173 +394,173 @@ static struct control_info const control_info[] =
   {"kill", CKILL, VKILL},
   {"eof", CEOF, VEOF},
   {"eol", CEOL, VEOL},
-#ifdef VEOL2
+#اگر_تعریف_شدہ VEOL2
   {"eol2", CEOL2, VEOL2},
-#endif
-#ifdef VSWTCH
+#اگر_ختم
+#اگر_تعریف_شدہ VSWTCH
   {"swtch", CSWTCH, VSWTCH},
-#endif
+#اگر_ختم
   {"start", CSTART, VSTART},
   {"stop", CSTOP, VSTOP},
   {"susp", CSUSP, VSUSP},
-#ifdef VDSUSP
+#اگر_تعریف_شدہ VDSUSP
   {"dsusp", CDSUSP, VDSUSP},
-#endif
-#ifdef VREPRINT
+#اگر_ختم
+#اگر_تعریف_شدہ VREPRINT
   {"rprnt", CRPRNT, VREPRINT},
-#else
+#ورنہ
 # ifdef CREPRINT /* HPUX 10.20 needs this */
   {"rprnt", CRPRNT, CREPRINT},
 # endif
-#endif
-#ifdef VWERASE
+#اگر_ختم
+#اگر_تعریف_شدہ VWERASE
   {"werase", CWERASE, VWERASE},
-#endif
-#ifdef VLNEXT
+#اگر_ختم
+#اگر_تعریف_شدہ VLNEXT
   {"lnext", CLNEXT, VLNEXT},
-#endif
-#ifdef VFLUSHO
+#اگر_ختم
+#اگر_تعریف_شدہ VFLUSHO
   {"flush", CFLUSHO, VFLUSHO},   /* deprecated compat option.  */
   {"discard", CFLUSHO, VFLUSHO},
-#endif
-#ifdef VSTATUS
+#اگر_ختم
+#اگر_تعریف_شدہ VSTATUS
   {"status", CSTATUS, VSTATUS},
-#endif
+#اگر_ختم
 
   /* These must be last because of the display routines. */
   {"min", 1, VMIN},
   {"time", 0, VTIME},
-  {NULL, 0, 0}
+  {تہی, 0, 0}
 };
 
 /* This struct is needed because some systems, e.g., GNU/Linux,
    support baud rates equal to (speed_t) -1.  */
-struct speed_desc
+ساخت رفتار_desc
 {
   /* The baud rate.  */
-  speed_t baud;
+  رفتار_t baud;
 
   /* True if the baud member is valid and did not overflow.  */
   bool valid;
 };
 
-static char const *visible (cc_t ch);
-static unsigned long int baud_to_value (speed_t speed);
-static bool recover_mode (char const *arg, struct termios *mode);
-static int screen_columns (void);
-static bool set_mode (struct mode_info const *info, bool reversed,
-                      struct termios *mode);
-static bool eq_mode (struct termios const *mode1,
-                     struct termios const *mode2);
-static bool speed_matches (struct termios const *mode1,
-                           struct termios const *mode2);
-static uintmax_t integer_arg (char const *s, uintmax_t max);
-static struct speed_desc string_to_baud (char const *arg);
-static tcflag_t *mode_type_flag (enum mode_type type, struct termios *mode);
-static void display_all (struct termios *mode, char const *device_name);
-static void display_changed (struct termios *mode);
-static void display_recoverable (struct termios *mode);
-static void display_settings (enum output_type output_type,
-                              struct termios *mode,
-                              char const *device_name);
-static void check_speed (struct termios *mode);
-static void display_speed (struct termios *mode, bool fancy);
-static void display_window_size (bool fancy, char const *device_name);
-static void sane_mode (struct termios *mode);
-static void set_control_char (struct control_info const *info,
-                              char const *arg,
-                              struct termios *mode);
-static void set_speed (enum speed_setting type, char const *arg,
-                       struct speed_desc const speed, struct termios *mode);
-static void set_window_size (int rows, int cols, char const *device_name);
+ساکن حرف ثابت *visible (cc_t ch);
+ساکن غیرعلامتی طویل صحیح baud_مقصد_قدر (رفتار_t رفتار);
+ساکن bool recover_منوال (حرف ثابت *arg, ساخت termios *منوال_2);
+ساکن صحیح screen_columns (خالی);
+ساکن bool سیٹ_منوال (ساخت منوال_info ثابت *info, bool reversed,
+                      ساخت termios *منوال_2);
+ساکن bool eq_منوال (ساخت termios ثابت *mode1,
+                     ساخت termios ثابت *mode2);
+ساکن bool رفتار_matches (ساخت termios ثابت *mode1,
+                           ساخت termios ثابت *mode2);
+ساکن uintmax_t integer_arg (حرف ثابت *s, uintmax_t max);
+ساکن ساخت رفتار_desc string_مقصد_baud (حرف ثابت *arg);
+ساکن tcflag_t *منوال_type_flag (شمار منوال_type type, ساخت termios *منوال_2);
+ساکن خالی display_all (ساخت termios *منوال_2, حرف ثابت *device_name);
+ساکن خالی display_بدلا (ساخت termios *منوال_2);
+ساکن خالی display_recoverable (ساخت termios *منوال_2);
+ساکن خالی display_settings (شمار output_type output_type,
+                              ساخت termios *منوال_2,
+                              حرف ثابت *device_name);
+ساکن خالی check_رفتار (ساخت termios *منوال_2);
+ساکن خالی display_رفتار (ساخت termios *منوال_2, bool fancy);
+ساکن خالی display_کھڑکی_سائز (bool fancy, حرف ثابت *device_name);
+ساکن خالی sane_منوال (ساخت termios *منوال_2);
+ساکن خالی سیٹ_control_char (ساخت control_info ثابت *info,
+                              حرف ثابت *arg,
+                              ساخت termios *منوال_2);
+ساکن خالی سیٹ_رفتار (شمار رفتار_setting type, حرف ثابت *arg,
+                       ساخت رفتار_desc ثابت رفتار, ساخت termios *منوال_2);
+ساکن خالی سیٹ_کھڑکی_سائز (صحیح صفیں, صحیح ستون_تعداد_2, حرف ثابت *device_name);
 
 /* The width of the screen, for output wrapping. */
-static int max_col;
+ساکن صحیح max_ستون;
 
 /* Current position, to know when to wrap. */
-static int current_col;
+ساکن صحیح current_ستون;
 
 /* Default "drain" mode for tcsetattr.  */
-static int tcsetattr_options = TCSADRAIN;
+ساکن صحیح tcsetattr_options = TCSADRAIN;
 
 /* Extra info to aid stty development.  */
-static bool dev_debug;
+ساکن bool dev_debug;
 
 /* Record last speed set for correlation.  */
-static struct speed_desc last_ibaud =
-  { .baud = (speed_t) -1, .valid = false };
-static struct speed_desc last_obaud =
-  { .baud = (speed_t) -1, .valid = false };
+ساکن ساخت رفتار_desc آخری_ibaud =
+  { .baud = (رفتار_t) -1, .valid = false };
+ساکن ساخت رفتار_desc آخری_obaud =
+  { .baud = (رفتار_t) -1, .valid = false };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
   DEV_DEBUG_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"save", no_argument, NULL, 'g'},
-  {"file", required_argument, NULL, 'F'},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
+  {"all", no_دلیل, تہی, 'a'},
+  {"save", no_دلیل, تہی, 'g'},
+  {"file", required_دلیل, تہی, 'F'},
+  {"-debug", no_دلیل, تہی, DEV_DEBUG_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
 /* Print format string MESSAGE and optional args.
    Wrap to next line first if it won't fit.
    Print a space first unless MESSAGE will start a new line. */
 
-ATTRIBUTE_FORMAT ((printf, 1, 2))
-static void
-wrapf (char const *message,...)
+ATTRIBUTE_FORMAT ((لکھو, 1, 2))
+ساکن خالی
+wrapf (حرف ثابت *پیغام_2,...)
 {
-  va_list args;
-  char *buf;
-  int buflen;
+  va_list دلائل;
+  حرف *buf;
+  صحیح buflen;
 
-  va_start (args, message);
-  buflen = vasprintf (&buf, message, args);
-  va_end (args);
+  va_آغاز (دلائل, پیغام_2);
+  buflen = vasprintf (&buf, پیغام_2, دلائل);
+  va_انتہا (دلائل);
 
-  if (buflen < 0)
+  اگر (buflen < 0)
     xalloc_die ();
 
-  if (0 < current_col)
+  اگر (0 < current_ستون)
     {
-      if (max_col - current_col <= buflen)
+      اگر (max_ستون - current_ستون <= buflen)
         {
-          putchar ('\n');
-          current_col = 0;
+          حرف_لکھو ('\n');
+          current_ستون = 0;
         }
-      else
+      ورنہ
         {
-          putchar (' ');
-          current_col++;
+          حرف_لکھو (' ');
+          current_ستون++;
         }
     }
 
   fputs (buf, stdout);
-  free (buf);
-  current_col += buflen;
+  آزاد (buf);
+  current_ستون += buflen;
 }
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [-F DEVICE | --file=DEVICE] [SETTING]...\n\
   or:  %s [-F DEVICE | --file=DEVICE] [-a|--all]\n\
   or:  %s [-F DEVICE | --file=DEVICE] [-g|--save]\n\
 "),
-              program_name, program_name, program_name);
+              پروگرام_name, پروگرام_name, پروگرام_name);
       fputs (_("\
 Print or change terminal characteristics.\n\
 "), stdout);
@@ -568,184 +568,184 @@ Print or change terminal characteristics.\n\
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -a, --all          print all current settings in human-readable form\n\
+  -a, --all          print all current settings اندر human-readable form\n\
 "));
       oputs (_("\
-  -g, --save         print all current settings in a stty-readable form\n\
+  -g, --save         print all current settings اندر a stty-readable form\n\
 "));
       oputs (_("\
-  -F, --file=DEVICE  open and use DEVICE instead of standard input\n\
+  -F, --file=DEVICE  open and use DEVICE instead کا standard داخلہ\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Optional - before SETTING indicates negation.  An * marks non-POSIX\n\
-settings.  The underlying system defines which settings are available.\n\
+settings.  The underlying system متعین_کرتا which settings are دستیاب.\n\
 "), stdout);
       fputs (_("\
 \n\
 Special characters:\n"), stdout);
-#ifdef VFLUSHO
+#اگر_تعریف_شدہ VFLUSHO
       fputs (_("\
- * discard CHAR  CHAR will toggle discarding of output\n\
+ * discard CHAR  CHAR will toggle discarding کا output\n\
 "), stdout);
-#endif
-#ifdef VDSUSP
+#اگر_ختم
+#اگر_تعریف_شدہ VDSUSP
       fputs (_("\
- * dsusp CHAR    CHAR will send a terminal stop signal once input flushed\n\
+ * dsusp CHAR    CHAR will send a terminal stop اشارہ once داخلہ flushed\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   eof CHAR      CHAR will send an end of file (terminate the input)\n\
-   eol CHAR      CHAR will end the line\n\
+   eof CHAR      CHAR will send an انتہا کا file (terminate the داخلہ)\n\
+   eol CHAR      CHAR will انتہا the سطر\n\
 "), stdout);
-#ifdef VEOL2
+#اگر_تعریف_شدہ VEOL2
       fputs (_("\
- * eol2 CHAR     alternate CHAR for ending the line\n\
+ * eol2 CHAR     alternate CHAR برائے ending the سطر\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   erase CHAR    CHAR will erase the last character typed\n\
-   intr CHAR     CHAR will send an interrupt signal\n\
-   kill CHAR     CHAR will erase the current line\n\
+   erase CHAR    CHAR will erase the آخری character typed\n\
+   intr CHAR     CHAR will send an مداخلت اشارہ\n\
+   kill CHAR     CHAR will erase the current سطر\n\
 "), stdout);
-#ifdef VLNEXT
+#اگر_تعریف_شدہ VLNEXT
       fputs (_("\
- * lnext CHAR    CHAR will enter the next character quoted\n\
+ * lnext CHAR    CHAR will enter the اگلا character quoted\n\
 "), stdout);
-#endif
-#ifdef VSTATUS
+#اگر_ختم
+#اگر_تعریف_شدہ VSTATUS
       fputs (_("\
- * status CHAR   CHAR will send an info signal\n\
+ * حالت_2 CHAR   CHAR will send an info اشارہ\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   quit CHAR     CHAR will send a quit signal\n\
+   quit CHAR     CHAR will send a quit اشارہ\n\
 "), stdout);
-#if defined CREPRINT || defined VREPRINT
+#اگر defined CREPRINT || defined VREPRINT
       fputs (_("\
- * rprnt CHAR    CHAR will redraw the current line\n\
+ * rprnt CHAR    CHAR will redraw the current سطر\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   start CHAR    CHAR will restart the output after stopping it\n\
+   آغاز CHAR    CHAR will restart the output after stopping it\n\
    stop CHAR     CHAR will stop the output\n\
-   susp CHAR     CHAR will send a terminal stop signal\n\
+   susp CHAR     CHAR will send a terminal stop اشارہ\n\
 "), stdout);
-#ifdef VSWTCH
+#اگر_تعریف_شدہ VSWTCH
       fputs (_("\
- * swtch CHAR    CHAR will switch to a different shell layer\n\
+ * swtch CHAR    CHAR will انتخاب مقصد a different shell layer\n\
 "), stdout);
-#endif
-#ifdef VWERASE
+#اگر_ختم
+#اگر_تعریف_شدہ VWERASE
       fputs (_("\
- * werase CHAR   CHAR will erase the last word typed\n\
+ * werase CHAR   CHAR will erase the آخری لفظ_2 typed\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
 \n\
 Special settings:\n\
-   N             set the input and output speeds to N bauds\n\
+   N             سیٹ_2 the داخلہ and output speeds مقصد N bauds\n\
 "), stdout);
-#ifdef TIOCGWINSZ
+#اگر_تعریف_شدہ TIOCGWINSZ
       fputs (_("\
-   cols N        tell the kernel that the terminal has N columns\n\
- * columns N     same as cols N\n\
+   ستون_تعداد_2 N        tell the kernel that the terminal has N columns\n\
+ * columns N     same as ستون_تعداد_2 N\n\
 "), stdout);
-#endif
-      printf (_("\
- * [-]drain      wait for transmission before applying settings (%s by default)\
+#اگر_ختم
+      لکھو (_("\
+ * [-]drain      wait برائے ترسیل before applying settings (%s by طےشدہ)\
 \n"), tcsetattr_options == TCSADRAIN ? _("on") : _("off"));
       fputs (_("\
-   ispeed N      set the input speed to N\n\
+   ispeed N      سیٹ_2 the داخلہ رفتار مقصد N\n\
 "), stdout);
-#ifdef HAVE_C_LINE
+#اگر_تعریف_شدہ HAVE_C_سطر
       fputs (_("\
- * line N        use line discipline N\n\
+ * سطر N        use سطر discipline N\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   min N         with -icanon, set N characters minimum for a completed read\n\
-   ospeed N      set the output speed to N\n\
+   min N         with -icanon, سیٹ_2 N characters minimum برائے a completed اقرأ\n\
+   ospeed N      سیٹ_2 the output رفتار مقصد N\n\
 "), stdout);
-#ifdef TIOCGWINSZ
+#اگر_تعریف_شدہ TIOCGWINSZ
       fputs (_("\
-   rows N        tell the kernel that the terminal has N rows\n\
-   size          print the number of rows and columns according to the kernel\n\
+   صفیں N        tell the kernel that the terminal has N صفیں\n\
+   سائز          print the نمبر کا صفیں and columns according مقصد the kernel\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   speed         print the terminal speed\n\
-   time N        with -icanon, set read timeout of N tenths of a second\n\
+   رفتار         print the terminal رفتار\n\
+   وقت N        with -icanon, سیٹ_2 اقرأ timeout کا N tenths کا a دوسرا\n\
 "), stdout);
       fputs (_("\
 \n\
 Control settings:\n\
-   [-]clocal     disable modem control signals\n\
-   [-]cread      allow input to be received\n\
+   [-]clocal     disable modem control اشارات\n\
+   [-]cread      allow داخلہ مقصد be received\n\
 "), stdout);
-#ifdef CRTSCTS
+#اگر_تعریف_شدہ CRTSCTS
       fputs (_("\
  * [-]crtscts    enable RTS/CTS handshaking\n\
 "), stdout);
-#endif
-#ifdef CDTRDSR
+#اگر_ختم
+#اگر_تعریف_شدہ CDTRDSR
       fputs (_("\
  * [-]cdtrdsr    enable DTR/DSR handshaking\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   csN           set character size to N bits, N in [5..8]\n\
+   csN           سیٹ_2 character سائز مقصد N بٹ_2, N اندر [5..8]\n\
 "), stdout);
       fputs (_("\
-   [-]cstopb     use two stop bits per character (one with '-')\n\
-   [-]hup        send a hangup signal when the last process closes the tty\n\
+   [-]cstopb     use two stop بٹ_2 فی character (one with '-')\n\
+   [-]hup        send a hangup اشارہ when the آخری process closes the tty\n\
    [-]hupcl      same as [-]hup\n\
-   [-]parenb     generate parity bit in output and expect parity bit in input\n\
-   [-]parodd     set odd parity (or even parity with '-')\n\
+   [-]parenb     generate parity ثنائی_ہندسہ اندر output and expect parity ثنائی_ہندسہ اندر داخلہ\n\
+   [-]parodd     سیٹ_2 odd parity (or even parity with '-')\n\
 "), stdout);
-#ifdef CMSPAR
+#اگر_تعریف_شدہ CMSPAR
       fputs (_("\
  * [-]cmspar     use \"stick\" (mark/space) parity\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
 \n\
-Input settings:\n\
-   [-]brkint     breaks cause an interrupt signal\n\
-   [-]icrnl      translate carriage return to newline\n\
-   [-]ignbrk     ignore break characters\n\
-   [-]igncr      ignore carriage return\n\
+داخلہ_3 settings:\n\
+   [-]brkint     breaks cause an مداخلت اشارہ\n\
+   [-]icrnl      translate carriage واپس مقصد newline\n\
+   [-]ignbrk     ignore توڑو characters\n\
+   [-]igncr      ignore carriage واپس\n\
    [-]ignpar     ignore characters with parity errors\n\
 "), stdout);
-#ifdef IMAXBEL
+#اگر_تعریف_شدہ IMAXBEL
       fputs (_("\
- * [-]imaxbel    beep and do not flush a full input buffer on a character\n\
+ * [-]imaxbel    beep and کرو not flush a بھرا داخلہ بفر on a character\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   [-]inlcr      translate newline to carriage return\n\
-   [-]inpck      enable input parity checking\n\
-   [-]istrip     clear high (8th) bit of input characters\n\
+   [-]inlcr      translate newline مقصد carriage واپس\n\
+   [-]inpck      enable داخلہ parity checking\n\
+   [-]istrip     clear بلند (8th) ثنائی_ہندسہ کا داخلہ characters\n\
 "), stdout);
-#ifdef IUTF8
+#اگر_تعریف_شدہ IUTF8
       fputs (_("\
- * [-]iutf8      assume input characters are UTF-8 encoded\n\
+ * [-]iutf8      assume داخلہ characters are UTF-8 encoded\n\
 "), stdout);
-#endif
-#ifdef IUCLC
+#اگر_ختم
+#اگر_تعریف_شدہ IUCLC
       fputs (_("\
- * [-]iuclc      translate uppercase characters to lowercase\n\
+ * [-]iuclc      translate uppercase characters مقصد lowercase\n\
 "), stdout);
-#endif
-#ifdef IXANY
+#اگر_ختم
+#اگر_تعریف_شدہ IXANY
       fputs (_("\
- * [-]ixany      let any character restart output, not only start character\n\
+ * [-]ixany      let any character restart output, not only آغاز character\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   [-]ixoff      enable sending of start/stop characters\n\
+   [-]ixoff      enable sending کا آغاز/stop characters\n\
    [-]ixon       enable XON/XOFF flow control\n\
    [-]parmrk     mark parity errors (with a 255-0-character sequence)\n\
    [-]tandem     same as [-]ixoff\n\
@@ -754,235 +754,235 @@ Input settings:\n\
 \n\
 Output settings:\n\
 "), stdout);
-#ifdef BSDLY
+#اگر_تعریف_شدہ BSDLY
       fputs (_("\
- * bsN           backspace delay style, N in [0..1]\n\
+ * bsN           backspace delay style, N اندر [0..1]\n\
 "), stdout);
-#endif
-#ifdef CRDLY
+#اگر_ختم
+#اگر_تعریف_شدہ CRDLY
       fputs (_("\
- * crN           carriage return delay style, N in [0..3]\n\
+ * crN           carriage واپس delay style, N اندر [0..3]\n\
 "), stdout);
-#endif
-#ifdef FFDLY
+#اگر_ختم
+#اگر_تعریف_شدہ FFDLY
       fputs (_("\
- * ffN           form feed delay style, N in [0..1]\n\
+ * ffN           form feed delay style, N اندر [0..1]\n\
 "), stdout);
-#endif
-#ifdef NLDLY
+#اگر_ختم
+#اگر_تعریف_شدہ NLDLY
       fputs (_("\
- * nlN           newline delay style, N in [0..1]\n\
+ * nlN           newline delay style, N اندر [0..1]\n\
 "), stdout);
-#endif
-#ifdef OCRNL
+#اگر_ختم
+#اگر_تعریف_شدہ OCRNL
       fputs (_("\
- * [-]ocrnl      translate carriage return to newline\n\
+ * [-]ocrnl      translate carriage واپس مقصد newline\n\
 "), stdout);
-#endif
-#ifdef OFDEL
+#اگر_ختم
+#اگر_تعریف_شدہ OFDEL
       fputs (_("\
- * [-]ofdel      use delete characters for fill instead of NUL characters\n\
+ * [-]ofdel      use delete characters برائے fill instead کا NUL characters\n\
 "), stdout);
-#endif
-#ifdef OFILL
+#اگر_ختم
+#اگر_تعریف_شدہ OFILL
       fputs (_("\
- * [-]ofill      use fill (padding) characters instead of timing for delays\n\
+ * [-]ofill      use fill (padding) characters instead کا timing برائے delays\n\
 "), stdout);
-#endif
-#ifdef OLCUC
+#اگر_ختم
+#اگر_تعریف_شدہ OLCUC
       fputs (_("\
- * [-]olcuc      translate lowercase characters to uppercase\n\
+ * [-]olcuc      translate lowercase characters مقصد uppercase\n\
 "), stdout);
-#endif
-#ifdef ONLCR
+#اگر_ختم
+#اگر_تعریف_شدہ ONLCR
       fputs (_("\
- * [-]onlcr      translate newline to carriage return-newline\n\
+ * [-]onlcr      translate newline مقصد carriage واپس-newline\n\
 "), stdout);
-#endif
-#ifdef ONLRET
+#اگر_ختم
+#اگر_تعریف_شدہ ONLRET
       fputs (_("\
- * [-]onlret     newline performs a carriage return\n\
+ * [-]onlret     newline performs a carriage واپس\n\
 "), stdout);
-#endif
-#ifdef ONOCR
+#اگر_ختم
+#اگر_تعریف_شدہ ONOCR
       fputs (_("\
- * [-]onocr      do not print carriage returns in the first column\n\
+ * [-]onocr      کرو not print carriage returns اندر the پہلا عمود\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
    [-]opost      postprocess output\n\
 "), stdout);
-#if defined TABDLY || defined OXTABS
+#اگر defined TABDLY || defined OXTABS
       fputs (_("\
- * tabN          horizontal tab delay style, N in [0..3]\n\
+ * tabN          horizontal tab delay style, N اندر [0..3]\n\
  * tabs          same as tab0\n\
  * -tabs         same as tab3\n\
 "), stdout);
-#endif
-#ifdef VTDLY
+#اگر_ختم
+#اگر_تعریف_شدہ VTDLY
       fputs (_("\
- * vtN           vertical tab delay style, N in [0..1]\n\
+ * vtN           vertical tab delay style, N اندر [0..1]\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
 \n\
 Local settings:\n\
    [-]crterase   echo erase characters as backspace-space-backspace\n\
 "), stdout);
-#ifdef ECHOKE
+#اگر_تعریف_شدہ ECHOKE
       fputs (_("\
- * crtkill       kill all line by obeying the echoprt and echoe settings\n\
- * -crtkill      kill all line by obeying the echoctl and echok settings\n\
+ * crtkill       kill all سطر by obeying the echoprt and echoe settings\n\
+ * -crtkill      kill all سطر by obeying the echoctl and echok settings\n\
 "), stdout);
-#endif
-#ifdef ECHOCTL
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOCTL
       fputs (_("\
- * [-]ctlecho    echo control characters in hat notation ('^c')\n\
+ * [-]ctlecho    echo control characters اندر hat notation ('^c')\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   [-]echo       echo input characters\n\
+   [-]echo       echo داخلہ characters\n\
 "), stdout);
-#ifdef ECHOCTL
+#اگر_تعریف_شدہ ECHOCTL
       fputs (_("\
  * [-]echoctl    same as [-]ctlecho\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
    [-]echoe      same as [-]crterase\n\
    [-]echok      echo a newline after a kill character\n\
 "), stdout);
-#ifdef ECHOKE
+#اگر_تعریف_شدہ ECHOKE
       fputs (_("\
  * [-]echoke     same as [-]crtkill\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   [-]echonl     echo newline even if not echoing other characters\n\
+   [-]echonl     echo newline even اگر not echoing other characters\n\
 "), stdout);
-#ifdef ECHOPRT
+#اگر_تعریف_شدہ ECHOPRT
       fputs (_("\
  * [-]echoprt    echo erased characters backward, between '\\' and '/'\n\
 "), stdout);
-#endif
-#if defined EXTPROC || defined TIOCEXT
+#اگر_ختم
+#اگر defined EXTPROC || defined TIOCEXT
       fputs (_("\
- * [-]extproc    enable \"LINEMODE\"; useful with high latency links\n\
+ * [-]extproc    enable \"LINEMODE\"; useful with بلند latency links\n\
 "), stdout);
-#endif
-#if defined FLUSHO
+#اگر_ختم
+#اگر defined FLUSHO
       fputs (_("\
  * [-]flusho     discard output\n\
 "), stdout);
-#endif
-      printf (_("\
+#اگر_ختم
+      لکھو (_("\
    [-]icanon     enable special characters: %s\n\
    [-]iexten     enable non-POSIX special characters\n\
 "), "erase, kill"
-#ifdef VWERASE
+#اگر_تعریف_شدہ VWERASE
     ", werase"
-#endif
-#if defined CREPRINT || defined VREPRINT
+#اگر_ختم
+#اگر defined CREPRINT || defined VREPRINT
     ", rprnt"
-#endif
+#اگر_ختم
 );
       fputs (_("\
-   [-]isig       enable interrupt, quit, and suspend special characters\n\
-   [-]noflsh     disable flushing after interrupt and quit special characters\n\
+   [-]isig       enable مداخلت, quit, and suspend special characters\n\
+   [-]noflsh     disable flushing after مداخلت and quit special characters\n\
 "), stdout);
-#ifdef ECHOPRT
+#اگر_تعریف_شدہ ECHOPRT
       fputs (_("\
  * [-]prterase   same as [-]echoprt\n\
 "), stdout);
-#endif
-#ifdef TOSTOP
+#اگر_ختم
+#اگر_تعریف_شدہ TOSTOP
       fputs (_("\
- * [-]tostop     stop background jobs that try to write to the terminal\n\
+ * [-]tostop     stop background jobs that try مقصد اكتب مقصد the terminal\n\
 "), stdout);
-#endif
-#ifdef XCASE
+#اگر_ختم
+#اگر_تعریف_شدہ XCASE
       fputs (_("\
- * [-]xcase      with icanon, escape with '\\' for uppercase characters\n\
+ * [-]xcase      with icanon, escape with '\\' برائے uppercase characters\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
 \n\
 Combination settings:\n\
 "), stdout);
-#if defined XCASE && defined IUCLC && defined OLCUC
+#اگر defined XCASE && defined IUCLC && defined OLCUC
       fputs (_("\
  * [-]LCASE      same as [-]lcase\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
    cbreak        same as -icanon\n\
    -cbreak       same as icanon\n\
 "), stdout);
       fputs (_("\
    cooked        same as brkint ignpar istrip icrnl ixon opost isig\n\
-                 icanon, eof and eol characters to their default values\n\
+                 icanon, eof and eol characters مقصد their طےشدہ اقدار\n\
    -cooked       same as raw\n\
 "), stdout);
-      printf (_("\
+      لکھو (_("\
    crt           same as %s\n\
 "), "echoe"
-#ifdef ECHOCTL
+#اگر_تعریف_شدہ ECHOCTL
     " echoctl"
-#endif
-#ifdef ECHOKE
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOKE
     " echoke"
-#endif
+#اگر_ختم
 );
-      printf (_("\
+      لکھو (_("\
    dec           same as %s intr ^c erase 0177\n\
                  kill ^u\n\
 "), "echoe"
-#ifdef ECHOCTL
+#اگر_تعریف_شدہ ECHOCTL
     " echoctl"
-#endif
-#ifdef ECHOKE
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOKE
     " echoke"
-#endif
-#ifdef IXANY
+#اگر_ختم
+#اگر_تعریف_شدہ IXANY
     " -ixany"
-#endif
+#اگر_ختم
 );
-#ifdef IXANY
+#اگر_تعریف_شدہ IXANY
       fputs (_("\
  * [-]decctlq    same as [-]ixany\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
-   ek            erase and kill characters to their default values\n\
+   ek            erase and kill characters مقصد their طےشدہ اقدار\n\
    evenp         same as parenb -parodd cs7\n\
    -evenp        same as -parenb cs8\n\
 "), stdout);
-#if defined XCASE && defined IUCLC && defined OLCUC
+#اگر defined XCASE && defined IUCLC && defined OLCUC
       fputs (_("\
  * [-]lcase      same as xcase iuclc olcuc\n\
 "), stdout);
-#endif
+#اگر_ختم
       fputs (_("\
    litout        same as -parenb -istrip -opost cs8\n\
    -litout       same as parenb istrip opost cs7\n\
 "), stdout);
-      printf (_("\
+      لکھو (_("\
    nl            same as %s\n\
    -nl           same as %s\n\
 "), "-icrnl"
-#ifdef ONLCR
+#اگر_تعریف_شدہ ONLCR
    " -onlcr"
-#endif
+#اگر_ختم
   , "icrnl -inlcr -igncr"
-#ifdef ONLCR
+#اگر_تعریف_شدہ ONLCR
    " onlcr"
-#endif
-#ifdef OCRNL
+#اگر_ختم
+#اگر_تعریف_شدہ OCRNL
    " -ocrnl"
-#endif
-#ifdef ONLRET
+#اگر_ختم
+#اگر_تعریف_شدہ ONLRET
    " -onlret"
-#endif
+#اگر_ختم
 );
       fputs (_("\
    oddp          same as parenb parodd cs7\n\
@@ -991,121 +991,121 @@ Combination settings:\n\
    pass8         same as -parenb -istrip cs8\n\
    -pass8        same as parenb istrip cs7\n\
 "), stdout);
-      printf (_("\
+      لکھو (_("\
    raw           same as -ignbrk -brkint -ignpar -parmrk -inpck -istrip\n\
                  -inlcr -igncr -icrnl -ixon -ixoff -icanon -opost\n\
-                 -isig%s min 1 time 0\n\
+                 -isig%s min 1 وقت 0\n\
    -raw          same as cooked\n\
 "),
-#ifdef IUCLC
+#اگر_تعریف_شدہ IUCLC
    " -iuclc"
-#endif
-#ifdef IXANY
+#اگر_ختم
+#اگر_تعریف_شدہ IXANY
    " -ixany"
-#endif
-#ifdef IMAXBEL
+#اگر_ختم
+#اگر_تعریف_شدہ IMAXBEL
    " -imaxbel"
-#endif
-#ifdef XCASE
+#اگر_ختم
+#اگر_تعریف_شدہ XCASE
    " -xcase"
-#endif
+#اگر_ختم
 );
-      printf (_("\
+      لکھو (_("\
    sane          same as cread -ignbrk brkint -inlcr -igncr icrnl\n\
                  icanon iexten echo echoe echok -echonl -noflsh\n\
                  %s\n\
                  %s\n\
                  %s,\n\
-                 all special characters to their default values\n\
+                 all special characters مقصد their طےشدہ اقدار\n\
 "),
    "-ixoff"
-#ifdef IUTF8
+#اگر_تعریف_شدہ IUTF8
    " -iutf8"
-#endif
-#ifdef IUCLC
+#اگر_ختم
+#اگر_تعریف_شدہ IUCLC
    " -iuclc"
-#endif
-#ifdef IXANY
+#اگر_ختم
+#اگر_تعریف_شدہ IXANY
    " -ixany"
-#endif
-#ifdef IMAXBEL
+#اگر_ختم
+#اگر_تعریف_شدہ IMAXBEL
    " imaxbel"
-#endif
-#ifdef XCASE
+#اگر_ختم
+#اگر_تعریف_شدہ XCASE
    " -xcase"
-#endif
-#ifdef OLCUC
+#اگر_ختم
+#اگر_تعریف_شدہ OLCUC
    " -olcuc"
-#endif
-#ifdef OCRNL
+#اگر_ختم
+#اگر_تعریف_شدہ OCRNL
    " -ocrnl"
-#endif
+#اگر_ختم
 
  , "opost"
-#ifdef OFILL
+#اگر_تعریف_شدہ OFILL
    " -ofill"
-#endif
-#ifdef ONLCR
+#اگر_ختم
+#اگر_تعریف_شدہ ONLCR
    " onlcr"
-#endif
-#ifdef ONOCR
+#اگر_ختم
+#اگر_تعریف_شدہ ONOCR
    " -onocr"
-#endif
-#ifdef ONLRET
+#اگر_ختم
+#اگر_تعریف_شدہ ONLRET
    " -onlret"
-#endif
-#ifdef NLDLY
+#اگر_ختم
+#اگر_تعریف_شدہ NLDLY
    " nl0"
-#endif
-#ifdef CRDLY
+#اگر_ختم
+#اگر_تعریف_شدہ CRDLY
    " cr0"
-#endif
-#ifdef TAB0
+#اگر_ختم
+#اگر_تعریف_شدہ TAB0
    " tab0"
-#endif
-#ifdef BSDLY
+#اگر_ختم
+#اگر_تعریف_شدہ BSDLY
    " bs0"
-#endif
-#ifdef VTDLY
+#اگر_ختم
+#اگر_تعریف_شدہ VTDLY
    " vt0"
-#endif
-#ifdef FFDLY
+#اگر_ختم
+#اگر_تعریف_شدہ FFDLY
    " ff0"
-#endif
+#اگر_ختم
 
  , "isig"
-#ifdef TOSTOP
+#اگر_تعریف_شدہ TOSTOP
    " -tostop"
-#endif
-#ifdef OFDEL
+#اگر_ختم
+#اگر_تعریف_شدہ OFDEL
    " -ofdel"
-#endif
-#ifdef ECHOPRT
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOPRT
    " -echoprt"
-#endif
-#ifdef ECHOCTL
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOCTL
    " echoctl"
-#endif
-#ifdef ECHOKE
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOKE
    " echoke"
-#endif
-#ifdef EXTPROC
+#اگر_ختم
+#اگر_تعریف_شدہ EXTPROC
    " -extproc"
-#endif
-#ifdef FLUSHO
+#اگر_ختم
+#اگر_تعریف_شدہ FLUSHO
    " -flusho"
-#endif
+#اگر_ختم
 );
       fputs (_("\
 \n\
-Handle the tty line connected to standard input.  Without arguments,\n\
-prints baud rate, line discipline, and deviations from stty sane.  In\n\
-settings, CHAR is taken literally, or coded as in ^c, 0x37, 0177 or\n\
-127; special values ^- or undef used to disable special characters.\n\
+Handle the tty سطر connected مقصد standard داخلہ.  Without arguments,\n\
+prints baud شرح, سطر discipline, and deviations from stty sane.  اندر_2\n\
+settings, CHAR is لیا_گیا literally, or coded as اندر ^c, 0x37, 0177 or\n\
+127; special اقدار ^- or undef مستعمل مقصد disable special characters.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 
@@ -1113,225 +1113,225 @@ settings, CHAR is taken literally, or coded as in ^c, 0x37, 0177 or\n\
    If CHECKING is true, this function doesn't interact
    with a device, and only validates specified settings.  */
 
-static void
-apply_settings (bool checking, char const *device_name,
-                char * const *settings, int n_settings,
-                struct termios *mode, bool *require_set_attr)
+ساکن خالی
+apply_settings (bool checking, حرف ثابت *device_name,
+                حرف * ثابت *settings, صحیح n_settings,
+                ساخت termios *منوال_2, bool *require_سیٹ_attr)
 {
-#define check_argument(arg)						\
-  do									\
+#تعریف_کرو check_دلیل(arg)						\
+  کرو									\
     {									\
-      if (k == n_settings - 1 || ! settings[k + 1])			\
+      اگر (k == n_settings - 1 || ! settings[k + 1])			\
         {								\
           error (0, 0, _("missing argument to %s"), quote (arg));	\
           usage (EXIT_FAILURE);						\
         }								\
     }									\
-  while (0)
+  جب (0)
 
-  for (int k = 1; k < n_settings; k++)
+  برائے (صحیح k = 1; k < n_settings; k++)
     {
-      char const *arg = settings[k];
-      bool match_found = false;
-      bool not_set_attr = false;
+      حرف ثابت *arg = settings[k];
+      bool مطابقت_ملا = false;
+      bool not_سیٹ_attr = false;
       bool reversed = false;
 
-      if (! arg)
-        continue;
+      اگر (! arg)
+        جاری;
 
-      if (arg[0] == '-')
+      اگر (arg[0] == '-')
         {
           ++arg;
           reversed = true;
         }
-      if (streq (arg, "drain"))
+      اگر (streq (arg, "drain"))
         {
           tcsetattr_options = reversed ? TCSANOW : TCSADRAIN;
-          continue;
+          جاری;
         }
-      for (int i = 0; mode_info[i].name != NULL; ++i)
+      برائے (صحیح i = 0; منوال_info[i].name != تہی; ++i)
         {
-          if (streq (arg, mode_info[i].name))
+          اگر (streq (arg, منوال_info[i].name))
             {
-              if ((mode_info[i].flags & NO_SETATTR) == 0)
+              اگر ((منوال_info[i].flags & NO_SETATTR) == 0)
                 {
-                  match_found = set_mode (&mode_info[i], reversed, mode);
-                  *require_set_attr = true;
+                  مطابقت_ملا = سیٹ_منوال (&منوال_info[i], reversed, منوال_2);
+                  *require_سیٹ_attr = true;
                 }
-              else
-                match_found = not_set_attr = true;
-              break;
+              ورنہ
+                مطابقت_ملا = not_سیٹ_attr = true;
+              توڑو;
             }
         }
-      if (!match_found && reversed)
+      اگر (!مطابقت_ملا && reversed)
         {
           error (0, 0, _("invalid argument %s"), quote (arg - 1));
           usage (EXIT_FAILURE);
         }
-      if (!match_found)
+      اگر (!مطابقت_ملا)
         {
-          for (int i = 0; control_info[i].name != NULL; ++i)
+          برائے (صحیح i = 0; control_info[i].name != تہی; ++i)
             {
-              if (streq (arg, control_info[i].name))
+              اگر (streq (arg, control_info[i].name))
                 {
-                  check_argument (arg);
-                  match_found = true;
+                  check_دلیل (arg);
+                  مطابقت_ملا = true;
                   ++k;
-                  set_control_char (&control_info[i], settings[k], mode);
-                  *require_set_attr = true;
-                  break;
+                  سیٹ_control_char (&control_info[i], settings[k], منوال_2);
+                  *require_سیٹ_attr = true;
+                  توڑو;
                 }
             }
         }
-      if (!match_found || not_set_attr)
+      اگر (!مطابقت_ملا || not_سیٹ_attr)
         {
-          if (streq (arg, "ispeed"))
+          اگر (streq (arg, "ispeed"))
             {
-              check_argument (arg);
+              check_دلیل (arg);
               ++k;
-              struct speed_desc const ispeed = string_to_baud (settings[k]);
-              if (! ispeed.valid)
+              ساخت رفتار_desc ثابت ispeed = string_مقصد_baud (settings[k]);
+              اگر (! ispeed.valid)
                 {
                   error (0, 0, _("invalid ispeed %s"), quote (settings[k]));
                   usage (EXIT_FAILURE);
                 }
-              set_speed (input_speed, settings[k], ispeed, mode);
-              if (checking)
-                continue;
-              *require_set_attr = true;
+              سیٹ_رفتار (داخلہ_رفتار, settings[k], ispeed, منوال_2);
+              اگر (checking)
+                جاری;
+              *require_سیٹ_attr = true;
             }
-          else if (streq (arg, "ospeed"))
+          ورنہ اگر (streq (arg, "ospeed"))
             {
-              check_argument (arg);
+              check_دلیل (arg);
               ++k;
-              struct speed_desc const ospeed = string_to_baud (settings[k]);
-              if (! ospeed.valid)
+              ساخت رفتار_desc ثابت ospeed = string_مقصد_baud (settings[k]);
+              اگر (! ospeed.valid)
                 {
                   error (0, 0, _("invalid ospeed %s"), quote (settings[k]));
                   usage (EXIT_FAILURE);
                 }
-              set_speed (output_speed, settings[k], ospeed, mode);
-              if (checking)
-                continue;
-              *require_set_attr = true;
+              سیٹ_رفتار (output_رفتار, settings[k], ospeed, منوال_2);
+              اگر (checking)
+                جاری;
+              *require_سیٹ_attr = true;
             }
-#ifdef TIOCEXT
+#اگر_تعریف_شدہ TIOCEXT
           /* This is the BSD interface to "extproc".
             Even though it's an lflag, an ioctl is used to set it.  */
-          else if (streq (arg, "extproc"))
+          ورنہ اگر (streq (arg, "extproc"))
             {
-              int val = ! reversed;
+              صحیح val = ! reversed;
 
-              if (checking)
-                continue;
+              اگر (checking)
+                جاری;
 
-              if (ioctl (STDIN_FILENO, TIOCEXT, &val) != 0)
+              اگر (ioctl (STDIN_FILENO, TIOCEXT, &val) != 0)
                 error (EXIT_FAILURE, errno, _("%s: error setting %s"),
                        quotef_n (0, device_name), quote_n (1, arg));
             }
-#endif
-#ifdef TIOCGWINSZ
-          else if (streq (arg, "rows"))
+#اگر_ختم
+#اگر_تعریف_شدہ TIOCGWINSZ
+          ورنہ اگر (streq (arg, "rows"))
             {
-              check_argument (arg);
+              check_دلیل (arg);
               ++k;
-              if (checking)
-                continue;
-              set_window_size (integer_arg (settings[k], INT_MAX), -1,
+              اگر (checking)
+                جاری;
+              سیٹ_کھڑکی_سائز (integer_arg (settings[k], زیادہ_سے_زیادہ_عدد), -1,
                                device_name);
             }
-          else if (streq (arg, "cols")
+          ورنہ اگر (streq (arg, "cols")
                    || streq (arg, "columns"))
             {
-              check_argument (arg);
+              check_دلیل (arg);
               ++k;
-              if (checking)
-                continue;
-              set_window_size (-1, integer_arg (settings[k], INT_MAX),
+              اگر (checking)
+                جاری;
+              سیٹ_کھڑکی_سائز (-1, integer_arg (settings[k], زیادہ_سے_زیادہ_عدد),
                                device_name);
             }
-          else if (streq (arg, "size"))
+          ورنہ اگر (streq (arg, "size"))
             {
-              if (checking)
-                continue;
-              max_col = screen_columns ();
-              current_col = 0;
-              display_window_size (false, device_name);
+              اگر (checking)
+                جاری;
+              max_ستون = screen_columns ();
+              current_ستون = 0;
+              display_کھڑکی_سائز (false, device_name);
             }
-#endif
-#ifdef HAVE_C_LINE
-          else if (streq (arg, "line"))
+#اگر_ختم
+#اگر_تعریف_شدہ HAVE_C_سطر
+          ورنہ اگر (streq (arg, "line"))
             {
-              check_argument (arg);
+              check_دلیل (arg);
               ++k;
-              uintmax_t value = integer_arg (settings[k], UINTMAX_MAX);
-              if (ckd_add (&mode->c_line, value, 0))
+              uintmax_t قدر = integer_arg (settings[k], UINTMAX_MAX);
+              اگر (ckd_جوڑو (&منوال_2->c_سطر, قدر, 0))
                 error (0, EOVERFLOW, _("invalid line discipline %s"),
                        quote (settings[k]));
-              *require_set_attr = true;
+              *require_سیٹ_attr = true;
             }
-#endif
-          else if (streq (arg, "speed"))
+#اگر_ختم
+          ورنہ اگر (streq (arg, "speed"))
             {
-              if (checking)
-                continue;
-              max_col = screen_columns ();
-              display_speed (mode, false);
+              اگر (checking)
+                جاری;
+              max_ستون = screen_columns ();
+              display_رفتار (منوال_2, false);
             }
-          else
+          ورنہ
             {
-              struct speed_desc const speed = string_to_baud (arg);
-              if (speed.valid)
+              ساخت رفتار_desc ثابت رفتار = string_مقصد_baud (arg);
+              اگر (رفتار.valid)
                 {
-                  set_speed (both_speeds, arg, speed, mode);
-                  if (checking)
-                    continue;
-                  *require_set_attr = true;
+                  سیٹ_رفتار (both_speeds, arg, رفتار, منوال_2);
+                  اگر (checking)
+                    جاری;
+                  *require_سیٹ_attr = true;
                 }
-              else
+              ورنہ
                 {
-                  if (! recover_mode (arg, mode))
+                  اگر (! recover_منوال (arg, منوال_2))
                     {
                       error (0, 0, _("invalid argument %s"), quote (arg));
                       usage (EXIT_FAILURE);
                     }
-                  *require_set_attr = true;
+                  *require_سیٹ_attr = true;
                 }
             }
         }
     }
 
-  if (checking)
-    check_speed (mode);
+  اگر (checking)
+    check_رفتار (منوال_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   /* Initialize to all zeroes so there is no risk memeq will report a
      spurious difference in an uninitialized portion of the structure.  */
-  static struct termios mode;
+  ساکن ساخت termios منوال_2;
 
-  enum output_type output_type;
-  int optc;
-  int argi = 0;
-  int opti = 1;
-  bool require_set_attr;
+  شمار output_type output_type;
+  صحیح optc;
+  صحیح argi = 0;
+  صحیح opti = 1;
+  bool require_سیٹ_attr;
   bool verbose_output;
   bool recoverable_output;
   bool noargs = true;
-  char *file_name = NULL;
-  char const *device_name;
+  حرف *file_name = تہی;
+  حرف ثابت *device_name;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  output_type = changed;
+  output_type = بدلا;
   verbose_output = false;
   recoverable_output = false;
 
@@ -1345,40 +1345,40 @@ main (int argc, char **argv)
      stty parses options, be sure it still works with combinations of
      short and long options, --, POSIXLY_CORRECT, etc.  */
 
-  while ((optc = getopt_long (argc - argi, argv + argi, "-agF:",
-                              longopts, NULL))
+  جب ((optc = getopt_long (argc - argi, argv + argi, "-agF:",
+                              longopts, تہی))
          != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'a':
+        حالت 'a':
           verbose_output = true;
           output_type = all;
-          break;
+          توڑو;
 
-        case 'g':
+        حالت 'g':
           recoverable_output = true;
           output_type = recoverable;
-          break;
+          توڑو;
 
-        case 'F':
-          if (file_name)
+        حالت 'F':
+          اگر (file_name)
             error (EXIT_FAILURE, 0, _("only one device may be specified"));
           file_name = optarg;
-          break;
+          توڑو;
 
-        case DEV_DEBUG_OPTION:
+        حالت DEV_DEBUG_OPTION:
           dev_debug = true;
-          break;
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        طےشدہ:
           /* Consider "drain" as an option rather than a setting,
              to support: alias stty='stty -drain'  etc.  */
-          if (! streq (argv[argi + opti], "-drain")
+          اگر (! streq (argv[argi + opti], "-drain")
               && ! streq (argv[argi + opti], "drain"))
             noargs = false;
 
@@ -1390,67 +1390,67 @@ main (int argc, char **argv)
           opti = 1;
           optind = 0;
 
-          break;
+          توڑو;
         }
 
       /* Clear fully-parsed arguments, so they don't confuse the 2nd pass.  */
-      while (opti < optind)
-        argv[argi + opti++] = NULL;
+      جب (opti < optind)
+        argv[argi + opti++] = تہی;
     }
 
   /* Specifying both -a and -g gets an error.  */
-  if (verbose_output && recoverable_output)
+  اگر (verbose_output && recoverable_output)
     error (EXIT_FAILURE, 0,
            _("the options for verbose and stty-readable output styles are\n"
              "mutually exclusive"));
 
   /* Specifying any other arguments with -a or -g gets an error.  */
-  if (!noargs && (verbose_output || recoverable_output))
+  اگر (!noargs && (verbose_output || recoverable_output))
     error (EXIT_FAILURE, 0,
            _("when specifying an output style, modes may not be set"));
 
   device_name = file_name ? file_name : _("standard input");
 
-  if (!noargs && !verbose_output && !recoverable_output)
+  اگر (!noargs && !verbose_output && !recoverable_output)
     {
-      static struct termios check_mode;
+      ساکن ساخت termios check_منوال;
       apply_settings (/* checking= */ true, device_name, argv, argc,
-                      &check_mode, &require_set_attr);
+                      &check_منوال, &require_سیٹ_attr);
     }
 
-  if (file_name)
+  اگر (file_name)
     {
-      int fdflags;
-      if (fd_reopen (STDIN_FILENO, device_name, O_RDONLY | O_NONBLOCK, 0) < 0)
+      صحیح fdflags;
+      اگر (fd_reopen (STDIN_FILENO, device_name, O_RDONLY | O_NONBLOCK, 0) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      if ((fdflags = fcntl (STDIN_FILENO, F_GETFL)) == -1
+      اگر ((fdflags = fcntl (STDIN_FILENO, F_GETFL)) == -1
           || fcntl (STDIN_FILENO, F_SETFL, fdflags & ~O_NONBLOCK) < 0)
         error (EXIT_FAILURE, errno, _("%s: couldn't reset non-blocking mode"),
                quotef (device_name));
     }
 
-  if (tcgetattr (STDIN_FILENO, &mode))
+  اگر (tcgetattr (STDIN_FILENO, &منوال_2))
     error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-  if (verbose_output || recoverable_output || noargs)
+  اگر (verbose_output || recoverable_output || noargs)
     {
-      max_col = screen_columns ();
-      current_col = 0;
-      display_settings (output_type, &mode, device_name);
-      return EXIT_SUCCESS;
+      max_ستون = screen_columns ();
+      current_ستون = 0;
+      display_settings (output_type, &منوال_2, device_name);
+      واپس EXIT_SUCCESS;
     }
 
-  require_set_attr = false;
+  require_سیٹ_attr = false;
   apply_settings (/* checking= */ false, device_name, argv, argc,
-                  &mode, &require_set_attr);
+                  &منوال_2, &require_سیٹ_attr);
 
-  if (require_set_attr)
+  اگر (require_سیٹ_attr)
     {
       /* Initialize to all zeroes so there is no risk memeq will report a
          spurious difference in an uninitialized portion of the structure.  */
-      static struct termios new_mode;
+      ساکن ساخت termios new_منوال;
 
-      if (tcsetattr (STDIN_FILENO, tcsetattr_options, &mode))
+      اگر (tcsetattr (STDIN_FILENO, tcsetattr_options, &منوال_2))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
       /* POSIX (according to Zlotnick's book) tcsetattr returns zero if
@@ -1460,18 +1460,18 @@ main (int argc, char **argv)
          this partial failure, get the current terminal attributes and
          compare them to the requested ones.  */
 
-      if (tcgetattr (STDIN_FILENO, &new_mode))
+      اگر (tcgetattr (STDIN_FILENO, &new_منوال))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-      if (! eq_mode (&mode, &new_mode))
+      اگر (! eq_منوال (&منوال_2, &new_منوال))
         {
-          if (dev_debug)
+          اگر (dev_debug)
             {
               error (0, 0, _("indx: mode: actual mode"));
-              for (unsigned int i = 0; i < sizeof (new_mode); i++)
+              برائے (غیرعلامتی صحیح i = 0; i < حجم (new_منوال); i++)
                 {
-                  unsigned int newc = *(((unsigned char *) &new_mode) + i);
-                  unsigned int oldc = *(((unsigned char *) &mode) + i);
+                  غیرعلامتی صحیح newc = *(((غیرعلامتی حرف *) &new_منوال) + i);
+                  غیرعلامتی صحیح oldc = *(((غیرعلامتی حرف *) &منوال_2) + i);
                   error (0, 0, "0x%02x, 0x%02x: 0x%02x%s", i, oldc, newc,
                           newc == oldc ? "" : " *");
                 }
@@ -1483,7 +1483,7 @@ main (int argc, char **argv)
         }
     }
 
-  return EXIT_SUCCESS;
+  واپس EXIT_SUCCESS;
 }
 
 /* Return true if modes are equivalent.
@@ -1500,315 +1500,315 @@ main (int argc, char **argv)
 
    3. An input speed of zero may be retained or normalized to the output
       speed across tcsetattr () ... tcgetattr ().  */
-static bool
-eq_mode (struct termios const *mode1, struct termios const *mode2)
+ساکن bool
+eq_منوال (ساخت termios ثابت *mode1, ساخت termios ثابت *mode2)
 {
-  if (mode1->c_iflag != mode2->c_iflag
+  اگر (mode1->c_iflag != mode2->c_iflag
       || mode1->c_oflag != mode2->c_oflag
       || mode1->c_lflag != mode2->c_lflag
-#ifdef HAVE_C_LINE
-      || mode1->c_line != mode2->c_line
-#endif
-      || !memeq (mode1->c_cc, mode2->c_cc, sizeof (mode1->c_cc)))
-    return false;
+#اگر_تعریف_شدہ HAVE_C_سطر
+      || mode1->c_سطر != mode2->c_سطر
+#اگر_ختم
+      || !memeq (mode1->c_cc, mode2->c_cc, حجم (mode1->c_cc)))
+    واپس false;
 
   /* Strip known baud-related flags from c_cflag before comparison.  */
-  tcflag_t cflag_mask = ~(tcflag_t) 0;
-#ifdef CBAUD
-  cflag_mask &= ~(tcflag_t) CBAUD;
-#endif
-#ifdef CIBAUD
-  cflag_mask &= ~(tcflag_t) CIBAUD;
-#endif
+  tcflag_t cflag_نقاب = ~(tcflag_t) 0;
+#اگر_تعریف_شدہ CBAUD
+  cflag_نقاب &= ~(tcflag_t) CBAUD;
+#اگر_ختم
+#اگر_تعریف_شدہ CIBAUD
+  cflag_نقاب &= ~(tcflag_t) CIBAUD;
+#اگر_ختم
 
-  if ((mode1->c_cflag ^ mode2->c_cflag) & cflag_mask)
-    return false;
+  اگر ((mode1->c_cflag ^ mode2->c_cflag) & cflag_نقاب)
+    واپس false;
 
-  return speed_matches (mode1, mode2);
+  واپس رفتار_matches (mode1, mode2);
 }
 
 /* Return false if not applied because not reversible; otherwise
    return true.  */
 
-static bool
-set_mode (struct mode_info const *info, bool reversed, struct termios *mode)
+ساکن bool
+سیٹ_منوال (ساخت منوال_info ثابت *info, bool reversed, ساخت termios *منوال_2)
 {
   tcflag_t *bitsp;
 
-  if (reversed && (info->flags & REV) == 0)
-    return false;
+  اگر (reversed && (info->flags & REV) == 0)
+    واپس false;
 
-  bitsp = mode_type_flag (info->type, mode);
+  bitsp = منوال_type_flag (info->type, منوال_2);
 
-  if (bitsp == NULL)
+  اگر (bitsp == تہی)
     {
       /* Combination mode. */
-      if (streq (info->name, "evenp") || streq (info->name, "parity"))
+      اگر (streq (info->name, "evenp") || streq (info->name, "parity"))
         {
-          if (reversed)
-            mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-          else
-            mode->c_cflag = (mode->c_cflag & ~PARODD & ~CSIZE) | PARENB | CS7;
+          اگر (reversed)
+            منوال_2->c_cflag = (منوال_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+          ورنہ
+            منوال_2->c_cflag = (منوال_2->c_cflag & ~PARODD & ~CSIZE) | PARENB | CS7;
         }
-      else if (streq (info->name, "oddp"))
+      ورنہ اگر (streq (info->name, "oddp"))
         {
-          if (reversed)
-            mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-          else
-            mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARODD | PARENB;
+          اگر (reversed)
+            منوال_2->c_cflag = (منوال_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+          ورنہ
+            منوال_2->c_cflag = (منوال_2->c_cflag & ~CSIZE) | CS7 | PARODD | PARENB;
         }
-      else if (streq (info->name, "nl"))
+      ورنہ اگر (streq (info->name, "nl"))
         {
-          if (reversed)
+          اگر (reversed)
             {
-              mode->c_iflag = (mode->c_iflag | ICRNL) & ~INLCR & ~IGNCR;
-              mode->c_oflag = (mode->c_oflag
-#ifdef ONLCR
+              منوال_2->c_iflag = (منوال_2->c_iflag | ICRNL) & ~INLCR & ~IGNCR;
+              منوال_2->c_oflag = (منوال_2->c_oflag
+#اگر_تعریف_شدہ ONLCR
                                | ONLCR
-#endif
+#اگر_ختم
                 )
-#ifdef OCRNL
+#اگر_تعریف_شدہ OCRNL
                 & ~OCRNL
-#endif
-#ifdef ONLRET
+#اگر_ختم
+#اگر_تعریف_شدہ ONLRET
                 & ~ONLRET
-#endif
+#اگر_ختم
                 ;
             }
-          else
+          ورنہ
             {
-              mode->c_iflag = mode->c_iflag & ~ICRNL;
-#ifdef ONLCR
-              mode->c_oflag = mode->c_oflag & ~ONLCR;
-#endif
+              منوال_2->c_iflag = منوال_2->c_iflag & ~ICRNL;
+#اگر_تعریف_شدہ ONLCR
+              منوال_2->c_oflag = منوال_2->c_oflag & ~ONLCR;
+#اگر_ختم
             }
         }
-      else if (streq (info->name, "ek"))
+      ورنہ اگر (streq (info->name, "ek"))
         {
-          mode->c_cc[VERASE] = CERASE;
-          mode->c_cc[VKILL] = CKILL;
+          منوال_2->c_cc[VERASE] = CERASE;
+          منوال_2->c_cc[VKILL] = CKILL;
         }
-      else if (streq (info->name, "sane"))
-        sane_mode (mode);
-      else if (streq (info->name, "cbreak"))
+      ورنہ اگر (streq (info->name, "sane"))
+        sane_منوال (منوال_2);
+      ورنہ اگر (streq (info->name, "cbreak"))
         {
-          if (reversed)
-            mode->c_lflag |= ICANON;
-          else
-            mode->c_lflag &= ~ICANON;
+          اگر (reversed)
+            منوال_2->c_lflag |= ICANON;
+          ورنہ
+            منوال_2->c_lflag &= ~ICANON;
         }
-      else if (streq (info->name, "pass8"))
+      ورنہ اگر (streq (info->name, "pass8"))
         {
-          if (reversed)
+          اگر (reversed)
             {
-              mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARENB;
-              mode->c_iflag |= ISTRIP;
+              منوال_2->c_cflag = (منوال_2->c_cflag & ~CSIZE) | CS7 | PARENB;
+              منوال_2->c_iflag |= ISTRIP;
             }
-          else
+          ورنہ
             {
-              mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-              mode->c_iflag &= ~ISTRIP;
-            }
-        }
-      else if (streq (info->name, "litout"))
-        {
-          if (reversed)
-            {
-              mode->c_cflag = (mode->c_cflag & ~CSIZE) | CS7 | PARENB;
-              mode->c_iflag |= ISTRIP;
-              mode->c_oflag |= OPOST;
-            }
-          else
-            {
-              mode->c_cflag = (mode->c_cflag & ~PARENB & ~CSIZE) | CS8;
-              mode->c_iflag &= ~ISTRIP;
-              mode->c_oflag &= ~OPOST;
+              منوال_2->c_cflag = (منوال_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+              منوال_2->c_iflag &= ~ISTRIP;
             }
         }
-      else if (streq (info->name, "raw") || streq (info->name, "cooked"))
+      ورنہ اگر (streq (info->name, "litout"))
         {
-          if ((info->name[0] == 'r' && reversed)
+          اگر (reversed)
+            {
+              منوال_2->c_cflag = (منوال_2->c_cflag & ~CSIZE) | CS7 | PARENB;
+              منوال_2->c_iflag |= ISTRIP;
+              منوال_2->c_oflag |= OPOST;
+            }
+          ورنہ
+            {
+              منوال_2->c_cflag = (منوال_2->c_cflag & ~PARENB & ~CSIZE) | CS8;
+              منوال_2->c_iflag &= ~ISTRIP;
+              منوال_2->c_oflag &= ~OPOST;
+            }
+        }
+      ورنہ اگر (streq (info->name, "raw") || streq (info->name, "cooked"))
+        {
+          اگر ((info->name[0] == 'r' && reversed)
               || (info->name[0] == 'c' && !reversed))
             {
               /* Cooked mode. */
-              mode->c_iflag |= BRKINT | IGNPAR | ISTRIP | ICRNL | IXON;
-              mode->c_oflag |= OPOST;
-              mode->c_lflag |= ISIG | ICANON;
-#if VMIN == VEOF
-              mode->c_cc[VEOF] = CEOF;
-#endif
-#if VTIME == VEOL
-              mode->c_cc[VEOL] = CEOL;
-#endif
+              منوال_2->c_iflag |= BRKINT | IGNPAR | ISTRIP | ICRNL | IXON;
+              منوال_2->c_oflag |= OPOST;
+              منوال_2->c_lflag |= ISIG | ICANON;
+#اگر VMIN == VEOF
+              منوال_2->c_cc[VEOF] = CEOF;
+#اگر_ختم
+#اگر VTIME == VEOL
+              منوال_2->c_cc[VEOL] = CEOL;
+#اگر_ختم
             }
-          else
+          ورنہ
             {
               /* Raw mode. */
-              mode->c_iflag = 0;
-              mode->c_oflag &= ~OPOST;
-              mode->c_lflag &= ~(ISIG | ICANON
-#ifdef XCASE
+              منوال_2->c_iflag = 0;
+              منوال_2->c_oflag &= ~OPOST;
+              منوال_2->c_lflag &= ~(ISIG | ICANON
+#اگر_تعریف_شدہ XCASE
                                  | XCASE
-#endif
+#اگر_ختم
                 );
-              mode->c_cc[VMIN] = 1;
-              mode->c_cc[VTIME] = 0;
+              منوال_2->c_cc[VMIN] = 1;
+              منوال_2->c_cc[VTIME] = 0;
             }
         }
-#ifdef IXANY
-      else if (streq (info->name, "decctlq"))
+#اگر_تعریف_شدہ IXANY
+      ورنہ اگر (streq (info->name, "decctlq"))
         {
-          if (reversed)
-            mode->c_iflag |= IXANY;
-          else
-            mode->c_iflag &= ~IXANY;
+          اگر (reversed)
+            منوال_2->c_iflag |= IXANY;
+          ورنہ
+            منوال_2->c_iflag &= ~IXANY;
         }
-#endif
-#ifdef TABDLY
-      else if (streq (info->name, "tabs"))
+#اگر_ختم
+#اگر_تعریف_شدہ TABDLY
+      ورنہ اگر (streq (info->name, "tabs"))
         {
-          if (reversed)
-            mode->c_oflag = (mode->c_oflag & ~TABDLY) | TAB3;
-          else
-            mode->c_oflag = (mode->c_oflag & ~TABDLY) | TAB0;
+          اگر (reversed)
+            منوال_2->c_oflag = (منوال_2->c_oflag & ~TABDLY) | TAB3;
+          ورنہ
+            منوال_2->c_oflag = (منوال_2->c_oflag & ~TABDLY) | TAB0;
         }
-#else
+#ورنہ
 # ifdef OXTABS
-      else if (streq (info->name, "tabs"))
+      ورنہ اگر (streq (info->name, "tabs"))
         {
-          if (reversed)
-            mode->c_oflag = mode->c_oflag | OXTABS;
-          else
-            mode->c_oflag = mode->c_oflag & ~OXTABS;
+          اگر (reversed)
+            منوال_2->c_oflag = منوال_2->c_oflag | OXTABS;
+          ورنہ
+            منوال_2->c_oflag = منوال_2->c_oflag & ~OXTABS;
         }
 # endif
-#endif
-#if defined XCASE && defined IUCLC && defined OLCUC
-      else if (streq (info->name, "lcase")
+#اگر_ختم
+#اگر defined XCASE && defined IUCLC && defined OLCUC
+      ورنہ اگر (streq (info->name, "lcase")
                || streq (info->name, "LCASE"))
         {
-          if (reversed)
+          اگر (reversed)
             {
-              mode->c_lflag &= ~XCASE;
-              mode->c_iflag &= ~IUCLC;
-              mode->c_oflag &= ~OLCUC;
+              منوال_2->c_lflag &= ~XCASE;
+              منوال_2->c_iflag &= ~IUCLC;
+              منوال_2->c_oflag &= ~OLCUC;
             }
-          else
+          ورنہ
             {
-              mode->c_lflag |= XCASE;
-              mode->c_iflag |= IUCLC;
-              mode->c_oflag |= OLCUC;
+              منوال_2->c_lflag |= XCASE;
+              منوال_2->c_iflag |= IUCLC;
+              منوال_2->c_oflag |= OLCUC;
             }
         }
-#endif
-      else if (streq (info->name, "crt"))
-        mode->c_lflag |= ECHOE
-#ifdef ECHOCTL
+#اگر_ختم
+      ورنہ اگر (streq (info->name, "crt"))
+        منوال_2->c_lflag |= ECHOE
+#اگر_تعریف_شدہ ECHOCTL
           | ECHOCTL
-#endif
-#ifdef ECHOKE
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOKE
           | ECHOKE
-#endif
+#اگر_ختم
           ;
-      else if (streq (info->name, "dec"))
+      ورنہ اگر (streq (info->name, "dec"))
         {
-          mode->c_cc[VINTR] = 3;	/* ^C */
-          mode->c_cc[VERASE] = 127;	/* DEL */
-          mode->c_cc[VKILL] = 21;	/* ^U */
-          mode->c_lflag |= ECHOE
-#ifdef ECHOCTL
+          منوال_2->c_cc[VINTR] = 3;	/* ^C */
+          منوال_2->c_cc[VERASE] = 127;	/* DEL */
+          منوال_2->c_cc[VKILL] = 21;	/* ^U */
+          منوال_2->c_lflag |= ECHOE
+#اگر_تعریف_شدہ ECHOCTL
             | ECHOCTL
-#endif
-#ifdef ECHOKE
+#اگر_ختم
+#اگر_تعریف_شدہ ECHOKE
             | ECHOKE
-#endif
+#اگر_ختم
             ;
-#ifdef IXANY
-          mode->c_iflag &= ~IXANY;
-#endif
+#اگر_تعریف_شدہ IXANY
+          منوال_2->c_iflag &= ~IXANY;
+#اگر_ختم
         }
     }
-  else if (reversed)
-    *bitsp = *bitsp & ~info->mask & ~info->bits;
-  else
-    *bitsp = (*bitsp & ~info->mask) | info->bits;
+  ورنہ اگر (reversed)
+    *bitsp = *bitsp & ~info->نقاب & ~info->بٹ_2;
+  ورنہ
+    *bitsp = (*bitsp & ~info->نقاب) | info->بٹ_2;
 
-  return true;
+  واپس true;
 }
 
-static void
-set_control_char (struct control_info const *info, char const *arg,
-                  struct termios *mode)
+ساکن خالی
+سیٹ_control_char (ساخت control_info ثابت *info, حرف ثابت *arg,
+                  ساخت termios *منوال_2)
 {
-  unsigned long int value;
+  غیرعلامتی طویل صحیح قدر;
 
-  if (streq (info->name, "min") || streq (info->name, "time"))
-    value = integer_arg (arg, TYPE_MAXIMUM (cc_t));
-  else if (arg[0] == '\0' || arg[1] == '\0')
-    value = to_uchar (arg[0]);
-  else if (streq (arg, "^-") || streq (arg, "undef"))
-    value = _POSIX_VDISABLE;
-  else if (arg[0] == '^' && arg[1] != '\0')	/* Ignore any trailing junk. */
+  اگر (streq (info->name, "min") || streq (info->name, "time"))
+    قدر = integer_arg (arg, TYPE_زیادہ_سے_زیادہ (cc_t));
+  ورنہ اگر (arg[0] == '\0' || arg[1] == '\0')
+    قدر = مقصد_uchar (arg[0]);
+  ورنہ اگر (streq (arg, "^-") || streq (arg, "undef"))
+    قدر = _POSIX_VDISABLE;
+  ورنہ اگر (arg[0] == '^' && arg[1] != '\0')	/* Ignore any trailing junk. */
     {
-      if (arg[1] == '?')
-        value = 127;
-      else
-        value = to_uchar (arg[1]) & ~0140; /* Non-letters get weird results. */
+      اگر (arg[1] == '?')
+        قدر = 127;
+      ورنہ
+        قدر = مقصد_uchar (arg[1]) & ~0140; /* Non-letters get weird results. */
     }
-  else
-    value = integer_arg (arg, TYPE_MAXIMUM (cc_t));
-  mode->c_cc[info->offset] = value;
+  ورنہ
+    قدر = integer_arg (arg, TYPE_زیادہ_سے_زیادہ (cc_t));
+  منوال_2->c_cc[info->انحراف] = قدر;
 }
 
-static void
-set_speed (enum speed_setting type, char const *arg,
-           struct speed_desc const speed, struct termios *mode)
+ساکن خالی
+سیٹ_رفتار (شمار رفتار_setting type, حرف ثابت *arg,
+           ساخت رفتار_desc ثابت رفتار, ساخت termios *منوال_2)
 {
   /* Note cfset[io]speed(), do not check with the device,
      and only check whether the system logic supports the specified speed.
      Therefore we don't report the device name in any errors.  */
 
-  affirm (speed.valid);
+  affirm (رفتار.valid);
 
-  if (type == input_speed || type == both_speeds)
+  اگر (type == داخلہ_رفتار || type == both_speeds)
     {
-      last_ibaud = speed;
-      if (cfsetispeed (mode, speed.baud))
+      آخری_ibaud = رفتار;
+      اگر (cfsetispeed (منوال_2, رفتار.baud))
         error (EXIT_FAILURE, 0, _("unsupported ispeed %s"), quoteaf (arg));
     }
-  if (type == output_speed || type == both_speeds)
+  اگر (type == output_رفتار || type == both_speeds)
     {
-      last_obaud = speed;
-      if (cfsetospeed (mode, speed.baud))
+      آخری_obaud = رفتار;
+      اگر (cfsetospeed (منوال_2, رفتار.baud))
         error (EXIT_FAILURE, 0, _("unsupported ospeed %s"), quoteaf (arg));
     }
 }
 
-#ifdef TIOCGWINSZ
+#اگر_تعریف_شدہ TIOCGWINSZ
 
-static int
-get_win_size (int fd, struct winsize *win)
+ساکن صحیح
+get_win_سائز (صحیح fd, ساخت winsize *win)
 {
-  int err = ioctl (fd, TIOCGWINSZ, (char *) win);
-  return err;
+  صحیح err = ioctl (fd, TIOCGWINSZ, (حرف *) win);
+  واپس err;
 }
 
-static void
-set_window_size (int rows, int cols, char const *device_name)
+ساکن خالی
+سیٹ_کھڑکی_سائز (صحیح صفیں, صحیح ستون_تعداد_2, حرف ثابت *device_name)
 {
-  struct winsize win;
+  ساخت winsize win;
 
-  if (get_win_size (STDIN_FILENO, &win))
+  اگر (get_win_سائز (STDIN_FILENO, &win))
     {
-      if (errno != EINVAL)
+      اگر (errno != EINVAL)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      memset (&win, 0, sizeof (win));
+      memset (&win, 0, حجم (win));
     }
 
-  if (rows >= 0)
-    win.ws_row = rows;
-  if (cols >= 0)
-    win.ws_col = cols;
+  اگر (صفیں >= 0)
+    win.ws_صف = صفیں;
+  اگر (ستون_تعداد_2 >= 0)
+    win.ws_ستون = ستون_تعداد_2;
 
 # ifdef TIOCSSIZE
   /* Alexander Dupuy <dupuy@cs.columbia.edu> wrote:
@@ -1832,58 +1832,58 @@ set_window_size (int rows, int cols, char const *device_name)
      The workaround is to do the ioctl once with row and col = 1 to set the
      pixel info, and then do it again using a TIOCSSIZE to set rows/cols.  */
 
-  if (win.ws_row == 0 || win.ws_col == 0)
+  اگر (win.ws_صف == 0 || win.ws_ستون == 0)
     {
-      struct ttysize ttysz;
+      ساخت ttysize ttysz;
 
-      ttysz.ts_lines = win.ws_row;
-      ttysz.ts_cols = win.ws_col;
+      ttysz.ts_سطریں = win.ws_صف;
+      ttysz.ts_ستون_تعداد = win.ws_ستون;
 
-      win.ws_row = 1;
-      win.ws_col = 1;
+      win.ws_صف = 1;
+      win.ws_ستون = 1;
 
-      if (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
+      اگر (ioctl (STDIN_FILENO, TIOCSWINSZ, (حرف *) &win))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 
-      if (ioctl (STDIN_FILENO, TIOCSSIZE, (char *) &ttysz))
+      اگر (ioctl (STDIN_FILENO, TIOCSSIZE, (حرف *) &ttysz))
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      return;
+      واپس;
     }
 # endif
 
-  if (ioctl (STDIN_FILENO, TIOCSWINSZ, (char *) &win))
+  اگر (ioctl (STDIN_FILENO, TIOCSWINSZ, (حرف *) &win))
     error (EXIT_FAILURE, errno, "%s", quotef (device_name));
 }
 
-static void
-display_window_size (bool fancy, char const *device_name)
+ساکن خالی
+display_کھڑکی_سائز (bool fancy, حرف ثابت *device_name)
 {
-  struct winsize win;
+  ساخت winsize win;
 
-  if (get_win_size (STDIN_FILENO, &win))
+  اگر (get_win_سائز (STDIN_FILENO, &win))
     {
-      if (errno != EINVAL)
+      اگر (errno != EINVAL)
         error (EXIT_FAILURE, errno, "%s", quotef (device_name));
-      if (!fancy)
+      اگر (!fancy)
         error (EXIT_FAILURE, 0,
                _("%s: no size information for this device"),
                quotef (device_name));
     }
-  else
+  ورنہ
     {
       wrapf (fancy ? "rows %d; columns %d;" : "%d %d\n",
-             win.ws_row, win.ws_col);
-      if (!fancy)
-        current_col = 0;
+             win.ws_صف, win.ws_ستون);
+      اگر (!fancy)
+        current_ستون = 0;
     }
 }
-#endif
+#اگر_ختم
 
-static int
-screen_columns (void)
+ساکن صحیح
+screen_columns (خالی)
 {
-#ifdef TIOCGWINSZ
-  struct winsize win;
+#اگر_تعریف_شدہ TIOCGWINSZ
+  ساخت winsize win;
 
   /* With Solaris 2.[123], this ioctl fails and errno is set to
      EINVAL for telnet (but not rlogin) sessions.
@@ -1891,532 +1891,532 @@ screen_columns (void)
      (but it works for ptys).
      It can also fail on any system when stdout isn't a tty.
      In case of any failure, just use the default.  */
-  if (get_win_size (STDOUT_FILENO, &win) == 0 && 0 < win.ws_col)
-    return win.ws_col;
-#endif
+  اگر (get_win_سائز (STDOUT_FILENO, &win) == 0 && 0 < win.ws_ستون)
+    واپس win.ws_ستون;
+#اگر_ختم
   {
     /* Use $COLUMNS if it's in [1..INT_MAX].  */
-    char *col_string = getenv ("COLUMNS");
-    long int n_columns;
-    if (!(col_string != NULL
-          && xstrtol (col_string, NULL, 0, &n_columns, "") == LONGINT_OK
+    حرف *ستون_string = getenv ("COLUMNS");
+    طویل صحیح n_columns;
+    اگر (!(ستون_string != تہی
+          && xstrtol (ستون_string, تہی, 0, &n_columns, "") == LONGINT_OK
           && 0 < n_columns
-          && n_columns <= INT_MAX))
+          && n_columns <= زیادہ_سے_زیادہ_عدد))
       n_columns = 80;
-    return n_columns;
+    واپس n_columns;
   }
 }
 
-ATTRIBUTE_PURE
-static tcflag_t *
-mode_type_flag (enum mode_type type, struct termios *mode)
+ATTRIBUTE_خالص
+ساکن tcflag_t *
+منوال_type_flag (شمار منوال_type type, ساخت termios *منوال_2)
 {
-  switch (type)
+  انتخاب (type)
     {
-    case control:
-      return &mode->c_cflag;
+    حالت control:
+      واپس &منوال_2->c_cflag;
 
-    case input:
-      return &mode->c_iflag;
+    حالت داخلہ:
+      واپس &منوال_2->c_iflag;
 
-    case output:
-      return &mode->c_oflag;
+    حالت output:
+      واپس &منوال_2->c_oflag;
 
-    case local:
-      return &mode->c_lflag;
+    حالت local:
+      واپس &منوال_2->c_lflag;
 
-    case combination:
-      return NULL;
+    حالت combination:
+      واپس تہی;
 
-    default:
+    طےشدہ:
       unreachable ();
     }
 }
 
-static void
-display_settings (enum output_type output_type, struct termios *mode,
-                  char const *device_name)
+ساکن خالی
+display_settings (شمار output_type output_type, ساخت termios *منوال_2,
+                  حرف ثابت *device_name)
 {
-  switch (output_type)
+  انتخاب (output_type)
     {
-    case changed:
-      display_changed (mode);
-      break;
+    حالت بدلا:
+      display_بدلا (منوال_2);
+      توڑو;
 
-    case all:
-      display_all (mode, device_name);
-      break;
+    حالت all:
+      display_all (منوال_2, device_name);
+      توڑو;
 
-    case recoverable:
-      display_recoverable (mode);
-      break;
+    حالت recoverable:
+      display_recoverable (منوال_2);
+      توڑو;
     }
 }
 
-static void
-display_changed (struct termios *mode)
+ساکن خالی
+display_بدلا (ساخت termios *منوال_2)
 {
-  bool empty_line;
+  bool خالی_خانے_سطر;
   tcflag_t *bitsp;
-  unsigned long mask;
-  enum mode_type prev_type = control;
+  غیرعلامتی طویل نقاب;
+  شمار منوال_type پچھلا_type = control;
 
-  display_speed (mode, true);
-#ifdef HAVE_C_LINE
-  wrapf ("line = %d;", mode->c_line);
-#endif
-  putchar ('\n');
-  current_col = 0;
+  display_رفتار (منوال_2, true);
+#اگر_تعریف_شدہ HAVE_C_سطر
+  wrapf ("line = %d;", منوال_2->c_سطر);
+#اگر_ختم
+  حرف_لکھو ('\n');
+  current_ستون = 0;
 
-  empty_line = true;
-  for (int i = 0; !streq (control_info[i].name, "min"); ++i)
+  خالی_خانے_سطر = true;
+  برائے (صحیح i = 0; !streq (control_info[i].name, "min"); ++i)
     {
-      if (mode->c_cc[control_info[i].offset] == control_info[i].saneval)
-        continue;
+      اگر (منوال_2->c_cc[control_info[i].انحراف] == control_info[i].saneval)
+        جاری;
 
-#ifdef VFLUSHO
+#اگر_تعریف_شدہ VFLUSHO
       /* 'flush' is the deprecated equivalent of 'discard'.  */
-      if (streq (control_info[i].name, "flush"))
-        continue;
-#endif
+      اگر (streq (control_info[i].name, "flush"))
+        جاری;
+#اگر_ختم
       /* If swtch is the same as susp, don't print both.  */
-#if VSWTCH == VSUSP
-      if (streq (control_info[i].name, "swtch"))
-        continue;
-#endif
+#اگر VSWTCH == VSUSP
+      اگر (streq (control_info[i].name, "swtch"))
+        جاری;
+#اگر_ختم
       /* If eof uses the same slot as min, only print whichever applies.  */
-#if VEOF == VMIN
-      if ((mode->c_lflag & ICANON) == 0
+#اگر VEOF == VMIN
+      اگر ((منوال_2->c_lflag & ICANON) == 0
           && (streq (control_info[i].name, "eof")
               || streq (control_info[i].name, "eol")))
-        continue;
-#endif
+        جاری;
+#اگر_ختم
 
-      empty_line = false;
+      خالی_خانے_سطر = false;
       wrapf ("%s = %s;", control_info[i].name,
-             visible (mode->c_cc[control_info[i].offset]));
+             visible (منوال_2->c_cc[control_info[i].انحراف]));
     }
-  if ((mode->c_lflag & ICANON) == 0)
+  اگر ((منوال_2->c_lflag & ICANON) == 0)
     {
       wrapf ("min = %lu; time = %lu;\n",
-             (unsigned long int) mode->c_cc[VMIN],
-             (unsigned long int) mode->c_cc[VTIME]);
+             (غیرعلامتی طویل صحیح) منوال_2->c_cc[VMIN],
+             (غیرعلامتی طویل صحیح) منوال_2->c_cc[VTIME]);
     }
-  else if (!empty_line)
-    putchar ('\n');
-  current_col = 0;
+  ورنہ اگر (!خالی_خانے_سطر)
+    حرف_لکھو ('\n');
+  current_ستون = 0;
 
-  empty_line = true;
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  خالی_خانے_سطر = true;
+  برائے (صحیح i = 0; منوال_info[i].name != تہی; ++i)
     {
-      if (mode_info[i].flags & OMIT)
-        continue;
-      if (mode_info[i].type != prev_type)
+      اگر (منوال_info[i].flags & OMIT)
+        جاری;
+      اگر (منوال_info[i].type != پچھلا_type)
         {
-          if (!empty_line)
+          اگر (!خالی_خانے_سطر)
             {
-              putchar ('\n');
-              current_col = 0;
-              empty_line = true;
+              حرف_لکھو ('\n');
+              current_ستون = 0;
+              خالی_خانے_سطر = true;
             }
-          prev_type = mode_info[i].type;
+          پچھلا_type = منوال_info[i].type;
         }
 
-      bitsp = mode_type_flag (mode_info[i].type, mode);
-      mask = mode_info[i].mask ? mode_info[i].mask : mode_info[i].bits;
-      if ((*bitsp & mask) == mode_info[i].bits)
+      bitsp = منوال_type_flag (منوال_info[i].type, منوال_2);
+      نقاب = منوال_info[i].نقاب ? منوال_info[i].نقاب : منوال_info[i].بٹ_2;
+      اگر ((*bitsp & نقاب) == منوال_info[i].بٹ_2)
         {
-          if (mode_info[i].flags & SANE_UNSET)
+          اگر (منوال_info[i].flags & SANE_UNSET)
             {
-              wrapf ("%s", mode_info[i].name);
-              empty_line = false;
+              wrapf ("%s", منوال_info[i].name);
+              خالی_خانے_سطر = false;
             }
         }
-      else if ((mode_info[i].flags & (SANE_SET | REV)) == (SANE_SET | REV))
+      ورنہ اگر ((منوال_info[i].flags & (SANE_سیٹ | REV)) == (SANE_سیٹ | REV))
         {
-          wrapf ("-%s", mode_info[i].name);
-          empty_line = false;
+          wrapf ("-%s", منوال_info[i].name);
+          خالی_خانے_سطر = false;
         }
     }
-  if (!empty_line)
-    putchar ('\n');
-  current_col = 0;
+  اگر (!خالی_خانے_سطر)
+    حرف_لکھو ('\n');
+  current_ستون = 0;
 }
 
-static void
-display_all (struct termios *mode, char const *device_name)
+ساکن خالی
+display_all (ساخت termios *منوال_2, حرف ثابت *device_name)
 {
   tcflag_t *bitsp;
-  unsigned long mask;
-  enum mode_type prev_type = control;
+  غیرعلامتی طویل نقاب;
+  شمار منوال_type پچھلا_type = control;
 
-  display_speed (mode, true);
-#ifdef TIOCGWINSZ
-  display_window_size (true, device_name);
-#endif
-#ifdef HAVE_C_LINE
-  wrapf ("line = %d;", mode->c_line);
-#endif
-  putchar ('\n');
-  current_col = 0;
+  display_رفتار (منوال_2, true);
+#اگر_تعریف_شدہ TIOCGWINSZ
+  display_کھڑکی_سائز (true, device_name);
+#اگر_ختم
+#اگر_تعریف_شدہ HAVE_C_سطر
+  wrapf ("line = %d;", منوال_2->c_سطر);
+#اگر_ختم
+  حرف_لکھو ('\n');
+  current_ستون = 0;
 
-  for (int i = 0; ! streq (control_info[i].name, "min"); ++i)
+  برائے (صحیح i = 0; ! streq (control_info[i].name, "min"); ++i)
     {
-#ifdef VFLUSHO
+#اگر_تعریف_شدہ VFLUSHO
       /* 'flush' is the deprecated equivalent of 'discard'.  */
-      if (streq (control_info[i].name, "flush"))
-        continue;
-#endif
+      اگر (streq (control_info[i].name, "flush"))
+        جاری;
+#اگر_ختم
       /* If swtch is the same as susp, don't print both.  */
-#if VSWTCH == VSUSP
-      if (streq (control_info[i].name, "swtch"))
-        continue;
-#endif
+#اگر VSWTCH == VSUSP
+      اگر (streq (control_info[i].name, "swtch"))
+        جاری;
+#اگر_ختم
       /* If eof uses the same slot as min, only print whichever applies.  */
-#if VEOF == VMIN
-      if ((mode->c_lflag & ICANON) == 0
+#اگر VEOF == VMIN
+      اگر ((منوال_2->c_lflag & ICANON) == 0
           && (streq (control_info[i].name, "eof")
               || streq (control_info[i].name, "eol")))
-        continue;
-#endif
+        جاری;
+#اگر_ختم
       wrapf ("%s = %s;", control_info[i].name,
-             visible (mode->c_cc[control_info[i].offset]));
+             visible (منوال_2->c_cc[control_info[i].انحراف]));
     }
-#if VEOF == VMIN
-  if ((mode->c_lflag & ICANON) == 0)
-#endif
+#اگر VEOF == VMIN
+  اگر ((منوال_2->c_lflag & ICANON) == 0)
+#اگر_ختم
     wrapf ("min = %lu; time = %lu;",
-           (unsigned long int) mode->c_cc[VMIN],
-           (unsigned long int) mode->c_cc[VTIME]);
-  if (current_col != 0)
-    putchar ('\n');
-  current_col = 0;
+           (غیرعلامتی طویل صحیح) منوال_2->c_cc[VMIN],
+           (غیرعلامتی طویل صحیح) منوال_2->c_cc[VTIME]);
+  اگر (current_ستون != 0)
+    حرف_لکھو ('\n');
+  current_ستون = 0;
 
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  برائے (صحیح i = 0; منوال_info[i].name != تہی; ++i)
     {
-      if (mode_info[i].flags & OMIT)
-        continue;
-      if (mode_info[i].type != prev_type)
+      اگر (منوال_info[i].flags & OMIT)
+        جاری;
+      اگر (منوال_info[i].type != پچھلا_type)
         {
-          putchar ('\n');
-          current_col = 0;
-          prev_type = mode_info[i].type;
+          حرف_لکھو ('\n');
+          current_ستون = 0;
+          پچھلا_type = منوال_info[i].type;
         }
 
-      bitsp = mode_type_flag (mode_info[i].type, mode);
-      mask = mode_info[i].mask ? mode_info[i].mask : mode_info[i].bits;
-      if ((*bitsp & mask) == mode_info[i].bits)
-        wrapf ("%s", mode_info[i].name);
-      else if (mode_info[i].flags & REV)
-        wrapf ("-%s", mode_info[i].name);
+      bitsp = منوال_type_flag (منوال_info[i].type, منوال_2);
+      نقاب = منوال_info[i].نقاب ? منوال_info[i].نقاب : منوال_info[i].بٹ_2;
+      اگر ((*bitsp & نقاب) == منوال_info[i].بٹ_2)
+        wrapf ("%s", منوال_info[i].name);
+      ورنہ اگر (منوال_info[i].flags & REV)
+        wrapf ("-%s", منوال_info[i].name);
     }
-  putchar ('\n');
-  current_col = 0;
+  حرف_لکھو ('\n');
+  current_ستون = 0;
 }
 
 /* Verify requested asymmetric speeds are supported.
    Note we don't flag the case where only ispeed or
    ospeed is set, when that would set both.  */
 
-static void
-check_speed (struct termios *mode)
+ساکن خالی
+check_رفتار (ساخت termios *منوال_2)
 {
-  if (last_ibaud.valid && last_obaud.valid)
+  اگر (آخری_ibaud.valid && آخری_obaud.valid)
     {
-      if (cfgetispeed (mode) != last_ibaud.baud
-          || cfgetospeed (mode) != last_obaud.baud)
+      اگر (cfgetispeed (منوال_2) != آخری_ibaud.baud
+          || cfgetospeed (منوال_2) != آخری_obaud.baud)
         error (EXIT_FAILURE, 0,
                _("asymmetric input (%lu), output (%lu) speeds not supported"),
-               baud_to_value (last_ibaud.baud),
-               baud_to_value (last_obaud.baud));
+               baud_مقصد_قدر (آخری_ibaud.baud),
+               baud_مقصد_قدر (آخری_obaud.baud));
     }
 }
 
-static void
-display_speed (struct termios *mode, bool fancy)
+ساکن خالی
+display_رفتار (ساخت termios *منوال_2, bool fancy)
 {
-  if (cfgetispeed (mode) == 0 || cfgetispeed (mode) == cfgetospeed (mode))
+  اگر (cfgetispeed (منوال_2) == 0 || cfgetispeed (منوال_2) == cfgetospeed (منوال_2))
     wrapf (fancy ? "speed %lu baud;" : "%lu\n",
-           baud_to_value (cfgetospeed (mode)));
-  else
+           baud_مقصد_قدر (cfgetospeed (منوال_2)));
+  ورنہ
     wrapf (fancy ? "ispeed %lu baud; ospeed %lu baud;" : "%lu %lu\n",
-           baud_to_value (cfgetispeed (mode)),
-           baud_to_value (cfgetospeed (mode)));
-  if (!fancy)
-    current_col = 0;
+           baud_مقصد_قدر (cfgetispeed (منوال_2)),
+           baud_مقصد_قدر (cfgetospeed (منوال_2)));
+  اگر (!fancy)
+    current_ستون = 0;
 }
 
-static void
-display_recoverable (struct termios *mode)
+ساکن خالی
+display_recoverable (ساخت termios *منوال_2)
 {
-  printf ("%lx:%lx:%lx:%lx",
-          (unsigned long int) mode->c_iflag,
-          (unsigned long int) mode->c_oflag,
-          (unsigned long int) mode->c_cflag,
-          (unsigned long int) mode->c_lflag);
-  for (size_t i = 0; i < NCCS; ++i)
-    printf (":%lx", (unsigned long int) mode->c_cc[i]);
+  لکھو ("%lx:%lx:%lx:%lx",
+          (غیرعلامتی طویل صحیح) منوال_2->c_iflag,
+          (غیرعلامتی طویل صحیح) منوال_2->c_oflag,
+          (غیرعلامتی طویل صحیح) منوال_2->c_cflag,
+          (غیرعلامتی طویل صحیح) منوال_2->c_lflag);
+  برائے (size_t i = 0; i < NCCS; ++i)
+    لکھو (":%lx", (غیرعلامتی طویل صحیح) منوال_2->c_cc[i]);
 
   /* Without CBAUD, speeds are stored separately from c_cflag (e.g.,
      on BSD).  Otherwise preserve the old format unless BOTHER is used.  */
   bool separate_speeds = true;
-#ifdef CBAUD
+#اگر_تعریف_شدہ CBAUD
   separate_speeds = false;
 # ifdef BOTHER
-  separate_speeds = (mode->c_cflag & CBAUD) == BOTHER;
-#  if defined CIBAUD && defined IBSHIFT
-  separate_speeds |= ((mode->c_cflag & CIBAUD) >> IBSHIFT) == BOTHER;
+  separate_speeds = (منوال_2->c_cflag & CBAUD) == BOTHER;
+#  اگر defined CIBAUD && defined IBSHIFT
+  separate_speeds |= ((منوال_2->c_cflag & CIBAUD) >> IBSHIFT) == BOTHER;
 #  endif
 # endif
-#endif
-  if (separate_speeds)
-    printf (":%lx:%lx", (unsigned long int) cfgetispeed (mode),
-            (unsigned long int) cfgetospeed (mode));
+#اگر_ختم
+  اگر (separate_speeds)
+    لکھو (":%lx:%lx", (غیرعلامتی طویل صحیح) cfgetispeed (منوال_2),
+            (غیرعلامتی طویل صحیح) cfgetospeed (منوال_2));
 
-  putchar ('\n');
+  حرف_لکھو ('\n');
 }
 
 /* Define a strtoul wrapper that checks the delimiter and result range.  */
-#define STRTOUL_TYPE(TYPE)                                               \
-  static int                                                             \
-  strtoul_##TYPE (char const *s, int base, char **p, TYPE *result,       \
-                  char delim)                                            \
+#تعریف_کرو STRTOUL_TYPE(TYPE)                                               \
+  ساکن صحیح                                                             \
+  strtoul_##TYPE (حرف ثابت *s, صحیح بنیاد_2, حرف **p, TYPE *نتیجہ,       \
+                  حرف delim)                                            \
   {                                                                      \
-    unsigned long ul;                                                    \
+    غیرعلامتی طویل ul;                                                    \
     errno = 0;                                                           \
-    ul = strtoul (s, p, base);                                           \
-    if (errno || **p != delim || *p == s || (TYPE) ul != ul)             \
-      return -1;                                                         \
-    *result = ul;                                                        \
-    return 0;                                                            \
+    ul = strtoul (s, p, بنیاد_2);                                           \
+    اگر (errno || **p != delim || *p == s || (TYPE) ul != ul)             \
+      واپس -1;                                                         \
+    *نتیجہ = ul;                                                        \
+    واپس 0;                                                            \
   }
 
 STRTOUL_TYPE (tcflag_t)
 STRTOUL_TYPE (cc_t)
-STRTOUL_TYPE (speed_t)
-#undef STRTOUL_TYPE
+STRTOUL_TYPE (رفتار_t)
+#تعریف_منسوخ STRTOUL_TYPE
 
 /* Autogenerated conversion functions to/from speed_t */
-#include "speedlist.h"
+#شامل "speedlist.h"
 
 /* Parse the output of display_recoverable.
    Return false if any part of it is invalid.  */
-static bool
-recover_mode (char const *arg, struct termios *mode)
+ساکن bool
+recover_منوال (حرف ثابت *arg, ساخت termios *منوال_2)
 {
   tcflag_t flag[4];
-  char const *s = arg;
-  for (size_t i = 0; i < 4; i++)
+  حرف ثابت *s = arg;
+  برائے (size_t i = 0; i < 4; i++)
     {
-      char *p;
-      if (strtoul_tcflag_t (s, 16, &p, flag + i, ':') != 0)
-        return false;
+      حرف *p;
+      اگر (strtoul_tcflag_t (s, 16, &p, flag + i, ':') != 0)
+        واپس false;
       s = p + 1;
     }
-  mode->c_iflag = flag[0];
-  mode->c_oflag = flag[1];
-  mode->c_cflag = flag[2];
-  mode->c_lflag = flag[3];
+  منوال_2->c_iflag = flag[0];
+  منوال_2->c_oflag = flag[1];
+  منوال_2->c_cflag = flag[2];
+  منوال_2->c_lflag = flag[3];
 
-  for (size_t i = 0; i < NCCS; ++i)
+  برائے (size_t i = 0; i < NCCS; ++i)
     {
-      char *p;
-      char delim = i < NCCS - 1 || strchr (s, ':') ? ':' : '\0';
-      if (strtoul_cc_t (s, 16, &p, mode->c_cc + i, delim) != 0)
-        return false;
+      حرف *p;
+      حرف delim = i < NCCS - 1 || strchr (s, ':') ? ':' : '\0';
+      اگر (strtoul_cc_t (s, 16, &p, منوال_2->c_cc + i, delim) != 0)
+        واپس false;
       /* Accept the old format, which has no separate speed fields.  */
-      if (! *p)
+      اگر (! *p)
         {
-#ifdef CBAUD
+#اگر_تعریف_شدہ CBAUD
           /* Some systems keep numeric speeds separately even when the
              control flags encode them.  Ensure those speeds are sync'd
              after restoring the flags.  */
-# ifdef TERMIOS_SPEED_T_SANE
-          struct speed_desc ospeed = cbaud_to_speed (mode->c_cflag & CBAUD);
-          if (ospeed.valid && cfsetospeed (mode, ospeed.baud) != 0)
-            return false;
-#  if defined CIBAUD && defined IBSHIFT
-          struct speed_desc ispeed =
-            cbaud_to_speed ((mode->c_cflag & CIBAUD) >> IBSHIFT);
-          if (ispeed.valid && cfsetispeed (mode, ispeed.baud) != 0)
-            return false;
+# ifdef TERMIOS_رفتار_T_SANE
+          ساخت رفتار_desc ospeed = cbaud_مقصد_رفتار (منوال_2->c_cflag & CBAUD);
+          اگر (ospeed.valid && cfsetospeed (منوال_2, ospeed.baud) != 0)
+            واپس false;
+#  اگر defined CIBAUD && defined IBSHIFT
+          ساخت رفتار_desc ispeed =
+            cbaud_مقصد_رفتار ((منوال_2->c_cflag & CIBAUD) >> IBSHIFT);
+          اگر (ispeed.valid && cfsetispeed (منوال_2, ispeed.baud) != 0)
+            واپس false;
 #  endif
 # endif
-          last_ibaud.baud = cfgetispeed (mode);
-          last_obaud.baud = cfgetospeed (mode);
-#endif
-          return true;
+          آخری_ibaud.baud = cfgetispeed (منوال_2);
+          آخری_obaud.baud = cfgetospeed (منوال_2);
+#اگر_ختم
+          واپس true;
         }
       s = p + 1;
     }
 
-  speed_t speed[2];
-  for (size_t i = 0; i < 2; i++)
+  رفتار_t رفتار[2];
+  برائے (size_t i = 0; i < 2; i++)
     {
-      char *p;
-      char delim = i == 0 ? ':' : '\0';
-      if (strtoul_speed_t (s, 16, &p, speed + i, delim) != 0)
-        return false;
+      حرف *p;
+      حرف delim = i == 0 ? ':' : '\0';
+      اگر (strtoul_رفتار_t (s, 16, &p, رفتار + i, delim) != 0)
+        واپس false;
       s = p + (i == 0);
     }
 
   /* Set output first, since an input speed of zero can mean to use
      the output speed.  */
-  if (cfsetospeed (mode, speed[1]) != 0
-      || cfsetispeed (mode, speed[0]) != 0)
-    return false;
+  اگر (cfsetospeed (منوال_2, رفتار[1]) != 0
+      || cfsetispeed (منوال_2, رفتار[0]) != 0)
+    واپس false;
 
-  last_ibaud.baud = speed[0] == 0 ? cfgetispeed (mode) : speed[0];
-  last_obaud.baud = speed[1];
-  return true;
+  آخری_ibaud.baud = رفتار[0] == 0 ? cfgetispeed (منوال_2) : رفتار[0];
+  آخری_obaud.baud = رفتار[1];
+  واپس true;
 }
 
 /* Return true if MODE1 and MODE2 have equivalent speeds.  */
-static bool
-speed_matches (struct termios const *mode1, struct termios const *mode2)
+ساکن bool
+رفتار_matches (ساخت termios ثابت *mode1, ساخت termios ثابت *mode2)
 {
-  speed_t speed1[2] = { cfgetospeed (mode1), cfgetispeed (mode1) };
-  speed_t speed2[2] = { cfgetospeed (mode2), cfgetispeed (mode2) };
-  if (speed1[1] == 0)
+  رفتار_t speed1[2] = { cfgetospeed (mode1), cfgetispeed (mode1) };
+  رفتار_t speed2[2] = { cfgetospeed (mode2), cfgetispeed (mode2) };
+  اگر (speed1[1] == 0)
     speed1[1] = speed1[0];
-  if (speed2[1] == 0)
+  اگر (speed2[1] == 0)
     speed2[1] = speed2[0];
 
-  unsigned int bits = 2;  /* Start and stop bits.  */
-  bits += !!(mode1->c_cflag & CSTOPB);  /* Extra stop bit.  */
-  bits += !!(mode1->c_cflag & PARENB);  /* Parity bit.  */
+  غیرعلامتی صحیح بٹ_2 = 2;  /* Start and stop bits.  */
+  بٹ_2 += !!(mode1->c_cflag & CSTOPB);  /* Extra stop bit.  */
+  بٹ_2 += !!(mode1->c_cflag & PARENB);  /* Parity bit.  */
   /* Data bits.  */
-  switch (mode1->c_cflag & CSIZE)
+  انتخاب (mode1->c_cflag & CSIZE)
     {
-      case CS5: bits += 5; break;
-      case CS6: bits += 6; break;
-      case CS7: bits += 7; break;
-      default: bits += 8; break;
+      حالت CS5: بٹ_2 += 5; توڑو;
+      حالت CS6: بٹ_2 += 6; توڑو;
+      حالت CS7: بٹ_2 += 7; توڑو;
+      طےشدہ: بٹ_2 += 8; توڑو;
     }
 
-  for (int i = 0; i < 2; i++)
+  برائے (صحیح i = 0; i < 2; i++)
     {
-      unsigned long int value1;
-      unsigned long int value2;
-      unsigned long int delta;
+      غیرعلامتی طویل صحیح value1;
+      غیرعلامتی طویل صحیح value2;
+      غیرعلامتی طویل صحیح delta;
 
-      if (speed1[i] == speed2[i])
-        continue;
+      اگر (speed1[i] == speed2[i])
+        جاری;
 
-      value1 = baud_to_value (speed1[i]);
-      value2 = baud_to_value (speed2[i]);
+      value1 = baud_مقصد_قدر (speed1[i]);
+      value2 = baud_مقصد_قدر (speed2[i]);
 
-#ifndef TERMIOS_SPEED_T_SANE
+#اگر_غیر_تعریف_شدہ TERMIOS_رفتار_T_SANE
       /* baud_to_value uses ULONG_MAX for an unrecognized encoding.  */
-      if (value1 == ULONG_MAX || value2 == ULONG_MAX)
-        return false;
-#endif
+      اگر (value1 == ULONG_MAX || value2 == ULONG_MAX)
+        واپس false;
+#اگر_ختم
 
       /* Accept a value that's within a 1/4 bit per character.
          E.g., for 8N1, within 2.5% of the requested speed.  */
       delta = value1 < value2 ? value2 - value1 : value1 - value2;
-      if (delta > value1 / (bits * 4))
-        return false;
+      اگر (delta > value1 / (بٹ_2 * 4))
+        واپس false;
     }
 
-  return true;
+  واپس true;
 }
 
-ATTRIBUTE_PURE
-static struct speed_desc
-string_to_baud (char const *arg)
+ATTRIBUTE_خالص
+ساکن ساخت رفتار_desc
+string_مقصد_baud (حرف ثابت *arg)
 {
-  char *ep;
-  unsigned long value;
-  unsigned char c;
+  حرف *ep;
+  غیرعلامتی طویل قدر;
+  غیرعلامتی حرف c;
 
   /* Explicitly disallow negative numbers.  */
-  while (c_isspace (*arg))
+  جب (c_isspace (*arg))
     arg++;
-  if (*arg == '-')
-    goto invalid;
+  اگر (*arg == '-')
+    جاؤ invalid;
 
   /* Empty does not mean 0.  */
-  if (! *arg)
-    goto invalid;
+  اگر (! *arg)
+    جاؤ invalid;
 
-  value = strtoul (arg, &ep, 10);
+  قدر = strtoul (arg, &ep, 10);
 
   c = *ep++;
-  if (c == '.')
+  اگر (c == '.')
     {
       /* Number includes a fraction. Round it to nearest-even.
          Note in particular that 134.5 must round to 134! */
       c = *ep++;
-      if (c)
+      اگر (c)
         {
-          unsigned char d = c - '0';
-          if (d > 5)
-            value++;
-          else if (d == 5)
+          غیرعلامتی حرف d = c - '0';
+          اگر (d > 5)
+            قدر++;
+          ورنہ اگر (d == 5)
             {
-              while ((c = *ep++) == '0'); /* Skip zeroes after .5 */
+              جب ((c = *ep++) == '0'); /* Skip zeroes after .5 */
 
-              if (c)
-                value++;                /* Nonzero, round up */
-              else
-                value += (value & 1);   /* Exactly in the middle, round even */
+              اگر (c)
+                قدر++;                /* Nonzero, round up */
+              ورنہ
+                قدر += (قدر & 1);   /* Exactly in the middle, round even */
             }
 
-          while (c_isdigit (c)) /* Skip remaining digits.  */
+          جب (c_isdigit (c)) /* Skip remaining digits.  */
             c = *ep++;
 
-          if (c)
-            goto invalid; /* Garbage after otherwise valid number */
+          اگر (c)
+            جاؤ invalid; /* Garbage after otherwise valid number */
         }
     }
-  else if (c)
+  ورنہ اگر (c)
     {
       /* Not a valid number; check for legacy aliases "exta" and "extb" */
-      if (streq (arg, "exta"))
-        return (struct speed_desc) { .baud = B19200, .valid = true };
-      else if (streq (arg, "extb"))
-        return (struct speed_desc) { .baud = B38400, .valid = true };
-      else
-        goto invalid;
+      اگر (streq (arg, "exta"))
+        واپس (ساخت رفتار_desc) { .baud = B19200, .valid = true };
+      ورنہ اگر (streq (arg, "extb"))
+        واپس (ساخت رفتار_desc) { .baud = B38400, .valid = true };
+      ورنہ
+        جاؤ invalid;
     }
 
-  return value_to_baud (value);
+  واپس قدر_مقصد_baud (قدر);
 
  invalid:
-  return (struct speed_desc) { .baud = (speed_t) -1, .valid = false };
+  واپس (ساخت رفتار_desc) { .baud = (رفتار_t) -1, .valid = false };
 }
 
-static void
-sane_mode (struct termios *mode)
+ساکن خالی
+sane_منوال (ساخت termios *منوال_2)
 {
   tcflag_t *bitsp;
 
-  for (int i = 0; control_info[i].name; ++i)
+  برائے (صحیح i = 0; control_info[i].name; ++i)
     {
-#if VMIN == VEOF
-      if (streq (control_info[i].name, "min"))
-        break;
-#endif
-      mode->c_cc[control_info[i].offset] = control_info[i].saneval;
+#اگر VMIN == VEOF
+      اگر (streq (control_info[i].name, "min"))
+        توڑو;
+#اگر_ختم
+      منوال_2->c_cc[control_info[i].انحراف] = control_info[i].saneval;
     }
 
-  for (int i = 0; mode_info[i].name != NULL; ++i)
+  برائے (صحیح i = 0; منوال_info[i].name != تہی; ++i)
     {
-      if (mode_info[i].flags & NO_SETATTR)
-        continue;
+      اگر (منوال_info[i].flags & NO_SETATTR)
+        جاری;
 
-      if (mode_info[i].flags & SANE_SET)
+      اگر (منوال_info[i].flags & SANE_سیٹ)
         {
-          bitsp = mode_type_flag (mode_info[i].type, mode);
+          bitsp = منوال_type_flag (منوال_info[i].type, منوال_2);
           assume (bitsp); /* combination modes will not have SANE_SET.  */
-          *bitsp = (*bitsp & ~mode_info[i].mask) | mode_info[i].bits;
+          *bitsp = (*bitsp & ~منوال_info[i].نقاب) | منوال_info[i].بٹ_2;
         }
-      else if (mode_info[i].flags & SANE_UNSET)
+      ورنہ اگر (منوال_info[i].flags & SANE_UNSET)
         {
-          bitsp = mode_type_flag (mode_info[i].type, mode);
+          bitsp = منوال_type_flag (منوال_info[i].type, منوال_2);
           assume (bitsp); /* combination modes will not have SANE_UNSET.  */
-          *bitsp = *bitsp & ~mode_info[i].mask & ~mode_info[i].bits;
+          *bitsp = *bitsp & ~منوال_info[i].نقاب & ~منوال_info[i].بٹ_2;
         }
     }
 }
@@ -2424,61 +2424,61 @@ sane_mode (struct termios *mode)
 /* Return a string that is the printable representation of character CH.  */
 /* Adapted from 'cat' by Torbjörn Granlund.  */
 
-static char const *
+ساکن حرف ثابت *
 visible (cc_t ch)
 {
-  static char buf[10];
-  char *bpout = buf;
+  ساکن حرف buf[10];
+  حرف *bpout = buf;
 
-  if (ch == _POSIX_VDISABLE)
-    return "<undef>";
+  اگر (ch == _POSIX_VDISABLE)
+    واپس "<undef>";
 
-  if (ch >= 32)
+  اگر (ch >= 32)
     {
-      if (ch < 127)
+      اگر (ch < 127)
         *bpout++ = ch;
-      else if (ch == 127)
+      ورنہ اگر (ch == 127)
         {
           *bpout++ = '^';
           *bpout++ = '?';
         }
-      else
+      ورنہ
         {
           *bpout++ = 'M';
           *bpout++ = '-';
-          if (ch >= 128 + 32)
+          اگر (ch >= 128 + 32)
             {
-              if (ch < 128 + 127)
+              اگر (ch < 128 + 127)
                 *bpout++ = ch - 128;
-              else
+              ورنہ
                 {
                   *bpout++ = '^';
                   *bpout++ = '?';
                 }
             }
-          else
+          ورنہ
             {
               *bpout++ = '^';
               *bpout++ = ch - 128 + 64;
             }
         }
     }
-  else
+  ورنہ
     {
       *bpout++ = '^';
       *bpout++ = ch + 64;
     }
   *bpout = '\0';
-  return (char const *) buf;
+  واپس (حرف ثابت *) buf;
 }
 
 /* Parse string S as an integer, using decimal radix by default,
    but allowing octal and hex numbers as in C.  Reject values
    larger than MAXVAL.  */
 
-static uintmax_t
-integer_arg (char const *s, uintmax_t maxval)
+ساکن uintmax_t
+integer_arg (حرف ثابت *s, uintmax_t maxval)
 {
-  return xnumtoumax (s, 0, 0, maxval, "bB", _("invalid integer argument"),
+  واپس xnumtoumax (s, 0, 0, maxval, "bB", _("invalid integer argument"),
                      0, 0);
 }

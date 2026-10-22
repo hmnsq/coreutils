@@ -1,2 +1,2 @@
-#include "ls.h"
-enum ls_modes ls_mode = LS_LONG_FORMAT;
+#شامل "ls.h"
+شمار ls_modes ls_منوال = LS_LONG_FORMAT;

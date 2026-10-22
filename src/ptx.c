@@ -17,38 +17,38 @@
 
    François Pinard <pinard@iro.umontreal.ca> */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include <regex.h>
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل "system.h"
+#شامل <regex.h>
+#شامل "argmatch.h"
+#شامل "c-ctype.h"
+#شامل "fadvise.h"
+#شامل "octhexdigits.h"
+#شامل "quote.h"
+#شامل "read-file.h"
+#شامل "stdio--.h"
+#شامل "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "ptx"
+#تعریف_کرو پروگرام_NAME "ptx"
 
 /* TRANSLATORS: Please translate "F. Pinard" to "François Pinard"
    if "ç" (c-with-cedilla) is available in the translation's character
    set and encoding.  */
-#define AUTHORS proper_name_lite ("F. Pinard", "Fran\xc3\xa7ois Pinard")
+#تعریف_کرو AUTHORS proper_name_lite ("F. Pinard", "Fran\xc3\xa7ois Pinard")
 
 /* Number of possible characters in a byte.  */
-#define CHAR_SET_SIZE 256
+#تعریف_کرو CHAR_سیٹ_سائز 256
 
 /* Debugging the memory allocator.  */
 
-#if WITH_DMALLOC
+#اگر WITH_DMALLOC
 # define MALLOC_FUNC_CHECK 1
 # include <dmalloc.h>
-#endif
+#اگر_ختم
 
 /* Global definitions.  */
 
@@ -59,7 +59,7 @@
 
 /* Program options.  */
 
-enum Format
+شمار Format
 {
   UNKNOWN_FORMAT,		/* output format still unknown */
   DUMB_FORMAT,			/* output for a dumb terminal */
@@ -67,132 +67,132 @@ enum Format
   TEX_FORMAT			/* output for 'TeX' or 'LaTeX' */
 };
 
-static bool gnu_extensions = true;	/* trigger all GNU extensions */
-static bool auto_reference = false;	/* refs are 'file_name:line_number:' */
-static bool input_reference = false;	/* refs at beginning of input lines */
-static bool right_reference = false;	/* output refs after right context  */
-static idx_t line_width = -1;		/* output line width in characters */
-static idx_t gap_size = 3;	/* number of spaces between output fields */
-static char const *truncation_string = "/";
+ساکن bool gnu_extensions = true;	/* trigger all GNU extensions */
+ساکن bool auto_reference = false;	/* refs are 'file_name:line_number:' */
+ساکن bool داخلہ_reference = false;	/* refs at beginning of input lines */
+ساکن bool دایاں_reference = false;	/* output refs after right context  */
+ساکن idx_t سطر_چوڑائی = -1;		/* output line width in characters */
+ساکن idx_t gap_سائز = 3;	/* number of spaces between output fields */
+ساکن حرف ثابت *truncation_string = "/";
                                 /* string used to mark line truncations */
-static char const *macro_name = "xx";	/* macro name for roff or TeX output */
-static enum Format output_format = UNKNOWN_FORMAT;
+ساکن حرف ثابت *macro_name = "xx";	/* macro name for roff or TeX output */
+ساکن شمار Format output_format = UNKNOWN_FORMAT;
                                 /* output format */
 
-static bool ignore_case = false;	/* fold lower to upper for sorting */
-static char const *break_file = NULL; /* name of the 'Break chars' file */
-static char const *only_file = NULL;	/* name of the 'Only words' file */
-static char const *ignore_file = NULL; /* name of the 'Ignore words' file */
+ساکن bool ignore_case = false;	/* fold lower to upper for sorting */
+ساکن حرف ثابت *break_file = تہی; /* name of the 'Break chars' file */
+ساکن حرف ثابت *only_file = تہی;	/* name of the 'Only words' file */
+ساکن حرف ثابت *ignore_file = تہی; /* name of the 'Ignore words' file */
 
 /* Options that use regular expressions.  */
-struct regex_data
+ساخت regex_ڈیٹا
 {
   /* The original regular expression, as a string.  */
-  char const *string;
+  حرف ثابت *string;
 
   /* The compiled regular expression, and its fastmap.  */
-  struct re_pattern_buffer pattern;
-  char fastmap[UCHAR_MAX + 1];
+  ساخت re_نمونہ_بفر نمونہ_2;
+  حرف fastmap[UCHAR_MAX + 1];
 };
 
-static struct regex_data context_regex;	/* end of context */
-static struct regex_data word_regex;	/* keyword */
+ساکن ساخت regex_ڈیٹا context_regex;	/* end of context */
+ساکن ساخت regex_ڈیٹا لفظ_regex;	/* keyword */
 
 /* A BLOCK delimit a region in memory of arbitrary size, like the copy of a
    whole file.  A WORD is similar, except it is intended for smaller regions.
    A WORD_TABLE may contain several WORDs.  */
 
-typedef struct
+قسمتعریف ساخت
   {
-    char *start;		/* pointer to beginning of region */
-    char *end;			/* pointer to end + 1 of region */
+    حرف *آغاز;		/* pointer to beginning of region */
+    حرف *انتہا;			/* pointer to end + 1 of region */
   }
-BLOCK;
+بلاک_2;
 
-typedef struct
+قسمتعریف ساخت
   {
-    char *start;		/* pointer to beginning of region */
-    idx_t size;			/* length of the region */
+    حرف *آغاز;		/* pointer to beginning of region */
+    idx_t سائز;			/* length of the region */
   }
-WORD;
+لفظ;
 
-typedef struct
+قسمتعریف ساخت
   {
     idx_t alloc;		/* allocated length */
-    idx_t length;		/* number of used entries */
-    WORD *start COUNTED_BY (length);	/* array of WORDs */
+    idx_t لمبائی;		/* number of used entries */
+    لفظ *آغاز COUNTED_BY (لمبائی);	/* array of WORDs */
   }
-WORD_TABLE;
+لفظ_جدول;
 
 /* Pattern description tables.  */
 
 /* For each character, provide its folded equivalent.  */
-static unsigned char folded_chars[CHAR_SET_SIZE];
+ساکن غیرعلامتی حرف folded_chars[CHAR_سیٹ_سائز];
 
 /* End of context pattern register indices.  */
-static struct re_registers context_regs;
+ساکن ساخت re_registers context_regs;
 
 /* Keyword pattern register indices.  */
-static struct re_registers word_regs;
+ساکن ساخت re_registers لفظ_regs;
 
 /* A word characters fastmap is used only when no word regexp has been
    provided.  A word is then made up of a sequence of one or more characters
    allowed by the fastmap.  Contains !0 if character allowed in word.  Not
    only this is faster in most cases, but it simplifies the implementation
    of the Break files.  */
-static char word_fastmap[CHAR_SET_SIZE];
+ساکن حرف لفظ_fastmap[CHAR_سیٹ_سائز];
 
 /* Maximum length of any word read.  */
-static idx_t maximum_word_length;
+ساکن idx_t زیادہ_سے_زیادہ_لفظ_لمبائی;
 
 /* Maximum width of any reference used.  */
-static idx_t reference_max_width;
+ساکن idx_t reference_max_چوڑائی;
 
 /* Ignore and Only word tables.  */
 
-static WORD_TABLE ignore_table;	/* table of words to ignore */
-static WORD_TABLE only_table;		/* table of words to select */
+ساکن لفظ_جدول ignore_جدول;	/* table of words to ignore */
+ساکن لفظ_جدول only_جدول;		/* table of words to select */
 
 /* Source text table, and scanning macros.  */
 
-static int number_input_files;	/* number of text input files */
-static intmax_t total_line_count;	/* total number of lines seen so far */
-static char const **input_file_name;	/* array of text input file names */
-static intmax_t *file_line_count;	/* array of line count values at end */
+ساکن صحیح نمبر_داخلہ_files;	/* number of text input files */
+ساکن intmax_t کل_سطر_گنتی;	/* total number of lines seen so far */
+ساکن حرف ثابت **داخلہ_file_name;	/* array of text input file names */
+ساکن intmax_t *file_سطر_گنتی;	/* array of line count values at end */
 
-static BLOCK *text_buffers;	/* files to study */
+ساکن بلاک_2 *متن_buffers;	/* files to study */
 
 /* SKIP_NON_WHITE used only for getting or skipping the reference.  */
 
-#define SKIP_NON_WHITE(cursor, limit) \
-  while (cursor < limit && ! isspace (to_uchar (*cursor)))		\
+#تعریف_کرو SKIP_NON_WHITE(cursor, حد_بندی) \
+  جب (cursor < حد_بندی && ! خلا_ہے (مقصد_uchar (*cursor)))		\
     cursor++
 
-#define SKIP_WHITE(cursor, limit) \
-  while (cursor < limit && isspace (to_uchar (*cursor)))		\
+#تعریف_کرو SKIP_WHITE(cursor, حد_بندی) \
+  جب (cursor < حد_بندی && خلا_ہے (مقصد_uchar (*cursor)))		\
     cursor++
 
-#define SKIP_WHITE_BACKWARDS(cursor, start) \
-  while (cursor > start && isspace (to_uchar (cursor[-1])))		\
+#تعریف_کرو SKIP_WHITE_BACKWARDS(cursor, آغاز) \
+  جب (cursor > آغاز && خلا_ہے (مقصد_uchar (cursor[-1])))		\
     cursor--
 
 /* Always advance by at least one byte, lest a nullable word regexp
    such as 'a*' match the empty string and loop forever.  */
 
-#define SKIP_SOMETHING(cursor, limit) \
-  if (word_regex.string)						\
+#تعریف_کرو SKIP_SOMETHING(cursor, حد_بندی) \
+  اگر (لفظ_regex.string)						\
     {									\
-      regoff_t count;							\
-      count = re_match (&word_regex.pattern, cursor, limit - cursor,	\
-                        0, NULL);					\
-      if (count == -2)							\
+      regoff_t گنتی;							\
+      گنتی = re_مطابقت (&لفظ_regex.نمونہ_2, cursor, حد_بندی - cursor,	\
+                        0, تہی);					\
+      اگر (گنتی == -2)							\
         matcher_error ();						\
-      cursor += count <= 0 ? 1 : count;					\
+      cursor += گنتی <= 0 ? 1 : گنتی;					\
     }									\
-  else if (word_fastmap[to_uchar (*cursor)])				\
-    while (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
+  ورنہ اگر (لفظ_fastmap[مقصد_uchar (*cursor)])				\
+    جب (cursor < حد_بندی && لفظ_fastmap[مقصد_uchar (*cursor)])		\
       cursor++;								\
-  else									\
+  ورنہ									\
     cursor++
 
 /* Occurrences table.
@@ -222,42 +222,42 @@ static BLOCK *text_buffers;	/* files to study */
    start of the reference field, and it fits in ptrdiff_t and is usually
    negative.  */
 
-typedef struct
+قسمتعریف ساخت
   {
-    WORD key;			/* description of the keyword */
-    ptrdiff_t left;		/* distance to left context start */
-    ptrdiff_t right;		/* distance to right context end */
+    لفظ کلید;			/* description of the keyword */
+    ptrdiff_t بایاں;		/* distance to left context start */
+    ptrdiff_t دایاں;		/* distance to right context end */
     intmax_t reference;		/* reference descriptor */
-    int file_index;		/* corresponding file  */
+    صحیح file_اشاریہ;		/* corresponding file  */
   }
 OCCURS;
 
 /* The various OCCURS tables are indexed by the language.  But the time
    being, there is no such multiple language support.  */
 
-static OCCURS *occurs_table[1];	/* all words retained from the read text */
-static idx_t occurs_alloc[1];	/* allocated size of occurs_table */
-static idx_t number_of_occurs[1]; /* number of used slots in occurs_table */
+ساکن OCCURS *occurs_جدول[1];	/* all words retained from the read text */
+ساکن idx_t occurs_alloc[1];	/* allocated size of occurs_table */
+ساکن idx_t نمبر_کا_occurs[1]; /* number of used slots in occurs_table */
 
 
 /* Communication among output routines.  */
 
 /* Indicate if special output processing is requested for each character.  */
-static char edited_flag[CHAR_SET_SIZE];
+ساکن حرف edited_flag[CHAR_سیٹ_سائز];
 
 /* Half of line width, reference excluded.  */
-static idx_t half_line_width;
+ساکن idx_t half_سطر_چوڑائی;
 
 /* Maximum width of before field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t before_max_width;
+ساکن ptrdiff_t before_max_چوڑائی;
 
 /* Maximum width of keyword-and-after field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t keyafter_max_width;
+ساکن ptrdiff_t keyafter_max_چوڑائی;
 
 /* Length of string that flags truncation.  */
-static idx_t truncation_string_length;
+ساکن idx_t truncation_string_لمبائی;
 
 /* When context is limited by lines, wraparound may happen on final output:
    the 'head' pointer gives access to some supplementary left context which
@@ -265,123 +265,123 @@ static idx_t truncation_string_length;
    access to some supplementary right context which will be seen at the
    beginning of the output line. */
 
-static BLOCK tail;		/* tail field */
-static bool tail_truncation;	/* flag truncation after the tail field */
+ساکن بلاک_2 دم;		/* tail field */
+ساکن bool دم_truncation;	/* flag truncation after the tail field */
 
-static BLOCK before;		/* before field */
-static bool before_truncation;	/* flag truncation before the before field */
+ساکن بلاک_2 before;		/* before field */
+ساکن bool before_truncation;	/* flag truncation before the before field */
 
-static BLOCK keyafter;		/* keyword-and-after field */
-static bool keyafter_truncation; /* flag truncation after the keyafter field */
+ساکن بلاک_2 keyafter;		/* keyword-and-after field */
+ساکن bool keyafter_truncation; /* flag truncation after the keyafter field */
 
-static BLOCK head;		/* head field */
-static bool head_truncation;	/* flag truncation before the head field */
+ساکن بلاک_2 سر;		/* head field */
+ساکن bool سر_truncation;	/* flag truncation before the head field */
 
-static BLOCK reference;		/* reference field for input reference mode */
+ساکن بلاک_2 reference;		/* reference field for input reference mode */
 
 /* Miscellaneous routines.  */
 
 /* Diagnose an error in the regular expression matcher.  Then exit.  */
 
-static _Noreturn void
-matcher_error (void)
+ساکن _Noreturn خالی
+matcher_error (خالی)
 {
   error (EXIT_FAILURE, errno, _("error in regular expression matcher"));
 }
 
 /* Unescape STRING in-place.  */
 
-static void
-unescape_string (char *string)
+ساکن خالی
+unescape_string (حرف *string)
 {
-  char *cursor;			/* cursor in result */
-  int value;			/* value of \nnn escape */
-  int length;			/* length of \nnn escape */
+  حرف *cursor;			/* cursor in result */
+  صحیح قدر;			/* value of \nnn escape */
+  صحیح لمبائی;			/* length of \nnn escape */
 
   cursor = string;
 
-  while (*string)
+  جب (*string)
     {
-      if (*string == '\\')
+      اگر (*string == '\\')
         {
           string++;
-          switch (*string)
+          انتخاب (*string)
             {
-            case 'x':		/* \xhhh escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
-                   length < 3 && c_isxdigit (*string);
-                   length++, string++)
-                value = value * 16 + fromhex (*string);
-              if (length == 0)
+            حالت 'x':		/* \xhhh escape, 3 chars maximum */
+              قدر = 0;
+              برائے (لمبائی = 0, string++;
+                   لمبائی < 3 && c_isxdigit (*string);
+                   لمبائی++, string++)
+                قدر = قدر * 16 + fromhex (*string);
+              اگر (لمبائی == 0)
                 {
                   *cursor++ = '\\';
                   *cursor++ = 'x';
                 }
-              else
-                *cursor++ = value;
-              break;
+              ورنہ
+                *cursor++ = قدر;
+              توڑو;
 
-            case '0':		/* \0ooo escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
-                   length < 3 && isoct (*string);
-                   length++, string++)
-                value = value * 8 + fromoct (*string);
-              *cursor++ = value;
-              break;
+            حالت '0':		/* \0ooo escape, 3 chars maximum */
+              قدر = 0;
+              برائے (لمبائی = 0, string++;
+                   لمبائی < 3 && isoct (*string);
+                   لمبائی++, string++)
+                قدر = قدر * 8 + fromoct (*string);
+              *cursor++ = قدر;
+              توڑو;
 
-            case 'a':		/* alert */
+            حالت 'a':		/* alert */
               *cursor++ = '\a';
               string++;
-              break;
+              توڑو;
 
-            case 'b':		/* backspace */
+            حالت 'b':		/* backspace */
               *cursor++ = '\b';
               string++;
-              break;
+              توڑو;
 
-            case 'c':		/* cancel the rest of the output */
-              while (*string)
+            حالت 'c':		/* cancel the rest of the output */
+              جب (*string)
                 string++;
-              break;
+              توڑو;
 
-            case 'f':		/* form feed */
+            حالت 'f':		/* form feed */
               *cursor++ = '\f';
               string++;
-              break;
+              توڑو;
 
-            case 'n':		/* new line */
+            حالت 'n':		/* new line */
               *cursor++ = '\n';
               string++;
-              break;
+              توڑو;
 
-            case 'r':		/* carriage return */
+            حالت 'r':		/* carriage return */
               *cursor++ = '\r';
               string++;
-              break;
+              توڑو;
 
-            case 't':		/* horizontal tab */
+            حالت 't':		/* horizontal tab */
               *cursor++ = '\t';
               string++;
-              break;
+              توڑو;
 
-            case 'v':		/* vertical tab */
+            حالت 'v':		/* vertical tab */
               *cursor++ = '\v';
               string++;
-              break;
+              توڑو;
 
-            case '\0':		/* lone backslash at end of string */
+            حالت '\0':		/* lone backslash at end of string */
               /* ignore it */
-              break;
+              توڑو;
 
-            default:
+            طےشدہ:
               *cursor++ = '\\';
               *cursor++ = *string++;
-              break;
+              توڑو;
             }
         }
-      else
+      ورنہ
         *cursor++ = *string++;
     }
 
@@ -392,27 +392,27 @@ unescape_string (char *string)
 | Compile the regex represented by REGEX, diagnose and abort if any error.  |
 `--------------------------------------------------------------------------*/
 
-static void
-compile_regex (struct regex_data *regex)
+ساکن خالی
+compile_regex (ساخت regex_ڈیٹا *regex)
 {
-  struct re_pattern_buffer *pattern = &regex->pattern;
-  char const *string = regex->string;
-  char const *message;
+  ساخت re_نمونہ_بفر *نمونہ_2 = &regex->نمونہ_2;
+  حرف ثابت *string = regex->string;
+  حرف ثابت *پیغام_2;
 
-  pattern->buffer = NULL;
-  pattern->allocated = 0;
-  pattern->fastmap = regex->fastmap;
-  pattern->translate = ignore_case ? folded_chars : NULL;
+  نمونہ_2->بفر = تہی;
+  نمونہ_2->allocated = 0;
+  نمونہ_2->fastmap = regex->fastmap;
+  نمونہ_2->translate = ignore_case ? folded_chars : تہی;
 
-  message = re_compile_pattern (string, strlen (string), pattern);
-  if (message)
-    error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), message, quote (string));
+  پیغام_2 = re_compile_نمونہ (string, لڑی_لمبائی (string), نمونہ_2);
+  اگر (پیغام_2)
+    error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), پیغام_2, quote (string));
 
   /* The fastmap should be compiled before 're_match'.  The following
      call is not mandatory, because 're_search' is always called sooner,
      and it compiles the fastmap if this has not been done yet.  */
 
-  re_compile_fastmap (pattern);
+  re_compile_fastmap (نمونہ_2);
 }
 
 /*------------------------------------------------------------------------.
@@ -420,14 +420,14 @@ compile_regex (struct regex_data *regex)
 | regexps.								  |
 `------------------------------------------------------------------------*/
 
-static void
-initialize_regex (void)
+ساکن خالی
+initialize_regex (خالی)
 {
   /* Initialize the case folding table.  */
 
-  if (ignore_case)
-    for (int character = 0; character < CHAR_SET_SIZE; character++)
-      folded_chars[character] = toupper (character);
+  اگر (ignore_case)
+    برائے (صحیح character = 0; character < CHAR_سیٹ_سائز; character++)
+      folded_chars[character] = بڑا_حرف (character);
 
   /* Unless the user already provided a description of the end of line or
      end of sentence sequence, select an end of line sequence to compile.
@@ -436,17 +436,17 @@ initialize_regex (void)
      extensions are enabled, use end of sentence like in GNU emacs.  If
      disabled, use end of lines.  */
 
-  if (context_regex.string)
+  اگر (context_regex.string)
     {
-      if (!*context_regex.string)
-        context_regex.string = NULL;
+      اگر (!*context_regex.string)
+        context_regex.string = تہی;
     }
-  else if (gnu_extensions && !input_reference)
+  ورنہ اگر (gnu_extensions && !داخلہ_reference)
     context_regex.string = "[.?!][]\"')}]*\\($\\|\t\\|  \\)[ \t\n]*";
-  else
+  ورنہ
     context_regex.string = "\n";
 
-  if (context_regex.string)
+  اگر (context_regex.string)
     compile_regex (&context_regex);
 
   /* If the user has already provided a non-empty regexp to describe
@@ -457,27 +457,27 @@ initialize_regex (void)
      include almost everything, even punctuation; stop only on white
      space.  */
 
-  if (word_regex.string)
-    compile_regex (&word_regex);
-  else if (!break_file)
+  اگر (لفظ_regex.string)
+    compile_regex (&لفظ_regex);
+  ورنہ اگر (!break_file)
     {
-      if (gnu_extensions)
+      اگر (gnu_extensions)
         {
 
           /* Simulate \w+.  */
 
-          for (int character = 0; character < CHAR_SET_SIZE; character++)
-            word_fastmap[character] = !! isalpha (character);
+          برائے (صحیح character = 0; character < CHAR_سیٹ_سائز; character++)
+            لفظ_fastmap[character] = !! حرف_ہے (character);
         }
-      else
+      ورنہ
         {
 
           /* Simulate [^ \t\n]+.  */
 
-          memset (word_fastmap, 1, CHAR_SET_SIZE);
-          word_fastmap[' '] = 0;
-          word_fastmap['\t'] = 0;
-          word_fastmap['\n'] = 0;
+          memset (لفظ_fastmap, 1, CHAR_سیٹ_سائز);
+          لفظ_fastmap[' '] = 0;
+          لفظ_fastmap['\t'] = 0;
+          لفظ_fastmap['\n'] = 0;
         }
     }
 }
@@ -493,27 +493,27 @@ initialize_regex (void)
 | compression is ever reinstated, it should be in output routines.	  |
 `------------------------------------------------------------------------*/
 
-static void
-swallow_file_in_memory (char const *file_name, BLOCK *block)
+ساکن خالی
+swallow_file_اندر_حافظہ (حرف ثابت *file_name, بلاک_2 *بلاک)
 {
-  size_t used_length;		/* used length in memory buffer */
+  size_t مستعمل_لمبائی;		/* used length in memory buffer */
 
   /* As special cases, a file name which is null or "-" indicates standard
      input, which is already opened.  In all other cases, open the file from
      its name.  */
   bool using_stdin = !file_name || !*file_name || streq (file_name, "-");
-  if (using_stdin)
-    block->start = fread_file (stdin, 0, &used_length);
-  else
-    block->start = read_file (file_name, 0, &used_length);
+  اگر (using_stdin)
+    بلاک->آغاز = fread_file (stdin, 0, &مستعمل_لمبائی);
+  ورنہ
+    بلاک->آغاز = read_file (file_name, 0, &مستعمل_لمبائی);
 
-  if (!block->start)
+  اگر (!بلاک->آغاز)
     error (EXIT_FAILURE, errno, "%s", quotef (using_stdin ? "-" : file_name));
 
-  if (using_stdin)
+  اگر (using_stdin)
     clearerr (stdin);
 
-  block->end = block->start + used_length;
+  بلاک->انتہا = بلاک->آغاز + مستعمل_لمبائی;
 }
 
 /* Sort and search routines.  */
@@ -526,35 +526,35 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
 | If a word is indeed a prefix of the other, the shorter should go first.   |
 `--------------------------------------------------------------------------*/
 
-static int
-compare_words (const void *void_first, const void *void_second)
+ساکن صحیح
+compare_الفاظ (ثابت خالی *void_پہلا, ثابت خالی *void_دوسرا)
 {
-  WORD const *first = void_first;
-  WORD const *second = void_second;
-  idx_t length = MIN (first->size, second->size);
+  لفظ ثابت *پہلا = void_پہلا;
+  لفظ ثابت *دوسرا = void_دوسرا;
+  idx_t لمبائی = MIN (پہلا->سائز, دوسرا->سائز);
 
-  if (ignore_case)
+  اگر (ignore_case)
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      برائے (idx_t شمار_2 = 0; شمار_2 < لمبائی; شمار_2++)
         {
-          int value = (folded_chars[to_uchar (first->start[counter])]
-                       - folded_chars[to_uchar (second->start[counter])]);
-          if (value != 0)
-            return value;
+          صحیح قدر = (folded_chars[مقصد_uchar (پہلا->آغاز[شمار_2])]
+                       - folded_chars[مقصد_uchar (دوسرا->آغاز[شمار_2])]);
+          اگر (قدر != 0)
+            واپس قدر;
         }
     }
-  else
+  ورنہ
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      برائے (idx_t شمار_2 = 0; شمار_2 < لمبائی; شمار_2++)
         {
-          int value = (to_uchar (first->start[counter])
-                       - to_uchar (second->start[counter]));
-          if (value != 0)
-            return value;
+          صحیح قدر = (مقصد_uchar (پہلا->آغاز[شمار_2])
+                       - مقصد_uchar (دوسرا->آغاز[شمار_2]));
+          اگر (قدر != 0)
+            واپس قدر;
         }
     }
 
-  return _GL_CMP (first->size, second->size);
+  واپس _GL_CMP (پہلا->سائز, دوسرا->سائز);
 }
 
 /*-----------------------------------------------------------------------.
@@ -563,40 +563,40 @@ compare_words (const void *void_first, const void *void_second)
 | pointer comparison.							 |
 `-----------------------------------------------------------------------*/
 
-static int
-compare_occurs (const void *void_first, const void *void_second)
+ساکن صحیح
+compare_occurs (ثابت خالی *void_پہلا, ثابت خالی *void_دوسرا)
 {
-#define first ((const OCCURS *) void_first)
-#define second ((const OCCURS *) void_second)
-  int value;
+#تعریف_کرو پہلا ((ثابت OCCURS *) void_پہلا)
+#تعریف_کرو دوسرا ((ثابت OCCURS *) void_دوسرا)
+  صحیح قدر;
 
-  value = compare_words (&first->key, &second->key);
-  return (value ? value
-          : _GL_CMP (first->key.start, second->key.start));
-#undef first
-#undef second
+  قدر = compare_الفاظ (&پہلا->کلید, &دوسرا->کلید);
+  واپس (قدر ? قدر
+          : _GL_CMP (پہلا->کلید.آغاز, دوسرا->کلید.آغاز));
+#تعریف_منسوخ پہلا
+#تعریف_منسوخ دوسرا
 }
 
 /* True if WORD appears in TABLE.  Uses a binary search.  */
 
-ATTRIBUTE_PURE
-static bool
-search_table (WORD *word, WORD_TABLE *table)
+ATTRIBUTE_خالص
+ساکن bool
+تلاش_جدول (لفظ *لفظ_2, لفظ_جدول *جدول)
 {
   idx_t lo = 0;
-  idx_t hi = table->length;
-  while (lo < hi)
+  idx_t hi = جدول->لمبائی;
+  جب (lo < hi)
     {
-      idx_t middle = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
-      int value = compare_words (word, table->start + middle);
-      if (value < 0)
-        hi = middle;
-      else if (value > 0)
-        lo = middle + 1;
-      else
-        return true;
+      idx_t درمیان = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
+      صحیح قدر = compare_الفاظ (لفظ_2, جدول->آغاز + درمیان);
+      اگر (قدر < 0)
+        hi = درمیان;
+      ورنہ اگر (قدر > 0)
+        lo = درمیان + 1;
+      ورنہ
+        واپس true;
     }
-  return false;
+  واپس false;
 }
 
 /*---------------------------------------------------------------------.
@@ -605,13 +605,13 @@ search_table (WORD *word, WORD_TABLE *table)
 | stabilized throughout the comparison routine.			       |
 `---------------------------------------------------------------------*/
 
-static void
-sort_found_occurs (void)
+ساکن خالی
+ترتیب_دو_ملا_occurs (خالی)
 {
 
   /* Only one language for the time being.  */
-  if (number_of_occurs[0])
-    qsort (occurs_table[0], number_of_occurs[0], sizeof **occurs_table,
+  اگر (نمبر_کا_occurs[0])
+    qsort (occurs_جدول[0], نمبر_کا_occurs[0], حجم **occurs_جدول,
            compare_occurs);
 }
 
@@ -623,21 +623,21 @@ sort_found_occurs (void)
 | allowed except those found in the file.  Characters may be repeated.  |
 `----------------------------------------------------------------------*/
 
-static void
-digest_break_file (char const *file_name)
+ساکن خالی
+digest_break_file (حرف ثابت *file_name)
 {
-  BLOCK file_contents;		/* to receive a copy of the file */
+  بلاک_2 file_contents;		/* to receive a copy of the file */
 
-  swallow_file_in_memory (file_name, &file_contents);
+  swallow_file_اندر_حافظہ (file_name, &file_contents);
 
   /* Make the fastmap and record the file contents in it.  */
 
-  memset (word_fastmap, 1, CHAR_SET_SIZE);
-  for (char *cursor = file_contents.start; cursor < file_contents.end;
+  memset (لفظ_fastmap, 1, CHAR_سیٹ_سائز);
+  برائے (حرف *cursor = file_contents.آغاز; cursor < file_contents.انتہا;
        cursor++)
-    word_fastmap[to_uchar (*cursor)] = 0;
+    لفظ_fastmap[مقصد_uchar (*cursor)] = 0;
 
-  if (!gnu_extensions)
+  اگر (!gnu_extensions)
     {
 
       /* If GNU extensions are enabled, the only way to avoid newline as
@@ -646,14 +646,14 @@ digest_break_file (char const *file_name)
          If disabled, spaces, tabs and newlines are always considered as
          break characters even if not included in the break file.  */
 
-      word_fastmap[' '] = 0;
-      word_fastmap['\t'] = 0;
-      word_fastmap['\n'] = 0;
+      لفظ_fastmap[' '] = 0;
+      لفظ_fastmap['\t'] = 0;
+      لفظ_fastmap['\n'] = 0;
     }
 
   /* Return the space of the file, which is no more required.  */
 
-  free (file_contents.start);
+  آزاد (file_contents.آغاز);
 }
 
 /*-----------------------------------------------------------------------.
@@ -663,52 +663,52 @@ digest_break_file (char const *file_name)
 | needed for newlines, which are useless; however, the reading is fast.	 |
 `-----------------------------------------------------------------------*/
 
-static void
-digest_word_file (char const *file_name, WORD_TABLE *table)
+ساکن خالی
+digest_لفظ_file (حرف ثابت *file_name, لفظ_جدول *جدول)
 {
-  BLOCK file_contents;		/* to receive a copy of the file */
-  char *cursor;			/* cursor in file copy */
-  char *word_start;		/* start of the current word */
+  بلاک_2 file_contents;		/* to receive a copy of the file */
+  حرف *cursor;			/* cursor in file copy */
+  حرف *لفظ_آغاز;		/* start of the current word */
 
-  swallow_file_in_memory (file_name, &file_contents);
+  swallow_file_اندر_حافظہ (file_name, &file_contents);
 
-  table->start = NULL;
-  table->alloc = 0;
-  table->length = 0;
+  جدول->آغاز = تہی;
+  جدول->alloc = 0;
+  جدول->لمبائی = 0;
 
   /* Read the whole file.  */
 
-  cursor = file_contents.start;
-  while (cursor < file_contents.end)
+  cursor = file_contents.آغاز;
+  جب (cursor < file_contents.انتہا)
     {
 
       /* Read one line, and save the word in contains.  */
 
-      word_start = cursor;
-      while (cursor < file_contents.end && *cursor != '\n')
+      لفظ_آغاز = cursor;
+      جب (cursor < file_contents.انتہا && *cursor != '\n')
         cursor++;
 
       /* Record the word in table if it is not empty.  */
 
-      if (cursor > word_start)
+      اگر (cursor > لفظ_آغاز)
         {
-          if (table->length == table->alloc)
-            table->start = xpalloc (table->start, &table->alloc, 1, -1,
-                                    sizeof *table->start);
-          idx_t const table_idx = table->length++;
-          table->start[table_idx].start = word_start;
-          table->start[table_idx].size = cursor - word_start;
+          اگر (جدول->لمبائی == جدول->alloc)
+            جدول->آغاز = xpalloc (جدول->آغاز, &جدول->alloc, 1, -1,
+                                    حجم *جدول->آغاز);
+          idx_t ثابت جدول_idx = جدول->لمبائی++;
+          جدول->آغاز[جدول_idx].آغاز = لفظ_آغاز;
+          جدول->آغاز[جدول_idx].سائز = cursor - لفظ_آغاز;
         }
 
       /* This test allows for an incomplete line at end of file.  */
 
-      if (cursor < file_contents.end)
+      اگر (cursor < file_contents.انتہا)
         cursor++;
     }
 
   /* Finally, sort all the words read.  */
 
-  qsort (table->start, table->length, sizeof table->start[0], compare_words);
+  qsort (جدول->آغاز, جدول->لمبائی, حجم جدول->آغاز[0], compare_الفاظ);
 }
 
 /* Keyword recognition and selection.  */
@@ -717,29 +717,29 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 | For each keyword in the source text, constructs an OCCURS structure.  |
 `----------------------------------------------------------------------*/
 
-static void
-find_occurs_in_text (int file_index)
+ساکن خالی
+ڈھونڈو_occurs_اندر_متن (صحیح file_اشاریہ)
 {
-  char *scan;			/* for scanning the source text */
-  char *line_start;		/* start of the current input line */
-  char *line_scan;		/* newlines scanned until this point */
-  idx_t reference_length;	/* length of reference in input mode */
-  WORD possible_key;		/* possible key, to ease searches */
+  حرف *جائزہ;			/* for scanning the source text */
+  حرف *سطر_آغاز;		/* start of the current input line */
+  حرف *سطر_جائزہ;		/* newlines scanned until this point */
+  idx_t reference_لمبائی;	/* length of reference in input mode */
+  لفظ possible_کلید;		/* possible key, to ease searches */
   OCCURS *occurs_cursor;	/* current OCCURS under construction */
 
-  char *context_start;		/* start of left context */
-  char *context_end;		/* end of right context */
-  char *word_start;		/* start of word */
-  char *word_end;		/* end of word */
-  char *next_context_start;	/* next start of left context */
+  حرف *context_آغاز;		/* start of left context */
+  حرف *context_انتہا;		/* end of right context */
+  حرف *لفظ_آغاز;		/* start of word */
+  حرف *لفظ_انتہا;		/* end of word */
+  حرف *اگلا_context_آغاز;	/* next start of left context */
 
-  const BLOCK *text_buffer = &text_buffers[file_index];
+  ثابت بلاک_2 *متن_بفر = &متن_buffers[file_اشاریہ];
 
   /* reference_length is always used within 'if (input_reference)'.
      However, GNU C diagnoses that it may be used uninitialized.  The
      following assignment is merely to shut it up.  */
 
-  reference_length = 0;
+  reference_لمبائی = 0;
 
   /* Tracking where lines start is helpful for reference processing.  In
      auto reference mode, this allows counting lines.  In input reference
@@ -750,27 +750,27 @@ find_occurs_in_text (int file_index)
      found inside it.  Also, unconditionally assigning these variable has
      the happy effect of shutting up lint.  */
 
-  line_start = text_buffer->start;
-  line_scan = line_start;
-  if (input_reference)
+  سطر_آغاز = متن_بفر->آغاز;
+  سطر_جائزہ = سطر_آغاز;
+  اگر (داخلہ_reference)
     {
-      SKIP_NON_WHITE (line_scan, text_buffer->end);
-      reference_length = line_scan - line_start;
-      SKIP_WHITE (line_scan, text_buffer->end);
+      SKIP_NON_WHITE (سطر_جائزہ, متن_بفر->انتہا);
+      reference_لمبائی = سطر_جائزہ - سطر_آغاز;
+      SKIP_WHITE (سطر_جائزہ, متن_بفر->انتہا);
     }
 
   /* Process the whole buffer, one line or one sentence at a time.  */
 
-  for (char *cursor = text_buffer->start;
-       cursor < text_buffer->end;
-       cursor = next_context_start)
+  برائے (حرف *cursor = متن_بفر->آغاز;
+       cursor < متن_بفر->انتہا;
+       cursor = اگلا_context_آغاز)
     {
 
       /* 'context_start' gets initialized before the processing of each
          line, or once for the whole buffer if no end of line or sentence
          sequence separator.  */
 
-      context_start = cursor;
+      context_آغاز = cursor;
 
       /* If an end of line or end of sentence sequence is defined and
          non-empty, 'next_context_start' will be recomputed to be the end of
@@ -780,93 +780,93 @@ find_occurs_in_text (int file_index)
          This test also accounts for the case of an incomplete line or
          sentence at the end of the buffer.  */
 
-      next_context_start = text_buffer->end;
-      if (context_regex.string)
-        switch (re_search (&context_regex.pattern, cursor,
-                           text_buffer->end - cursor,
-                           0, text_buffer->end - cursor, &context_regs))
+      اگلا_context_آغاز = متن_بفر->انتہا;
+      اگر (context_regex.string)
+        انتخاب (re_تلاش (&context_regex.نمونہ_2, cursor,
+                           متن_بفر->انتہا - cursor,
+                           0, متن_بفر->انتہا - cursor, &context_regs))
           {
-          case -2:
+          حالت -2:
             matcher_error ();
 
-          case -1:
-            break;
+          حالت -1:
+            توڑو;
 
-          case 0:
+          حالت 0:
             error (EXIT_FAILURE, 0,
                    _("error: regular expression has a match of length zero:"
                      " %s"),
                    quote (context_regex.string));
 
-          default:
-            next_context_start = cursor + context_regs.end[0];
-            break;
+          طےشدہ:
+            اگلا_context_آغاز = cursor + context_regs.انتہا[0];
+            توڑو;
           }
 
       /* Include the separator into the right context, but not any suffix
          white space in this separator; this insures it will be seen in
          output and will not take more space than necessary.  */
 
-      context_end = next_context_start;
-      SKIP_WHITE_BACKWARDS (context_end, context_start);
+      context_انتہا = اگلا_context_آغاز;
+      SKIP_WHITE_BACKWARDS (context_انتہا, context_آغاز);
 
       /* Read and process a single input line or sentence, one word at a
          time.  */
 
-      while (true)
+      جب (true)
         {
-          if (word_regex.string)
+          اگر (لفظ_regex.string)
 
             /* If a word regexp has been compiled, use it to skip at the
                beginning of the next word.  If there is no such word, exit
                the loop.  */
 
             {
-              regoff_t r = re_search (&word_regex.pattern, cursor,
-                                      context_end - cursor,
-                                      0, context_end - cursor, &word_regs);
-              if (r == -2)
+              regoff_t r = re_تلاش (&لفظ_regex.نمونہ_2, cursor,
+                                      context_انتہا - cursor,
+                                      0, context_انتہا - cursor, &لفظ_regs);
+              اگر (r == -2)
                 matcher_error ();
-              if (r == -1)
-                break;
-              word_start = cursor + word_regs.start[0];
-              word_end = cursor + word_regs.end[0];
+              اگر (r == -1)
+                توڑو;
+              لفظ_آغاز = cursor + لفظ_regs.آغاز[0];
+              لفظ_انتہا = cursor + لفظ_regs.انتہا[0];
             }
-          else
+          ورنہ
 
             /* Avoid re_search and use the fastmap to skip to the
                beginning of the next word.  If there is no more word in
                the buffer, exit the loop.  */
 
             {
-              scan = cursor;
-              while (scan < context_end
-                     && !word_fastmap[to_uchar (*scan)])
-                scan++;
+              جائزہ = cursor;
+              جب (جائزہ < context_انتہا
+                     && !لفظ_fastmap[مقصد_uchar (*جائزہ)])
+                جائزہ++;
 
-              if (scan == context_end)
-                break;
+              اگر (جائزہ == context_انتہا)
+                توڑو;
 
-              word_start = scan;
+              لفظ_آغاز = جائزہ;
 
-              while (scan < context_end
-                     && word_fastmap[to_uchar (*scan)])
-                scan++;
+              جب (جائزہ < context_انتہا
+                     && لفظ_fastmap[مقصد_uchar (*جائزہ)])
+                جائزہ++;
 
-              word_end = scan;
+              لفظ_انتہا = جائزہ;
             }
 
           /* Skip right to the beginning of the found word.  */
 
-          cursor = word_start;
+          cursor = لفظ_آغاز;
 
           /* Skip any zero length word.  Just advance a single position,
              then go fetch the next word.  */
 
-          if (word_end == word_start)
+          اگر (لفظ_انتہا == لفظ_آغاز)
             {
               cursor++;
-              continue;
+              جاری;
             }
 
           /* This is a genuine, non empty word, so save it as a possible
@@ -876,33 +876,33 @@ find_occurs_in_text (int file_index)
              are actually kept or rejected, because backward jumps at output
              generation time may fall in *any* word.  */
 
-          possible_key.start = cursor;
-          possible_key.size = word_end - word_start;
-          cursor += possible_key.size;
+          possible_کلید.آغاز = cursor;
+          possible_کلید.سائز = لفظ_انتہا - لفظ_آغاز;
+          cursor += possible_کلید.سائز;
 
-          if (possible_key.size > maximum_word_length)
-            maximum_word_length = possible_key.size;
+          اگر (possible_کلید.سائز > زیادہ_سے_زیادہ_لفظ_لمبائی)
+            زیادہ_سے_زیادہ_لفظ_لمبائی = possible_کلید.سائز;
 
           /* In input reference mode, update 'line_start' from its previous
              value.  Count the lines just in case auto reference mode is
              also selected. If it happens that the word just matched is
              indeed part of a reference; just ignore it.  */
 
-          if (input_reference)
+          اگر (داخلہ_reference)
             {
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              جب (سطر_جائزہ < possible_کلید.آغاز)
+                اگر (*سطر_جائزہ == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
-                    reference_length = line_scan - line_start;
+                    کل_سطر_گنتی++;
+                    سطر_جائزہ++;
+                    سطر_آغاز = سطر_جائزہ;
+                    SKIP_NON_WHITE (سطر_جائزہ, متن_بفر->انتہا);
+                    reference_لمبائی = سطر_جائزہ - سطر_آغاز;
                   }
-                else
-                  line_scan++;
-              if (line_scan > possible_key.start)
-                continue;
+                ورنہ
+                  سطر_جائزہ++;
+              اگر (سطر_جائزہ > possible_کلید.آغاز)
+                جاری;
             }
 
           /* Ignore the word if an 'Ignore words' table exists and if it is
@@ -915,23 +915,23 @@ find_occurs_in_text (int file_index)
              tables, the Ignore table could then reject words that would
              have been previously accepted by the Only table.  */
 
-          if (ignore_file && search_table (&possible_key, &ignore_table))
-            continue;
-          if (only_file && !search_table (&possible_key, &only_table))
-            continue;
+          اگر (ignore_file && تلاش_جدول (&possible_کلید, &ignore_جدول))
+            جاری;
+          اگر (only_file && !تلاش_جدول (&possible_کلید, &only_جدول))
+            جاری;
 
           /* A non-empty word has been found.  First of all, insure
              proper allocation of the next OCCURS, and make a pointer to
              where it will be constructed.  */
 
-          if (number_of_occurs[0] == occurs_alloc[0])
-            occurs_table[0] = xpalloc (occurs_table[0], &occurs_alloc[0],
-                                       1, -1, sizeof *occurs_table[0]);
-          occurs_cursor = occurs_table[0] + number_of_occurs[0];
+          اگر (نمبر_کا_occurs[0] == occurs_alloc[0])
+            occurs_جدول[0] = xpalloc (occurs_جدول[0], &occurs_alloc[0],
+                                       1, -1, حجم *occurs_جدول[0]);
+          occurs_cursor = occurs_جدول[0] + نمبر_کا_occurs[0];
 
           /* Define the reference field, if any.  */
 
-          if (auto_reference)
+          اگر (auto_reference)
             {
 
               /* While auto referencing, update 'line_start' from its
@@ -940,20 +940,20 @@ find_occurs_in_text (int file_index)
                  advanced earlier, and the following loop is never really
                  executed.  */
 
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              جب (سطر_جائزہ < possible_کلید.آغاز)
+                اگر (*سطر_جائزہ == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
+                    کل_سطر_گنتی++;
+                    سطر_جائزہ++;
+                    سطر_آغاز = سطر_جائزہ;
+                    SKIP_NON_WHITE (سطر_جائزہ, متن_بفر->انتہا);
                   }
-                else
-                  line_scan++;
+                ورنہ
+                  سطر_جائزہ++;
 
-              occurs_cursor->reference = total_line_count;
+              occurs_cursor->reference = کل_سطر_گنتی;
             }
-          else if (input_reference)
+          ورنہ اگر (داخلہ_reference)
             {
 
               /* If only input referencing, 'line_start' has been computed
@@ -961,27 +961,27 @@ find_occurs_in_text (int file_index)
                  of the reference.  The reference position is simply the
                  value of 'line_start'.  */
 
-              occurs_cursor->reference = line_start - possible_key.start;
-              if (reference_length > reference_max_width)
-                reference_max_width = reference_length;
+              occurs_cursor->reference = سطر_آغاز - possible_کلید.آغاز;
+              اگر (reference_لمبائی > reference_max_چوڑائی)
+                reference_max_چوڑائی = reference_لمبائی;
             }
 
           /* Exclude the reference from the context in simple cases.  */
 
-          if (input_reference && line_start == context_start)
+          اگر (داخلہ_reference && سطر_آغاز == context_آغاز)
             {
-              SKIP_NON_WHITE (context_start, context_end);
-              SKIP_WHITE (context_start, context_end);
+              SKIP_NON_WHITE (context_آغاز, context_انتہا);
+              SKIP_WHITE (context_آغاز, context_انتہا);
             }
 
           /* Completes the OCCURS structure.  */
 
-          occurs_cursor->key = possible_key;
-          occurs_cursor->left = context_start - possible_key.start;
-          occurs_cursor->right = context_end - possible_key.start;
-          occurs_cursor->file_index = file_index;
+          occurs_cursor->کلید = possible_کلید;
+          occurs_cursor->بایاں = context_آغاز - possible_کلید.آغاز;
+          occurs_cursor->دایاں = context_انتہا - possible_کلید.آغاز;
+          occurs_cursor->file_اشاریہ = file_اشاریہ;
 
-          number_of_occurs[0]++;
+          نمبر_کا_occurs[0]++;
         }
     }
 }
@@ -992,69 +992,69 @@ find_occurs_in_text (int file_index)
 | Prints some NUMBER of spaces on stdout.  |
 `-----------------------------------------*/
 
-static void
-print_spaces (ptrdiff_t number)
+ساکن خالی
+print_spaces (ptrdiff_t نمبر)
 {
-  for (ptrdiff_t counter = number; counter > 0; counter--)
-    putchar (' ');
+  برائے (ptrdiff_t شمار_2 = نمبر; شمار_2 > 0; شمار_2--)
+    حرف_لکھو (' ');
 }
 
 /*-------------------------------------.
 | Prints the field provided by FIELD.  |
 `-------------------------------------*/
 
-static void
-print_field (BLOCK field)
+ساکن خالی
+print_میدان (بلاک_2 میدان)
 {
   /* Whitespace is not really compressed.  Instead, each white space
      character (tab, vt, ht etc.) is printed as one single space.  */
 
-  for (char *cursor = field.start; cursor < field.end; cursor++)
+  برائے (حرف *cursor = میدان.آغاز; cursor < میدان.انتہا; cursor++)
     {
-      unsigned char character = *cursor;
-      if (edited_flag[character])
+      غیرعلامتی حرف character = *cursor;
+      اگر (edited_flag[character])
         {
           /* Handle cases which are specific to 'roff' or TeX.  All
              white space processing is done as the default case of
              this switch.  */
 
-          switch (character)
+          انتخاب (character)
             {
-            case '"':
+            حالت '"':
               /* In roff output format, double any quote.  */
-              putchar ('"');
-              putchar ('"');
-              break;
+              حرف_لکھو ('"');
+              حرف_لکھو ('"');
+              توڑو;
 
-            case '$':
-            case '%':
-            case '&':
-            case '#':
-            case '_':
+            حالت '$':
+            حالت '%':
+            حالت '&':
+            حالت '#':
+            حالت '_':
               /* In TeX output format, precede these with a backslash.  */
-              putchar ('\\');
-              putchar (character);
-              break;
+              حرف_لکھو ('\\');
+              حرف_لکھو (character);
+              توڑو;
 
-            case '{':
-            case '}':
+            حالت '{':
+            حالت '}':
               /* In TeX output format, precede these with a backslash and
                  force mathematical mode.  */
-              printf ("$\\%c$", character);
-              break;
+              لکھو ("$\\%c$", character);
+              توڑو;
 
-            case '\\':
+            حالت '\\':
               /* In TeX output mode, request production of a backslash.  */
               fputs ("\\backslash{}", stdout);
-              break;
+              توڑو;
 
-            default:
+            طےشدہ:
               /* Any other flagged character produces a single space.  */
-              putchar (' ');
+              حرف_لکھو (' ');
             }
         }
-      else
-        putchar (*cursor);
+      ورنہ
+        حرف_لکھو (*cursor);
     }
 }
 
@@ -1065,37 +1065,37 @@ print_field (BLOCK field)
 | readings, compute and fix some output parameter values.	      |
 `--------------------------------------------------------------------*/
 
-static void
-fix_output_parameters (void)
+ساکن خالی
+fix_output_parameters (خالی)
 {
   /* In auto reference mode, the maximum width of this field is
      precomputed and subtracted from the overall line width.  Add one for
      the column which separate the file name from the line number.  */
 
-  if (auto_reference)
+  اگر (auto_reference)
     {
-      reference_max_width = 0;
-      for (int file_index = 0; file_index < number_input_files; file_index++)
+      reference_max_چوڑائی = 0;
+      برائے (صحیح file_اشاریہ = 0; file_اشاریہ < نمبر_داخلہ_files; file_اشاریہ++)
         {
-          intmax_t line_ordinal = file_line_count[file_index] + 1;
-          if (file_index > 0)
-            line_ordinal -= file_line_count[file_index - 1];
-          char ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
-          idx_t reference_width = sprintf (ordinal_string, "%jd", line_ordinal);
-          if (input_file_name[file_index])
-            reference_width += strlen (input_file_name[file_index]);
-          if (reference_width > reference_max_width)
-            reference_max_width = reference_width;
+          intmax_t سطر_ordinal = file_سطر_گنتی[file_اشاریہ] + 1;
+          اگر (file_اشاریہ > 0)
+            سطر_ordinal -= file_سطر_گنتی[file_اشاریہ - 1];
+          حرف ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
+          idx_t reference_چوڑائی = sprintf (ordinal_string, "%jd", سطر_ordinal);
+          اگر (داخلہ_file_name[file_اشاریہ])
+            reference_چوڑائی += لڑی_لمبائی (داخلہ_file_name[file_اشاریہ]);
+          اگر (reference_چوڑائی > reference_max_چوڑائی)
+            reference_max_چوڑائی = reference_چوڑائی;
         }
-      reference_max_width++;
-      reference.start = xmalloc (reference_max_width + 1);
+      reference_max_چوڑائی++;
+      reference.آغاز = xmalloc (reference_max_چوڑائی + 1);
     }
 
   /* If the reference appears to the left of the output line, reserve some
      space for it right away, including one gap size.  */
 
-  if ((auto_reference || input_reference) && !right_reference)
-    line_width = MAX (0, line_width - (reference_max_width + gap_size));
+  اگر ((auto_reference || داخلہ_reference) && !دایاں_reference)
+    سطر_چوڑائی = MAX (0, سطر_چوڑائی - (reference_max_چوڑائی + gap_سائز));
 
   /* The output lines, minimally, will contain from left to right a left
      context, a gap, and a keyword followed by the right context with no
@@ -1109,20 +1109,20 @@ fix_output_parameters (void)
      on a case by case basis.  It is worth noting that it cannot happen that
      both the tail and head fields are used at once.  */
 
-  half_line_width = line_width >> 1;
-  before_max_width = half_line_width - gap_size;
-  keyafter_max_width = half_line_width;
+  half_سطر_چوڑائی = سطر_چوڑائی >> 1;
+  before_max_چوڑائی = half_سطر_چوڑائی - gap_سائز;
+  keyafter_max_چوڑائی = half_سطر_چوڑائی;
 
   /* If truncation_string is the empty string, make it null to speed up
      tests.  In this case, truncation_string_length will never get used, so
      there is no need to set it.  */
 
-  if (truncation_string && *truncation_string)
-    truncation_string_length = strlen (truncation_string);
-  else
-    truncation_string = NULL;
+  اگر (truncation_string && *truncation_string)
+    truncation_string_لمبائی = لڑی_لمبائی (truncation_string);
+  ورنہ
+    truncation_string = تہی;
 
-  if (gnu_extensions)
+  اگر (gnu_extensions)
     {
 
       /* When flagging truncation at the left of the keyword, the
@@ -1147,10 +1147,10 @@ fix_output_parameters (void)
          on the left side of the center of the output line, both on the
          right side, or one on either side.  */
 
-      before_max_width -= 2 * truncation_string_length;
-      keyafter_max_width -= 2 * truncation_string_length;
+      before_max_چوڑائی -= 2 * truncation_string_لمبائی;
+      keyafter_max_چوڑائی -= 2 * truncation_string_لمبائی;
     }
-  else
+  ورنہ
     {
 
       /* I never figured out exactly how UNIX' ptx plans the output width
@@ -1159,46 +1159,46 @@ fix_output_parameters (void)
          following formula, which does not completely imitate UNIX' ptx,
          but almost.  */
 
-      keyafter_max_width -= 2 * truncation_string_length + 1;
+      keyafter_max_چوڑائی -= 2 * truncation_string_لمبائی + 1;
     }
 
-  if (before_max_width < 0)
-    before_max_width = 0;
+  اگر (before_max_چوڑائی < 0)
+    before_max_چوڑائی = 0;
 
   /* Compute which characters need special output processing.  Initialize
      by flagging any white space character.  Some systems do not consider
      form feed as a space character, but we do.  */
 
-  for (int character = 0; character < CHAR_SET_SIZE; character++)
-    edited_flag[character] = !! isspace (character);
+  برائے (صحیح character = 0; character < CHAR_سیٹ_سائز; character++)
+    edited_flag[character] = !! خلا_ہے (character);
   edited_flag['\f'] = 1;
 
   /* Complete the special character flagging according to selected output
      format.  */
 
-  switch (output_format)
+  انتخاب (output_format)
     {
-    case UNKNOWN_FORMAT:
+    حالت UNKNOWN_FORMAT:
       /* Should never happen.  */
 
-    case DUMB_FORMAT:
-      break;
+    حالت DUMB_FORMAT:
+      توڑو;
 
-    case ROFF_FORMAT:
+    حالت ROFF_FORMAT:
 
       /* 'Quote' characters should be doubled.  */
 
       edited_flag['"'] = 1;
-      break;
+      توڑو;
 
-    case TEX_FORMAT:
+    حالت TEX_FORMAT:
 
       /* Various characters need special processing.  */
 
-      for (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
-        edited_flag[to_uchar (*cursor)] = 1;
+      برائے (حرف ثابت *cursor = "$%&#_{}\\"; *cursor; cursor++)
+        edited_flag[مقصد_uchar (*cursor)] = 1;
 
-      break;
+      توڑو;
     }
 }
 
@@ -1207,19 +1207,19 @@ fix_output_parameters (void)
 | pointer to some OCCURS.					    |
 `------------------------------------------------------------------*/
 
-static void
+ساکن خالی
 define_all_fields (OCCURS *occurs)
 {
-  ptrdiff_t tail_max_width;	/* allowable width of tail field */
-  ptrdiff_t head_max_width;	/* allowable width of head field */
-  char *cursor;			/* running cursor in source text */
-  char *left_context_start;	/* start of left context */
-  char *right_context_end;	/* end of right context */
-  char *left_field_start;	/* conservative start for 'head'/'before' */
-  char const *file_name;	/* file name for reference */
-  intmax_t line_ordinal;	/* line ordinal for reference */
-  char const *buffer_start;	/* start of buffered file for this occurs */
-  char const *buffer_end;	/* end of buffered file for this occurs */
+  ptrdiff_t دم_max_چوڑائی;	/* allowable width of tail field */
+  ptrdiff_t سر_max_چوڑائی;	/* allowable width of head field */
+  حرف *cursor;			/* running cursor in source text */
+  حرف *بایاں_context_آغاز;	/* start of left context */
+  حرف *دایاں_context_انتہا;	/* end of right context */
+  حرف *بایاں_میدان_آغاز;	/* conservative start for 'head'/'before' */
+  حرف ثابت *file_name;	/* file name for reference */
+  intmax_t سطر_ordinal;	/* line ordinal for reference */
+  حرف ثابت *بفر_آغاز;	/* start of buffered file for this occurs */
+  حرف ثابت *بفر_انتہا;	/* end of buffered file for this occurs */
 
   /* Define 'keyafter', start of left context and end of right context.
      'keyafter' starts at the saved position for keyword and extend to the
@@ -1227,27 +1227,27 @@ define_all_fields (OCCURS *occurs)
      not beyond maximum allowed width for 'keyafter' field or limit for the
      right context.  Suffix spaces will be removed afterwards.  */
 
-  keyafter.start = occurs->key.start;
-  keyafter.end = keyafter.start + occurs->key.size;
-  left_context_start = keyafter.start + occurs->left;
-  right_context_end = keyafter.start + occurs->right;
+  keyafter.آغاز = occurs->کلید.آغاز;
+  keyafter.انتہا = keyafter.آغاز + occurs->کلید.سائز;
+  بایاں_context_آغاز = keyafter.آغاز + occurs->بایاں;
+  دایاں_context_انتہا = keyafter.آغاز + occurs->دایاں;
 
-  buffer_start = text_buffers[occurs->file_index].start;
-  buffer_end = text_buffers[occurs->file_index].end;
+  بفر_آغاز = متن_buffers[occurs->file_اشاریہ].آغاز;
+  بفر_انتہا = متن_buffers[occurs->file_اشاریہ].انتہا;
 
-  cursor = keyafter.end;
-  while (cursor < right_context_end
-         && cursor <= keyafter.start + keyafter_max_width)
+  cursor = keyafter.انتہا;
+  جب (cursor < دایاں_context_انتہا
+         && cursor <= keyafter.آغاز + keyafter_max_چوڑائی)
     {
-      keyafter.end = cursor;
-      SKIP_SOMETHING (cursor, right_context_end);
+      keyafter.انتہا = cursor;
+      SKIP_SOMETHING (cursor, دایاں_context_انتہا);
     }
-  if (cursor <= keyafter.start + keyafter_max_width)
-    keyafter.end = cursor;
+  اگر (cursor <= keyafter.آغاز + keyafter_max_چوڑائی)
+    keyafter.انتہا = cursor;
 
-  keyafter_truncation = truncation_string && keyafter.end < right_context_end;
+  keyafter_truncation = truncation_string && keyafter.انتہا < دایاں_context_انتہا;
 
-  SKIP_WHITE_BACKWARDS (keyafter.end, keyafter.start);
+  SKIP_WHITE_BACKWARDS (keyafter.انتہا, keyafter.آغاز);
 
   /* When the left context is wide, it might take some time to catch up from
      the left context boundary to the beginning of the 'head' or 'before'
@@ -1261,14 +1261,14 @@ define_all_fields (OCCURS *occurs)
      beginning of 'head' or 'before' fields, we will skip forward words or
      delimiters until we get sufficiently near.  */
 
-  if (-occurs->left > half_line_width + maximum_word_length)
+  اگر (-occurs->بایاں > half_سطر_چوڑائی + زیادہ_سے_زیادہ_لفظ_لمبائی)
     {
-      left_field_start
-        = keyafter.start - (half_line_width + maximum_word_length);
-      SKIP_SOMETHING (left_field_start, keyafter.start);
+      بایاں_میدان_آغاز
+        = keyafter.آغاز - (half_سطر_چوڑائی + زیادہ_سے_زیادہ_لفظ_لمبائی);
+      SKIP_SOMETHING (بایاں_میدان_آغاز, keyafter.آغاز);
     }
-  else
-    left_field_start = keyafter.start + occurs->left;
+  ورنہ
+    بایاں_میدان_آغاز = keyafter.آغاز + occurs->بایاں;
 
   /* 'before' certainly ends at the keyword, but not including separating
      spaces.  It starts after than the saved value for the left context, by
@@ -1276,23 +1276,23 @@ define_all_fields (OCCURS *occurs)
      before field.  There will be no prefix spaces either.  'before' only
      advances by skipping single separators or whole words. */
 
-  before.start = left_field_start;
-  before.end = keyafter.start;
-  SKIP_WHITE_BACKWARDS (before.end, before.start);
+  before.آغاز = بایاں_میدان_آغاز;
+  before.انتہا = keyafter.آغاز;
+  SKIP_WHITE_BACKWARDS (before.انتہا, before.آغاز);
 
-  while (before.start + before_max_width < before.end)
-    SKIP_SOMETHING (before.start, before.end);
+  جب (before.آغاز + before_max_چوڑائی < before.انتہا)
+    SKIP_SOMETHING (before.آغاز, before.انتہا);
 
-  if (truncation_string)
+  اگر (truncation_string)
     {
-      cursor = before.start;
-      SKIP_WHITE_BACKWARDS (cursor, buffer_start);
-      before_truncation = cursor > left_context_start;
+      cursor = before.آغاز;
+      SKIP_WHITE_BACKWARDS (cursor, بفر_آغاز);
+      before_truncation = cursor > بایاں_context_آغاز;
     }
-  else
+  ورنہ
     before_truncation = false;
 
-  SKIP_WHITE (before.start, buffer_end);
+  SKIP_WHITE (before.آغاز, بفر_انتہا);
 
   /* The tail could not take more columns than what has been left in the
      left context field, and a gap is mandatory.  It starts after the
@@ -1301,44 +1301,44 @@ define_all_fields (OCCURS *occurs)
      whichever comes first.  It cannot contain only part of a word, and
      has no suffixed spaces.  */
 
-  tail_max_width
-    = before_max_width - (before.end - before.start) - gap_size;
+  دم_max_چوڑائی
+    = before_max_چوڑائی - (before.انتہا - before.آغاز) - gap_سائز;
 
-  if (tail_max_width > 0)
+  اگر (دم_max_چوڑائی > 0)
     {
-      tail.start = keyafter.end;
-      SKIP_WHITE (tail.start, buffer_end);
+      دم.آغاز = keyafter.انتہا;
+      SKIP_WHITE (دم.آغاز, بفر_انتہا);
 
-      tail.end = tail.start;
-      cursor = tail.end;
-      while (cursor < right_context_end
-             && cursor < tail.start + tail_max_width)
+      دم.انتہا = دم.آغاز;
+      cursor = دم.انتہا;
+      جب (cursor < دایاں_context_انتہا
+             && cursor < دم.آغاز + دم_max_چوڑائی)
         {
-          tail.end = cursor;
-          SKIP_SOMETHING (cursor, right_context_end);
+          دم.انتہا = cursor;
+          SKIP_SOMETHING (cursor, دایاں_context_انتہا);
         }
 
-      if (cursor < tail.start + tail_max_width)
-        tail.end = cursor;
+      اگر (cursor < دم.آغاز + دم_max_چوڑائی)
+        دم.انتہا = cursor;
 
-      if (tail.end > tail.start)
+      اگر (دم.انتہا > دم.آغاز)
         {
           keyafter_truncation = false;
-          tail_truncation = truncation_string && tail.end < right_context_end;
+          دم_truncation = truncation_string && دم.انتہا < دایاں_context_انتہا;
         }
-      else
-        tail_truncation = false;
+      ورنہ
+        دم_truncation = false;
 
-      SKIP_WHITE_BACKWARDS (tail.end, tail.start);
+      SKIP_WHITE_BACKWARDS (دم.انتہا, دم.آغاز);
     }
-  else
+  ورنہ
     {
 
       /* No place left for a tail field.  */
 
-      tail.start = NULL;
-      tail.end = NULL;
-      tail_truncation = false;
+      دم.آغاز = تہی;
+      دم.انتہا = تہی;
+      دم_truncation = false;
     }
 
   /* 'head' could not take more columns than what has been left in the right
@@ -1347,66 +1347,66 @@ define_all_fields (OCCURS *occurs)
      until the head field has shrunk to its allowed width.  It cannot
      contain only part of a word, and has no suffixed spaces.  */
 
-  head_max_width
-    = keyafter_max_width - (keyafter.end - keyafter.start) - gap_size;
+  سر_max_چوڑائی
+    = keyafter_max_چوڑائی - (keyafter.انتہا - keyafter.آغاز) - gap_سائز;
 
-  if (head_max_width > 0)
+  اگر (سر_max_چوڑائی > 0)
     {
-      head.end = before.start;
-      SKIP_WHITE_BACKWARDS (head.end, buffer_start);
+      سر.انتہا = before.آغاز;
+      SKIP_WHITE_BACKWARDS (سر.انتہا, بفر_آغاز);
 
-      head.start = left_field_start;
-      while (head.start + head_max_width < head.end)
-        SKIP_SOMETHING (head.start, head.end);
+      سر.آغاز = بایاں_میدان_آغاز;
+      جب (سر.آغاز + سر_max_چوڑائی < سر.انتہا)
+        SKIP_SOMETHING (سر.آغاز, سر.انتہا);
 
-      if (head.end > head.start)
+      اگر (سر.انتہا > سر.آغاز)
         {
           before_truncation = false;
-          head_truncation = (truncation_string
-                             && head.start > left_context_start);
+          سر_truncation = (truncation_string
+                             && سر.آغاز > بایاں_context_آغاز);
         }
-      else
-        head_truncation = false;
+      ورنہ
+        سر_truncation = false;
 
-      SKIP_WHITE (head.start, head.end);
+      SKIP_WHITE (سر.آغاز, سر.انتہا);
     }
-  else
+  ورنہ
     {
 
       /* No place left for a head field.  */
 
-      head.start = NULL;
-      head.end = NULL;
-      head_truncation = false;
+      سر.آغاز = تہی;
+      سر.انتہا = تہی;
+      سر_truncation = false;
     }
 
-  if (auto_reference)
+  اگر (auto_reference)
     {
 
       /* Construct the reference text in preallocated space from the file
          name and the line number.  Standard input yields an empty file name.
          Ensure line numbers are 1 based, even if they are computed 0 based.  */
 
-      file_name = input_file_name[occurs->file_index];
-      if (!file_name)
+      file_name = داخلہ_file_name[occurs->file_اشاریہ];
+      اگر (!file_name)
         file_name = "";
 
-      line_ordinal = occurs->reference + 1;
-      if (occurs->file_index > 0)
-        line_ordinal -= file_line_count[occurs->file_index - 1];
+      سطر_ordinal = occurs->reference + 1;
+      اگر (occurs->file_اشاریہ > 0)
+        سطر_ordinal -= file_سطر_گنتی[occurs->file_اشاریہ - 1];
 
-      char *file_end = stpcpy (reference.start, file_name);
-      reference.end = file_end + sprintf (file_end, ":%jd", line_ordinal);
+      حرف *file_انتہا = stpcpy (reference.آغاز, file_name);
+      reference.انتہا = file_انتہا + sprintf (file_انتہا, ":%jd", سطر_ordinal);
     }
-  else if (input_reference)
+  ورنہ اگر (داخلہ_reference)
     {
 
       /* Reference starts at saved position for reference and extends right
          until some white space is met.  */
 
-      reference.start = keyafter.start + occurs->reference;
-      reference.end = reference.start;
-      SKIP_NON_WHITE (reference.end, right_context_end);
+      reference.آغاز = keyafter.آغاز + occurs->reference;
+      reference.انتہا = reference.آغاز;
+      SKIP_NON_WHITE (reference.انتہا, دایاں_context_انتہا);
     }
 }
 
@@ -1416,188 +1416,188 @@ define_all_fields (OCCURS *occurs)
 | Output the current output fields as one line for 'troff' or 'nroff'.  |
 `----------------------------------------------------------------------*/
 
-static void
-output_one_roff_line (void)
+ساکن خالی
+output_one_roff_سطر (خالی)
 {
   /* Output the 'tail' field.  */
 
-  printf (".%s \"", macro_name);
-  print_field (tail);
-  if (tail_truncation)
+  لکھو (".%s \"", macro_name);
+  print_میدان (دم);
+  اگر (دم_truncation)
     fputs (truncation_string, stdout);
-  putchar ('"');
+  حرف_لکھو ('"');
 
   /* Output the 'before' field.  */
 
   fputs (" \"", stdout);
-  if (before_truncation)
+  اگر (before_truncation)
     fputs (truncation_string, stdout);
-  print_field (before);
-  putchar ('"');
+  print_میدان (before);
+  حرف_لکھو ('"');
 
   /* Output the 'keyafter' field.  */
 
   fputs (" \"", stdout);
-  print_field (keyafter);
-  if (keyafter_truncation)
+  print_میدان (keyafter);
+  اگر (keyafter_truncation)
     fputs (truncation_string, stdout);
-  putchar ('"');
+  حرف_لکھو ('"');
 
   /* Output the 'head' field.  */
 
   fputs (" \"", stdout);
-  if (head_truncation)
+  اگر (سر_truncation)
     fputs (truncation_string, stdout);
-  print_field (head);
-  putchar ('"');
+  print_میدان (سر);
+  حرف_لکھو ('"');
 
   /* Conditionally output the 'reference' field.  */
 
-  if (auto_reference || input_reference)
+  اگر (auto_reference || داخلہ_reference)
     {
       fputs (" \"", stdout);
-      print_field (reference);
-      putchar ('"');
+      print_میدان (reference);
+      حرف_لکھو ('"');
     }
 
-  putchar ('\n');
+  حرف_لکھو ('\n');
 }
 
 /*---------------------------------------------------------.
 | Output the current output fields as one line for 'TeX'.  |
 `---------------------------------------------------------*/
 
-static void
-output_one_tex_line (void)
+ساکن خالی
+output_one_tex_سطر (خالی)
 {
-  BLOCK key;			/* key field, isolated */
-  BLOCK after;			/* after field, isolated */
-  char *cursor;			/* running cursor in source text */
+  بلاک_2 کلید;			/* key field, isolated */
+  بلاک_2 after;			/* after field, isolated */
+  حرف *cursor;			/* running cursor in source text */
 
-  printf ("\\%s ", macro_name);
-  putchar ('{');
-  print_field (tail);
+  لکھو ("\\%s ", macro_name);
+  حرف_لکھو ('{');
+  print_میدان (دم);
   fputs ("}{", stdout);
-  print_field (before);
+  print_میدان (before);
   fputs ("}{", stdout);
-  key.start = keyafter.start;
-  after.end = keyafter.end;
-  cursor = keyafter.start;
-  SKIP_SOMETHING (cursor, keyafter.end);
-  key.end = cursor;
-  after.start = cursor;
-  print_field (key);
+  کلید.آغاز = keyafter.آغاز;
+  after.انتہا = keyafter.انتہا;
+  cursor = keyafter.آغاز;
+  SKIP_SOMETHING (cursor, keyafter.انتہا);
+  کلید.انتہا = cursor;
+  after.آغاز = cursor;
+  print_میدان (کلید);
   fputs ("}{", stdout);
-  print_field (after);
+  print_میدان (after);
   fputs ("}{", stdout);
-  print_field (head);
-  putchar ('}');
-  if (auto_reference || input_reference)
+  print_میدان (سر);
+  حرف_لکھو ('}');
+  اگر (auto_reference || داخلہ_reference)
     {
-      putchar ('{');
-      print_field (reference);
-      putchar ('}');
+      حرف_لکھو ('{');
+      print_میدان (reference);
+      حرف_لکھو ('}');
     }
-  putchar ('\n');
+  حرف_لکھو ('\n');
 }
 
 /*-------------------------------------------------------------------.
 | Output the current output fields as one line for a dumb terminal.  |
 `-------------------------------------------------------------------*/
 
-static void
-output_one_dumb_line (void)
+ساکن خالی
+output_one_dumb_سطر (خالی)
 {
-  if (!right_reference)
+  اگر (!دایاں_reference)
     {
-      if (auto_reference)
+      اگر (auto_reference)
         {
 
           /* Output the 'reference' field, in such a way that GNU emacs
              next-error will handle it.  The ending colon is taken from the
              gap which follows.  */
 
-          print_field (reference);
-          putchar (':');
-          print_spaces (reference_max_width
-                        + gap_size
-                        - (reference.end - reference.start)
+          print_میدان (reference);
+          حرف_لکھو (':');
+          print_spaces (reference_max_چوڑائی
+                        + gap_سائز
+                        - (reference.انتہا - reference.آغاز)
                         - 1);
         }
-      else
+      ورنہ
         {
 
           /* Output the 'reference' field and its following gap.  */
 
-          print_field (reference);
-          print_spaces (reference_max_width
-                        + gap_size
-                        - (reference.end - reference.start));
+          print_میدان (reference);
+          print_spaces (reference_max_چوڑائی
+                        + gap_سائز
+                        - (reference.انتہا - reference.آغاز));
         }
     }
 
-  if (tail.start < tail.end)
+  اگر (دم.آغاز < دم.انتہا)
     {
       /* Output the 'tail' field.  */
 
-      print_field (tail);
-      if (tail_truncation)
+      print_میدان (دم);
+      اگر (دم_truncation)
         fputs (truncation_string, stdout);
 
-      print_spaces (half_line_width - gap_size
-                    - (before.end - before.start)
-                    - (before_truncation ? truncation_string_length : 0)
-                    - (tail.end - tail.start)
-                    - (tail_truncation ? truncation_string_length : 0));
+      print_spaces (half_سطر_چوڑائی - gap_سائز
+                    - (before.انتہا - before.آغاز)
+                    - (before_truncation ? truncation_string_لمبائی : 0)
+                    - (دم.انتہا - دم.آغاز)
+                    - (دم_truncation ? truncation_string_لمبائی : 0));
     }
-  else
-    print_spaces (half_line_width - gap_size
-                  - (before.end - before.start)
-                  - (before_truncation ? truncation_string_length : 0));
+  ورنہ
+    print_spaces (half_سطر_چوڑائی - gap_سائز
+                  - (before.انتہا - before.آغاز)
+                  - (before_truncation ? truncation_string_لمبائی : 0));
 
   /* Output the 'before' field.  */
 
-  if (before_truncation)
+  اگر (before_truncation)
     fputs (truncation_string, stdout);
-  print_field (before);
+  print_میدان (before);
 
-  print_spaces (gap_size);
+  print_spaces (gap_سائز);
 
   /* Output the 'keyafter' field.  */
 
-  print_field (keyafter);
-  if (keyafter_truncation)
+  print_میدان (keyafter);
+  اگر (keyafter_truncation)
     fputs (truncation_string, stdout);
 
-  if (head.start < head.end)
+  اگر (سر.آغاز < سر.انتہا)
     {
       /* Output the 'head' field.  */
 
-      print_spaces (half_line_width
-                    - (keyafter.end - keyafter.start)
-                    - (keyafter_truncation ? truncation_string_length : 0)
-                    - (head.end - head.start)
-                    - (head_truncation ? truncation_string_length : 0));
-      if (head_truncation)
+      print_spaces (half_سطر_چوڑائی
+                    - (keyafter.انتہا - keyafter.آغاز)
+                    - (keyafter_truncation ? truncation_string_لمبائی : 0)
+                    - (سر.انتہا - سر.آغاز)
+                    - (سر_truncation ? truncation_string_لمبائی : 0));
+      اگر (سر_truncation)
         fputs (truncation_string, stdout);
-      print_field (head);
+      print_میدان (سر);
     }
-  else
+  ورنہ
 
-    if ((auto_reference || input_reference) && right_reference)
-      print_spaces (half_line_width
-                    - (keyafter.end - keyafter.start)
-                    - (keyafter_truncation ? truncation_string_length : 0));
+    اگر ((auto_reference || داخلہ_reference) && دایاں_reference)
+      print_spaces (half_سطر_چوڑائی
+                    - (keyafter.انتہا - keyafter.آغاز)
+                    - (keyafter_truncation ? truncation_string_لمبائی : 0));
 
-  if ((auto_reference || input_reference) && right_reference)
+  اگر ((auto_reference || داخلہ_reference) && دایاں_reference)
     {
       /* Output the 'reference' field.  */
 
-      print_spaces (gap_size);
-      print_field (reference);
+      print_spaces (gap_سائز);
+      print_میدان (reference);
     }
 
-  putchar ('\n');
+  حرف_لکھو ('\n');
 }
 
 /*------------------------------------------------------------------------.
@@ -1605,8 +1605,8 @@ output_one_dumb_line (void)
 | appropriate format.							  |
 `------------------------------------------------------------------------*/
 
-static void
-generate_all_output (void)
+ساکن خالی
+generate_all_output (خالی)
 {
   OCCURS *occurs_cursor;	/* current keyword entry being processed */
 
@@ -1614,20 +1614,20 @@ generate_all_output (void)
      line contexts or references are not used, in which case these variables
      would never be computed.  */
 
-  tail.start = NULL;
-  tail.end = NULL;
-  tail_truncation = false;
+  دم.آغاز = تہی;
+  دم.انتہا = تہی;
+  دم_truncation = false;
 
-  head.start = NULL;
-  head.end = NULL;
-  head_truncation = false;
+  سر.آغاز = تہی;
+  سر.انتہا = تہی;
+  سر_truncation = false;
 
   /* Loop over all keyword occurrences.  */
 
-  occurs_cursor = occurs_table[0];
+  occurs_cursor = occurs_جدول[0];
 
-  for (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
-       occurs_index++)
+  برائے (idx_t occurs_اشاریہ = 0; occurs_اشاریہ < نمبر_کا_occurs[0];
+       occurs_اشاریہ++)
     {
       /* Compute the exact size of every field and whenever truncation flags
          are present or not.  */
@@ -1636,22 +1636,22 @@ generate_all_output (void)
 
       /* Produce one output line according to selected format.  */
 
-      switch (output_format)
+      انتخاب (output_format)
         {
-        case UNKNOWN_FORMAT:
+        حالت UNKNOWN_FORMAT:
           /* Should never happen.  */
 
-        case DUMB_FORMAT:
-          output_one_dumb_line ();
-          break;
+        حالت DUMB_FORMAT:
+          output_one_dumb_سطر ();
+          توڑو;
 
-        case ROFF_FORMAT:
-          output_one_roff_line ();
-          break;
+        حالت ROFF_FORMAT:
+          output_one_roff_سطر ();
+          توڑو;
 
-        case TEX_FORMAT:
-          output_one_tex_line ();
-          break;
+        حالت TEX_FORMAT:
+          output_one_tex_سطر ();
+          توڑو;
         }
 
       /* Advance the cursor into the occurs table.  */
@@ -1666,81 +1666,81 @@ generate_all_output (void)
 | Print program identification and options, then exit.  |
 `------------------------------------------------------*/
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
-Usage: %s [OPTION]... [INPUT]...   (without -G)\n\
-  or:  %s -G [OPTION]... [INPUT [OUTPUT]]\n"),
-              program_name, program_name);
+      لکھو (_("\
+Usage: %s [OPTION]... [داخلہ_2]...   (without -G)\n\
+  or:  %s -G [OPTION]... [داخلہ_2 [OUTPUT]]\n"),
+              پروگرام_name, پروگرام_name);
       fputs (_("\
-Output a permuted index, including context, of the words in the input files.\n\
+Output a permuted index, including context, کا the الفاظ اندر the داخلہ files.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -A, --auto-reference           output automatically generated references\n\
+  -A, --خودکار-reference           output automatically generated references\n\
 "));
       oputs (_("\
-  -G, --traditional              behave more like System V 'ptx'\n\
+  -G, --traditional              behave مزید like System V 'ptx'\n\
 "));
       oputs (_("\
-  -F, --flag-truncation=STRING   use STRING for flagging line truncations.\n\
-                                 The default is '/'\n\
+  -F, --flag-truncation=STRING   use STRING برائے flagging سطر truncations.\n\
+                                 The طےشدہ is '/'\n\
 "));
       oputs (_("\
-  -M, --macro-name=STRING        macro name to use instead of 'xx'\n\
+  -M, --macro-name=STRING        macro name مقصد use instead کا 'xx'\n\
 "));
       oputs (_("\
   -O, --format=roff              generate output as roff directives\n\
 "));
       oputs (_("\
-  -R, --right-side-refs          put references at right, not counted in -w\n\
+  -R, --دایاں-side-refs          put references at دایاں, not counted اندر -w\n\
 "));
       oputs (_("\
-  -S, --sentence-regexp=REGEXP   for end of lines or end of sentences\n\
+  -S, --sentence-regexp=REGEXP   برائے انتہا کا سطریں or انتہا کا sentences\n\
 "));
       oputs (_("\
   -T, --format=tex               generate output as TeX directives\n\
 "));
       oputs (_("\
-  -W, --word-regexp=REGEXP       use REGEXP to match each keyword\n\
+  -W, --لفظ_2-regexp=REGEXP       use REGEXP مقصد مطابقت each keyword\n\
 "));
       oputs (_("\
-  -b, --break-file=FILE          word break characters in this FILE\n\
+  -b, --توڑو-file=FILE          لفظ_2 توڑو characters اندر this FILE\n\
 "));
       oputs (_("\
-  -f, --ignore-case              fold lower case to upper case for sorting\n\
+  -f, --ignore-حالت              fold زیریں حالت مقصد بالائی حالت برائے ترتیب_کاری\n\
 "));
       oputs (_("\
-  -g, --gap-size=NUMBER          gap size in columns between output fields\n\
+  -g, --gap-سائز=نمبر_2          gap سائز اندر columns between output fields\n\
 "));
       oputs (_("\
-  -i, --ignore-file=FILE         read ignore word list from FILE\n\
+  -i, --ignore-file=FILE         اقرأ ignore لفظ_2 list from FILE\n\
 "));
       oputs (_("\
-  -o, --only-file=FILE           read only word list from this FILE\n\
+  -o, --only-file=FILE           اقرأ only لفظ_2 list from this FILE\n\
 "));
       oputs (_("\
-  -r, --references               first field of each line is a reference\n\
+  -r, --references               پہلا میدان کا each سطر is a reference\n\
 "));
       oputs (_("\
-  -t, --typeset-mode             change the default width from 72 to 100\n\
+  -t, --typeset-منوال_2             change the طےشدہ چوڑائی from 72 مقصد 100\n\
 "));
       oputs (_("\
-  -w, --width=NUMBER             output width in columns, reference excluded\n\
+  -w, --چوڑائی=نمبر_2             output چوڑائی اندر columns, reference excluded\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /*----------------------------------------------------------------------.
@@ -1750,230 +1750,230 @@ Output a permuted index, including context, of the words in the input files.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
   FORMAT_OPTION = CHAR_MAX + 1
 };
 
 /* Long options equivalences.  */
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"auto-reference", no_argument, NULL, 'A'},
-  {"break-file", required_argument, NULL, 'b'},
-  {"flag-truncation", required_argument, NULL, 'F'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"gap-size", required_argument, NULL, 'g'},
-  {"ignore-file", required_argument, NULL, 'i'},
-  {"macro-name", required_argument, NULL, 'M'},
-  {"only-file", required_argument, NULL, 'o'},
-  {"references", no_argument, NULL, 'r'},
-  {"right-side-refs", no_argument, NULL, 'R'},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"sentence-regexp", required_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, 'G'},
-  {"typeset-mode", no_argument, NULL, 't'},
-  {"width", required_argument, NULL, 'w'},
-  {"word-regexp", required_argument, NULL, 'W'},
+  {"auto-reference", no_دلیل, تہی, 'A'},
+  {"break-file", required_دلیل, تہی, 'b'},
+  {"flag-truncation", required_دلیل, تہی, 'F'},
+  {"ignore-case", no_دلیل, تہی, 'f'},
+  {"gap-size", required_دلیل, تہی, 'g'},
+  {"ignore-file", required_دلیل, تہی, 'i'},
+  {"macro-name", required_دلیل, تہی, 'M'},
+  {"only-file", required_دلیل, تہی, 'o'},
+  {"references", no_دلیل, تہی, 'r'},
+  {"right-side-refs", no_دلیل, تہی, 'R'},
+  {"format", required_دلیل, تہی, FORMAT_OPTION},
+  {"sentence-regexp", required_دلیل, تہی, 'S'},
+  {"traditional", no_دلیل, تہی, 'G'},
+  {"typeset-mode", no_دلیل, تہی, 't'},
+  {"width", required_دلیل, تہی, 'w'},
+  {"word-regexp", required_دلیل, تہی, 'W'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0},
 };
 
-static char const *const format_args[] =
+ساکن حرف ثابت *ثابت format_دلائل[] =
 {
-  "roff", "tex", NULL
+  "roff", "tex", تہی
 };
 
-static enum Format const format_vals[] =
+ساکن شمار Format ثابت format_vals[] =
 {
   ROFF_FORMAT, TEX_FORMAT
 };
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  int optchar;			/* argument character */
-  int file_index;		/* index in text input file arrays */
+  صحیح optchar;			/* argument character */
+  صحیح file_اشاریہ;		/* index in text input file arrays */
 
   /* Decode program options.  */
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
-                                long_options, NULL),
+  جب (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
+                                long_options, تہی),
          optchar != EOF)
     {
-      switch (optchar)
+      انتخاب (optchar)
         {
-        default:
+        طےشدہ:
           usage (EXIT_FAILURE);
 
-        case 'G':
+        حالت 'G':
           gnu_extensions = false;
-          break;
+          توڑو;
 
-        case 'b':
+        حالت 'b':
           break_file = optarg;
-          break;
+          توڑو;
 
-        case 'f':
+        حالت 'f':
           ignore_case = true;
-          break;
+          توڑو;
 
-        case 'g':
+        حالت 'g':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            اگر (! (xstrtoimax (optarg, تہی, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid gap width: %s"),
                      quote (optarg));
-            gap_size = tmp;
-            break;
+            gap_سائز = tmp;
+            توڑو;
           }
 
-        case 'i':
+        حالت 'i':
           ignore_file = optarg;
-          break;
+          توڑو;
 
-        case 'o':
+        حالت 'o':
           only_file = optarg;
-          break;
+          توڑو;
 
-        case 'r':
-          input_reference = true;
-          break;
+        حالت 'r':
+          داخلہ_reference = true;
+          توڑو;
 
-        case 't':
-          if (line_width < 0)
-            line_width = 100;
-          break;
+        حالت 't':
+          اگر (سطر_چوڑائی < 0)
+            سطر_چوڑائی = 100;
+          توڑو;
 
-        case 'w':
+        حالت 'w':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            اگر (! (xstrtoimax (optarg, تہی, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid line width: %s"),
                      quote (optarg));
-            line_width = tmp;
-            break;
+            سطر_چوڑائی = tmp;
+            توڑو;
           }
 
-        case 'A':
+        حالت 'A':
           auto_reference = true;
-          break;
+          توڑو;
 
-        case 'F':
+        حالت 'F':
           truncation_string = optarg;
           unescape_string (optarg);
-          break;
+          توڑو;
 
-        case 'M':
+        حالت 'M':
           macro_name = optarg;
-          break;
+          توڑو;
 
-        case 'O':
+        حالت 'O':
           output_format = ROFF_FORMAT;
-          break;
+          توڑو;
 
-        case 'R':
-          right_reference = true;
-          break;
+        حالت 'R':
+          دایاں_reference = true;
+          توڑو;
 
-        case 'S':
+        حالت 'S':
           context_regex.string = optarg;
           unescape_string (optarg);
-          break;
+          توڑو;
 
-        case 'T':
+        حالت 'T':
           output_format = TEX_FORMAT;
-          break;
+          توڑو;
 
-        case 'W':
-          word_regex.string = optarg;
+        حالت 'W':
+          لفظ_regex.string = optarg;
           unescape_string (optarg);
-          if (!*word_regex.string)
-            word_regex.string = NULL;
-          break;
+          اگر (!*لفظ_regex.string)
+            لفظ_regex.string = تہی;
+          توڑو;
 
-        case FORMAT_OPTION:
+        حالت FORMAT_OPTION:
           output_format = XARGMATCH ("--format", optarg,
-                                     format_args, format_vals);
-          break;
+                                     format_دلائل, format_vals);
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
         }
     }
 
-  if (line_width < 0)
-    line_width = 72;
+  اگر (سطر_چوڑائی < 0)
+    سطر_چوڑائی = 72;
 
   /* Process remaining arguments.  If GNU extensions are enabled, process
      all arguments as input parameters.  If disabled, accept at most two
      arguments, the second of which is an output parameter.  */
 
-  if (optind == argc)
+  اگر (optind == argc)
     {
 
       /* No more argument simply means: read standard input.  */
 
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers =    xmalloc (sizeof *text_buffers);
-      number_input_files = 1;
-      input_file_name[0] = NULL;
+      داخلہ_file_name = xmalloc (حجم *داخلہ_file_name);
+      file_سطر_گنتی = xmalloc (حجم *file_سطر_گنتی);
+      متن_buffers =    xmalloc (حجم *متن_buffers);
+      نمبر_داخلہ_files = 1;
+      داخلہ_file_name[0] = تہی;
     }
-  else if (gnu_extensions)
+  ورنہ اگر (gnu_extensions)
     {
-      number_input_files = argc - optind;
-      input_file_name = xnmalloc (number_input_files, sizeof *input_file_name);
-      file_line_count = xnmalloc (number_input_files, sizeof *file_line_count);
-      text_buffers    = xnmalloc (number_input_files, sizeof *text_buffers);
+      نمبر_داخلہ_files = argc - optind;
+      داخلہ_file_name = xnmalloc (نمبر_داخلہ_files, حجم *داخلہ_file_name);
+      file_سطر_گنتی = xnmalloc (نمبر_داخلہ_files, حجم *file_سطر_گنتی);
+      متن_buffers    = xnmalloc (نمبر_داخلہ_files, حجم *متن_buffers);
 
-      for (file_index = 0; file_index < number_input_files; file_index++)
+      برائے (file_اشاریہ = 0; file_اشاریہ < نمبر_داخلہ_files; file_اشاریہ++)
         {
-          if (!*argv[optind] || streq (argv[optind], "-"))
-            input_file_name[file_index] = NULL;
-          else
-            input_file_name[file_index] = argv[optind];
+          اگر (!*argv[optind] || streq (argv[optind], "-"))
+            داخلہ_file_name[file_اشاریہ] = تہی;
+          ورنہ
+            داخلہ_file_name[file_اشاریہ] = argv[optind];
           optind++;
         }
     }
-  else
+  ورنہ
     {
 
       /* There is one necessary input file.  */
 
-      number_input_files = 1;
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers    = xmalloc (sizeof *text_buffers);
-      if (!*argv[optind] || streq (argv[optind], "-"))
-        input_file_name[0] = NULL;
-      else
-        input_file_name[0] = argv[optind];
+      نمبر_داخلہ_files = 1;
+      داخلہ_file_name = xmalloc (حجم *داخلہ_file_name);
+      file_سطر_گنتی = xmalloc (حجم *file_سطر_گنتی);
+      متن_buffers    = xmalloc (حجم *متن_buffers);
+      اگر (!*argv[optind] || streq (argv[optind], "-"))
+        داخلہ_file_name[0] = تہی;
+      ورنہ
+        داخلہ_file_name[0] = argv[optind];
       optind++;
 
       /* Redirect standard output, only if requested.  */
 
-      if (optind < argc)
+      اگر (optind < argc)
         {
-          if (! freopen (argv[optind], "w", stdout))
+          اگر (! freopen (argv[optind], "w", stdout))
             error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
           optind++;
         }
 
       /* Diagnose any other argument as an error.  */
 
-      if (optind < argc)
+      اگر (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           usage (EXIT_FAILURE);
@@ -1983,7 +1983,7 @@ main (int argc, char **argv)
   /* If the output format has not been explicitly selected, choose dumb
      terminal format if GNU extensions are enabled, else 'roff' format.  */
 
-  if (output_format == UNKNOWN_FORMAT)
+  اگر (output_format == UNKNOWN_FORMAT)
     output_format = gnu_extensions ? DUMB_FORMAT : ROFF_FORMAT;
 
   /* Initialize the main tables.  */
@@ -1992,58 +1992,58 @@ main (int argc, char **argv)
 
   /* Read 'Break character' file, if any.  */
 
-  if (break_file)
+  اگر (break_file)
     digest_break_file (break_file);
 
   /* Read 'Ignore words' file and 'Only words' files, if any.  If any of
      these files is empty, reset the name of the file to null, to avoid
      unnecessary calls to search_table. */
 
-  if (ignore_file)
+  اگر (ignore_file)
     {
-      digest_word_file (ignore_file, &ignore_table);
-      if (ignore_table.length == 0)
-        ignore_file = NULL;
+      digest_لفظ_file (ignore_file, &ignore_جدول);
+      اگر (ignore_جدول.لمبائی == 0)
+        ignore_file = تہی;
     }
 
-  if (only_file)
+  اگر (only_file)
     {
-      digest_word_file (only_file, &only_table);
-      if (only_table.length == 0)
-        only_file = NULL;
+      digest_لفظ_file (only_file, &only_جدول);
+      اگر (only_جدول.لمبائی == 0)
+        only_file = تہی;
     }
 
   /* Prepare to study all the input files.  */
 
-  number_of_occurs[0] = 0;
-  total_line_count = 0;
-  maximum_word_length = 0;
-  reference_max_width = 0;
+  نمبر_کا_occurs[0] = 0;
+  کل_سطر_گنتی = 0;
+  زیادہ_سے_زیادہ_لفظ_لمبائی = 0;
+  reference_max_چوڑائی = 0;
 
-  for (file_index = 0; file_index < number_input_files; file_index++)
+  برائے (file_اشاریہ = 0; file_اشاریہ < نمبر_داخلہ_files; file_اشاریہ++)
     {
-      BLOCK *text_buffer = text_buffers + file_index;
+      بلاک_2 *متن_بفر = متن_buffers + file_اشاریہ;
 
       /* Read the file contents into memory, then study it.  */
 
-      swallow_file_in_memory (input_file_name[file_index], text_buffer);
-      find_occurs_in_text (file_index);
+      swallow_file_اندر_حافظہ (داخلہ_file_name[file_اشاریہ], متن_بفر);
+      ڈھونڈو_occurs_اندر_متن (file_اشاریہ);
 
       /* Maintain for each file how many lines has been read so far when its
          end is reached.  Incrementing the count first is a simple kludge to
          handle a possible incomplete line at end of file.  */
 
-      total_line_count++;
-      file_line_count[file_index] = total_line_count;
+      کل_سطر_گنتی++;
+      file_سطر_گنتی[file_اشاریہ] = کل_سطر_گنتی;
     }
 
   /* Do the output process phase.  */
 
-  sort_found_occurs ();
+  ترتیب_دو_ملا_occurs ();
   fix_output_parameters ();
   generate_all_output ();
 
   /* All done.  */
 
-  return EXIT_SUCCESS;
+  واپس EXIT_SUCCESS;
 }

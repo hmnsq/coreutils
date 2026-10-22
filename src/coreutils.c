@@ -19,128 +19,128 @@
 
    Written by Alex Deymo <deymo@chromium.org>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#if HAVE_PRCTL
+#شامل <config.h>
+#شامل <getopt.h>
+#شامل <stdio.h>
+#اگر HAVE_PRCTL
 # include <sys/prctl.h>
-#endif
+#اگر_ختم
 
-#include "system.h"
-#include "quote.h"
+#شامل "system.h"
+#شامل "quote.h"
 
-#ifdef SINGLE_BINARY
+#اگر_تعریف_شدہ SINGLE_ثنائی
 /* Declare the main function on each one of the selected tools.  This name
    needs to match the one passed as CFLAGS on single-binary.mk (generated
    by gen-single-binary.sh). */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  int single_binary_main_##main_name (int, char **);
+# define SINGLE_ثنائی_پروگرام(prog_name_str, main_name) \
+  صحیح single_ثنائی_main##main_name (صحیح, حرف **);
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
-#endif
+# undef SINGLE_ثنائی_پروگرام
+#اگر_ختم
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "coreutils"
+#تعریف_کرو پروگرام_NAME "coreutils"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("Alex Deymo")
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
-Usage: %s --coreutils-prog=PROGRAM_NAME [PARAMETERS]... \n"),
-              program_name);
+      لکھو (_("\
+Usage: %s --coreutils-prog=پروگرام_NAME [PARAMETERS]... \n"),
+              پروگرام_name);
       fputs (_("\
-Execute the PROGRAM_NAME built-in program with the given PARAMETERS.\n\
+Execute the پروگرام_NAME built-اندر پروگرام with the given PARAMETERS.\n\
 \n"), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
 
-#ifdef SINGLE_BINARY
+#اگر_تعریف_شدہ SINGLE_ثنائی
 /* XXX: Ideally we'd like to present "install" here, not "ginstall".  */
-      char const *prog_name_list =
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) " " prog_name_str
+      حرف ثابت *prog_name_list =
+# define SINGLE_ثنائی_پروگرام(prog_name_str, main_name) " " prog_name_str
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
+# undef SINGLE_ثنائی_پروگرام
       ;
-      printf ("\n\
-Built-in programs:\n\
+      لکھو ("\n\
+Built-اندر programs:\n\
 %s\n", prog_name_list);
-#endif
+#اگر_ختم
 
-      printf (_("\
+      لکھو (_("\
 \n\
-Use: '%s --coreutils-prog=PROGRAM_NAME --help' for individual program help.\n"),
-              program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+Use: '%s --coreutils-prog=PROGRAM_NAME --help' برائے individual پروگرام help.\n"),
+              پروگرام_name);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-static void
-launch_program (char const *prog_name, int prog_argc, char **prog_argv)
+ساکن خالی
+launch_پروگرام (حرف ثابت *prog_name, صحیح prog_argc, حرف **prog_argv)
 {
-  int (*prog_main) (int, char **) = NULL;
+  صحیح (*prog_main) (صحیح, حرف **) = تہی;
 
   /* Ensure that at least one parameter was passed.  */
-  if (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
-    return;
+  اگر (!prog_argc || !prog_argv || !prog_argv[0] || !prog_name)
+    واپس;
 
-#ifdef SINGLE_BINARY
-  if (false);
+#اگر_تعریف_شدہ SINGLE_ثنائی
+  اگر (false);
   /* Look up the right main program.  */
-# define SINGLE_BINARY_PROGRAM(prog_name_str, main_name) \
-  else if (streq (prog_name_str, prog_name)) \
-    prog_main = single_binary_main_##main_name;
+# define SINGLE_ثنائی_پروگرام(prog_name_str, main_name) \
+  ورنہ اگر (streq (prog_name_str, prog_name)) \
+    prog_main = single_ثنائی_main##main_name;
 # include "coreutils.h"
-# undef SINGLE_BINARY_PROGRAM
-#endif
+# undef SINGLE_ثنائی_پروگرام
+#اگر_ختم
 
-  if (! prog_main)
-    return;
+  اگر (! prog_main)
+    واپس;
 
-#if HAVE_PRCTL && defined PR_SET_NAME
+#اگر HAVE_PRCTL && defined PR_سیٹ_NAME
   /* Not being able to set the program name is not a fatal error.  */
-  prctl (PR_SET_NAME, last_component (prog_argv[0]));
-#endif
-#if HAVE_PRCTL && defined PR_SET_MM_ARG_START
+  prctl (PR_سیٹ_NAME, آخری_component (prog_argv[0]));
+#اگر_ختم
+#اگر HAVE_PRCTL && defined PR_سیٹ_MM_ARG_آغاز
   /* Shift the beginning of the command line to prog_argv[0] (if set) so
      /proc/$pid/cmdline reflects a more specific value.  Note one needs
      CAP_SYS_RESOURCE or root privileges for this to succeed.  */
-  prctl (PR_SET_MM, PR_SET_MM_ARG_START, prog_argv[0], 0, 0);
-#endif
+  prctl (PR_سیٹ_MM, PR_سیٹ_MM_ARG_آغاز, prog_argv[0], 0, 0);
+#اگر_ختم
 
-  exit (prog_main (prog_argc, prog_argv));
+  باہر_نکلو (prog_main (prog_argc, prog_argv));
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  char *prog_name = last_component (argv[0]);
-  int optc;
+  حرف *prog_name = آخری_component (argv[0]);
+  صحیح optc;
 
   /* Map external name to internal name.  */
-  char ginstall[] = "ginstall";
-  if (streq (prog_name, "install"))
+  حرف ginstall[] = "ginstall";
+  اگر (streq (prog_name, "install"))
     prog_name = ginstall;
 
   /* If this program is called directly as "coreutils" or if the value of
      argv[0] is an unknown tool (which "coreutils" is), we proceed and parse
      the options.  */
-  launch_program (prog_name, argc, argv);
+  launch_پروگرام (prog_name, argc, argv);
 
   /* No known program was selected via argv[0].  Try parsing the first
      argument as --coreutils-prog=PROGRAM to determine the program.  The
@@ -149,57 +149,57 @@ main (int argc, char **argv)
      The third argument is what the program will see as argv[0].  */
 
   size_t nskip = 0;
-  if (argc >= 2)
+  اگر (argc >= 2)
     {
-      char *arg_name = NULL;
+      حرف *arg_name = تہی;
 
       /* If calling coreutils directly, the "script" name isn't passed.
          Distinguish the two cases with a -shebang suffix.  */
-      if (STRPREFIX (argv[1], "--coreutils-prog="))
+      اگر (STRPREFIX (argv[1], "--coreutils-prog="))
         {
           nskip = 1;
-          arg_name = prog_name = argv[1] + strlen ("--coreutils-prog=");
+          arg_name = prog_name = argv[1] + لڑی_لمبائی ("--coreutils-prog=");
         }
-      else if (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
+      ورنہ اگر (STRPREFIX (argv[1], "--coreutils-prog-shebang="))
         {
           nskip = 2;
-          prog_name = argv[1] + strlen ("--coreutils-prog-shebang=");
-          if (argc >= 3)
-            arg_name = last_component (argv[2]);
-          else
+          prog_name = argv[1] + لڑی_لمبائی ("--coreutils-prog-shebang=");
+          اگر (argc >= 3)
+            arg_name = آخری_component (argv[2]);
+          ورنہ
             arg_name = prog_name;
         }
 
-      if (nskip)
+      اگر (nskip)
         {
           argv[nskip] = arg_name; /* XXX: Discards any specified path.  */
-          launch_program (prog_name, argc - nskip, argv + nskip);
+          launch_پروگرام (prog_name, argc - nskip, argv + nskip);
         }
     }
 
   /* Only process options if calling multi-call binary directly,
      otherwise `foo --version` would succeed.  */
-  if (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
+  اگر (nskip || (prog_name && !str_endswith (prog_name, "coreutils")))
     {
       fprintf (stderr, _("%s: unknown program %s\n"),
-               PROGRAM_NAME, quote (prog_name));
-      exit (EXIT_FAILURE);
+               پروگرام_NAME, quote (prog_name));
+      باہر_نکلو (EXIT_FAILURE);
     }
 
   /* From here on, we behave like any other coreutils program.  */
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
   atexit (close_stdout);
 
-  if ((optc = getopt_long (argc, argv, "", long_options, NULL)) != -1)
-    switch (optc)
+  اگر ((optc = getopt_long (argc, argv, "", long_options, تہی)) != -1)
+    انتخاب (optc)
       {
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
       }
 
   usage (EXIT_FAILURE);

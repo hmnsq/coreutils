@@ -1,8 +1,8 @@
-#define IOPOLL_BROKEN_OUTPUT -2
-#define IOPOLL_ERROR         -3
+#تعریف_کرو IOPOLL_BROKEN_OUTPUT -2
+#تعریف_کرو IOPOLL_ERROR         -3
 
-int iopoll (int fdin, int fdout, bool block);
-bool iopoll_input_ok (int fdin);
-bool iopoll_output_ok (int fdout);
+صحیح iopoll (صحیح fdin, صحیح fdout, bool بلاک);
+bool iopoll_داخلہ_ok (صحیح fdin);
+bool iopoll_output_ok (صحیح fdout);
 
-bool write_wait (int fd, void const *buffer, size_t size);
+bool write_wait (صحیح fd, خالی ثابت *بفر, size_t سائز);

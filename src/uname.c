@@ -17,18 +17,18 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-#include <getopt.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <sys/utsname.h>
+#شامل <getopt.h>
 
-#if HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
+#اگر HAVE_SYSINFO && HAVE_SYS_SYSTEMINFO_H
 # include <sys/systeminfo.h>
-#endif
+#اگر_ختم
 
-#if HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
-# if HAVE_SYS_PARAM_H
+#اگر HAVE_SYS_SYSCTL_H && ! defined __GLIBC__ && ! defined __APPLE__
+# اگر HAVE_SYS_PARAM_H
 #  include <sys/param.h> /* needed for OpenBSD 3.0 */
 # endif
 # include <sys/sysctl.h>
@@ -37,110 +37,110 @@
 /* E.g., FreeBSD 4.5, NetBSD 1.5.2 */
 #   define UNAME_HARDWARE_PLATFORM HW_MODEL
 #   define UNAME_PROCESSOR HW_MACHINE_ARCH
-#  else
+#  ورنہ
 /* E.g., OpenBSD 3.0 */
 #   define UNAME_PROCESSOR HW_MODEL
 #  endif
 # endif
-#endif
+#اگر_ختم
 
-#include "system.h"
-#include "quote.h"
-#include "uname.h"
+#شامل "system.h"
+#شامل "quote.h"
+#شامل "uname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME (uname_mode == UNAME_UNAME ? "uname" : "arch")
+#تعریف_کرو پروگرام_NAME (uname_منوال == UNAME_UNAME ? "uname" : "arch")
 
-#define AUTHORS proper_name ("David MacKenzie")
-#define ARCH_AUTHORS "David MacKenzie", "Karel Zak"
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو ARCH_AUTHORS "David MacKenzie", "Karel Zak"
 
 /* Values that are bitwise or'd into 'toprint'. */
 /* Kernel name. */
-#define PRINT_KERNEL_NAME 1
+#تعریف_کرو PRINT_KERNEL_NAME 1
 
 /* Node name on a communications network. */
-#define PRINT_NODENAME 2
+#تعریف_کرو PRINT_NODENAME 2
 
 /* Kernel release. */
-#define PRINT_KERNEL_RELEASE 4
+#تعریف_کرو PRINT_KERNEL_RELEASE 4
 
 /* Kernel version. */
-#define PRINT_KERNEL_VERSION 8
+#تعریف_کرو PRINT_KERNEL_نسخہ 8
 
 /* Machine hardware name. */
-#define PRINT_MACHINE 16
+#تعریف_کرو PRINT_MACHINE 16
 
 /* Processor type. */
-#define PRINT_PROCESSOR 32
+#تعریف_کرو PRINT_PROCESSOR 32
 
 /* Hardware platform.  */
-#define PRINT_HARDWARE_PLATFORM 64
+#تعریف_کرو PRINT_HARDWARE_PLATFORM 64
 
 /* Operating system.  */
-#define PRINT_OPERATING_SYSTEM 128
+#تعریف_کرو PRINT_OPERATING_SYSTEM 128
 
-static bool labeled = false;
+ساکن bool labeled = false;
 
-static struct option const uname_long_options[] =
+ساکن ساخت option ثابت uname_long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"all-labeled", no_argument, NULL, 'A'},
-  {"kernel-name", no_argument, NULL, 's'},
-  {"sysname", no_argument, NULL, 's'},	/* Obsolescent.  */
-  {"nodename", no_argument, NULL, 'n'},
-  {"kernel-release", no_argument, NULL, 'r'},
-  {"release", no_argument, NULL, 'r'},  /* Obsolescent.  */
-  {"kernel-version", no_argument, NULL, 'v'},
-  {"machine", no_argument, NULL, 'm'},
-  {"processor", no_argument, NULL, 'p'},
-  {"hardware-platform", no_argument, NULL, 'i'},
-  {"operating-system", no_argument, NULL, 'o'},
+  {"all", no_دلیل, تہی, 'a'},
+  {"all-labeled", no_دلیل, تہی, 'A'},
+  {"kernel-name", no_دلیل, تہی, 's'},
+  {"sysname", no_دلیل, تہی, 's'},	/* Obsolescent.  */
+  {"nodename", no_دلیل, تہی, 'n'},
+  {"kernel-release", no_دلیل, تہی, 'r'},
+  {"release", no_دلیل, تہی, 'r'},  /* Obsolescent.  */
+  {"kernel-version", no_دلیل, تہی, 'v'},
+  {"machine", no_دلیل, تہی, 'm'},
+  {"processor", no_دلیل, تہی, 'p'},
+  {"hardware-platform", no_دلیل, تہی, 'i'},
+  {"operating-system", no_دلیل, تہی, 'o'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-static struct option const arch_long_options[] =
+ساکن ساخت option ثابت arch_long_options[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]...\n"), program_name);
+      لکھو (_("Usage: %s [OPTION]...\n"), پروگرام_name);
 
-      if (uname_mode == UNAME_UNAME)
+      اگر (uname_منوال == UNAME_UNAME)
         {
           fputs (_("\
 Print certain system information.  With no OPTION, same as -s.\n\
 \n\
 "), stdout);
           oputs (_("\
-  -a, --all                print all information, in the following order,\n\
-                             except omit -p and -i if unknown\n\
+  -a, --all                print all information, اندر the following ترتیب,\n\
+                             except omit -p and -i اگر unknown\n\
 "));
           oputs (_("\
-  -A, --all-labeled        print all information, one labeled field per line,\n\
-                             except omit -p and -i if unknown\n\
+  -A, --all-labeled        print all information, one labeled میدان فی سطر,\n\
+                             except omit -p and -i اگر unknown\n\
 "));
           oputs (_("\
   -s, --kernel-name        print the kernel name\n\
 "));
           oputs (_("\
-  -n, --nodename           print the network node hostname\n\
+  -n, --nodename           print the جال گرہ hostname\n\
 "));
           oputs (_("\
   -r, --kernel-release     print the kernel release\n\
 "));
           oputs (_("\
-  -v, --kernel-version     print the kernel version\n\
+  -v, --kernel-نسخہ_3     print the kernel نسخہ_3\n\
 "));
           oputs (_("\
   -m, --machine            print the machine hardware name\n\
@@ -155,7 +155,7 @@ Print certain system information.  With no OPTION, same as -s.\n\
   -o, --operating-system   print the operating system\n\
 "));
         }
-      else
+      ورنہ
         {
           fputs (_("\
 Print machine architecture.\n\
@@ -164,27 +164,27 @@ Print machine architecture.\n\
         }
 
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* Print ELEMENT, preceded by a space if something has already been
    printed.  */
 
-static void
-print_element (char const *element, char const *label)
+ساکن خالی
+print_element (حرف ثابت *element, حرف ثابت *label)
 {
-  if (labeled)
+  اگر (labeled)
     {
-      printf ("%s: %s\n", label, element);
+      لکھو ("%s: %s\n", label, element);
     }
-  else
+  ورنہ
     {
-      static bool printed;
-      if (printed)
-        putchar (' ');
+      ساکن bool printed;
+      اگر (printed)
+        حرف_لکھو (' ');
       printed = true;
       fputs (element, stdout);
     }
@@ -194,19 +194,19 @@ print_element (char const *element, char const *label)
    printed.  But if the environment variable ENVVAR is set, print its
    value instead of ELEMENT.  */
 
-static void
-print_element_env (char const *element,
-                   MAYBE_UNUSED char const *envvar,
-                   char const *label)
+ساکن خالی
+print_element_env (حرف ثابت *element,
+                   MAYBE_غیر_مستعمل حرف ثابت *envvar,
+                   حرف ثابت *label)
 {
-#ifdef __APPLE__
-  if (envvar)
+#اگر_تعریف_شدہ __APPLE__
+  اگر (envvar)
     {
-      char const *val = getenv (envvar);
-      if (val)
+      حرف ثابت *val = getenv (envvar);
+      اگر (val)
         element = val;
     }
-#endif
+#اگر_ختم
   print_element (element, label);
 }
 
@@ -214,109 +214,109 @@ print_element_env (char const *element,
 /* Set all the option flags according to the switches specified.
    Return the mask indicating which elements to print.  */
 
-static int
-decode_switches (int argc, char **argv)
+ساکن صحیح
+decode_switches (صحیح argc, حرف **argv)
 {
-  int c;
-  unsigned int toprint = 0;
+  صحیح c;
+  غیرعلامتی صحیح toprint = 0;
 
-  if (uname_mode == UNAME_ARCH)
+  اگر (uname_منوال == UNAME_ARCH)
     {
-      while ((c = getopt_long (argc, argv, "",
-                               arch_long_options, NULL))
+      جب ((c = getopt_long (argc, argv, "",
+                               arch_long_options, تہی))
              != -1)
         {
-          switch (c)
+          انتخاب (c)
             {
             case_GETOPT_HELP_CHAR;
 
-            case_GETOPT_VERSION_CHAR (PROGRAM_NAME, ARCH_AUTHORS);
+            case_GETOPT_نسخہ_CHAR (پروگرام_NAME, ARCH_AUTHORS);
 
-            default:
+            طےشدہ:
               usage (EXIT_FAILURE);
             }
         }
       toprint = PRINT_MACHINE;
     }
-  else
+  ورنہ
     {
-      while ((c = getopt_long (argc, argv, "asnrvmpioA",
-                               uname_long_options, NULL))
+      جب ((c = getopt_long (argc, argv, "asnrvmpioA",
+                               uname_long_options, تہی))
              != -1)
         {
-          switch (c)
+          انتخاب (c)
             {
-            case 'a':
+            حالت 'a':
               toprint = UINT_MAX;
               labeled = false;
-              break;
+              توڑو;
 
-            case 'A':
+            حالت 'A':
               toprint = UINT_MAX;
               labeled = true;
-              break;
+              توڑو;
 
-            case 's':
+            حالت 's':
               toprint |= PRINT_KERNEL_NAME;
-              break;
+              توڑو;
 
-            case 'n':
+            حالت 'n':
               toprint |= PRINT_NODENAME;
-              break;
+              توڑو;
 
-            case 'r':
+            حالت 'r':
               toprint |= PRINT_KERNEL_RELEASE;
-              break;
+              توڑو;
 
-            case 'v':
-              toprint |= PRINT_KERNEL_VERSION;
-              break;
+            حالت 'v':
+              toprint |= PRINT_KERNEL_نسخہ;
+              توڑو;
 
-            case 'm':
+            حالت 'm':
               toprint |= PRINT_MACHINE;
-              break;
+              توڑو;
 
-            case 'p':
+            حالت 'p':
               toprint |= PRINT_PROCESSOR;
-              break;
+              توڑو;
 
-            case 'i':
+            حالت 'i':
               toprint |= PRINT_HARDWARE_PLATFORM;
-              break;
+              توڑو;
 
-            case 'o':
+            حالت 'o':
               toprint |= PRINT_OPERATING_SYSTEM;
-              break;
+              توڑو;
 
             case_GETOPT_HELP_CHAR;
 
-            case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+            case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-            default:
+            طےشدہ:
               usage (EXIT_FAILURE);
             }
         }
     }
 
-  if (argc != optind)
+  اگر (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  return toprint;
+  واپس toprint;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  static char const unknown[] = "unknown";
+  ساکن حرف ثابت unknown[] = "unknown";
 
   /* Mask indicating which elements to print. */
-  unsigned int toprint = 0;
+  غیرعلامتی صحیح toprint = 0;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -325,94 +325,94 @@ main (int argc, char **argv)
 
   toprint = decode_switches (argc, argv);
 
-  if (toprint == 0)
+  اگر (toprint == 0)
     toprint = PRINT_KERNEL_NAME;
 
-  if (toprint
+  اگر (toprint
        & (PRINT_KERNEL_NAME | PRINT_NODENAME | PRINT_KERNEL_RELEASE
-          | PRINT_KERNEL_VERSION | PRINT_MACHINE))
+          | PRINT_KERNEL_نسخہ | PRINT_MACHINE))
     {
-      struct utsname name;
+      ساخت utsname name;
 
-      if (uname (&name) == -1)
+      اگر (uname (&name) == -1)
         error (EXIT_FAILURE, errno, _("cannot get system name"));
 
-      if (toprint & PRINT_KERNEL_NAME)
+      اگر (toprint & PRINT_KERNEL_NAME)
         print_element_env (name.sysname, "UNAME_SYSNAME", _("Kernel name"));
-      if (toprint & PRINT_NODENAME)
+      اگر (toprint & PRINT_NODENAME)
         print_element_env (name.nodename, "UNAME_NODENAME", _("Node name"));
-      if (toprint & PRINT_KERNEL_RELEASE)
+      اگر (toprint & PRINT_KERNEL_RELEASE)
         print_element_env (name.release, "UNAME_RELEASE", _("Kernel release"));
-      if (toprint & PRINT_KERNEL_VERSION)
-        print_element_env (name.version, "UNAME_VERSION", _("Kernel version"));
-      if (toprint & PRINT_MACHINE)
+      اگر (toprint & PRINT_KERNEL_نسخہ)
+        print_element_env (name.نسخہ_3, "UNAME_VERSION", _("Kernel version"));
+      اگر (toprint & PRINT_MACHINE)
         print_element_env (name.machine, "UNAME_MACHINE", _("Machine"));
     }
 
-  if (toprint & PRINT_PROCESSOR)
+  اگر (toprint & PRINT_PROCESSOR)
     {
-      char const *element = unknown;
-#ifdef __APPLE__
-# if defined __arm__ || defined __arm64__
+      حرف ثابت *element = unknown;
+#اگر_تعریف_شدہ __APPLE__
+# اگر defined __arm__ || defined __arm64__
       element = "arm";
 # elif defined __i386__ || defined __x86_64__
       element = "i386";
 # elif defined __ppc__ || defined __ppc64__
       element = "powerpc";
 # endif
-#endif
-#if HAVE_SYSINFO && defined SI_ARCHITECTURE
-      if (element == unknown)
+#اگر_ختم
+#اگر HAVE_SYSINFO && defined SI_ARCHITECTURE
+      اگر (element == unknown)
         {
-          static char processor[257];
-          if (0 <= sysinfo (SI_ARCHITECTURE, processor, sizeof processor))
+          ساکن حرف processor[257];
+          اگر (0 <= sysinfo (SI_ARCHITECTURE, processor, حجم processor))
             element = processor;
         }
-#endif
-#ifdef UNAME_PROCESSOR
-      if (element == unknown)
+#اگر_ختم
+#اگر_تعریف_شدہ UNAME_PROCESSOR
+      اگر (element == unknown)
         {
-          static char processor[257];
-          size_t s = sizeof processor;
-          static int mib[] = { CTL_HW, UNAME_PROCESSOR };
-          if (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
+          ساکن حرف processor[257];
+          size_t s = حجم processor;
+          ساکن صحیح mib[] = { CTL_HW, UNAME_PROCESSOR };
+          اگر (sysctl (mib, 2, processor, &s, 0, 0) >= 0)
             element = processor;
         }
-#endif
-      if (! (toprint == UINT_MAX && element == unknown))
+#اگر_ختم
+      اگر (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Processor"));
     }
 
-  if (toprint & PRINT_HARDWARE_PLATFORM)
+  اگر (toprint & PRINT_HARDWARE_PLATFORM)
     {
-      char const *element = unknown;
-#if HAVE_SYSINFO && defined SI_PLATFORM
+      حرف ثابت *element = unknown;
+#اگر HAVE_SYSINFO && defined SI_PLATFORM
       {
-        static char hardware_platform[257];
-        if (0 <= sysinfo (SI_PLATFORM,
-                          hardware_platform, sizeof hardware_platform))
+        ساکن حرف hardware_platform[257];
+        اگر (0 <= sysinfo (SI_PLATFORM,
+                          hardware_platform, حجم hardware_platform))
           element = hardware_platform;
       }
-#endif
-#ifdef UNAME_HARDWARE_PLATFORM
-      if (element == unknown)
+#اگر_ختم
+#اگر_تعریف_شدہ UNAME_HARDWARE_PLATFORM
+      اگر (element == unknown)
         {
-          static char hardware_platform[257];
-          size_t s = sizeof hardware_platform;
-          static int mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
-          if (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
+          ساکن حرف hardware_platform[257];
+          size_t s = حجم hardware_platform;
+          ساکن صحیح mib[] = { CTL_HW, UNAME_HARDWARE_PLATFORM };
+          اگر (sysctl (mib, 2, hardware_platform, &s, 0, 0) >= 0)
             element = hardware_platform;
         }
-#endif
-      if (! (toprint == UINT_MAX && element == unknown))
+#اگر_ختم
+      اگر (! (toprint == UINT_MAX && element == unknown))
         print_element (element, _("Hardware platform"));
     }
 
-  if (toprint & PRINT_OPERATING_SYSTEM)
+  اگر (toprint & PRINT_OPERATING_SYSTEM)
     print_element (HOST_OPERATING_SYSTEM, _("Operating system"));
 
-  if (!labeled)
-    putchar ('\n');
+  اگر (!labeled)
+    حرف_لکھو ('\n');
 
-  return EXIT_SUCCESS;
+  واپس EXIT_SUCCESS;
 }

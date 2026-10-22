@@ -1,4 +1,4 @@
-enum uname_modes
+شمار uname_modes
 {
   /* This is for the 'uname' program.  */
   UNAME_UNAME,
@@ -7,4 +7,4 @@ enum uname_modes
   UNAME_ARCH
 };
 
-extern enum uname_modes uname_mode;
+خارجی شمار uname_modes uname_منوال;

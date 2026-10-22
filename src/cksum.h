@@ -1,8 +1,8 @@
-enum Algorithm
+شمار Algorithm
 {
   bsd,
   sysv,
-  crc,
+  چکری_جانچ,
   crc32b,
   md5,
   sha1,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+خارجی شمار Algorithm cksum_algorithm;

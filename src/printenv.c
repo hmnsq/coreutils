@@ -27,82 +27,82 @@
 
    David MacKenzie and Richard Mlynarik */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "printenv.h"
-#include "xbinary-io.h"
+#شامل "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#شامل "system.h"
+#شامل "printenv.h"
+#شامل "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+شمار { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printenv"
+#تعریف_کرو پروگرام_NAME "printenv"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Richard Mlynarik")
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
-  {"null", no_argument, NULL, '0'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
+  {"null", no_دلیل, تہی, '0'},
+  {"quoting-style", required_دلیل, تہی, QUOTING_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+Print the اقدار کا the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, print name and قدر جوڑے برائے them all.\n\
 \n\
 "),
-              program_name);
+              پروگرام_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         انتہا each output سطر with NUL, not newline\n\
 "));
       oputs (_("\
-      --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+      --quoting-style=لفظ\n\
+         use quoting style لفظ برائے نام and اقدار:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      لکھو (USAGE_BUILTIN_WARNING, پروگرام_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  صحیح quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -110,79 +110,79 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  صحیح optc;
+  جب ((optc = getopt_long (argc, argv, "+0", longopts, تہی)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case '0':
+        حالت '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          توڑو;
+        حالت QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
-                                         quoting_style_args,
+                                         quoting_style_دلائل,
                                          quoting_style_vals);
-          break;
+          توڑو;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (PRINTENV_FAILURE);
         }
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  صحیح qs = quoting_style_opt;
+  اگر (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      اگر (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  اگر (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      سیٹ_quoting_style (تہی, qs);
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t ثابت n_دلائل = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  حرف ثابت terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  اگر (opt_nul_terminate_output)
+    xset_ثنائی_منوال (STDOUT_FILENO, O_ثنائی);
 
-  if (n_args <= 0)
+  اگر (n_دلائل <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      برائے (حرف **env = environ; *env != تہی; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  ورنہ
     {
-      int matches = 0;
+      صحیح matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      برائے (صحیح i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
-            continue;
+          اگر (strchr (argv[i], '='))
+            جاری;
 
-          for (char **env = environ; *env; ++env)
+          برائے (حرف **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              حرف ثابت *ep = *env;
+              حرف ثابت *ap = argv[i];
+              جب (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  اگر (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      حرف ثابت *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
-                      putchar (terminator);
+                      حرف_لکھو (terminator);
                       matched = true;
-                      break;
+                      توڑو;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

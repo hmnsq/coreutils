@@ -23,12 +23,12 @@
    the script this is fed through contains a pre-defined set of common
    constants. */
 
-#include <config.h>
+#شامل <config.h>
 
-#ifdef TERMIOS_NEEDS_XOPEN_SOURCE
-# define _XOPEN_SOURCE
-#endif
+#اگر_تعریف_شدہ TERMIOS_NEEDS_XOPEN_ماخذ
+# define XOPEN_ماخذ
+#اگر_ختم
 
-#include <sys/types.h>
-#include <termios.h>
-#include <sys/ioctl.h>
+#شامل <sys/types.h>
+#شامل <termios.h>
+#شامل <sys/ioctl.h>

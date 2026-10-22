@@ -14,58 +14,58 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <wchar.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <wchar.h>
 
-#include "system.h"
-#include "c-ctype.h"
-#include "cl-strtod.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "unicodeio.h"
-#include "xprintf.h"
+#شامل "system.h"
+#شامل "c-ctype.h"
+#شامل "cl-strtod.h"
+#شامل "octhexdigits.h"
+#شامل "quote.h"
+#شامل "unicodeio.h"
+#شامل "xprintf.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "printf"
+#تعریف_کرو پروگرام_NAME "printf"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
 /* The value to return to the calling program.  */
-static int exit_status;
+ساکن صحیح exit_حالت;
 
 /* True if the POSIXLY_CORRECT environment variable is set.  */
-static bool posixly_correct;
+ساکن bool posixly_correct;
 
 /* This message appears in N_() here rather than just in _() below because
    the sole use would have been in a #define.  */
-static char const *const cfcc_msg =
+ساکن حرف ثابت *ثابت cfcc_پیغام =
  N_("warning: %s: character(s) following character constant have been ignored");
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
-Usage: %s FORMAT [ARGUMENT]...\n\
+      لکھو (_("\
+Usage: %s FORMAT [دلیل_2]...\n\
   or:  %s OPTION\n\
 "),
-              program_name, program_name);
+              پروگرام_name, پروگرام_name);
       fputs (_("\
-Print ARGUMENT(s) according to FORMAT, or execute according to OPTION:\n\
+Print دلیل_2(s) according مقصد FORMAT, or execute according مقصد OPTION:\n\
 \n\
 "), stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
+FORMAT controls the output as اندر C لکھو.  Interpreted sequences are:\n\
 \n\
-  \\\"      double quote\n\
+  \\\"      دوہرا quote\n\
 "), stdout);
       fputs (_("\
   \\\\      backslash\n\
@@ -74,38 +74,38 @@ FORMAT controls the output as in C printf.  Interpreted sequences are:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new سطر\n\
+  \\r      carriage واپس\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
       fputs (_("\
-  \\NNN    byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
-  \\uHHHH  Unicode (ISO/IEC 10646) character with hex value HHHH (4 digits)\n\
-  \\UHHHHHHHH  Unicode character with hex value HHHHHHHH (8 digits)\n\
+  \\NNN    byte with octal قدر NNN (1 مقصد 3 digits)\n\
+  \\xHH    byte with hexadecimal قدر HH (1 مقصد 2 digits)\n\
+  \\uHHHH  Unicode (ISO/IEC 10646) character with hex قدر HHHH (4 digits)\n\
+  \\UHHHHHHHH  Unicode character with hex قدر HHHHHHHH (8 digits)\n\
 "), stdout);
       fputs (_("\
 \n\
   %%      a single %\n\
-  %b      ARGUMENT as a string with '\\' escapes interpreted,\n\
+  %b      دلیل_2 as a string with '\\' escapes interpreted,\n\
           except that octal escapes should have a leading 0 like \\0NNN\n\
-  %q      ARGUMENT is printed in a format that can be reused as shell input,\n\
+  %q      دلیل_2 is printed اندر a format that can be reused as shell داخلہ,\n\
           escaping non-printable characters with the POSIX $'' syntax\
 \n\n\
-and all C printf(3) format specifications ending with one of diouxXfaAeEgGcs,\n\
-with ARGUMENTs converted to proper type first.\n\
+and all C لکھو(3) format specifications ending with one کا diouxXfaAeEgGcs,\n\
+with ARGUMENTs converted مقصد proper type پہلا.\n\
 "), stdout);
       fputs (_("\
-FORMAT is reused to convert all specified arguments.\n\
+FORMAT is reused مقصد convert all specified arguments.\n\
 "), stdout);
       fputs (_("\
-The following table shows supported conversion specifiers,\n\
-with examples including usage of width, precision, and flags.\n\
+The following جدول shows supported conversion specifiers,\n\
+with examples including usage کا چوڑائی, precision, and flags.\n\
 \n\
   CONVERSION  Shell format example        Output\n\
-  %s          '[%10s]' 'left pad'         [  left pad]\n\
-  %s          '[%-10s]' 'right pad'       [right pad ]\n\
+  %s          '[%10s]' 'left pad'         [  بایاں pad]\n\
+  %s          '[%-10s]' 'right pad'       [دایاں pad ]\n\
   %c %s       '%c %.3s' un unibyte        u uni\n\
 \n\
   %d %i       \"%'d ;%04i\" 1234 '-1'       1,234 ;-001\n\
@@ -120,56 +120,56 @@ with examples including usage of width, precision, and flags.\n\
   %b          '%bfoo' 'bar\\cbaz' qux      bar\n\
   %q          '%q ' 'a' \\;b $'c\\n'        a ';b' 'c'$'\\n'\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      لکھو (USAGE_BUILTIN_WARNING, پروگرام_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-static void
-verify_numeric (char const *s, char const *end)
+ساکن خالی
+verify_numeric (حرف ثابت *s, حرف ثابت *انتہا)
 {
-  if (s == end)
+  اگر (s == انتہا)
     {
       error (0, 0, _("%s: expected a numeric value"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_حالت = EXIT_FAILURE;
     }
-  else if (errno)
+  ورنہ اگر (errno)
     {
       error (0, errno, "%s", quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_حالت = EXIT_FAILURE;
     }
-  else if (*end)
+  ورنہ اگر (*انتہا)
     {
       error (0, 0, _("%s: value not completely converted"), quote (s));
-      exit_status = EXIT_FAILURE;
+      exit_حالت = EXIT_FAILURE;
     }
 }
 
-#define STRTOX(TYPE, FUNC_NAME, LIB_FUNC_EXPR)				 \
-static TYPE								 \
-FUNC_NAME (char const *s)						 \
+#تعریف_کرو STRTOX(TYPE, FUNC_NAME, LIB_FUNC_اظہاریہ)				 \
+ساکن TYPE								 \
+FUNC_NAME (حرف ثابت *s)						 \
 {									 \
-  char *end;								 \
+  حرف *انتہا;								 \
   TYPE val;								 \
                                                                          \
-  if ((*s == '\"' || *s == '\'') && *(s + 1))				 \
+  اگر ((*s == '\"' || *s == '\'') && *(s + 1))				 \
     {									 \
-      unsigned char ch = *++s;						 \
+      غیرعلامتی حرف ch = *++s;						 \
       val = ch;								 \
                                                                          \
-      if (MB_CUR_MAX > 1 && *(s + 1))					 \
+      اگر (MB_CUR_MAX > 1 && *(s + 1))					 \
         {								 \
           mbstate_t mbstate; mbszero (&mbstate);			 \
           wchar_t wc;							 \
-          size_t slen = strlen (s);					 \
-          ssize_t bytes;						 \
+          size_t slen = لڑی_لمبائی (s);					 \
+          ssize_t بائٹیں;						 \
           /* Use mbrtowc not mbrtoc32, as per POSIX.  */		 \
-          bytes = mbrtowc (&wc, s, slen, &mbstate);			 \
-          if (0 < bytes)						 \
+          بائٹیں = mbrtowc (&wc, s, slen, &mbstate);			 \
+          اگر (0 < بائٹیں)						 \
             {								 \
               val = wc;							 \
-              s += bytes - 1;						 \
+              s += بائٹیں - 1;						 \
             }								 \
         }								 \
                                                                          \
@@ -177,59 +177,59 @@ FUNC_NAME (char const *s)						 \
          are characters following the character constant and that GNU	 \
          printf is ignoring those characters.  If POSIXLY_CORRECT *is*	 \
          set, then don't give the warning.  */				 \
-      if (*++s != 0 && !posixly_correct)				 \
-        error (0, 0, _(cfcc_msg), s);					 \
+      اگر (*++s != 0 && !posixly_correct)				 \
+        error (0, 0, _(cfcc_پیغام), s);					 \
     }									 \
-  else									 \
+  ورنہ									 \
     {									 \
       errno = 0;							 \
-      val = (LIB_FUNC_EXPR);						 \
-      verify_numeric (s, end);						 \
+      val = (LIB_FUNC_اظہاریہ);						 \
+      verify_numeric (s, انتہا);						 \
     }									 \
-  return val;								 \
+  واپس val;								 \
 }									 \
 
-STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &end, 0))
-STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &end, 0))
-STRTOX (long double, vstrtold,   cl_strtold (s, &end))
+STRTOX (intmax_t,    vstrtoimax, strtoimax (s, &انتہا, 0))
+STRTOX (uintmax_t,   vstrtoumax, strtoumax (s, &انتہا, 0))
+STRTOX (طویل دوہرا, vstrtold,   cl_strtold (s, &انتہا))
 
 /* Output a single-character \ escape.  */
 
-static void
-print_esc_char (char c)
+ساکن خالی
+print_esc_char (حرف c)
 {
-  switch (c)
+  انتخاب (c)
     {
-    case 'a':			/* Alert. */
-      putchar ('\a');
-      break;
-    case 'b':			/* Backspace. */
-      putchar ('\b');
-      break;
-    case 'c':			/* Cancel the rest of the output. */
-      exit (EXIT_SUCCESS);
-      break;
-    case 'e':			/* Escape. */
-      putchar ('\x1B');
-      break;
-    case 'f':			/* Form feed. */
-      putchar ('\f');
-      break;
-    case 'n':			/* New line. */
-      putchar ('\n');
-      break;
-    case 'r':			/* Carriage return. */
-      putchar ('\r');
-      break;
-    case 't':			/* Horizontal tab. */
-      putchar ('\t');
-      break;
-    case 'v':			/* Vertical tab. */
-      putchar ('\v');
-      break;
-    default:
-      putchar (c);
-      break;
+    حالت 'a':			/* Alert. */
+      حرف_لکھو ('\a');
+      توڑو;
+    حالت 'b':			/* Backspace. */
+      حرف_لکھو ('\b');
+      توڑو;
+    حالت 'c':			/* Cancel the rest of the output. */
+      باہر_نکلو (EXIT_SUCCESS);
+      توڑو;
+    حالت 'e':			/* Escape. */
+      حرف_لکھو ('\x1B');
+      توڑو;
+    حالت 'f':			/* Form feed. */
+      حرف_لکھو ('\f');
+      توڑو;
+    حالت 'n':			/* New line. */
+      حرف_لکھو ('\n');
+      توڑو;
+    حالت 'r':			/* Carriage return. */
+      حرف_لکھو ('\r');
+      توڑو;
+    حالت 't':			/* Horizontal tab. */
+      حرف_لکھو ('\t');
+      توڑو;
+    حالت 'v':			/* Vertical tab. */
+      حرف_لکھو ('\v');
+      توڑو;
+    طےشدہ:
+      حرف_لکھو (c);
+      توڑو;
     }
 }
 
@@ -239,82 +239,82 @@ print_esc_char (char c)
    If OCTAL_0 is nonzero, octal escapes are of the form \0ooo, where o
    is an octal digit; otherwise they are of the form \ooo.  */
 
-static int
-print_esc (char const *escstart, bool octal_0)
+ساکن صحیح
+print_esc (حرف ثابت *escstart, bool octal_0)
 {
-  char const *p = escstart + 1;
-  int esc_value = 0;		/* Value of \nnn escape. */
-  int esc_length;		/* Length of \nnn escape. */
+  حرف ثابت *p = escstart + 1;
+  صحیح esc_قدر = 0;		/* Value of \nnn escape. */
+  صحیح esc_لمبائی;		/* Length of \nnn escape. */
 
-  if (*p == 'x')
+  اگر (*p == 'x')
     {
       /* A hexadecimal \xhh escape sequence must have 1 or 2 hex. digits.  */
-      for (esc_length = 0, ++p;
-           esc_length < 2 && c_isxdigit (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 16 + fromhex (*p);
-      if (esc_length == 0)
+      برائے (esc_لمبائی = 0, ++p;
+           esc_لمبائی < 2 && c_isxdigit (*p);
+           ++esc_لمبائی, ++p)
+        esc_قدر = esc_قدر * 16 + fromhex (*p);
+      اگر (esc_لمبائی == 0)
         error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-      putchar (esc_value);
+      حرف_لکھو (esc_قدر);
     }
-  else if (isoct (*p))
+  ورنہ اگر (isoct (*p))
     {
       /* Parse \0ooo (if octal_0 && *p == '0') or \ooo (otherwise).
          Allow \ooo if octal_0 && *p != '0'; this is an undocumented
          extension to POSIX that is compatible with Bash 2.05b.  */
-      for (esc_length = 0, p += octal_0 && *p == '0';
-           esc_length < 3 && isoct (*p);
-           ++esc_length, ++p)
-        esc_value = esc_value * 8 + fromoct (*p);
-      putchar (esc_value);
+      برائے (esc_لمبائی = 0, p += octal_0 && *p == '0';
+           esc_لمبائی < 3 && isoct (*p);
+           ++esc_لمبائی, ++p)
+        esc_قدر = esc_قدر * 8 + fromoct (*p);
+      حرف_لکھو (esc_قدر);
     }
-  else if (*p && strchr ("\"\\abcefnrtv", *p))
+  ورنہ اگر (*p && strchr ("\"\\abcefnrtv", *p))
     print_esc_char (*p++);
-  else if (*p == 'u' || *p == 'U')
+  ورنہ اگر (*p == 'u' || *p == 'U')
     {
-      char esc_char = *p;
-      unsigned int uni_value;
+      حرف esc_char = *p;
+      غیرعلامتی صحیح uni_قدر;
 
-      uni_value = 0;
-      for (esc_length = (esc_char == 'u' ? 4 : 8), ++p;
-           esc_length > 0;
-           --esc_length, ++p)
+      uni_قدر = 0;
+      برائے (esc_لمبائی = (esc_char == 'u' ? 4 : 8), ++p;
+           esc_لمبائی > 0;
+           --esc_لمبائی, ++p)
         {
-          if (! c_isxdigit (*p))
+          اگر (! c_isxdigit (*p))
             error (EXIT_FAILURE, 0, _("missing hexadecimal number in escape"));
-          uni_value = uni_value * 16 + fromhex (*p);
+          uni_قدر = uni_قدر * 16 + fromhex (*p);
         }
 
       /* Error for invalid code points 0000D800 through 0000DFFF inclusive.
          Note print_unicode_char() would print the literal \u.. in this case. */
-      if (uni_value >= 0xd800 && uni_value <= 0xdfff)
+      اگر (uni_قدر >= 0xd800 && uni_قدر <= 0xdfff)
         error (EXIT_FAILURE, 0, _("invalid universal character name \\%c%0*x"),
-               esc_char, (esc_char == 'u' ? 4 : 8), uni_value);
+               esc_char, (esc_char == 'u' ? 4 : 8), uni_قدر);
 
-      print_unicode_char (stdout, uni_value, 0);
+      print_unicode_char (stdout, uni_قدر, 0);
     }
-  else
+  ورنہ
     {
-      putchar ('\\');
-      if (*p)
+      حرف_لکھو ('\\');
+      اگر (*p)
         {
-          putchar (*p);
+          حرف_لکھو (*p);
           p++;
         }
     }
-  return p - escstart - 1;
+  واپس p - escstart - 1;
 }
 
 /* Print string STR, evaluating \ escapes. */
 
-static void
-print_esc_string (char const *str)
+ساکن خالی
+print_esc_string (حرف ثابت *str)
 {
-  for (; *str; str++)
-    if (*str == '\\')
+  برائے (; *str; str++)
+    اگر (*str == '\\')
       str += print_esc (str, true);
-    else
-      putchar (*str);
+    ورنہ
+      حرف_لکھو (*str);
 }
 
 /* Evaluate a printf conversion specification.  START is the start of
@@ -323,196 +323,196 @@ print_esc_string (char const *str)
    values, if HAVE_FIELD_WIDTH and HAVE_PRECISION are true, respectively.
    ARGUMENT is the argument to be formatted.  */
 
-static void
-print_direc (char const *start, char conversion,
-             bool have_field_width, int field_width,
-             bool have_precision, int precision,
-             char const *argument)
+ساکن خالی
+print_direc (حرف ثابت *آغاز, حرف conversion,
+             bool have_میدان_چوڑائی, صحیح میدان_چوڑائی,
+             bool have_precision, صحیح precision,
+             حرف ثابت *دلیل)
 {
-  char *p;		/* Null-terminated copy of % directive. */
+  حرف *p;		/* Null-terminated copy of % directive. */
 
   /* Create a null-terminated copy of the % directive, with an
      intmax_t-wide length modifier substituted for any existing
      integer length modifier.  */
   {
-    char *q;
-    char const *length_modifier;
-    size_t length_modifier_len;
+    حرف *q;
+    حرف ثابت *لمبائی_modifier;
+    size_t لمبائی_modifier_len;
 
-    switch (conversion)
+    انتخاب (conversion)
       {
-      case 'd': case 'i': case 'o': case 'u': case 'x': case 'X':
-        length_modifier = "j";
-        length_modifier_len = 1;
-        break;
+      حالت 'd': حالت 'i': حالت 'o': حالت 'u': حالت 'x': حالت 'X':
+        لمبائی_modifier = "j";
+        لمبائی_modifier_len = 1;
+        توڑو;
 
-      case 'a': case 'e': case 'f': case 'g':
-      case 'A': case 'E': case 'F': case 'G':
-        length_modifier = "L";
-        length_modifier_len = 1;
-        break;
+      حالت 'a': حالت 'e': حالت 'f': حالت 'g':
+      حالت 'A': حالت 'E': حالت 'F': حالت 'G':
+        لمبائی_modifier = "L";
+        لمبائی_modifier_len = 1;
+        توڑو;
 
-      default:
-        length_modifier = start;  /* Any valid pointer will do.  */
-        length_modifier_len = 0;
-        break;
+      طےشدہ:
+        لمبائی_modifier = آغاز;  /* Any valid pointer will do.  */
+        لمبائی_modifier_len = 0;
+        توڑو;
       }
 
-    size_t length = strlen (start);
-    p = xmalloc (length + length_modifier_len + 2);
-    q = mempcpy (p, start, length);
-    q = mempcpy (q, length_modifier, length_modifier_len);
+    size_t لمبائی = لڑی_لمبائی (آغاز);
+    p = xmalloc (لمبائی + لمبائی_modifier_len + 2);
+    q = mempcpy (p, آغاز, لمبائی);
+    q = mempcpy (q, لمبائی_modifier, لمبائی_modifier_len);
     *q++ = conversion;
     *q = '\0';
   }
 
-  switch (conversion)
+  انتخاب (conversion)
     {
-    case 'd':
-    case 'i':
+    حالت 'd':
+    حالت 'i':
       {
-        intmax_t arg = argument ? vstrtoimax (argument) : 0;
-        if (!have_field_width)
+        intmax_t arg = دلیل ? vstrtoimax (دلیل) : 0;
+        اگر (!have_میدان_چوڑائی)
           {
-            if (!have_precision)
+            اگر (!have_precision)
               xprintf (p, arg);
-            else
+            ورنہ
               xprintf (p, precision, arg);
           }
-        else
+        ورنہ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            اگر (!have_precision)
+              xprintf (p, میدان_چوڑائی, arg);
+            ورنہ
+              xprintf (p, میدان_چوڑائی, precision, arg);
           }
       }
-      break;
+      توڑو;
 
-    case 'o':
-    case 'u':
-    case 'x':
-    case 'X':
+    حالت 'o':
+    حالت 'u':
+    حالت 'x':
+    حالت 'X':
       {
-        uintmax_t arg = argument ? vstrtoumax (argument) : 0;
-        if (!have_field_width)
+        uintmax_t arg = دلیل ? vstrtoumax (دلیل) : 0;
+        اگر (!have_میدان_چوڑائی)
           {
-            if (!have_precision)
+            اگر (!have_precision)
               xprintf (p, arg);
-            else
+            ورنہ
               xprintf (p, precision, arg);
           }
-        else
+        ورنہ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            اگر (!have_precision)
+              xprintf (p, میدان_چوڑائی, arg);
+            ورنہ
+              xprintf (p, میدان_چوڑائی, precision, arg);
           }
       }
-      break;
+      توڑو;
 
-    case 'a':
-    case 'A':
-    case 'e':
-    case 'E':
-    case 'f':
-    case 'F':
-    case 'g':
-    case 'G':
+    حالت 'a':
+    حالت 'A':
+    حالت 'e':
+    حالت 'E':
+    حالت 'f':
+    حالت 'F':
+    حالت 'g':
+    حالت 'G':
       {
-        long double arg = argument ? vstrtold (argument) : 0;
-        if (!have_field_width)
+        طویل دوہرا arg = دلیل ? vstrtold (دلیل) : 0;
+        اگر (!have_میدان_چوڑائی)
           {
-            if (!have_precision)
+            اگر (!have_precision)
               xprintf (p, arg);
-            else
+            ورنہ
               xprintf (p, precision, arg);
           }
-        else
+        ورنہ
           {
-            if (!have_precision)
-              xprintf (p, field_width, arg);
-            else
-              xprintf (p, field_width, precision, arg);
+            اگر (!have_precision)
+              xprintf (p, میدان_چوڑائی, arg);
+            ورنہ
+              xprintf (p, میدان_چوڑائی, precision, arg);
           }
       }
-      break;
+      توڑو;
 
-    case 'c':
+    حالت 'c':
       {
-        char c = argument ? *argument : '\0';
-        if (!have_field_width)
+        حرف c = دلیل ? *دلیل : '\0';
+        اگر (!have_میدان_چوڑائی)
           xprintf (p, c);
-        else
-          xprintf (p, field_width, c);
+        ورنہ
+          xprintf (p, میدان_چوڑائی, c);
       }
-      break;
+      توڑو;
 
-    case 's':
-      if (!argument)
-        argument = "";
-      if (!have_field_width)
+    حالت 's':
+      اگر (!دلیل)
+        دلیل = "";
+      اگر (!have_میدان_چوڑائی)
         {
-          if (!have_precision)
-            xprintf (p, argument);
-          else
-            xprintf (p, precision, argument);
+          اگر (!have_precision)
+            xprintf (p, دلیل);
+          ورنہ
+            xprintf (p, precision, دلیل);
         }
-      else
+      ورنہ
         {
-          if (!have_precision)
-            xprintf (p, field_width, argument);
-          else
-            xprintf (p, field_width, precision, argument);
+          اگر (!have_precision)
+            xprintf (p, میدان_چوڑائی, دلیل);
+          ورنہ
+            xprintf (p, میدان_چوڑائی, precision, دلیل);
         }
-      break;
+      توڑو;
     }
 
-  free (p);
+  آزاد (p);
 }
 
 /* Set curr_arg from indexed %i$ or otherwise next in sequence.
    POS can be 0,1,2,3 corresponding to
    [%][width][.precision][conversion] respectively.  */
 
-struct arg_cursor
+ساخت arg_cursor
 {
-  char const *f;	/* Pointer into 'format'.  */
-  int curr_arg;		/* Current offset.  */
-  int curr_s_arg;	/* Current sequential offset.  */
-  int end_arg;		/* End arg processed.  */
-  int direc_arg;	/* Arg for main directive.  */
+  حرف ثابت *f;	/* Pointer into 'format'.  */
+  صحیح curr_arg;		/* Current offset.  */
+  صحیح curr_s_arg;	/* Current sequential offset.  */
+  صحیح انتہا_arg;		/* End arg processed.  */
+  صحیح direc_arg;	/* Arg for main directive.  */
 };
-ATTRIBUTE_PURE static struct arg_cursor
-get_curr_arg (int pos, struct arg_cursor ac)
+ATTRIBUTE_خالص ساکن ساخت arg_cursor
+get_curr_arg (صحیح pos, ساخت arg_cursor ac)
 {
   /* Convert sequences like "123$" by hand to avoid problems with strtol,
      which might treat "$" as part of the number in some locales.  */
-  int arg = 0;
-  char const *f = ac.f;
-  if (pos < 3 && c_isdigit (*f))
+  صحیح arg = 0;
+  حرف ثابت *f = ac.f;
+  اگر (pos < 3 && c_isdigit (*f))
     {
       bool v = false;
-      int a = *f++ - '0';
-      for (; c_isdigit (*f); f++)
+      صحیح a = *f++ - '0';
+      برائے (; c_isdigit (*f); f++)
         {
           v |= ckd_mul (&a, a, 10);
-          v |= ckd_add (&a, a, *f - '0');
+          v |= ckd_جوڑو (&a, a, *f - '0');
         }
-      if (*f == '$')
-        arg = v ? INT_MAX : a;
+      اگر (*f == '$')
+        arg = v ? زیادہ_سے_زیادہ_عدد : a;
     }
 
-  if (0 < arg)
+  اگر (0 < arg)
     {
       /* Process indexed %i$ format.  */
       arg--;
       ac.f = f + 1;
-      if (pos == 0)
+      اگر (pos == 0)
         ac.direc_arg = arg;
     }
-  else
+  ورنہ
     {
       /* Process sequential arg.  */
       arg = (pos == 0 ? (ac.direc_arg = -1)
@@ -520,237 +520,237 @@ get_curr_arg (int pos, struct arg_cursor ac)
              : ac.direc_arg);
     }
 
-  if (0 <= arg)
+  اگر (0 <= arg)
     {
       ac.curr_arg = arg;
-      ac.end_arg = MAX (ac.end_arg, arg);
+      ac.انتہا_arg = MAX (ac.انتہا_arg, arg);
     }
-  return ac;
+  واپس ac;
 }
 
 /* Print the text in FORMAT, using ARGV (with ARGC elements) for
    arguments to any '%' directives.
    Return the number of elements of ARGV used.  */
 
-static int
-print_formatted (char const *format, int argc, char **argv)
+ساکن صحیح
+print_formatted (حرف ثابت *format, صحیح argc, حرف **argv)
 {
-  struct arg_cursor ac;
-  ac.curr_arg = ac.curr_s_arg = ac.end_arg = ac.direc_arg = -1;
-  char const *direc_start;	/* Start of % directive.  */
-  char *direc;			/* Generated % directive.  */
-  char *pdirec;			/* Pointer to current end of directive.  */
-  bool have_field_width;	/* True if FIELD_WIDTH is valid.  */
-  int field_width = 0;		/* Arg to first '*'.  */
+  ساخت arg_cursor ac;
+  ac.curr_arg = ac.curr_s_arg = ac.انتہا_arg = ac.direc_arg = -1;
+  حرف ثابت *direc_آغاز;	/* Start of % directive.  */
+  حرف *direc;			/* Generated % directive.  */
+  حرف *pdirec;			/* Pointer to current end of directive.  */
+  bool have_میدان_چوڑائی;	/* True if FIELD_WIDTH is valid.  */
+  صحیح میدان_چوڑائی = 0;		/* Arg to first '*'.  */
   bool have_precision;		/* True if PRECISION is valid.  */
-  int precision = 0;		/* Arg to second '*'.  */
-  char ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
+  صحیح precision = 0;		/* Arg to second '*'.  */
+  حرف ok[UCHAR_MAX + 1];	/* ok['x'] is true if %x is allowed.  */
 
-  direc = xmalloc (strlen (format) + 1);
+  direc = xmalloc (لڑی_لمبائی (format) + 1);
 
-  for (ac.f = format; *ac.f; ac.f++)
+  برائے (ac.f = format; *ac.f; ac.f++)
     {
-      switch (*ac.f)
+      انتخاب (*ac.f)
         {
-        case '%':
-          direc_start = ac.f;
+        حالت '%':
+          direc_آغاز = ac.f;
           pdirec = direc;
           *pdirec++ = *ac.f++;
-          have_field_width = have_precision = false;
-          if (*ac.f == '%')
+          have_میدان_چوڑائی = have_precision = false;
+          اگر (*ac.f == '%')
             {
-              putchar ('%');
-              break;
+              حرف_لکھو ('%');
+              توڑو;
             }
 
           ac = get_curr_arg (0, ac);
 
-          if (*ac.f == 'b')
+          اگر (*ac.f == 'b')
             {
               /* FIXME: Field width and precision are not supported
                  for %b, even though POSIX requires it.  */
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              اگر (ac.curr_arg < argc)
                 print_esc_string (argv[ac.curr_arg]);
-              break;
+              توڑو;
             }
 
-          if (*ac.f == 'q')
+          اگر (*ac.f == 'q')
             {
               ac = get_curr_arg (3, ac);
-              if (ac.curr_arg < argc)
+              اگر (ac.curr_arg < argc)
                 {
                   fputs (quotearg_style (shell_escape_quoting_style,
                                          argv[ac.curr_arg]), stdout);
                 }
-              break;
+              توڑو;
             }
 
-          memset (ok, 0, sizeof ok);
+          memset (ok, 0, حجم ok);
           ok['a'] = ok['A'] = ok['c'] = ok['d'] = ok['e'] = ok['E'] =
             ok['f'] = ok['F'] = ok['g'] = ok['G'] = ok['i'] = ok['o'] =
             ok['s'] = ok['u'] = ok['x'] = ok['X'] = 1;
 
-          for (;; ac.f++)
+          برائے (;; ac.f++)
             {
-              switch (*ac.f)
+              انتخاب (*ac.f)
                 {
-#if (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
-                case 'I':
-#endif
-                case '\'':
+#اگر (__GLIBC__ == 2 && 2 <= __GLIBC_MINOR__) || 3 <= __GLIBC__
+                حالت 'I':
+#اگر_ختم
+                حالت '\'':
                   ok['a'] = ok['A'] = ok['c'] = ok['e'] = ok['E'] =
                     ok['o'] = ok['s'] = ok['x'] = ok['X'] = 0;
-                  break;
-                case '-': case '+': case ' ':
-                  break;
-                case '#':
+                  توڑو;
+                حالت '-': حالت '+': حالت ' ':
+                  توڑو;
+                حالت '#':
                   ok['c'] = ok['d'] = ok['i'] = ok['s'] = ok['u'] = 0;
-                  break;
-                case '0':
+                  توڑو;
+                حالت '0':
                   ok['c'] = ok['s'] = 0;
-                  break;
-                default:
-                  goto no_more_flag_characters;
+                  توڑو;
+                طےشدہ:
+                  جاؤ no_مزید_flag_characters;
                 }
               *pdirec++ = *ac.f;
             }
-        no_more_flag_characters:
+        no_مزید_flag_characters:
 
-          if (*ac.f == '*')
+          اگر (*ac.f == '*')
             {
               *pdirec++ = *ac.f++;
 
               ac = get_curr_arg (1, ac);
 
-              if (ac.curr_arg < argc)
+              اگر (ac.curr_arg < argc)
                 {
-                  intmax_t width = vstrtoimax (argv[ac.curr_arg]);
-                  if (INT_MIN <= width && width <= INT_MAX)
-                    field_width = width;
-                  else
+                  intmax_t چوڑائی = vstrtoimax (argv[ac.curr_arg]);
+                  اگر (INT_MIN <= چوڑائی && چوڑائی <= زیادہ_سے_زیادہ_عدد)
+                    میدان_چوڑائی = چوڑائی;
+                  ورنہ
                     error (EXIT_FAILURE, 0, _("invalid field width: %s"),
                            quote (argv[ac.curr_arg]));
                 }
-              else
-                field_width = 0;
-              have_field_width = true;
+              ورنہ
+                میدان_چوڑائی = 0;
+              have_میدان_چوڑائی = true;
             }
-          else
-            while (c_isdigit (*ac.f))
+          ورنہ
+            جب (c_isdigit (*ac.f))
               *pdirec++ = *ac.f++;
-          if (*ac.f == '.')
+          اگر (*ac.f == '.')
             {
               *pdirec++ = *ac.f++;
               ok['c'] = 0;
-              if (*ac.f == '*')
+              اگر (*ac.f == '*')
                 {
                   *pdirec++ = *ac.f++;
 
                   ac = get_curr_arg (2, ac);
 
-                  if (ac.curr_arg < argc)
+                  اگر (ac.curr_arg < argc)
                     {
                       intmax_t prec = vstrtoimax (argv[ac.curr_arg]);
-                      if (prec < 0)
+                      اگر (prec < 0)
                         {
                           /* A negative precision is taken as if the
                              precision were omitted, so -1 is safe
                              here even if prec < INT_MIN.  */
                           precision = -1;
                         }
-                      else if (INT_MAX < prec)
+                      ورنہ اگر (زیادہ_سے_زیادہ_عدد < prec)
                         error (EXIT_FAILURE, 0, _("invalid precision: %s"),
                                quote (argv[ac.curr_arg]));
-                      else
+                      ورنہ
                         precision = prec;
                     }
-                  else
+                  ورنہ
                     precision = 0;
                   have_precision = true;
                 }
-              else
-                while (c_isdigit (*ac.f))
+              ورنہ
+                جب (c_isdigit (*ac.f))
                   *pdirec++ = *ac.f++;
             }
 
           *pdirec++ = '\0';
 
-          while (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
+          جب (*ac.f == 'l' || *ac.f == 'L' || *ac.f == 'h'
                  || *ac.f == 'j' || *ac.f == 't' || *ac.f == 'z')
             ++ac.f;
 
           {
-            unsigned char conversion = *ac.f;
-            int speclen = MIN (ac.f + 1 - direc_start, INT_MAX);
-            if (! ok[conversion])
+            غیرعلامتی حرف conversion = *ac.f;
+            صحیح speclen = MIN (ac.f + 1 - direc_آغاز, زیادہ_سے_زیادہ_عدد);
+            اگر (! ok[conversion])
               error (EXIT_FAILURE, 0,
                      _("%.*s: invalid conversion specification"),
-                     speclen, direc_start);
+                     speclen, direc_آغاز);
           }
 
           ac = get_curr_arg (3, ac);
 
           print_direc (direc, *ac.f,
-                       have_field_width, field_width,
+                       have_میدان_چوڑائی, میدان_چوڑائی,
                        have_precision, precision,
-                       ac.curr_arg < argc ? argv[ac.curr_arg] : NULL);
+                       ac.curr_arg < argc ? argv[ac.curr_arg] : تہی);
 
-          break;
+          توڑو;
 
-        case '\\':
+        حالت '\\':
           ac.f += print_esc (ac.f, false);
-          break;
+          توڑو;
 
-        default:
-          putchar (*ac.f);
+        طےشدہ:
+          حرف_لکھو (*ac.f);
         }
     }
 
-  free (direc);
-  return MIN (argc, ac.end_arg + 1);
+  آزاد (direc);
+  واپس MIN (argc, ac.انتہا_arg + 1);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  char *format;
-  int args_used;
+  حرف *format;
+  صحیح دلائل_مستعمل;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != تہی);
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (argc == 2)
+  اگر (argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      اگر (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      اگر (streq (argv[1], "--version"))
         {
-          version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+          نسخہ_etc (stdout, پروگرام_NAME, PACKAGE_NAME, نسخہ, AUTHORS,
+                       (حرف *) تہی);
+          واپس EXIT_SUCCESS;
         }
     }
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  اگر (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  اگر (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -760,18 +760,18 @@ main (int argc, char **argv)
   argc -= 2;
   argv += 2;
 
-  do
+  کرو
     {
-      args_used = print_formatted (format, argc, argv);
-      argc -= args_used;
-      argv += args_used;
+      دلائل_مستعمل = print_formatted (format, argc, argv);
+      argc -= دلائل_مستعمل;
+      argv += دلائل_مستعمل;
     }
-  while (args_used > 0 && argc > 0);
+  جب (دلائل_مستعمل > 0 && argc > 0);
 
-  if (argc > 0)
+  اگر (argc > 0)
     error (0, 0,
            _("warning: ignoring excess arguments, starting with %s"),
            quote (argv[0]));
 
-  return exit_status;
+  واپس exit_حالت;
 }

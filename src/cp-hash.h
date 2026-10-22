@@ -1,5 +1,5 @@
-void hash_init (void);
-void forget_created (ino_t ino, dev_t dev);
-char *remember_copied (char const *node, ino_t ino, dev_t dev)
+خالی hash_init (خالی);
+خالی forget_created (ino_t ino, dev_t dev);
+حرف *remember_copied (حرف ثابت *گرہ, ino_t ino, dev_t dev)
   _GL_ATTRIBUTE_NONNULL ();
-char *src_to_dest_lookup (ino_t ino, dev_t dev);
+حرف *src_مقصد_dest_lookup (ino_t ino, dev_t dev);

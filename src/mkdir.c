@@ -16,87 +16,87 @@
 
 /* David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل <selinux/label.h>
 
-#include "system.h"
-#include "mkdir-p.h"
-#include "modechange.h"
-#include "prog-fprintf.h"
-#include "quote.h"
-#include "savewd.h"
-#include "selinux.h"
-#include "smack.h"
+#شامل "system.h"
+#شامل "mkdir-p.h"
+#شامل "modechange.h"
+#شامل "prog-fprintf.h"
+#شامل "quote.h"
+#شامل "savewd.h"
+#شامل "selinux.h"
+#شامل "smack.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mkdir"
+#تعریف_کرو پروگرام_NAME "mkdir"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
-  {"parents", no_argument, NULL, 'p'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"mode", required_دلیل, تہی, 'm'},
+  {"parents", no_دلیل, تہی, 'p'},
+  {"verbose", no_دلیل, تہی, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
+      لکھو (_("Usage: %s [OPTION]... DIRECTORY...\n"), پروگرام_name);
       fputs (_("\
-Create the DIRECTORY(ies), if they do not already exist.\n\
+Create the DIRECTORY(ies), اگر they کرو not already exist.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file mode (as in chmod), not a=rwx - umask\n\
+  -m, --منوال_2=منوال\n\
+         سیٹ_2 file منوال_2 (as اندر chmod), not a=rwx - umask\n\
 "));
       oputs (_("\
   -p, --parents\n\
-         no error if existing, make parent directories as needed,\n\
+         no error اگر existing, make والد directories as needed,\n\
          with their file modes unaffected by any -m option\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         print a message for each created directory\n\
+         print a پیغام_2 برائے each created directory\n\
 "));
       oputs (_("\
   -Z\n\
-         set SELinux security context of each created directory\n\
-         to the default type\n\
+         سیٹ_2 SELinux security context کا each created directory\n\
+         مقصد the طےشدہ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or اگر CTX is specified then سیٹ_2 the\n\
+         SELinux or SMACK security context مقصد CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* Options passed to subsidiary functions.  */
-struct mkdir_options
+ساخت mkdir_options
 {
   /* Function to make an ancestor, or NULL if ancestors should not be
      made.  */
-  int (*make_ancestor_function) (char const *, char const *, void *);
+  صحیح (*make_ancestor_function) (حرف ثابت *, حرف ثابت *, خالی *);
 
   /* Umask value for when making an ancestor.  */
   mode_t umask_ancestor;
@@ -105,24 +105,24 @@ struct mkdir_options
   mode_t umask_self;
 
   /* Mode for directory itself.  */
-  mode_t mode;
+  mode_t منوال_2;
 
   /* File mode bits affected by MODE.  */
-  mode_t mode_bits;
+  mode_t منوال_بٹ;
 
   /* Set the SELinux File Context.  */
-  struct selabel_handle *set_security_context;
+  ساخت selabel_handle *سیٹ_security_context;
 
   /* If not null, format to use when reporting newly made directories.  */
-  char const *created_directory_format;
+  حرف ثابت *created_directory_format;
 };
 
 /* Report that directory DIR was made, if OPTIONS requests this.  */
-static void
-announce_mkdir (char const *dir, void *options)
+ساکن خالی
+announce_mkdir (حرف ثابت *dir, خالی *options)
 {
-  struct mkdir_options const *o = options;
-  if (o->created_directory_format)
+  ساخت mkdir_options ثابت *o = options;
+  اگر (o->created_directory_format)
     prog_fprintf (stdout, o->created_directory_format, quoteaf (dir));
 }
 
@@ -131,53 +131,53 @@ announce_mkdir (char const *dir, void *options)
    parent.  Return 0 if successful and the resulting directory is
    readable, 1 if successful but the resulting directory is not
    readable, -1 (setting errno) otherwise.  */
-static int
-make_ancestor (char const *dir, char const *component, void *options)
+ساکن صحیح
+make_ancestor (حرف ثابت *dir, حرف ثابت *component, خالی *options)
 {
-  struct mkdir_options const *o = options;
+  ساخت mkdir_options ثابت *o = options;
 
-  if (o->set_security_context
-      && defaultcon (o->set_security_context, component, S_IFDIR) < 0
+  اگر (o->سیٹ_security_context
+      && defaultcon (o->سیٹ_security_context, component, S_IFDIR) < 0
       && ! ignorable_ctx_err (errno))
     error (0, errno, _("failed to set default creation context for %s"),
            quoteaf (dir));
 
-  if (o->umask_ancestor != o->umask_self)
+  اگر (o->umask_ancestor != o->umask_self)
     umask (o->umask_ancestor);
-  int r = mkdir (component, S_IRWXUGO);
-  if (o->umask_ancestor != o->umask_self)
+  صحیح r = mkdir (component, S_IRWXUGO);
+  اگر (o->umask_ancestor != o->umask_self)
     {
-      int mkdir_errno = errno;
+      صحیح mkdir_errno = errno;
       umask (o->umask_self);
       errno = mkdir_errno;
     }
-  if (r == 0)
+  اگر (r == 0)
     {
       r = (o->umask_ancestor & S_IRUSR) != 0;
       announce_mkdir (dir, options);
     }
-  return r;
+  واپس r;
 }
 
 /* Process a command-line file name.  */
-static int
-process_dir (char *dir, struct savewd *wd, void *options)
+ساکن صحیح
+process_dir (حرف *dir, ساخت savewd *wd, خالی *options)
 {
-  struct mkdir_options const *o = options;
+  ساخت mkdir_options ثابت *o = options;
 
   /* If possible set context before DIR created.  */
-  if (o->set_security_context)
+  اگر (o->سیٹ_security_context)
     {
-      if (! o->make_ancestor_function
-          && defaultcon (o->set_security_context, dir, S_IFDIR) < 0
+      اگر (! o->make_ancestor_function
+          && defaultcon (o->سیٹ_security_context, dir, S_IFDIR) < 0
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to set default creation context for %s"),
                quoteaf (dir));
     }
 
-  int ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
-                               o->mode, announce_mkdir,
-                               o->mode_bits, (uid_t) -1, (gid_t) -1, true)
+  صحیح ret = (make_dir_parents (dir, wd, o->make_ancestor_function, options,
+                               o->منوال_2, announce_mkdir,
+                               o->منوال_بٹ, (uid_t) -1, (gid_t) -1, true)
              ? EXIT_SUCCESS
              : EXIT_FAILURE);
 
@@ -186,86 +186,86 @@ process_dir (char *dir, struct savewd *wd, void *options)
      final component of DIR is created.  So for now, create the
      final component with the context from previous component
      and here we set the context for the final component. */
-  if (ret == EXIT_SUCCESS && o->set_security_context
+  اگر (ret == EXIT_SUCCESS && o->سیٹ_security_context
       && o->make_ancestor_function)
     {
-      if (! restorecon (o->set_security_context, last_component (dir), false)
+      اگر (! restorecon (o->سیٹ_security_context, آخری_component (dir), false)
           && ! ignorable_ctx_err (errno))
         error (0, errno, _("failed to restore context for %s"),
                quoteaf (dir));
     }
 
-  return ret;
+  واپس ret;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  char const *specified_mode = NULL;
-  int optc;
-  char const *scontext = NULL;
-  struct mkdir_options options;
+  حرف ثابت *specified_منوال = تہی;
+  صحیح optc;
+  حرف ثابت *scontext = تہی;
+  ساخت mkdir_options options;
 
-  options.make_ancestor_function = NULL;
-  options.mode = S_IRWXUGO;
-  options.mode_bits = 0;
-  options.created_directory_format = NULL;
-  options.set_security_context = NULL;
+  options.make_ancestor_function = تہی;
+  options.منوال_2 = S_IRWXUGO;
+  options.منوال_بٹ = 0;
+  options.created_directory_format = تہی;
+  options.سیٹ_security_context = تہی;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "pm:vZ", longopts, NULL)) != -1)
+  جب ((optc = getopt_long (argc, argv, "pm:vZ", longopts, تہی)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'p':
+        حالت 'p':
           options.make_ancestor_function = make_ancestor;
-          break;
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'v': /* --verbose  */
+          توڑو;
+        حالت 'm':
+          specified_منوال = optarg;
+          توڑو;
+        حالت 'v': /* --verbose  */
           options.created_directory_format = _("created directory %s");
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+          توڑو;
+        حالت 'Z':
+          اگر (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ورنہ اگر (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              اگر (optarg)
                 scontext = optarg;
-              else
+              ورنہ
                 {
-                  options.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                               NULL, 0);
-                  if (! options.set_security_context)
+                  options.سیٹ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                               تہی, 0);
+                  اگر (! options.سیٹ_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ورنہ اگر (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          توڑو;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind == argc)
+  اگر (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
@@ -274,46 +274,46 @@ main (int argc, char **argv)
   /* FIXME: This assumes mkdir() is done in the same process.
      If that's not always the case we would need to call this
      like we do when options.set_security_context.  */
-  if (scontext)
+  اگر (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      صحیح ret = 0;
+      اگر (is_smack_enabled ())
+        ret = smack_سیٹ_label_for_self (scontext);
+      ورنہ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      اگر (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
     }
 
 
-  if (options.make_ancestor_function || specified_mode)
+  اگر (options.make_ancestor_function || specified_منوال)
     {
-      mode_t umask_value = umask (0);
-      options.umask_ancestor = umask_value & ~(S_IWUSR | S_IXUSR);
+      mode_t umask_قدر = umask (0);
+      options.umask_ancestor = umask_قدر & ~(S_IWUSR | S_IXUSR);
 
-      if (specified_mode)
+      اگر (specified_منوال)
         {
-          struct mode_change *change = mode_compile (specified_mode);
-          if (!change)
+          ساخت منوال_change *change = منوال_compile (specified_منوال);
+          اگر (!change)
             error (EXIT_FAILURE, 0, _("invalid mode %s"),
-                   quote (specified_mode));
-          options.mode = mode_adjust (S_IRWXUGO, true, umask_value, change,
-                                      &options.mode_bits);
-          options.umask_self = umask_value & ~options.mode;
-          free (change);
+                   quote (specified_منوال));
+          options.منوال_2 = منوال_adjust (S_IRWXUGO, true, umask_قدر, change,
+                                      &options.منوال_بٹ);
+          options.umask_self = umask_قدر & ~options.منوال_2;
+          آزاد (change);
         }
-      else
+      ورنہ
         {
-          options.mode = S_IRWXUGO;
-          options.umask_self = umask_value;
+          options.منوال_2 = S_IRWXUGO;
+          options.umask_self = umask_قدر;
         }
 
       umask (options.umask_self);
     }
 
-  return savewd_process_files (argc - optind, argv + optind,
+  واپس savewd_process_files (argc - optind, argv + optind,
                                process_dir, &options);
 }

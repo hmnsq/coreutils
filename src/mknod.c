@@ -16,148 +16,148 @@
 
 /* Written by David MacKenzie <djm@ai.mit.edu>  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل <selinux/label.h>
 
-#include "system.h"
-#include "modechange.h"
-#include "quote.h"
-#include "selinux.h"
-#include "smack.h"
-#include "xstrtol.h"
+#شامل "system.h"
+#شامل "modechange.h"
+#شامل "quote.h"
+#شامل "selinux.h"
+#شامل "smack.h"
+#شامل "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mknod"
+#تعریف_کرو پروگرام_NAME "mknod"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
-  {"mode", required_argument, NULL, 'm'},
+  {"mode", required_دلیل, تہی, 'm'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
-              program_name);
+      لکھو (_("Usage: %s [OPTION]... NAME TYPE [MAJOR MINOR]\n"),
+              پروگرام_name);
       fputs (_("\
-Create the special file NAME of the given TYPE.\n\
+Create the special file NAME کا the given TYPE.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -m, --mode=MODE\n\
-         set file permission bits to MODE, not a=rw - umask\n\
+  -m, --منوال_2=منوال\n\
+         سیٹ_2 file permission بٹ_2 مقصد منوال, not a=rw - umask\n\
 "));
       oputs (_("\
   -Z\n\
-         set the SELinux security context to default type\n\
+         سیٹ_2 the SELinux security context مقصد طےشدہ type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
-         SELinux or SMACK security context to CTX\n\
+         like -Z, or اگر CTX is specified then سیٹ_2 the\n\
+         SELinux or SMACK security context مقصد CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
 Both MAJOR and MINOR must be specified when TYPE is b, c, or u, and they\n\
 must be omitted when TYPE is p.  If MAJOR or MINOR begins with 0x or 0X,\n\
-it is interpreted as hexadecimal; otherwise, if it begins with 0, as octal;\n\
+it is interpreted as hexadecimal; otherwise, اگر it begins with 0, as octal;\n\
 otherwise, as decimal.  TYPE may be:\n\
 "), stdout);
       fputs (_("\
 \n\
-  b      create a block (buffered) special file\n\
+  b      create a بلاک (buffered) special file\n\
   c, u   create a character (unbuffered) special file\n\
   p      create a FIFO\n\
 "), stdout);
-      printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
-      emit_ancillary_info (PROGRAM_NAME);
+      لکھو (USAGE_BUILTIN_WARNING, پروگرام_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  char const *specified_mode = NULL;
-  char const *scontext = NULL;
-  struct selabel_handle *set_security_context = NULL;
+  حرف ثابت *specified_منوال = تہی;
+  حرف ثابت *scontext = تہی;
+  ساخت selabel_handle *سیٹ_security_context = تہی;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "m:Z", longopts, NULL)) != -1)
+  صحیح optc;
+  جب ((optc = getopt_long (argc, argv, "m:Z", longopts, تہی)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'm':
-          specified_mode = optarg;
-          break;
-        case 'Z':
-          if (is_smack_enabled ())
+        حالت 'm':
+          specified_منوال = optarg;
+          توڑو;
+        حالت 'Z':
+          اگر (is_smack_enabled ())
             {
               /* We don't yet support -Z to restore context with SMACK.  */
               scontext = optarg;
             }
-          else if (is_selinux_enabled () > 0)
+          ورنہ اگر (is_selinux_enabled () > 0)
             {
-              if (optarg)
+              اگر (optarg)
                 scontext = optarg;
-              else
+              ورنہ
                 {
-                  set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                       NULL, 0);
-                  if (! set_security_context)
+                  سیٹ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                       تہی, 0);
+                  اگر (! سیٹ_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          ورنہ اگر (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux/SMACK-enabled kernel"));
             }
-          break;
+          توڑو;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  mode_t newmode = MODE_RW_UGO;
-  if (specified_mode)
+  mode_t newmode = منوال_RW_UGO;
+  اگر (specified_منوال)
     {
-      struct mode_change *change = mode_compile (specified_mode);
-      if (!change)
+      ساخت منوال_change *change = منوال_compile (specified_منوال);
+      اگر (!change)
         error (EXIT_FAILURE, 0, _("invalid mode"));
-      mode_t umask_value = umask (0);
-      umask (umask_value);
-      newmode = mode_adjust (newmode, false, umask_value, change, NULL);
-      free (change);
-      if (newmode & ~S_IRWXUGO)
+      mode_t umask_قدر = umask (0);
+      umask (umask_قدر);
+      newmode = منوال_adjust (newmode, false, umask_قدر, change, تہی);
+      آزاد (change);
+      اگر (newmode & ~S_IRWXUGO)
         error (EXIT_FAILURE, 0,
                _("mode must specify only file permission bits"));
     }
@@ -165,41 +165,41 @@ main (int argc, char **argv)
   /* If the number of arguments is 0 or 1,
      or (if it's 2 or more and the second one starts with 'p'), then there
      must be exactly two operands.  Otherwise, there must be four.  */
-  int expected_operands = (argc <= optind
+  صحیح expected_operands = (argc <= optind
                            || (optind + 1 < argc && argv[optind + 1][0] == 'p')
                            ? 2 : 4);
 
-  if (argc - optind < expected_operands)
+  اگر (argc - optind < expected_operands)
     {
-      if (argc <= optind)
+      اگر (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ورنہ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
-      if (expected_operands == 4 && argc - optind == 2)
+      اگر (expected_operands == 4 && argc - optind == 2)
         fprintf (stderr, "%s\n",
                  _("Special files require major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (expected_operands < argc - optind)
+  اگر (expected_operands < argc - optind)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[optind + expected_operands]));
-      if (expected_operands == 2 && argc - optind == 4)
+      اگر (expected_operands == 2 && argc - optind == 4)
         fprintf (stderr, "%s\n",
                  _("Fifos do not have major and minor device numbers."));
       usage (EXIT_FAILURE);
     }
 
-  if (scontext)
+  اگر (scontext)
     {
-      int ret = 0;
-      if (is_smack_enabled ())
-        ret = smack_set_label_for_self (scontext);
-      else
+      صحیح ret = 0;
+      اگر (is_smack_enabled ())
+        ret = smack_سیٹ_label_for_self (scontext);
+      ورنہ
         ret = setfscreatecon (scontext);
 
-      if (ret < 0)
+      اگر (ret < 0)
         error (EXIT_FAILURE, errno,
                _("failed to set default file creation context to %s"),
                quote (scontext));
@@ -208,72 +208,72 @@ main (int argc, char **argv)
   /* Only check the first character, to allow mnemonic usage like
      'mknod /dev/rst0 character 18 0'. */
 
-  mode_t node_type;
-  switch (argv[optind + 1][0])
+  mode_t گرہ_type;
+  انتخاب (argv[optind + 1][0])
     {
-    case 'b':			/* 'block' or 'buffered' */
-#ifndef S_IFBLK
+    حالت 'b':			/* 'block' or 'buffered' */
+#اگر_غیر_تعریف_شدہ S_IFBLK
       error (EXIT_FAILURE, 0, _("block special files not supported"));
-#else
-      node_type = S_IFBLK;
-#endif
-      goto block_or_character;
+#ورنہ
+      گرہ_type = S_IFBLK;
+#اگر_ختم
+      جاؤ بلاک_or_character;
 
-    case 'c':			/* 'character' */
-    case 'u':			/* 'unbuffered' */
-#ifndef S_IFCHR
+    حالت 'c':			/* 'character' */
+    حالت 'u':			/* 'unbuffered' */
+#اگر_غیر_تعریف_شدہ S_IFCHR
       error (EXIT_FAILURE, 0, _("character special files not supported"));
-#else
-      node_type = S_IFCHR;
-#endif
-      goto block_or_character;
+#ورنہ
+      گرہ_type = S_IFCHR;
+#اگر_ختم
+      جاؤ بلاک_or_character;
 
-    block_or_character:
+    بلاک_or_character:
       {
-        char const *s_major = argv[optind + 2];
+        حرف ثابت *s_major = argv[optind + 2];
         uintmax_t i_major;
-        if (xstrtoumax (s_major, NULL, 0, &i_major, "") != LONGINT_OK
+        اگر (xstrtoumax (s_major, تہی, 0, &i_major, "") != LONGINT_OK
             || i_major != (major_t) i_major)
           error (EXIT_FAILURE, 0,
                  _("invalid major device number %s"), quote (s_major));
 
-        char const *s_minor = argv[optind + 3];
+        حرف ثابت *s_minor = argv[optind + 3];
         uintmax_t i_minor;
-        if (xstrtoumax (s_minor, NULL, 0, &i_minor, "") != LONGINT_OK
+        اگر (xstrtoumax (s_minor, تہی, 0, &i_minor, "") != LONGINT_OK
             || i_minor != (minor_t) i_minor)
           error (EXIT_FAILURE, 0,
                  _("invalid minor device number %s"), quote (s_minor));
 
         dev_t device = makedev (i_major, i_minor);
-#ifdef NODEV
-        if (device == NODEV)
+#اگر_تعریف_شدہ NODEV
+        اگر (device == NODEV)
           error (EXIT_FAILURE, 0, _("invalid device %s %s"),
                  s_major, s_minor);
-#endif
+#اگر_ختم
 
-        if (set_security_context)
-          defaultcon (set_security_context, argv[optind], node_type);
+        اگر (سیٹ_security_context)
+          defaultcon (سیٹ_security_context, argv[optind], گرہ_type);
 
-        if (mknod (argv[optind], newmode | node_type, device) != 0)
+        اگر (mknod (argv[optind], newmode | گرہ_type, device) != 0)
           error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
       }
-      break;
+      توڑو;
 
-    case 'p':			/* 'pipe' */
-      if (set_security_context)
-        defaultcon (set_security_context, argv[optind], S_IFIFO);
-      if (mkfifo (argv[optind], newmode) != 0)
+    حالت 'p':			/* 'pipe' */
+      اگر (سیٹ_security_context)
+        defaultcon (سیٹ_security_context, argv[optind], S_IFIFO);
+      اگر (mkfifo (argv[optind], newmode) != 0)
         error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
-      break;
+      توڑو;
 
-    default:
+    طےشدہ:
       error (0, 0, _("invalid device type %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (specified_mode && lchmod (argv[optind], newmode) != 0)
+  اگر (specified_منوال && lchmod (argv[optind], newmode) != 0)
     error (EXIT_FAILURE, errno, _("cannot set permissions of %s"),
            quoteaf (argv[optind]));
 
-  return EXIT_SUCCESS;
+  واپس EXIT_SUCCESS;
 }

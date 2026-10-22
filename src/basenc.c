@@ -16,48 +16,48 @@
 
 /* Written by Simon Josefsson <simon@josefsson.org>.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <gmp.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل <gmp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "quote.h"
-#include "xstrtol.h"
-#include "xbinary-io.h"
+#شامل "system.h"
+#شامل "assure.h"
+#شامل "c-ctype.h"
+#شامل "fadvise.h"
+#شامل "quote.h"
+#شامل "xstrtol.h"
+#شامل "xbinary-io.h"
 
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
 # define AUTHORS \
   proper_name ("Simon Josefsson"), \
   proper_name ("Assaf Gordon")
-#else
+#ورنہ
 # define AUTHORS proper_name ("Simon Josefsson")
-#endif
+#اگر_ختم
 
-#if BASE_TYPE == 32
+#اگر بنیاد_TYPE == 32
 # include "base32.h"
-# define PROGRAM_NAME "base32"
-#elif BASE_TYPE == 64
+# define پروگرام_NAME "base32"
+#وگرنہ_اگر بنیاد_TYPE == 64
 # include "base64.h"
-# define PROGRAM_NAME "base64"
-#elif BASE_TYPE == 42
+# define پروگرام_NAME "base64"
+#وگرنہ_اگر بنیاد_TYPE == 42
 # include "base32.h"
 # include "base64.h"
 # include "assure.h"
-# define PROGRAM_NAME "basenc"
-#else
-# error missing/invalid BASE_TYPE definition
-#endif
+# define پروگرام_NAME "basenc"
+#ورنہ
+# error missing/invalid بنیاد_TYPE definition
+#اگر_ختم
 
 
 
-#if BASE_TYPE == 42
-enum
+#اگر بنیاد_TYPE == 42
+شمار
 {
   BASE64_OPTION = CHAR_MAX + 1,
   BASE64URL_OPTION,
@@ -69,60 +69,60 @@ enum
   BASE2LSBF_OPTION,
   Z85_OPTION
 };
-#endif
+#اگر_ختم
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"decode", no_argument, NULL, 'd'},
-  {"wrap", required_argument, NULL, 'w'},
-  {"ignore-garbage", no_argument, NULL, 'i'},
-#if BASE_TYPE == 42
-  {"base64",    no_argument, NULL, BASE64_OPTION},
-  {"base64url", no_argument, NULL, BASE64URL_OPTION},
-  {"base58",    no_argument, NULL, BASE58_OPTION},
-  {"base32",    no_argument, NULL, BASE32_OPTION},
-  {"base32hex", no_argument, NULL, BASE32HEX_OPTION},
-  {"base16",    no_argument, NULL, BASE16_OPTION},
-  {"base2msbf", no_argument, NULL, BASE2MSBF_OPTION},
-  {"base2lsbf", no_argument, NULL, BASE2LSBF_OPTION},
-  {"z85",       no_argument, NULL, Z85_OPTION},
-#endif
+  {"decode", no_دلیل, تہی, 'd'},
+  {"wrap", required_دلیل, تہی, 'w'},
+  {"ignore-garbage", no_دلیل, تہی, 'i'},
+#اگر بنیاد_TYPE == 42
+  {"base64",    no_دلیل, تہی, BASE64_OPTION},
+  {"base64url", no_دلیل, تہی, BASE64URL_OPTION},
+  {"base58",    no_دلیل, تہی, BASE58_OPTION},
+  {"base32",    no_دلیل, تہی, BASE32_OPTION},
+  {"base32hex", no_دلیل, تہی, BASE32HEX_OPTION},
+  {"base16",    no_دلیل, تہی, BASE16_OPTION},
+  {"base2msbf", no_دلیل, تہی, BASE2MSBF_OPTION},
+  {"base2lsbf", no_دلیل, تہی, BASE2LSBF_OPTION},
+  {"z85",       no_دلیل, تہی, Z85_OPTION},
+#اگر_ختم
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]\n\
-"), program_name);
+"), پروگرام_name);
 
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
       fputs (_("\
-basenc encode or decode FILE, or standard input, to standard output.\n\
+basenc encode or decode FILE, or standard داخلہ, مقصد standard output.\n\
 "), stdout);
-#else
-      printf (_("\
-Base%d encode or decode FILE, or standard input, to standard output.\n\
-"), BASE_TYPE);
-#endif
+#ورنہ
+      لکھو (_("\
+بنیاد%d encode or decode FILE, or standard داخلہ, مقصد standard output.\n\
+"), بنیاد_TYPE);
+#اگر_ختم
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
       oputs (_("\
       --base64\n\
-         same as base64(1) program (RFC4648 section 4)\n\
+         same as base64(1) پروگرام (RFC4648 section 4)\n\
 "));
       oputs (_("\
       --base64url\n\
-         file- and url-safe base64 (RFC4648 section 5)\n\
+         file- and url-محفوظ_2 base64 (RFC4648 section 5)\n\
 "));
       oputs (_("\
       --base58\n\
@@ -130,7 +130,7 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base32\n\
-         same as base32(1) program (RFC4648 section 6)\n\
+         same as base32(1) پروگرام (RFC4648 section 6)\n\
 "));
       oputs (_("\
       --base32hex\n\
@@ -142,88 +142,88 @@ Base%d encode or decode FILE, or standard input, to standard output.\n\
 "));
       oputs (_("\
       --base2msbf\n\
-         bit string with most significant bit (msb) first\n\
+         ثنائی_ہندسہ string with most significant ثنائی_ہندسہ (msb) پہلا\n\
 "));
       oputs (_("\
       --base2lsbf\n\
-         bit string with least significant bit (lsb) first\n\
+         ثنائی_ہندسہ string with کم_سے_کم significant ثنائی_ہندسہ (lsb) پہلا\n\
 "));
-#endif
+#اگر_ختم
       oputs (_("\
   -d, --decode\n\
-         decode data\n\
+         decode ڈیٹا\n\
 "));
       oputs (_("\
   -i, --ignore-garbage\n\
          when decoding, ignore non-alphabet characters\n\
 "));
       oputs (_("\
-  -w, --wrap=COLS\n\
-         wrap encoded lines after COLS character (default 76).\n\
-         Use 0 to disable line wrapping\n\
+  -w, --wrap=ستون_تعداد\n\
+         wrap encoded سطریں after ستون_تعداد character (طےشدہ 76).\n\
+         Use 0 مقصد disable سطر wrapping\n\
 "));
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
       oputs (_("\
       --z85\n\
          ascii85-like encoding (ZeroMQ spec:32/Z85);\n\
-         when encoding, input length must be a multiple of 4;\n\
-         when decoding, input length must be a multiple of 5\n\
+         when encoding, داخلہ لمبائی must be a مضرب کا 4;\n\
+         when decoding, داخلہ لمبائی must be a مضرب کا 5\n\
 "));
-#endif
+#اگر_ختم
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-#if BASE_TYPE == 42
+      oputs (نسخہ_OPTION_DESCRIPTION);
+#اگر بنیاد_TYPE == 42
       fputs (_("\
 \n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n\
+When decoding, the داخلہ may contain newlines اندر addition مقصد the بائٹیں کا\n\
+the formal alphabet.  Use --ignore-garbage مقصد attempt مقصد recover\n\
+from any other non-alphabet بائٹیں اندر the encoded دھارا.\n\
 "), stdout);
-#else
-      printf (_("\
+#ورنہ
+      لکھو (_("\
 \n\
-The data are encoded as described for the %s alphabet in RFC 4648.\n\
-When decoding, the input may contain newlines in addition to the bytes of\n\
-the formal %s alphabet.  Use --ignore-garbage to attempt to recover\n\
-from any other non-alphabet bytes in the encoded stream.\n"),
-              PROGRAM_NAME, PROGRAM_NAME);
-#endif
-      emit_ancillary_info (PROGRAM_NAME);
+The ڈیٹا are encoded as described برائے the %s alphabet اندر RFC 4648.\n\
+When decoding, the داخلہ may contain newlines اندر addition مقصد the بائٹیں کا\n\
+the formal %s alphabet.  Use --ignore-garbage مقصد attempt مقصد recover\n\
+from any other non-alphabet بائٹیں اندر the encoded دھارا.\n"),
+              پروگرام_NAME, پروگرام_NAME);
+#اگر_ختم
+      emit_ancillary_info (پروگرام_NAME);
     }
 
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-#if BASE_TYPE != 64
-static int
-base32_required_padding (int len)
+#اگر بنیاد_TYPE != 64
+ساکن صحیح
+base32_required_padding (صحیح len)
 {
-  int partial = len % 8;
-  return partial ? 8 - partial : 0;
+  صحیح partial = len % 8;
+  واپس partial ? 8 - partial : 0;
 }
-#endif
+#اگر_ختم
 
-#if BASE_TYPE != 32
-static int
-base64_required_padding (int len)
+#اگر بنیاد_TYPE != 32
+ساکن صحیح
+base64_required_padding (صحیح len)
 {
-  int partial = len % 4;
-  return partial ? 4 - partial : 0;
+  صحیح partial = len % 4;
+  واپس partial ? 4 - partial : 0;
 }
-#endif
+#اگر_ختم
 
-#if BASE_TYPE == 42
-static int
-no_required_padding (MAYBE_UNUSED int len)
+#اگر بنیاد_TYPE == 42
+ساکن صحیح
+no_required_padding (MAYBE_غیر_مستعمل صحیح len)
 {
-  return 0;
+  واپس 0;
 }
-#endif
+#اگر_ختم
 
-#define ENC_BLOCKSIZE (1024 * 3 * 10)
+#تعریف_کرو ENC_BLOCKSIZE (1024 * 3 * 10)
 
-#if BASE_TYPE == 32
-# define BASE_LENGTH BASE32_LENGTH
+#اگر بنیاد_TYPE == 32
+# define بنیاد_لمبائی BASE32_لمبائی
 # define REQUIRED_PADDING base32_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -233,14 +233,14 @@ no_required_padding (MAYBE_UNUSED int len)
 static_assert (ENC_BLOCKSIZE % 40 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base32_encode
-# define base_decode_context base32_decode_context
-# define base_decode_ctx_init base32_decode_ctx_init
-# define base_decode_ctx base32_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define بنیاد_encode base32_encode
+# define بنیاد_decode_context base32_decode_context
+# define بنیاد_decode_ctx_init base32_decode_ctx_init
+# define بنیاد_decode_ctx base32_decode_ctx
+# define بنیاد_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase32
-#elif BASE_TYPE == 64
-# define BASE_LENGTH BASE64_LENGTH
+#وگرنہ_اگر بنیاد_TYPE == 64
+# define بنیاد_لمبائی BASE64_لمبائی
 # define REQUIRED_PADDING base64_required_padding
 /* Note that increasing this may decrease performance if --ignore-garbage
    is used, because of the memmove operation below.  */
@@ -250,16 +250,16 @@ static_assert (DEC_BLOCKSIZE % 40 == 0); /* Complete encoded blocks are used. */
 static_assert (ENC_BLOCKSIZE % 12 == 0); /* Padding chars only on last block. */
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 
-# define base_encode base64_encode
-# define base_decode_context base64_decode_context
-# define base_decode_ctx_init base64_decode_ctx_init
-# define base_decode_ctx base64_decode_ctx
-# define base_decode_ctx_finalize decode_ctx_finalize
+# define بنیاد_encode base64_encode
+# define بنیاد_decode_context base64_decode_context
+# define بنیاد_decode_ctx_init base64_decode_ctx_init
+# define بنیاد_decode_ctx base64_decode_ctx
+# define بنیاد_decode_ctx_finalize decode_ctx_finalize
 # define isubase isubase64
-#elif BASE_TYPE == 42
+#وگرنہ_اگر بنیاد_TYPE == 42
 
 
-# define BASE_LENGTH base_length
+# define بنیاد_لمبائی بنیاد_لمبائی_2
 # define REQUIRED_PADDING required_padding
 
 /* Note that increasing this may decrease performance if --ignore-garbage
@@ -268,303 +268,303 @@ static_assert (DEC_BLOCKSIZE % 12 == 0); /* Complete encoded blocks are used. */
 static_assert (DEC_BLOCKSIZE % 40 == 0); /* complete encoded blocks for base32*/
 static_assert (DEC_BLOCKSIZE % 12 == 0); /* complete encoded blocks for base64*/
 
-static idx_t (*base_length) (idx_t len);
-static int (*required_padding) (int i);
-static bool (*isubase) (unsigned char ch);
-static void (*base_encode) (char const *restrict in, idx_t inlen,
-                            char *restrict out, idx_t outlen);
+ساکن idx_t (*بنیاد_لمبائی_2) (idx_t len);
+ساکن صحیح (*required_padding) (صحیح i);
+ساکن bool (*isubase) (غیرعلامتی حرف ch);
+ساکن خالی (*بنیاد_encode) (حرف ثابت *محدود اندر, idx_t inlen,
+                            حرف *محدود برآمد, idx_t outlen);
 
-struct base16_decode_context
+ساخت base16_decode_context
 {
   /* Either a 4-bit nibble, or negative if we have no nibble.  */
-  signed char nibble;
+  علامتی حرف nibble;
 };
 
-struct z85_decode_context
+ساخت z85_decode_context
 {
-  int i;
-  unsigned char octets[5];
+  صحیح i;
+  غیرعلامتی حرف octets[5];
 };
 
-struct base58_context
+ساخت base58_context
 {
-  idx_t size;
-  idx_t capacity;
-  unsigned char *buf COUNTED_BY (capacity);
+  idx_t سائز;
+  idx_t استعداد;
+  غیرعلامتی حرف *buf COUNTED_BY (استعداد);
 };
 
-struct base2_decode_context
+ساخت base2_decode_context
 {
-  unsigned char octet;
-  int bit_pos;
+  غیرعلامتی حرف octet;
+  صحیح ثنائی_ہندسہ_pos;
 };
 
-struct base_decode_context
+ساخت بنیاد_decode_context
 {
-  union {
-    struct base64_decode_context base64;
-    struct base32_decode_context base32;
-    struct base16_decode_context base16;
-    struct base2_decode_context base2;
-    struct z85_decode_context z85;
-    struct base58_context base58;
+  اتحاد {
+    ساخت base64_decode_context base64;
+    ساخت base32_decode_context base32;
+    ساخت base16_decode_context base16;
+    ساخت base2_decode_context base2;
+    ساخت z85_decode_context z85;
+    ساخت base58_context base58;
   } ctx;
-  char *inbuf;
+  حرف *inbuf;
   idx_t bufsize;
 };
-static void (*base_decode_ctx_init) (struct base_decode_context *ctx);
-static bool (*base_decode_ctx) (struct base_decode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_decode_ctx_finalize) (struct base_decode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+ساکن خالی (*بنیاد_decode_ctx_init) (ساخت بنیاد_decode_context *ctx);
+ساکن bool (*بنیاد_decode_ctx) (ساخت بنیاد_decode_context *ctx,
+                                حرف ثابت *محدود اندر, idx_t inlen,
+                                حرف *محدود برآمد, idx_t *outlen);
+ساکن bool (*بنیاد_decode_ctx_finalize) (ساخت بنیاد_decode_context *ctx,
+                                         حرف *محدود *برآمد, idx_t *outlen);
 
-struct base_encode_context
+ساخت بنیاد_encode_context
 {
-  union {
-    struct base58_context base58;
+  اتحاد {
+    ساخت base58_context base58;
   } ctx;
 };
 
-static void (*base_encode_ctx_init) (struct base_encode_context *ctx);
-static bool (*base_encode_ctx) (struct base_encode_context *ctx,
-                                char const *restrict in, idx_t inlen,
-                                char *restrict out, idx_t *outlen);
-static bool (*base_encode_ctx_finalize) (struct base_encode_context *ctx,
-                                         char *restrict *out, idx_t *outlen);
+ساکن خالی (*بنیاد_encode_ctx_init) (ساخت بنیاد_encode_context *ctx);
+ساکن bool (*بنیاد_encode_ctx) (ساخت بنیاد_encode_context *ctx,
+                                حرف ثابت *محدود اندر, idx_t inlen,
+                                حرف *محدود برآمد, idx_t *outlen);
+ساکن bool (*بنیاد_encode_ctx_finalize) (ساخت بنیاد_encode_context *ctx,
+                                         حرف *محدود *برآمد, idx_t *outlen);
 
-static bool
-no_padding (MAYBE_UNUSED struct base_decode_context *ctx)
+ساکن bool
+no_padding (MAYBE_غیر_مستعمل ساخت بنیاد_decode_context *ctx)
 {
-  return false;
+  واپس false;
 }
 
-static int
-no_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+ساکن صحیح
+no_pending_لمبائی (MAYBE_غیر_مستعمل ساخت بنیاد_decode_context *ctx)
 {
-  return 0;
+  واپس 0;
 }
-#endif
+#اگر_ختم
 
-#if BASE_TYPE == 42
-static bool (*has_padding) (struct base_decode_context *ctx);
-static int (*get_pending_length) (struct base_decode_context *ctx);
+#اگر بنیاد_TYPE == 42
+ساکن bool (*has_padding) (ساخت بنیاد_decode_context *ctx);
+ساکن صحیح (*get_pending_لمبائی) (ساخت بنیاد_decode_context *ctx);
 
-static bool
-base64_ctx_has_padding (struct base_decode_context *ctx)
+ساکن bool
+base64_ctx_has_padding (ساخت بنیاد_decode_context *ctx)
 {
-  return ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
-}
-
-static bool
-base32_ctx_has_padding (struct base_decode_context *ctx)
-{
-  return ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
+  واپس ctx->ctx.base64.i && ctx->ctx.base64.buf[ctx->ctx.base64.i - 1] == '=';
 }
 
-static int
-base64_ctx_get_pending_length (struct base_decode_context *ctx)
+ساکن bool
+base32_ctx_has_padding (ساخت بنیاد_decode_context *ctx)
 {
-  return ctx->ctx.base64.i;
+  واپس ctx->ctx.base32.i && ctx->ctx.base32.buf[ctx->ctx.base32.i - 1] == '=';
 }
 
-static int
-base32_ctx_get_pending_length (struct base_decode_context *ctx)
+ساکن صحیح
+base64_ctx_get_pending_لمبائی (ساخت بنیاد_decode_context *ctx)
 {
-  return ctx->ctx.base32.i;
+  واپس ctx->ctx.base64.i;
 }
 
-static int
-base16_ctx_get_pending_length (MAYBE_UNUSED struct base_decode_context *ctx)
+ساکن صحیح
+base32_ctx_get_pending_لمبائی (ساخت بنیاد_decode_context *ctx)
 {
-  return 1; /* Always check nibble state.  */
+  واپس ctx->ctx.base32.i;
 }
 
-static int
-z85_ctx_get_pending_length (struct base_decode_context *ctx)
+ساکن صحیح
+base16_ctx_get_pending_لمبائی (MAYBE_غیر_مستعمل ساخت بنیاد_decode_context *ctx)
 {
-  return ctx->ctx.z85.i;
+  واپس 1; /* Always check nibble state.  */
 }
 
-static int
-base2_ctx_get_pending_length (struct base_decode_context *ctx)
+ساکن صحیح
+z85_ctx_get_pending_لمبائی (ساخت بنیاد_decode_context *ctx)
 {
-  return ctx->ctx.base2.bit_pos;
-}
-#else
-static bool
-has_padding (struct base_decode_context *ctx)
-{
-  return ctx->i && ctx->buf[ctx->i - 1] == '=';
+  واپس ctx->ctx.z85.i;
 }
 
-static int
-get_pending_length (struct base_decode_context *ctx)
+ساکن صحیح
+base2_ctx_get_pending_لمبائی (ساخت بنیاد_decode_context *ctx)
 {
-  return ctx->i;
+  واپس ctx->ctx.base2.ثنائی_ہندسہ_pos;
 }
-#endif
+#ورنہ
+ساکن bool
+has_padding (ساخت بنیاد_decode_context *ctx)
+{
+  واپس ctx->i && ctx->buf[ctx->i - 1] == '=';
+}
+
+ساکن صحیح
+get_pending_لمبائی (ساخت بنیاد_decode_context *ctx)
+{
+  واپس ctx->i;
+}
+#اگر_ختم
 
 
 /* Process any pending data in CTX, while auto padding if appropriate.
    Return TRUE on success, FALSE on failure.  */
 
-static bool
-decode_ctx_finalize (struct base_decode_context *ctx,
-                     char *restrict *out, idx_t *outlen)
+ساکن bool
+decode_ctx_finalize (ساخت بنیاد_decode_context *ctx,
+                     حرف *محدود *برآمد, idx_t *outlen)
 {
-  if (get_pending_length (ctx) == 0)
+  اگر (get_pending_لمبائی (ctx) == 0)
     {
       *outlen = 0;
-      return true;
+      واپس true;
     }
 
   /* Auto-pad input and flush the context */
-  char padbuf[8] ATTRIBUTE_NONSTRING = "========";
-  idx_t pending_len = get_pending_length (ctx);
+  حرف padbuf[8] ATTRIBUTE_NONSTRING = "========";
+  idx_t pending_len = get_pending_لمبائی (ctx);
   idx_t auto_padding = REQUIRED_PADDING (pending_len);
   idx_t n = *outlen;
-  bool result;
+  bool نتیجہ;
 
-  if (auto_padding && ! has_padding (ctx))
+  اگر (auto_padding && ! has_padding (ctx))
     {
-      affirm (auto_padding <= sizeof (padbuf));
-      result = base_decode_ctx (ctx, padbuf, auto_padding, *out, &n);
+      affirm (auto_padding <= حجم (padbuf));
+      نتیجہ = بنیاد_decode_ctx (ctx, padbuf, auto_padding, *برآمد, &n);
     }
-  else
+  ورنہ
     {
-      result = base_decode_ctx (ctx, "", 0, *out, &n);
+      نتیجہ = بنیاد_decode_ctx (ctx, "", 0, *برآمد, &n);
     }
 
   *outlen = n;
-  return result;
+  واپس نتیجہ;
 }
 
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
 
-static idx_t
-base64_length_wrapper (idx_t len)
+ساکن idx_t
+base64_لمبائی_wrapper (idx_t len)
 {
-  return BASE64_LENGTH (len);
+  واپس BASE64_لمبائی (len);
 }
 
-static void
-base64_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساکن خالی
+base64_decode_ctx_init_wrapper (ساخت بنیاد_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
 }
 
-static bool
-base64_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+ساکن bool
+base64_decode_ctx_wrapper (ساخت بنیاد_decode_context *ctx,
+                           حرف ثابت *محدود اندر, idx_t inlen,
+                           حرف *محدود برآمد, idx_t *outlen)
 {
-  return base64_decode_ctx (&ctx->ctx.base64, in, inlen, out, outlen);
+  واپس base64_decode_ctx (&ctx->ctx.base64, اندر, inlen, برآمد, outlen);
 }
 
-static void
-init_inbuf (struct base_decode_context *ctx)
+ساکن خالی
+init_inbuf (ساخت بنیاد_decode_context *ctx)
 {
   ctx->bufsize = DEC_BLOCKSIZE;
   ctx->inbuf = xcharalloc (ctx->bufsize);
 }
 
-static void
-prepare_inbuf (struct base_decode_context *ctx, idx_t inlen)
+ساکن خالی
+prepare_inbuf (ساخت بنیاد_decode_context *ctx, idx_t inlen)
 {
-  if (ctx->bufsize < inlen)
+  اگر (ctx->bufsize < inlen)
     ctx->inbuf = xpalloc (ctx->inbuf, &ctx->bufsize,
-                          inlen - ctx->bufsize, -1, sizeof *ctx->inbuf);
+                          inlen - ctx->bufsize, -1, حجم *ctx->inbuf);
 }
 
 
-static void
-base64url_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+ساکن خالی
+base64url_encode (حرف ثابت *محدود اندر, idx_t inlen,
+                  حرف *محدود برآمد, idx_t outlen)
 {
-  base64_encode (in, inlen, out, outlen);
+  base64_encode (اندر, inlen, برآمد, outlen);
   /* translate 62nd and 63rd characters */
-  char *p = out;
-  while (outlen--)
+  حرف *p = برآمد;
+  جب (outlen--)
     {
-      if (*p == '+')
+      اگر (*p == '+')
         *p = '-';
-      else if (*p == '/')
+      ورنہ اگر (*p == '/')
         *p = '_';
       ++p;
     }
 }
 
-static bool
-isubase64url (unsigned char ch)
+ساکن bool
+isubase64url (غیرعلامتی حرف ch)
 {
-  return (ch == '-' || ch == '_'
+  واپس (ch == '-' || ch == '_'
           || (ch != '+' && ch != '/' && isubase64 (ch)));
 }
 
-static void
-base64url_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساکن خالی
+base64url_decode_ctx_init_wrapper (ساخت بنیاد_decode_context *ctx)
 {
   base64_decode_ctx_init (&ctx->ctx.base64);
   init_inbuf (ctx);
 }
 
 
-static bool
-base64url_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+ساکن bool
+base64url_decode_ctx_wrapper (ساخت بنیاد_decode_context *ctx,
+                              حرف ثابت *محدود اندر, idx_t inlen,
+                              حرف *محدود برآمد, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
-  memcpy (ctx->inbuf, in, inlen);
+  حافظہ_نقل (ctx->inbuf, اندر, inlen);
 
   /* translate 62nd and 63rd characters */
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  حرف *p = ctx->inbuf;
+  جب (i--)
     {
-      if (*p == '+' || *p == '/')
+      اگر (*p == '+' || *p == '/')
         {
           *outlen = 0;
-          return false; /* reject base64 input */
+          واپس false; /* reject base64 input */
         }
-      else if (*p == '-')
+      ورنہ اگر (*p == '-')
         *p = '+';
-      else if (*p == '_')
+      ورنہ اگر (*p == '_')
         *p = '/';
       ++p;
     }
 
-  return base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
-                            out, outlen);
+  واپس base64_decode_ctx (&ctx->ctx.base64, ctx->inbuf, inlen,
+                            برآمد, outlen);
 }
 
 
 
-static idx_t
-base32_length_wrapper (idx_t len)
+ساکن idx_t
+base32_لمبائی_wrapper (idx_t len)
 {
-  return BASE32_LENGTH (len);
+  واپس BASE32_لمبائی (len);
 }
 
-static void
-base32_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساکن خالی
+base32_decode_ctx_init_wrapper (ساخت بنیاد_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
 }
 
-static bool
-base32_decode_ctx_wrapper (struct base_decode_context *ctx,
-                           char const *restrict in, idx_t inlen,
-                           char *restrict out, idx_t *outlen)
+ساکن bool
+base32_decode_ctx_wrapper (ساخت بنیاد_decode_context *ctx,
+                           حرف ثابت *محدود اندر, idx_t inlen,
+                           حرف *محدود برآمد, idx_t *outlen)
 {
-  return base32_decode_ctx (&ctx->ctx.base32, in, inlen, out, outlen);
+  واپس base32_decode_ctx (&ctx->ctx.base32, اندر, inlen, برآمد, outlen);
 }
 
 /* ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
-     to
+مقصد
    0123456789ABCDEFGHIJKLMNOPQRSTUV */
-static const char base32_norm_to_hex[32 + 9] = {
+ساکن ثابت حرف base32_norm_مقصد_hex[32 + 9] = {
 /*0x32, 0x33, 0x34, 0x35, 0x36, 0x37, */
   'Q',  'R',  'S',  'T',  'U',  'V',
 
@@ -584,9 +584,9 @@ static const char base32_norm_to_hex[32 + 9] = {
 };
 
 /* 0123456789ABCDEFGHIJKLMNOPQRSTUV
-     to
+مقصد
    ABCDEFGHIJKLMNOPQRSTUVWXYZ234567 */
-static const char base32_hex_to_norm[32 + 9] = {
+ساکن ثابت حرف base32_hex_مقصد_norm[32 + 9] = {
   /* from: 0x30 .. 0x39 ('0' to '9') */
   /* to:*/ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
 
@@ -603,56 +603,56 @@ static const char base32_hex_to_norm[32 + 9] = {
 };
 
 
-inline static bool
-isubase32hex (unsigned char ch)
+اندرونی ساکن bool
+isubase32hex (غیرعلامتی حرف ch)
 {
-  return ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
+  واپس ('0' <= ch && ch <= '9') || ('A' <= ch && ch <= 'V');
 }
 
 
-static void
-base32hex_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+ساکن خالی
+base32hex_encode (حرف ثابت *محدود اندر, idx_t inlen,
+                  حرف *محدود برآمد, idx_t outlen)
 {
-  base32_encode (in, inlen, out, outlen);
+  base32_encode (اندر, inlen, برآمد, outlen);
 
-  for (char *p = out; outlen--; p++)
+  برائے (حرف *p = برآمد; outlen--; p++)
     {
       affirm (0x32 <= *p && *p <= 0x5a);          /* LCOV_EXCL_LINE */
-      *p = base32_norm_to_hex[*p - 0x32];
+      *p = base32_norm_مقصد_hex[*p - 0x32];
     }
 }
 
 
-static void
-base32hex_decode_ctx_init_wrapper (struct base_decode_context *ctx)
+ساکن خالی
+base32hex_decode_ctx_init_wrapper (ساخت بنیاد_decode_context *ctx)
 {
   base32_decode_ctx_init (&ctx->ctx.base32);
   init_inbuf (ctx);
 }
 
 
-static bool
-base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
-                              char const *restrict in, idx_t inlen,
-                              char *restrict out, idx_t *outlen)
+ساکن bool
+base32hex_decode_ctx_wrapper (ساخت بنیاد_decode_context *ctx,
+                              حرف ثابت *محدود اندر, idx_t inlen,
+                              حرف *محدود برآمد, idx_t *outlen)
 {
   prepare_inbuf (ctx, inlen);
 
   idx_t i = inlen;
-  char *p = ctx->inbuf;
-  while (i--)
+  حرف *p = ctx->inbuf;
+  جب (i--)
     {
-      if (isubase32hex (*in))
-        *p = base32_hex_to_norm[*in - 0x30];
-      else
-        *p = *in;
+      اگر (isubase32hex (*اندر))
+        *p = base32_hex_مقصد_norm[*اندر - 0x30];
+      ورنہ
+        *p = *اندر;
       ++p;
-      ++in;
+      ++اندر;
     }
 
-  return base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
-                            out, outlen);
+  واپس base32_decode_ctx (&ctx->ctx.base32, ctx->inbuf, inlen,
+                            برآمد, outlen);
 }
 /* With this approach this file works independent of the charset used
    (think EBCDIC).  However, it does assume that the characters in the
@@ -682,7 +682,7 @@ base32hex_decode_ctx_wrapper (struct base_decode_context *ctx,
    : (_) == 'F' || (_) == 'f' ? 15              \
    : -1)
 
-static signed char const base16_to_int[256] = {
+ساکن علامتی حرف ثابت base16_مقصد_int[256] = {
   B16 (0), B16 (1), B16 (2), B16 (3),
   B16 (4), B16 (5), B16 (6), B16 (7),
   B16 (8), B16 (9), B16 (10), B16 (11),
@@ -749,181 +749,181 @@ static signed char const base16_to_int[256] = {
   B16 (252), B16 (253), B16 (254), B16 (255)
 };
 
-static bool
-isubase16 (unsigned char ch)
+ساکن bool
+isubase16 (غیرعلامتی حرف ch)
 {
-  return ch < sizeof base16_to_int && 0 <= base16_to_int[ch];
+  واپس ch < حجم base16_مقصد_int && 0 <= base16_مقصد_int[ch];
 }
 
-static idx_t
-base16_length (idx_t len)
+ساکن idx_t
+base16_لمبائی (idx_t len)
 {
-  return len * 2;
+  واپس len * 2;
 }
 
 
-static void
-base16_encode (char const *restrict in, idx_t inlen,
-               char *restrict out, idx_t outlen)
+ساکن خالی
+base16_encode (حرف ثابت *محدود اندر, idx_t inlen,
+               حرف *محدود برآمد, idx_t outlen)
 {
-  static const char base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
+  ساکن ثابت حرف base16[16] ATTRIBUTE_NONSTRING = "0123456789ABCDEF";
 
-  while (inlen && outlen)
+  جب (inlen && outlen)
     {
-      unsigned char c = *in;
-      *out++ = base16[c >> 4];
-      *out++ = base16[c & 0x0F];
-      ++in;
+      غیرعلامتی حرف c = *اندر;
+      *برآمد++ = base16[c >> 4];
+      *برآمد++ = base16[c & 0x0F];
+      ++اندر;
       inlen--;
       outlen -= 2;
     }
 }
 
 
-static void
-base16_decode_ctx_init (struct base_decode_context *ctx)
+ساکن خالی
+base16_decode_ctx_init (ساخت بنیاد_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base16.nibble = -1;
 }
 
 
-static bool
-base16_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   char *restrict out, idx_t *outlen)
+ساکن bool
+base16_decode_ctx (ساخت بنیاد_decode_context *ctx,
+                   حرف ثابت *محدود اندر, idx_t inlen,
+                   حرف *محدود برآمد, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
-  char *out0 = out;
-  signed char nibble = ctx->ctx.base16.nibble;
+  bool ignore_سطریں = true;  /* for now, always ignore them */
+  حرف *out0 = برآمد;
+  علامتی حرف nibble = ctx->ctx.base16.nibble;
 
   /* inlen==0 is request to flush output.
      if there is a dangling high nibble - we are missing the low nibble,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  اگر (inlen == 0)
     {
       *outlen = 0;
-      return nibble < 0;
+      واپس nibble < 0;
     }
 
-  while (inlen--)
+  جب (inlen--)
     {
-      unsigned char c = *in++;
-      if (ignore_lines && c == '\n')
-        continue;
+      غیرعلامتی حرف c = *اندر++;
+      اگر (ignore_سطریں && c == '\n')
+        جاری;
 
-      if (sizeof base16_to_int <= c || base16_to_int[c] < 0)
+      اگر (حجم base16_مقصد_int <= c || base16_مقصد_int[c] < 0)
         {
-          *outlen = out - out0;
-          return false; /* garbage - return false */
+          *outlen = برآمد - out0;
+          واپس false; /* garbage - return false */
         }
 
-      if (nibble < 0)
-        nibble = base16_to_int[c];
-      else
+      اگر (nibble < 0)
+        nibble = base16_مقصد_int[c];
+      ورنہ
         {
           /* have both nibbles, write octet */
-          *out++ = (nibble << 4) + base16_to_int[c];
+          *برآمد++ = (nibble << 4) + base16_مقصد_int[c];
           nibble = -1;
         }
     }
 
   ctx->ctx.base16.nibble = nibble;
-  *outlen = out - out0;
-  return true;
+  *outlen = برآمد - out0;
+  واپس true;
 }
 
 
 
-ATTRIBUTE_PURE
-static idx_t
-z85_length (idx_t len)
+ATTRIBUTE_خالص
+ساکن idx_t
+z85_لمبائی (idx_t len)
 {
   /* Z85 does not allow padding, so no need to round to highest integer.  */
   idx_t z85_len = (len * 5) / 4;
   affirm (0 <= z85_len);
-  return z85_len;
+  واپس z85_len;
 }
 
-static bool
-isuz85 (unsigned char ch)
+ساکن bool
+isuz85 (غیرعلامتی حرف ch)
 {
-  return c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != NULL;
+  واپس c_isalnum (ch) || strchr (".-:+=^!/*?&<>()[]{}@%$#", ch) != تہی;
 }
 
-static char const z85_encoding[85] ATTRIBUTE_NONSTRING =
+ساکن حرف ثابت z85_encoding[85] ATTRIBUTE_NONSTRING =
   "0123456789"
   "abcdefghijklmnopqrstuvwxyz"
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   ".-:+=^!/*?&<>()[]{}@%$#";
 
-static void
-z85_encode (char const *restrict in, idx_t inlen,
-            char *restrict out, idx_t outlen)
+ساکن خالی
+z85_encode (حرف ثابت *محدود اندر, idx_t inlen,
+            حرف *محدود برآمد, idx_t outlen)
 {
-  int i = 0;
-  unsigned char quad[4];
+  صحیح i = 0;
+  غیرعلامتی حرف quad[4];
   idx_t outidx = 0;
 
-  while (true)
+  جب (true)
     {
-      if (inlen == 0)
+      اگر (inlen == 0)
         {
           /* no more input, exactly on 4 octet boundary. */
-          if (i == 0)
-            return;
+          اگر (i == 0)
+            واپس;
 
           /* currently, there's no way to return an error in encoding.  */
           error (EXIT_FAILURE, 0,
                  _("invalid input (length must be multiple of 4 characters)"));
         }
-      else
+      ورنہ
         {
-          quad[i++] = *in++;
+          quad[i++] = *اندر++;
           --inlen;
         }
 
       /* Got a quad, encode it */
-      if (i == 4)
+      اگر (i == 4)
         {
           int_fast64_t val = quad[0];
           val = (val << 24) + (quad[1] << 16) + (quad[2] << 8) + quad[3];
 
-          for (int j = 4; j >= 0; --j)
+          برائے (صحیح j = 4; j >= 0; --j)
             {
-              int c = val % 85;
+              صحیح c = val % 85;
               val /= 85;
 
               /* NOTE: if there is padding (which is trimmed by z85
                  before outputting the result), the output buffer 'out'
                  might not include enough allocated bytes for the padding,
                  so don't store them. */
-              if (outidx + j < outlen)
-                out[j] = z85_encoding[c];
+              اگر (outidx + j < outlen)
+                برآمد[j] = z85_encoding[c];
             }
-          out += 5;
+          برآمد += 5;
           outidx += 5;
           i = 0;
         }
     }
 }
 
-static void
-z85_decode_ctx_init (struct base_decode_context *ctx)
+ساکن خالی
+z85_decode_ctx_init (ساخت بنیاد_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.z85.i = 0;
 }
 
 
-# define Z85_LO_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_LO_CTX_مقصد_32_ثنائی_ہندسہ_VAL(ctx) \
   (((ctx)->ctx.z85.octets[1] * 85 * 85 * 85) +      \
    ((ctx)->ctx.z85.octets[2] * 85 * 85) +	    \
    ((ctx)->ctx.z85.octets[3] * 85) +		    \
    ((ctx)->ctx.z85.octets[4]))
 
 
-# define Z85_HI_CTX_TO_32BIT_VAL(ctx) \
+# define Z85_HI_CTX_مقصد_32_ثنائی_ہندسہ_VAL(ctx) \
   ((int_fast64_t) (ctx)->ctx.z85.octets[0] * 85 * 85 * 85 * 85 )
 
 /*
@@ -937,7 +937,7 @@ z85_decode_ctx_init (struct base_decode_context *ctx)
  70 - 79:  * ? & < > ( ) [ ] {
  80 - 84:  } @ % $ #
 */
-static signed char const z85_decoding[93] = {
+ساکن علامتی حرف ثابت z85_decoding[93] = {
   68, -1,  84,  83, 82,  72, -1,               /* ! " # $ % & ' */
   75, 76,  70,  65, -1,  63, 62, 69,           /* ( ) * + , - . / */
   0,  1,   2,   3,  4,   5,  6,   7,  8,  9,   /* '0' to '9' */
@@ -952,232 +952,232 @@ static signed char const z85_decoding[93] = {
   79, -1,  80                                  /* { | } */
 };
 
-static bool
-z85_decode_ctx (struct base_decode_context *ctx,
-                char const *restrict in, idx_t inlen,
-                char *restrict out, idx_t *outlen)
+ساکن bool
+z85_decode_ctx (ساخت بنیاد_decode_context *ctx,
+                حرف ثابت *محدود اندر, idx_t inlen,
+                حرف *محدود برآمد, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_سطریں = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there are dangling values - we are missing entries,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
+  اگر (inlen == 0)
     {
-      if (ctx->ctx.z85.i > 0)
+      اگر (ctx->ctx.z85.i > 0)
         {
           /* Z85 variant does not allow padding - input must
              be a multiple of 5 - so return error.  */
-          return false;
+          واپس false;
         }
-      return true;
+      واپس true;
     }
 
-  while (inlen--)
+  جب (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      اگر (ignore_سطریں && *اندر == '\n')
         {
-          ++in;
-          continue;
+          ++اندر;
+          جاری;
         }
 
       /* z85 decoding */
-      unsigned char c = *in;
+      غیرعلامتی حرف c = *اندر;
 
-      if (c >= 33 && c <= 125)
+      اگر (c >= 33 && c <= 125)
         {
-          signed char ch = z85_decoding[c - 33];
-          if (ch < 0)
-            return false; /* garbage - return false */
+          علامتی حرف ch = z85_decoding[c - 33];
+          اگر (ch < 0)
+            واپس false; /* garbage - return false */
           c = ch;
         }
-      else
-        return false; /* garbage - return false */
+      ورنہ
+        واپس false; /* garbage - return false */
 
-      ++in;
+      ++اندر;
 
       ctx->ctx.z85.octets[ctx->ctx.z85.i++] = c;
-      if (ctx->ctx.z85.i == 5)
+      اگر (ctx->ctx.z85.i == 5)
         {
           /* decode the lowest 4 octets, then check for overflows.  */
-          int_fast64_t val = Z85_LO_CTX_TO_32BIT_VAL (ctx);
+          int_fast64_t val = Z85_LO_CTX_مقصد_32_ثنائی_ہندسہ_VAL (ctx);
 
           /* The Z85 spec and the reference implementation say nothing
              about overflows. To be on the safe side, reject them.  */
 
-          val += Z85_HI_CTX_TO_32BIT_VAL (ctx);
-          if ((val >> 24) & ~0xFF)
-            return false;
+          val += Z85_HI_CTX_مقصد_32_ثنائی_ہندسہ_VAL (ctx);
+          اگر ((val >> 24) & ~0xFF)
+            واپس false;
 
-          *out++ = val >> 24;
-          *out++ = (val >> 16) & 0xFF;
-          *out++ = (val >> 8) & 0xFF;
-          *out++ = val & 0xFF;
+          *برآمد++ = val >> 24;
+          *برآمد++ = (val >> 16) & 0xFF;
+          *برآمد++ = (val >> 8) & 0xFF;
+          *برآمد++ = val & 0xFF;
 
           *outlen += 4;
 
           ctx->ctx.z85.i = 0;
         }
     }
-  return true;
+  واپس true;
 }
 
 
-inline static bool
-isubase2 (unsigned char ch)
+اندرونی ساکن bool
+isubase2 (غیرعلامتی حرف ch)
 {
-  return ch == '0' || ch == '1';
+  واپس ch == '0' || ch == '1';
 }
 
-static idx_t
-base2_length (idx_t len)
+ساکن idx_t
+base2_لمبائی (idx_t len)
 {
-  return len * 8;
+  واپس len * 8;
 }
 
 
-inline static void
-base2msbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+اندرونی ساکن خالی
+base2msbf_encode (حرف ثابت *محدود اندر, idx_t inlen,
+                  حرف *محدود برآمد, idx_t outlen)
 {
-  while (inlen && outlen)
+  جب (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      غیرعلامتی حرف c = *اندر;
+      برائے (صحیح i = 0; i < 8; i++)
         {
-          *out++ = c & 0x80 ? '1' : '0';
+          *برآمد++ = c & 0x80 ? '1' : '0';
           c <<= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++اندر;
     }
 }
 
-inline static void
-base2lsbf_encode (char const *restrict in, idx_t inlen,
-                  char *restrict out, idx_t outlen)
+اندرونی ساکن خالی
+base2lsbf_encode (حرف ثابت *محدود اندر, idx_t inlen,
+                  حرف *محدود برآمد, idx_t outlen)
 {
-  while (inlen && outlen)
+  جب (inlen && outlen)
     {
-      unsigned char c = *in;
-      for (int i = 0; i < 8; i++)
+      غیرعلامتی حرف c = *اندر;
+      برائے (صحیح i = 0; i < 8; i++)
         {
-          *out++ = c & 0x01 ? '1' : '0';
+          *برآمد++ = c & 0x01 ? '1' : '0';
           c >>= 1;
         }
       inlen--;
       outlen -= 8;
-      ++in;
+      ++اندر;
     }
 }
 
 
-static void
-base2_decode_ctx_init (struct base_decode_context *ctx)
+ساکن خالی
+base2_decode_ctx_init (ساخت بنیاد_decode_context *ctx)
 {
   init_inbuf (ctx);
   ctx->ctx.base2.octet = 0;
-  ctx->ctx.base2.bit_pos = 0;
+  ctx->ctx.base2.ثنائی_ہندسہ_pos = 0;
 }
 
 
-static bool
-base2lsbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+ساکن bool
+base2lsbf_decode_ctx (ساخت بنیاد_decode_context *ctx,
+                      حرف ثابت *محدود اندر, idx_t inlen,
+                      حرف *محدود برآمد, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_سطریں = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  اگر (inlen == 0)
+    واپس ctx->ctx.base2.ثنائی_ہندسہ_pos == 0;
 
-  while (inlen--)
+  جب (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      اگر (ignore_سطریں && *اندر == '\n')
         {
-          ++in;
-          continue;
+          ++اندر;
+          جاری;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      اگر (!isubase2 (*اندر))
+        واپس false;
 
-      bool bit = (*in == '1');
-      ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
-      ++ctx->ctx.base2.bit_pos;
+      bool ثنائی_ہندسہ = (*اندر == '1');
+      ctx->ctx.base2.octet |= ثنائی_ہندسہ << ctx->ctx.base2.ثنائی_ہندسہ_pos;
+      ++ctx->ctx.base2.ثنائی_ہندسہ_pos;
 
-      if (ctx->ctx.base2.bit_pos == 8)
+      اگر (ctx->ctx.base2.ثنائی_ہندسہ_pos == 8)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *برآمد++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
-          ctx->ctx.base2.bit_pos = 0;
+          ctx->ctx.base2.ثنائی_ہندسہ_pos = 0;
         }
 
-      ++in;
+      ++اندر;
     }
 
-  return true;
+  واپس true;
 }
 
-static bool
-base2msbf_decode_ctx (struct base_decode_context *ctx,
-                      char const *restrict in, idx_t inlen,
-                      char *restrict out, idx_t *outlen)
+ساکن bool
+base2msbf_decode_ctx (ساخت بنیاد_decode_context *ctx,
+                      حرف ثابت *محدود اندر, idx_t inlen,
+                      حرف *محدود برآمد, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_سطریں = true;  /* for now, always ignore them */
 
   *outlen = 0;
 
   /* inlen==0 is request to flush output.
      if there is a dangling bit - we are missing some bits,
      so return false - indicating an invalid input.  */
-  if (inlen == 0)
-    return ctx->ctx.base2.bit_pos == 0;
+  اگر (inlen == 0)
+    واپس ctx->ctx.base2.ثنائی_ہندسہ_pos == 0;
 
-  while (inlen--)
+  جب (inlen--)
     {
-      if (ignore_lines && *in == '\n')
+      اگر (ignore_سطریں && *اندر == '\n')
         {
-          ++in;
-          continue;
+          ++اندر;
+          جاری;
         }
 
-      if (!isubase2 (*in))
-        return false;
+      اگر (!isubase2 (*اندر))
+        واپس false;
 
-      bool bit = (*in == '1');
-      if (ctx->ctx.base2.bit_pos == 0)
-        ctx->ctx.base2.bit_pos = 8;
-      --ctx->ctx.base2.bit_pos;
-      ctx->ctx.base2.octet |= bit << ctx->ctx.base2.bit_pos;
+      bool ثنائی_ہندسہ = (*اندر == '1');
+      اگر (ctx->ctx.base2.ثنائی_ہندسہ_pos == 0)
+        ctx->ctx.base2.ثنائی_ہندسہ_pos = 8;
+      --ctx->ctx.base2.ثنائی_ہندسہ_pos;
+      ctx->ctx.base2.octet |= ثنائی_ہندسہ << ctx->ctx.base2.ثنائی_ہندسہ_pos;
 
-      if (ctx->ctx.base2.bit_pos == 0)
+      اگر (ctx->ctx.base2.ثنائی_ہندسہ_pos == 0)
         {
-          *out++ = ctx->ctx.base2.octet;
+          *برآمد++ = ctx->ctx.base2.octet;
           ctx->ctx.base2.octet = 0;
           ++*outlen;
         }
 
-      ++in;
+      ++اندر;
     }
 
-  return true;
+  واپس true;
 }
 
 /* Map from GMP (up to base 62):
    "0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuv";
    to base 58:
    "123456789A BCDEFGHJKLMNPQRSTUVWXYZabc defghijkmnopqrstuvwxyz";  */
-static signed char const gmp_to_base58[256] = {
+ساکن علامتی حرف ثابت gmp_مقصد_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1196,7 +1196,7 @@ static signed char const gmp_to_base58[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static signed char const base58_to_gmp[256] = {
+ساکن علامتی حرف ثابت base58_مقصد_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -1215,16 +1215,16 @@ static signed char const base58_to_gmp[256] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-static bool
-isubase58 (unsigned char ch)
+ساکن bool
+isubase58 (غیرعلامتی حرف ch)
 {
-  return ch < sizeof base58_to_gmp && 0 <= base58_to_gmp[ch];
+  واپس ch < حجم base58_مقصد_gmp && 0 <= base58_مقصد_gmp[ch];
 }
 
 
-ATTRIBUTE_PURE
-static idx_t
-base58_length (idx_t len)
+ATTRIBUTE_خالص
+ساکن idx_t
+base58_لمبائی (idx_t len)
 {
   /* Base58 output length is approximately log(256)/log(58),
      which is approximately len * 138 / 100,
@@ -1232,605 +1232,605 @@ base58_length (idx_t len)
      +1 to ensure we've enough place for NUL  */
   idx_t base58_len = ((len + 99) / 100) * 138 + 1;
   affirm (0 < base58_len);
-  return base58_len;
+  واپس base58_len;
 }
 
 
-static void
-base58_encode_ctx_init (struct base_encode_context *ctx)
+ساکن خالی
+base58_encode_ctx_init (ساخت بنیاد_encode_context *ctx)
 {
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  ctx->ctx.base58.buf = تہی;
+  ctx->ctx.base58.سائز = 0;
+  ctx->ctx.base58.استعداد = 0;
 }
 
 
-static bool
-base58_encode_ctx (struct base_encode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+ساکن bool
+base58_encode_ctx (ساخت بنیاد_encode_context *ctx,
+                   حرف ثابت *محدود اندر, idx_t inlen,
+                   MAYBE_غیر_مستعمل حرف *محدود برآمد, idx_t *outlen)
 {
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  اگر (inlen == 0)
+    واپس true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
-  if (free_space < inlen)
+  idx_t free_space = ctx->ctx.base58.استعداد - ctx->ctx.base58.سائز;
+  اگر (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.استعداد,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, حجم *ctx->ctx.base58.buf);
     }
 
-  memcpy (ctx->ctx.base58.buf + ctx->ctx.base58.size, in, inlen);
-  ctx->ctx.base58.size += inlen;
+  حافظہ_نقل (ctx->ctx.base58.buf + ctx->ctx.base58.سائز, اندر, inlen);
+  ctx->ctx.base58.سائز += inlen;
 
-  return true;
+  واپس true;
 }
 
-static void
-base58_encode (char const *data, size_t data_len,
-               char *out, idx_t *outlen)
+ساکن خالی
+base58_encode (حرف ثابت *ڈیٹا, size_t ڈیٹا_len,
+               حرف *برآمد, idx_t *outlen)
 {
-  affirm (base_length (data_len) <= *outlen);
+  affirm (بنیاد_لمبائی_2 (ڈیٹا_len) <= *outlen);
 
   size_t zeros = 0;
-  while (zeros < data_len && data[zeros] == 0)
+  جب (zeros < ڈیٹا_len && ڈیٹا[zeros] == 0)
     zeros++;
 
-  memset (out, '1', zeros);
-  char *p = out + zeros;
+  memset (برآمد, '1', zeros);
+  حرف *p = برآمد + zeros;
 
   /* Use GMP to convert from base 256 to base 58.  */
-  mpz_t num;
-  mpz_init (num);
-  if (data_len - zeros)
+  mpz_t عدد;
+  mpz_init (عدد);
+  اگر (ڈیٹا_len - zeros)
     {
-      mpz_import (num, data_len - zeros, 1, 1, 0, 0, data + zeros);
-      for (p = mpz_get_str (p, 58, num); *p; p++)
-        *p = gmp_to_base58[to_uchar (*p)];
+      mpz_import (عدد, ڈیٹا_len - zeros, 1, 1, 0, 0, ڈیٹا + zeros);
+      برائے (p = mpz_get_str (p, 58, عدد); *p; p++)
+        *p = gmp_مقصد_base58[مقصد_uchar (*p)];
     }
-  mpz_clear (num);
+  mpz_clear (عدد);
 
-  *outlen = p - out;
+  *outlen = p - برآمد;
 }
 
 
-static bool
-base58_encode_ctx_finalize (struct base_encode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+ساکن bool
+base58_encode_ctx_finalize (ساخت بنیاد_encode_context *ctx,
+                            حرف *محدود *برآمد, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.  */
-  idx_t max_outlen = base_length (ctx->ctx.base58.size);
-  if (max_outlen > *outlen)
+  idx_t max_outlen = بنیاد_لمبائی_2 (ctx->ctx.base58.سائز);
+  اگر (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *برآمد = xrealloc (*برآمد, max_outlen);
       *outlen = max_outlen;
     }
 
-  base58_encode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                 *out, outlen);
+  base58_encode ((حرف *)ctx->ctx.base58.buf, ctx->ctx.base58.سائز,
+                 *برآمد, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  آزاد (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = تہی;
+  ctx->ctx.base58.سائز = 0;
+  ctx->ctx.base58.استعداد = 0;
 
-  return true;
+  واپس true;
 }
 
 
-static void
-base58_decode_ctx_init (struct base_decode_context *ctx)
+ساکن خالی
+base58_decode_ctx_init (ساخت بنیاد_decode_context *ctx)
 {
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
-  ctx->ctx.base58.buf = NULL;
+  ctx->ctx.base58.سائز = 0;
+  ctx->ctx.base58.استعداد = 0;
+  ctx->ctx.base58.buf = تہی;
 }
 
-static bool
-base58_decode_ctx (struct base_decode_context *ctx,
-                   char const *restrict in, idx_t inlen,
-                   MAYBE_UNUSED char *restrict out, idx_t *outlen)
+ساکن bool
+base58_decode_ctx (ساخت بنیاد_decode_context *ctx,
+                   حرف ثابت *محدود اندر, idx_t inlen,
+                   MAYBE_غیر_مستعمل حرف *محدود برآمد, idx_t *outlen)
 {
-  bool ignore_lines = true;  /* for now, always ignore them */
+  bool ignore_سطریں = true;  /* for now, always ignore them */
 
   *outlen = 0;   /* Only accumulate input in this function.  */
 
-  if (inlen == 0)
-    return true;
+  اگر (inlen == 0)
+    واپس true;
 
-  idx_t free_space = ctx->ctx.base58.capacity - ctx->ctx.base58.size;
+  idx_t free_space = ctx->ctx.base58.استعداد - ctx->ctx.base58.سائز;
   free_space -= 1;  /* Ensure we leave space for NUL (for mpz_set_str).  */
-  if (free_space < inlen)
+  اگر (free_space < inlen)
     {
       ctx->ctx.base58.buf = xpalloc (ctx->ctx.base58.buf,
-                                     &ctx->ctx.base58.capacity,
+                                     &ctx->ctx.base58.استعداد,
                                      inlen - free_space,
-                                     -1, sizeof *ctx->ctx.base58.buf);
+                                     -1, حجم *ctx->ctx.base58.buf);
     }
 
   /* Accumulate all valid input characters in our buffer.
      Note we don't rely on mpz_set_str() for validation
      as that allows (skips) all whitespace.  */
-  for (idx_t i = 0; i < inlen; i++)
+  برائے (idx_t i = 0; i < inlen; i++)
     {
-      unsigned char c = in[i];
+      غیرعلامتی حرف c = اندر[i];
 
-      if (ignore_lines && c == '\n')
-        continue;
+      اگر (ignore_سطریں && c == '\n')
+        جاری;
 
-      if (!isubase58 (c))
-        return false;
+      اگر (!isubase58 (c))
+        واپس false;
 
-      ctx->ctx.base58.buf[ctx->ctx.base58.size++] = base58_to_gmp[to_uchar (c)];
+      ctx->ctx.base58.buf[ctx->ctx.base58.سائز++] = base58_مقصد_gmp[مقصد_uchar (c)];
     }
 
-  return true;
+  واپس true;
 }
 
 
-static bool
-base58_decode (char const *data, size_t data_len,
-               char *restrict out, idx_t *outlen)
+ساکن bool
+base58_decode (حرف ثابت *ڈیٹا, size_t ڈیٹا_len,
+               حرف *محدود برآمد, idx_t *outlen)
 {
-  affirm (data_len <= *outlen);
+  affirm (ڈیٹا_len <= *outlen);
 
   size_t ones = 0;
-  while (ones < data_len && data[ones] == base58_to_gmp['1'])
+  جب (ones < ڈیٹا_len && ڈیٹا[ones] == base58_مقصد_gmp['1'])
     ones++;
 
-  memset (out, 0, ones);
+  memset (برآمد, 0, ones);
 
   /* Use GMP to convert from base 58 to base 256.  */
-  mpz_t num;
-  mpz_init (num);
+  mpz_t عدد;
+  mpz_init (عدد);
 
-  if ((data_len - ones) && mpz_set_str (num, data + ones, 58) != 0)
+  اگر ((ڈیٹا_len - ones) && mpz_سیٹ_str (عدد, ڈیٹا + ones, 58) != 0)
     {
-      mpz_clear (num);
+      mpz_clear (عدد);
       *outlen = 0;
-      return false;
+      واپس false;
     }
 
-  size_t exported_size = 0;
-  if (data_len - ones)
+  size_t exported_سائز = 0;
+  اگر (ڈیٹا_len - ones)
     {
-      size_t binary_size = (mpz_sizeinbase (num, 2) + 7) / 8;
-      affirm (*outlen - ones >= binary_size);
-      mpz_export (out + ones, &exported_size, 1, 1, 0, 0, num);
+      size_t ثنائی_سائز = (mpz_sizeinbase (عدد, 2) + 7) / 8;
+      affirm (*outlen - ones >= ثنائی_سائز);
+      mpz_export (برآمد + ones, &exported_سائز, 1, 1, 0, 0, عدد);
     }
 
-  mpz_clear (num);
-  *outlen = ones + exported_size;
-  return true;
+  mpz_clear (عدد);
+  *outlen = ones + exported_سائز;
+  واپس true;
 }
 
 
-static bool
-base58_decode_ctx_finalize (struct base_decode_context *ctx,
-                            char *restrict *out, idx_t *outlen)
+ساکن bool
+base58_decode_ctx_finalize (ساخت بنیاد_decode_context *ctx,
+                            حرف *محدود *برآمد, idx_t *outlen)
 {
   /* Ensure output buffer is large enough.
      Worst case is input is all '1's.  */
-  idx_t max_outlen = ctx->ctx.base58.size;
-  if (max_outlen > *outlen)
+  idx_t max_outlen = ctx->ctx.base58.سائز;
+  اگر (max_outlen > *outlen)
     {
-      *out = xrealloc (*out, max_outlen);
+      *برآمد = xrealloc (*برآمد, max_outlen);
       *outlen = max_outlen;
     }
 
   /* Ensure input buffer is NUL terminated (for mpz_get_str).  */
-  if (ctx->ctx.base58.size)
-    ctx->ctx.base58.buf[ctx->ctx.base58.size] = '\0';
+  اگر (ctx->ctx.base58.سائز)
+    ctx->ctx.base58.buf[ctx->ctx.base58.سائز] = '\0';
 
-  bool ret = base58_decode ((char *)ctx->ctx.base58.buf, ctx->ctx.base58.size,
-                            *out, outlen);
+  bool ret = base58_decode ((حرف *)ctx->ctx.base58.buf, ctx->ctx.base58.سائز,
+                            *برآمد, outlen);
 
-  free (ctx->ctx.base58.buf);
-  ctx->ctx.base58.buf = NULL;
-  ctx->ctx.base58.size = 0;
-  ctx->ctx.base58.capacity = 0;
+  آزاد (ctx->ctx.base58.buf);
+  ctx->ctx.base58.buf = تہی;
+  ctx->ctx.base58.سائز = 0;
+  ctx->ctx.base58.استعداد = 0;
 
-  return ret;
+  واپس ret;
 }
 
-#endif /* BASE_TYPE == 42, i.e., "basenc"*/
+#اگر_ختم /* BASE_TYPE == 42, i.e., "basenc"*/
 
 
 
-static void
-wrap_write (char const *buffer, idx_t len,
-            idx_t wrap_column, idx_t *current_column, FILE *out)
+ساکن خالی
+wrap_write (حرف ثابت *بفر, idx_t len,
+            idx_t wrap_عمود, idx_t *current_عمود, FILE *برآمد)
 {
-  if (wrap_column == 0)
+  اگر (wrap_عمود == 0)
     {
       /* Simple write. */
-      if (fwrite (buffer, 1, len, stdout) < len)
+      اگر (fwrite (بفر, 1, len, stdout) < len)
         write_error ();
     }
-  else
-    for (idx_t written = 0; written < len; )
+  ورنہ
+    برائے (idx_t written = 0; written < len; )
       {
-        idx_t to_write = MIN (wrap_column - *current_column, len - written);
+        idx_t مقصد_write = MIN (wrap_عمود - *current_عمود, len - written);
 
-        if (to_write == 0)
+        اگر (مقصد_write == 0)
           {
-            if (fputc ('\n', out) == EOF)
+            اگر (fputc ('\n', برآمد) == EOF)
               write_error ();
-            *current_column = 0;
+            *current_عمود = 0;
           }
-        else
+        ورنہ
           {
-            if (fwrite (buffer + written, 1, to_write, stdout) < to_write)
+            اگر (fwrite (بفر + written, 1, مقصد_write, stdout) < مقصد_write)
               write_error ();
-            *current_column += to_write;
-            written += to_write;
+            *current_عمود += مقصد_write;
+            written += مقصد_write;
           }
       }
 }
 
-static _Noreturn void
-finish_and_exit (FILE *in, char const *infile)
+ساکن _Noreturn خالی
+اختتام_and_exit (FILE *اندر, حرف ثابت *infile)
 {
-  if (fclose (in) != 0)
+  اگر (fclose (اندر) != 0)
     {
-      if (streq (infile, "-"))
+      اگر (streq (infile, "-"))
         error (EXIT_FAILURE, errno, _("closing standard input"));
-      else
+      ورنہ
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  exit (EXIT_SUCCESS);
+  باہر_نکلو (EXIT_SUCCESS);
 }
 
-static _Noreturn void
-do_encode (FILE *in, char const *infile, FILE *out, idx_t wrap_column)
+ساکن _Noreturn خالی
+do_encode (FILE *اندر, حرف ثابت *infile, FILE *برآمد, idx_t wrap_عمود)
 {
-  idx_t current_column = 0;
-  char *inbuf, *outbuf;
-  idx_t sum;
+  idx_t current_عمود = 0;
+  حرف *inbuf, *outbuf;
+  idx_t مجموع;
 
   inbuf = xmalloc (ENC_BLOCKSIZE);
-  outbuf = xmalloc (BASE_LENGTH (ENC_BLOCKSIZE));
+  outbuf = xmalloc (بنیاد_لمبائی (ENC_BLOCKSIZE));
 
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
   /* Initialize encoding context if needed (for base58) */
-  struct base_encode_context encode_ctx;
-  bool use_ctx = (base_encode_ctx_init != NULL);
-  if (use_ctx)
-    base_encode_ctx_init (&encode_ctx);
-#endif
+  ساخت بنیاد_encode_context encode_ctx;
+  bool use_ctx = (بنیاد_encode_ctx_init != تہی);
+  اگر (use_ctx)
+    بنیاد_encode_ctx_init (&encode_ctx);
+#اگر_ختم
 
-  do
+  کرو
     {
       idx_t n;
 
-      sum = 0;
-      do
+      مجموع = 0;
+      کرو
         {
-          n = fread (inbuf + sum, 1, ENC_BLOCKSIZE - sum, in);
-          sum += n;
+          n = fread (inbuf + مجموع, 1, ENC_BLOCKSIZE - مجموع, اندر);
+          مجموع += n;
         }
-      while (!feof (in) && !ferror (in) && sum < ENC_BLOCKSIZE);
+      جب (!feof (اندر) && !ferror (اندر) && مجموع < ENC_BLOCKSIZE);
 
-      if (sum > 0)
+      اگر (مجموع > 0)
         {
-#if BASE_TYPE == 42
-          if (use_ctx)
+#اگر بنیاد_TYPE == 42
+          اگر (use_ctx)
             {
               idx_t outlen = 0;
-              base_encode_ctx (&encode_ctx, inbuf, sum, outbuf, &outlen);
+              بنیاد_encode_ctx (&encode_ctx, inbuf, مجموع, outbuf, &outlen);
 
-              wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+              wrap_write (outbuf, outlen, wrap_عمود, &current_عمود, برآمد);
             }
-          else
-#endif
+          ورنہ
+#اگر_ختم
             {
               /* Process input one block at a time.  Note that ENC_BLOCKSIZE
                  is sized so that no pad chars will appear in output. */
-              base_encode (inbuf, sum, outbuf, BASE_LENGTH (sum));
+              بنیاد_encode (inbuf, مجموع, outbuf, بنیاد_لمبائی (مجموع));
 
-              wrap_write (outbuf, BASE_LENGTH (sum), wrap_column,
-                          &current_column, out);
+              wrap_write (outbuf, بنیاد_لمبائی (مجموع), wrap_عمود,
+                          &current_عمود, برآمد);
             }
         }
     }
-  while (!feof (in) && !ferror (in) && sum == ENC_BLOCKSIZE);
+  جب (!feof (اندر) && !ferror (اندر) && مجموع == ENC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  if (use_ctx && base_encode_ctx_finalize)
+#اگر بنیاد_TYPE == 42
+  اگر (use_ctx && بنیاد_encode_ctx_finalize)
     {
-      idx_t outlen = BASE_LENGTH (ENC_BLOCKSIZE);
-      base_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
+      idx_t outlen = بنیاد_لمبائی (ENC_BLOCKSIZE);
+      بنیاد_encode_ctx_finalize (&encode_ctx, &outbuf, &outlen);
 
-      wrap_write (outbuf, outlen, wrap_column, &current_column, out);
+      wrap_write (outbuf, outlen, wrap_عمود, &current_عمود, برآمد);
     }
-#endif
+#اگر_ختم
 
   /* When wrapping, terminate last line. */
-  if (wrap_column && current_column > 0 && fputc ('\n', out) == EOF)
+  اگر (wrap_عمود && current_عمود > 0 && fputc ('\n', برآمد) == EOF)
     write_error ();
 
-  if (ferror (in))
+  اگر (ferror (اندر))
     error (EXIT_FAILURE, errno, _("read error"));
 
-  finish_and_exit (in, infile);
+  اختتام_and_exit (اندر, infile);
 }
 
-static _Noreturn void
-do_decode (FILE *in, char const *infile, FILE *out, bool ignore_garbage)
+ساکن _Noreturn خالی
+do_decode (FILE *اندر, حرف ثابت *infile, FILE *برآمد, bool ignore_garbage)
 {
-  char *inbuf, *outbuf;
-  idx_t sum;
-  struct base_decode_context ctx;
+  حرف *inbuf, *outbuf;
+  idx_t مجموع;
+  ساخت بنیاد_decode_context ctx;
 
-  inbuf = xmalloc (BASE_LENGTH (DEC_BLOCKSIZE));
+  inbuf = xmalloc (بنیاد_لمبائی (DEC_BLOCKSIZE));
   outbuf = xmalloc (DEC_BLOCKSIZE);
 
-#if BASE_TYPE == 42
-  ctx.inbuf = NULL;
-#endif
-  base_decode_ctx_init (&ctx);
+#اگر بنیاد_TYPE == 42
+  ctx.inbuf = تہی;
+#اگر_ختم
+  بنیاد_decode_ctx_init (&ctx);
 
-  do
+  کرو
     {
       bool ok;
 
-      sum = 0;
-      do
+      مجموع = 0;
+      کرو
         {
-          idx_t n = fread (inbuf + sum,
-                           1, BASE_LENGTH (DEC_BLOCKSIZE) - sum, in);
+          idx_t n = fread (inbuf + مجموع,
+                           1, بنیاد_لمبائی (DEC_BLOCKSIZE) - مجموع, اندر);
 
-          if (ignore_garbage)
+          اگر (ignore_garbage)
             {
-              for (idx_t i = 0; n > 0 && i < n;)
+              برائے (idx_t i = 0; n > 0 && i < n;)
                 {
-                  if (isubase (inbuf[sum + i])
-                      || (REQUIRED_PADDING (1) && inbuf[sum + i] == '='))
+                  اگر (isubase (inbuf[مجموع + i])
+                      || (REQUIRED_PADDING (1) && inbuf[مجموع + i] == '='))
                     i++;
-                  else
-                    memmove (inbuf + sum + i, inbuf + sum + i + 1, --n - i);
+                  ورنہ
+                    memmove (inbuf + مجموع + i, inbuf + مجموع + i + 1, --n - i);
                 }
             }
 
-          sum += n;
+          مجموع += n;
 
-          if (ferror (in))
+          اگر (ferror (اندر))
             error (EXIT_FAILURE, errno, _("read error"));
         }
-      while (sum < BASE_LENGTH (DEC_BLOCKSIZE) && !feof (in));
+      جب (مجموع < بنیاد_لمبائی (DEC_BLOCKSIZE) && !feof (اندر));
 
-      while (sum || feof (in))
+      جب (مجموع || feof (اندر))
         {
           idx_t n = DEC_BLOCKSIZE;
-          if (sum)
-            ok = base_decode_ctx (&ctx, inbuf, sum, outbuf, &n);
-          else
-            ok = base_decode_ctx_finalize (&ctx, &outbuf, &n);
+          اگر (مجموع)
+            ok = بنیاد_decode_ctx (&ctx, inbuf, مجموع, outbuf, &n);
+          ورنہ
+            ok = بنیاد_decode_ctx_finalize (&ctx, &outbuf, &n);
 
-          if (fwrite (outbuf, 1, n, out) < n)
+          اگر (fwrite (outbuf, 1, n, برآمد) < n)
             write_error ();
 
-          if (! ok)
+          اگر (! ok)
             error (EXIT_FAILURE, 0, _("invalid input"));
 
-          if (sum == 0)
-            break;
-          sum = 0;
+          اگر (مجموع == 0)
+            توڑو;
+          مجموع = 0;
         }
     }
-  while (!feof (in));
+  جب (!feof (اندر));
 
-  finish_and_exit (in, infile);
+  اختتام_and_exit (اندر, infile);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  int opt;
-  FILE *input_fh;
-  char const *infile;
+  صحیح opt;
+  FILE *داخلہ_fh;
+  حرف ثابت *infile;
 
   /* True if --decode has been given and we should decode data. */
   bool decode = false;
   /* True if we should ignore non-base-alphabetic characters. */
   bool ignore_garbage = false;
   /* Wrap encoded data around the 76th column, by default. */
-  idx_t wrap_column = 76;
+  idx_t wrap_عمود = 76;
 
-#if BASE_TYPE == 42
-  int base_type = 0;
-#endif
+#اگر بنیاد_TYPE == 42
+  صحیح بنیاد_type = 0;
+#اگر_ختم
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((opt = getopt_long (argc, argv, "diw:", long_options, NULL)) != -1)
-    switch (opt)
+  جب ((opt = getopt_long (argc, argv, "diw:", long_options, تہی)) != -1)
+    انتخاب (opt)
       {
-      case 'd':
+      حالت 'd':
         decode = true;
-        break;
+        توڑو;
 
-      case 'w':
+      حالت 'w':
         {
           intmax_t w;
-          strtol_error s_err = xstrtoimax (optarg, NULL, 10, &w, "");
-          if (LONGINT_OVERFLOW < s_err || w < 0)
+          strtol_error s_err = xstrtoimax (optarg, تہی, 10, &w, "");
+          اگر (LONGINT_حد_سے_تجاوز < s_err || w < 0)
             error (EXIT_FAILURE, 0, "%s: %s",
                    _("invalid wrap size"), quote (optarg));
-          wrap_column = s_err == LONGINT_OVERFLOW || IDX_MAX < w ? 0 : w;
+          wrap_عمود = s_err == LONGINT_حد_سے_تجاوز || IDX_MAX < w ? 0 : w;
         }
-        break;
+        توڑو;
 
-      case 'i':
+      حالت 'i':
         ignore_garbage = true;
-        break;
+        توڑو;
 
-#if BASE_TYPE == 42
-      case BASE64_OPTION:
-      case BASE64URL_OPTION:
-      case BASE32_OPTION:
-      case BASE32HEX_OPTION:
-      case BASE16_OPTION:
-      case BASE2MSBF_OPTION:
-      case BASE2LSBF_OPTION:
-      case Z85_OPTION:
-      case BASE58_OPTION:
-        base_type = opt;
-        break;
-#endif
+#اگر بنیاد_TYPE == 42
+      حالت BASE64_OPTION:
+      حالت BASE64URL_OPTION:
+      حالت BASE32_OPTION:
+      حالت BASE32HEX_OPTION:
+      حالت BASE16_OPTION:
+      حالت BASE2MSBF_OPTION:
+      حالت BASE2LSBF_OPTION:
+      حالت Z85_OPTION:
+      حالت BASE58_OPTION:
+        بنیاد_type = opt;
+        توڑو;
+#اگر_ختم
 
       case_GETOPT_HELP_CHAR;
 
-      case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+      case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-      default:
+      طےشدہ:
         usage (EXIT_FAILURE);
-        break;
+        توڑو;
       }
 
-#if BASE_TYPE == 42
+#اگر بنیاد_TYPE == 42
   required_padding = no_required_padding;
   has_padding = no_padding;
-  get_pending_length = no_pending_length;
-  base_decode_ctx_finalize = decode_ctx_finalize;
+  get_pending_لمبائی = no_pending_لمبائی;
+  بنیاد_decode_ctx_finalize = decode_ctx_finalize;
 
-  switch (base_type)
+  انتخاب (بنیاد_type)
     {
-    case BASE64_OPTION:
-      base_length = base64_length_wrapper;
+    حالت BASE64_OPTION:
+      بنیاد_لمبائی_2 = base64_لمبائی_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_لمبائی = base64_ctx_get_pending_لمبائی;
       isubase = isubase64;
-      base_encode = base64_encode;
-      base_decode_ctx_init = base64_decode_ctx_init_wrapper;
-      base_decode_ctx = base64_decode_ctx_wrapper;
-      break;
+      بنیاد_encode = base64_encode;
+      بنیاد_decode_ctx_init = base64_decode_ctx_init_wrapper;
+      بنیاد_decode_ctx = base64_decode_ctx_wrapper;
+      توڑو;
 
-    case BASE64URL_OPTION:
-      base_length = base64_length_wrapper;
+    حالت BASE64URL_OPTION:
+      بنیاد_لمبائی_2 = base64_لمبائی_wrapper;
       required_padding = base64_required_padding;
       has_padding = base64_ctx_has_padding;
-      get_pending_length = base64_ctx_get_pending_length;
+      get_pending_لمبائی = base64_ctx_get_pending_لمبائی;
       isubase = isubase64url;
-      base_encode = base64url_encode;
-      base_decode_ctx_init = base64url_decode_ctx_init_wrapper;
-      base_decode_ctx = base64url_decode_ctx_wrapper;
-      break;
+      بنیاد_encode = base64url_encode;
+      بنیاد_decode_ctx_init = base64url_decode_ctx_init_wrapper;
+      بنیاد_decode_ctx = base64url_decode_ctx_wrapper;
+      توڑو;
 
-    case BASE32_OPTION:
-      base_length = base32_length_wrapper;
+    حالت BASE32_OPTION:
+      بنیاد_لمبائی_2 = base32_لمبائی_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_لمبائی = base32_ctx_get_pending_لمبائی;
       isubase = isubase32;
-      base_encode = base32_encode;
-      base_decode_ctx_init = base32_decode_ctx_init_wrapper;
-      base_decode_ctx = base32_decode_ctx_wrapper;
-      break;
+      بنیاد_encode = base32_encode;
+      بنیاد_decode_ctx_init = base32_decode_ctx_init_wrapper;
+      بنیاد_decode_ctx = base32_decode_ctx_wrapper;
+      توڑو;
 
-    case BASE32HEX_OPTION:
-      base_length = base32_length_wrapper;
+    حالت BASE32HEX_OPTION:
+      بنیاد_لمبائی_2 = base32_لمبائی_wrapper;
       required_padding = base32_required_padding;
       has_padding = base32_ctx_has_padding;
-      get_pending_length = base32_ctx_get_pending_length;
+      get_pending_لمبائی = base32_ctx_get_pending_لمبائی;
       isubase = isubase32hex;
-      base_encode = base32hex_encode;
-      base_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
-      base_decode_ctx = base32hex_decode_ctx_wrapper;
-      break;
+      بنیاد_encode = base32hex_encode;
+      بنیاد_decode_ctx_init = base32hex_decode_ctx_init_wrapper;
+      بنیاد_decode_ctx = base32hex_decode_ctx_wrapper;
+      توڑو;
 
-    case BASE16_OPTION:
-      base_length = base16_length;
-      get_pending_length = base16_ctx_get_pending_length;
+    حالت BASE16_OPTION:
+      بنیاد_لمبائی_2 = base16_لمبائی;
+      get_pending_لمبائی = base16_ctx_get_pending_لمبائی;
       isubase = isubase16;
-      base_encode = base16_encode;
-      base_decode_ctx_init = base16_decode_ctx_init;
-      base_decode_ctx = base16_decode_ctx;
-      break;
+      بنیاد_encode = base16_encode;
+      بنیاد_decode_ctx_init = base16_decode_ctx_init;
+      بنیاد_decode_ctx = base16_decode_ctx;
+      توڑو;
 
-    case BASE2MSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    حالت BASE2MSBF_OPTION:
+      بنیاد_لمبائی_2 = base2_لمبائی;
+      get_pending_لمبائی = base2_ctx_get_pending_لمبائی;
       isubase = isubase2;
-      base_encode = base2msbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2msbf_decode_ctx;
-      break;
+      بنیاد_encode = base2msbf_encode;
+      بنیاد_decode_ctx_init = base2_decode_ctx_init;
+      بنیاد_decode_ctx = base2msbf_decode_ctx;
+      توڑو;
 
-    case BASE2LSBF_OPTION:
-      base_length = base2_length;
-      get_pending_length = base2_ctx_get_pending_length;
+    حالت BASE2LSBF_OPTION:
+      بنیاد_لمبائی_2 = base2_لمبائی;
+      get_pending_لمبائی = base2_ctx_get_pending_لمبائی;
       isubase = isubase2;
-      base_encode = base2lsbf_encode;
-      base_decode_ctx_init = base2_decode_ctx_init;
-      base_decode_ctx = base2lsbf_decode_ctx;
-      break;
+      بنیاد_encode = base2lsbf_encode;
+      بنیاد_decode_ctx_init = base2_decode_ctx_init;
+      بنیاد_decode_ctx = base2lsbf_decode_ctx;
+      توڑو;
 
-    case Z85_OPTION:
-      base_length = z85_length;
-      get_pending_length = z85_ctx_get_pending_length;
+    حالت Z85_OPTION:
+      بنیاد_لمبائی_2 = z85_لمبائی;
+      get_pending_لمبائی = z85_ctx_get_pending_لمبائی;
       isubase = isuz85;
-      base_encode = z85_encode;
-      base_decode_ctx_init = z85_decode_ctx_init;
-      base_decode_ctx = z85_decode_ctx;
-      break;
+      بنیاد_encode = z85_encode;
+      بنیاد_decode_ctx_init = z85_decode_ctx_init;
+      بنیاد_decode_ctx = z85_decode_ctx;
+      توڑو;
 
-    case BASE58_OPTION:
-      base_length = base58_length;
+    حالت BASE58_OPTION:
+      بنیاد_لمبائی_2 = base58_لمبائی;
       isubase = isubase58;
-      base_encode_ctx_init = base58_encode_ctx_init;
-      base_encode_ctx = base58_encode_ctx;
-      base_encode_ctx_finalize = base58_encode_ctx_finalize;
-      base_decode_ctx_init = base58_decode_ctx_init;
-      base_decode_ctx = base58_decode_ctx;
-      base_decode_ctx_finalize = base58_decode_ctx_finalize;
-      break;
+      بنیاد_encode_ctx_init = base58_encode_ctx_init;
+      بنیاد_encode_ctx = base58_encode_ctx;
+      بنیاد_encode_ctx_finalize = base58_encode_ctx_finalize;
+      بنیاد_decode_ctx_init = base58_decode_ctx_init;
+      بنیاد_decode_ctx = base58_decode_ctx;
+      بنیاد_decode_ctx_finalize = base58_decode_ctx_finalize;
+      توڑو;
 
-    default:
+    طےشدہ:
       error (0, 0, _("missing encoding type"));
       usage (EXIT_FAILURE);
     }
-#endif
+#اگر_ختم
 
-  if (argc - optind > 1)
+  اگر (argc - optind > 1)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind < argc)
+  اگر (optind < argc)
     infile = argv[optind];
-  else
+  ورنہ
     infile = "-";
 
-  if (streq (infile, "-"))
+  اگر (streq (infile, "-"))
     {
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      input_fh = stdin;
+      xset_ثنائی_منوال (STDIN_FILENO, O_ثنائی);
+      داخلہ_fh = stdin;
     }
-  else
+  ورنہ
     {
-      input_fh = fopen (infile, "rb");
-      if (input_fh == NULL)
+      داخلہ_fh = fopen (infile, "rb");
+      اگر (داخلہ_fh == تہی)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
     }
 
-  fadvise (input_fh, FADVISE_SEQUENTIAL);
+  fadvise (داخلہ_fh, FADVISE_SEQUENTIAL);
 
-  if (decode)
-    do_decode (input_fh, infile, stdout, ignore_garbage);
-  else
-    do_encode (input_fh, infile, stdout, wrap_column);
+  اگر (decode)
+    do_decode (داخلہ_fh, infile, stdout, ignore_garbage);
+  ورنہ
+    do_encode (داخلہ_fh, infile, stdout, wrap_عمود);
 }

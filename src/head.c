@@ -23,53 +23,53 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
 
-#include "system.h"
+#شامل "system.h"
 
-#include "assure.h"
-#include "c-ctype.h"
-#include "full-read.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
+#شامل "assure.h"
+#شامل "c-ctype.h"
+#شامل "full-read.h"
+#شامل "stat-size.h"
+#شامل "xbinary-io.h"
+#شامل "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "head"
+#تعریف_کرو پروگرام_NAME "head"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* Number of lines/chars/blocks to head. */
-#define DEFAULT_NUMBER 10
+#تعریف_کرو DEFAULT_نمبر 10
 
 /* Useful only when eliding tail bytes or lines.
    If true, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+ساکن bool presume_داخلہ_pipe;
 
 /* If true, print filename headers. */
-static bool print_headers;
+ساکن bool print_سرخیاں;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+ساکن حرف سطر_انتہا = '\n';
 
 /* When to print the filename banners. */
-enum header_mode
+شمار سرخی_منوال
 {
-  multiple_files, always, never
+  مضرب_files, always, never
 };
 
 /* Have we ever read standard input?  */
-static bool have_read_stdin;
+ساکن bool have_read_stdin;
 
-enum Copy_fd_status
+شمار Copy_fd_حالت
   {
     COPY_FD_OK = 0,
     COPY_FD_READ_ERROR,
@@ -78,119 +78,119 @@ enum Copy_fd_status
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
-  PRESUME_INPUT_PIPE_OPTION = CHAR_MAX + 1
+  PRESUME_داخلہ_PIPE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"bytes", required_argument, NULL, 'c'},
-  {"lines", required_argument, NULL, 'n'},
-  {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 'q'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_دلیل, تہی, 'c'},
+  {"lines", required_دلیل, تہی, 'n'},
+  {"-presume-input-pipe", no_دلیل, تہی,
+   PRESUME_داخلہ_PIPE_OPTION}, /* do not document */
+  {"quiet", no_دلیل, تہی, 'q'},
+  {"silent", no_دلیل, تہی, 'q'},
+  {"verbose", no_دلیل, تہی, 'v'},
+  {"zero-terminated", no_دلیل, تہی, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
-      printf (_("\
-Print the first %d lines of each FILE to standard output.\n\
-With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_NUMBER);
+              پروگرام_name);
+      لکھو (_("\
+Print the پہلا %d سطریں کا each FILE مقصد standard output.\n\
+With مزید than one FILE, precede each with a سرخی giving the file name.\n\
+"), DEFAULT_نمبر);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --bytes=[-]NUM\n\
-         print the first NUM bytes of each file;\n\
-         with the leading '-', print all but the last NUM bytes of each file\n\
+  -c, --بائٹیں=[-]عدد_2\n\
+         print the پہلا عدد_2 بائٹیں کا each file;\n\
+         with the leading '-', print all but the آخری عدد_2 بائٹیں کا each file\n\
 "));
       oprintf (_("\
-  -n, --lines=[-]NUM\n\
-         print the first NUM lines instead of the first %d;\n\
-         with the leading '-', print all but the last NUM lines of each file\n\
-"), DEFAULT_NUMBER);
+  -n, --سطریں=[-]عدد_2\n\
+         print the پہلا عدد_2 سطریں instead کا the پہلا %d;\n\
+         with the leading '-', print all but the آخری عدد_2 سطریں کا each file\n\
+"), DEFAULT_نمبر);
       oputs (_("\
   -q, --quiet, --silent\n\
-         never print headers giving file names\n\
+         never print سرخیاں giving file نام\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         always print headers giving file names\n\
+         always print سرخیاں giving file نام\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         سطر delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+عدد_2 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
-GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB 1000*1000*1000, G 1024*1024*1024, and so on برائے T, P, E, Z, Y, R, Q.\n\
+ثنائی_2 prefixes can be مستعمل, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-static void
-diagnose_read_failure (char const *filename)
+ساکن خالی
+diagnose_read_failure (حرف ثابت *filename)
 {
   error (0, errno, _("error reading %s"), quoteaf (filename));
 }
 
-static void
-diagnose_copy_fd_failure (enum Copy_fd_status err, char const *filename)
+ساکن خالی
+diagnose_copy_fd_failure (شمار Copy_fd_حالت err, حرف ثابت *filename)
 {
-  switch (err)
+  انتخاب (err)
     {
-    case COPY_FD_READ_ERROR:
+    حالت COPY_FD_READ_ERROR:
       diagnose_read_failure (filename);
-      break;
-    case COPY_FD_UNEXPECTED_EOF:
+      توڑو;
+    حالت COPY_FD_UNEXPECTED_EOF:
       error (0, errno, _("%s: file has shrunk too much"), quotef (filename));
-      break;
-    case COPY_FD_OK: default:
+      توڑو;
+    حالت COPY_FD_OK: طےشدہ:
       affirm (false);
     }
 }
 
-static void
-write_header (char const *filename)
+ساکن خالی
+write_سرخی (حرف ثابت *filename)
 {
-  static bool first_file = true;
+  ساکن bool پہلا_file = true;
 
-  printf ("%s==> %s <==\n", (first_file ? "" : "\n"), quotef (filename));
-  first_file = false;
+  لکھو ("%s==> %s <==\n", (پہلا_file ? "" : "\n"), quotef (filename));
+  پہلا_file = false;
 }
 
 /* Write N_BYTES from BUFFER to stdout.
    Exit immediately on error with a single diagnostic.  */
 
-static void
-xwrite_stdout (char const *buffer, size_t n_bytes)
+ساکن خالی
+xwrite_stdout (حرف ثابت *بفر, size_t n_بائٹیں)
 {
-  if (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
+  اگر (n_بائٹیں > 0 && fwrite (بفر, 1, n_بائٹیں, stdout) < n_بائٹیں)
     {
       clearerr (stdout); /* To avoid redundant close_stdout diagnostic.  */
       fpurge (stdout);
@@ -202,35 +202,35 @@ xwrite_stdout (char const *buffer, size_t n_bytes)
 /* Copy no more than N_BYTES from file descriptor SRC_FD to stdout.
    Return an appropriate indication of success or read failure.  */
 
-static enum Copy_fd_status
-copy_fd (int src_fd, uintmax_t n_bytes)
+ساکن شمار Copy_fd_حالت
+copy_fd (صحیح src_fd, uintmax_t n_بائٹیں)
 {
-  char buf[BUFSIZ];
+  حرف buf[BUFSIZ];
 
   /* Copy the file contents.  */
-  while (0 < n_bytes)
+  جب (0 < n_بائٹیں)
     {
-      idx_t n_to_read = MIN (n_bytes, sizeof buf);
-      ssize_t n_read = read (src_fd, buf, n_to_read);
-      if (n_read < 0)
-        return COPY_FD_READ_ERROR;
+      idx_t n_مقصد_read = MIN (n_بائٹیں, حجم buf);
+      ssize_t n_read = اقرأ (src_fd, buf, n_مقصد_read);
+      اگر (n_read < 0)
+        واپس COPY_FD_READ_ERROR;
 
-      n_bytes -= n_read;
+      n_بائٹیں -= n_read;
 
-      if (n_read == 0 && n_bytes != 0)
-        return COPY_FD_UNEXPECTED_EOF;
+      اگر (n_read == 0 && n_بائٹیں != 0)
+        واپس COPY_FD_UNEXPECTED_EOF;
 
       xwrite_stdout (buf, n_read);
     }
 
-  return COPY_FD_OK;
+  واپس COPY_FD_OK;
 }
 
 /* Report an lseek failure at OFFSET compared to WHENCE, for FILENAME.  */
-static void
-elseek_diagnostic (off_t offset, int whence, char const *filename)
+ساکن خالی
+elseek_diagnostic (off_t انحراف, صحیح whence, حرف ثابت *filename)
 {
-  intmax_t off = offset;
+  intmax_t off = انحراف;
   error (0, errno,
          _(whence == SEEK_SET
            ? N_("%s: cannot seek to offset %jd")
@@ -243,15 +243,15 @@ elseek_diagnostic (off_t offset, int whence, char const *filename)
    SEEK_CUR.  Return the resulting offset.  Give a diagnostic and
    return -1 if lseek fails.  */
 
-static off_t
-elseek (int fd, off_t offset, int whence, char const *filename)
+ساکن off_t
+elseek (صحیح fd, off_t انحراف, صحیح whence, حرف ثابت *filename)
 {
-  off_t new_offset = lseek (fd, offset, whence);
+  off_t new_انحراف = lseek (fd, انحراف, whence);
 
-  if (new_offset < 0)
-    elseek_diagnostic (offset, whence, filename);
+  اگر (new_انحراف < 0)
+    elseek_diagnostic (انحراف, whence, filename);
 
-  return new_offset;
+  واپس new_انحراف;
 }
 
 /* For an input file with name FILENAME and descriptor FD,
@@ -261,29 +261,29 @@ elseek (int fd, off_t offset, int whence, char const *filename)
    just before the elided bytes before returning.
    Return true upon success.
    Give a diagnostic and return false upon error.  */
-static bool
-elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
+ساکن bool
+elide_دم_بائٹیں_pipe (حرف ثابت *filename, صحیح fd, uintmax_t n_elide,
                        off_t current_pos)
 {
   uintmax_t desired_pos = current_pos;
   bool ok = true;
 
-#ifndef HEAD_TAIL_PIPE_READ_BUFSIZE
-# define HEAD_TAIL_PIPE_READ_BUFSIZE BUFSIZ
-#endif
-#define READ_BUFSIZE HEAD_TAIL_PIPE_READ_BUFSIZE
+#اگر_غیر_تعریف_شدہ سر_دم_PIPE_READ_BUFSIZE
+# define سر_دم_PIPE_READ_BUFSIZE BUFSIZ
+#اگر_ختم
+#تعریف_کرو READ_BUFSIZE سر_دم_PIPE_READ_BUFSIZE
 
   /* If we're eliding no more than this many bytes, then it's ok to allocate
      more memory in order to use a more time-efficient algorithm.
      FIXME: use a fraction of available memory instead, as in sort.
      FIXME: is this even worthwhile?  */
-#ifndef HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD
-# define HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD 1024 * 1024
-#endif
+#اگر_غیر_تعریف_شدہ سر_دم_PIPE_BYTECOUNT_حد
+# define سر_دم_PIPE_BYTECOUNT_حد 1024 * 1024
+#اگر_ختم
 
-#if HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD < 2 * READ_BUFSIZE
+#اگر سر_دم_PIPE_BYTECOUNT_حد < 2 * READ_BUFSIZE
 # error "HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD must be at least 2 * READ_BUFSIZE"
-#endif
+#اگر_ختم
 
   /* Two cases to consider...
      1) n_elide is small enough that we can afford to double-buffer:
@@ -297,42 +297,42 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
      a ridiculous amount, but when given only a small input.  */
 
   static_assert (READ_BUFSIZE <= IDX_MAX);
-  static_assert (HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD <= IDX_MAX - READ_BUFSIZE);
-  if (n_elide <= HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD)
+  static_assert (سر_دم_PIPE_BYTECOUNT_حد <= IDX_MAX - READ_BUFSIZE);
+  اگر (n_elide <= سر_دم_PIPE_BYTECOUNT_حد)
     {
-      idx_t in_elide = n_elide;
-      bool first = true;
+      idx_t اندر_elide = n_elide;
+      bool پہلا = true;
       bool eof = false;
-      idx_t n_to_read = READ_BUFSIZE + n_elide;
-      char *b[2];
-      b[0] = xnmalloc (2, n_to_read);
-      b[1] = b[0] + n_to_read;
+      idx_t n_مقصد_read = READ_BUFSIZE + n_elide;
+      حرف *b[2];
+      b[0] = xnmalloc (2, n_مقصد_read);
+      b[1] = b[0] + n_مقصد_read;
 
-      for (bool i = false; ! eof ; i = !i)
+      برائے (bool i = false; ! eof ; i = !i)
         {
-          idx_t n_read = full_read (fd, b[i], n_to_read);
+          idx_t n_read = بھرا_read (fd, b[i], n_مقصد_read);
           idx_t delta = 0;
-          if (n_read < n_to_read)
+          اگر (n_read < n_مقصد_read)
             {
-              if (errno != 0)
+              اگر (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  break;
+                  توڑو;
                 }
 
               /* reached EOF */
-              if (n_read <= in_elide)
+              اگر (n_read <= اندر_elide)
                 {
-                  if (first)
+                  اگر (پہلا)
                     {
                       /* The input is no larger than the number of bytes
                          to elide.  So there's nothing to output, and
                          we're done.  */
                     }
-                  else
+                  ورنہ
                     {
-                      delta = in_elide - n_read;
+                      delta = اندر_elide - n_read;
                     }
                 }
               eof = true;
@@ -340,30 +340,30 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
           /* Output any (but maybe just part of the) elided data from
              the previous round.  */
-          if (! first)
+          اگر (! پہلا)
             {
-              desired_pos += in_elide - delta;
-              xwrite_stdout (b[!i] + READ_BUFSIZE, in_elide - delta);
+              desired_pos += اندر_elide - delta;
+              xwrite_stdout (b[!i] + READ_BUFSIZE, اندر_elide - delta);
             }
-          first = false;
+          پہلا = false;
 
-          if (in_elide < n_read)
+          اگر (اندر_elide < n_read)
             {
-              desired_pos += n_read - in_elide;
-              xwrite_stdout (b[i], n_read - in_elide);
+              desired_pos += n_read - اندر_elide;
+              xwrite_stdout (b[i], n_read - اندر_elide);
             }
         }
 
-      free (b[0]);
+      آزاد (b[0]);
     }
-  else
+  ورنہ
     {
       /* Read blocks of size READ_BUFSIZE, until we've read at least n_elide
          bytes.  Then, for each new buffer we read, also write an old one.  */
 
       bool eof = false;
       idx_t n_read;
-      char **b = NULL;
+      حرف **b = تہی;
 
       idx_t remainder = n_elide % READ_BUFSIZE;
       /* The number of buffers needed to hold n_elide bytes plus one
@@ -374,57 +374,57 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
       idx_t n_array_alloc = 0;
 
       bool buffered_enough = false;
-      idx_t i, i_next;
-      for (i = 0, i_next = 1; !eof; i = i_next, i_next = (i_next + 1) % n_bufs)
+      idx_t i, i_اگلا;
+      برائے (i = 0, i_اگلا = 1; !eof; i = i_اگلا, i_اگلا = (i_اگلا + 1) % n_bufs)
         {
-          if (n_array_alloc == i)
+          اگر (n_array_alloc == i)
             b = xpalloc (b, &n_array_alloc, 1, MIN (n_bufs, PTRDIFF_MAX),
-                         sizeof *b);
+                         حجم *b);
 
-          if (! buffered_enough)
+          اگر (! buffered_enough)
             {
               b[i] = xmalloc (READ_BUFSIZE);
               n_alloc = i + 1;
             }
-          n_read = full_read (fd, b[i], READ_BUFSIZE);
-          if (n_read < READ_BUFSIZE)
+          n_read = بھرا_read (fd, b[i], READ_BUFSIZE);
+          اگر (n_read < READ_BUFSIZE)
             {
-              if (errno != 0)
+              اگر (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  goto free_mem;
+                  جاؤ free_mem;
                 }
               eof = true;
             }
 
-          if (i + 1 == n_bufs)
+          اگر (i + 1 == n_bufs)
             buffered_enough = true;
 
-          if (buffered_enough)
+          اگر (buffered_enough)
             {
               desired_pos += n_read;
-              xwrite_stdout (b[i_next], n_read);
+              xwrite_stdout (b[i_اگلا], n_read);
             }
         }
 
       /* Output the remainder: rem bytes from b[i] + n_read.  */
       idx_t rem = READ_BUFSIZE - remainder;
-      if (buffered_enough)
+      اگر (buffered_enough)
         {
-          idx_t n_bytes_left_in_b_i = READ_BUFSIZE - n_read;
+          idx_t n_بائٹیں_بایاں_اندر_b_i = READ_BUFSIZE - n_read;
           desired_pos += rem;
-          if (rem < n_bytes_left_in_b_i)
+          اگر (rem < n_بائٹیں_بایاں_اندر_b_i)
             {
               xwrite_stdout (b[i] + n_read, rem);
             }
-          else
+          ورنہ
             {
-              xwrite_stdout (b[i] + n_read, n_bytes_left_in_b_i);
-              xwrite_stdout (b[i_next], rem - n_bytes_left_in_b_i);
+              xwrite_stdout (b[i] + n_read, n_بائٹیں_بایاں_اندر_b_i);
+              xwrite_stdout (b[i_اگلا], rem - n_بائٹیں_بایاں_اندر_b_i);
             }
         }
-      else if (i + 1 == n_bufs)
+      ورنہ اگر (i + 1 == n_bufs)
         {
           /* This happens when
              n_elide < file_size < (n_bufs - 1) * READ_BUFSIZE.
@@ -442,18 +442,18 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
           idx_t y = READ_BUFSIZE - rem;
           idx_t x = n_read - y;
           desired_pos += x;
-          xwrite_stdout (b[i_next], x);
+          xwrite_stdout (b[i_اگلا], x);
         }
 
     free_mem:
-      for (i = 0; i < n_alloc; i++)
-        free (b[i]);
-      free (b);
+      برائے (i = 0; i < n_alloc; i++)
+        آزاد (b[i]);
+      آزاد (b);
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  اگر (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  واپس ok;
 }
 
 /* For the file FILENAME with descriptor FD, output all but the last N_ELIDE
@@ -464,29 +464,29 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 /* NOTE: if the input file shrinks by more than N_ELIDE bytes between
    the length determination and the actual reading, then head fails.  */
 
-static bool
-elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+ساکن bool
+elide_دم_بائٹیں_file (حرف ثابت *filename, صحیح fd, uintmax_t n_elide,
+                       ساخت stat ثابت *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_bytes_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t سائز = st->st_سائز;
+  اگر (current_pos < 0 || سائز <= STP_BLKSIZE (st))
+    واپس elide_دم_بائٹیں_pipe (filename, fd, n_elide, current_pos);
+  ورنہ
     {
       /* Be careful here.  The current position may actually be
          beyond the end of the file.  */
-      off_t diff = size - current_pos;
-      off_t bytes_remaining = diff < 0 ? 0 : diff;
+      off_t diff = سائز - current_pos;
+      off_t بائٹیں_بقایا = diff < 0 ? 0 : diff;
 
-      if (bytes_remaining <= n_elide)
-        return true;
+      اگر (بائٹیں_بقایا <= n_elide)
+        واپس true;
 
-      enum Copy_fd_status err = copy_fd (fd, bytes_remaining - n_elide);
-      if (err == COPY_FD_OK)
-        return true;
+      شمار Copy_fd_حالت err = copy_fd (fd, بائٹیں_بقایا - n_elide);
+      اگر (err == COPY_FD_OK)
+        واپس true;
 
       diagnose_copy_fd_failure (err, filename);
-      return false;
+      واپس false;
     }
 }
 
@@ -497,143 +497,143 @@ elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
    Buffer the specified number of lines as a linked list of LBUFFERs,
    adding them as needed.  Return true if successful.  */
 
-static bool
-elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
+ساکن bool
+elide_دم_سطریں_pipe (حرف ثابت *filename, صحیح fd, uintmax_t n_elide,
                        off_t current_pos)
 {
-  struct linebuffer
+  ساخت linebuffer
   {
-    char buffer[BUFSIZ + 1];
+    حرف بفر[BUFSIZ + 1];
     size_t nbytes;
     size_t nlines;
-    struct linebuffer *next;
+    ساخت linebuffer *اگلا;
   };
   off_t desired_pos = current_pos;
-  typedef struct linebuffer LBUFFER;
-  LBUFFER *first, *last, *tmp;
-  size_t total_lines = 0;	/* Total number of newlines in all buffers.  */
+  قسمتعریف ساخت linebuffer LBUFFER;
+  LBUFFER *پہلا, *آخری, *tmp;
+  size_t کل_سطریں = 0;	/* Total number of newlines in all buffers.  */
   bool ok = true;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
-  first = last = xmalloc (sizeof (LBUFFER));
-  first->nbytes = first->nlines = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (LBUFFER));
+  پہلا = آخری = xmalloc (حجم (LBUFFER));
+  پہلا->nbytes = پہلا->nlines = 0;
+  پہلا->اگلا = تہی;
+  tmp = xmalloc (حجم (LBUFFER));
 
   /* Always read into a fresh buffer.
      Read, (producing no output) until we've accumulated at least
      n_elide newlines, or until EOF, whichever comes first.  */
-  while (true)
+  جب (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = اقرأ (fd, tmp->بفر, BUFSIZ);
+      اگر (n_read <= 0)
+        توڑو;
 
-      if (! n_elide)
+      اگر (! n_elide)
         {
           desired_pos += n_read;
-          xwrite_stdout (tmp->buffer, n_read);
-          continue;
+          xwrite_stdout (tmp->بفر, n_read);
+          جاری;
         }
 
       tmp->nbytes = n_read;
       tmp->nlines = 0;
-      tmp->next = NULL;
+      tmp->اگلا = تہی;
 
       /* Count the number of newlines just read.  */
       {
-        char *buffer_end = tmp->buffer + n_read;
-        *buffer_end = line_end;
-        char const *p = tmp->buffer;
-        while ((p = rawmemchr (p, line_end)) < buffer_end)
+        حرف *بفر_انتہا = tmp->بفر + n_read;
+        *بفر_انتہا = سطر_انتہا;
+        حرف ثابت *p = tmp->بفر;
+        جب ((p = rawmemchr (p, سطر_انتہا)) < بفر_انتہا)
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      کل_سطریں += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      اگر (tmp->nbytes + آخری->nbytes < BUFSIZ)
         {
-          memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
-          last->nbytes += tmp->nbytes;
-          last->nlines += tmp->nlines;
+          حافظہ_نقل (&آخری->بفر[آخری->nbytes], tmp->بفر, tmp->nbytes);
+          آخری->nbytes += tmp->nbytes;
+          آخری->nlines += tmp->nlines;
         }
-      else
+      ورنہ
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
              read if that would leave enough lines, or else malloc a new one.
              Some compaction mechanism is possible but probably not
              worthwhile.  */
-          last = last->next = tmp;
-          if (n_elide < total_lines - first->nlines)
+          آخری = آخری->اگلا = tmp;
+          اگر (n_elide < کل_سطریں - پہلا->nlines)
             {
-              desired_pos += first->nbytes;
-              xwrite_stdout (first->buffer, first->nbytes);
-              tmp = first;
-              total_lines -= first->nlines;
-              first = first->next;
+              desired_pos += پہلا->nbytes;
+              xwrite_stdout (پہلا->بفر, پہلا->nbytes);
+              tmp = پہلا;
+              کل_سطریں -= پہلا->nlines;
+              پہلا = پہلا->اگلا;
             }
-          else
-            tmp = xmalloc (sizeof (LBUFFER));
+          ورنہ
+            tmp = xmalloc (حجم (LBUFFER));
         }
     }
 
-  free (tmp);
+  آزاد (tmp);
 
-  if (n_read < 0)
+  اگر (n_read < 0)
     {
       diagnose_read_failure (filename);
       ok = false;
-      goto free_lbuffers;
+      جاؤ free_lbuffers;
     }
 
   /* If we read any bytes at all, count the incomplete line
      on files that don't end with a newline.  */
-  if (last->nbytes && last->buffer[last->nbytes - 1] != line_end)
+  اگر (آخری->nbytes && آخری->بفر[آخری->nbytes - 1] != سطر_انتہا)
     {
-      ++last->nlines;
-      ++total_lines;
+      ++آخری->nlines;
+      ++کل_سطریں;
     }
 
-  for (tmp = first; n_elide < total_lines - tmp->nlines; tmp = tmp->next)
+  برائے (tmp = پہلا; n_elide < کل_سطریں - tmp->nlines; tmp = tmp->اگلا)
     {
       desired_pos += tmp->nbytes;
-      xwrite_stdout (tmp->buffer, tmp->nbytes);
-      total_lines -= tmp->nlines;
+      xwrite_stdout (tmp->بفر, tmp->nbytes);
+      کل_سطریں -= tmp->nlines;
     }
 
   /* Print the first 'total_lines - n_elide' lines of tmp->buffer.  */
-  if (n_elide < total_lines)
+  اگر (n_elide < کل_سطریں)
     {
-      size_t n = total_lines - n_elide;
-      char const *buffer_end = tmp->buffer + tmp->nbytes;
-      char const *p = tmp->buffer;
-      while (n && (p = memchr (p, line_end, buffer_end - p)))
+      size_t n = کل_سطریں - n_elide;
+      حرف ثابت *بفر_انتہا = tmp->بفر + tmp->nbytes;
+      حرف ثابت *p = tmp->بفر;
+      جب (n && (p = memchr (p, سطر_انتہا, بفر_انتہا - p)))
         {
           ++p;
           ++tmp->nlines;
           --n;
         }
-      desired_pos += p - tmp->buffer;
-      xwrite_stdout (tmp->buffer, p - tmp->buffer);
+      desired_pos += p - tmp->بفر;
+      xwrite_stdout (tmp->بفر, p - tmp->بفر);
     }
 
 free_lbuffers:
-  while (first)
+  جب (پہلا)
     {
-      tmp = first->next;
-      free (first);
-      first = tmp;
+      tmp = پہلا->اگلا;
+      آزاد (پہلا);
+      پہلا = tmp;
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  اگر (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  واپس ok;
 }
 
 /* Output all but the last N_LINES lines of the input stream defined by
@@ -647,105 +647,105 @@ free_lbuffers:
    NOTE: this code is very similar to that of tail.c's file_lines function.
    Unfortunately, factoring out some common core looks like it'd result
    in a less efficient implementation or a messy interface.  */
-static bool
-elide_tail_lines_seekable (char const *pretty_filename, int fd,
-                           uintmax_t n_lines,
-                           off_t start_pos, off_t size)
+ساکن bool
+elide_دم_سطریں_seekable (حرف ثابت *pretty_filename, صحیح fd,
+                           uintmax_t n_سطریں,
+                           off_t آغاز_pos, off_t سائز)
 {
-  char buffer[BUFSIZ];
-  ssize_t bytes_read;
-  off_t pos = size;
+  حرف بفر[BUFSIZ];
+  ssize_t بائٹیں_read;
+  off_t pos = سائز;
 
   /* Set 'bytes_read' to the size of the last, probably partial, buffer;
      0 < 'bytes_read' <= 'BUFSIZ'.  */
-  bytes_read = (pos - start_pos) % BUFSIZ;
-  if (bytes_read == 0)
-    bytes_read = BUFSIZ;
+  بائٹیں_read = (pos - آغاز_pos) % BUFSIZ;
+  اگر (بائٹیں_read == 0)
+    بائٹیں_read = BUFSIZ;
   /* Make 'pos' a multiple of 'BUFSIZ' (0 if the file is short), so that all
      reads will be on block boundaries, which might increase efficiency.  */
-  pos -= bytes_read;
-  if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-    return false;
-  bytes_read = read (fd, buffer, bytes_read);
-  if (bytes_read < 0)
+  pos -= بائٹیں_read;
+  اگر (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+    واپس false;
+  بائٹیں_read = اقرأ (fd, بفر, بائٹیں_read);
+  اگر (بائٹیں_read < 0)
     {
       diagnose_read_failure (pretty_filename);
-      return false;
+      واپس false;
     }
 
   /* n_lines == 0 case needs special treatment. */
-  const bool all_lines = !n_lines;
+  ثابت bool all_سطریں = !n_سطریں;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (n_lines && bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  اگر (n_سطریں && بائٹیں_read && بفر[بائٹیں_read - 1] != سطر_انتہا)
+    --n_سطریں;
 
-  while (true)
+  جب (true)
     {
       /* Scan backward, counting the newlines in this bufferfull.  */
 
-      idx_t n = bytes_read;
-      while (n)
+      idx_t n = بائٹیں_read;
+      جب (n)
         {
-          if (all_lines)
+          اگر (all_سطریں)
             n -= 1;
-          else
+          ورنہ
             {
-              char const *nl;
-              nl = memrchr (buffer, line_end, n);
-              if (nl == NULL)
-                break;
-              n = nl - buffer;
+              حرف ثابت *nl;
+              nl = memrchr (بفر, سطر_انتہا, n);
+              اگر (nl == تہی)
+                توڑو;
+              n = nl - بفر;
             }
-          if (n_lines-- == 0)
+          اگر (n_سطریں-- == 0)
             {
               /* Found it.  */
               /* If necessary, restore the file pointer and copy
                  input to output up to position, POS.  */
-              if (start_pos < pos)
+              اگر (آغاز_pos < pos)
                 {
-                  enum Copy_fd_status err;
-                  if (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
-                    return false;
+                  شمار Copy_fd_حالت err;
+                  اگر (elseek (fd, آغاز_pos, SEEK_SET, pretty_filename) < 0)
+                    واپس false;
 
-                  err = copy_fd (fd, pos - start_pos);
-                  if (err != COPY_FD_OK)
+                  err = copy_fd (fd, pos - آغاز_pos);
+                  اگر (err != COPY_FD_OK)
                     {
                       diagnose_copy_fd_failure (err, pretty_filename);
-                      return false;
+                      واپس false;
                     }
                 }
 
               /* Output the initial portion of the buffer
                  in which we found the desired newline byte.  */
-              xwrite_stdout (buffer, n + 1);
+              xwrite_stdout (بفر, n + 1);
 
               /* Set file pointer to the byte after what we've output.  */
-              return 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
+              واپس 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
             }
         }
 
       /* Not enough newlines in that bufferfull.  */
-      if (pos == start_pos)
+      اگر (pos == آغاز_pos)
         {
           /* Not enough lines in the file.  */
-          return true;
+          واپس true;
         }
       pos -= BUFSIZ;
-      if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-        return false;
+      اگر (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+        واپس false;
 
-      bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read < 0)
+      بائٹیں_read = اقرأ (fd, بفر, BUFSIZ);
+      اگر (بائٹیں_read < 0)
         {
           diagnose_read_failure (pretty_filename);
-          return false;
+          واپس false;
         }
 
       /* FIXME: is this dead code?
          Consider the test, pos == start_pos, above. */
-      if (bytes_read == 0)
-        return true;
+      اگر (بائٹیں_read == 0)
+        واپس true;
     }
 }
 
@@ -754,144 +754,144 @@ elide_tail_lines_seekable (char const *pretty_filename, int fd,
    at CURRENT_POS.  The file's status is ST.  Return true on success.
    Give a diagnostic and return false upon error.  */
 
-static bool
-elide_tail_lines_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+ساکن bool
+elide_دم_سطریں_file (حرف ثابت *filename, صحیح fd, uintmax_t n_elide,
+                       ساخت stat ثابت *st, off_t current_pos)
 {
-  off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_lines_pipe (filename, fd, n_elide, current_pos);
-  else
+  off_t سائز = st->st_سائز;
+  اگر (current_pos < 0 || سائز <= STP_BLKSIZE (st))
+    واپس elide_دم_سطریں_pipe (filename, fd, n_elide, current_pos);
+  ورنہ
     {
       /* Find the offset, OFF, of the Nth newline from the end,
          but not counting the last byte of the file.
          If found, write from current position to OFF, inclusive.
          Otherwise, just return true.  */
 
-      return (size <= current_pos
-              || elide_tail_lines_seekable (filename, fd, n_elide,
-                                            current_pos, size));
+      واپس (سائز <= current_pos
+              || elide_دم_سطریں_seekable (filename, fd, n_elide,
+                                            current_pos, سائز));
     }
 }
 
-static bool
-head_bytes (char const *filename, int fd, uintmax_t bytes_to_write)
+ساکن bool
+سر_بائٹیں (حرف ثابت *filename, صحیح fd, uintmax_t بائٹیں_مقصد_write)
 {
-  if (copy_fd (fd, bytes_to_write) == COPY_FD_READ_ERROR)
+  اگر (copy_fd (fd, بائٹیں_مقصد_write) == COPY_FD_READ_ERROR)
     {
       diagnose_read_failure (filename);
-      return false;
+      واپس false;
     }
-  return true;
+  واپس true;
 }
 
-static bool
-head_lines (char const *filename, int fd, uintmax_t lines_to_write)
+ساکن bool
+سر_سطریں (حرف ثابت *filename, صحیح fd, uintmax_t سطریں_مقصد_write)
 {
-  char buffer[BUFSIZ];
+  حرف بفر[BUFSIZ];
 
-  while (lines_to_write)
+  جب (سطریں_مقصد_write)
     {
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
-      idx_t bytes_to_write = 0;
+      ssize_t بائٹیں_read = اقرأ (fd, بفر, BUFSIZ);
+      idx_t بائٹیں_مقصد_write = 0;
 
-      if (bytes_read < 0)
+      اگر (بائٹیں_read < 0)
         {
           diagnose_read_failure (filename);
-          return false;
+          واپس false;
         }
-      if (bytes_read == 0)
-        break;
-      while (bytes_to_write < bytes_read)
-        if (buffer[bytes_to_write++] == line_end && --lines_to_write == 0)
+      اگر (بائٹیں_read == 0)
+        توڑو;
+      جب (بائٹیں_مقصد_write < بائٹیں_read)
+        اگر (بفر[بائٹیں_مقصد_write++] == سطر_انتہا && --سطریں_مقصد_write == 0)
           {
-            off_t n_bytes_past_EOL = bytes_read - bytes_to_write;
+            off_t n_بائٹیں_past_EOL = بائٹیں_read - بائٹیں_مقصد_write;
             /* If we have read more data than that on the specified number
                of lines, try to seek back to the position we would have
                gotten to had we been reading one byte at a time.  */
-            if (lseek (fd, -n_bytes_past_EOL, SEEK_CUR) < 0)
+            اگر (lseek (fd, -n_بائٹیں_past_EOL, SEEK_CUR) < 0)
               {
-                struct stat st;
-                if (fstat (fd, &st) != 0 || S_ISREG (st.st_mode))
-                  elseek_diagnostic (-n_bytes_past_EOL, SEEK_CUR, filename);
+                ساخت stat st;
+                اگر (fstat (fd, &st) != 0 || S_ISREG (st.st_منوال))
+                  elseek_diagnostic (-n_بائٹیں_past_EOL, SEEK_CUR, filename);
               }
-            break;
+            توڑو;
           }
-      xwrite_stdout (buffer, bytes_to_write);
+      xwrite_stdout (بفر, بائٹیں_مقصد_write);
     }
-  return true;
+  واپس true;
 }
 
-static bool
-head (char const *filename, int fd, uintmax_t n_units, bool count_lines,
-      bool elide_from_end)
+ساکن bool
+سر (حرف ثابت *filename, صحیح fd, uintmax_t n_units, bool گنتی_سطریں,
+      bool elide_from_انتہا)
 {
-  if (print_headers)
-    write_header (filename);
+  اگر (print_سرخیاں)
+    write_سرخی (filename);
 
-  if (elide_from_end)
+  اگر (elide_from_انتہا)
     {
       /* Optimize for "infinite" elisions.  */
-      if (n_units == UINTMAX_MAX)
-        return true;
+      اگر (n_units == UINTMAX_MAX)
+        واپس true;
 
       off_t current_pos = -1;
-      struct stat st;
-      if (fstat (fd, &st) != 0)
+      ساخت stat st;
+      اگر (fstat (fd, &st) != 0)
         {
           error (0, errno, _("cannot fstat %s"),
                  quoteaf (filename));
-          return false;
+          واپس false;
         }
-      if (! presume_input_pipe && S_ISREG (st.st_mode))
+      اگر (! presume_داخلہ_pipe && S_ISREG (st.st_منوال))
         {
           current_pos = elseek (fd, 0, SEEK_CUR, filename);
-          if (current_pos < 0)
-            return false;
+          اگر (current_pos < 0)
+            واپس false;
         }
-      if (count_lines)
-        return elide_tail_lines_file (filename, fd, n_units, &st, current_pos);
-      else
-        return elide_tail_bytes_file (filename, fd, n_units, &st, current_pos);
+      اگر (گنتی_سطریں)
+        واپس elide_دم_سطریں_file (filename, fd, n_units, &st, current_pos);
+      ورنہ
+        واپس elide_دم_بائٹیں_file (filename, fd, n_units, &st, current_pos);
     }
-  if (count_lines)
-    return head_lines (filename, fd, n_units);
-  else
-    return head_bytes (filename, fd, n_units);
+  اگر (گنتی_سطریں)
+    واپس سر_سطریں (filename, fd, n_units);
+  ورنہ
+    واپس سر_بائٹیں (filename, fd, n_units);
 }
 
-static bool
-head_file (char const *filename, uintmax_t n_units, bool count_lines,
-           bool elide_from_end)
+ساکن bool
+سر_file (حرف ثابت *filename, uintmax_t n_units, bool گنتی_سطریں,
+           bool elide_from_انتہا)
 {
-  int fd;
+  صحیح fd;
   bool ok;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  اگر (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_ثنائی_منوال (STDIN_FILENO, O_ثنائی);
     }
-  else
+  ورنہ
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_ثنائی);
+      اگر (fd < 0)
         {
           error (0, errno, _("cannot open %s for reading"), quoteaf (filename));
-          return false;
+          واپس false;
         }
     }
 
-  ok = head (filename, fd, n_units, count_lines, elide_from_end);
-  if (!is_stdin && close (fd) != 0)
+  ok = سر (filename, fd, n_units, گنتی_سطریں, elide_from_انتہا);
+  اگر (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (filename));
-      return false;
+      واپس false;
     }
-  return ok;
+  واپس ok;
 }
 
 /* Convert a string of decimal digits, N_STRING, with an optional suffix
@@ -901,97 +901,97 @@ head_file (char const *filename, uintmax_t n_units, bool count_lines,
    COUNT_LINES indicates whether N_STRING is a number of bytes or a number
    of lines.  It is used solely to give a more specific diagnostic.  */
 
-static uintmax_t
-string_to_integer (bool count_lines, char const *n_string)
+ساکن uintmax_t
+string_مقصد_integer (bool گنتی_سطریں, حرف ثابت *n_string)
 {
-  return xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
-                     (count_lines
+  واپس xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
+                     (گنتی_سطریں
                       ? _("invalid number of lines")
                       : _("invalid number of bytes")),
                      0, XTOINT_MAX_QUIET);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  enum header_mode header_mode = multiple_files;
+  شمار سرخی_منوال سرخی_منوال = مضرب_files;
   bool ok = true;
-  int c;
+  صحیح c;
 
   /* Number of items to output, or to elide from the end.
      UINTMAX_MAX stands for an essentially unlimited number.  */
-  uintmax_t n_units = DEFAULT_NUMBER;
+  uintmax_t n_units = DEFAULT_نمبر;
 
   /* If true, interpret the numeric argument as the number of lines.
      Otherwise, interpret it as the number of bytes.  */
-  bool count_lines = true;
+  bool گنتی_سطریں = true;
 
   /* Elide the specified number of lines or bytes, counting from
      the end of the file.  */
-  bool elide_from_end = false;
+  bool elide_from_انتہا = false;
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file_list;
+  ساکن حرف ثابت *ثابت default_file_list[] = {"-", تہی};
+  حرف ثابت *ثابت *file_list;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  if (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  اگر (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
-      char *a = argv[1];
-      char *n_string = ++a;
-      char *end_n_string;
-      char multiplier_char = 0;
+      حرف *a = argv[1];
+      حرف *n_string = ++a;
+      حرف *انتہا_n_string;
+      حرف multiplier_char = 0;
 
       /* Old option syntax; a dash, one or more digits, and one or
          more option letters.  Move past the number. */
-      do ++a;
-      while (c_isdigit (*a));
+      کرو ++a;
+      جب (c_isdigit (*a));
 
       /* Pointer to the byte after the last digit.  */
-      end_n_string = a;
+      انتہا_n_string = a;
 
       /* Parse any appended option letters. */
-      for (; *a; a++)
+      برائے (; *a; a++)
         {
-          switch (*a)
+          انتخاب (*a)
             {
-            case 'c':
-              count_lines = false;
+            حالت 'c':
+              گنتی_سطریں = false;
               multiplier_char = 0;
-              break;
+              توڑو;
 
-            case 'b':
-            case 'k':
-            case 'm':
-              count_lines = false;
+            حالت 'b':
+            حالت 'k':
+            حالت 'm':
+              گنتی_سطریں = false;
               multiplier_char = *a;
-              break;
+              توڑو;
 
-            case 'l':
-              count_lines = true;
-              break;
+            حالت 'l':
+              گنتی_سطریں = true;
+              توڑو;
 
-            case 'q':
-              header_mode = never;
-              break;
+            حالت 'q':
+              سرخی_منوال = never;
+              توڑو;
 
-            case 'v':
-              header_mode = always;
-              break;
+            حالت 'v':
+              سرخی_منوال = always;
+              توڑو;
 
-            case 'z':
-              line_end = '\0';
-              break;
+            حالت 'z':
+              سطر_انتہا = '\0';
+              توڑو;
 
-            default:
+            طےشدہ:
               error (0, 0, _("invalid trailing option -- %c"), *a);
               usage (EXIT_FAILURE);
             }
@@ -999,11 +999,11 @@ main (int argc, char **argv)
 
       /* Append the multiplier character (if any) onto the end of
          the digit string.  Then add NUL byte if necessary.  */
-      *end_n_string = multiplier_char;
-      if (multiplier_char)
-        *(++end_n_string) = 0;
+      *انتہا_n_string = multiplier_char;
+      اگر (multiplier_char)
+        *(++انتہا_n_string) = 0;
 
-      n_units = string_to_integer (count_lines, n_string);
+      n_units = string_مقصد_integer (گنتی_سطریں, n_string);
 
       /* Make the options we just parsed invisible to getopt. */
       argv[1] = argv[0];
@@ -1011,70 +1011,70 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
-                           long_options, NULL))
+  جب ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
+                           long_options, تہی))
          != -1)
     {
-      switch (c)
+      انتخاب (c)
         {
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
-          break;
+        حالت PRESUME_داخلہ_PIPE_OPTION:
+          presume_داخلہ_pipe = true;
+          توڑو;
 
-        case 'c':
-          count_lines = false;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        حالت 'c':
+          گنتی_سطریں = false;
+          elide_from_انتہا = (*optarg == '-');
+          اگر (elide_from_انتہا)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_مقصد_integer (گنتی_سطریں, optarg);
+          توڑو;
 
-        case 'n':
-          count_lines = true;
-          elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+        حالت 'n':
+          گنتی_سطریں = true;
+          elide_from_انتہا = (*optarg == '-');
+          اگر (elide_from_انتہا)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_مقصد_integer (گنتی_سطریں, optarg);
+          توڑو;
 
-        case 'q':
-          header_mode = never;
-          break;
+        حالت 'q':
+          سرخی_منوال = never;
+          توڑو;
 
-        case 'v':
-          header_mode = always;
-          break;
+        حالت 'v':
+          سرخی_منوال = always;
+          توڑو;
 
-        case 'z':
-          line_end = '\0';
-          break;
+        حالت 'z':
+          سطر_انتہا = '\0';
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
-          if (c_isdigit (c))
+        طےشدہ:
+          اگر (c_isdigit (c))
             error (0, 0, _("invalid trailing option -- %c"), c);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (header_mode == always
-      || (header_mode == multiple_files && optind < argc - 1))
-    print_headers = true;
+  اگر (سرخی_منوال == always
+      || (سرخی_منوال == مضرب_files && optind < argc - 1))
+    print_سرخیاں = true;
 
   file_list = (optind < argc
-               ? (char const *const *) &argv[optind]
+               ? (حرف ثابت *ثابت *) &argv[optind]
                : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_ثنائی_منوال (STDOUT_FILENO, O_ثنائی);
 
-  for (size_t i = 0; file_list[i]; ++i)
-    ok &= head_file (file_list[i], n_units, count_lines, elide_from_end);
+  برائے (size_t i = 0; file_list[i]; ++i)
+    ok &= سر_file (file_list[i], n_units, گنتی_سطریں, elide_from_انتہا);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  اگر (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -35,50 +35,50 @@
    A FILE of '-' means standard input.
    If no FILEs are given, standard input is used. */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "fadvise.h"
-#include "mcel.h"
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل "system.h"
+#شامل "fadvise.h"
+#شامل "mcel.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "paste"
+#تعریف_کرو پروگرام_NAME "paste"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("David M. Ihnat"), \
   proper_name ("David MacKenzie")
 
 /* If nonzero, we have read standard input at some point. */
-static bool have_read_stdin;
+ساکن bool have_read_stdin;
 
 /* If nonzero, merge subsequent lines of each file rather than
    corresponding lines from each file in parallel. */
-static bool serial_merge;
+ساکن bool serial_ملاؤ;
 
 /* The delimiters between lines of input files (used cyclically).
    This stores the raw bytes of all delimiters concatenated.  */
-static char *delims;
+ساکن حرف *delims;
 
 /* Length of each delimiter in bytes (supports multi-byte characters).
    A length of 0 indicates no delimiter at this position (from \0 escape).  */
-static size_t *delim_lens;
+ساکن size_t *delim_lens;
 
 /* Number of delimiters.  */
-static idx_t num_delims;
+ساکن idx_t عدد_delims;
 
-static unsigned char line_delim = '\n';
+ساکن غیرعلامتی حرف سطر_delim = '\n';
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
-  {"serial", no_argument, NULL, 's'},
-  {"delimiters", required_argument, NULL, 'd'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"serial", no_دلیل, تہی, 's'},
+  {"delimiters", required_دلیل, تہی, 'd'},
+  {"zero-terminated", no_دلیل, تہی, 'z'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
 /* Set globals delims, delim_lens, and num_delims.
@@ -89,53 +89,53 @@ static struct option const longopts[] =
    If the string ends in an odd number of backslashes, ignore the
    final backslash and return nonzero.  */
 
-static int
-collapse_escapes (char const *strptr)
+ساکن صحیح
+collapse_escapes (حرف ثابت *strptr)
 {
-  char *strout = xstrdup (strptr);
-  bool backslash_at_end = false;
+  حرف *strout = xstrdup (strptr);
+  bool backslash_at_انتہا = false;
 
   delims = strout;
-  delim_lens = xnmalloc (MAX (1, strlen (strptr)), sizeof *delim_lens);
+  delim_lens = xnmalloc (MAX (1, لڑی_لمبائی (strptr)), حجم *delim_lens);
 
-  char const *s = strptr;
+  حرف ثابت *s = strptr;
   idx_t idx = 0;
 
-  while (*s)
+  جب (*s)
     {
-      if (*s == '\\')
+      اگر (*s == '\\')
         {
           s++;
-          if (*s == '\0')
+          اگر (*s == '\0')
             {
-              backslash_at_end = true;
-              break;
+              backslash_at_انتہا = true;
+              توڑو;
             }
-          else if (*s == '0')
+          ورنہ اگر (*s == '0')
             {
               /* Empty delimiter at this position.  */
               s++;
               delim_lens[idx++] = 0;
             }
-          else
+          ورنہ
             {
-              switch (*s)
+              انتخاب (*s)
                 {
-                case 'b': *strout++ = '\b'; break;
-                case 'f': *strout++ = '\f'; break;
-                case 'n': *strout++ = '\n'; break;
-                case 'r': *strout++ = '\r'; break;
-                case 't': *strout++ = '\t'; break;
-                case 'v': *strout++ = '\v'; break;
-                case '\\': *strout++ = '\\'; break;
-                default: goto copy_character;
+                حالت 'b': *strout++ = '\b'; توڑو;
+                حالت 'f': *strout++ = '\f'; توڑو;
+                حالت 'n': *strout++ = '\n'; توڑو;
+                حالت 'r': *strout++ = '\r'; توڑو;
+                حالت 't': *strout++ = '\t'; توڑو;
+                حالت 'v': *strout++ = '\v'; توڑو;
+                حالت '\\': *strout++ = '\\'; توڑو;
+                طےشدہ: جاؤ copy_character;
                 }
 
               s++;
               delim_lens[idx++] = 1;
             }
 
-          continue;
+          جاری;
         }
 
       copy_character:;
@@ -147,33 +147,33 @@ collapse_escapes (char const *strptr)
 
   *strout = '\0';
 
-  if (idx == 0)
+  اگر (idx == 0)
     {
       delim_lens[0] = 0;
       idx = 1;
     }
 
-  num_delims = idx;
+  عدد_delims = idx;
 
-  return backslash_at_end ? 1 : 0;
+  واپس backslash_at_انتہا ? 1 : 0;
 }
 
 /* Output a single byte, reporting any write errors.  */
 
-static inline void
-xputchar (char c)
+ساکن اندرونی خالی
+xputchar (حرف c)
 {
-  if (putchar (c) < 0)
+  اگر (حرف_لکھو (c) < 0)
     write_error ();
 }
 
 /* Output the delimiter at DELIMPTR with length LEN.
    If LEN is 0, nothing is output (empty delimiter from \0 escape).  */
 
-static inline void
-output_delim (char const *delimptr, size_t len)
+ساکن اندرونی خالی
+output_delim (حرف ثابت *delimptr, size_t len)
 {
-  if (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
+  اگر (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
     write_error ();
 }
 
@@ -181,19 +181,19 @@ output_delim (char const *delimptr, size_t len)
    Return true if successful, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_parallel (size_t nfiles, char **fnamptr)
+ساکن bool
+paste_parallel (size_t nfiles, حرف **fnamptr)
 {
   bool ok = true;
   /* If all files are just ready to be closed, or will be on this
      round, the string of delimiters must be preserved.
      delbuf stores the delimiter bytes for closed files.
      Size it to hold up to (nfiles - 1) delimiters.  */
-  char *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
+  حرف *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
 
   /* Streams open to the files to process; null if the corresponding
      stream is closed.  */
-  FILE **fileptr = xnmalloc (nfiles + 1, sizeof *fileptr);
+  FILE **fileptr = xnmalloc (nfiles + 1, حجم *fileptr);
 
   /* Number of files still open to process.  */
   size_t files_open;
@@ -205,32 +205,32 @@ paste_parallel (size_t nfiles, char **fnamptr)
      number of files, but at the (considerable) expense of remembering
      each file and its current offset, then opening/reading/closing.  */
 
-  for (files_open = 0; files_open < nfiles; ++files_open)
+  برائے (files_open = 0; files_open < nfiles; ++files_open)
     {
-      if (streq (fnamptr[files_open], "-"))
+      اگر (streq (fnamptr[files_open], "-"))
         {
           have_read_stdin = true;
           fileptr[files_open] = stdin;
         }
-      else
+      ورنہ
         {
           fileptr[files_open] = fopen (fnamptr[files_open], "r");
-          if (fileptr[files_open] == NULL)
+          اگر (fileptr[files_open] == تہی)
             error (EXIT_FAILURE, errno, "%s", quotef (fnamptr[files_open]));
-          else if (fileno (fileptr[files_open]) == STDIN_FILENO)
+          ورنہ اگر (fileno (fileptr[files_open]) == STDIN_FILENO)
             opened_stdin = true;
           fadvise (fileptr[files_open], FADVISE_SEQUENTIAL);
         }
     }
 
-  if (opened_stdin && have_read_stdin)
+  اگر (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
   /* Read a line from each file and output it to stdout separated by a
      delimiter, until we go through the loop without successfully
      reading from any of the files. */
 
-  while (files_open)
+  جب (files_open)
     {
       /* Set up for the next line. */
       bool somedone = false;
@@ -238,152 +238,152 @@ paste_parallel (size_t nfiles, char **fnamptr)
       idx_t delimoff = 0;              /* Current offset into delims.  */
       idx_t delims_saved = 0;          /* Bytes saved in 'delbuf'. */
 
-      for (size_t i = 0; i < nfiles && files_open; i++)
+      برائے (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
+          صحیح chr;			/* Input character. */
+          صحیح err;			/* Input errno value.  */
           bool sometodo = false;	/* Input chars to process.  */
 
-          if (fileptr[i])
+          اگر (fileptr[i])
             {
               chr = getc (fileptr[i]);
               err = errno;
-              if (chr != EOF && delims_saved)
+              اگر (chr != EOF && delims_saved)
                 {
-                  if (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
+                  اگر (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
                     write_error ();
                   delims_saved = 0;
                 }
 
-              while (chr != EOF)
+              جب (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
-                    break;
+                  اگر (chr == سطر_delim)
+                    توڑو;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
                   err = errno;
                 }
             }
 
-          if (! sometodo)
+          اگر (! sometodo)
             {
               /* EOF, read error, or closed file.
                  If an EOF or error, close the file.  */
-              if (fileptr[i])
+              اگر (fileptr[i])
                 {
-                  if (!ferror (fileptr[i]))
+                  اگر (!ferror (fileptr[i]))
                     err = 0;
-                  if (fileptr[i] == stdin)
+                  اگر (fileptr[i] == stdin)
                     clearerr (fileptr[i]); /* Also clear EOF. */
-                  else if (fclose (fileptr[i]) == EOF && !err)
+                  ورنہ اگر (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
-                  if (err)
+                  اگر (err)
                     {
                       error (0, err, "%s", quotef (fnamptr[i]));
                       ok = false;
                     }
 
-                  fileptr[i] = NULL;
+                  fileptr[i] = تہی;
                   files_open--;
                 }
 
-              if (i + 1 == nfiles)
+              اگر (i + 1 == nfiles)
                 {
                   /* End of this output line.
                      Is this the end of the whole thing? */
-                  if (somedone)
+                  اگر (somedone)
                     {
                       /* No.  Some files were not closed for this line. */
-                      if (delims_saved)
+                      اگر (delims_saved)
                         {
-                          if (fwrite (delbuf, 1, delims_saved, stdout)
+                          اگر (fwrite (delbuf, 1, delims_saved, stdout)
                               != delims_saved)
                             write_error ();
                           delims_saved = 0;
                         }
-                      xputchar (line_delim);
+                      xputchar (سطر_delim);
                     }
-                  continue;	/* Next read of files, or exit. */
+                  جاری;	/* Next read of files, or exit. */
                 }
-              else
+              ورنہ
                 {
                   /* Closed file; add delimiter to 'delbuf'. */
                   size_t len = delim_lens[delimidx];
-                  if (len > 0)
+                  اگر (len > 0)
                     {
-                      memcpy (delbuf + delims_saved, delims + delimoff, len);
+                      حافظہ_نقل (delbuf + delims_saved, delims + delimoff, len);
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  اگر (++delimidx == عدد_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
             }
-          else
+          ورنہ
             {
               /* Some data read. */
               somedone = true;
 
               /* Except for last file, replace last newline with delim. */
-              if (i + 1 != nfiles)
+              اگر (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  اگر (chr != سطر_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  اگر (++delimidx == عدد_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              ورنہ
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
-                  char c = (chr == EOF ? line_delim : chr);
+                  حرف c = (chr == EOF ? سطر_delim : chr);
                   xputchar (c);
                 }
             }
         }
     }
-  free (fileptr);
-  free (delbuf);
-  return ok;
+  آزاد (fileptr);
+  آزاد (delbuf);
+  واپس ok;
 }
 
 /* Perform serial paste on the NFILES files named in FNAMPTR.
    Return true if no errors, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_serial (size_t nfiles, char **fnamptr)
+ساکن bool
+paste_serial (size_t nfiles, حرف **fnamptr)
 {
   bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
+  صحیح charnew, charold; /* Current and previous char read. */
   FILE *fileptr;	/* Open for reading current file. */
 
-  for (; nfiles; nfiles--, fnamptr++)
+  برائے (; nfiles; nfiles--, fnamptr++)
     {
-      int saved_errno;
+      صحیح saved_errno;
       bool is_stdin = streq (*fnamptr, "-");
-      if (is_stdin)
+      اگر (is_stdin)
         {
           have_read_stdin = true;
           fileptr = stdin;
         }
-      else
+      ورنہ
         {
           fileptr = fopen (*fnamptr, "r");
-          if (fileptr == NULL)
+          اگر (fileptr == تہی)
             {
               error (0, errno, "%s", quotef (*fnamptr));
               ok = false;
-              continue;
+              جاری;
             }
           fadvise (fileptr, FADVISE_SEQUENTIAL);
         }
@@ -393,7 +393,7 @@ paste_serial (size_t nfiles, char **fnamptr)
 
       charold = getc (fileptr);
       saved_errno = errno;
-      if (charold != EOF)
+      اگر (charold != EOF)
         {
           /* 'charold' is set up.  Hit it!
              Keep reading characters, stashing them in 'charnew';
@@ -401,20 +401,20 @@ paste_serial (size_t nfiles, char **fnamptr)
              character if needed.  After the EOF, output 'charold'
              if it's a newline; otherwise, output it and then a newline. */
 
-          while ((charnew = getc (fileptr)) != EOF)
+          جب ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              اگر (charold == سطر_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  اگر (++delimidx == عدد_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              ورنہ
                 xputchar (charold);
 
               charold = charnew;
@@ -425,38 +425,38 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
-        xputchar (line_delim);
+      اگر (charold != سطر_delim)
+        xputchar (سطر_delim);
 
-      if (!ferror (fileptr))
+      اگر (!ferror (fileptr))
         saved_errno = 0;
-      if (is_stdin)
+      اگر (is_stdin)
         clearerr (fileptr);	/* Also clear EOF. */
-      else if (fclose (fileptr) != 0 && !saved_errno)
+      ورنہ اگر (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
-      if (saved_errno)
+      اگر (saved_errno)
         {
           error (0, saved_errno, "%s", quotef (*fnamptr));
           ok = false;
         }
     }
-  return ok;
+  واپس ok;
 }
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              پروگرام_name);
       fputs (_("\
-Write lines consisting of corresponding lines from each file joined by TABs\n\
-to standard output.\n\
+Write سطریں consisting کا corresponding سطریں from each file joined by TABs\n\
+مقصد standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -464,75 +464,75 @@ to standard output.\n\
 
       oputs (_("\
   -d, --delimiters=LIST\n\
-         reuse characters from LIST instead of TABs;\n\
+         reuse characters from LIST instead کا TABs;\n\
          backslash escapes are supported\n\
 "));
       oputs (_("\
   -s, --serial\n\
-         paste one file at a time instead of in parallel; the newline of\n\
-         every line except the last line in each file is replaced with a TAB\
+         paste one file at a وقت instead کا اندر parallel; the newline کا\n\
+         every سطر except the آخری سطر اندر each file is replaced with a TAB\
 \n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         سطر delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       /* FIXME: add a couple of examples.  */
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  int optc;
-  char const *delim_arg = "\t";
+  صحیح optc;
+  حرف ثابت *delim_arg = "\t";
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
+  جب ((optc = getopt_long (argc, argv, "d:sz", longopts, تہی)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'd':
+        حالت 'd':
           /* Delimiter character(s). */
           delim_arg = (optarg[0] == '\0' ? "\\0" : optarg);
-          break;
+          توڑو;
 
-        case 's':
-          serial_merge = true;
-          break;
+        حالت 's':
+          serial_ملاؤ = true;
+          توڑو;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        حالت 'z':
+          سطر_delim = '\0';
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  int nfiles = argc - optind;
-  if (nfiles == 0)
+  صحیح nfiles = argc - optind;
+  اگر (nfiles == 0)
     {
       argv[optind] = bad_cast ("-");
       nfiles++;
     }
 
-  if (collapse_escapes (delim_arg))
+  اگر (collapse_escapes (delim_arg))
     {
       /* Don't use the quote() quoting style, because that would double the
          number of displayed backslashes, making the diagnostic look bogus.  */
@@ -541,13 +541,13 @@ main (int argc, char **argv)
              quotearg_n_style_colon (0, c_maybe_quoting_style, delim_arg));
     }
 
-  bool ok = ((serial_merge ? paste_serial : paste_parallel)
+  bool ok = ((serial_ملاؤ ? paste_serial : paste_parallel)
              (nfiles, &argv[optind]));
 
-  free (delims);
-  free (delim_lens);
+  آزاد (delims);
+  آزاد (delim_lens);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  اگر (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

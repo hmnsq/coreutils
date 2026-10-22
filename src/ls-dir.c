@@ -1,2 +1,2 @@
-#include "ls.h"
-enum ls_modes ls_mode = LS_MULTI_COL;
+#شامل "ls.h"
+شمار ls_modes ls_منوال = LS_MULTI_ستون;

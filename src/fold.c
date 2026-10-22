@@ -16,127 +16,127 @@
 
 /* Written by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#شامل <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
 
-#include "system.h"
-#include "fadvise.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "xdectoint.h"
+#شامل "system.h"
+#شامل "fadvise.h"
+#شامل "ioblksize.h"
+#شامل "mcel.h"
+#شامل "mbbuf.h"
+#شامل "xdectoint.h"
 
-#define TAB_WIDTH 8
+#تعریف_کرو TAB_چوڑائی 8
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "fold"
+#تعریف_کرو پروگرام_NAME "fold"
 
-#define AUTHORS proper_name ("David MacKenzie")
+#تعریف_کرو AUTHORS proper_name ("David MacKenzie")
 
 /* If nonzero, try to break on whitespace. */
-static bool break_spaces;
+ساکن bool break_spaces;
 
 /* Mode to operate in.  */
-static enum
+ساکن شمار
   {
-    COUNT_COLUMNS,
-    COUNT_BYTES,
-    COUNT_CHARACTERS
-  } counting_mode = COUNT_COLUMNS;
+    گنتی_COLUMNS,
+    گنتی_بائٹیں,
+    گنتی_CHARACTERS
+  } counting_منوال = گنتی_COLUMNS;
 
 /* If nonzero, at least one of the files we read was standard input. */
-static bool have_read_stdin;
+ساکن bool have_read_stdin;
 
-static char const shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
+ساکن حرف ثابت shortopts[] = "bcsw:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
-  {"bytes", no_argument, NULL, 'b'},
-  {"characters", no_argument, NULL, 'c'},
-  {"spaces", no_argument, NULL, 's'},
-  {"width", required_argument, NULL, 'w'},
+  {"bytes", no_دلیل, تہی, 'b'},
+  {"characters", no_دلیل, تہی, 'c'},
+  {"spaces", no_دلیل, تہی, 's'},
+  {"width", required_دلیل, تہی, 'w'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
-              program_name);
+              پروگرام_name);
       fputs (_("\
-Wrap input lines in each FILE, writing to standard output.\n\
+Wrap داخلہ سطریں اندر each FILE, writing مقصد standard output.\n\
 "), stdout);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -b, --bytes\n\
-         count bytes rather than columns\n\
+  -b, --بائٹیں\n\
+         گنتی بائٹیں rather than columns\n\
 "));
       oputs (_("\
   -c, --characters\n\
-         count characters rather than columns\n\
+         گنتی characters rather than columns\n\
 "));
       oputs (_("\
   -s, --spaces\n\
-         break after blanks, or in words greater than WIDTH\n\
+         توڑو after blanks, or اندر الفاظ greater than چوڑائی_2\n\
 "));
       oputs (_("\
-  -w, --width=WIDTH\n\
-         use WIDTH columns instead of 80\n\
+  -w, --چوڑائی=چوڑائی_2\n\
+         use چوڑائی_2 columns instead کا 80\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* Assuming the current column is COLUMN, return the column that
    printing C will move the cursor to.
    The first column is 0. */
 
-static size_t
-adjust_column (size_t column, mcel_t g)
+ساکن size_t
+adjust_عمود (size_t عمود, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  اگر (counting_منوال != گنتی_بائٹیں)
     {
-      if (g.ch == '\b')
-        column -= !!column;
-      else if (g.ch == '\r')
-        column = 0;
-      else if (g.ch == '\t')
-        column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      اگر (g.ch == '\b')
+        عمود -= !!عمود;
+      ورنہ اگر (g.ch == '\r')
+        عمود = 0;
+      ورنہ اگر (g.ch == '\t')
+        عمود += TAB_چوڑائی - عمود % TAB_چوڑائی;
+      ورنہ
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          صحیح چوڑائی = (counting_منوال == گنتی_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
-          column += width < 0 ? 1 : width;
+          عمود += چوڑائی < 0 ? 1 : چوڑائی;
         }
     }
-  else
-    column += g.len;
-  return column;
+  ورنہ
+    عمود += g.len;
+  واپس عمود;
 }
 
-static void
-write_out (char const *line, size_t line_len, bool newline)
+ساکن خالی
+write_برآمد (حرف ثابت *سطر, size_t سطر_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
-      || (newline && putchar ('\n') < 0))
+  اگر (fwrite (سطر, حجم (حرف), سطر_len, stdout) != سطر_len
+      || (newline && حرف_لکھو ('\n') < 0))
     write_error ();
 }
 
@@ -144,206 +144,206 @@ write_out (char const *line, size_t line_len, bool newline)
    to stdout, with maximum line length WIDTH.
    Return true if successful.  */
 
-static bool
-fold_file (char const *filename, size_t width)
+ساکن bool
+fold_file (حرف ثابت *filename, size_t چوڑائی)
 {
   FILE *istream;
-  size_t column = 0;		/* Screen column where next char will go. */
-  idx_t offset_out = 0;		/* Index in 'line_out' for next char. */
-  static char line_out[IO_BUFSIZE];
-  static char line_in[IO_BUFSIZE];
+  size_t عمود = 0;		/* Screen column where next char will go. */
+  idx_t انحراف_برآمد = 0;		/* Index in 'line_out' for next char. */
+  ساکن حرف سطر_برآمد[IO_BUFSIZE];
+  ساکن حرف سطر_اندر[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  صحیح saved_errno;
 
-  if (streq (filename, "-"))
+  اگر (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  ورنہ
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  اگر (istream == تہی)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      واپس false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
+  mbbuf_init (&mbbuf, سطر_اندر, حجم سطر_اندر, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  جب ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      اگر (g.ch == '\n')
         {
-          write_out (line_out, offset_out, /*newline=*/ true);
-          column = offset_out = 0;
-          continue;
+          write_برآمد (سطر_برآمد, انحراف_برآمد, /*newline=*/ true);
+          عمود = انحراف_برآمد = 0;
+          جاری;
         }
     rescan:
-      column = adjust_column (column, g);
+      عمود = adjust_عمود (عمود, g);
 
-      if (column > width)
+      اگر (عمود > چوڑائی)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          اگر (break_spaces)
             {
-              int space_length = 0;
-              idx_t logical_end = offset_out;
-              char *logical_p = line_out;
-              char *logical_lim = logical_p + logical_end;
+              صحیح space_لمبائی = 0;
+              idx_t logical_انتہا = انحراف_برآمد;
+              حرف *logical_p = سطر_برآمد;
+              حرف *logical_lim = logical_p + logical_انتہا;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              برائے (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
-                  g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  g2 = mcel_جائزہ (logical_p, logical_lim);
+                  اگر (c32issep (g2.ch))
                     {
-                      space_length = g2.len;
-                      logical_end = logical_p - line_out;
+                      space_لمبائی = g2.len;
+                      logical_انتہا = logical_p - سطر_برآمد;
                     }
                 }
 
-              if (space_length)
+              اگر (space_لمبائی)
                 {
-                  logical_end += space_length;
+                  logical_انتہا += space_لمبائی;
                   /* Found a blank.  Don't output the part after it. */
-                  write_out (line_out, logical_end, /*newline=*/ true);
+                  write_برآمد (سطر_برآمد, logical_انتہا, /*newline=*/ true);
                   /* Move the remainder to the beginning of the next line.
                      The areas being copied here might overlap. */
-                  memmove (line_out, line_out + logical_end,
-                           offset_out - logical_end);
-                  offset_out -= logical_end;
-                  column = 0;
-                  char *printed_p = line_out;
-                  char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  memmove (سطر_برآمد, سطر_برآمد + logical_انتہا,
+                           انحراف_برآمد - logical_انتہا);
+                  انحراف_برآمد -= logical_انتہا;
+                  عمود = 0;
+                  حرف *printed_p = سطر_برآمد;
+                  حرف *printed_lim = printed_p + انحراف_برآمد;
+                  برائے (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
-                      g2 = mcel_scan (printed_p, printed_lim);
-                      column = adjust_column (column, g2);
+                      g2 = mcel_جائزہ (printed_p, printed_lim);
+                      عمود = adjust_عمود (عمود, g2);
                     }
-                  goto rescan;
+                  جاؤ rescan;
                 }
             }
 
-          if (offset_out == 0)
+          اگر (انحراف_برآمد == 0)
             {
-              memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
-              offset_out += g.len;
-              continue;
+              حافظہ_نقل (سطر_برآمد, mbbuf_char_انحراف (&mbbuf, g), g.len);
+              انحراف_برآمد += g.len;
+              جاری;
             }
 
-          write_out (line_out, offset_out, /*newline=*/ true);
-          column = offset_out = 0;
-          goto rescan;
+          write_برآمد (سطر_برآمد, انحراف_برآمد, /*newline=*/ true);
+          عمود = انحراف_برآمد = 0;
+          جاؤ rescan;
         }
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      اگر (حجم سطر_برآمد <= انحراف_برآمد + g.len)
         {
-          write_out (line_out, offset_out, /*newline=*/ false);
-          offset_out = 0;
+          write_برآمد (سطر_برآمد, انحراف_برآمد, /*newline=*/ false);
+          انحراف_برآمد = 0;
         }
 
-      memcpy (line_out + offset_out, mbbuf_char_offset (&mbbuf, g), g.len);
-      offset_out += g.len;
+      حافظہ_نقل (سطر_برآمد + انحراف_برآمد, mbbuf_char_انحراف (&mbbuf, g), g.len);
+      انحراف_برآمد += g.len;
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  اگر (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
-    write_out (line_out, offset_out, /*newline=*/ false);
+  اگر (انحراف_برآمد)
+    write_برآمد (سطر_برآمد, انحراف_برآمد, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  اگر (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  ورنہ اگر (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  اگر (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      واپس false;
     }
 
-  return true;
+  واپس true;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  size_t width = 80;
-  int optc;
+  size_t چوڑائی = 80;
+  صحیح optc;
   bool ok;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  جب ((optc = getopt_long (argc, argv, shortopts, longopts, تہی)) != -1)
     {
-      char optargbuf[2];
+      حرف optargbuf[2];
 
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'b':		/* Count bytes rather than columns. */
-          counting_mode = COUNT_BYTES;
-          break;
+        حالت 'b':		/* Count bytes rather than columns. */
+          counting_منوال = گنتی_بائٹیں;
+          توڑو;
 
-        case 'c':               /* Count characters rather than columns. */
-          counting_mode = COUNT_CHARACTERS;
-          break;
+        حالت 'c':               /* Count characters rather than columns. */
+          counting_منوال = گنتی_CHARACTERS;
+          توڑو;
 
-        case 's':		/* Break at word boundaries. */
+        حالت 's':		/* Break at word boundaries. */
           break_spaces = true;
-          break;
+          توڑو;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        حالت '0': حالت '1': حالت '2': حالت '3': حالت '4':
+        حالت '5': حالت '6': حالت '7': حالت '8': حالت '9':
+          اگر (optarg)
             optarg--;
-          else
+          ورنہ
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
               optarg = optargbuf;
             }
           FALLTHROUGH;
-        case 'w':		/* Line width. */
-          width = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_WIDTH - 1, "",
+        حالت 'w':		/* Line width. */
+          چوڑائی = xnumtoumax (optarg, 10, 1, SIZE_MAX - TAB_چوڑائی - 1, "",
                               _("invalid number of columns"), 0,
                               XTOINT_MIN_RANGE | XTOINT_MAX_RANGE);
-          break;
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc == optind)
-    ok = fold_file ("-", width);
-  else
+  اگر (argc == optind)
+    ok = fold_file ("-", چوڑائی);
+  ورنہ
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
-        ok &= fold_file (argv[i], width);
+      برائے (صحیح i = optind; i < argc; i++)
+        ok &= fold_file (argv[i], چوڑائی);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  اگر (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

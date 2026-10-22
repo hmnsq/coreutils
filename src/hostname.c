@@ -16,94 +16,94 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xgethostname.h"
+#شامل "system.h"
+#شامل "long-options.h"
+#شامل "quote.h"
+#شامل "xgethostname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "hostname"
+#تعریف_کرو پروگرام_NAME "hostname"
 
-#define AUTHORS proper_name ("Jim Meyering")
+#تعریف_کرو AUTHORS proper_name ("Jim Meyering")
 
-#ifndef HAVE_SETHOSTNAME
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+#اگر_غیر_تعریف_شدہ HAVE_SETHOSTNAME
+# اگر defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
 #  include <sys/systeminfo.h>
 # endif
 
-static int
-sethostname (char const *name, size_t namelen)
+ساکن صحیح
+sethostname (حرف ثابت *name, size_t namelen)
 {
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# اگر defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
   /* Using sysinfo() is the SVR4 mechanism to set a hostname. */
-  return (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
-# else
+  واپس (sysinfo (SI_سیٹ_HOSTNAME, name, namelen) < 0 ? -1 : 0);
+# ورنہ
   errno = ENOTSUP;
-  return -1;
+  واپس -1;
 # endif
 }
-#endif
+#اگر_ختم
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [NAME]\n\
   or:  %s OPTION\n\
-Print or set the hostname of the current system.\n\
+Print or سیٹ_2 the hostname کا the current system.\n\
 \n\
 "),
-             program_name, program_name);
+             پروگرام_name, پروگرام_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  char *hostname;
+  حرف *hostname;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, پروگرام_NAME, PACKAGE_NAME,
+                                   نسخہ, true, usage, AUTHORS,
+                                   (حرف ثابت *) تہی);
 
-  if (optind + 1 < argc)
+  اگر (optind + 1 < argc)
      {
        error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
        usage (EXIT_FAILURE);
      }
 
-  if (optind + 1 == argc)
+  اگر (optind + 1 == argc)
     {
       /* Set hostname to operand.  */
-      char const *name = argv[optind];
-      if (sethostname (name, strlen (name)) != 0)
+      حرف ثابت *name = argv[optind];
+      اگر (sethostname (name, لڑی_لمبائی (name)) != 0)
         error (EXIT_FAILURE, errno, _("cannot set name to %s"),
                quote (name));
     }
-  else
+  ورنہ
     {
       hostname = xgethostname ();
-      if (hostname == NULL)
+      اگر (hostname == تہی)
         error (EXIT_FAILURE, errno, _("cannot determine hostname"));
       puts (hostname);
     }

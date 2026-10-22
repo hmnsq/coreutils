@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#شامل <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#شامل "wc.h"
+#شامل "system.h"
+#شامل "ioblksize.h"
 
-#include <x86intrin.h>
+#شامل <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx512 (int fd)
+خارجی ساخت wc_سطریں
+wc_سطریں_avx512 (صحیح fd)
 {
-  intmax_t lines = 0;
-  intmax_t bytes = 0;
+  intmax_t سطریں = 0;
+  intmax_t بائٹیں = 0;
 
   __m512i endlines = _mm512_set1_epi8 ('\n');
 
-  while (true)
+  جب (true)
     {
-       __m512i avx_buf[IO_BUFSIZE / sizeof (__m512i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m512i avx_buf[IO_BUFSIZE / حجم (__m512i)];
+      ssize_t بائٹیں_read = اقرأ (fd, avx_buf, حجم avx_buf);
+      اگر (بائٹیں_read <= 0)
+        واپس (ساخت wc_سطریں) { بائٹیں_read == 0 ? 0 : errno, سطریں, بائٹیں };
 
-      bytes += bytes_read;
+      بائٹیں += بائٹیں_read;
       __m512i *datap = avx_buf;
 
-      while (bytes_read >= 64)
+      جب (بائٹیں_read >= 64)
         {
-           __m512i to_match = _mm512_load_si512 (datap);
-           long long matches = _mm512_cmpeq_epi8_mask (to_match, endlines);
-           lines += __builtin_popcountll (matches);
+           __m512i مقصد_مطابقت = mm512_بھرو_si512 (datap);
+           طویل طویل matches = mm512_cmpeq_epi8_نقاب (مقصد_مطابقت, endlines);
+           سطریں += __builtin_popcountll (matches);
            datap += 1;
-           bytes_read -= 64;
+           بائٹیں_read -= 64;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      حرف *انتہا = (حرف *) datap + بائٹیں_read;
+      برائے (حرف *p = (حرف *) datap; p < انتہا; p++)
+        سطریں += *p == '\n';
     }
 }

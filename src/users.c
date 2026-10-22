@@ -16,44 +16,44 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#شامل <config.h>
+#شامل <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#شامل <sys/types.h>
+#شامل "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#شامل "long-options.h"
+#شامل "quote.h"
+#شامل "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "users"
+#تعریف_کرو پروگرام_NAME "users"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+ساکن صحیح
+userid_compare (ثابت خالی *v_a, ثابت خالی *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  حرف **a = (حرف **) v_a;
+  حرف **b = (حرف **) v_b;
+  واپس strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+ساکن خالی
+list_entries_users (idx_t n, STRUCT_UTMP ثابت *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  حرف **u = xinmalloc (n, حجم *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  جب (n--)
     {
-      if (IS_USER_PROCESS (this))
+      اگر (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          حرف *trimmed_name;
 
-          trimmed_name = extract_trimmed_name (this);
+          trimmed_name = نکالو_trimmed_name (this);
 
           u[n_entries] = trimmed_name;
           ++n_entries;
@@ -61,87 +61,87 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, حجم (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  برائے (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      حرف c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
-      putchar (c);
+      حرف_لکھو (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  برائے (idx_t i = 0; i < n_entries; i++)
+    آزاد (u[i]);
+  آزاد (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+ساکن خالی
+users (حرف ثابت *filename, صحیح options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  اگر (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  آزاد (utmp_buf);
 }
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
-      printf (_("\
-Output who is currently logged in according to FILE.\n\
+      لکھو (_("Usage: %s [OPTION]... [FILE]\n"), پروگرام_name);
+      لکھو (_("\
+Output who is currently logged اندر according مقصد FILE.\n\
 If FILE is not specified, use %s.  %s as FILE is common.\n\
 \n\
 "),
               UTMP_FILE, WTMP_FILE);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, پروگرام_NAME, PACKAGE_NAME,
+                                   نسخہ, true, usage, AUTHORS,
+                                   (حرف ثابت *) تہی);
 
-  switch (argc - optind)
+  انتخاب (argc - optind)
     {
-    case 0:			/* users */
+    حالت 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      توڑو;
 
-    case 1:			/* users <utmp file> */
+    حالت 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      توڑو;
 
-    default:			/* lose */
+    طےشدہ:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  واپس EXIT_SUCCESS;
 }

@@ -14,7 +14,7 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <stdlib.h>
+#شامل <stdlib.h>
 
-extern char *find_mount_point (char const *, struct stat const *)
+خارجی حرف *ڈھونڈو_mount_نقطہ (حرف ثابت *, ساخت stat ثابت *)
   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE _GL_ATTRIBUTE_NONNULL ();

@@ -16,83 +16,83 @@
 
 /* Written by David MacKenzie <djm@gnu.ai.mit.edu>. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <getopt.h>
 
-#include "system.h"
-#include "chown.h"
-#include "chown-core.h"
-#include "fts_.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "userspec.h"
+#شامل "system.h"
+#شامل "chown.h"
+#شامل "chown-core.h"
+#شامل "fts_.h"
+#شامل "quote.h"
+#شامل "root-dev-ino.h"
+#شامل "userspec.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME (chown_mode == CHOWN_CHOWN ? "chown" : "chgrp")
+#تعریف_کرو پروگرام_NAME (chown_منوال == CHOWN_CHOWN ? "chown" : "chgrp")
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* The argument to the --reference option.  Use the owner and group IDs
    of this file.  This file must exist.  */
-static char *reference_file;
+ساکن حرف *reference_file;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
   FROM_OPTION,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
+  NO_PRESERVE_جڑ,
+  PRESERVE_جڑ,
   REFERENCE_FILE_OPTION
 };
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"recursive", no_argument, NULL, 'R'},
-  {"changes", no_argument, NULL, 'c'},
-  {"dereference", no_argument, NULL, DEREFERENCE_OPTION},
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"no-dereference", no_argument, NULL, 'h'},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", no_argument, NULL, PRESERVE_ROOT},
-  {"quiet", no_argument, NULL, 'f'},
-  {"silent", no_argument, NULL, 'f'},
-  {"reference", required_argument, NULL, REFERENCE_FILE_OPTION},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_دلیل, تہی, 'R'},
+  {"changes", no_دلیل, تہی, 'c'},
+  {"dereference", no_دلیل, تہی, DEREFERENCE_OPTION},
+  {"from", required_دلیل, تہی, FROM_OPTION},
+  {"no-dereference", no_دلیل, تہی, 'h'},
+  {"no-preserve-root", no_دلیل, تہی, NO_PRESERVE_جڑ},
+  {"preserve-root", no_دلیل, تہی, PRESERVE_جڑ},
+  {"quiet", no_دلیل, تہی, 'f'},
+  {"silent", no_دلیل, تہی, 'f'},
+  {"reference", required_دلیل, تہی, REFERENCE_FILE_OPTION},
+  {"verbose", no_دلیل, تہی, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... %s FILE...\n\
   or:  %s [OPTION]... --reference=RFILE FILE...\n\
 "),
-              program_name,
-              chown_mode == CHOWN_CHOWN ? _("[OWNER][:[GROUP]]") : _("GROUP"),
-              program_name);
-      if (chown_mode == CHOWN_CHOWN)
+              پروگرام_name,
+              chown_منوال == CHOWN_CHOWN ? _("[OWNER][:[GROUP]]") : _("GROUP"),
+              پروگرام_name);
+      اگر (chown_منوال == CHOWN_CHOWN)
         fputs (_("\
-Change the owner and/or group of each FILE to OWNER and/or GROUP.\n\
-With --reference, change the owner and group of each FILE to those of RFILE.\n\
+Change the owner and/or گروہ کا each FILE مقصد OWNER and/or گروہ_2.\n\
+With --reference, change the owner and گروہ کا each FILE مقصد those کا RFILE.\n\
 \n\
 "), stdout);
-      else
+      ورنہ
         fputs (_("\
-Change the group of each FILE to GROUP.\n\
-With --reference, change the group of each FILE to that of RFILE.\n\
+Change the گروہ کا each FILE مقصد گروہ_2.\n\
+With --reference, change the گروہ کا each FILE مقصد that کا RFILE.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -105,79 +105,79 @@ With --reference, change the group of each FILE to that of RFILE.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every file processed\n\
+         output a diagnostic برائے every file processed\n\
 "));
       oputs (_("\
       --dereference\n\
-         affect the referent of each symbolic link (this is\n\
-         the default), rather than the symbolic link itself\n\
+         affect the referent کا each symbolic link (this is\n\
+         the طےشدہ), rather than the symbolic link itself\n\
 "));
       oputs (_("\
   -h, --no-dereference\n\
-         affect symbolic links instead of any referenced file;\n\
-         useful only on systems that can change the ownership of a symlink\n\
+         affect symbolic links instead کا any referenced file;\n\
+         useful only on systems that can change the ownership کا a symlink\n\
 "));
       oputs (_("\
-      --from=CURRENT_OWNER:CURRENT_GROUP\n\
-         change the ownership of each file only if its\n\
-         current owner and/or group match those specified here.\n\
-         Either may be omitted, in which case a match\n\
-         is not required for the omitted attribute\n\
+      --from=CURRENT_OWNER:CURRENT_گروہ\n\
+         change the ownership کا each file only اگر its\n\
+         current owner and/or گروہ مطابقت those specified یہاں.\n\
+         Either may be omitted, اندر which حالت a مطابقت\n\
+         is not required برائے the omitted attribute\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially (the default)\n\
+      --no-preserve-جڑ\n\
+         کرو not treat '/' specially (the طےشدہ)\n\
 "));
       oputs (_("\
-      --preserve-root\n\
-         fail to operate recursively on '/'\n\
+      --preserve-جڑ\n\
+         fail مقصد عمل_کرو recursively on '/'\n\
 "));
       oputs (_("\
       --reference=RFILE\n\
-         use RFILE's ownership rather than specifying values.\n\
-         RFILE is always dereferenced if a symbolic link.\n\
+         use RFILE's ownership rather than specifying اقدار.\n\
+         RFILE is always dereferenced اگر a symbolic link.\n\
 "));
       oputs (_("\
   -R, --recursive\n\
-         operate on files and directories recursively\n\
+         عمل_کرو on files and directories recursively\n\
 "));
       emit_symlink_recurse_options ("-P");
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      if (chown_mode == CHOWN_CHOWN)
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      اگر (chown_منوال == CHOWN_CHOWN)
         fputs (_("\
 \n\
-Owner is unchanged if missing.  Group is unchanged if missing, but changed\n\
-to login group if implied by a ':' following a symbolic OWNER.\n\
-OWNER and GROUP may be numeric as well as symbolic.\n\
+Owner is unchanged اگر missing.  گروہ_3 is unchanged اگر missing, but بدلا\n\
+مقصد login گروہ اگر implied by a ':' following a symbolic OWNER.\n\
+OWNER and گروہ_2 may be numeric as well as symbolic.\n\
 "), stdout);
 
-      if (chown_mode == CHOWN_CHOWN)
-        printf (_("\
+      اگر (chown_منوال == CHOWN_CHOWN)
+        لکھو (_("\
 \n\
 Examples:\n\
-  %s root /u        Change the owner of /u to \"root\".\n\
-  %s root:staff /u  Likewise, but also change its group to \"staff\".\n\
-  %s -hR root /u    Change the owner of /u and subfiles to \"root\".\n\
+  %s جڑ /u        Change the owner کا /u مقصد \"جڑ\".\n\
+  %s جڑ:staff /u  Likewise, but also change its گروہ مقصد \"staff\".\n\
+  %s -hR جڑ /u    Change the owner کا /u and subfiles مقصد \"جڑ\".\n\
 "),
-              program_name, program_name, program_name);
-      else
-        printf (_("\
+              پروگرام_name, پروگرام_name, پروگرام_name);
+      ورنہ
+        لکھو (_("\
 \n\
 Examples:\n\
-  %s staff /u      Change the group of /u to \"staff\".\n\
-  %s -hR staff /u  Change the group of /u and subfiles to \"staff\".\n\
+  %s staff /u      Change the گروہ کا /u مقصد \"staff\".\n\
+  %s -hR staff /u  Change the گروہ کا /u and subfiles مقصد \"staff\".\n\
 "),
-              program_name, program_name);
-      emit_ancillary_info (PROGRAM_NAME);
+              پروگرام_name, پروگرام_name);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  bool preserve_root = false;
+  bool preserve_جڑ = false;
 
   /* Change the owner (group) of a file only if it has this uid (gid).
      -1 means there's no restriction.  */
@@ -185,16 +185,16 @@ main (int argc, char **argv)
   gid_t required_gid = -1;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_PHYSICAL;
+  صحیح ثنائی_ہندسہ_flags = FTS_PHYSICAL;
 
   /* 1 if --dereference, 0 if --no-dereference, -1 if neither has been
      specified.  */
-  int dereference = -1;
+  صحیح dereference = -1;
 
-  struct Chown_option chopt;
+  ساخت Chown_option chopt;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -203,100 +203,100 @@ main (int argc, char **argv)
 
   chopt_init (&chopt);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, NULL))
+  صحیح optc;
+  جب ((optc = getopt_long (argc, argv, "HLPRcfhv", long_options, تہی))
          != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
-        case 'H': /* Traverse command-line symlinks-to-directories.  */
-          bit_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+        حالت 'H': /* Traverse command-line symlinks-to-directories.  */
+          ثنائی_ہندسہ_flags = FTS_COMFOLLOW | FTS_PHYSICAL;
+          توڑو;
 
-        case 'L': /* Traverse all symlinks-to-directories.  */
-          bit_flags = FTS_LOGICAL;
-          break;
+        حالت 'L': /* Traverse all symlinks-to-directories.  */
+          ثنائی_ہندسہ_flags = FTS_LOGICAL;
+          توڑو;
 
-        case 'P': /* Traverse no symlinks-to-directories.  */
-          bit_flags = FTS_PHYSICAL;
-          break;
+        حالت 'P': /* Traverse no symlinks-to-directories.  */
+          ثنائی_ہندسہ_flags = FTS_PHYSICAL;
+          توڑو;
 
-        case 'h': /* --no-dereference: affect symlinks */
+        حالت 'h': /* --no-dereference: affect symlinks */
           dereference = 0;
-          break;
+          توڑو;
 
-        case DEREFERENCE_OPTION: /* --dereference: affect the referent
+        حالت DEREFERENCE_OPTION: /* --dereference: affect the referent
                                     of each symlink */
           dereference = 1;
-          break;
+          توڑو;
 
-        case NO_PRESERVE_ROOT:
-          preserve_root = false;
-          break;
+        حالت NO_PRESERVE_جڑ:
+          preserve_جڑ = false;
+          توڑو;
 
-        case PRESERVE_ROOT:
-          preserve_root = true;
-          break;
+        حالت PRESERVE_جڑ:
+          preserve_جڑ = true;
+          توڑو;
 
-        case REFERENCE_FILE_OPTION:
+        حالت REFERENCE_FILE_OPTION:
           reference_file = optarg;
-          break;
+          توڑو;
 
-        case FROM_OPTION:
+        حالت FROM_OPTION:
           {
             bool warn;
-            char const *e = parse_user_spec_warn (optarg,
+            حرف ثابت *e = parse_user_spec_warn (optarg,
                                                   &required_uid, &required_gid,
-                                                  NULL, NULL, &warn);
-            if (e)
+                                                  تہی, تہی, &warn);
+            اگر (e)
               error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (optarg));
-            break;
+            توڑو;
           }
 
-        case 'R':
+        حالت 'R':
           chopt.recurse = true;
-          break;
+          توڑو;
 
-        case 'c':
+        حالت 'c':
           chopt.verbosity = V_changes_only;
-          break;
+          توڑو;
 
-        case 'f':
+        حالت 'f':
           chopt.force_silent = true;
-          break;
+          توڑو;
 
-        case 'v':
-          chopt.verbosity = V_high;
-          break;
+        حالت 'v':
+          chopt.verbosity = V_بلند;
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (chopt.recurse)
+  اگر (chopt.recurse)
     {
-      if (bit_flags == FTS_PHYSICAL)
+      اگر (ثنائی_ہندسہ_flags == FTS_PHYSICAL)
         {
-          if (dereference == 1)
+          اگر (dereference == 1)
             error (EXIT_FAILURE, 0,
                    _("-R --dereference requires either -H or -L"));
           dereference = 0;
         }
     }
-  else
+  ورنہ
     {
-      bit_flags = FTS_PHYSICAL;
+      ثنائی_ہندسہ_flags = FTS_PHYSICAL;
     }
   chopt.affect_symlink_referent = (dereference != 0);
 
-  if (argc - optind < (reference_file ? 1 : 2))
+  اگر (argc - optind < (reference_file ? 1 : 2))
     {
-      if (argc <= optind)
+      اگر (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      ورنہ
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -304,61 +304,61 @@ main (int argc, char **argv)
   uid_t uid = -1;	/* Specified uid; -1 if not to be changed.  */
   gid_t gid = -1;	/* Specified gid; -1 if not to be changed.  */
 
-  if (reference_file)
+  اگر (reference_file)
     {
-      struct stat ref_stats;
-      if (stat (reference_file, &ref_stats))
+      ساخت stat ref_stats;
+      اگر (stat (reference_file, &ref_stats))
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf (reference_file));
 
-      if (chown_mode == CHOWN_CHOWN)
+      اگر (chown_منوال == CHOWN_CHOWN)
         {
           uid = ref_stats.st_uid;
-          chopt.user_name = uid_to_name (ref_stats.st_uid);
+          chopt.user_name = uid_مقصد_name (ref_stats.st_uid);
         }
       gid = ref_stats.st_gid;
-      chopt.group_name = gid_to_name (ref_stats.st_gid);
+      chopt.گروہ_name = gid_مقصد_name (ref_stats.st_gid);
     }
-  else
+  ورنہ
     {
-      char *ug = argv[optind];
-      if (chown_mode == CHOWN_CHGRP)
+      حرف *ug = argv[optind];
+      اگر (chown_منوال == CHOWN_CHGRP)
         {
-          ug = xmalloc (1 + strlen (argv[optind]) + 1);
+          ug = xmalloc (1 + لڑی_لمبائی (argv[optind]) + 1);
           stpcpy (stpcpy (ug, ":"), argv[optind]);
         }
 
       bool warn;
-      char const *e = parse_user_spec_warn (ug, &uid, &gid,
+      حرف ثابت *e = parse_user_spec_warn (ug, &uid, &gid,
                                             &chopt.user_name,
-                                            &chopt.group_name, &warn);
+                                            &chopt.گروہ_name, &warn);
 
-      if (ug != argv[optind])
-        free (ug);
+      اگر (ug != argv[optind])
+        آزاد (ug);
 
-      if (e)
+      اگر (e)
         error (warn ? 0 : EXIT_FAILURE, 0, "%s: %s", e, quote (argv[optind]));
 
       /* If a group is specified but no user, set the user name to the
          empty string so that diagnostics say "ownership :GROUP"
          rather than "group GROUP".  */
-      if (chown_mode == CHOWN_CHOWN && !chopt.user_name && chopt.group_name)
+      اگر (chown_منوال == CHOWN_CHOWN && !chopt.user_name && chopt.گروہ_name)
         chopt.user_name = xstrdup ("");
 
       optind++;
     }
 
-  if (chopt.recurse && preserve_root)
+  اگر (chopt.recurse && preserve_جڑ)
     {
-      static struct dev_ino dev_ino_buf;
-      chopt.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (chopt.root_dev_ino == NULL)
+      ساکن ساخت dev_ino dev_ino_buf;
+      chopt.جڑ_dev_ino = get_جڑ_dev_ino (&dev_ino_buf);
+      اگر (chopt.جڑ_dev_ino == تہی)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
-  bit_flags |= FTS_DEFER_STAT;
-  bool ok = chown_files (argv + optind, bit_flags,
+  ثنائی_ہندسہ_flags |= FTS_DEFER_STAT;
+  bool ok = chown_files (argv + optind, ثنائی_ہندسہ_flags,
                          uid, gid,
                          required_uid, required_gid, &chopt);
 

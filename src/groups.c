@@ -17,57 +17,57 @@
 /* Written by James Youngman based on id.c and groups.sh,
    which were written by Arnold Robbins and David MacKenzie. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <getopt.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
+#شامل <pwd.h>
+#شامل <grp.h>
+#شامل <getopt.h>
 
-#include "system.h"
-#include "group-list.h"
-#include "quote.h"
+#شامل "system.h"
+#شامل "group-list.h"
+#شامل "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "groups"
+#تعریف_کرو پروگرام_NAME "groups"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("David MacKenzie"), \
   proper_name ("James Youngman")
 
 
-static struct option const longopts[] =
+ساکن ساخت option ثابت longopts[] =
 {
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("Usage: %s [OPTION]... [USERNAME]...\n"), program_name);
+      لکھو (_("Usage: %s [OPTION]... [USERNAME]...\n"), پروگرام_name);
       fputs (_("\
-Print group memberships for each USERNAME or, if no USERNAME is specified, for\
+Print گروہ memberships برائے each USERNAME or, اگر no USERNAME is specified, برائے\
 \n\
-the current process (which may differ if the groups database has changed).\n"),
+the current process (which may فرق اگر the groups database has بدلا).\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -76,20 +76,20 @@ main (int argc, char **argv)
 
   /* Processing the arguments this way makes groups.c behave differently to
      groups.sh if one of the arguments is "--".  */
-  int optc;
-  while ((optc = getopt_long (argc, argv, "", longopts, NULL)) != -1)
+  صحیح optc;
+  جب ((optc = getopt_long (argc, argv, "", longopts, تہی)) != -1)
     {
-      switch (optc)
+      انتخاب (optc)
         {
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
   bool ok = true;
-  if (optind == argc)
+  اگر (optind == argc)
     {
       /* No arguments.  Divulge the details of the current process. */
       uid_t NO_UID = -1;
@@ -97,48 +97,48 @@ main (int argc, char **argv)
 
       errno = 0;
       uid_t ruid = getuid ();
-      if (ruid == NO_UID && errno)
+      اگر (ruid == NO_UID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real UID"));
 
       errno = 0;
       gid_t egid = getegid ();
-      if (egid == NO_GID && errno)
+      اگر (egid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
       errno = 0;
       gid_t rgid = getgid ();
-      if (rgid == NO_GID && errno)
+      اگر (rgid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real GID"));
 
-      if (!print_group_list (NULL, ruid, rgid, egid, true, ' '))
+      اگر (!print_گروہ_list (تہی, ruid, rgid, egid, true, ' '))
         ok = false;
-      putchar ('\n');
+      حرف_لکھو ('\n');
     }
-  else
+  ورنہ
     {
       /* At least one argument.  Divulge the details of the specified users.  */
-      for ( ; optind < argc; optind++)
+      برائے ( ; optind < argc; optind++)
         {
-          struct passwd *pwd = getpwnam (argv[optind]);
-          if (pwd == NULL)
+          ساخت passwd *pwd = getpwnam (argv[optind]);
+          اگر (pwd == تہی)
             {
               error (0, 0, _("%s: no such user"), quote (argv[optind]));
               ok = false;
-              continue;
+              جاری;
             }
           uid_t ruid = pwd->pw_uid;
           gid_t rgid = pwd->pw_gid;
           gid_t egid = rgid;
 
-          printf ("%s : ", argv[optind]);
-          if (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
+          لکھو ("%s : ", argv[optind]);
+          اگر (!print_گروہ_list (argv[optind], ruid, rgid, egid, true, ' '))
             ok = false;
-          putchar ('\n');
+          حرف_لکھو ('\n');
 
-          if (ferror (stdout))
+          اگر (ferror (stdout))
             write_error ();
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

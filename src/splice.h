@@ -14,10 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#ifndef SPLICE_H
+#اگر_غیر_تعریف_شدہ SPLICE_H
 # define SPLICE_H 1
 
-# if HAVE_VMSPLICE
+# اگر HAVE_VMSPLICE
 
 /* splice() and vmsplice() were introduced at the same time,
    so assume splice() is available.  Note AIX also has a different
@@ -26,21 +26,21 @@
 
 /* Empirically determined pipe size for best throughput.
    Needs to be <= /proc/sys/fs/pipe-max-size  */
-enum { SPLICE_PIPE_SIZE = 512 * 1024 };
+شمار { SPLICE_PIPE_سائز = 512 * 1024 };
 
-static inline idx_t
-increase_pipe_size (int fd)
+ساکن اندرونی idx_t
+increase_pipe_سائز (صحیح fd)
 {
-  int pipe_cap = 0;
-#  if defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
-  if ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_SIZE)) < 0)
+  صحیح pipe_cap = 0;
+#  اگر defined F_SETPIPE_SZ && defined F_GETPIPE_SZ
+  اگر ((pipe_cap = fcntl (fd, F_SETPIPE_SZ, SPLICE_PIPE_سائز)) < 0)
     pipe_cap = fcntl (fd, F_GETPIPE_SZ);
 #  endif
-  if (pipe_cap <= 0)
+  اگر (pipe_cap <= 0)
     pipe_cap = 64 * 1024;
-  return pipe_cap;
+  واپس pipe_cap;
 }
 
 # endif
 
-#endif
+#اگر_ختم

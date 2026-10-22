@@ -16,36 +16,36 @@
 
 /* Written by Mike Parker, David MacKenzie, and Jim Meyering */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل <selinux/label.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "filenamecat.h"
-#include "remove.h"
-#include "renameatu.h"
-#include "root-dev-ino.h"
-#include "targetdir.h"
-#include "priv-set.h"
+#شامل "system.h"
+#شامل "argmatch.h"
+#شامل "assure.h"
+#شامل "backupfile.h"
+#شامل "copy.h"
+#شامل "cp-hash.h"
+#شامل "filenamecat.h"
+#شامل "remove.h"
+#شامل "renameatu.h"
+#شامل "root-dev-ino.h"
+#شامل "targetdir.h"
+#شامل "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "mv"
+#تعریف_کرو پروگرام_NAME "mv"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("Mike Parker"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
   DEBUG_OPTION = CHAR_MAX + 1,
   EXCHANGE_OPTION,
@@ -53,43 +53,43 @@ enum
   STRIP_TRAILING_SLASHES_OPTION
 };
 
-static char const *const update_type_string[] =
+ساکن حرف ثابت *ثابت update_type_string[] =
 {
-  "all", "none", "none-fail", "older", NULL
+  "all", "none", "none-fail", "older", تہی
 };
-static enum Update_type const update_type[] =
+ساکن شمار Update_type ثابت update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"backup", optional_argument, NULL, 'b'},
-  {"context", no_argument, NULL, 'Z'},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"exchange", no_argument, NULL, EXCHANGE_OPTION},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"no-clobber", no_argument, NULL, 'n'},   /* Deprecated.  */
-  {"no-copy", no_argument, NULL, NO_COPY_OPTION},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"strip-trailing-slashes", no_argument, NULL,
+  {"backup", optional_دلیل, تہی, 'b'},
+  {"context", no_دلیل, تہی, 'Z'},
+  {"debug", no_دلیل, تہی, DEBUG_OPTION},
+  {"exchange", no_دلیل, تہی, EXCHANGE_OPTION},
+  {"force", no_دلیل, تہی, 'f'},
+  {"interactive", no_دلیل, تہی, 'i'},
+  {"no-clobber", no_دلیل, تہی, 'n'},   /* Deprecated.  */
+  {"no-copy", no_دلیل, تہی, NO_COPY_OPTION},
+  {"no-target-directory", no_دلیل, تہی, 'T'},
+  {"strip-trailing-slashes", no_دلیل, تہی,
    STRIP_TRAILING_SLASHES_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"update", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"suffix", required_دلیل, تہی, 'S'},
+  {"target-directory", required_دلیل, تہی, 't'},
+  {"update", optional_دلیل, تہی, 'u'},
+  {"verbose", no_دلیل, تہی, 'v'},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-static void
-rm_option_init (struct rm_options *x)
+ساکن خالی
+rm_option_init (ساخت rm_options *x)
 {
   x->ignore_missing_files = false;
-  x->remove_empty_directories = true;
+  x->remove_خالی_خانے_directories = true;
   x->recursive = true;
   x->one_file_system = false;
 
@@ -107,57 +107,57 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = true;
 
   {
-    static struct dev_ino dev_ino_buf;
-    x->root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-    if (x->root_dev_ino == NULL)
+    ساکن ساخت dev_ino dev_ino_buf;
+    x->جڑ_dev_ino = get_جڑ_dev_ino (&dev_ino_buf);
+    اگر (x->جڑ_dev_ino == تہی)
       error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
              quoteaf ("/"));
   }
 
-  x->preserve_all_root = false;
+  x->preserve_all_جڑ = false;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+ساکن خالی
+cp_option_init (ساخت cp_options *x)
 {
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
   cp_options_default (x);
   x->copy_as_regular = false;  /* FIXME: maybe make this an option */
-  x->reflink_mode = REFLINK_AUTO;
+  x->reflink_منوال = REFLINK_AUTO;
   x->dereference = DEREF_NEVER;
   x->unlink_dest_before_opening = false;
   x->unlink_dest_after_failed_open = false;
   x->hard_link = false;
   x->interactive = I_UNSPECIFIED;
-  x->move_mode = true;
-  x->install_mode = false;
+  x->move_منوال = true;
+  x->install_منوال = false;
   x->one_file_system = false;
   x->preserve_ownership = true;
   x->preserve_links = true;
-  x->preserve_mode = true;
+  x->preserve_منوال = true;
   x->preserve_timestamps = true;
-  x->explicit_no_preserve_mode= false;
+  x->explicit_no_preserve_منوال= false;
   x->preserve_security_context = selinux_enabled;
-  x->set_security_context = NULL;
+  x->سیٹ_security_context = تہی;
   x->reduce_diagnostics = false;
-  x->data_copy_required = true;
+  x->ڈیٹا_copy_required = true;
   x->require_preserve = false;  /* FIXME: maybe make this an option */
   x->require_preserve_context = false;
   x->preserve_xattr = true;
   x->require_preserve_xattr = true;
   x->recursive = true;
-  x->sparse_mode = SPARSE_AUTO;  /* FIXME: maybe make this an option */
+  x->sparse_منوال = SPARSE_AUTO;  /* FIXME: maybe make this an option */
   x->symbolic_link = false;
-  x->set_mode = false;
-  x->mode = 0;
+  x->سیٹ_منوال = false;
+  x->منوال_2 = 0;
   x->stdin_tty = isatty (STDIN_FILENO);
 
   x->open_dangling_dest_symlink = false;
   x->update = UPDATE_ALL;
   x->verbose = false;
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = تہی;
+  x->src_info = تہی;
 }
 
 /* Move SOURCE onto DEST aka DEST_DIRFD+DEST_RELNAME.
@@ -165,19 +165,19 @@ cp_option_init (struct cp_options *x)
    If SOURCE is a directory, DEST must not exist.
    Return true if successful.  */
 
-static bool
-do_move (char const *source, char const *dest,
-         int dest_dirfd, char const *dest_relname, const struct cp_options *x)
+ساکن bool
+do_move (حرف ثابت *ماخذ_2, حرف ثابت *dest,
+         صحیح dest_dirfd, حرف ثابت *dest_relname, ثابت ساخت cp_options *x)
 {
   bool copy_into_self;
   bool rename_succeeded;
-  bool ok = copy (source, dest, dest_dirfd, dest_relname, 0, x,
+  bool ok = copy (ماخذ_2, dest, dest_dirfd, dest_relname, 0, x,
                   &copy_into_self, &rename_succeeded);
 
-  if (ok)
+  اگر (ok)
     {
-      char const *dir_to_remove;
-      if (copy_into_self)
+      حرف ثابت *dir_مقصد_remove;
+      اگر (copy_into_self)
         {
           /* In general, when copy returns with copy_into_self set, SOURCE is
              the same as, or a parent of DEST.  In this case we know it's a
@@ -190,16 +190,16 @@ do_move (char const *source, char const *dest,
              copied-into-self directory, DEST ('b/b' in the example),
              and failing.  */
 
-          dir_to_remove = NULL;
+          dir_مقصد_remove = تہی;
           ok = false;
         }
-      else if (rename_succeeded)
+      ورنہ اگر (rename_succeeded)
         {
           /* No need to remove anything.  SOURCE was successfully
              renamed to DEST.  Or the user declined to rename a file.  */
-          dir_to_remove = NULL;
+          dir_مقصد_remove = تہی;
         }
-      else
+      ورنہ
         {
           /* This may mean SOURCE and DEST referred to different devices.
              It may also conceivably mean that even though they referred
@@ -223,64 +223,64 @@ do_move (char const *source, char const *dest,
              This function used to resort to copying only when rename
              failed and set errno to EXDEV.  */
 
-          dir_to_remove = source;
+          dir_مقصد_remove = ماخذ_2;
         }
 
-      if (dir_to_remove != NULL)
+      اگر (dir_مقصد_remove != تہی)
         {
-          struct rm_options rm_options;
+          ساخت rm_options rm_options;
           rm_option_init (&rm_options);
           rm_options.verbose = x->verbose;
-          char const *dir[2] = { dir_to_remove, NULL };
+          حرف ثابت *dir[2] = { dir_مقصد_remove, تہی };
 
-          enum RM_status status = rm ((void *) dir, &rm_options);
-          affirm (VALID_STATUS (status));
-          if (status == RM_ERROR)
+          شمار RM_حالت حالت_2 = rm ((خالی *) dir, &rm_options);
+          affirm (VALID_حالت (حالت_2));
+          اگر (حالت_2 == RM_ERROR)
             ok = false;
         }
     }
 
-  return ok;
+  واپس ok;
 }
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
-Usage: %s [OPTION]... [-T] SOURCE DEST\n\
-  or:  %s [OPTION]... SOURCE... DIRECTORY\n\
-  or:  %s [OPTION]... -t DIRECTORY SOURCE...\n\
+      لکھو (_("\
+Usage: %s [OPTION]... [-T] ماخذ DEST\n\
+  or:  %s [OPTION]... ماخذ... DIRECTORY\n\
+  or:  %s [OPTION]... -t DIRECTORY ماخذ...\n\
 "),
-              program_name, program_name, program_name);
+              پروگرام_name, پروگرام_name, پروگرام_name);
       fputs (_("\
-Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
+Rename ماخذ مقصد DEST, or move ماخذ(s) مقصد DIRECTORY.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
       --backup[=CONTROL]\n\
-         make a backup of each existing destination file\n\
+         make a backup کا each existing destination file\n\
 "));
       oputs (_("\
   -b\n\
-         like --backup but does not accept an argument\n\
+         like --backup but does not accept an دلیل\n\
 "));
       oputs (_("\
       --debug\n\
-         explain how a file is copied.  Implies -v\n\
+         explain how a file is copied.  مستلزم_2 -v\n\
 "));
       oputs (_("\
       --exchange\n\
-         exchange source and destination\n\
+         exchange ماخذ_2 and destination\n\
 "));
       oputs (_("\
   -f, --force\n\
-         do not prompt before overwriting\n\
+         کرو not prompt before overwriting\n\
 "));
       oputs (_("\
   -i, --interactive\n\
@@ -291,68 +291,68 @@ Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
          (deprecated) silently skip existing files.  See also --update\n\
 "));
       fputs (_("\
-If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
+If you specify مزید than one کا -i, -f, -n, only the final one takes effect.\n\
 "), stdout);
       oputs (_("\
       --no-copy\n\
-         do not copy if renaming fails\n\
+         کرو not copy اگر renaming fails\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
-         remove any trailing slashes from each SOURCE argument\n\
+         remove any trailing slashes from each ماخذ دلیل\n\
 "));
       oputs (_("\
   -S, --suffix=SUFFIX\n\
          override the usual backup suffix\n\
 "));
       oputs (_("\
-  -t, --target-directory=DIRECTORY\n\
-         move all SOURCE arguments into DIRECTORY\n\
+  -t, --ہدف-directory=DIRECTORY\n\
+         move all ماخذ arguments into DIRECTORY\n\
 "));
       oputs (_("\
-  -T, --no-target-directory\n\
-         treat DEST as a normal file\n\
+  -T, --no-ہدف-directory\n\
+         treat DEST as a معمول file\n\
 "));
       oputs (_("\
       --update[=UPDATE]\n\
          control which existing files are updated;\n\
-         UPDATE={all,none,none-fail,older(default)}\n\
+         UPDATE={all,none,none-fail,older(طےشدہ)}\n\
 "));
       oputs (_("\
   -u\n\
-         equivalent to --update[=older].  See below\n\
+         equivalent مقصد --update[=older].  See نیچے\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         explain what is being done\n\
+         explain what is being مکمل\n\
 "));
       oputs (_("\
   -Z, --context\n\
-         set SELinux security context of destination file to default type\n\
+         سیٹ_2 SELinux security context کا destination file مقصد طےشدہ type\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       emit_update_parameters_note ();
       emit_backup_suffix_note ();
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  حرف ثابت *backup_suffix = تہی;
+  حرف *نسخہ_control_string = تہی;
+  ساخت cp_options x;
   bool remove_trailing_slashes = false;
-  char const *target_directory = NULL;
-  bool no_target_directory = false;
+  حرف ثابت *ہدف_directory = تہی;
+  bool no_ہدف_directory = false;
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -362,133 +362,133 @@ main (int argc, char **argv)
   cp_option_init (&x);
 
   /* Try to disable the ability to unlink a directory.  */
-  priv_set_remove_linkdir ();
+  priv_سیٹ_remove_linkdir ();
 
-  int c;
-  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
+  صحیح c;
+  جب ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, تہی))
          != -1)
     {
-      switch (c)
+      انتخاب (c)
         {
-        case 'b':
+        حالت 'b':
           make_backups = true;
-          if (optarg)
-            version_control_string = optarg;
-          break;
-        case 'f':
+          اگر (optarg)
+            نسخہ_control_string = optarg;
+          توڑو;
+        حالت 'f':
           x.interactive = I_ALWAYS_YES;
-          break;
-        case 'i':
+          توڑو;
+        حالت 'i':
           x.interactive = I_ASK_USER;
-          break;
-        case 'n':
+          توڑو;
+        حالت 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
-        case DEBUG_OPTION:
+          توڑو;
+        حالت DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
-        case EXCHANGE_OPTION:
+          توڑو;
+        حالت EXCHANGE_OPTION:
           x.exchange = true;
-          break;
-        case NO_COPY_OPTION:
+          توڑو;
+        حالت NO_COPY_OPTION:
           x.no_copy = true;
-          break;
-        case STRIP_TRAILING_SLASHES_OPTION:
+          توڑو;
+        حالت STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
-        case 't':
-          if (target_directory)
+          توڑو;
+        حالت 't':
+          اگر (ہدف_directory)
             error (EXIT_FAILURE, 0, _("multiple target directories specified"));
-          target_directory = optarg;
-          break;
-        case 'T':
-          no_target_directory = true;
-          break;
-        case 'u':
+          ہدف_directory = optarg;
+          توڑو;
+        حالت 'T':
+          no_ہدف_directory = true;
+          توڑو;
+        حالت 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          اگر (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
-        case 'v':
+          توڑو;
+        حالت 'v':
           x.verbose = true;
-          break;
-        case 'S':
+          توڑو;
+        حالت 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
-        case 'Z':
+          توڑو;
+        حالت 'Z':
           /* As a performance enhancement, don't even bother trying
              to "restorecon" when not on an selinux-enabled kernel.  */
-          if (selinux_enabled)
+          اگر (selinux_enabled)
             {
               x.preserve_security_context = false;
-              x.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                     NULL, 0);
-              if (! x.set_security_context)
+              x.سیٹ_security_context = selabel_open (SELABEL_CTX_FILE,
+                                                     تہی, 0);
+              اگر (! x.سیٹ_security_context)
                 error (0, errno, _("warning: ignoring --context"));
             }
-          break;
+          توڑو;
         case_GETOPT_HELP_CHAR;
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
+        طےشدہ:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_files = argc - optind;
-  char **file = argv + optind;
+  صحیح n_files = argc - optind;
+  حرف **file = argv + optind;
 
-  if (n_files <= !target_directory)
+  اگر (n_files <= !ہدف_directory)
     {
-      if (n_files <= 0)
+      اگر (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      ورنہ
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
-  sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  ساخت stat sb;
+  sb.st_منوال = 0;
+  صحیح ہدف_dirfd = AT_FDCWD;
+  اگر (no_ہدف_directory)
     {
-      if (target_directory)
+      اگر (ہدف_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      اگر (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  ورنہ اگر (ہدف_directory)
     {
-      target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      ہدف_dirfd = ہدف_directory_عملیہ (ہدف_directory, &sb);
+      اگر (! ہدف_dirfd_valid (ہدف_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
-               quoteaf (target_directory));
+               quoteaf (ہدف_directory));
     }
-  else
+  ورنہ
     {
-      char const *lastfile = file[n_files - 1];
-      if (n_files == 2 && !x.exchange)
+      حرف ثابت *lastfile = file[n_files - 1];
+      اگر (n_files == 2 && !x.exchange)
         x.rename_errno = (renameatu (AT_FDCWD, file[0], AT_FDCWD, lastfile,
                                      RENAME_NOREPLACE)
                           ? errno : 0);
-      if (x.rename_errno != 0)
+      اگر (x.rename_errno != 0)
         {
-          int fd = target_directory_operand (lastfile, &sb);
-          if (target_dirfd_valid (fd))
+          صحیح fd = ہدف_directory_عملیہ (lastfile, &sb);
+          اگر (ہدف_dirfd_valid (fd))
             {
               x.rename_errno = -1;
-              target_dirfd = fd;
-              target_directory = lastfile;
+              ہدف_dirfd = fd;
+              ہدف_directory = lastfile;
               n_files--;
             }
-          else
+          ورنہ
             {
               /* The last operand LASTFILE cannot be opened as a directory.
                  If there are more than two operands, report an error.
@@ -499,11 +499,11 @@ main (int argc, char **argv)
                  In this case use stat to test whether LASTFILE is a
                  directory, in case opening a non-directory with (O_SEARCH
                  | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-              int err = errno;
-              if (2 < n_files
-                  || (O_PATHSEARCH == O_SEARCH && err == EACCES
-                      && (sb.st_mode != 0 || stat (lastfile, &sb) == 0)
-                      && S_ISDIR (sb.st_mode)))
+              صحیح err = errno;
+              اگر (2 < n_files
+                  || (O_PATHSEARCH == O_تلاش && err == EACCES
+                      && (sb.st_منوال != 0 || stat (lastfile, &sb) == 0)
+                      && S_ISDIR (sb.st_منوال)))
                 error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));
             }
         }
@@ -514,14 +514,14 @@ main (int argc, char **argv)
      systems (e.g., GNU/Linux) have a rename function that honors a
      trailing slash in the source, while others (Solaris 9, FreeBSD
      7.2) have a rename function that ignores it.  */
-  if (remove_trailing_slashes)
-    for (int i = 0; i < n_files; i++)
+  اگر (remove_trailing_slashes)
+    برائے (صحیح i = 0; i < n_files; i++)
       strip_trailing_slashes (file[i]);
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  اگر (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  اگر (make_backups
       && (x.exchange
           || x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
@@ -533,39 +533,39 @@ main (int argc, char **argv)
     }
 
   x.backup_type = (make_backups
-                   ? xget_version (_("backup type"),
-                                   version_control_string)
+                   ? xget_نسخہ (_("backup type"),
+                                   نسخہ_control_string)
                    : no_backups);
-  set_simple_backup_suffix (backup_suffix);
+  سیٹ_simple_backup_suffix (backup_suffix);
 
   hash_init ();
 
   bool ok;
-  if (target_directory)
+  اگر (ہدف_directory)
     {
       /* Initialize the hash table only if we'll need it.
          The problem it is used to detect can arise only if there are
          two or more files to move.  */
-      if (2 <= n_files)
+      اگر (2 <= n_files)
         dest_info_init (&x);
 
       ok = true;
-      for (int i = 0; i < n_files; ++i)
+      برائے (صحیح i = 0; i < n_files; ++i)
         {
-          x.last_file = i + 1 == n_files;
-          char const *source = file[i];
-          char const *source_basename = last_component (source);
-          char *dest_relname;
-          char *dest = file_name_concat (target_directory, source_basename,
+          x.آخری_file = i + 1 == n_files;
+          حرف ثابت *ماخذ_2 = file[i];
+          حرف ثابت *ماخذ_basename = آخری_component (ماخذ_2);
+          حرف *dest_relname;
+          حرف *dest = file_name_concat (ہدف_directory, ماخذ_basename,
                                          &dest_relname);
           strip_trailing_slashes (dest_relname);
-          ok &= do_move (source, dest, target_dirfd, dest_relname, &x);
-          free (dest);
+          ok &= do_move (ماخذ_2, dest, ہدف_dirfd, dest_relname, &x);
+          آزاد (dest);
         }
     }
-  else
+  ورنہ
     {
-      x.last_file = true;
+      x.آخری_file = true;
       ok = do_move (file[0], file[1], AT_FDCWD, file[1], &x);
     }
 

@@ -16,20 +16,20 @@
 
 /* Written by Pádraig Brady.  LD_PRELOAD idea from Brian Dessent.  */
 
-#include <config.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
+#شامل <config.h>
+#شامل <stddef.h>
+#شامل <stdio.h>
+#شامل <stdlib.h>
 
-#include "gettext.h"
-#define _(msgid) gettext (msgid)
+#شامل "gettext.h"
+#تعریف_کرو _(msgid) gettext (msgid)
 
 /* Deactivate config.h's "rpl_"-prefixed definitions, since we don't
    link gnulib here, and the replacements aren't needed.  */
-#undef fprintf
-#undef free
-#undef malloc
-#undef strtoul
+#تعریف_منسوخ fprintf
+#تعریف_منسوخ آزاد
+#تعریف_منسوخ حافظہ_دو
+#تعریف_منسوخ strtoul
 
 /* Note currently for glibc (2.3.5) the following call does not change
    the buffer size, and more problematically does not give any indication
@@ -67,67 +67,67 @@
    However I think it's just a buggy implementation due to the various
    inconsistencies with write sizes and subsequent writes.  */
 
-static void
-apply_mode (FILE *stream, char const *stream_name, char const *envvar)
+ساکن خالی
+apply_منوال (FILE *دھارا, حرف ثابت *دھارا_name, حرف ثابت *envvar)
 {
-  char *buf = NULL;
-  int setvbuf_mode;
-  unsigned long int size = 0;
+  حرف *buf = تہی;
+  صحیح setvbuf_منوال;
+  غیرعلامتی طویل صحیح سائز = 0;
 
-  char const *mode = getenv (envvar);
-  if (!mode)
-    return;
+  حرف ثابت *منوال_2 = getenv (envvar);
+  اگر (!منوال_2)
+    واپس;
 
-  if (*mode == '0')
-    setvbuf_mode = _IONBF;
-  else if (*mode == 'L')
-    setvbuf_mode = _IOLBF;      /* FIXME: should we allow 1ML  */
-  else
+  اگر (*منوال_2 == '0')
+    setvbuf_منوال = _IONBF;
+  ورنہ اگر (*منوال_2 == 'L')
+    setvbuf_منوال = _IOLBF;      /* FIXME: should we allow 1ML  */
+  ورنہ
     {
-      setvbuf_mode = _IOFBF;
-      char *mode_end;
-      size = strtoul (mode, &mode_end, 10);
-      if (size == 0 || *mode_end)
+      setvbuf_منوال = _IOFBF;
+      حرف *منوال_انتہا;
+      سائز = strtoul (منوال_2, &منوال_انتہا, 10);
+      اگر (سائز == 0 || *منوال_انتہا)
         {
           fprintf (stderr, _("invalid buffering mode %s for %s\n"),
-                   mode, stream_name);
-          return;
+                   منوال_2, دھارا_name);
+          واپس;
         }
 
       /* If strtoul might have overflowed or if the size is more than
          half of size_t range, treat it as an allocation failure.
          Huge sizes can cause problems with some stdio implementations.  */
-      buf = (size <= ((unsigned long int) -2 < (size_t) -1 / 2
-                      ? (unsigned long int) -2 : (size_t) -1 / 2)
-             ? malloc (size) : NULL);
-      if (!buf)
+      buf = (سائز <= ((غیرعلامتی طویل صحیح) -2 < (size_t) -1 / 2
+                      ? (غیرعلامتی طویل صحیح) -2 : (size_t) -1 / 2)
+             ? حافظہ_دو (سائز) : تہی);
+      اگر (!buf)
         {
           /* We could defer the allocation to libc, however since
              glibc currently ignores the combination of null buffer
              with non zero size, we'll fail here.  */
           fprintf (stderr,
                    _("failed to allocate a %lu byte stdio buffer\n"),
-                   size);
-          return;
+                   سائز);
+          واپس;
         }
       /* buf will be freed by fclose.  */
     }
 
-  if (setvbuf (stream, buf, setvbuf_mode, size) != 0)
+  اگر (setvbuf (دھارا, buf, setvbuf_منوال, سائز) != 0)
     {
       fprintf (stderr, _("could not set buffering of %s to mode %s\n"),
-               stream_name, mode);
-      free (buf);
+               دھارا_name, منوال_2);
+      آزاد (buf);
     }
 }
 
 /* Use __attribute to avoid elision of __attribute__ on SUNPRO_C etc.  */
-static void __attribute ((constructor))
-stdbuf (void)
+ساکن خالی __attribute ((constructor))
+stdbuf (خالی)
 {
   /* Do first so can write errors to stderr.  */
-  apply_mode (stderr, "stderr", "_STDBUF_E");
+  apply_منوال (stderr, "stderr", "_STDBUF_E");
 
-  apply_mode (stdin, "stdin", "_STDBUF_I");
-  apply_mode (stdout, "stdout", "_STDBUF_O");
+  apply_منوال (stdin, "stdin", "_STDBUF_I");
+  apply_منوال (stdout, "stdout", "_STDBUF_O");
 }

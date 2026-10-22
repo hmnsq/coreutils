@@ -1,18 +1,18 @@
-extern int
-bsd_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+خارجی صحیح
+bsd_مجموع_دھارا (FILE *دھارا, خالی *resstream, intmax_t *لمبائی);
 
-extern int
-sysv_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+خارجی صحیح
+sysv_مجموع_دھارا (FILE *دھارا, خالی *resstream, intmax_t *لمبائی);
 
-typedef int (*sumfn)(FILE *, void *, intmax_t *);
+قسمتعریف صحیح (*sumfn)(FILE *, خالی *, intmax_t *);
 
 
-extern void
-output_bsd (char const *file, int binary_file, void const *digest,
-            bool raw, bool tagged, unsigned char delim, bool args,
-            intmax_t length);
+خارجی خالی
+output_bsd (حرف ثابت *file, صحیح ثنائی_file, خالی ثابت *digest,
+            bool raw, bool tagged, غیرعلامتی حرف delim, bool دلائل,
+            intmax_t لمبائی);
 
-extern void
-output_sysv (char const *file, int binary_file, void const *digest,
-             bool raw, bool tagged, unsigned char delim, bool args,
-             intmax_t length);
+خارجی خالی
+output_sysv (حرف ثابت *file, صحیح ثنائی_file, خالی ثابت *digest,
+             bool raw, bool tagged, غیرعلامتی حرف delim, bool دلائل,
+             intmax_t لمبائی);

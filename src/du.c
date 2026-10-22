@@ -23,32 +23,32 @@
    Variable blocks added by lm@sgi.com and eggert@twinsun.com.
    Rewritten to use nftw, then to use fts by Jim Meyering.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "argv-iter.h"
-#include "assure.h"
-#include "di-set.h"
-#include "exclude.h"
-#include "fts-missing.h"
-#include "human.h"
-#include "mountlist.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-size.h"
-#include "stat-time.h"
-#include "stdio--.h"
-#include "xfts.h"
-#include "xmemdup0.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#شامل <config.h>
+#شامل <getopt.h>
+#شامل <sys/types.h>
+#شامل "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#شامل "system.h"
+#شامل "argv-iter.h"
+#شامل "assure.h"
+#شامل "di-set.h"
+#شامل "exclude.h"
+#شامل "fts-missing.h"
+#شامل "human.h"
+#شامل "mountlist.h"
+#شامل "quote.h"
+#شامل "show-date.h"
+#شامل "stat-size.h"
+#شامل "stat-time.h"
+#شامل "stdio--.h"
+#شامل "xfts.h"
+#شامل "xmemdup0.h"
+#شامل "xstrtol.h"
+#شامل "xstrtol-error.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "du"
+#تعریف_کرو پروگرام_NAME "du"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name_lite ("Torbjorn Granlund", "Torbj\303\266rn Granlund"), \
   proper_name ("David MacKenzie"), \
   proper_name ("Paul Eggert"), \
@@ -56,441 +56,441 @@
 
 /* A set of dev/ino pairs to help identify files and directories
    whose sizes have already been counted.  */
-static struct di_set *di_files;
+ساکن ساخت di_سیٹ *di_files;
 
 /* A set containing a dev/ino pair for each local mount point directory.  */
-static struct di_set *di_mnt;
+ساکن ساخت di_سیٹ *di_mnt;
 
 /* Keep track of the preceding "level" (depth in hierarchy)
    from one call of process_file to the next.  */
-static idx_t prev_level;
+ساکن idx_t پچھلا_level;
 
 /* Define a class for collecting directory information. */
-struct duinfo
+ساخت duinfo
 {
   /* Size of files in directory.  */
-  uintmax_t size;
+  uintmax_t سائز;
 
   /* Number of inodes in directory.  */
   uintmax_t inodes;
 
   /* Latest timestamp found.  If tmax.tv_sec == TYPE_MINIMUM (time_t)
      && tmax.tv_nsec < 0, no timestamp has been found.  */
-  struct timespec tmax;
+  ساخت timespec tmax;
 };
 
 /* Initialize directory data.  */
-static inline void
-duinfo_init (struct duinfo *a)
+ساکن اندرونی خالی
+duinfo_init (ساخت duinfo *a)
 {
-  a->size = 0;
+  a->سائز = 0;
   a->inodes = 0;
   a->tmax.tv_sec = TYPE_MINIMUM (time_t);
   a->tmax.tv_nsec = -1;
 }
 
 /* Set directory data.  */
-static inline void
-duinfo_set (struct duinfo *a, uintmax_t size, struct timespec tmax)
+ساکن اندرونی خالی
+duinfo_سیٹ (ساخت duinfo *a, uintmax_t سائز, ساخت timespec tmax)
 {
-  a->size = size;
+  a->سائز = سائز;
   a->inodes = 1;
   a->tmax = tmax;
 }
 
 /* Accumulate directory data.  */
-static inline void
-duinfo_add (struct duinfo *a, struct duinfo const *b)
+ساکن اندرونی خالی
+duinfo_جوڑو (ساخت duinfo *a, ساخت duinfo ثابت *b)
 {
-  uintmax_t sum = a->size + b->size;
-  a->size = a->size <= sum ? sum : UINTMAX_MAX;
+  uintmax_t مجموع = a->سائز + b->سائز;
+  a->سائز = a->سائز <= مجموع ? مجموع : UINTMAX_MAX;
   a->inodes = a->inodes + b->inodes;
-  if (timespec_cmp (a->tmax, b->tmax) < 0)
+  اگر (timespec_cmp (a->tmax, b->tmax) < 0)
     a->tmax = b->tmax;
 }
 
 /* A structure for per-directory level information.  */
-struct dulevel
+ساخت dulevel
 {
   /* Entries in this directory.  */
-  struct duinfo ent;
+  ساخت duinfo ent;
 
   /* Total for subdirectories.  */
-  struct duinfo subdir;
+  ساخت duinfo subdir;
 };
 
 /* If true, display counts for all files, not just directories.  */
-static bool opt_all = false;
+ساکن bool opt_all = false;
 
 /* If true, rather than using the device usage of each file,
    use the apparent size (stat.st_size if usable, 0 otherwise).  */
-static bool apparent_size = false;
+ساکن bool apparent_سائز = false;
 
 /* If true, count each hard link of files with multiple links.  */
-static bool opt_count_all = false;
+ساکن bool opt_گنتی_all = false;
 
 /* If true, hash all files to look for hard links.  */
-static bool hash_all;
+ساکن bool hash_all;
 
 /* If true, output the NUL byte instead of a newline at the end of each line. */
-static bool opt_nul_terminate_output = false;
+ساکن bool opt_nul_terminate_output = false;
 
 /* If true, quote output pathnames according to the selected quoting style.  */
-static bool quote_output;
+ساکن bool quote_output;
 
 /* If true, print a grand total at the end.  */
-static bool print_grand_total = false;
+ساکن bool print_grand_کل = false;
 
 /* If nonzero, do not add sizes of subdirectories.  */
-static bool opt_separate_dirs = false;
+ساکن bool opt_separate_dirs = false;
 
 /* Show the total for each directory (and file if --all) that is at
    most MAX_DEPTH levels down from the root of the hierarchy.  The root
    is at level 0, so 'du --max-depth=0' is equivalent to 'du -s'.  */
-static idx_t max_depth = IDX_MAX;
+ساکن idx_t max_گہرائی = IDX_MAX;
 
 /* Only output entries with at least this SIZE if positive,
    or at most if negative.  See --threshold option.  */
-static intmax_t opt_threshold = 0;
+ساکن intmax_t opt_حد = 0;
 
 /* Human-readable options for output.  */
-static int human_output_opts;
+ساکن صحیح human_output_opts;
 
 /* Output inodes count instead of blocks used.  */
-static bool opt_inodes = false;
+ساکن bool opt_inodes = false;
 
 /* If true, print most recently modified date, using the specified format.  */
-static bool opt_time = false;
+ساکن bool opt_وقت = false;
 
 /* Type of time to display. controlled by --time.  */
 
-enum time_type
+شمار وقت_type
   {
-    time_mtime,			/* default */
-    time_ctime,
-    time_atime
+    وقت_mtime,			/* default */
+    وقت_ctime,
+    وقت_atime
   };
 
-static enum time_type time_type = time_mtime;
+ساکن شمار وقت_type وقت_type = وقت_mtime;
 
 /* User specified date / time style */
-static char const *time_style = NULL;
+ساکن حرف ثابت *وقت_style = تہی;
 
 /* Format used to display date / time. Controlled by --time-style */
-static char const *time_format = NULL;
+ساکن حرف ثابت *وقت_format = تہی;
 
 /* The local time zone rules, as per the TZ environment variable.  */
-static timezone_t localtz;
+ساکن timezone_t localtz;
 
 /* The units to use when printing sizes.  */
-static uintmax_t output_block_size;
+ساکن uintmax_t output_بلاک_سائز;
 
 /* File name patterns to exclude.  */
-static struct exclude *exclude;
+ساکن ساخت exclude *exclude;
 
 /* Grand total size of all args, in bytes. Also latest modified date. */
-static struct duinfo tot_dui;
+ساکن ساخت duinfo tot_dui;
 
-#define IS_DIR_TYPE(Type)	\
+#تعریف_کرو IS_DIR_TYPE(Type)	\
   ((Type) == FTS_DP		\
    || (Type) == FTS_DNR)
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+شمار
 {
   EXCLUDE_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
   HUMAN_SI_OPTION,
-#if GNULIB_FTS_DEBUG
+#اگر GNULIB_FTS_DEBUG
   FTS_DEBUG,
-#endif
-  TIME_OPTION,
-  TIME_STYLE_OPTION,
+#اگر_ختم
+  وقت_OPTION,
+  وقت_STYLE_OPTION,
   INODES_OPTION
 };
 
-static struct option const long_options[] =
+ساکن ساخت option ثابت long_options[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"apparent-size", no_argument, NULL, 'A'},
-  {"block-size", required_argument, NULL, 'B'},
-  {"bytes", no_argument, NULL, 'b'},
-  {"count-links", no_argument, NULL, 'l'},
-#if GNULIB_FTS_DEBUG
-  {"-debug", no_argument, NULL, FTS_DEBUG},
-#endif
-  {"dereference", no_argument, NULL, 'L'},
-  {"dereference-args", no_argument, NULL, 'D'},
-  {"exclude", required_argument, NULL, EXCLUDE_OPTION},
-  {"exclude-from", required_argument, NULL, 'X'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"human-readable", no_argument, NULL, 'h'},
-  {"inodes", no_argument, NULL, INODES_OPTION},
-  {"si", no_argument, NULL, HUMAN_SI_OPTION},
-  {"max-depth", required_argument, NULL, 'd'},
-  {"null", no_argument, NULL, '0'},
-  {"no-dereference", no_argument, NULL, 'P'},
-  {"one-file-system", no_argument, NULL, 'x'},
-  {"separate-dirs", no_argument, NULL, 'S'},
-  {"summarize", no_argument, NULL, 's'},
-  {"total", no_argument, NULL, 'c'},
-  {"threshold", required_argument, NULL, 't'},
-  {"time", optional_argument, NULL, TIME_OPTION},
-  {"time-style", required_argument, NULL, TIME_STYLE_OPTION},
+  {"all", no_دلیل, تہی, 'a'},
+  {"apparent-size", no_دلیل, تہی, 'A'},
+  {"block-size", required_دلیل, تہی, 'B'},
+  {"bytes", no_دلیل, تہی, 'b'},
+  {"count-links", no_دلیل, تہی, 'l'},
+#اگر GNULIB_FTS_DEBUG
+  {"-debug", no_دلیل, تہی, FTS_DEBUG},
+#اگر_ختم
+  {"dereference", no_دلیل, تہی, 'L'},
+  {"dereference-args", no_دلیل, تہی, 'D'},
+  {"exclude", required_دلیل, تہی, EXCLUDE_OPTION},
+  {"exclude-from", required_دلیل, تہی, 'X'},
+  {"files0-from", required_دلیل, تہی, FILES0_FROM_OPTION},
+  {"human-readable", no_دلیل, تہی, 'h'},
+  {"inodes", no_دلیل, تہی, INODES_OPTION},
+  {"si", no_دلیل, تہی, HUMAN_SI_OPTION},
+  {"max-depth", required_دلیل, تہی, 'd'},
+  {"null", no_دلیل, تہی, '0'},
+  {"no-dereference", no_دلیل, تہی, 'P'},
+  {"one-file-system", no_دلیل, تہی, 'x'},
+  {"separate-dirs", no_دلیل, تہی, 'S'},
+  {"summarize", no_دلیل, تہی, 's'},
+  {"total", no_دلیل, تہی, 'c'},
+  {"threshold", required_دلیل, تہی, 't'},
+  {"time", optional_دلیل, تہی, وقت_OPTION},
+  {"time-style", required_دلیل, تہی, وقت_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
-  {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {GETOPT_نسخہ_OPTION_DECL},
+  {تہی, 0, تہی, 0}
 };
 
-static char const *const time_args[] =
+ساکن حرف ثابت *ثابت وقت_دلائل[] =
 {
-  "atime", "access", "use", "ctime", "status", NULL
+  "atime", "access", "use", "ctime", "status", تہی
 };
-static enum time_type const time_types[] =
+ساکن شمار وقت_type ثابت وقت_types[] =
 {
-  time_atime, time_atime, time_atime, time_ctime, time_ctime
+  وقت_atime, وقت_atime, وقت_atime, وقت_ctime, وقت_ctime
 };
-ARGMATCH_VERIFY (time_args, time_types);
+ARGMATCH_VERIFY (وقت_دلائل, وقت_types);
 
 /* 'full-iso' uses full ISO-style dates and times.  'long-iso' uses longer
    ISO-style timestamps, though shorter than 'full-iso'.  'iso' uses shorter
    ISO-style timestamps.  */
-enum time_style
+شمار وقت_style
   {
-    full_iso_time_style,       /* --time-style=full-iso */
-    long_iso_time_style,       /* --time-style=long-iso */
-    iso_time_style	       /* --time-style=iso */
+    بھرا_iso_وقت_style,       /* --time-style=full-iso */
+    long_iso_وقت_style,       /* --time-style=long-iso */
+    iso_وقت_style	       /* --time-style=iso */
   };
 
-static char const *const time_style_args[] =
+ساکن حرف ثابت *ثابت وقت_style_دلائل[] =
 {
-  "full-iso", "long-iso", "iso", NULL
+  "full-iso", "long-iso", "iso", تہی
 };
-static enum time_style const time_style_types[] =
+ساکن شمار وقت_style ثابت وقت_style_types[] =
 {
-  full_iso_time_style, long_iso_time_style, iso_time_style
+  بھرا_iso_وقت_style, long_iso_وقت_style, iso_وقت_style
 };
-ARGMATCH_VERIFY (time_style_args, time_style_types);
+ARGMATCH_VERIFY (وقت_style_دلائل, وقت_style_types);
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
+      لکھو (_("\
 Usage: %s [OPTION]... [FILE]...\n\
   or:  %s [OPTION]... --files0-from=F\n\
-"), program_name, program_name);
+"), پروگرام_name, پروگرام_name);
       fputs (_("\
-Summarize device usage of the set of FILEs, recursively for directories.\n\
+Summarize device usage کا the سیٹ_2 کا FILEs, recursively برائے directories.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         انتہا each output سطر with NUL, not newline\n\
 "));
       oputs (_("\
   -a, --all\n\
-         write counts for all files, not just directories\n\
+         اكتب counts برائے all files, not just directories\n\
 "));
       oputs (_("\
-  -A, --apparent-size\n\
+  -A, --apparent-سائز\n\
          print apparent sizes rather than device usage;\n\
-         although the apparent size is usually smaller, it may be\n\
-         larger due to holes in ('sparse') files,\n\
-         internal fragmentation, indirect blocks, etc.\n\
+         although the apparent سائز is usually smaller, it may be\n\
+         larger due مقصد holes اندر ('sparse') files,\n\
+         اندرونی_2 fragmentation, بالواسطہ بلاکیں, etc.\n\
 "));
       oputs (_("\
-  -B, --block-size=SIZE\n\
-         scale sizes by SIZE before printing them; See SIZE format below;\n\
-         E.g., '-BM' prints sizes in units of 1,048,576 bytes\n\
+  -B, --بلاک-سائز=سائز_2\n\
+         scale sizes by سائز_2 before printing them; See سائز_2 format نیچے;\n\
+         E.g., '-BM' prints sizes اندر units کا 1,048,576 بائٹیں\n\
 "));
       oputs (_("\
-  -b, --bytes\n\
-         equivalent to '--apparent-size --block-size=1'\n\
+  -b, --بائٹیں\n\
+         equivalent مقصد '--apparent-size --block-size=1'\n\
 "));
       oputs (_("\
-  -c, --total\n\
-         produce a grand total\n\
+  -c, --کل\n\
+         produce a grand کل\n\
 "));
       oputs (_("\
-  -D, --dereference-args\n\
-         dereference only symlinks that are listed on the command line\n\
+  -D, --dereference-دلائل\n\
+         dereference only symlinks that are listed on the command سطر\n\
 "));
       oputs (_("\
-  -d, --max-depth=N\n\
-         print the total for a directory (or file, with --all)\n\
-         only if it is N or fewer levels below the command\n\
-         line argument;  --max-depth=0 is the same as --summarize\n\
+  -d, --max-گہرائی=N\n\
+         print the کل برائے a directory (or file, with --all)\n\
+         only اگر it is N or fewer سطحیں نیچے the command\n\
+         سطر دلیل;  --max-گہرائی=0 is the same as --summarize\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         summarize device usage of the NUL-terminated file names\n\
-         specified in file F;  if F is -, read names from standard input\n\
+         summarize device usage کا the NUL-terminated file نام\n\
+         specified اندر file F;  اگر F is -, اقرأ نام from standard داخلہ\n\
 "));
       oputs (_("\
   -H\n\
-         equivalent to --dereference-args (-D)\n\
+         equivalent مقصد --dereference-دلائل (-D)\n\
 "));
       oputs (_("\
   -h, --human-readable\n\
-         print sizes in human readable format (e.g., 1K 234M 2G)\n\
+         print sizes اندر human readable format (e.g., 1K 234M 2G)\n\
 "));
       oputs (_("\
       --inodes\n\
-         list inode usage information instead of block usage\n\
+         list inode usage information instead کا بلاک usage\n\
 "));
       oputs (_("\
   -k\n\
-         like --block-size=1K\n\
+         like --بلاک-سائز=1K\n\
 "));
       oputs (_("\
   -L, --dereference\n\
          dereference all symbolic links\n\
 "));
       oputs (_("\
-  -l, --count-links\n\
-         count sizes many times if hard linked\n\
+  -l, --گنتی-links\n\
+         گنتی sizes many times اگر hard linked\n\
 "));
       oputs (_("\
   -m\n\
-         like --block-size=1M\n\
+         like --بلاک-سائز=1M\n\
 "));
       oputs (_("\
   -P, --no-dereference\n\
-         don't follow any symbolic links (this is the default)\n\
+         don't follow any symbolic links (this is the طےشدہ)\n\
 "));
       oputs (_("\
   -S, --separate-dirs\n\
-         for directories do not include size of subdirectories\n\
+         برائے directories کرو not include سائز کا subdirectories\n\
 "));
       oputs (_("\
       --si\n\
-         like -h, but use powers of 1000 not 1024\n\
+         like -h, but use powers کا 1000 not 1024\n\
 "));
       oputs (_("\
   -s, --summarize\n\
-         display only a total for each argument\n\
+         display only a کل برائے each دلیل\n\
 "));
       oputs (_("\
-  -t, --threshold=SIZE\n\
-         exclude entries smaller than SIZE if positive,\n\
-         or entries greater than SIZE if negative\n\
+  -t, --حد=سائز_2\n\
+         exclude entries smaller than سائز_2 اگر مثبت,\n\
+         or entries greater than سائز_2 اگر negative\n\
 "));
       oputs (_("\
-      --time\n\
-         show time of the last modification of any file in the directory,\n\
-         or any of its subdirectories\n\
+      --وقت\n\
+         show وقت کا the آخری modification کا any file اندر the directory,\n\
+         or any کا its subdirectories\n\
 "));
       oputs (_("\
-      --time=WORD\n\
-         show time as WORD instead of modification time:\n\
-         atime, access, use, ctime or status\n\
+      --وقت=لفظ\n\
+         show وقت as لفظ instead کا modification وقت:\n\
+         atime, access, use, ctime or حالت_2\n\
 "));
       oputs (_("\
-      --time-style=STYLE\n\
-         time/date format with --time; see TIME_STYLE below\n\
+      --وقت-style=STYLE\n\
+         وقت/date format with --وقت; see وقت_STYLE نیچے\n\
 "));
       oputs (_("\
   -X, --exclude-from=FILE\n\
-         exclude files that match any pattern in FILE\n\
+         exclude files that مطابقت any نمونہ_2 اندر FILE\n\
 "));
       oputs (_("\
-      --exclude=PATTERN\n\
-         exclude files that match PATTERN\n\
+      --exclude=نمونہ\n\
+         exclude files that مطابقت نمونہ\n\
 "));
       oputs (_("\
   -x, --one-file-system\n\
          skip directories on different file systems\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
+      oputs (نسخہ_OPTION_DESCRIPTION);
       emit_blocksize_note ("DU");
-      emit_size_note ();
+      emit_سائز_note ();
       fputs (_("\
 \n\
-The --time-style STYLE argument can be full-iso, long-iso, iso, or +FORMAT.\n\
-FORMAT is interpreted like in date(1).\n\
-Also the TIME_STYLE environment variable sets the default style to use.\n\
+The --وقت-style STYLE دلیل can be بھرا-iso, طویل-iso, iso, or +FORMAT.\n\
+FORMAT is interpreted like اندر date(1).\n\
+Also the وقت_STYLE environment variable sets the طےشدہ style مقصد use.\n\
 "), stdout);
-      emit_ancillary_info (PROGRAM_NAME);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* Try to insert the INO/DEV pair into DI_SET.
    Return true if the pair is successfully inserted,
    false if the pair was already there.  */
-static bool
-hash_ins (struct di_set *di_set, ino_t ino, dev_t dev)
+ساکن bool
+hash_ins (ساخت di_سیٹ *di_سیٹ, ino_t ino, dev_t dev)
 {
-  int inserted = di_set_insert (di_set, dev, ino);
-  if (inserted < 0)
+  صحیح inserted = di_سیٹ_داخل_کرو (di_سیٹ, dev, ino);
+  اگر (inserted < 0)
     xalloc_die ();
-  return inserted;
+  واپس inserted;
 }
 
 /* Print N_BYTES.  Convert it to a readable value before printing.  */
 
-static void
-print_only_size (uintmax_t n_bytes)
+ساکن خالی
+print_only_سائز (uintmax_t n_بائٹیں)
 {
-  char buf[LONGEST_HUMAN_READABLE + 1];
-  fputs ((n_bytes == UINTMAX_MAX
+  حرف buf[LONGEST_HUMAN_READABLE + 1];
+  fputs ((n_بائٹیں == UINTMAX_MAX
           ? _("Infinity")
-          : human_readable (n_bytes, buf, human_output_opts,
-                            1, output_block_size)),
+          : human_readable (n_بائٹیں, buf, human_output_opts,
+                            1, output_بلاک_سائز)),
          stdout);
 }
 
 /* Print size (and optionally time) indicated by *PDUI, followed by STRING,
    quoting STRING if QUOTE is true.  */
 
-static void
-print_size (const struct duinfo *pdui, char const *string, bool quote)
+ساکن خالی
+print_سائز (ثابت ساخت duinfo *pdui, حرف ثابت *string, bool quote)
 {
-  print_only_size (opt_inodes
+  print_only_سائز (opt_inodes
                    ? pdui->inodes
-                   : pdui->size);
+                   : pdui->سائز);
 
-  if (opt_time)
+  اگر (opt_وقت)
     {
-      putchar ('\t');
-      bool ok = show_date (time_format, pdui->tmax, localtz);
-      if (!ok)
+      حرف_لکھو ('\t');
+      bool ok = show_date (وقت_format, pdui->tmax, localtz);
+      اگر (!ok)
         {
           /* If failed to format date, print raw seconds instead.  */
-          char buf[INT_BUFSIZE_BOUND (intmax_t)];
+          حرف buf[INT_BUFSIZE_BOUND (intmax_t)];
           fputs (timetostr (pdui->tmax.tv_sec, buf), stdout);
         }
     }
-  putchar ('\t');
+  حرف_لکھو ('\t');
   fputs (quote ? quoteN (string) : string, stdout);
-  putchar (opt_nul_terminate_output ? '\0' : '\n');
-  if (fflush (stdout) < 0)
+  حرف_لکھو (opt_nul_terminate_output ? '\0' : '\n');
+  اگر (fflush (stdout) < 0)
     write_error ();
 }
 
 /* Fill the di_mnt set with local mount point dev/ino pairs.  */
 
-static void
-fill_mount_table (void)
+ساکن خالی
+fill_mount_جدول (خالی)
 {
-  struct mount_entry *mnt_ent = read_file_system_list (false);
-  while (mnt_ent)
+  ساخت mount_اندراج *mnt_ent = read_file_system_list (false);
+  جب (mnt_ent)
     {
-      struct mount_entry *mnt_free;
-      if (!mnt_ent->me_remote && !mnt_ent->me_dummy)
+      ساخت mount_اندراج *mnt_free;
+      اگر (!mnt_ent->me_remote && !mnt_ent->me_dummy)
         {
-          struct stat buf;
-          if (!stat (mnt_ent->me_mountdir, &buf))
+          ساخت stat buf;
+          اگر (!stat (mnt_ent->me_mountdir, &buf))
             hash_ins (di_mnt, buf.st_ino, buf.st_dev);
-          else
+          ورنہ
             {
               /* Ignore stat failure.  False positives are too common.
                  E.g., "Permission denied" on /run/user/<name>/gvfs.  */
@@ -498,40 +498,40 @@ fill_mount_table (void)
         }
 
       mnt_free = mnt_ent;
-      mnt_ent = mnt_ent->me_next;
-      free_mount_entry (mnt_free);
+      mnt_ent = mnt_ent->me_اگلا;
+      free_mount_اندراج (mnt_free);
     }
 }
 
 /* This function checks whether any of the directories in the cycle that
    fts detected is a mount point.  */
 
-static bool
-mount_point_in_fts_cycle (FTSENT const *ent)
+ساکن bool
+mount_نقطہ_اندر_fts_چکر (FTSENT ثابت *ent)
 {
-  FTSENT const *cycle_ent = ent->fts_cycle;
+  FTSENT ثابت *چکر_ent = ent->fts_چکر;
 
-  if (!di_mnt)
+  اگر (!di_mnt)
     {
       /* Initialize the set of dev,inode pairs.  */
-      di_mnt = di_set_alloc ();
-      if (!di_mnt)
+      di_mnt = di_سیٹ_alloc ();
+      اگر (!di_mnt)
         xalloc_die ();
 
-      fill_mount_table ();
+      fill_mount_جدول ();
     }
 
-  while (ent && ent != cycle_ent)
+  جب (ent && ent != چکر_ent)
     {
-      if (di_set_lookup (di_mnt, ent->fts_statp->st_dev,
+      اگر (di_سیٹ_lookup (di_mnt, ent->fts_statp->st_dev,
                          ent->fts_statp->st_ino) > 0)
         {
-          return true;
+          واپس true;
         }
-      ent = ent->fts_parent;
+      ent = ent->fts_والد;
     }
 
-  return false;
+  واپس false;
 }
 
 /* This function is called once for every file system object that fts
@@ -539,13 +539,13 @@ mount_point_in_fts_cycle (FTSENT const *ent)
    that and accumulates per-directory totals based on changes in
    the depth of the current entry.  It returns true on success.  */
 
-static bool
+ساکن bool
 process_file (FTS *fts, FTSENT *ent)
 {
   bool ok = true;
-  struct duinfo dui;
-  struct duinfo dui_to_print;
-  static idx_t n_alloc;
+  ساخت duinfo dui;
+  ساخت duinfo dui_مقصد_print;
+  ساکن idx_t n_alloc;
   /* First element of the structure contains:
      The sum of the sizes of all entries in the single directory
      at the corresponding level.  Although this does include the sizes
@@ -554,44 +554,44 @@ process_file (FTS *fts, FTSENT *ent)
      Second element of the structure contains:
      The sum of the sizes of all entries in the hierarchy at or below the
      directory at the specified level.  */
-  static struct dulevel *dulvl;
+  ساکن ساخت dulevel *dulvl;
 
-  char const *file = ent->fts_path;
-  const struct stat *sb = ent->fts_statp;
-  int info = ent->fts_info;
-  bool ignore_missing = ignore_missing_fts_entry (ent);
+  حرف ثابت *file = ent->fts_راستہ;
+  ثابت ساخت stat *sb = ent->fts_statp;
+  صحیح info = ent->fts_info;
+  bool ignore_missing = ignore_missing_fts_اندراج (ent);
 
-  if (ignore_missing && ignorable_fts_error (ent))
-    return true;
+  اگر (ignore_missing && ignorable_fts_error (ent))
+    واپس true;
 
-  if (info == FTS_DNR)
+  اگر (info == FTS_DNR)
     {
       /* An error occurred, but the size is known, so count it.  */
       error (0, ent->fts_errno, _("cannot read directory %s"), quoteaf (file));
       ok = false;
     }
-  else if (info != FTS_DP)
+  ورنہ اگر (info != FTS_DP)
     {
       bool excluded = excluded_file_name (exclude, file);
-      if (! excluded)
+      اگر (! excluded)
         {
           /* Make the stat buffer *SB valid, or fail noisily.  */
 
-          if (info == FTS_NSOK)
+          اگر (info == FTS_NSOK)
             {
-              fts_set (fts, ent, FTS_AGAIN);
-              MAYBE_UNUSED FTSENT const *e = fts_read (fts);
+              fts_سیٹ (fts, ent, FTS_AGAIN);
+              MAYBE_غیر_مستعمل FTSENT ثابت *e = fts_read (fts);
               affirm (e == ent);
               info = ent->fts_info;
 
-              if (ignore_missing && ignorable_fts_error (ent))
-                return true;
+              اگر (ignore_missing && ignorable_fts_error (ent))
+                واپس true;
             }
 
-          if (info == FTS_NS || info == FTS_SLNONE)
+          اگر (info == FTS_NS || info == FTS_SLNONE)
             {
               error (0, ent->fts_errno, _("cannot access %s"), quoteaf (file));
-              return false;
+              واپس false;
             }
 
           /* The --one-file-system (-x) option cannot exclude anything
@@ -599,93 +599,93 @@ process_file (FTS *fts, FTSENT *ent)
              a file or directory only when its device number is different
              from that of its just-processed parent directory, and du does
              not process the parent of a command-line argument.  */
-          if (fts->fts_options & FTS_XDEV
+          اگر (fts->fts_options & FTS_XDEV
               && FTS_ROOTLEVEL < ent->fts_level
               && fts->fts_dev != sb->st_dev)
             excluded = true;
         }
 
-      if (excluded
-          || (! opt_count_all
-              && (hash_all || (! S_ISDIR (sb->st_mode) && 1 < sb->st_nlink))
+      اگر (excluded
+          || (! opt_گنتی_all
+              && (hash_all || (! S_ISDIR (sb->st_منوال) && 1 < sb->st_nlink))
               && ! hash_ins (di_files, sb->st_ino, sb->st_dev)))
         {
           /* If ignoring a directory in preorder, skip its children.
              Ignore the next fts_read output too, as it's a postorder
              visit to the same directory.  */
-          if (info == FTS_D)
+          اگر (info == FTS_D)
             {
-              fts_set (fts, ent, FTS_SKIP);
-              MAYBE_UNUSED FTSENT const *e = fts_read (fts);
+              fts_سیٹ (fts, ent, FTS_SKIP);
+              MAYBE_غیر_مستعمل FTSENT ثابت *e = fts_read (fts);
               affirm (e == ent);
             }
 
-          return true;
+          واپس true;
         }
 
-      switch (info)
+      انتخاب (info)
         {
-        case FTS_D:
-          return true;
+        حالت FTS_D:
+          واپس true;
 
-        case FTS_ERR:
+        حالت FTS_ERR:
           /* An error occurred, but the size is known, so count it.  */
           error (0, ent->fts_errno, "%s", quotef (file));
           ok = false;
-          break;
+          توڑو;
 
-        case FTS_DC:
+        حالت FTS_DC:
           /* If not following symlinks and not a (bind) mount point.  */
-          if (cycle_warning_required (fts, ent)
-              && ! mount_point_in_fts_cycle (ent))
+          اگر (چکر_warning_required (fts, ent)
+              && ! mount_نقطہ_اندر_fts_چکر (ent))
             {
-              emit_cycle_warning (file);
-              return false;
+              emit_چکر_warning (file);
+              واپس false;
             }
-          return true;
+          واپس true;
         }
     }
 
-  duinfo_set (&dui,
-              (apparent_size
-               ? (usable_st_size (sb) ? MAX (0, sb->st_size) : 0)
+  duinfo_سیٹ (&dui,
+              (apparent_سائز
+               ? (usable_st_سائز (sb) ? MAX (0, sb->st_سائز) : 0)
                : (uintmax_t) STP_NBLOCKS (sb) * ST_NBLOCKSIZE),
-              (time_type == time_mtime ? get_stat_mtime (sb)
-               : time_type == time_atime ? get_stat_atime (sb)
+              (وقت_type == وقت_mtime ? get_stat_mtime (sb)
+               : وقت_type == وقت_atime ? get_stat_atime (sb)
                : get_stat_ctime (sb)));
 
   idx_t level = ent->fts_level;
-  dui_to_print = dui;
+  dui_مقصد_print = dui;
 
-  if (n_alloc == 0)
+  اگر (n_alloc == 0)
     {
       n_alloc = level + 10;
-      dulvl = xcalloc (n_alloc, sizeof *dulvl);
+      dulvl = xcalloc (n_alloc, حجم *dulvl);
     }
-  else
+  ورنہ
     {
-      if (level == prev_level)
+      اگر (level == پچھلا_level)
         {
           /* This is usually the most common case.  Do nothing.  */
         }
-      else if (level > prev_level)
+      ورنہ اگر (level > پچھلا_level)
         {
           /* Descending the hierarchy.
              Clear the accumulators for *all* levels between prev_level
              and the current one.  The depth may change dramatically,
              e.g., from 1 to 10.  */
 
-          if (n_alloc <= level)
+          اگر (n_alloc <= level)
             dulvl = xpalloc (dulvl, &n_alloc, level - n_alloc + 1, -1,
-                             sizeof *dulvl);
+                             حجم *dulvl);
 
-          for (idx_t i = prev_level + 1; i <= level; i++)
+          برائے (idx_t i = پچھلا_level + 1; i <= level; i++)
             {
               duinfo_init (&dulvl[i].ent);
               duinfo_init (&dulvl[i].subdir);
             }
         }
-      else /* level < prev_level */
+      ورنہ /* level < prev_level */
         {
           /* Ascending the hierarchy.
              Process a directory only after all entries in that
@@ -693,39 +693,39 @@ process_file (FTS *fts, FTSENT *ent)
              propagate sums from the children (prev_level) to the parent.
              Here, the current level is always one smaller than the
              previous one.  */
-          affirm (level == prev_level - 1);
-          duinfo_add (&dui_to_print, &dulvl[prev_level].ent);
-          if (!opt_separate_dirs)
-            duinfo_add (&dui_to_print, &dulvl[prev_level].subdir);
-          duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].ent);
-          duinfo_add (&dulvl[level].subdir, &dulvl[prev_level].subdir);
+          affirm (level == پچھلا_level - 1);
+          duinfo_جوڑو (&dui_مقصد_print, &dulvl[پچھلا_level].ent);
+          اگر (!opt_separate_dirs)
+            duinfo_جوڑو (&dui_مقصد_print, &dulvl[پچھلا_level].subdir);
+          duinfo_جوڑو (&dulvl[level].subdir, &dulvl[پچھلا_level].ent);
+          duinfo_جوڑو (&dulvl[level].subdir, &dulvl[پچھلا_level].subdir);
         }
     }
 
-  prev_level = level;
+  پچھلا_level = level;
 
   /* Let the size of a directory entry contribute to the total for the
      containing directory, unless --separate-dirs (-S) is specified.  */
-  if (! (opt_separate_dirs && IS_DIR_TYPE (info)))
-    duinfo_add (&dulvl[level].ent, &dui);
+  اگر (! (opt_separate_dirs && IS_DIR_TYPE (info)))
+    duinfo_جوڑو (&dulvl[level].ent, &dui);
 
   /* Even if this directory is unreadable or we can't chdir into it,
      do let its size contribute to the total. */
-  duinfo_add (&tot_dui, &dui);
+  duinfo_جوڑو (&tot_dui, &dui);
 
-  if ((IS_DIR_TYPE (info) && level <= max_depth)
-      || (opt_all && level <= max_depth)
+  اگر ((IS_DIR_TYPE (info) && level <= max_گہرائی)
+      || (opt_all && level <= max_گہرائی)
       || level == 0)
     {
       /* Print or elide this entry according to the --threshold option.  */
-      uintmax_t v = opt_inodes ? dui_to_print.inodes : dui_to_print.size;
-      if (opt_threshold < 0
-          ? v <= -opt_threshold
-          : v >= opt_threshold)
-        print_size (&dui_to_print, file, quote_output);
+      uintmax_t v = opt_inodes ? dui_مقصد_print.inodes : dui_مقصد_print.سائز;
+      اگر (opt_حد < 0
+          ? v <= -opt_حد
+          : v >= opt_حد)
+        print_سائز (&dui_مقصد_print, file, quote_output);
     }
 
-  return ok;
+  واپس ok;
 }
 
 /* Recursively print the sizes of the directories (and, if selected, files)
@@ -733,77 +733,77 @@ process_file (FTS *fts, FTSENT *ent)
    BIT_FLAGS controls how fts works.
    Return true if successful.  */
 
-static bool
-du_files (char **files, int bit_flags)
+ساکن bool
+du_files (حرف **files, صحیح ثنائی_ہندسہ_flags)
 {
   bool ok = true;
 
-  if (*files)
+  اگر (*files)
     {
-      FTS *fts = xfts_open (files, bit_flags, NULL);
+      FTS *fts = xfts_open (files, ثنائی_ہندسہ_flags, تہی);
 
-      while (true)
+      جب (true)
         {
           FTSENT *ent;
 
           ent = fts_read (fts);
-          if (ent == NULL)
+          اگر (ent == تہی)
             {
-              if (errno != 0)
+              اگر (errno != 0)
                 {
                   error (0, errno, _("fts_read failed: %s"),
-                         quotef (fts->fts_path));
+                         quotef (fts->fts_راستہ));
                   ok = false;
                 }
 
               /* When exiting this loop early, be careful to reset the
                  global, prev_level, used in process_file.  Otherwise, its
                  (level == prev_level - 1) assertion could fail.  */
-              prev_level = 0;
-              break;
+              پچھلا_level = 0;
+              توڑو;
             }
 
-#if GNULIB_FTS_DEBUG
-          if (fts_debug)
+#اگر GNULIB_FTS_DEBUG
+          اگر (fts_debug)
             fts_cross_check (fts);
-#endif
+#اگر_ختم
 
           ok &= process_file (fts, ent);
         }
 
-      if (fts_close (fts) != 0)
+      اگر (fts_close (fts) != 0)
         {
           error (0, errno, _("fts_close failed"));
           ok = false;
         }
     }
 
-  return ok;
+  واپس ok;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  char *cwd_only[2];
-  bool max_depth_specified = false;
+  حرف *cwd_only[2];
+  bool max_گہرائی_specified = false;
   bool ok = true;
-  char *files_from = NULL;
+  حرف *files_from = تہی;
 
   /* Bit flags that control how fts works.  */
-  int bit_flags = FTS_NOSTAT;
+  صحیح ثنائی_ہندسہ_flags = FTS_NOSTAT;
 
   /* Select one of the three FTS_ options that control if/when
      to follow a symlink.  */
-  int symlink_deref_bits = FTS_PHYSICAL;
+  صحیح symlink_deref_بٹ = FTS_PHYSICAL;
 
   /* If true, display only a total for each argument. */
   bool opt_summarize_only = false;
 
   cwd_only[0] = bad_cast (".");
-  cwd_only[1] = NULL;
+  cwd_only[1] = تہی;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
@@ -813,282 +813,282 @@ main (int argc, char **argv)
   exclude = new_exclude ();
 
   human_options (getenv ("DU_BLOCK_SIZE"),
-                 &human_output_opts, &output_block_size);
+                 &human_output_opts, &output_بلاک_سائز);
 
-  while (true)
+  جب (true)
     {
-      int oi = -1;
-      int c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
+      صحیح oi = -1;
+      صحیح c = getopt_long (argc, argv, "0aAbd:chHklmst:xB:DLPSX:",
                            long_options, &oi);
-      if (c == -1)
-        break;
+      اگر (c == -1)
+        توڑو;
 
-      switch (c)
+      انتخاب (c)
         {
-#if GNULIB_FTS_DEBUG
-        case FTS_DEBUG:
+#اگر GNULIB_FTS_DEBUG
+        حالت FTS_DEBUG:
           fts_debug = true;
-          break;
-#endif
+          توڑو;
+#اگر_ختم
 
-        case '0':
+        حالت '0':
           opt_nul_terminate_output = true;
-          break;
+          توڑو;
 
-        case 'a':
+        حالت 'a':
           opt_all = true;
-          break;
+          توڑو;
 
-        case 'A':
-          apparent_size = true;
-          break;
+        حالت 'A':
+          apparent_سائز = true;
+          توڑو;
 
-        case 'b':
-          apparent_size = true;
+        حالت 'b':
+          apparent_سائز = true;
           human_output_opts = 0;
-          output_block_size = 1;
-          break;
+          output_بلاک_سائز = 1;
+          توڑو;
 
-        case 'c':
-          print_grand_total = true;
-          break;
+        حالت 'c':
+          print_grand_کل = true;
+          توڑو;
 
-        case 'h':
-          human_output_opts = human_autoscale | human_SI | human_base_1024;
-          output_block_size = 1;
-          break;
+        حالت 'h':
+          human_output_opts = human_autoscale | human_SI | human_بنیاد_1024;
+          output_بلاک_سائز = 1;
+          توڑو;
 
-        case HUMAN_SI_OPTION:
+        حالت HUMAN_SI_OPTION:
           human_output_opts = human_autoscale | human_SI;
-          output_block_size = 1;
-          break;
+          output_بلاک_سائز = 1;
+          توڑو;
 
-        case 'k':
+        حالت 'k':
           human_output_opts = 0;
-          output_block_size = 1024;
-          break;
+          output_بلاک_سائز = 1024;
+          توڑو;
 
-        case 'd':		/* --max-depth=N */
+        حالت 'd':		/* --max-depth=N */
           {
             intmax_t tmp;
-            if (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
-                && ! ckd_add (&max_depth, tmp, 0) && 0 <= max_depth)
-              max_depth_specified = true;
-            else
+            اگر (xstrtoimax (optarg, تہی, 0, &tmp, "") == LONGINT_OK
+                && ! ckd_جوڑو (&max_گہرائی, tmp, 0) && 0 <= max_گہرائی)
+              max_گہرائی_specified = true;
+            ورنہ
               {
                 error (0, 0, _("invalid maximum depth %s"),
                        quote (optarg));
                 ok = false;
               }
           }
-          break;
+          توڑو;
 
-        case 'm':
+        حالت 'm':
           human_output_opts = 0;
-          output_block_size = 1024 * 1024;
-          break;
+          output_بلاک_سائز = 1024 * 1024;
+          توڑو;
 
-        case 'l':
-          opt_count_all = true;
-          break;
+        حالت 'l':
+          opt_گنتی_all = true;
+          توڑو;
 
-        case 's':
+        حالت 's':
           opt_summarize_only = true;
-          break;
+          توڑو;
 
-        case 't':
+        حالت 't':
           {
-            enum strtol_error e;
-            e = xstrtoimax (optarg, NULL, 0, &opt_threshold,
+            شمار strtol_error e;
+            e = xstrtoimax (optarg, تہی, 0, &opt_حد,
                             "kKmMGTPEZYRQ0");
-            if (e != LONGINT_OK)
+            اگر (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
-            if (opt_threshold == 0 && *optarg == '-')
+            اگر (opt_حد == 0 && *optarg == '-')
               {
                 /* Do not allow -0, as this wouldn't make sense anyway.  */
                 error (EXIT_FAILURE, 0, _("invalid --threshold argument '-0'"));
               }
           }
-          break;
+          توڑو;
 
-        case 'x':
-          bit_flags |= FTS_XDEV;
-          break;
+        حالت 'x':
+          ثنائی_ہندسہ_flags |= FTS_XDEV;
+          توڑو;
 
-        case 'B':
+        حالت 'B':
           {
-            enum strtol_error e = human_options (optarg, &human_output_opts,
-                                                 &output_block_size);
-            if (e != LONGINT_OK)
+            شمار strtol_error e = human_options (optarg, &human_output_opts,
+                                                 &output_بلاک_سائز);
+            اگر (e != LONGINT_OK)
               xstrtol_fatal (e, oi, c, long_options, optarg);
           }
-          break;
+          توڑو;
 
-        case 'H':  /* NOTE: before 2008-12, -H was equivalent to --si.  */
-        case 'D':
-          symlink_deref_bits = FTS_COMFOLLOW | FTS_PHYSICAL;
-          break;
+        حالت 'H':  /* NOTE: before 2008-12, -H was equivalent to --si.  */
+        حالت 'D':
+          symlink_deref_بٹ = FTS_COMFOLLOW | FTS_PHYSICAL;
+          توڑو;
 
-        case 'L': /* --dereference */
-          symlink_deref_bits = FTS_LOGICAL;
-          break;
+        حالت 'L': /* --dereference */
+          symlink_deref_بٹ = FTS_LOGICAL;
+          توڑو;
 
-        case 'P': /* --no-dereference */
-          symlink_deref_bits = FTS_PHYSICAL;
-          break;
+        حالت 'P': /* --no-dereference */
+          symlink_deref_بٹ = FTS_PHYSICAL;
+          توڑو;
 
-        case 'S':
+        حالت 'S':
           opt_separate_dirs = true;
-          break;
+          توڑو;
 
-        case 'X':
-          if (add_exclude_file (add_exclude, exclude, optarg,
+        حالت 'X':
+          اگر (جوڑو_exclude_file (جوڑو_exclude, exclude, optarg,
                                 EXCLUDE_WILDCARDS, '\n'))
             {
               error (0, errno, "%s", quotef (optarg));
               ok = false;
             }
-          break;
+          توڑو;
 
-        case FILES0_FROM_OPTION:
+        حالت FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          توڑو;
 
-        case EXCLUDE_OPTION:
-          add_exclude (exclude, optarg, EXCLUDE_WILDCARDS);
-          break;
+        حالت EXCLUDE_OPTION:
+          جوڑو_exclude (exclude, optarg, EXCLUDE_WILDCARDS);
+          توڑو;
 
-        case INODES_OPTION:
+        حالت INODES_OPTION:
           opt_inodes = true;
-          break;
+          توڑو;
 
-        case TIME_OPTION:
-          opt_time = true;
-          time_type =
+        حالت وقت_OPTION:
+          opt_وقت = true;
+          وقت_type =
             (optarg
-             ? XARGMATCH ("--time", optarg, time_args, time_types)
-             : time_mtime);
+             ? XARGMATCH ("--time", optarg, وقت_دلائل, وقت_types)
+             : وقت_mtime);
           localtz = tzalloc (getenv ("TZ"));
-          break;
+          توڑو;
 
-        case TIME_STYLE_OPTION:
-          time_style = optarg;
-          break;
+        حالت وقت_STYLE_OPTION:
+          وقت_style = optarg;
+          توڑو;
 
         case_GETOPT_HELP_CHAR;
 
-        case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
+        case_GETOPT_نسخہ_CHAR (پروگرام_NAME, AUTHORS);
 
-        default:
+        طےشدہ:
           ok = false;
         }
     }
 
-  if (!ok)
+  اگر (!ok)
     usage (EXIT_FAILURE);
 
-  if (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
+  اگر (!opt_nul_terminate_output && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحیح qs = getenv_quoting_style ();
+      اگر (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      اگر (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          سیٹ_quoting_style (تہی, qs);
           quote_output = true;
         }
     }
 
-  if (opt_all && opt_summarize_only)
+  اگر (opt_all && opt_summarize_only)
     {
       error (0, 0, _("cannot both summarize and show all entries"));
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth == 0)
+  اگر (opt_summarize_only && max_گہرائی_specified && max_گہرائی == 0)
     {
       error (0, 0,
              _("warning: summarizing is the same as using --max-depth=0"));
     }
 
-  if (opt_summarize_only && max_depth_specified && max_depth != 0)
+  اگر (opt_summarize_only && max_گہرائی_specified && max_گہرائی != 0)
     {
       error (0, 0, _("warning: summarizing conflicts with --max-depth=%td"),
-             max_depth);
+             max_گہرائی);
       usage (EXIT_FAILURE);
     }
 
-  if (opt_summarize_only)
-    max_depth = 0;
+  اگر (opt_summarize_only)
+    max_گہرائی = 0;
 
-  if (opt_inodes)
+  اگر (opt_inodes)
     {
-      if (apparent_size)
+      اگر (apparent_سائز)
         {
           error (0, 0, _("warning: options --apparent-size and -b are "
                          "ineffective with --inodes"));
         }
-      output_block_size = 1;
+      output_بلاک_سائز = 1;
     }
 
   /* Process time style if printing last times.  */
-  if (opt_time)
+  اگر (opt_وقت)
     {
-      if (! time_style)
+      اگر (! وقت_style)
         {
-          time_style = getenv ("TIME_STYLE");
+          وقت_style = getenv ("TIME_STYLE");
 
           /* Ignore TIMESTYLE="locale", for compatibility with ls.  */
-          if (! time_style || streq (time_style, "locale"))
-            time_style = "long-iso";
-          else if (*time_style == '+')
+          اگر (! وقت_style || streq (وقت_style, "locale"))
+            وقت_style = "long-iso";
+          ورنہ اگر (*وقت_style == '+')
             {
               /* Ignore anything after a newline, for compatibility
                  with ls.  */
-              char const *p = strchr (time_style, '\n');
-              if (p)
-                time_style = xmemdup0 (time_style, p - time_style);
+              حرف ثابت *p = strchr (وقت_style, '\n');
+              اگر (p)
+                وقت_style = xmemdup0 (وقت_style, p - وقت_style);
             }
-          else
+          ورنہ
             {
               /* Ignore "posix-" prefix, for compatibility with ls.  */
-              static char const posix_prefix[] = "posix-";
-              static const size_t prefix_len = sizeof posix_prefix - 1;
-              while (STREQ_LEN (time_style, posix_prefix, prefix_len))
-                time_style += prefix_len;
+              ساکن حرف ثابت posix_سابقہ[] = "posix-";
+              ساکن ثابت size_t سابقہ_len = حجم posix_سابقہ - 1;
+              جب (STREQ_LEN (وقت_style, posix_سابقہ, سابقہ_len))
+                وقت_style += سابقہ_len;
             }
         }
 
-      if (*time_style == '+')
-        time_format = time_style + 1;
-      else
+      اگر (*وقت_style == '+')
+        وقت_format = وقت_style + 1;
+      ورنہ
         {
-          switch (x_timestyle_match (time_style, /*allow_posix=*/ false,
-                                     time_style_args,
-                                     (char const *) time_style_types,
-                                     sizeof (*time_style_types), EXIT_FAILURE))
+          انتخاب (x_timestyle_مطابقت (وقت_style, /*allow_posix=*/ false,
+                                     وقت_style_دلائل,
+                                     (حرف ثابت *) وقت_style_types,
+                                     حجم (*وقت_style_types), EXIT_FAILURE))
             {
-            case full_iso_time_style:
-              time_format = "%Y-%m-%d %H:%M:%S.%N %z";
-              break;
+            حالت بھرا_iso_وقت_style:
+              وقت_format = "%Y-%m-%d %H:%M:%S.%N %z";
+              توڑو;
 
-            case long_iso_time_style:
-              time_format = "%Y-%m-%d %H:%M";
-              break;
+            حالت long_iso_وقت_style:
+              وقت_format = "%Y-%m-%d %H:%M";
+              توڑو;
 
-            case iso_time_style:
-              time_format = "%Y-%m-%d";
-              break;
+            حالت iso_وقت_style:
+              وقت_format = "%Y-%m-%d";
+              توڑو;
             }
         }
     }
 
-  struct argv_iterator *ai;
-  if (files_from)
+  ساخت argv_iterator *ai;
+  اگر (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      اگر (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -1096,66 +1096,66 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
+      اگر (! (streq (files_from, "-") || freopen (files_from, "r", stdin)))
         error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                quoteaf (files_from));
 
-      ai = argv_iter_init_stream (stdin);
+      ai = argv_iter_init_دھارا (stdin);
 
       /* It's not easy here to count the arguments, so assume the
          worst.  */
       hash_all = true;
     }
-  else
+  ورنہ
     {
-      char **files = (optind < argc ? argv + optind : cwd_only);
+      حرف **files = (optind < argc ? argv + optind : cwd_only);
       ai = argv_iter_init_argv (files);
 
       /* Hash all dev,ino pairs if there are multiple arguments, or if
          following non-command-line symlinks, because in either case a
          file with just one hard link might be seen more than once.  */
-      hash_all = (optind + 1 < argc || symlink_deref_bits == FTS_LOGICAL);
+      hash_all = (optind + 1 < argc || symlink_deref_بٹ == FTS_LOGICAL);
     }
 
-  if (!ai)
+  اگر (!ai)
     xalloc_die ();
 
   /* Initialize the set of dev,inode pairs.  */
-  di_files = di_set_alloc ();
-  if (!di_files)
+  di_files = di_سیٹ_alloc ();
+  اگر (!di_files)
     xalloc_die ();
 
   /* If not hashing everything, process_file won't find cycles on its
      own, so ask fts_read to check for them accurately.  */
-  if (opt_count_all || ! hash_all)
-    bit_flags |= FTS_TIGHT_CYCLE_CHECK;
+  اگر (opt_گنتی_all || ! hash_all)
+    ثنائی_ہندسہ_flags |= FTS_TIGHT_چکر_CHECK;
 
-  bit_flags |= symlink_deref_bits;
-  static char *temp_argv[] = { NULL, NULL };
+  ثنائی_ہندسہ_flags |= symlink_deref_بٹ;
+  ساکن حرف *عارضی_argv[] = { تہی, تہی };
 
-  while (true)
+  جب (true)
     {
       bool skip_file = false;
-      enum argv_iter_err ai_err;
-      char *file_name = argv_iter (ai, &ai_err);
-      if (!file_name)
+      شمار argv_iter_err ai_err;
+      حرف *file_name = argv_iter (ai, &ai_err);
+      اگر (!file_name)
         {
-          switch (ai_err)
+          انتخاب (ai_err)
             {
-            case AI_ERR_EOF:
-              goto argv_iter_done;
-            case AI_ERR_READ:
+            حالت AI_ERR_EOF:
+              جاؤ argv_iter_مکمل;
+            حالت AI_ERR_READ:
               error (0, errno, _("%s: read error"),
                      quotef (files_from));
               ok = false;
-              goto argv_iter_done;
-            case AI_ERR_MEM:
+              جاؤ argv_iter_مکمل;
+            حالت AI_ERR_MEM:
               xalloc_die ();
-            case AI_ERR_OK: default:
+            حالت AI_ERR_OK: طےشدہ:
               affirm (!"unexpected error code from argv_iter");
             }
         }
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      اگر (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | du --files0-from=- */
@@ -1169,46 +1169,46 @@ main (int argc, char **argv)
          This works around a glitch in fts, which fails immediately
          (without looking at the other file names) when given an empty
          file name.  */
-      if (!file_name[0])
+      اگر (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          اگر (files_from == تہی)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          ورنہ
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
                  but it might be better than nothing.  */
-              idx_t file_number = argv_iter_n_args (ai);
+              idx_t file_نمبر = argv_iter_n_دلائل (ai);
               error (0, 0, "%s:%td: %s", quotef (files_from),
-                     file_number, _("invalid zero-length file name"));
+                     file_نمبر, _("invalid zero-length file name"));
             }
           skip_file = true;
         }
 
-      if (skip_file)
+      اگر (skip_file)
         ok = false;
-      else
+      ورنہ
         {
-          temp_argv[0] = file_name;
-          ok &= du_files (temp_argv, bit_flags);
+          عارضی_argv[0] = file_name;
+          ok &= du_files (عارضی_argv, ثنائی_ہندسہ_flags);
         }
     }
- argv_iter_done:
+ argv_iter_مکمل:
 
   argv_iter_free (ai);
-  di_set_free (di_files);
-  if (di_mnt)
-    di_set_free (di_mnt);
+  di_سیٹ_free (di_files);
+  اگر (di_mnt)
+    di_سیٹ_free (di_mnt);
 
-  if (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
+  اگر (files_from && (ferror (stdin) || fclose (stdin) != 0) && ok)
     error (EXIT_FAILURE, 0, _("error reading %s"), quoteaf (files_from));
 
-  if (print_grand_total)
-    print_size (&tot_dui, _("total"), false);
+  اگر (print_grand_کل)
+    print_سائز (&tot_dui, _("total"), false);
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  واپس ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

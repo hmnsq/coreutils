@@ -1,12 +1,12 @@
-#include <config.h>
-#include <stdio.h>
+#شامل <config.h>
+#شامل <stdio.h>
 
-#include "system.h"
-#include "fprintftime.h"
-#include "parse-datetime.h"
-#include "quote.h"
-#include "show-date.h"
-#include "stat-time.h"
+#شامل "system.h"
+#شامل "fprintftime.h"
+#شامل "parse-datetime.h"
+#شامل "quote.h"
+#شامل "show-date.h"
+#شامل "stat-time.h"
 
 /* Display the date and/or time in WHEN according to the format specified
    in FORMAT, followed by a newline.
@@ -16,25 +16,25 @@
    If unsuccessful and ON_ERROR_PRINT_UNFORMATTED, also prints WHEN.TV_SEC
    to STDOUT.  */
 
-extern bool
-show_date (char const *format, struct timespec when, timezone_t tz)
+خارجی bool
+show_date (حرف ثابت *format, ساخت timespec when, timezone_t tz)
 {
-  struct tm tm;
+  ساخت tm tm;
 
-  if (!localtime_rz (tz, &when.tv_sec, &tm))
+  اگر (!localtime_rz (tz, &when.tv_sec, &tm))
     {
-      char buf[INT_BUFSIZE_BOUND (intmax_t)];
+      حرف buf[INT_BUFSIZE_BOUND (intmax_t)];
       error (0, 0, _("time %s is out of range"),
              quote (timetostr (when.tv_sec, buf)));
-      return false;
+      واپس false;
     }
 
-  if (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
+  اگر (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
     {
-      if (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
+      اگر (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
         error (0, errno, _("fprintftime error"));
-      return false;
+      واپس false;
     }
 
-  return true;
+  واپس true;
 }

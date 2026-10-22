@@ -14,45 +14,45 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#شامل <config.h>
+#شامل <stdio.h>
+#شامل <sys/types.h>
 
-#include "system.h"
-#include "cl-strtod.h"
-#include "dtimespec-bound.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xnanosleep.h"
+#شامل "system.h"
+#شامل "cl-strtod.h"
+#شامل "dtimespec-bound.h"
+#شامل "long-options.h"
+#شامل "quote.h"
+#شامل "xnanosleep.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "sleep"
+#تعریف_کرو پروگرام_NAME "sleep"
 
-#define AUTHORS \
+#تعریف_کرو AUTHORS \
   proper_name ("Jim Meyering"), \
   proper_name ("Paul Eggert")
 
-void
-usage (int status)
+خالی
+usage (صحیح حالت_2)
 {
-  if (status != EXIT_SUCCESS)
+  اگر (حالت_2 != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  ورنہ
     {
-      printf (_("\
-Usage: %s NUMBER[SUFFIX]...\n\
+      لکھو (_("\
+Usage: %s نمبر_2[SUFFIX]...\n\
   or:  %s OPTION\n\
-Pause for NUMBER seconds, where NUMBER is an integer or floating-point.\n\
-SUFFIX may be 's','m','h', or 'd', for seconds, minutes, hours, days.\n\
-With multiple arguments, pause for the sum of their values.\n\
+Pause برائے نمبر_2 seconds, where نمبر_2 is an integer or floating-نقطہ.\n\
+SUFFIX may be 's','m','h', or 'd', برائے seconds, minutes, hours, days.\n\
+With مضرب arguments, pause برائے the مجموع کا their اقدار.\n\
 \n\
 "),
-              program_name, program_name);
+              پروگرام_name, پروگرام_name);
       oputs (HELP_OPTION_DESCRIPTION);
-      oputs (VERSION_OPTION_DESCRIPTION);
-      emit_ancillary_info (PROGRAM_NAME);
+      oputs (نسخہ_OPTION_DESCRIPTION);
+      emit_ancillary_info (پروگرام_NAME);
     }
-  exit (status);
+  باہر_نکلو (حالت_2);
 }
 
 /* Given a floating point value *X, and a suffix character, SUFFIX_CHAR,
@@ -61,66 +61,66 @@ With multiple arguments, pause for the sum of their values.\n\
    hours, or 'd' for days.  If SUFFIX_CHAR is invalid, don't modify *X
    and return false.  Otherwise return true.  */
 
-static bool
-apply_suffix (double *x, char suffix_char)
+ساکن bool
+apply_suffix (دوہرا *x, حرف suffix_char)
 {
-  int multiplier;
+  صحیح multiplier;
 
-  switch (suffix_char)
+  انتخاب (suffix_char)
     {
-    case 0:
-    case 's':
+    حالت 0:
+    حالت 's':
       multiplier = 1;
-      break;
-    case 'm':
+      توڑو;
+    حالت 'm':
       multiplier = 60;
-      break;
-    case 'h':
+      توڑو;
+    حالت 'h':
       multiplier = 60 * 60;
-      break;
-    case 'd':
+      توڑو;
+    حالت 'd':
       multiplier = 60 * 60 * 24;
-      break;
-    default:
-      return false;
+      توڑو;
+    طےشدہ:
+      واپس false;
     }
 
   *x = dtimespec_bound (*x * multiplier, 0);
 
-  return true;
+  واپس true;
 }
 
-int
-main (int argc, char **argv)
+صحیح
+مین (صحیح argc, حرف **argv)
 {
-  double seconds = 0.0;
+  دوہرا seconds = 0.0;
   bool ok = true;
 
   initialize_main (&argc, &argv);
-  set_program_name (argv[0]);
+  سیٹ_پروگرام_name (argv[0]);
   setlocale (LC_ALL, "");
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   atexit (close_stdout);
 
-  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
-                                   Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+  parse_gnu_standard_options_only (argc, argv, پروگرام_NAME, PACKAGE_NAME,
+                                   نسخہ, true, usage, AUTHORS,
+                                   (حرف ثابت *) تہی);
 
-  if (argc == 1)
+  اگر (argc == 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  for (int i = optind; i < argc; i++)
+  برائے (صحیح i = optind; i < argc; i++)
     {
-      char *p;
+      حرف *p;
       errno = 0;
-      double duration = cl_strtod (argv[i], &p);
-      double s = dtimespec_bound (duration, errno);
-      if (argv[i] == p
+      دوہرا duration = cl_strtod (argv[i], &p);
+      دوہرا s = dtimespec_bound (duration, errno);
+      اگر (argv[i] == p
           /* Nonnegative interval.  */
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
@@ -135,11 +135,11 @@ main (int argc, char **argv)
       seconds = dtimespec_bound (seconds + s, 0);
     }
 
-  if (!ok)
+  اگر (!ok)
     usage (EXIT_FAILURE);
 
-  if (xnanosleep (seconds))
+  اگر (xnanosleep (seconds))
     error (EXIT_FAILURE, errno, _("cannot read realtime clock"));
 
-  return EXIT_SUCCESS;
+  واپس EXIT_SUCCESS;
 }

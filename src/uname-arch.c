@@ -1,2 +1,2 @@
-#include "uname.h"
-enum uname_modes uname_mode = UNAME_ARCH;
+#شامل "uname.h"
+شمار uname_modes uname_منوال = UNAME_ARCH;
