@@ -17,13 +17,13 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ضمن <config.h>
+#ضمن <getopt.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#ضمن "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#ضمن "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dirname"
@@ -32,22 +32,22 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+ساكن bool quote_output;
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_argument, عدم, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,12 +55,12 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; إذا NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output هێڵ with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   bool use_nuls = false;
 
@@ -90,58 +90,58 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  طالما (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      صحيح c = getopt_long (argc, argv, "z", longopts, عدم);
 
-      if (c == -1)
-        break;
+      إذا (c == -1)
+        اكسر;
 
-      switch (c)
+      بدل (c)
         {
-        case 'z':
+        حالة 'z':
           use_nuls = true;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  إذا (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  إذا (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      صحيح qs = getenv_quoting_style ();
+      إذا (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      إذا (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (عدم, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  لكل (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
+      حرف ثابت *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      إذا (! len)
         {
-          static char const dot = '.';
+          ساكن حرف ثابت dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      إذا (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  أرجع EXIT_SUCCESS;
 }

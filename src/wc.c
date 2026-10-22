@@ -17,31 +17,31 @@
 /* Written by Paul Rubin, phr@ocf.berkeley.edu
    and David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#ضمن <stdio.h>
+#ضمن <getopt.h>
+#ضمن <sys/types.h>
 
-#include <argmatch.h>
-#include <argv-iter.h>
-#include <fadvise.h>
-#include <physmem.h>
-#include <readtokens0.h>
-#include <stat-size.h>
-#include <xbinary-io.h>
+#ضمن <argmatch.h>
+#ضمن <argv-iter.h>
+#ضمن <fadvise.h>
+#ضمن <physmem.h>
+#ضمن <readtokens0.h>
+#ضمن <stat-size.h>
+#ضمن <xbinary-io.h>
 
 #ifdef USE_NEON_WC_LINECOUNT
 # include <sys/auxv.h>
 # include <asm/hwcap.h>
 #endif
 
-#include "system.h"
-#include "assure.h"
-#include "cpu-supports.h"
-#include "ioblksize.h"
-#include "wc.h"
-#include "utf8.h"
+#ضمن "system.h"
+#ضمن "assure.h"
+#ضمن "cpu-supports.h"
+#ضمن "ioblksize.h"
+#ضمن "wc.h"
+#ضمن "utf8.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "wc"
@@ -50,143 +50,143 @@
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie")
 
-static bool wc_isprint[UCHAR_MAX + 1];
-static bool wc_isspace[UCHAR_MAX + 1];
+ساكن bool wc_isprint[UCHAR_MAX + 1];
+ساكن bool wc_isspace[UCHAR_MAX + 1];
 
-static bool debug;
+ساكن bool debug;
 
 /* Cumulative number of lines, words, chars and bytes in all files so far.
    max_line_length is the maximum over all files processed so far.  */
-static uintmax_t total_lines;
-static uintmax_t total_words;
-static uintmax_t total_chars;
-static uintmax_t total_bytes;
-static bool total_lines_overflow;
-static bool total_words_overflow;
-static bool total_chars_overflow;
-static bool total_bytes_overflow;
-static intmax_t max_line_length;
+ساكن uintmax_t total_هێڵەکان;
+ساكن uintmax_t total_وشەکان;
+ساكن uintmax_t total_chars;
+ساكن uintmax_t total_bytes;
+ساكن bool total_هێڵەکان_overflow;
+ساكن bool total_وشەکان_overflow;
+ساكن bool total_chars_overflow;
+ساكن bool total_bytes_overflow;
+ساكن intmax_t max_هێڵ_length;
 
 /* Which counts to print. */
-static bool print_lines, print_words, print_chars, print_bytes;
-static bool print_linelength;
+ساكن bool print_هێڵەکان, print_وشەکان, print_chars, print_bytes;
+ساكن bool print_linelength;
 
 /* The print width of each count.  */
-static int number_width;
+ساكن صحيح ژمار_width;
 
 /* True if we have ever read the standard input. */
-static bool have_read_stdin;
+ساكن bool have_read_stdin;
 
 /* Used to determine if file size can be determined without reading.  */
-static idx_t page_size;
+ساكن idx_t page_size;
 
 /* Enable to _not_ treat non breaking space as a word separator.  */
-static bool posixly_correct;
+ساكن bool posixly_correct;
 
 /* The result of calling fstat or stat on a file descriptor or file.  */
-struct fstatus
+بنية fstatus
 {
   /* If positive, fstat or stat has not been called yet.  Otherwise,
      this is the value returned from fstat or stat.  */
-  int failed;
+  صحيح failed;
 
   /* If FAILED is zero, this is the file's status.  */
-  struct stat st;
+  بنية stat st;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   DEBUG_PROGRAM_OPTION = CHAR_MAX + 1,
   FILES0_FROM_OPTION,
   TOTAL_OPTION,
 };
 
-static struct option const longopts[] =
+ساكن بنية option ثابت longopts[] =
 {
-  {"bytes", no_argument, NULL, 'c'},
-  {"chars", no_argument, NULL, 'm'},
-  {"lines", no_argument, NULL, 'l'},
-  {"words", no_argument, NULL, 'w'},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"max-line-length", no_argument, NULL, 'L'},
-  {"total", required_argument, NULL, TOTAL_OPTION},
+  {"bytes", no_argument, عدم, 'c'},
+  {"chars", no_argument, عدم, 'm'},
+  {"lines", no_argument, عدم, 'l'},
+  {"words", no_argument, عدم, 'w'},
+  {"debug", no_argument, عدم, DEBUG_PROGRAM_OPTION},
+  {"files0-from", required_argument, عدم, FILES0_FROM_OPTION},
+  {"max-line-length", no_argument, عدم, 'L'},
+  {"total", required_argument, عدم, TOTAL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-enum total_type
+تعداد total_type
   {
     total_auto,         /* 0: default or --total=auto */
     total_always,       /* 1: --total=always */
     total_only,         /* 2: --total=only */
     total_never         /* 3: --total=never */
   };
-static char const *const total_args[] =
+ساكن حرف ثابت *ثابت total_args[] =
 {
-  "auto", "always", "only", "never", NULL
+  "auto", "always", "only", "never", عدم
 };
-static enum total_type const total_types[] =
+ساكن تعداد total_type ثابت total_types[] =
 {
   total_auto, total_always, total_only, total_never
 };
 ARGMATCH_VERIFY (total_args, total_types);
-static enum total_type total_mode = total_auto;
+ساكن تعداد total_type total_mode = total_auto;
 
 #ifdef USE_AVX2_WC_LINECOUNT
-static bool
-avx2_supported (void)
+ساكن bool
+avx2_supported (فراغ)
 {
   bool avx2_enabled = cpu_supports ("avx2");
-  if (debug)
+  إذا (debug)
     error (0, 0, (avx2_enabled
                   ? _("using avx2 hardware support")
                   : _("avx2 support not detected")));
 
-  return avx2_enabled;
+  أرجع avx2_enabled;
 }
 #endif
 
 #ifdef USE_AVX512_WC_LINECOUNT
-static bool
-avx512_supported (void)
+ساكن bool
+avx512_supported (فراغ)
 {
   bool avx512_enabled = (cpu_supports ("avx512f")
                          && cpu_supports ("avx512bw"));
 
-  if (debug)
+  إذا (debug)
     error (0, 0, (avx512_enabled
                   ? _("using avx512 hardware support")
                   : _("avx512 support not detected")));
 
-  return avx512_enabled;
+  أرجع avx512_enabled;
 }
 #endif
 
 #ifdef USE_NEON_WC_LINECOUNT
-static bool
-neon_supported (void)
+ساكن bool
+neon_supported (فراغ)
 {
   bool neon_enabled = (cpu_may_support ("asimd")
                        && 0 < (getauxval (AT_HWCAP) & HWCAP_ASIMD));
-  if (debug)
+  إذا (debug)
     error (0, 0, (neon_enabled
                   ? _("using neon hardware support")
                   : _("neon support not detected")));
 
-  return neon_enabled;
+  أرجع neon_enabled;
 }
 #endif
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  إذا (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -194,9 +194,9 @@ Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name, program_name);
       fputs (_("\
-Print newline, word, and byte counts for each FILE, and a total line if\n\
+Print newline, word, and byte counts لكل each FILE, and a total هێڵ إذا\n\
 more than one FILE is specified.  A word is a nonempty sequence of non white\n\
-space delimited by white space characters or by start or end of input.\n\
+space delimited by white space characters or by start or end of تێخستن.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -204,7 +204,7 @@ space delimited by white space characters or by start or end of input.\n\
       fputs (_("\
 \n\
 The options below may be used to select which counts are printed, always in\n\
-the following order: newline, word, character, byte, maximum line length.\n\
+the following order: newline, word, character, byte, maximum هێڵ length.\n\
 "), stdout);
       oputs (_("\
   -c, --bytes\n\
@@ -215,30 +215,30 @@ the following order: newline, word, character, byte, maximum line length.\n\
          print the character counts\n\
 "));
       oputs (_("\
-  -l, --lines\n\
+  -l, --هێڵەکان\n\
          print the newline counts\n\
 "));
       oputs (_("\
       --debug\n\
-         indicate what line count acceleration is used\n\
+         indicate what هێڵ ژماردن acceleration is used\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by\n\
+         اقرأ تێخستن from the files specified by\n\
          NUL-terminated names in file F;\n\
-         If F is -, read names from standard input\n\
+         If F is -, اقرأ names from standard تێخستن\n\
 "));
       oputs (_("\
-  -L, --max-line-length\n\
+  -L, --max-هێڵ-length\n\
          print the maximum display width\n\
 "));
       oputs (_("\
-  -w, --words\n\
+  -w, --وشەکان\n\
          print the word counts\n\
 "));
       oputs (_("\
       --total=WHEN\n\
-         when to print a line with total counts;\n\
+         when to print a هێڵ with total counts;\n\
          WHEN can be: auto, always, only, never\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
@@ -251,108 +251,108 @@ the following order: newline, word, character, byte, maximum line length.\n\
 /* Return non zero if POSIXLY_CORRECT is not set and WC is a non breaking
    space.  */
 ATTRIBUTE_PURE
-static int
+ساكن صحيح
 maybe_c32isnbspace (char32_t wc)
 {
-  return ! posixly_correct && c32isnbspace (wc);
+  أرجع ! posixly_correct && c32isnbspace (wc);
 }
 
 /* FILE is the name of the file (or null for standard input)
    associated with the specified counters.  */
-static void
-write_counts (uintmax_t lines,
-              uintmax_t words,
+ساكن فراغ
+write_counts (uintmax_t هێڵەکان,
+              uintmax_t وشەکان,
               uintmax_t chars,
               uintmax_t bytes,
               intmax_t linelength,
-              char const *file)
+              حرف ثابت *file)
 {
-  static char const format_sp_int[] = " %*s";
-  char const *format_int = format_sp_int + 1;
-  char buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
+  ساكن حرف ثابت format_sp_int[] = " %*s";
+  حرف ثابت *format_int = format_sp_int + 1;
+  حرف buf[MAX (INT_BUFSIZE_BOUND (intmax_t),
                 INT_BUFSIZE_BOUND (uintmax_t))];
 
-  if (print_lines)
+  إذا (print_هێڵەکان)
     {
-      printf (format_int, number_width, umaxtostr (lines, buf));
+      printf (format_int, ژمار_width, umaxtostr (هێڵەکان, buf));
       format_int = format_sp_int;
     }
-  if (print_words)
+  إذا (print_وشەکان)
     {
-      printf (format_int, number_width, umaxtostr (words, buf));
+      printf (format_int, ژمار_width, umaxtostr (وشەکان, buf));
       format_int = format_sp_int;
     }
-  if (print_chars)
+  إذا (print_chars)
     {
-      printf (format_int, number_width, umaxtostr (chars, buf));
+      printf (format_int, ژمار_width, umaxtostr (chars, buf));
       format_int = format_sp_int;
     }
-  if (print_bytes)
+  إذا (print_bytes)
     {
-      printf (format_int, number_width, umaxtostr (bytes, buf));
+      printf (format_int, ژمار_width, umaxtostr (bytes, buf));
       format_int = format_sp_int;
     }
-  if (print_linelength)
-    printf (format_int, number_width, imaxtostr (linelength, buf));
-  if (file)
+  إذا (print_linelength)
+    printf (format_int, ژمار_width, imaxtostr (linelength, buf));
+  إذا (file)
     printf (" %s", strchr (file, '\n') ? quotef (file) : file);
   putchar ('\n');
 
-  if (ferror (stdout))
+  إذا (ferror (stdout))
     write_error ();
 }
 
 /* Read FD and return a summary.  */
-static struct wc_lines
-wc_lines (int fd)
+ساكن بنية wc_هێڵەکان
+wc_هێڵەکان (صحيح fd)
 {
 #ifdef USE_AVX512_WC_LINECOUNT
-  static signed char use_avx512;
-  if (!use_avx512)
+  ساكن signed حرف use_avx512;
+  إذا (!use_avx512)
     use_avx512 = avx512_supported () ? 1 : -1;
-  if (0 < use_avx512)
-    return wc_lines_avx512 (fd);
+  إذا (0 < use_avx512)
+    أرجع wc_هێڵەکان_avx512 (fd);
 #endif
 #ifdef USE_AVX2_WC_LINECOUNT
-  static signed char use_avx2;
-  if (!use_avx2)
+  ساكن signed حرف use_avx2;
+  إذا (!use_avx2)
     use_avx2 = avx2_supported () ? 1 : -1;
-  if (0 < use_avx2)
-    return wc_lines_avx2 (fd);
+  إذا (0 < use_avx2)
+    أرجع wc_هێڵەکان_avx2 (fd);
 #endif
 #ifdef USE_NEON_WC_LINECOUNT
-  static signed char use_neon;
-  if (!use_neon)
+  ساكن signed حرف use_neon;
+  إذا (!use_neon)
     use_neon = neon_supported () ? 1 : -1;
-  if (0 < use_neon)
-    return wc_lines_neon (fd);
+  إذا (0 < use_neon)
+    أرجع wc_هێڵەکان_neon (fd);
 #endif
 
-  intmax_t lines = 0, bytes = 0;
-  bool long_lines = false;
+  intmax_t هێڵەکان = 0, bytes = 0;
+  bool long_هێڵەکان = false;
 
-  while (true)
+  طالما (true)
     {
-      char buf[IO_BUFSIZE + 1];
-      ssize_t bytes_read = read (fd, buf, IO_BUFSIZE);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+      حرف buf[IO_BUFSIZE + 1];
+      ssize_t bytes_read = اقرأ (fd, buf, IO_BUFSIZE);
+      إذا (bytes_read <= 0)
+        أرجع (بنية wc_هێڵەکان) { bytes_read == 0 ? 0 : errno, هێڵەکان, bytes };
 
       bytes += bytes_read;
-      char *end = buf + bytes_read;
+      حرف *end = buf + bytes_read;
       idx_t buflines = 0;
 
-      if (! long_lines)
+      إذا (! long_هێڵەکان)
         {
           /* Avoid function call overhead for shorter lines.  */
-          for (char *p = buf; p < end; p++)
+          لكل (حرف *p = buf; p < end; p++)
             buflines += *p == '\n';
         }
-      else
+      وإلا
         {
           /* rawmemchr is more efficient with longer lines.  */
           *end = '\n';
-          for (char *p = buf; (p = rawmemchr (p, '\n')) < end; p++)
+          لكل (حرف *p = buf; (p = rawmemchr (p, '\n')) < end; p++)
             buflines++;
         }
 
@@ -362,41 +362,41 @@ wc_lines (int fd)
           FIXME: This line length was determined in 2015, on both
           x86_64 and ppc64, but it's worth re-evaluating in future with
           newer compilers, CPUs, or memchr() implementations etc.  */
-      long_lines = 15 * buflines <= bytes_read;
-      lines += buflines;
+      long_هێڵەکان = 15 * buflines <= bytes_read;
+      هێڵەکان += buflines;
     }
 }
 
 /* Count words.  FILE_X is the name of the file (or null for standard
    input) that is open on descriptor FD.  *FSTATUS is its status.
    Return true if successful.  */
-static bool
-wc (int fd, char const *file_x, struct fstatus *fstatus)
+ساكن bool
+wc (صحيح fd, حرف ثابت *file_x, بنية fstatus *fstatus)
 {
-  int err = 0;
-  char buf[IO_BUFSIZE + 1];
-  intmax_t lines, words, chars, bytes, linelength;
-  bool count_bytes, count_chars, count_complicated;
-  char const *file = file_x ? file_x : _("standard input");
+  صحيح err = 0;
+  حرف buf[IO_BUFSIZE + 1];
+  intmax_t هێڵەکان, وشەکان, chars, bytes, linelength;
+  bool ژماردن_bytes, ژماردن_chars, ژماردن_complicated;
+  حرف ثابت *file = file_x ? file_x : _("standard input");
 
-  lines = words = chars = bytes = linelength = 0;
+  هێڵەکان = وشەکان = chars = bytes = linelength = 0;
 
   /* If in the current locale, chars are equivalent to bytes, we prefer
      counting bytes, because that's easier.  */
-  if (MB_CUR_MAX > 1)
+  إذا (MB_CUR_MAX > 1)
     {
-      count_bytes = print_bytes;
-      count_chars = print_chars;
+      ژماردن_bytes = print_bytes;
+      ژماردن_chars = print_chars;
     }
-  else
+  وإلا
     {
-      count_bytes = print_bytes || print_chars;
-      count_chars = false;
+      ژماردن_bytes = print_bytes || print_chars;
+      ژماردن_chars = false;
     }
-  count_complicated = print_words || print_linelength;
+  ژماردن_complicated = print_وشەکان || print_linelength;
 
   /* Advise the kernel of our access pattern only if we will read().  */
-  if (!count_bytes || count_chars || print_lines || count_complicated)
+  إذا (!ژماردن_bytes || ژماردن_chars || print_هێڵەکان || ژماردن_complicated)
     fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
 
   /* When counting only bytes, save some line- and word-counting
@@ -409,24 +409,24 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
      '(dd ibs=99k skip=1 count=0; ./wc -c) < /etc/group'
      should make wc report '0' bytes.  */
 
-  if (count_bytes && !count_chars && !print_lines && !count_complicated)
+  إذا (ژماردن_bytes && !ژماردن_chars && !print_هێڵەکان && !ژماردن_complicated)
     {
       bool skip_read = false;
 
-      if (0 < fstatus->failed)
+      إذا (0 < fstatus->failed)
         fstatus->failed = fstat (fd, &fstatus->st);
 
       /* For sized files, seek to one st_blksize before EOF rather than to EOF.
          This works better for files in proc-like file systems where
          the size is only approximate.  */
-      if (! fstatus->failed && usable_st_size (&fstatus->st)
+      إذا (! fstatus->failed && usable_st_size (&fstatus->st)
           && 0 <= fstatus->st.st_size)
         {
           off_t end_pos = fstatus->st.st_size;
           off_t current_pos = lseek (fd, 0, SEEK_CUR);
-          if (current_pos < 0)
+          إذا (current_pos < 0)
             ;
-          else if (end_pos % page_size)
+          وإلا إذا (end_pos % page_size)
             {
               /* We need special handling of /proc and /sys files etc. only
                  when they're a multiple of PAGE_SIZE.  In the common case
@@ -436,93 +436,93 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                  Be careful here.  The current position may actually be
                  beyond the end of the file.  As in the example above.  */
 
-              if (current_pos < end_pos)
+              إذا (current_pos < end_pos)
                 {
                   bytes = end_pos - current_pos;
                   skip_read = true;
                 }
             }
-          else if (0 < end_pos)
+          وإلا إذا (0 < end_pos)
             {
               off_t ep_1 = end_pos - 1;
               off_t hi_pos = ep_1 - ep_1 % STP_BLKSIZE (&fstatus->st);
-              if (current_pos < hi_pos)
+              إذا (current_pos < hi_pos)
                 bytes = hi_pos - current_pos;
             }
 
-          if (0 < bytes && lseek (fd, bytes, SEEK_CUR) < 0)
+          إذا (0 < bytes && lseek (fd, bytes, SEEK_CUR) < 0)
             {
               bytes = 0;
               skip_read = false;
             }
         }
 
-      if (! skip_read)
+      إذا (! skip_read)
         {
           fdadvise (fd, 0, 0, FADVISE_SEQUENTIAL);
-          for (ssize_t bytes_read;
-               (bytes_read = read (fd, buf, IO_BUFSIZE));
+          لكل (ssize_t bytes_read;
+               (bytes_read = اقرأ (fd, buf, IO_BUFSIZE));
                bytes += bytes_read)
-            if (bytes_read < 0)
+            إذا (bytes_read < 0)
               {
                 err = errno;
-                break;
+                اكسر;
               }
         }
     }
-  else if (!count_chars && !count_complicated)
+  وإلا إذا (!ژماردن_chars && !ژماردن_complicated)
     {
       /* Use a separate loop when counting only lines or lines and bytes --
          but not chars or words.  */
-      struct wc_lines w = wc_lines (fd);
+      بنية wc_هێڵەکان w = wc_هێڵەکان (fd);
       err = w.err;
-      lines = w.lines;
+      هێڵەکان = w.هێڵەکان;
       bytes = w.bytes;
     }
-  else if (MB_CUR_MAX > 1)
+  وإلا إذا (MB_CUR_MAX > 1)
     {
       bool in_word = false;
       intmax_t linepos = 0;
       mbstate_t state; mbszero (&state);
       bool in_shift = false;
-      bool count_utf8 = !count_complicated && !print_lines
+      bool ژماردن_utf8 = !ژماردن_complicated && !print_هێڵەکان
                         && is_utf8_charset ();
       idx_t prev = 0; /* Number of bytes carried over from previous round.  */
 
-      for (ssize_t bytes_read;
-           ((bytes_read = read (fd, buf + prev, IO_BUFSIZE - prev))
+      لكل (ssize_t bytes_read;
+           ((bytes_read = اقرأ (fd, buf + prev, IO_BUFSIZE - prev))
             || prev);
            )
         {
-          if (bytes_read < 0)
+          إذا (bytes_read < 0)
             {
               err = errno;
-              break;
+              اكسر;
             }
 
           bytes += bytes_read;
-          char const *p = buf;
-          char const *plim = p + prev + bytes_read;
-          bool try_count_utf8 = count_utf8;
-          do
+          حرف ثابت *p = buf;
+          حرف ثابت *plim = p + prev + bytes_read;
+          bool try_ژماردن_utf8 = ژماردن_utf8;
+          افعل
             {
-              if (try_count_utf8 && !in_shift)
+              إذا (try_ژماردن_utf8 && !in_shift)
                 {
                   /* Scan at most once per buffer, to avoid repeatedly
                      scanning ASCII after decoding errors.  */
-                  try_count_utf8 = false;
+                  try_ژماردن_utf8 = false;
                   idx_t n = plim - p;
-                  chars += u8_count (p, &n);
+                  chars += u8_ژماردن (p, &n);
                   p += n;
-                  if (p == plim)
-                    break;
+                  إذا (p == plim)
+                    اكسر;
                 }
 
               char32_t wide_char;
               idx_t charbytes;
               bool single_byte;
 
-              if (!in_shift && 0 <= *p && *p < 0x80)
+              إذا (!in_shift && 0 <= *p && *p < 0x80)
                 {
                   /* Handle most ASCII characters quickly, without calling
                      mbrtoc32.  */
@@ -530,16 +530,16 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   wide_char = *p;
                   single_byte = true;
                 }
-              else
+              وإلا
                 {
                   idx_t prev_bytes = prev;
                   idx_t scanbytes = plim - (p + prev);
                   size_t n = mbrtoc32 (&wide_char, p + prev, scanbytes, &state);
                   prev = 0;
 
-                  if (scanbytes < n)
+                  إذا (scanbytes < n)
                     {
-                      if (n == (size_t) -2 && plim - p < IO_BUFSIZE
+                      إذا (n == (size_t) -2 && plim - p < IO_BUFSIZE
                           && bytes_read)
                         {
                           /* An incomplete character that is not ridiculously
@@ -548,7 +548,7 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                           prev = plim - p;
                           memmove (buf, p, prev);
                           in_shift = true;
-                          break;
+                          اكسر;
                         }
 
                       /* Remember that we read a byte, but don't complain
@@ -567,9 +567,9 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                          means when the input contains encoding errors.
                          Since encoding errors are not white space,
                          treat them that way here.  */
-                      words += !in_word;
+                      وشەکان += !in_word;
                       in_word = true;
-                      continue;
+                      استمر;
                     }
 
                   /* Include bytes already consumed into STATE in an earlier
@@ -579,46 +579,46 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   in_shift = !mbsinit (&state);
                 }
 
-              switch (wide_char)
+              بدل (wide_char)
                 {
-                case '\n':
-                  lines++;
+                حالة '\n':
+                  هێڵەکان++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                حالة '\r':
+                حالة '\f':
+                  إذا (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
                   in_word = false;
-                  break;
+                  اكسر;
 
-                case '\t':
+                حالة '\t':
                   linepos += 8 - (linepos % 8);
                   in_word = false;
-                  break;
+                  اكسر;
 
-                case ' ':
+                حالة ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
+                حالة '\v':
                   in_word = false;
-                  break;
+                  اكسر;
 
-                default:;
+                افتراضي:;
                   bool in_word2;
-                  if (single_byte && wide_char <= UCHAR_MAX)
+                  إذا (single_byte && wide_char <= UCHAR_MAX)
                     {
                       linepos += wc_isprint[wide_char];
                       in_word2 = !wc_isspace[wide_char];
                     }
-                  else
+                  وإلا
                     {
                       /* c32width can be expensive on macOS for example,
                          so avoid if not needed.  */
-                      if (print_linelength)
+                      إذا (print_linelength)
                         {
-                          int width = c32width (wide_char);
-                          if (width > 0)
+                          صحيح width = c32width (wide_char);
+                          إذا (width > 0)
                             linepos += width;
                         }
                       in_word2 = (! c32isspace (wide_char)
@@ -628,121 +628,121 @@ wc (int fd, char const *file_x, struct fstatus *fstatus)
                   /* Count words by counting word starts, i.e., each
                      white space character (or the start of input)
                      followed by non white space.  */
-                  words += !in_word & in_word2;
+                  وشەکان += !in_word & in_word2;
                   in_word = in_word2;
-                  break;
+                  اكسر;
                 }
 
               p += charbytes;
               chars++;
             }
-          while (p < plim);
+          طالما (p < plim);
         }
-      if (linepos > linelength)
+      إذا (linepos > linelength)
         linelength = linepos;
     }
-  else
+  وإلا
     {
       bool in_word = false;
       intmax_t linepos = 0;
 
-      for (ssize_t bytes_read; (bytes_read = read (fd, buf, IO_BUFSIZE)); )
+      لكل (ssize_t bytes_read; (bytes_read = اقرأ (fd, buf, IO_BUFSIZE)); )
         {
-          if (bytes_read < 0)
+          إذا (bytes_read < 0)
             {
               err = errno;
-              break;
+              اكسر;
             }
 
           bytes += bytes_read;
-          char const *p = buf;
-          do
+          حرف ثابت *p = buf;
+          افعل
             {
-              unsigned char c = *p++;
-              switch (c)
+              unsigned حرف c = *p++;
+              بدل (c)
                 {
-                case '\n':
-                  lines++;
+                حالة '\n':
+                  هێڵەکان++;
                   FALLTHROUGH;
-                case '\r':
-                case '\f':
-                  if (linepos > linelength)
+                حالة '\r':
+                حالة '\f':
+                  إذا (linepos > linelength)
                     linelength = linepos;
                   linepos = 0;
                   in_word = false;
-                  break;
+                  اكسر;
 
-                case '\t':
+                حالة '\t':
                   linepos += 8 - (linepos % 8);
                   in_word = false;
-                  break;
+                  اكسر;
 
-                case ' ':
+                حالة ' ':
                   linepos++;
                   FALLTHROUGH;
-                case '\v':
+                حالة '\v':
                   in_word = false;
-                  break;
+                  اكسر;
 
-                default:
+                افتراضي:
                   linepos += wc_isprint[c];
                   bool in_word2 = !wc_isspace[c];
-                  words += !in_word & in_word2;
+                  وشەکان += !in_word & in_word2;
                   in_word = in_word2;
-                  break;
+                  اكسر;
                 }
             }
-          while (--bytes_read);
+          طالما (--bytes_read);
         }
-      if (linepos > linelength)
+      إذا (linepos > linelength)
         linelength = linepos;
     }
 
-  if (count_chars < print_chars)
+  إذا (ژماردن_chars < print_chars)
     chars = bytes;
 
-  if (total_mode != total_only)
-    write_counts (lines, words, chars, bytes, linelength, file_x);
+  إذا (total_mode != total_only)
+    write_counts (هێڵەکان, وشەکان, chars, bytes, linelength, file_x);
 
-  total_lines_overflow |= ckd_add (&total_lines, total_lines, lines);
-  total_words_overflow |= ckd_add (&total_words, total_words, words);
+  total_هێڵەکان_overflow |= ckd_add (&total_هێڵەکان, total_هێڵەکان, هێڵەکان);
+  total_وشەکان_overflow |= ckd_add (&total_وشەکان, total_وشەکان, وشەکان);
   total_chars_overflow |= ckd_add (&total_chars, total_chars, chars);
   total_bytes_overflow |= ckd_add (&total_bytes, total_bytes, bytes);
 
-  if (linelength > max_line_length)
-    max_line_length = linelength;
+  إذا (linelength > max_هێڵ_length)
+    max_هێڵ_length = linelength;
 
-  if (err)
+  إذا (err)
     error (0, err, "%s", quotef (file));
-  return !err;
+  أرجع !err;
 }
 
-static bool
-wc_file (char const *file, struct fstatus *fstatus)
+ساكن bool
+wc_file (حرف ثابت *file, بنية fstatus *fstatus)
 {
-  if (! file || streq (file, "-"))
+  إذا (! file || streq (file, "-"))
     {
       have_read_stdin = true;
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
-      return wc (STDIN_FILENO, file, fstatus);
+      xset_دووانەیی_mode (STDIN_FILENO, O_دووانەیی);
+      أرجع wc (STDIN_FILENO, file, fstatus);
     }
-  else
+  وإلا
     {
-      int fd = open (file, O_RDONLY | O_BINARY);
-      if (fd == -1)
+      صحيح fd = open (file, O_RDONLY | O_دووانەیی);
+      إذا (fd == -1)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          أرجع false;
         }
-      else
+      وإلا
         {
           bool ok = wc (fd, file, fstatus);
-          if (close (fd) != 0)
+          إذا (close (fd) != 0)
             {
               error (0, errno, "%s", quotef (file));
-              return false;
+              أرجع false;
             }
-          return ok;
+          أرجع ok;
         }
     }
 }
@@ -753,26 +753,26 @@ wc_file (char const *file, struct fstatus *fstatus)
    to stat the file.  Handle the case of (nfiles == 0) in the same way;
    that happens when we don't know how long the list of file names will be.  */
 
-static struct fstatus *
-get_input_fstatus (idx_t nfiles, char *const *file)
+ساكن بنية fstatus *
+get_تێخستن_fstatus (idx_t nfiles, حرف *ثابت *file)
 {
-  struct fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, sizeof *fstatus);
+  بنية fstatus *fstatus = xnmalloc (nfiles ? nfiles : 1, حجم *fstatus);
 
-  if (nfiles == 0
+  إذا (nfiles == 0
       || (nfiles == 1
-          && ((print_lines + print_words + print_chars
+          && ((print_هێڵەکان + print_وشەکان + print_chars
                + print_bytes + print_linelength)
               == 1)))
     fstatus[0].failed = 1;
-  else
+  وإلا
     {
-      for (idx_t i = 0; i < nfiles; i++)
+      لكل (idx_t i = 0; i < nfiles; i++)
         fstatus[i].failed = (! file[i] || streq (file[i], "-")
                              ? fstat (STDIN_FILENO, &fstatus[i].st)
                              : stat (file[i], &fstatus[i].st));
     }
 
-  return fstatus;
+  أرجع fstatus;
 }
 
 /* Return a print width suitable for the NFILES files whose status is
@@ -780,48 +780,48 @@ get_input_fstatus (idx_t nfiles, char *const *file)
    get_input_fstatus optimizes.  */
 
 ATTRIBUTE_PURE
-static int
-compute_number_width (idx_t nfiles, struct fstatus const *fstatus)
+ساكن صحيح
+compute_ژمار_width (idx_t nfiles, بنية fstatus ثابت *fstatus)
 {
-  int width = 1;
+  صحيح width = 1;
 
-  if (0 < nfiles && fstatus[0].failed <= 0)
+  إذا (0 < nfiles && fstatus[0].failed <= 0)
     {
-      int minimum_width = 1;
+      صحيح minimum_width = 1;
       uintmax_t regular_total = 0;
 
-      for (idx_t i = 0; i < nfiles; i++)
-        if (! fstatus[i].failed)
+      لكل (idx_t i = 0; i < nfiles; i++)
+        إذا (! fstatus[i].failed)
           {
-            if (!S_ISREG (fstatus[i].st.st_mode))
+            إذا (!S_ISREG (fstatus[i].st.st_mode))
               minimum_width = 7;
-            else if (ckd_add (&regular_total, regular_total,
+            وإلا إذا (ckd_add (&regular_total, regular_total,
                               fstatus[i].st.st_size))
               {
                 regular_total = UINTMAX_MAX;
-                break;
+                اكسر;
               }
           }
 
-      for (; 10 <= regular_total; regular_total /= 10)
+      لكل (; 10 <= regular_total; regular_total /= 10)
         width++;
-      if (width < minimum_width)
+      إذا (width < minimum_width)
         width = minimum_width;
     }
 
-  return width;
+  أرجع width;
 }
 
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
-  int optc;
+  صحيح optc;
   idx_t nfiles;
-  char **files;
-  char *files_from = NULL;
-  struct fstatus *fstatus;
-  struct Tokens tok;
+  حرف **files;
+  حرف *files_from = عدم;
+  بنية fstatus *fstatus;
+  بنية Tokens tok;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -834,73 +834,73 @@ main (int argc, char **argv)
   page_size = getpagesize ();
   /* Line buffer stdout to ensure lines are written atomically and immediately
      so that processes running in parallel do not intersperse their output.  */
-  setvbuf (stdout, NULL, _IOLBF, 0);
+  setvbuf (stdout, عدم, _IOLBF, 0);
 
-  posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
+  posixly_correct = (getenv ("POSIXLY_CORRECT") != عدم);
 
-  while ((optc = getopt_long (argc, argv, "clLmw", longopts, NULL)) != -1)
-    switch (optc)
+  طالما ((optc = getopt_long (argc, argv, "clLmw", longopts, عدم)) != -1)
+    بدل (optc)
       {
-      case 'c':
+      حالة 'c':
         print_bytes = true;
-        break;
+        اكسر;
 
-      case 'm':
+      حالة 'm':
         print_chars = true;
-        break;
+        اكسر;
 
-      case 'l':
-        print_lines = true;
-        break;
+      حالة 'l':
+        print_هێڵەکان = true;
+        اكسر;
 
-      case 'w':
-        print_words = true;
-        break;
+      حالة 'w':
+        print_وشەکان = true;
+        اكسر;
 
-      case 'L':
+      حالة 'L':
         print_linelength = true;
-        break;
+        اكسر;
 
-      case DEBUG_PROGRAM_OPTION:
+      حالة DEBUG_PROGRAM_OPTION:
         debug = true;
-        break;
+        اكسر;
 
-      case FILES0_FROM_OPTION:
+      حالة FILES0_FROM_OPTION:
         files_from = optarg;
-        break;
+        اكسر;
 
-      case TOTAL_OPTION:
+      حالة TOTAL_OPTION:
         total_mode = XARGMATCH ("--total", optarg, total_args, total_types);
-        break;
+        اكسر;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      افتراضي:
         usage (EXIT_FAILURE);
       }
 
-  if (! (print_lines || print_words || print_chars || print_bytes
+  إذا (! (print_هێڵەکان || print_وشەکان || print_chars || print_bytes
          || print_linelength))
-    print_lines = print_words = print_bytes = true;
+    print_هێڵەکان = print_وشەکان = print_bytes = true;
 
-  if (print_linelength)
-    for (int i = 0; i <= UCHAR_MAX; i++)
+  إذا (print_linelength)
+    لكل (صحيح i = 0; i <= UCHAR_MAX; i++)
       wc_isprint[i] = !!isprint (i);
-  if (print_words)
-    for (int i = 0; i <= UCHAR_MAX; i++)
+  إذا (print_وشەکان)
+    لكل (صحيح i = 0; i <= UCHAR_MAX; i++)
       wc_isspace[i] = isspace (i) || maybe_c32isnbspace (btoc32 (i));
 
   bool read_tokens = false;
-  struct argv_iterator *ai;
-  if (files_from)
+  بنية argv_iterator *ai;
+  إذا (files_from)
     {
       FILE *stream;
 
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (optind < argc)
+      إذا (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quoteaf (argv[optind]));
           fprintf (stderr, "%s\n",
@@ -908,63 +908,63 @@ main (int argc, char **argv)
           usage (EXIT_FAILURE);
         }
 
-      if (streq (files_from, "-"))
+      إذا (streq (files_from, "-"))
         stream = stdin;
-      else
+      وإلا
         {
           stream = fopen (files_from, "r");
-          if (stream == NULL)
+          إذا (stream == عدم)
             error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
                    quoteaf (files_from));
         }
 
       /* Read the file list into RAM if we can detect its size and that
          size is reasonable.  Otherwise, we'll read a name at a time.  */
-      struct stat st;
-      if (fstat (fileno (stream), &st) == 0
+      بنية stat st;
+      إذا (fstat (fileno (stream), &st) == 0
           && S_ISREG (st.st_mode)
           && st.st_size <= MIN (10 * 1024 * 1024, physmem_available () / 2))
         {
           read_tokens = true;
           readtokens0_init (&tok);
-          if (! readtokens0 (stream, &tok) || fclose (stream) != 0)
+          إذا (! readtokens0 (stream, &tok) || fclose (stream) != 0)
             error (EXIT_FAILURE, 0, _("cannot read file names from %s"),
                    quoteaf (files_from));
           files = tok.tok;
           nfiles = tok.n_tok;
           ai = argv_iter_init_argv (files);
         }
-      else
+      وإلا
         {
-          files = NULL;
+          files = عدم;
           nfiles = 0;
           ai = argv_iter_init_stream (stream);
         }
     }
-  else
+  وإلا
     {
-      static char *stdin_only[] = { NULL };
+      ساكن حرف *stdin_only[] = { عدم };
       files = (optind < argc ? argv + optind : stdin_only);
       nfiles = (optind < argc ? argc - optind : 1);
       ai = argv_iter_init_argv (files);
     }
 
-  if (!ai)
+  إذا (!ai)
     xalloc_die ();
 
-  fstatus = get_input_fstatus (nfiles, files);
-  if (total_mode == total_only)
-    number_width = 1;  /* No extra padding, since no alignment requirement.  */
-  else
-    number_width = compute_number_width (nfiles, fstatus);
+  fstatus = get_تێخستن_fstatus (nfiles, files);
+  إذا (total_mode == total_only)
+    ژمار_width = 1;  /* No extra padding, since no alignment requirement.  */
+  وإلا
+    ژمار_width = compute_ژمار_width (nfiles, fstatus);
 
   bool ok = true;
-  enum argv_iter_err ai_err;
-  char *file_name;
-  for (int i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
+  تعداد argv_iter_err ai_err;
+  حرف *file_name;
+  لكل (صحيح i = 0; (file_name = argv_iter (ai, &ai_err)); i++)
     {
       bool skip_file = false;
-      if (files_from && streq (files_from, "-") && streq (file_name, "-"))
+      إذا (files_from && streq (files_from, "-") && streq (file_name, "-"))
         {
           /* Give a better diagnostic in an unusual case:
              printf - | wc --files0-from=- */
@@ -974,15 +974,15 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (!file_name[0])
+      إذا (!file_name[0])
         {
           /* Diagnose a zero-length file name.  When it's one
              among many, knowing the record number may help.
              FIXME: currently print the record number only with
              --files0-from=FILE.  Maybe do it for argv, too?  */
-          if (files_from == NULL)
+          إذا (files_from == عدم)
             error (0, 0, "%s", _("invalid zero-length file name"));
-          else
+          وإلا
             {
               /* Using the standard 'filename:line-number:' prefix here is
                  not totally appropriate, since NUL is the separator, not NL,
@@ -993,79 +993,79 @@ main (int argc, char **argv)
           skip_file = true;
         }
 
-      if (skip_file)
+      إذا (skip_file)
         ok = false;
-      else
+      وإلا
         ok &= wc_file (file_name, &fstatus[nfiles ? i : 0]);
 
-      if (! nfiles)
+      إذا (! nfiles)
         fstatus[0].failed = 1;
     }
-  switch (ai_err)
+  بدل (ai_err)
     {
-    case AI_ERR_EOF:
-      break;
+    حالة AI_ERR_EOF:
+      اكسر;
 
-    case AI_ERR_READ:
+    حالة AI_ERR_READ:
       error (0, errno, _("%s: read error"), quotef (files_from));
       ok = false;
-      break;
+      اكسر;
 
-    case AI_ERR_MEM:
+    حالة AI_ERR_MEM:
       xalloc_die ();
 
-    case AI_ERR_OK: default:
+    حالة AI_ERR_OK: افتراضي:
       affirm (false);
     }
 
   /* No arguments on the command line is fine.  That means read from stdin.
      However, no arguments on the --files0-from input stream is an error
      means don't read anything.  */
-  if (ok && !files_from && argv_iter_n_args (ai) == 0)
-    ok &= wc_file (NULL, &fstatus[0]);
+  إذا (ok && !files_from && argv_iter_n_args (ai) == 0)
+    ok &= wc_file (عدم, &fstatus[0]);
 
-  if (read_tokens)
+  إذا (read_tokens)
     readtokens0_free (&tok);
 
-  if (total_mode != total_never
+  إذا (total_mode != total_never
       && (total_mode != total_auto || 1 < argv_iter_n_args (ai)))
     {
-      if (total_lines_overflow)
+      إذا (total_هێڵەکان_overflow)
         {
-          total_lines = UINTMAX_MAX;
+          total_هێڵەکان = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total lines"));
           ok = false;
         }
-      if (total_words_overflow)
+      إذا (total_وشەکان_overflow)
         {
-          total_words = UINTMAX_MAX;
+          total_وشەکان = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total words"));
           ok = false;
         }
-      if (total_chars_overflow)
+      إذا (total_chars_overflow)
         {
           total_chars = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total characters"));
           ok = false;
         }
-      if (total_bytes_overflow)
+      إذا (total_bytes_overflow)
         {
           total_bytes = UINTMAX_MAX;
           error (0, EOVERFLOW, _("total bytes"));
           ok = false;
         }
 
-      write_counts (total_lines, total_words, total_chars, total_bytes,
-                    max_line_length,
-                    total_mode != total_only ? _("total") : NULL);
+      write_counts (total_هێڵەکان, total_وشەکان, total_chars, total_bytes,
+                    max_هێڵ_length,
+                    total_mode != total_only ? _("total") : عدم);
     }
 
   argv_iter_free (ai);
 
-  free (fstatus);
+  حرر (fstatus);
 
-  if (have_read_stdin && close (STDIN_FILENO) != 0)
+  إذا (have_read_stdin && close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  أرجع ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }
