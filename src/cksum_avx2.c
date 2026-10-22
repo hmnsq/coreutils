@@ -14,14 +14,14 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#ضمن <config.h>
 
-#include "cksum_crc.h"
+#ضمن "cksum_crc.h"
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <x86intrin.h>
-#include "system.h"
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <x86intrin.h>
+#ضمن "system.h"
 
 /* Number of bytes to read at once.  */
 #define BUFLEN (1 << 16)
@@ -29,7 +29,7 @@
 bool
 cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 {
-  __m256i buf[BUFLEN / sizeof (__m256i)];
+  __m256i buf[BUFLEN / حجم (__m256i)];
   uint_fast32_t crc = 0;
   intmax_t length = 0;
   size_t bytes_read;
@@ -37,8 +37,8 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
   __m256i four_mult_constant;
   __m256i shuffle_constant;
 
-  if (!fp || !crc_out || !length_out)
-    return false;
+  𐡄𐡍 (!fp || !crc_out || !length_out)
+    أرجع false;
 
   /* These constants and general algorithms are taken from the Intel whitepaper
      "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
@@ -53,7 +53,7 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
                                       9, 10, 11, 12, 13, 14, 15,
                                       0, 1, 2, 3, 4, 5, 6, 7, 8,
                                       9, 10, 11, 12, 13, 14, 15);
-  while ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
+  طالما ((bytes_read = fread (buf, 1, BUFLEN, fp)) > 0)
     {
       __m256i data;
       __m256i data2;
@@ -68,16 +68,16 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
 
       __m256i *datap;
 
-      if (ckd_add (&length, length, bytes_read))
+      𐡄𐡍 (ckd_add (&length, length, bytes_read))
         {
           errno = EOVERFLOW;
-          return false;
+          أرجع false;
         }
 
       datap = buf;
 
       /* Fold in parallel 16x 16-byte blocks into 8x 16-byte blocks */
-      if (bytes_read >= 16 * 8 * 2)
+      𐡄𐡍 (bytes_read >= 16 * 8 * 2)
         {
           data = _mm256_loadu_si256 (datap);
           data = _mm256_shuffle_epi8 (data, shuffle_constant);
@@ -93,7 +93,7 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
           data7 = _mm256_loadu_si256 (datap + 3);
           data7 = _mm256_shuffle_epi8 (data7, shuffle_constant);
 
-          while (bytes_read >= 16 * 8 * 2)
+          طالما (bytes_read >= 16 * 8 * 2)
             {
               datap += 4;
 
@@ -155,14 +155,14 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* Fold two 32-byte blocks into one 32-byte block */
-      if (bytes_read >= 64)
+      𐡄𐡍 (bytes_read >= 64)
         {
           data = _mm256_loadu_si256 (datap);
           data = _mm256_shuffle_epi8 (data, shuffle_constant);
           xor_crc = _mm256_set_epi32 (0, 0, 0, 0, crc, 0, 0, 0);
           crc = 0;
           data = _mm256_xor_si256 (data, xor_crc);
-          while (bytes_read >= 64)
+          طالما (bytes_read >= 64)
             {
               datap++;
 
@@ -181,15 +181,15 @@ cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out)
         }
 
       /* And finish up last 0-63 bytes in a byte by byte fashion */
-      unsigned char *cp = (unsigned char *)datap;
-      while (bytes_read--)
+      unsigned حرف *cp = (unsigned حرف *)datap;
+      طالما (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
-      if (feof (fp))
-        break;
+      𐡄𐡍 (feof (fp))
+        اكسر;
     }
 
   *crc_out = crc;
   *length_out = length;
 
-  return !ferror (fp);
+  أرجع !ferror (fp);
 }

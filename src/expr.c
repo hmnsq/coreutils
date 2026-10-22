@@ -28,17 +28,17 @@
 
    Define EVAL_TRACE to print an evaluation trace.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن "system.h"
 
-#include <gmp.h>
-#include <regex.h>
-#include "c-ctype.h"
-#include "long-options.h"
-#include "mcel.h"
-#include "strnumcmp.h"
+#ضمن <gmp.h>
+#ضمن <regex.h>
+#ضمن "c-ctype.h"
+#ضمن "long-options.h"
+#ضمن "mcel.h"
+#ضمن "strnumcmp.h"
 
 /* Various parts of this code assume size_t fits into unsigned long
    int, the widest unsigned type that GMP supports.  */
@@ -53,7 +53,7 @@ static_assert (SIZE_MAX <= ULONG_MAX);
   proper_name ("Paul Eggert")
 
 /* Exit statuses.  */
-enum
+تعداد
   {
     /* Invalid expression: e.g., its form does not conform to the
        grammar for expressions.  Our grammar is an extension of the
@@ -66,32 +66,32 @@ enum
   };
 
 /* The kinds of value we can have.  */
-enum valtype
+تعداد valtype
 {
   integer,
   string
 };
-typedef enum valtype TYPE;
+تعريفنوع تعداد valtype TYPE;
 
 /* A value is.... */
-struct valinfo
+بنية valinfo
 {
   TYPE type;			/* Which kind. */
-  union
+  اتحاد
   {				/* The value itself. */
     mpz_t i;
-    char *s;
+    حرف *s;
   } u;
 };
-typedef struct valinfo VALUE;
+تعريفنوع بنية valinfo VALUE;
 
 /* The arguments given to the program, minus the program name.  */
-static char **args;
+ساكن حرف **args;
 
-static VALUE *eval (bool);
-static bool nomoreargs (void);
-static bool null (VALUE *v);
-static void printv (VALUE *v);
+ساكن VALUE *eval (bool);
+ساكن bool nomoreargs (فراغ);
+ساكن bool null (VALUE *v);
+ساكن فراغ printv (VALUE *v);
 
 
 /*
@@ -111,47 +111,47 @@ static void printv (VALUE *v);
    In UTF-8 \xCE\xB1 is a single character (greek alpha):
      mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
      mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
-static size_t
-mbs_logical_cspn (char const *s, char const *accept)
+ساكن size_t
+mbs_logical_cspn (حرف ثابت *s, حرف ثابت *accept)
 {
-  if (accept[0] == '\0')
-    return 0;
+  𐡄𐡍 (accept[0] == '\0')
+    أرجع 0;
 
   /* General case.  */
-  if (MB_CUR_MAX > 1)
+  𐡄𐡍 (MB_CUR_MAX > 1)
     {
       size_t idx = 0;
-      for (char const *p = s; *p; )
+      لكل (حرف ثابت *p = s; *p; )
         {
           ++idx;
           mcel_t g = mcel_scanz (p);
-          if (g.len == 1)
+          𐡄𐡍 (g.len == 1)
             {
-              if (mbschr (accept, *p))
-                return idx;
+              𐡄𐡍 (mbschr (accept, *p))
+                أرجع idx;
             }
-          else
-            for (char const *a = accept; *a; )
+          وإلا
+            لكل (حرف ثابت *a = accept; *a; )
               {
                 mcel_t h = mcel_scanz (a);
-                if (mcel_eq (g, h))
-                  return idx;
+                𐡄𐡍 (mcel_eq (g, h))
+                  أرجع idx;
                 a += h.len;
               }
           p += g.len;
         }
     }
-  else
+  وإلا
     {
       /* single-byte locale,
          convert returned byte offset to 1-based index or zero if not found. */
       size_t i = strcspn (s, accept);
-      if (s[i])
-        return i + 1;
+      𐡄𐡍 (s[i])
+        أرجع i + 1;
     }
 
   /* not found */
-  return 0;
+  أرجع 0;
 }
 
 /* Extract the substring of S, from logical character
@@ -161,8 +161,8 @@ mbs_logical_cspn (char const *s, char const *accept)
 
    Upon exit, sets v->s to the new string.
    The new string might be empty if POS/LEN are invalid. */
-static char *
-mbs_logical_substr (char const *s, size_t pos, size_t len)
+ساكن حرف *
+mbs_logical_substr (حرف ثابت *s, size_t pos, size_t len)
 {
   size_t mb_cur_max = MB_CUR_MAX;
   idx_t llen = mb_cur_max <= 1 ? strlen (s) : mbslen (s); /* logical length */
@@ -170,26 +170,26 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
   /* characters to copy */
   size_t vlen = MIN (len, pos <= llen ? llen - pos + 1 : 0);
 
-  char const *substart = s;
+  حرف ثابت *substart = s;
   idx_t sublen = 0;
-  if (pos == 0 || len == SIZE_MAX)
+  𐡄𐡍 (pos == 0 || len == SIZE_MAX)
     {
       /* The request is invalid.  Silently yield an empty string.  */
     }
-  else if (mb_cur_max <= 1)
+  وإلا 𐡄𐡍 (mb_cur_max <= 1)
     {
       substart += pos - 1;
       sublen = vlen;
     }
-  else
-    for (idx_t idx = 1; *s && vlen; idx++)
+  وإلا
+    لكل (idx_t idx = 1; *s && vlen; idx++)
       {
         idx_t char_bytes = mcel_scanz (s).len;
 
         /* Skip until we reach the starting position.  */
-        if (pos <= idx)
+        𐡄𐡍 (pos <= idx)
           {
-            if (pos == idx)
+            𐡄𐡍 (pos == idx)
               substart = s;
 
             /* Add one character's length in bytes.  */
@@ -200,7 +200,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
         s += char_bytes;
       }
 
-  return ximemdup0 (substart, sublen);
+  أرجع ximemdup0 (substart, sublen);
 }
 
 /* Return the number of logical characters (possibly multibyte)
@@ -211,23 +211,23 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
    In the string below, there are only two characters
    up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
       mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
-static size_t
-mbs_offset_to_chars (char const *s, size_t ofs)
+ساكن size_t
+mbs_offset_to_chars (حرف ثابت *s, size_t ofs)
 {
   size_t c = 0;
-  for (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
+  لكل (size_t d = 0; d < ofs && s[d]; d += mcel_scanz (s + d).len)
     c++;
-  return c;
+  أرجع c;
 }
 
 
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  𐡄𐡍 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s EXPRESSION\n\
@@ -242,9 +242,9 @@ Usage: %s EXPRESSION\n\
 Print the value of EXPRESSION to standard output.  A blank line below\n\
 separates increasing precedence groups.  EXPRESSION may be:\n\
 \n\
-  ARG1 | ARG2       ARG1 if it is neither null nor 0, otherwise ARG2\n\
+  ARG1 | ARG2       ARG1 𐡄𐡍 it is neither null nor 0, otherwise ARG2\n\
 \n\
-  ARG1 & ARG2       ARG1 if neither argument is null or 0, otherwise 0\n\
+  ARG1 & ARG2       ARG1 𐡄𐡍 neither argument is null or 0, otherwise 0\n\
 "), stdout);
       fputs (_("\
 \n\
@@ -278,22 +278,22 @@ separates increasing precedence groups.  EXPRESSION may be:\n\
   length STRING              length of STRING\n\
 "), stdout);
       fputs (_("\
-  + TOKEN                    interpret TOKEN as a string, even if it is a\n\
+  + TOKEN                    interpret TOKEN as a string, even 𐡄𐡍 it is a\n\
                                keyword like 'match' or an operator like '/'\n\
 \n\
   ( EXPRESSION )             value of EXPRESSION\n\
 "), stdout);
       fputs (_("\
 \n\
-Beware that many operators need to be escaped or quoted for shells.\n\
-Comparisons are arithmetic if both ARGs are numbers, else lexicographical.\n\
-Pattern matches return the string matched between \\( and \\) or null; if\n\
-\\( and \\) are not used, they return the number of characters matched or 0.\n\
+Beware that many operators need to be escaped or quoted لكل shells.\n\
+Comparisons are arithmetic 𐡄𐡍 both ARGs are numbers, وإلا lexicographical.\n\
+Pattern matches أرجع the string matched between \\( and \\) or null; 𐡄𐡍\n\
+\\( and \\) are not used, they أرجع the number of characters matched or 0.\n\
 "), stdout);
       fputs (_("\
 \n\
-Exit status is 0 if EXPRESSION is neither null nor 0, 1 if EXPRESSION is null\n\
-or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
+Exit status is 0 𐡄𐡍 EXPRESSION is neither null nor 0, 1 𐡄𐡍 EXPRESSION is null\n\
+or 0, 2 𐡄𐡍 EXPRESSION is syntactically invalid, and 3 𐡄𐡍 an error occurred.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -301,8 +301,8 @@ or 0, 2 if EXPRESSION is syntactically invalid, and 3 if an error occurred.\n\
 }
 
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -314,17 +314,17 @@ main (int argc, char **argv)
   atexit (close_stdout);
 
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, VERSION,
-                      usage, AUTHORS, (char const *) NULL);
+                      usage, AUTHORS, (حرف ثابت *) عدم);
 
   /* The above handles --help and --version.
      Since there is no other invocation of getopt, handle '--' here.  */
-  if (1 < argc && streq (argv[1], "--"))
+  𐡄𐡍 (1 < argc && streq (argv[1], "--"))
     {
       --argc;
       ++argv;
     }
 
-  if (argc <= 1)
+  𐡄𐡍 (argc <= 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXPR_INVALID);
@@ -333,7 +333,7 @@ main (int argc, char **argv)
   args = argv + 1;
 
   VALUE *v = eval (true);
-  if (!nomoreargs ())
+  𐡄𐡍 (!nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: unexpected argument %s"),
            quotearg_n_style (0, locale_quoting_style, *args));
 
@@ -344,53 +344,53 @@ main (int argc, char **argv)
 
 /* Return a VALUE for I.  */
 
-static VALUE *
-int_value (unsigned long int i)
+ساكن VALUE *
+int_value (unsigned long صحيح i)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  VALUE *v = xmalloc (حجم *v);
   v->type = integer;
   mpz_init_set_ui (v->u.i, i);
-  return v;
+  أرجع v;
 }
 
 /* Return a VALUE for S.  */
 
-static VALUE *
-str_value (char const *s)
+ساكن VALUE *
+str_value (حرف ثابت *s)
 {
-  VALUE *v = xmalloc (sizeof *v);
+  VALUE *v = xmalloc (حجم *v);
   v->type = string;
   v->u.s = xstrdup (s);
-  return v;
+  أرجع v;
 }
 
 /* Free VALUE V, including structure components.  */
 
-static void
+ساكن فراغ
 freev (VALUE *v)
 {
-  if (v->type == string)
-    free (v->u.s);
-  else
+  𐡄𐡍 (v->type == string)
+    حرر (v->u.s);
+  وإلا
     mpz_clear (v->u.i);
-  free (v);
+  حرر (v);
 }
 
 /* Print VALUE V.  */
 
-static void
+ساكن فراغ
 printv (VALUE *v)
 {
-  switch (v->type)
+  بدل (v->type)
     {
-    case integer:
+    حالة integer:
       mpz_out_str (stdout, 10, v->u.i);
       putchar ('\n');
-      break;
-    case string:
+      اكسر;
+    حالة string:
       puts (v->u.s);
-      break;
-    default:
+      اكسر;
+    افتراضي:
       unreachable ();
     }
 }
@@ -398,31 +398,31 @@ printv (VALUE *v)
 /* Return true if V is a null-string or zero-number.  */
 
 ATTRIBUTE_PURE
-static bool
+ساكن bool
 null (VALUE *v)
 {
-  switch (v->type)
+  بدل (v->type)
     {
-    case integer:
-      return mpz_sgn (v->u.i) == 0;
-    case string:
+    حالة integer:
+      أرجع mpz_sgn (v->u.i) == 0;
+    حالة string:
       {
-        char const *cp = v->u.s;
-        if (*cp == '\0')
-          return true;
+        حرف ثابت *cp = v->u.s;
+        𐡄𐡍 (*cp == '\0')
+          أرجع true;
 
         cp += (*cp == '-');
 
-        do
+        𐡏𐡁𐡃
           {
-            if (*cp != '0')
-              return false;
+            𐡄𐡍 (*cp != '0')
+              أرجع false;
           }
-        while (*++cp);
+        طالما (*++cp);
 
-        return true;
+        أرجع true;
       }
-    default:
+    افتراضي:
       unreachable ();
     }
 }
@@ -430,63 +430,63 @@ null (VALUE *v)
 /* Return true if CP takes the form of an integer.  */
 
 ATTRIBUTE_PURE
-static bool
-looks_like_integer (char const *cp)
+ساكن bool
+looks_like_integer (حرف ثابت *cp)
 {
   cp += (*cp == '-');
 
-  do
-    if (! c_isdigit (*cp))
-      return false;
-  while (*++cp);
+  𐡏𐡁𐡃
+    𐡄𐡍 (! c_isdigit (*cp))
+      أرجع false;
+  طالما (*++cp);
 
-  return true;
+  أرجع true;
 }
 
 /* Coerce V to a string value (can't fail).  */
 
-static void
+ساكن فراغ
 tostring (VALUE *v)
 {
-  switch (v->type)
+  بدل (v->type)
     {
-    case integer:
+    حالة integer:
       {
-        char *s = mpz_get_str (NULL, 10, v->u.i);
+        حرف *s = mpz_get_str (عدم, 10, v->u.i);
         mpz_clear (v->u.i);
         v->u.s = s;
         v->type = string;
       }
-      break;
-    case string:
-      break;
-    default:
+      اكسر;
+    حالة string:
+      اكسر;
+    افتراضي:
       unreachable ();
     }
 }
 
 /* Coerce V to an integer value.  Return true on success, false on failure.  */
 
-static bool
+ساكن bool
 toarith (VALUE *v)
 {
-  switch (v->type)
+  بدل (v->type)
     {
-    case integer:
-      return true;
-    case string:
+    حالة integer:
+      أرجع true;
+    حالة string:
       {
-        char *s = v->u.s;
+        حرف *s = v->u.s;
 
-        if (! looks_like_integer (s))
-          return false;
-        if (mpz_init_set_str (v->u.i, s, 10) != 0)
+        𐡄𐡍 (! looks_like_integer (s))
+          أرجع false;
+        𐡄𐡍 (mpz_init_set_str (v->u.i, s, 10) != 0)
           error (EXPR_FAILURE, ERANGE, "%s", (s));
-        free (s);
+        حرر (s);
         v->type = integer;
-        return true;
+        أرجع true;
       }
-    default:
+    افتراضي:
       unreachable ();
     }
 }
@@ -494,51 +494,51 @@ toarith (VALUE *v)
 /* Extract a size_t value from an integer value I.
    If the value is negative, return SIZE_MAX.
    If the value is too large, return SIZE_MAX - 1.  */
-static size_t
+ساكن size_t
 getsize (mpz_t i)
 {
-  if (mpz_sgn (i) < 0)
-    return SIZE_MAX;
-  if (mpz_fits_ulong_p (i))
+  𐡄𐡍 (mpz_sgn (i) < 0)
+    أرجع SIZE_MAX;
+  𐡄𐡍 (mpz_fits_ulong_p (i))
     {
-      unsigned long int ul = mpz_get_ui (i);
-      if (ul < SIZE_MAX)
-        return ul;
+      unsigned long صحيح ul = mpz_get_ui (i);
+      𐡄𐡍 (ul < SIZE_MAX)
+        أرجع ul;
     }
-  return SIZE_MAX - 1;
+  أرجع SIZE_MAX - 1;
 }
 
 /* Return true and advance if the next token matches STR exactly.
    STR must not be null.  */
 
-static bool
-nextarg (char const *str)
+ساكن bool
+nextarg (حرف ثابت *str)
 {
-  if (*args == NULL)
-    return false;
-  else
+  𐡄𐡍 (*args == عدم)
+    أرجع false;
+  وإلا
     {
       bool r = streq (*args, str);
       args += r;
-      return r;
+      أرجع r;
     }
 }
 
 /* Return true if there no more tokens.  */
 
-static bool
-nomoreargs (void)
+ساكن bool
+nomoreargs (فراغ)
 {
-  return !*args;
+  أرجع !*args;
 }
 
 /* Report missing operand.
    There is an implicit assumption that there was a previous argument,
    and (args-1) is valid. */
-static void
-require_more_args (void)
+ساكن فراغ
+require_more_args (فراغ)
 {
-  if (nomoreargs ())
+  𐡄𐡍 (nomoreargs ())
     error (EXPR_INVALID, 0, _("syntax error: missing argument after %s"),
            quotearg_n_style (0, locale_quoting_style, *(args - 1)));
 }
@@ -547,11 +547,11 @@ require_more_args (void)
 #ifdef EVAL_TRACE
 /* Print evaluation trace and args remaining.  */
 
-static void
-trace (char const *fxn)
+ساكن فراغ
+trace (حرف ثابت *fxn)
 {
   printf ("%s:", fxn);
-  for (char **a = args; *a; a++)
+  لكل (حرف **a = args; *a; a++)
     printf (" %s", *a);
   putchar ('\n');
 }
@@ -561,48 +561,48 @@ trace (char const *fxn)
    SV is the VALUE for the lhs (the string),
    PV is the VALUE for the rhs (the pattern).  */
 
-static VALUE *
+ساكن VALUE *
 docolon (VALUE *sv, VALUE *pv)
 {
   tostring (sv);
   tostring (pv);
 
-  struct re_registers re_regs;
+  بنية re_registers re_regs;
   re_regs.num_regs = 0;
-  re_regs.start = NULL;
-  re_regs.end = NULL;
+  re_regs.start = عدم;
+  re_regs.end = عدم;
 
-  struct re_pattern_buffer re_buffer;
-  char fastmap[UCHAR_MAX + 1];
-  re_buffer.buffer = NULL;
+  بنية re_pattern_buffer re_buffer;
+  حرف fastmap[UCHAR_MAX + 1];
+  re_buffer.buffer = عدم;
   re_buffer.allocated = 0;
   re_buffer.fastmap = fastmap;
-  re_buffer.translate = NULL;
+  re_buffer.translate = عدم;
   re_syntax_options = (RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP
                        & ~RE_NO_EMPTY_RANGES);
-  char const *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
+  حرف ثابت *errmsg = re_compile_pattern (pv->u.s, strlen (pv->u.s),
                                            &re_buffer);
-  if (errmsg)
+  𐡄𐡍 (errmsg)
     error (EXPR_INVALID, 0, "%s", (errmsg));
   re_buffer.newline_anchor = 0;
 
   VALUE *v;
   regoff_t matchlen = re_match (&re_buffer, sv->u.s, strlen (sv->u.s), 0,
                                 &re_regs);
-  if (0 <= matchlen)
+  𐡄𐡍 (0 <= matchlen)
     {
       /* Were \(...\) used? */
-      if (re_buffer.re_nsub > 0)
+      𐡄𐡍 (re_buffer.re_nsub > 0)
         {
-          if (re_regs.end[1] < 0)
+          𐡄𐡍 (re_regs.end[1] < 0)
             v = str_value ("");
-          else
+          وإلا
             {
               sv->u.s[re_regs.end[1]] = '\0';
               v = str_value (sv->u.s + re_regs.start[1]);
             }
         }
-      else
+      وإلا
         {
           /* In multibyte locales, convert the matched offset (=number of bytes)
              to the number of matched characters. */
@@ -612,32 +612,32 @@ docolon (VALUE *sv, VALUE *pv)
           v = int_value (i);
         }
     }
-  else if (matchlen == -1)
+  وإلا 𐡄𐡍 (matchlen == -1)
     {
       /* Match failed -- return the right kind of null.  */
-      if (re_buffer.re_nsub > 0)
+      𐡄𐡍 (re_buffer.re_nsub > 0)
         v = str_value ("");
-      else
+      وإلا
         v = int_value (0);
     }
-  else
+  وإلا
     error (EXPR_FAILURE,
            matchlen == -2 ? errno : EOVERFLOW,
            _("error in regular expression matcher"));
 
-  if (0 < re_regs.num_regs)
+  𐡄𐡍 (0 < re_regs.num_regs)
     {
-      free (re_regs.start);
-      free (re_regs.end);
+      حرر (re_regs.start);
+      حرر (re_regs.end);
     }
-  re_buffer.fastmap = NULL;
+  re_buffer.fastmap = عدم;
   regfree (&re_buffer);
-  return v;
+  أرجع v;
 }
 
 /* Handle bare operands and ( expr ) syntax.  */
 
-static VALUE *
+ساكن VALUE *
 eval7 (bool evaluate)
 {
 #ifdef EVAL_TRACE
@@ -645,61 +645,61 @@ eval7 (bool evaluate)
 #endif
   require_more_args ();
 
-  if (nextarg ("("))
+  𐡄𐡍 (nextarg ("("))
     {
       VALUE *v = eval (evaluate);
-      if (nomoreargs ())
+      𐡄𐡍 (nomoreargs ())
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' after %s"),
                quotearg_n_style (0, locale_quoting_style, *(args - 1)));
-      if (!nextarg (")"))
+      𐡄𐡍 (!nextarg (")"))
         error (EXPR_INVALID, 0, _("syntax error: expecting ')' instead of %s"),
                quotearg_n_style (0, locale_quoting_style, *args));
-      return v;
+      أرجع v;
     }
 
-  if (nextarg (")"))
+  𐡄𐡍 (nextarg (")"))
     error (EXPR_INVALID, 0, _("syntax error: unexpected ')'"));
 
-  return str_value (*args++);
+  أرجع str_value (*args++);
 }
 
 /* Handle match, substr, index, and length keywords, and quoting "+".  */
 
-static VALUE *
+ساكن VALUE *
 eval6 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval6");
 #endif
-  if (nextarg ("+"))
+  𐡄𐡍 (nextarg ("+"))
     {
       require_more_args ();
-      return str_value (*args++);
+      أرجع str_value (*args++);
     }
-  else if (nextarg ("length"))
+  وإلا 𐡄𐡍 (nextarg ("length"))
     {
       VALUE *r = eval6 (evaluate);
       tostring (r);
       VALUE *v = int_value (mbslen (r->u.s));
       freev (r);
-      return v;
+      أرجع v;
     }
-  else if (nextarg ("match"))
+  وإلا 𐡄𐡍 (nextarg ("match"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
       VALUE *v;
-      if (evaluate)
+      𐡄𐡍 (evaluate)
         {
           v = docolon (l, r);
           freev (l);
         }
-      else
+      وإلا
         v = l;
       freev (r);
-      return v;
+      أرجع v;
     }
-  else if (nextarg ("index"))
+  وإلا 𐡄𐡍 (nextarg ("index"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *r = eval6 (evaluate);
@@ -709,9 +709,9 @@ eval6 (bool evaluate)
       VALUE *v = int_value (pos);
       freev (l);
       freev (r);
-      return v;
+      أرجع v;
     }
-  else if (nextarg ("substr"))
+  وإلا 𐡄𐡍 (nextarg ("substr"))
     {
       VALUE *l = eval6 (evaluate);
       VALUE *i1 = eval6 (evaluate);
@@ -719,42 +719,42 @@ eval6 (bool evaluate)
       tostring (l);
 
       VALUE *v;
-      if (!toarith (i1) || !toarith (i2))
+      𐡄𐡍 (!toarith (i1) || !toarith (i2))
         v = str_value ("");
-      else
+      وإلا
         {
           size_t pos = getsize (i1->u.i);
           size_t len = getsize (i2->u.i);
 
-          char *s = mbs_logical_substr (l->u.s, pos, len);
+          حرف *s = mbs_logical_substr (l->u.s, pos, len);
           v = str_value (s);
-          free (s);
+          حرر (s);
         }
       freev (l);
       freev (i1);
       freev (i2);
-      return v;
+      أرجع v;
     }
-  else
-    return eval7 (evaluate);
+  وإلا
+    أرجع eval7 (evaluate);
 }
 
 /* Handle : operator (pattern matching).
    Calls docolon to do the real work.  */
 
-static VALUE *
+ساكن VALUE *
 eval5 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval5");
 #endif
   VALUE *l = eval6 (evaluate);
-  while (true)
+  طالما (true)
     {
-      if (nextarg (":"))
+      𐡄𐡍 (nextarg (":"))
         {
           VALUE *r = eval6 (evaluate);
-          if (evaluate)
+          𐡄𐡍 (evaluate)
             {
               VALUE *v = docolon (l, r);
               freev (l);
@@ -762,38 +762,38 @@ eval5 (bool evaluate)
             }
           freev (r);
         }
-      else
-        return l;
+      وإلا
+        أرجع l;
     }
 }
 
 /* Handle *, /, % operators.  */
 
-static VALUE *
+ساكن VALUE *
 eval4 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval4");
 #endif
   VALUE *l = eval5 (evaluate);
-  while (true)
+  طالما (true)
     {
-      enum { multiply, divide, mod } fxn;
+      تعداد { multiply, divide, mod } fxn;
 
-      if (nextarg ("*"))
+      𐡄𐡍 (nextarg ("*"))
         fxn = multiply;
-      else if (nextarg ("/"))
+      وإلا 𐡄𐡍 (nextarg ("/"))
         fxn = divide;
-      else if (nextarg ("%"))
+      وإلا 𐡄𐡍 (nextarg ("%"))
         fxn = mod;
-      else
-        return l;
+      وإلا
+        أرجع l;
       VALUE *r = eval5 (evaluate);
-      if (evaluate)
+      𐡄𐡍 (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          𐡄𐡍 (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
-          if (fxn != multiply && mpz_sgn (r->u.i) == 0)
+          𐡄𐡍 (fxn != multiply && mpz_sgn (r->u.i) == 0)
             error (EXPR_INVALID, 0, _("division by zero"));
           ((fxn == multiply ? mpz_mul
             : fxn == divide ? mpz_tdiv_q
@@ -806,27 +806,27 @@ eval4 (bool evaluate)
 
 /* Handle +, - operators.  */
 
-static VALUE *
+ساكن VALUE *
 eval3 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval3");
 #endif
   VALUE *l = eval4 (evaluate);
-  while (true)
+  طالما (true)
     {
-      enum { plus, minus } fxn;
+      تعداد { plus, minus } fxn;
 
-      if (nextarg ("+"))
+      𐡄𐡍 (nextarg ("+"))
         fxn = plus;
-      else if (nextarg ("-"))
+      وإلا 𐡄𐡍 (nextarg ("-"))
         fxn = minus;
-      else
-        return l;
+      وإلا
+        أرجع l;
       VALUE *r = eval4 (evaluate);
-      if (evaluate)
+      𐡄𐡍 (evaluate)
         {
-          if (!toarith (l) || !toarith (r))
+          𐡄𐡍 (!toarith (l) || !toarith (r))
             error (EXPR_INVALID, 0, _("non-integer argument"));
           (fxn == plus ? mpz_add : mpz_sub) (l->u.i, l->u.i, r->u.i);
         }
@@ -836,51 +836,51 @@ eval3 (bool evaluate)
 
 /* Handle comparisons.  */
 
-static VALUE *
+ساكن VALUE *
 eval2 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval2");
 #endif
   VALUE *l = eval3 (evaluate);
-  while (true)
+  طالما (true)
     {
-      enum
+      تعداد
         {
           less_than, less_equal, equal, not_equal, greater_equal, greater_than
         } fxn;
 
-      if (nextarg ("<"))
+      𐡄𐡍 (nextarg ("<"))
         fxn = less_than;
-      else if (nextarg ("<="))
+      وإلا 𐡄𐡍 (nextarg ("<="))
         fxn = less_equal;
-      else if (nextarg ("=") || nextarg ("=="))
+      وإلا 𐡄𐡍 (nextarg ("=") || nextarg ("=="))
         fxn = equal;
-      else if (nextarg ("!="))
+      وإلا 𐡄𐡍 (nextarg ("!="))
         fxn = not_equal;
-      else if (nextarg (">="))
+      وإلا 𐡄𐡍 (nextarg (">="))
         fxn = greater_equal;
-      else if (nextarg (">"))
+      وإلا 𐡄𐡍 (nextarg (">"))
         fxn = greater_than;
-      else
-        return l;
+      وإلا
+        أرجع l;
       VALUE *r = eval3 (evaluate);
 
       bool val = false;
-      if (evaluate)
+      𐡄𐡍 (evaluate)
         {
           tostring (l);
           tostring (r);
 
-          int cmp;
-          if (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
+          صحيح cmp;
+          𐡄𐡍 (looks_like_integer (l->u.s) && looks_like_integer (r->u.s))
             cmp = strintcmp (l->u.s, r->u.s);
-          else
+          وإلا
             {
               errno = 0;
               cmp = strcoll (l->u.s, r->u.s);
 
-              if (errno)
+              𐡄𐡍 (errno)
                 {
                   error (0, errno, _("string comparison failed"));
                   error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -891,15 +891,15 @@ eval2 (bool evaluate)
                 }
             }
 
-          switch (fxn)
+          بدل (fxn)
             {
-            case less_than:     val = (cmp <  0); break;
-            case less_equal:    val = (cmp <= 0); break;
-            case equal:         val = (cmp == 0); break;
-            case not_equal:     val = (cmp != 0); break;
-            case greater_equal: val = (cmp >= 0); break;
-            case greater_than:  val = (cmp >  0); break;
-            default: unreachable ();
+            حالة less_than:     val = (cmp <  0); اكسر;
+            حالة less_equal:    val = (cmp <= 0); اكسر;
+            حالة equal:         val = (cmp == 0); اكسر;
+            حالة not_equal:     val = (cmp != 0); اكسر;
+            حالة greater_equal: val = (cmp >= 0); اكسر;
+            حالة greater_than:  val = (cmp >  0); اكسر;
+            افتراضي: unreachable ();
             }
         }
 
@@ -911,60 +911,60 @@ eval2 (bool evaluate)
 
 /* Handle &.  */
 
-static VALUE *
+ساكن VALUE *
 eval1 (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval1");
 #endif
   VALUE *l = eval2 (evaluate);
-  while (true)
+  طالما (true)
     {
-      if (nextarg ("&"))
+      𐡄𐡍 (nextarg ("&"))
         {
           VALUE *r = eval2 (evaluate && !null (l));
-          if (null (l) || null (r))
+          𐡄𐡍 (null (l) || null (r))
             {
               freev (l);
               freev (r);
               l = int_value (0);
             }
-          else
+          وإلا
             freev (r);
         }
-      else
-        return l;
+      وإلا
+        أرجع l;
     }
 }
 
 /* Handle |.  */
 
-static VALUE *
+ساكن VALUE *
 eval (bool evaluate)
 {
 #ifdef EVAL_TRACE
   trace ("eval");
 #endif
   VALUE *l = eval1 (evaluate);
-  while (true)
+  طالما (true)
     {
-      if (nextarg ("|"))
+      𐡄𐡍 (nextarg ("|"))
         {
           VALUE *r = eval1 (evaluate && null (l));
-          if (null (l))
+          𐡄𐡍 (null (l))
             {
               freev (l);
               l = r;
-              if (null (l))
+              𐡄𐡍 (null (l))
                 {
                   freev (l);
                   l = int_value (0);
                 }
             }
-          else
+          وإلا
             freev (r);
         }
-      else
-        return l;
+      وإلا
+        أرجع l;
     }
 }

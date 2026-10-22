@@ -16,25 +16,25 @@
 
    Written by Torbjörn Granlund, David MacKenzie, and Jim Meyering. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
-#include <selinux/label.h>
+#ضمن <config.h>
+#ضمن <stdio.h>
+#ضمن <sys/types.h>
+#ضمن <getopt.h>
+#ضمن <selinux/label.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "filenamecat.h"
-#include "ignore-value.h"
-#include "quote.h"
-#include "stat-time.h"
-#include "targetdir.h"
-#include "utimens.h"
-#include "acl.h"
+#ضمن "system.h"
+#ضمن "argmatch.h"
+#ضمن "assure.h"
+#ضمن "backupfile.h"
+#ضمن "copy.h"
+#ضمن "cp-hash.h"
+#ضمن "filenamecat.h"
+#ضمن "ignore-value.h"
+#ضمن "quote.h"
+#ضمن "stat-time.h"
+#ضمن "targetdir.h"
+#ضمن "utimens.h"
+#ضمن "acl.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "cp"
@@ -47,17 +47,17 @@
 /* Used by do_copy, make_dir_parents_private, and re_protect
    to keep a list of leading directories whose protections
    need to be fixed after copying. */
-struct dir_attr
+بنية dir_attr
 {
-  struct stat st;
+  بنية stat st;
   bool restore_mode;
   size_t slash_offset;
-  struct dir_attr *next;
+  بنية dir_attr *next;
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+تعداد
 {
   ATTRIBUTES_ONLY_OPTION = CHAR_MAX + 1,
   COPY_CONTENTS_OPTION,
@@ -73,89 +73,89 @@ enum
 };
 
 /* True if the kernel is SELinux enabled.  */
-static bool selinux_enabled;
+ساكن bool selinux_enabled;
 
 /* If true, the command "cp x/e_file e_dir" uses "e_dir/x/e_file"
    as its destination instead of the usual "e_dir/e_file." */
-static bool parents_option = false;
+ساكن bool parents_option = false;
 
 /* Remove any trailing slashes from each SOURCE argument.  */
-static bool remove_trailing_slashes;
+ساكن bool remove_trailing_slashes;
 
-static char const *const sparse_type_string[] =
+ساكن حرف ثابت *ثابت sparse_type_string[] =
 {
-  "never", "auto", "always", NULL
+  "never", "auto", "always", عدم
 };
-static enum Sparse_type const sparse_type[] =
+ساكن تعداد Sparse_type ثابت sparse_type[] =
 {
   SPARSE_NEVER, SPARSE_AUTO, SPARSE_ALWAYS
 };
 ARGMATCH_VERIFY (sparse_type_string, sparse_type);
 
-static char const *const reflink_type_string[] =
+ساكن حرف ثابت *ثابت reflink_type_string[] =
 {
-  "auto", "always", "never", NULL
+  "auto", "always", "never", عدم
 };
-static enum Reflink_type const reflink_type[] =
+ساكن تعداد Reflink_type ثابت reflink_type[] =
 {
   REFLINK_AUTO, REFLINK_ALWAYS, REFLINK_NEVER
 };
 ARGMATCH_VERIFY (reflink_type_string, reflink_type);
 
-static char const *const update_type_string[] =
+ساكن حرف ثابت *ثابت update_type_string[] =
 {
-  "all", "none", "none-fail", "older", NULL
+  "all", "none", "none-fail", "older", عدم
 };
-static enum Update_type const update_type[] =
+ساكن تعداد Update_type ثابت update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_opts[] =
+ساكن بنية option ثابت long_opts[] =
 {
-  {"archive", no_argument, NULL, 'a'},
-  {"attributes-only", no_argument, NULL, ATTRIBUTES_ONLY_OPTION},
-  {"backup", optional_argument, NULL, 'b'},
-  {"copy-contents", no_argument, NULL, COPY_CONTENTS_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"dereference", no_argument, NULL, 'L'},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"link", no_argument, NULL, 'l'},
-  {"no-clobber", no_argument, NULL, 'n'},   /* Deprecated.  */
-  {"no-dereference", no_argument, NULL, 'P'},
-  {"no-preserve", required_argument, NULL, NO_PRESERVE_ATTRIBUTES_OPTION},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"one-file-system", no_argument, NULL, 'x'},
-  {"parents", no_argument, NULL, PARENTS_OPTION},
-  {"path", no_argument, NULL, PARENTS_OPTION},   /* Deprecated.  */
-  {"preserve", optional_argument, NULL, PRESERVE_ATTRIBUTES_OPTION},
-  {"recursive", no_argument, NULL, 'R'},
-  {"remove-destination", no_argument, NULL, UNLINK_DEST_BEFORE_OPENING},
-  {"sparse", required_argument, NULL, SPARSE_OPTION},
-  {"reflink", optional_argument, NULL, REFLINK_OPTION},
-  {"strip-trailing-slashes", no_argument, NULL,
+  {"archive", no_argument, عدم, 'a'},
+  {"attributes-only", no_argument, عدم, ATTRIBUTES_ONLY_OPTION},
+  {"backup", optional_argument, عدم, 'b'},
+  {"copy-contents", no_argument, عدم, COPY_CONTENTS_OPTION},
+  {"debug", no_argument, عدم, DEBUG_OPTION},
+  {"dereference", no_argument, عدم, 'L'},
+  {"force", no_argument, عدم, 'f'},
+  {"interactive", no_argument, عدم, 'i'},
+  {"link", no_argument, عدم, 'l'},
+  {"no-clobber", no_argument, عدم, 'n'},   /* Deprecated.  */
+  {"no-dereference", no_argument, عدم, 'P'},
+  {"no-preserve", required_argument, عدم, NO_PRESERVE_ATTRIBUTES_OPTION},
+  {"no-target-directory", no_argument, عدم, 'T'},
+  {"one-file-system", no_argument, عدم, 'x'},
+  {"parents", no_argument, عدم, PARENTS_OPTION},
+  {"path", no_argument, عدم, PARENTS_OPTION},   /* Deprecated.  */
+  {"preserve", optional_argument, عدم, PRESERVE_ATTRIBUTES_OPTION},
+  {"recursive", no_argument, عدم, 'R'},
+  {"remove-destination", no_argument, عدم, UNLINK_DEST_BEFORE_OPENING},
+  {"sparse", required_argument, عدم, SPARSE_OPTION},
+  {"reflink", optional_argument, عدم, REFLINK_OPTION},
+  {"strip-trailing-slashes", no_argument, عدم,
    STRIP_TRAILING_SLASHES_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"symbolic-link", no_argument, NULL, 's'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"update", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"keep-directory-symlink", no_argument, NULL,
+  {"suffix", required_argument, عدم, 'S'},
+  {"symbolic-link", no_argument, عدم, 's'},
+  {"target-directory", required_argument, عدم, 't'},
+  {"update", optional_argument, عدم, 'u'},
+  {"verbose", no_argument, عدم, 'v'},
+  {"keep-directory-symlink", no_argument, عدم,
     KEEP_DIRECTORY_SYMLINK_OPTION},
   {GETOPT_SELINUX_CONTEXT_OPTION_DECL},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {عدم, 0, عدم, 0}
 };
 
-void
-usage (int status)
+فراغ
+usage (صحيح status)
 {
-  if (status != EXIT_SUCCESS)
+  𐡄𐡍 (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  وإلا
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -199,7 +199,7 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -f, --force\n\
-         if an existing destination file cannot be opened, remove it and try\n\
+         𐡄𐡍 an existing destination file cannot be opened, remove it and try\n\
          again (this option is ignored when the -n option is also used)\n\
 "));
       oputs (_("\
@@ -286,7 +286,7 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
       oputs (_("\
       --update[=UPDATE]\n\
          control which existing files are updated;\n\
-         UPDATE={all,none,none-fail,older(default)}\n\
+         UPDATE={all,none,none-fail,older(افتراضي)}\n\
 "));
       oputs (_("\
   -u\n\
@@ -302,26 +302,26 @@ Copy SOURCE to DEST, or multiple SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -Z\n\
-         set SELinux security context of destination file to default type\n\
+         set SELinux security context of destination file to افتراضي type\n\
 "));
       oputs (_("\
       --context[=CTX]\n\
-         like -Z, or if CTX is specified then set the\n\
+         like -Z, or 𐡄𐡍 CTX is specified then set the\n\
          SELinux or SMACK security context to CTX\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-ATTR_LIST is a comma-separated list of attributes. Attributes are 'mode' for\n\
-permissions (including any ACL and xattr permissions), 'ownership' for user\n\
-and group, 'timestamps' for file timestamps, 'links' for hard links, 'context'\
-\nfor security context, 'xattr' for extended attributes, and 'all' for all\n\
+ATTR_LIST is a comma-separated list of attributes. Attributes are 'mode' لكل\n\
+permissions (including any ACL and xattr permissions), 'ownership' لكل user\n\
+and group, 'timestamps' لكل file timestamps, 'links' لكل hard links, 'context'\
+\nfor security context, 'xattr' لكل extended attributes, and 'all' لكل all\n\
 attributes.\n\
 "), stdout);
       fputs (_("\
 \n\
-By default, sparse SOURCE files are detected by a crude heuristic and the\n\
+By افتراضي, sparse SOURCE files are detected by a crude heuristic and the\n\
 corresponding DEST file is made sparse as well.  That is the behavior\n\
 selected by --sparse=auto.  Specify --sparse=always to create a sparse DEST\n\
 file whenever the SOURCE file contains a long enough sequence of zero bytes.\n\
@@ -330,16 +330,16 @@ Use --sparse=never to inhibit creation of sparse files.\n\
       emit_update_parameters_note ();
       fputs (_("\
 \n\
-By default or with --reflink=auto, cp will try a lightweight copy, where the\n\
+By افتراضي or with --reflink=auto, cp will try a lightweight copy, where the\n\
 data blocks are copied only when modified, falling back to a standard copy\n\
-if this is not possible.  With --reflink[=always] cp will fail if CoW is not\n\
-supported, while --reflink=never ensures a standard copy is performed.\n\
+𐡄𐡍 this is not possible.  With --reflink[=always] cp will fail 𐡄𐡍 CoW is not\n\
+supported, طالما --reflink=never ensures a standard copy is performed.\n\
 "), stdout);
       emit_backup_suffix_note ();
       fputs (_("\
 \n\
-As a special case, cp makes a backup of SOURCE when the force and backup\n\
-options are given and SOURCE and DEST are the same name for an existing,\n\
+As a special حالة, cp makes a backup of SOURCE when the force and backup\n\
+options are given and SOURCE and DEST are the same name لكل an existing,\n\
 regular file.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -367,23 +367,23 @@ regular file.\n\
    directories specified by ATTR_LIST have the proper permissions
    when done.  */
 
-static bool
-re_protect (char const *const_dst_name, char const *dst_src_name,
-            int dst_dirfd, char const *dst_relname,
-            struct dir_attr *attr_list, const struct cp_options *x)
+ساكن bool
+re_protect (حرف ثابت *const_dst_name, حرف ثابت *dst_src_name,
+            صحيح dst_dirfd, حرف ثابت *dst_relname,
+            بنية dir_attr *attr_list, ثابت بنية cp_options *x)
 {
-  char *dst_name;		/* A copy of CONST_DST_NAME we can change. */
+  حرف *dst_name;		/* A copy of CONST_DST_NAME we can change. */
 
   ASSIGN_STRDUPA (dst_name, const_dst_name);
 
   /* The suffix of DST_NAME that is a copy of the source file name,
      possibly truncated to name a parent directory.  */
-  char const *src_name = dst_name + (dst_src_name - const_dst_name);
+  حرف ثابت *src_name = dst_name + (dst_src_name - const_dst_name);
 
   /* Likewise, but with any leading '/'s skipped.  */
-  char const *relname = dst_name + (dst_relname - const_dst_name);
+  حرف ثابت *relname = dst_name + (dst_relname - const_dst_name);
 
-  for (struct dir_attr *p = attr_list; p; p = p->next)
+  لكل (بنية dir_attr *p = attr_list; p; p = p->next)
     {
       dst_name[p->slash_offset] = '\0';
 
@@ -391,29 +391,29 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
          chown turns off set[ug]id bits for non-root,
          so do the chmod last.  */
 
-      if (x->preserve_timestamps)
+      𐡄𐡍 (x->preserve_timestamps)
         {
-          struct timespec timespec[2] = { get_stat_atime (&p->st),
+          بنية timespec timespec[2] = { get_stat_atime (&p->st),
                                           get_stat_mtime (&p->st) };
 
-          if (utimensat (dst_dirfd, relname, timespec, 0))
+          𐡄𐡍 (utimensat (dst_dirfd, relname, timespec, 0))
             {
               error (0, errno, _("failed to preserve times for %s"),
                      quoteaf (dst_name));
-              return false;
+              أرجع false;
             }
         }
 
-      if (x->preserve_ownership)
+      𐡄𐡍 (x->preserve_ownership)
         {
-          if (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
+          𐡄𐡍 (lchownat (dst_dirfd, relname, p->st.st_uid, p->st.st_gid)
               != 0)
             {
-              if (! chown_failure_ok (x))
+              𐡄𐡍 (! chown_failure_ok (x))
                 {
                   error (0, errno, _("failed to preserve ownership for %s"),
                          quoteaf (dst_name));
-                  return false;
+                  أرجع false;
                 }
               /* Failing to preserve ownership is OK. Still, try to preserve
                  the group, but ignore the possible error. */
@@ -421,24 +421,24 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
             }
         }
 
-      if (x->preserve_mode)
+      𐡄𐡍 (x->preserve_mode)
         {
-          if (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_mode) != 0)
-            return false;
+          𐡄𐡍 (xcopy_acl (src_name, -1, dst_name, -1, p->st.st_mode) != 0)
+            أرجع false;
         }
-      else if (p->restore_mode)
+      وإلا 𐡄𐡍 (p->restore_mode)
         {
-          if (lchmodat (dst_dirfd, relname, p->st.st_mode) != 0)
+          𐡄𐡍 (lchmodat (dst_dirfd, relname, p->st.st_mode) != 0)
             {
               error (0, errno, _("failed to preserve permissions for %s"),
                      quoteaf (dst_name));
-              return false;
+              أرجع false;
             }
         }
 
       dst_name[p->slash_offset] = '/';
     }
-  return true;
+  أرجع true;
 }
 
 /* Ensure that the parent directory of CONST_DIR exists, for
@@ -461,76 +461,76 @@ re_protect (char const *const_dst_name, char const *dst_src_name,
 
 /* FIXME: Synch this function with the one in ../lib/mkdir-p.c.  */
 
-static bool
-make_dir_parents_private (char const *const_dir, size_t src_offset,
-                          int dst_dirfd,
-                          char const *verbose_fmt_string,
-                          struct dir_attr **attr_list, bool *new_dst,
-                          const struct cp_options *x)
+ساكن bool
+make_dir_parents_private (حرف ثابت *const_dir, size_t src_offset,
+                          صحيح dst_dirfd,
+                          حرف ثابت *verbose_fmt_string,
+                          بنية dir_attr **attr_list, bool *new_dst,
+                          ثابت بنية cp_options *x)
 {
   idx_t dirlen = dir_len (const_dir);
 
-  *attr_list = NULL;
+  *attr_list = عدم;
 
   /* Succeed immediately if the parent of CONST_DIR must already exist,
      as the target directory has already been checked.  */
-  if (dirlen <= src_offset)
-    return true;
+  𐡄𐡍 (dirlen <= src_offset)
+    أرجع true;
 
   /* A copy of CONST_DIR we can change.  */
-  char *dir;
+  حرف *dir;
   ASSIGN_STRDUPA (dir, const_dir);
 
   /* Source name in DIR.  */
-  char *src = dir + src_offset;
+  حرف *src = dir + src_offset;
 
   /* Leading directory of DIR.  */
-  char *dst_dir = alloca (dirlen + 1);
+  حرف *dst_dir = alloca (dirlen + 1);
   memcpy (dst_dir, dir, dirlen);
   dst_dir[dirlen] = '\0';
-  char const *dst_reldir = dst_dir + src_offset;
-  while (*dst_reldir == '/')
+  حرف ثابت *dst_reldir = dst_dir + src_offset;
+  طالما (*dst_reldir == '/')
     dst_reldir++;
 
   /* XXX: If all dirs are present at the destination,
      no permissions or security contexts will be updated.  */
-  struct stat stats;
-  if (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
+  بنية stat stats;
+  𐡄𐡍 (fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0)
     {
       /* A parent of CONST_DIR does not exist.
          Make all missing intermediate directories. */
-      char *slash = src;
+      حرف *slash = src;
 
-      while (*slash == '/')
+      طالما (*slash == '/')
         slash++;
       dst_reldir = slash;
 
-      while ((slash = strchr (slash, '/')))
+      طالما ((slash = strchr (slash, '/')))
         {
-          struct dir_attr *new;
+          بنية dir_attr *new;
 
           *slash = '\0';
           bool missing_dir = fstatat (dst_dirfd, dst_reldir, &stats, 0) != 0;
 
-          if (missing_dir || x->preserve_ownership || x->preserve_mode
+          𐡄𐡍 (missing_dir || x->preserve_ownership || x->preserve_mode
               || x->preserve_timestamps)
             {
               /* Add this directory to the list of directories whose
                  modes might need fixing later. */
-              struct stat src_st;
-              int src_errno = (stat (src, &src_st) != 0
+              بنية stat src_st;
+              صحيح src_errno = (stat (src, &src_st) != 0
                                ? errno
                                : S_ISDIR (src_st.st_mode)
                                ? 0
                                : ENOTDIR);
-              if (src_errno)
+              𐡄𐡍 (src_errno)
                 {
                   error (0, src_errno, _("failed to get attributes of %s"),
                          quoteaf (src));
-                  return false;
+                  أرجع false;
                 }
 
-              new = xmalloc (sizeof *new);
+              new = xmalloc (حجم *new);
               new->st = src_st;
               new->slash_offset = slash - dir;
               new->restore_mode = false;
@@ -539,12 +539,12 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
             }
 
           /* If required set the default context for created dirs.  */
-          if (! set_process_security_ctx (src, dir,
+          𐡄𐡍 (! set_process_security_ctx (src, dir,
                                           missing_dir ? new->st.st_mode : 0,
                                           missing_dir, x))
-            return false;
+            أرجع false;
 
-          if (missing_dir)
+          𐡄𐡍 (missing_dir)
             {
               /* This component does not exist.  We must set
                  *new_dst and new->st.st_mode inside this loop because,
@@ -571,15 +571,15 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
               mode_t mkdir_mode = (x->explicit_no_preserve_mode
                                    ? S_IRWXUGO : src_mode);
               mkdir_mode &= CHMOD_MODE_BITS & ~omitted_permissions;
-              if (mkdirat (dst_dirfd, dst_reldir, mkdir_mode) != 0)
+              𐡄𐡍 (mkdirat (dst_dirfd, dst_reldir, mkdir_mode) != 0)
                 {
                   error (0, errno, _("cannot make directory %s"),
                          quoteaf (dir));
-                  return false;
+                  أرجع false;
                 }
-              else
+              وإلا
                 {
-                  if (verbose_fmt_string != NULL)
+                  𐡄𐡍 (verbose_fmt_string != عدم)
                     printf (verbose_fmt_string, src, dir);
                 }
 
@@ -587,19 +587,19 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                  for writing the directory's contents. Check if these
                  permissions are there.  */
 
-              if (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
+              𐡄𐡍 (fstatat (dst_dirfd, dst_reldir, &stats, AT_SYMLINK_NOFOLLOW))
                 {
                   error (0, errno, _("failed to get attributes of %s"),
                          quoteaf (dir));
-                  return false;
+                  أرجع false;
                 }
 
 
-              if (! x->preserve_mode)
+              𐡄𐡍 (! x->preserve_mode)
                 {
-                  if (omitted_permissions & ~stats.st_mode)
+                  𐡄𐡍 (omitted_permissions & ~stats.st_mode)
                     omitted_permissions &= ~ cached_umask ();
-                  if (omitted_permissions & ~stats.st_mode
+                  𐡄𐡍 (omitted_permissions & ~stats.st_mode
                       || (stats.st_mode & S_IRWXU) != S_IRWXU)
                     {
                       new->st.st_mode = stats.st_mode | omitted_permissions;
@@ -608,116 +608,116 @@ make_dir_parents_private (char const *const_dir, size_t src_offset,
                 }
 
               mode_t accessible = stats.st_mode | S_IRWXU;
-              if (stats.st_mode != accessible)
+              𐡄𐡍 (stats.st_mode != accessible)
                 {
                   /* Make the new directory searchable and writable.
                      The original permissions will be restored later.  */
 
-                  if (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
+                  𐡄𐡍 (lchmodat (dst_dirfd, dst_reldir, accessible) != 0)
                     {
                       error (0, errno, _("setting permissions for %s"),
                              quoteaf (dir));
-                      return false;
+                      أرجع false;
                     }
                 }
             }
-          else if (!S_ISDIR (stats.st_mode))
+          وإلا 𐡄𐡍 (!S_ISDIR (stats.st_mode))
             {
               error (0, 0, _("%s exists but is not a directory"),
                      quoteaf (dir));
-              return false;
+              أرجع false;
             }
-          else
+          وإلا
             *new_dst = false;
 
           /* For existing dirs, set the security context as per that already
              set for the process global context.  */
-          if (! *new_dst
+          𐡄𐡍 (! *new_dst
               && (x->set_security_context || x->preserve_security_context))
             {
-              if (! set_file_security_ctx (dir, false, x)
+              𐡄𐡍 (! set_file_security_ctx (dir, false, x)
                   && x->require_preserve_context)
-                return false;
+                أرجع false;
             }
 
           *slash++ = '/';
 
           /* Avoid unnecessary calls to 'stat' when given
              file names containing multiple adjacent slashes.  */
-          while (*slash == '/')
+          طالما (*slash == '/')
             slash++;
         }
     }
 
   /* We get here if the parent of DIR already exists.  */
 
-  else if (!S_ISDIR (stats.st_mode))
+  وإلا 𐡄𐡍 (!S_ISDIR (stats.st_mode))
     {
       error (0, 0, _("%s exists but is not a directory"), quoteaf (dst_dir));
-      return false;
+      أرجع false;
     }
-  else
+  وإلا
     {
       *new_dst = false;
     }
-  return true;
+  أرجع true;
 }
 
 /* Scan the arguments, and copy each by calling copy.
    Return true if successful.  */
 
-static bool
-do_copy (int n_files, char **file, char const *target_directory,
-         bool no_target_directory, struct cp_options *x)
+ساكن bool
+do_copy (صحيح n_files, حرف **file, حرف ثابت *target_directory,
+         bool no_target_directory, بنية cp_options *x)
 {
-  if (n_files <= !target_directory)
+  𐡄𐡍 (n_files <= !target_directory)
     {
-      if (n_files <= 0)
+      𐡄𐡍 (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      وإلا
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
+  بنية stat sb;
   sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
+  صحيح target_dirfd = AT_FDCWD;
   bool new_dst = false;
   bool ok = true;
-  if (no_target_directory)
+  𐡄𐡍 (no_target_directory)
     {
-      if (target_directory)
+      𐡄𐡍 (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      𐡄𐡍 (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  وإلا 𐡄𐡍 (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      𐡄𐡍 (! target_dirfd_valid (target_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
                quoteaf (target_directory));
     }
-  else
+  وإلا
     {
-      char const *lastfile = file[n_files - 1];
-      int fd = target_directory_operand (lastfile, &sb);
-      if (target_dirfd_valid (fd))
+      حرف ثابت *lastfile = file[n_files - 1];
+      صحيح fd = target_directory_operand (lastfile, &sb);
+      𐡄𐡍 (target_dirfd_valid (fd))
         {
           target_dirfd = fd;
           target_directory = lastfile;
           n_files--;
         }
-      else
+      وإلا
         {
-          int err = errno;
-          if (err == ENOENT)
+          صحيح err = errno;
+          𐡄𐡍 (err == ENOENT)
             new_dst = true;
 
           /* The last operand LASTFILE cannot be opened as a directory.
@@ -729,7 +729,7 @@ do_copy (int n_files, char **file, char const *target_directory,
              In this case use stat to test whether LASTFILE is a
              directory, in case opening a non-directory with (O_SEARCH
              | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-          if (2 < n_files
+          𐡄𐡍 (2 < n_files
               || (O_PATHSEARCH == O_SEARCH && err == EACCES
                   && (sb.st_mode || stat (lastfile, &sb) == 0)
                   && S_ISDIR (sb.st_mode)))
@@ -737,7 +737,7 @@ do_copy (int n_files, char **file, char const *target_directory,
         }
     }
 
-  if (target_directory)
+  𐡄𐡍 (target_directory)
     {
       /* cp file1...filen edir
          Copy the files 'file1' through 'filen'
@@ -746,28 +746,28 @@ do_copy (int n_files, char **file, char const *target_directory,
       /* Initialize these hash tables only if we'll need them.
          The problems they're used to detect can arise only if
          there are two or more files to copy.  */
-      if (2 <= n_files)
+      𐡄𐡍 (2 <= n_files)
         {
           dest_info_init (x);
           src_info_init (x);
         }
 
-      for (int i = 0; i < n_files; i++)
+      لكل (صحيح i = 0; i < n_files; i++)
         {
-          char *dst_name;
+          حرف *dst_name;
           bool parent_exists = true;  /* True if dir_name (dst_name) exists. */
-          struct dir_attr *attr_list;
-          char *arg_in_concat;
-          char *arg = file[i];
+          بنية dir_attr *attr_list;
+          حرف *arg_in_concat;
+          حرف *arg = file[i];
 
           /* Trailing slashes are meaningful (i.e., maybe worth preserving)
              only in the source file names.  */
-          if (remove_trailing_slashes)
+          𐡄𐡍 (remove_trailing_slashes)
             strip_trailing_slashes (arg);
 
-          if (parents_option)
+          𐡄𐡍 (parents_option)
             {
-              char *arg_no_trailing_slash;
+              حرف *arg_no_trailing_slash;
 
               /* Use 'arg' without trailing slashes in constructing destination
                  file names.  Otherwise, we can end up trying to create a
@@ -787,12 +787,12 @@ do_copy (int n_files, char **file, char const *target_directory,
               parent_exists =
                 (make_dir_parents_private
                  (dst_name, arg_in_concat - dst_name, target_dirfd,
-                  (x->verbose ? "%s -> %s\n" : NULL),
+                  (x->verbose ? "%s -> %s\n" : عدم),
                   &attr_list, &new_dst, x));
             }
-          else
+          وإلا
             {
-              char *arg_base;
+              حرف *arg_base;
               /* Append the last component of 'arg' to 'target_directory'.  */
               ASSIGN_STRDUPA (arg_base, last_component (arg));
               strip_trailing_slashes (arg_base);
@@ -802,43 +802,43 @@ do_copy (int n_files, char **file, char const *target_directory,
                                            &arg_in_concat);
             }
 
-          if (!parent_exists)
+          𐡄𐡍 (!parent_exists)
             {
               /* make_dir_parents_private failed, so don't even
                  attempt the copy.  */
               ok = false;
             }
-          else
+          وإلا
             {
-              char const *dst_relname = arg_in_concat;
-              while (*dst_relname == '/')
+              حرف ثابت *dst_relname = arg_in_concat;
+              طالما (*dst_relname == '/')
                 dst_relname++;
 
               bool copy_into_self;
               ok &= copy (arg, dst_name, target_dirfd, dst_relname,
-                          new_dst, x, &copy_into_self, NULL);
+                          new_dst, x, &copy_into_self, عدم);
 
-              if (parents_option)
+              𐡄𐡍 (parents_option)
                 ok &= re_protect (dst_name, arg_in_concat, target_dirfd,
                                   dst_relname, attr_list, x);
             }
 
-          if (parents_option)
+          𐡄𐡍 (parents_option)
             {
-              while (attr_list)
+              طالما (attr_list)
                 {
-                  struct dir_attr *p = attr_list;
+                  بنية dir_attr *p = attr_list;
                   attr_list = attr_list->next;
-                  free (p);
+                  حرر (p);
                 }
             }
 
-          free (dst_name);
+          حرر (dst_name);
         }
     }
-  else /* !target_directory */
+  وإلا /* !target_directory */
     {
-      if (parents_option)
+      𐡄𐡍 (parents_option)
         {
           error (0, 0,
                  _("with --parents, the destination must be a directory"));
@@ -851,15 +851,15 @@ do_copy (int n_files, char **file, char const *target_directory,
          'cp --force --backup foo foo' to 'cp --force foo fooSUFFIX'
          where SUFFIX is determined by any version control options used.  */
 
-      char const *source = file[0];
-      char const *dest = file[1];
-      if (x->unlink_dest_after_failed_open
+      حرف ثابت *source = file[0];
+      حرف ثابت *dest = file[1];
+      𐡄𐡍 (x->unlink_dest_after_failed_open
           && x->backup_type != no_backups
           && streq (source, dest)
           && !new_dst
           && (sb.st_mode != 0 || stat (dest, &sb) == 0) && S_ISREG (sb.st_mode))
         {
-          static struct cp_options x_tmp;
+          ساكن بنية cp_options x_tmp;
 
           dest = find_backup_file_name (AT_FDCWD, dest, x->backup_type);
           /* Set x->backup_type to 'no_backups' so that the normal backup
@@ -873,14 +873,14 @@ do_copy (int n_files, char **file, char const *target_directory,
         }
 
       bool unused;
-      ok = copy (source, dest, AT_FDCWD, dest, -new_dst, x, &unused, NULL);
+      ok = copy (source, dest, AT_FDCWD, dest, -new_dst, x, &unused, عدم);
     }
 
-  return ok;
+  أرجع ok;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+ساكن فراغ
+cp_option_init (بنية cp_options *x)
 {
   cp_options_default (x);
   x->copy_as_regular = true;
@@ -901,7 +901,7 @@ cp_option_init (struct cp_options *x)
   x->explicit_no_preserve_mode = false;
   x->preserve_security_context = false; /* -a or --preserve=context.  */
   x->require_preserve_context = false;  /* --preserve=context.  */
-  x->set_security_context = NULL;       /* -Z, set sys default context. */
+  x->set_security_context = عدم;       /* -Z, set sys default context. */
   x->preserve_xattr = false;
   x->reduce_diagnostics = false;
   x->require_preserve_xattr = false;
@@ -925,18 +925,18 @@ cp_option_init (struct cp_options *x)
      in general one cannot do that safely, give the current semantics of
      open's O_EXCL flag, (which POSIX doesn't even allow cp to use, btw).
      But POSIX requires it.  */
-  x->open_dangling_dest_symlink = getenv ("POSIXLY_CORRECT") != NULL;
+  x->open_dangling_dest_symlink = getenv ("POSIXLY_CORRECT") != عدم;
 
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = عدم;
+  x->src_info = عدم;
 }
 
 /* Given a string, ARG, containing a comma-separated list of arguments
    to the --preserve option, set the appropriate fields of X to ON_OFF.  */
-static void
-decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
+ساكن فراغ
+decode_preserve_arg (حرف ثابت *arg, بنية cp_options *x, bool on_off)
 {
-  enum File_attribute
+  تعداد File_attribute
     {
       PRESERVE_MODE,
       PRESERVE_TIMESTAMPS,
@@ -946,96 +946,96 @@ decode_preserve_arg (char const *arg, struct cp_options *x, bool on_off)
       PRESERVE_XATTR,
       PRESERVE_ALL
     };
-  static enum File_attribute const preserve_vals[] =
+  ساكن تعداد File_attribute ثابت preserve_vals[] =
     {
       PRESERVE_MODE, PRESERVE_TIMESTAMPS,
       PRESERVE_OWNERSHIP, PRESERVE_LINK, PRESERVE_CONTEXT, PRESERVE_XATTR,
       PRESERVE_ALL
     };
   /* Valid arguments to the '--preserve' option. */
-  static char const *const preserve_args[] =
+  ساكن حرف ثابت *ثابت preserve_args[] =
     {
       "mode", "timestamps",
-      "ownership", "links", "context", "xattr", "all", NULL
+      "ownership", "links", "context", "xattr", "all", عدم
     };
   ARGMATCH_VERIFY (preserve_args, preserve_vals);
 
-  char *arg_writable = xstrdup (arg);
-  char *s = arg_writable;
-  do
+  حرف *arg_writable = xstrdup (arg);
+  حرف *s = arg_writable;
+  𐡏𐡁𐡃
     {
       /* find next comma */
-      char *comma = strchr (s, ',');
-      enum File_attribute val;
+      حرف *comma = strchr (s, ',');
+      تعداد File_attribute val;
 
       /* If we found a comma, put a NUL in its place and advance.  */
-      if (comma)
+      𐡄𐡍 (comma)
         *comma++ = 0;
 
       /* process S.  */
       val = XARGMATCH (on_off ? "--preserve" : "--no-preserve",
                        s, preserve_args, preserve_vals);
-      switch (val)
+      بدل (val)
         {
-        case PRESERVE_MODE:
+        حالة PRESERVE_MODE:
           x->preserve_mode = on_off;
           x->explicit_no_preserve_mode = !on_off;
-          break;
+          اكسر;
 
-        case PRESERVE_TIMESTAMPS:
+        حالة PRESERVE_TIMESTAMPS:
           x->preserve_timestamps = on_off;
-          break;
+          اكسر;
 
-        case PRESERVE_OWNERSHIP:
+        حالة PRESERVE_OWNERSHIP:
           x->preserve_ownership = on_off;
-          break;
+          اكسر;
 
-        case PRESERVE_LINK:
+        حالة PRESERVE_LINK:
           x->preserve_links = on_off;
-          break;
+          اكسر;
 
-        case PRESERVE_CONTEXT:
+        حالة PRESERVE_CONTEXT:
           x->require_preserve_context = on_off;
           x->preserve_security_context = on_off;
-          break;
+          اكسر;
 
-        case PRESERVE_XATTR:
+        حالة PRESERVE_XATTR:
           x->preserve_xattr = on_off;
           x->require_preserve_xattr = on_off;
-          break;
+          اكسر;
 
-        case PRESERVE_ALL:
+        حالة PRESERVE_ALL:
           x->preserve_mode = on_off;
           x->preserve_timestamps = on_off;
           x->preserve_ownership = on_off;
           x->preserve_links = on_off;
           x->explicit_no_preserve_mode = !on_off;
-          if (selinux_enabled)
+          𐡄𐡍 (selinux_enabled)
             x->preserve_security_context = on_off;
           x->preserve_xattr = on_off;
-          break;
+          اكسر;
 
-        default:
+        افتراضي:
           affirm (false);
         }
       s = comma;
     }
-  while (s);
+  طالما (s);
 
-  free (arg_writable);
+  حرر (arg_writable);
 }
 
-int
-main (int argc, char **argv)
+صحيح
+main (صحيح argc, حرف **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  حرف ثابت *backup_suffix = عدم;
+  حرف *version_control_string = عدم;
+  بنية cp_options x;
   bool copy_contents = false;
-  char *target_directory = NULL;
+  حرف *target_directory = عدم;
   bool no_target_directory = false;
-  char const *scontext = NULL;
+  حرف ثابت *scontext = عدم;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1048,27 +1048,27 @@ main (int argc, char **argv)
   selinux_enabled = (0 < is_selinux_enabled ());
   cp_option_init (&x);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
-                           long_opts, NULL))
+  صحيح c;
+  طالما ((c = getopt_long (argc, argv, "abdfHilLnprst:uvxPRS:TZ",
+                           long_opts, عدم))
          != -1)
     {
-      switch (c)
+      بدل (c)
         {
-        case SPARSE_OPTION:
+        حالة SPARSE_OPTION:
           x.sparse_mode = XARGMATCH ("--sparse", optarg,
                                      sparse_type_string, sparse_type);
-          break;
+          اكسر;
 
-        case REFLINK_OPTION:
-          if (optarg == NULL)
+        حالة REFLINK_OPTION:
+          𐡄𐡍 (optarg == عدم)
             x.reflink_mode = REFLINK_ALWAYS;
-          else
+          وإلا
             x.reflink_mode = XARGMATCH ("--reflink", optarg,
                                        reflink_type_string, reflink_type);
-          break;
+          اكسر;
 
-        case 'a':
+        حالة 'a':
           /* Like -dR --preserve=all with reduced failure diagnostics.  */
           x.dereference = DEREF_NEVER;
           x.preserve_links = true;
@@ -1076,171 +1076,171 @@ main (int argc, char **argv)
           x.preserve_mode = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          if (selinux_enabled)
+          𐡄𐡍 (selinux_enabled)
              x.preserve_security_context = true;
           x.preserve_xattr = true;
           x.reduce_diagnostics = true;
           x.recursive = true;
-          break;
+          اكسر;
 
-        case 'b':
+        حالة 'b':
           make_backups = true;
-          if (optarg)
+          𐡄𐡍 (optarg)
             version_control_string = optarg;
-          break;
+          اكسر;
 
-        case ATTRIBUTES_ONLY_OPTION:
+        حالة ATTRIBUTES_ONLY_OPTION:
           x.data_copy_required = false;
-          break;
+          اكسر;
 
-        case DEBUG_OPTION:
+        حالة DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
+          اكسر;
 
-        case COPY_CONTENTS_OPTION:
+        حالة COPY_CONTENTS_OPTION:
           copy_contents = true;
-          break;
+          اكسر;
 
-        case 'd':
+        حالة 'd':
           x.preserve_links = true;
           x.dereference = DEREF_NEVER;
-          break;
+          اكسر;
 
-        case 'f':
+        حالة 'f':
           x.unlink_dest_after_failed_open = true;
-          break;
+          اكسر;
 
-        case 'H':
+        حالة 'H':
           x.dereference = DEREF_COMMAND_LINE_ARGUMENTS;
-          break;
+          اكسر;
 
-        case 'i':
+        حالة 'i':
           x.interactive = I_ASK_USER;
-          break;
+          اكسر;
 
-        case 'l':
+        حالة 'l':
           x.hard_link = true;
-          break;
+          اكسر;
 
-        case 'L':
+        حالة 'L':
           x.dereference = DEREF_ALWAYS;
-          break;
+          اكسر;
 
-        case 'n':
+        حالة 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
+          اكسر;
 
-        case 'P':
+        حالة 'P':
           x.dereference = DEREF_NEVER;
-          break;
+          اكسر;
 
-        case NO_PRESERVE_ATTRIBUTES_OPTION:
+        حالة NO_PRESERVE_ATTRIBUTES_OPTION:
           decode_preserve_arg (optarg, &x, false);
-          break;
+          اكسر;
 
-        case PRESERVE_ATTRIBUTES_OPTION:
-          if (optarg == NULL)
+        حالة PRESERVE_ATTRIBUTES_OPTION:
+          𐡄𐡍 (optarg == عدم)
             {
               /* Fall through to the case for 'p' below.  */
             }
-          else
+          وإلا
             {
               decode_preserve_arg (optarg, &x, true);
               x.require_preserve = true;
-              break;
+              اكسر;
             }
           FALLTHROUGH;
 
-        case 'p':
+        حالة 'p':
           x.preserve_ownership = true;
           x.preserve_mode = true;
           x.preserve_timestamps = true;
           x.require_preserve = true;
-          break;
+          اكسر;
 
-        case PARENTS_OPTION:
+        حالة PARENTS_OPTION:
           parents_option = true;
-          break;
+          اكسر;
 
-        case 'r':
-        case 'R':
+        حالة 'r':
+        حالة 'R':
           x.recursive = true;
-          break;
+          اكسر;
 
-        case UNLINK_DEST_BEFORE_OPENING:
+        حالة UNLINK_DEST_BEFORE_OPENING:
           x.unlink_dest_before_opening = true;
-          break;
+          اكسر;
 
-        case STRIP_TRAILING_SLASHES_OPTION:
+        حالة STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
+          اكسر;
 
-        case 's':
+        حالة 's':
           x.symbolic_link = true;
-          break;
+          اكسر;
 
-        case 't':
-          if (target_directory)
+        حالة 't':
+          𐡄𐡍 (target_directory)
             error (EXIT_FAILURE, 0,
                    _("multiple target directories specified"));
           target_directory = optarg;
-          break;
+          اكسر;
 
-        case 'T':
+        حالة 'T':
           no_target_directory = true;
-          break;
+          اكسر;
 
-        case 'u':
+        حالة 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          𐡄𐡍 (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
+          اكسر;
 
-        case 'v':
+        حالة 'v':
           x.verbose = true;
-          break;
+          اكسر;
 
-        case KEEP_DIRECTORY_SYMLINK_OPTION:
+        حالة KEEP_DIRECTORY_SYMLINK_OPTION:
           x.keep_directory_symlink = true;
-          break;
+          اكسر;
 
-        case 'x':
+        حالة 'x':
           x.one_file_system = true;
-          break;
+          اكسر;
 
-        case 'Z':
+        حالة 'Z':
           /* politely decline if we're not on a selinux-enabled kernel.  */
-          if (selinux_enabled)
+          𐡄𐡍 (selinux_enabled)
             {
-              if (optarg)
+              𐡄𐡍 (optarg)
                 scontext = optarg;
-              else
+              وإلا
                 {
                   x.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                         NULL, 0);
-                  if (! x.set_security_context)
+                                                         عدم, 0);
+                  𐡄𐡍 (! x.set_security_context)
                     error (0, errno, _("warning: ignoring --context"));
                 }
             }
-          else if (optarg)
+          وإلا 𐡄𐡍 (optarg)
             {
               error (0, 0,
                      _("warning: ignoring --context; "
                        "it requires an SELinux-enabled kernel"));
             }
-          break;
+          اكسر;
 
-        case 'S':
+        حالة 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
+          اكسر;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        افتراضي:
           usage (EXIT_FAILURE);
         }
     }
@@ -1249,19 +1249,19 @@ main (int argc, char **argv)
      This will also have the effect of disabling copy offload as that may
      propagate holes.  For e.g. FreeBSD documents that copy_file_range()
      will try to propagate holes.  */
-  if (x.reflink_mode == REFLINK_AUTO && x.sparse_mode == SPARSE_NEVER)
+  𐡄𐡍 (x.reflink_mode == REFLINK_AUTO && x.sparse_mode == SPARSE_NEVER)
     x.reflink_mode = REFLINK_NEVER;
 
-  if (x.hard_link && x.symbolic_link)
+  𐡄𐡍 (x.hard_link && x.symbolic_link)
     {
       error (0, 0, _("cannot make both hard and symbolic links"));
       usage (EXIT_FAILURE);
     }
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  𐡄𐡍 (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  𐡄𐡍 (make_backups
       && (x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
     {
@@ -1270,7 +1270,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (x.reflink_mode == REFLINK_ALWAYS && x.sparse_mode != SPARSE_AUTO)
+  𐡄𐡍 (x.reflink_mode == REFLINK_ALWAYS && x.sparse_mode != SPARSE_AUTO)
     {
       error (0, 0, _("--reflink can be used only with --sparse=auto"));
       usage (EXIT_FAILURE);
@@ -1282,28 +1282,28 @@ main (int argc, char **argv)
                    : no_backups);
   set_simple_backup_suffix (backup_suffix);
 
-  if (x.dereference == DEREF_UNDEFINED)
+  𐡄𐡍 (x.dereference == DEREF_UNDEFINED)
     {
-      if (x.recursive && ! x.hard_link)
+      𐡄𐡍 (x.recursive && ! x.hard_link)
         /* This is compatible with FreeBSD.  */
         x.dereference = DEREF_NEVER;
-      else
+      وإلا
         x.dereference = DEREF_ALWAYS;
     }
 
-  if (x.recursive)
+  𐡄𐡍 (x.recursive)
     x.copy_as_regular = copy_contents;
 
   /* Ensure -Z overrides -a.  */
-  if ((x.set_security_context || scontext)
+  𐡄𐡍 ((x.set_security_context || scontext)
       && ! x.require_preserve_context)
     x.preserve_security_context = false;
 
-  if (x.preserve_security_context && (x.set_security_context || scontext))
+  𐡄𐡍 (x.preserve_security_context && (x.set_security_context || scontext))
     error (EXIT_FAILURE, 0,
            _("cannot set target context and preserve it"));
 
-  if (x.require_preserve_context && ! selinux_enabled)
+  𐡄𐡍 (x.require_preserve_context && ! selinux_enabled)
     error (EXIT_FAILURE, 0,
            _("cannot preserve security context "
              "without an SELinux-enabled kernel"));
@@ -1314,13 +1314,13 @@ main (int argc, char **argv)
        if (scontext && !restorecon (NULL, dst_path, 0))
           error (...);
    */
-  if (scontext && setfscreatecon (scontext) < 0)
+  𐡄𐡍 (scontext && setfscreatecon (scontext) < 0)
     error (EXIT_FAILURE, errno,
            _("failed to set default file creation context to %s"),
            quote (scontext));
 
-#if !USE_XATTR
-  if (x.require_preserve_xattr)
+#𐡄𐡍 !USE_XATTR
+  𐡄𐡍 (x.require_preserve_xattr)
     error (EXIT_FAILURE, 0, _("cannot preserve extended attributes, cp is "
                               "built without xattr support"));
 #endif
