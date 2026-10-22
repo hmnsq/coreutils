@@ -39,51 +39,51 @@ print_group_list (char const *username,
   bool ok = true;
   struct passwd *pwd = NULL;
 
-  if (username)
+  ако (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      ако (pwd == NULL)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  ако (!print_group (rgid, use_names))
     ok = false;
 
-  if (egid != rgid)
+  ако (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      ако (!print_group (egid, use_names))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    цяло n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    ако (n_groups < 0)
       {
-        if (username)
+        ако (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        иначе
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        върни false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    за (цяло i = 0; i < n_groups; i++)
+      ако (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          ако (!print_group (groups[i], use_names))
             ok = false;
         }
     free (groups);
   }
-  return ok;
+  върни ok;
 }
 
 /* Print the name or value of group ID GID. */
@@ -93,17 +93,17 @@ print_group (gid_t gid, bool use_name)
   struct group *grp = NULL;
   bool ok = true;
 
-  if (use_name)
+  ако (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      ако (grp == NULL)
         {
-          if (TYPE_SIGNED (gid_t))
+          ако (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          иначе
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
+  ако (grp)
     printf ("%s", grp->gr_name);
-  else
+  иначе
     printf ("%ju", (uintmax_t) gid);
-  return ok;
+  върни ok;
 }

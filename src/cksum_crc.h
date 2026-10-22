@@ -22,14 +22,14 @@
 
 extern bool cksum_debug;
 
-extern int
+extern цяло
 crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
 
-extern int
+extern цяло
 crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
 
 extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
+output_crc (char const *file, цяло binary_file, void const *digest, bool raw,
             bool tagged, unsigned char delim, bool args, intmax_t length)
   _GL_ATTRIBUTE_NONNULL ((3));
 

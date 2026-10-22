@@ -93,11 +93,11 @@ static struct option const long_options[] =
   };
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       fputs (_("\
@@ -119,13 +119,13 @@ Determine format of output:\n\
 "));
       oputs (_("\
       --print-ls-colors\n\
-         output fully escaped colors for display\n\
+         output fully escaped colors за display\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-If FILE is specified, read it to determine which colors to use for which\n\
+If FILE is specified, read it to determine which colors to use за which\n\
 file types and extensions.  Otherwise, a precompiled database is used.\n\
 For details on the format of these files, run 'dircolors --print-database'.\n\
 "), stdout);
@@ -144,15 +144,15 @@ guess_shell_syntax (void)
   char *shell;
 
   shell = getenv ("SHELL");
-  if (shell == NULL || *shell == '\0')
-    return SHELL_SYNTAX_UNKNOWN;
+  ако (shell == NULL || *shell == '\0')
+    върни SHELL_SYNTAX_UNKNOWN;
 
   shell = last_component (shell);
 
-  if (streq (shell, "csh") || streq (shell, "tcsh"))
-    return SHELL_SYNTAX_C;
+  ако (streq (shell, "csh") || streq (shell, "tcsh"))
+    върни SHELL_SYNTAX_C;
 
-  return SHELL_SYNTAX_BOURNE;
+  върни SHELL_SYNTAX_BOURNE;
 }
 
 static void
@@ -165,39 +165,39 @@ parse_line (char const *line, char **keyword, char **arg)
   *keyword = NULL;
   *arg = NULL;
 
-  for (p = line; c_isspace (*p); ++p)
+  за (p = line; c_isspace (*p); ++p)
     continue;
 
   /* Ignore blank lines and shell-style comments.  */
-  if (*p == '\0' || *p == '#')
-    return;
+  ако (*p == '\0' || *p == '#')
+    върни;
 
   keyword_start = p;
 
-  while (!c_isspace (*p) && *p != '\0')
+  докато (!c_isspace (*p) && *p != '\0')
     {
       ++p;
     }
 
   *keyword = ximemdup0 (keyword_start, p - keyword_start);
-  if (*p  == '\0')
-    return;
+  ако (*p  == '\0')
+    върни;
 
   do
     {
       ++p;
     }
-  while (c_isspace (*p));
+  докато (c_isspace (*p));
 
-  if (*p == '\0' || *p == '#')
-    return;
+  ако (*p == '\0' || *p == '#')
+    върни;
 
   arg_start = p;
 
-  while (*p != '\0' && *p != '#')
+  докато (*p != '\0' && *p != '#')
     ++p;
 
-  for (--p; c_isspace (*p); --p)
+  за (--p; c_isspace (*p); --p)
     continue;
   ++p;
 
@@ -212,9 +212,9 @@ append_quoted (char const *str)
 {
   bool need_backslash = true;
 
-  while (*str != '\0')
+  докато (*str != '\0')
     {
-      if (! print_ls_colors)
+      ако (! print_ls_colors)
         switch (*str)
           {
           case '\'':
@@ -231,7 +231,7 @@ append_quoted (char const *str)
 
           case ':':
           case '=':
-            if (need_backslash)
+            ако (need_backslash)
               APPEND_CHAR ('\\');
             FALLTHROUGH;
 
@@ -251,18 +251,18 @@ append_quoted (char const *str)
 static void
 append_entry (char prefix, char const *item, char const *arg)
 {
-  if (print_ls_colors)
+  ако (print_ls_colors)
     {
       append_quoted ("\x1B[");
       append_quoted (arg);
       APPEND_CHAR ('m');
     }
-  if (prefix)
+  ако (prefix)
     APPEND_CHAR (prefix);
   append_quoted (item);
   APPEND_CHAR (print_ls_colors ? '\t' : '=');
   append_quoted (arg);
-  if (print_ls_colors)
+  ако (print_ls_colors)
     append_quoted ("\x1B[0m");
   APPEND_CHAR (print_ls_colors ? '\n' : ':');
 }
@@ -291,26 +291,26 @@ dc_parse_stream (FILE *fp, char const *filename)
 
   /* Get terminal type */
   term = getenv ("TERM");
-  if (term == NULL || *term == '\0')
+  ако (term == NULL || *term == '\0')
     term = "none";
 
   /* Also match $COLORTERM.  */
   colorterm = getenv ("COLORTERM");
-  if (colorterm == NULL)
+  ако (colorterm == NULL)
     colorterm = "";  /* Doesn't match default "?*"  */
 
-  while (true)
+  докато (true)
     {
       char *keywd, *arg;
       bool unrecognized;
 
       ++line_number;
 
-      if (fp)
+      ако (fp)
         {
-          if (getline (&input_line, &input_line_size, fp) <= 0)
+          ако (getline (&input_line, &input_line_size, fp) <= 0)
             {
-              if (ferror (fp))
+              ако (ferror (fp))
                 {
                   error (0, errno, _("%s: read error"), quotef (filename));
                   ok = false;
@@ -320,9 +320,9 @@ dc_parse_stream (FILE *fp, char const *filename)
             }
           line = input_line;
         }
-      else
+      иначе
         {
-          if (next_G_line == G_line + sizeof G_line)
+          ако (next_G_line == G_line + sizeof G_line)
             break;
           line = next_G_line;
           next_G_line += strlen (next_G_line) + 1;
@@ -330,10 +330,10 @@ dc_parse_stream (FILE *fp, char const *filename)
 
       parse_line (line, &keywd, &arg);
 
-      if (keywd == NULL)
+      ако (keywd == NULL)
         continue;
 
-      if (arg == NULL)
+      ако (arg == NULL)
         {
           error (0, 0, _("%s:%td: invalid line;  missing second token"),
                  quotef (filename), line_number);
@@ -343,52 +343,52 @@ dc_parse_stream (FILE *fp, char const *filename)
         }
 
       unrecognized = false;
-      if (c_strcasecmp (keywd, "TERM") == 0)
+      ако (c_strcasecmp (keywd, "TERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          ако (state != ST_TERMSURE)
             state = fnmatch (arg, term, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else if (c_strcasecmp (keywd, "COLORTERM") == 0)
+      иначе ако (c_strcasecmp (keywd, "COLORTERM") == 0)
         {
-          if (state != ST_TERMSURE)
+          ако (state != ST_TERMSURE)
             state = fnmatch (arg, colorterm, 0) == 0 ? ST_TERMSURE : ST_TERMNO;
         }
-      else
+      иначе
         {
-          if (state == ST_TERMSURE)
+          ако (state == ST_TERMSURE)
             state = ST_TERMYES;  /* Another {COLOR,}TERM can cancel.  */
 
-          if (state != ST_TERMNO)
+          ако (state != ST_TERMNO)
             {
-              if (keywd[0] == '.')
+              ако (keywd[0] == '.')
                 append_entry ('*', keywd, arg);
-              else if (keywd[0] == '*')
+              иначе ако (keywd[0] == '*')
                 append_entry (0, keywd, arg);
-              else if (c_strcasecmp (keywd, "OPTIONS") == 0
+              иначе ако (c_strcasecmp (keywd, "OPTIONS") == 0
                        || c_strcasecmp (keywd, "COLOR") == 0
                        || c_strcasecmp (keywd, "EIGHTBIT") == 0)
                 {
                   /* Ignore.  */
                 }
-              else
+              иначе
                 {
-                  int i;
+                  цяло i;
 
-                  for (i = 0; slack_codes[i] != NULL; ++i)
-                    if (c_strcasecmp (keywd, slack_codes[i]) == 0)
+                  за (i = 0; slack_codes[i] != NULL; ++i)
+                    ако (c_strcasecmp (keywd, slack_codes[i]) == 0)
                       break;
 
-                  if (slack_codes[i] != NULL)
+                  ако (slack_codes[i] != NULL)
                     append_entry (0, ls_codes[i], arg);
-                  else
+                  иначе
                     unrecognized = true;
                 }
             }
-          else
+          иначе
             unrecognized = true;
         }
 
-      if (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
+      ако (unrecognized && (state == ST_TERMSURE || state == ST_TERMYES))
         {
           error (0, 0, _("%s:%td: unrecognized keyword %s"),
                  (filename ? quotef (filename) : _("<internal>")),
@@ -400,7 +400,7 @@ dc_parse_stream (FILE *fp, char const *filename)
       free (arg);
     }
 
-  return ok;
+  върни ok;
 }
 
 static bool
@@ -408,28 +408,28 @@ dc_parse_file (char const *filename)
 {
   bool ok;
 
-  if (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
+  ако (! streq (filename, "-") && freopen (filename, "r", stdin) == NULL)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      върни false;
     }
 
   ok = dc_parse_stream (stdin, filename);
 
-  if (fclose (stdin) != 0)
+  ако (fclose (stdin) != 0)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      върни false;
     }
 
-  return ok;
+  върни ok;
 }
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
   bool ok = true;
-  int optc;
+  цяло optc;
   enum Shell_syntax syntax = SHELL_SYNTAX_UNKNOWN;
   bool print_database = false;
 
@@ -441,7 +441,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
+  докато ((optc = getopt_long (argc, argv, "bcp", long_options, NULL)) != -1)
     switch (optc)
       {
       case 'b':	/* Bourne shell syntax.  */
@@ -473,7 +473,7 @@ main (int argc, char **argv)
 
   /* It doesn't make sense to use --print with either of
      --bourne or --c-shell.  */
-  if ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
+  ако ((print_database | print_ls_colors) && syntax != SHELL_SYNTAX_UNKNOWN)
     {
       error (0, 0,
              _("the options to output non shell syntax,\n"
@@ -481,7 +481,7 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if (print_database && print_ls_colors)
+  ако (print_database && print_ls_colors)
     {
       error (0, 0,
              _("options --print-database and --print-ls-colors "
@@ -489,68 +489,68 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  if ((!print_database) < argc)
+  ако ((!print_database) < argc)
     {
       error (0, 0, _("extra operand %s"),
              quote (argv[!print_database]));
-      if (print_database)
+      ако (print_database)
         fprintf (stderr, "%s\n",
                  _("file operands cannot be combined with "
                    "--print-database (-p)"));
       usage (EXIT_FAILURE);
     }
 
-  if (print_database)
+  ако (print_database)
     {
       char const *p = G_line;
-      while (p - G_line < sizeof G_line)
+      докато (p - G_line < sizeof G_line)
         {
           puts (p);
           p += strlen (p) + 1;
         }
     }
-  else
+  иначе
     {
       /* If shell syntax was not explicitly specified, try to guess it. */
-      if (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
+      ако (syntax == SHELL_SYNTAX_UNKNOWN && ! print_ls_colors)
         {
           syntax = guess_shell_syntax ();
-          if (syntax == SHELL_SYNTAX_UNKNOWN)
+          ако (syntax == SHELL_SYNTAX_UNKNOWN)
             error (EXIT_FAILURE, 0,
                    _("no SHELL environment variable,"
                      " and no shell type option given"));
         }
 
       obstack_init (&lsc_obstack);
-      if (argc == 0)
+      ако (argc == 0)
         ok = dc_parse_stream (NULL, NULL);
-      else
+      иначе
         ok = dc_parse_file (argv[0]);
 
-      if (ok)
+      ако (ok)
         {
           size_t len = obstack_object_size (&lsc_obstack);
           char *s = obstack_finish (&lsc_obstack);
           char const *prefix;
           char const *suffix;
 
-          if (syntax == SHELL_SYNTAX_BOURNE)
+          ако (syntax == SHELL_SYNTAX_BOURNE)
             {
               prefix = "LS_COLORS='";
               suffix = "';\nexport LS_COLORS\n";
             }
-          else
+          иначе
             {
               prefix = "setenv LS_COLORS '";
               suffix = "'\n";
             }
-          if (! print_ls_colors)
+          ако (! print_ls_colors)
             fputs (prefix, stdout);
           fwrite (s, 1, len, stdout);
-          if (! print_ls_colors)
+          ако (! print_ls_colors)
             fputs (suffix, stdout);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  върни ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

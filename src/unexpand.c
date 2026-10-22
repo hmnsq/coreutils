@@ -70,11 +70,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -121,8 +121,8 @@ unexpand (void)
      stored, not merely counted.  */
   char *pending_blank;
 
-  if (!fp)
-    return;
+  ако (!fp)
+    върни;
 
   static char line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
@@ -133,7 +133,7 @@ unexpand (void)
      allocate MAX_COLUMN_WIDTH bytes to store the blanks.  */
   pending_blank = xinmalloc (max_column_width, MB_CUR_MAX);
 
-  while (true)
+  докато (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -170,43 +170,43 @@ unexpand (void)
 
       do
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          докато ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
             mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
 
-          if (convert)
+          ако (convert)
             {
               bool blank = c32issep (g.ch);
 
-              if (blank)
+              ако (blank)
                 {
                   bool last_tab;
 
                   next_tab_column = get_next_tab_column (column, &tab_index,
                                                          &last_tab);
 
-                  if (last_tab)
+                  ако (last_tab)
                     convert = false;
 
-                  if (convert)
+                  ако (convert)
                     {
-                      if (g.ch == '\t')
+                      ако (g.ch == '\t')
                         {
                           column = next_tab_column;
 
-                          if (pending)
+                          ако (pending)
                             pending_blank[0] = '\t';
                         }
-                      else
+                      иначе
                         {
-                          int width = c32width (g.ch);
+                          цяло width = c32width (g.ch);
                           column += width < 0 ? 1 : width;
 
-                          if (! (prev_blank && column >= next_tab_column))
+                          ако (! (prev_blank && column >= next_tab_column))
                             {
                               /* It is not yet known whether the pending blanks
                                  will be replaced by tabs.  */
-                              if (column == next_tab_column)
+                              ако (column == next_tab_column)
                                 one_blank_before_tab_stop = true;
                               memcpy (pending_blank + pending,
                                       mbbuf_char_offset (&mbbuf, g), g.len);
@@ -217,7 +217,7 @@ unexpand (void)
 
                           /* Replace the pending blanks by a tab or two.  */
                           g.len = 0;
-                          if (putc ('\t', stdout) < 0)
+                          ако (putc ('\t', stdout) < 0)
                             write_error ();
                           pending_blank[0] = '\t';
                         }
@@ -227,7 +227,7 @@ unexpand (void)
                       pending = one_blank_before_tab_stop;
                     }
                 }
-              else if (g.ch == '\b')
+              иначе ако (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
@@ -235,18 +235,18 @@ unexpand (void)
                   next_tab_column = column;
                   tab_index -= !!tab_index;
                 }
-              else
+              иначе
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  цяло width = c32width (g.ch);
+                  ако (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
-              if (pending)
+              ако (pending)
                 {
-                  if (pending > 1 && one_blank_before_tab_stop)
+                  ако (pending > 1 && one_blank_before_tab_stop)
                     pending_blank[0] = '\t';
-                  if (fwrite (pending_blank, 1, pending, stdout) != pending)
+                  ако (fwrite (pending_blank, 1, pending, stdout) != pending)
                     write_error ();
                   pending = 0;
                   one_blank_before_tab_stop = false;
@@ -256,26 +256,26 @@ unexpand (void)
               convert &= convert_entire_line || blank;
             }
 
-          if (g.ch == MBBUF_EOF)
+          ако (g.ch == MBBUF_EOF)
             {
               free (pending_blank);
-              return;
+              върни;
             }
 
           fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          ако (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      докато (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
   bool have_tabval = false;
   colno tabval IF_LINT ( = 0);
-  int c;
+  цяло c;
 
   /* If true, cancel the effect of any -a (explicit or implicit in -t),
      so that only leading blanks will be considered.  */
@@ -289,7 +289,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
+  докато ((c = getopt_long (argc, argv, ",0123456789at:", longopts, NULL))
          != -1)
     {
       switch (c)
@@ -307,28 +307,28 @@ main (int argc, char **argv)
           convert_first_only = true;
           break;
         case ',':
-          if (have_tabval)
+          ако (have_tabval)
             add_tab_stop (tabval);
           have_tabval = false;
           break;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
-          if (!have_tabval)
+          ако (!have_tabval)
             {
               tabval = 0;
               have_tabval = true;
             }
-          if (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
+          ако (!DECIMAL_DIGIT_ACCUMULATE (tabval, c - '0'))
             error (EXIT_FAILURE, 0, _("tab stop is too large"));
           break;
         }
     }
 
-  if (convert_first_only)
+  ако (convert_first_only)
     convert_entire_line = false;
 
-  if (have_tabval)
+  ако (have_tabval)
     add_tab_stop (tabval);
 
   finalize_tab_stops ();
@@ -339,5 +339,5 @@ main (int argc, char **argv)
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  върни exit_status;
 }

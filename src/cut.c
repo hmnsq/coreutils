@@ -54,7 +54,7 @@
       error (0, 0, (Message));						\
       usage (EXIT_FAILURE);						\
     }									\
-  while (0)
+  докато (0)
 
 /* Above this function call overhead becomes less of a concern.
    At this and below we avoid fwrite(), memchr() etc.  */
@@ -173,11 +173,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s OPTION... [FILE]...\n\
@@ -204,7 +204,7 @@ Print selected parts of lines from each FILE to standard output.\n\
 "));
       oputs (_("\
   -d, --delimiter=DELIM\n\
-         use DELIM instead of TAB for field delimiter\n\
+         use DELIM instead of TAB за field delimiter\n\
 "));
       oputs (_("\
   -f, --fields=LIST\n\
@@ -266,7 +266,7 @@ static inline void
 next_item (uintmax_t *item_idx)
 {
   (*item_idx)++;
-  if ((*item_idx) > current_rp->hi)
+  ако ((*item_idx) > current_rp->hi)
     current_rp++;
 }
 
@@ -275,7 +275,7 @@ next_item (uintmax_t *item_idx)
 static inline bool
 print_kth (uintmax_t k)
 {
-  return current_rp->lo <= k;
+  върни current_rp->lo <= k;
 }
 
 /* Return nonzero if K'th byte is the beginning of a range.  */
@@ -283,13 +283,13 @@ print_kth (uintmax_t k)
 static inline bool
 is_range_start_index (uintmax_t k)
 {
-  return k == current_rp->lo;
+  върни k == current_rp->lo;
 }
 
 static inline bool
 field_delim_is_line_delim (void)
 {
-  return delim_mcel.len == 1 && delim_bytes[0] == line_delim;
+  върни delim_mcel.len == 1 && delim_bytes[0] == line_delim;
 }
 
 /* This is equivalent to but faster than calling c32issep directly.
@@ -298,7 +298,7 @@ field_delim_is_line_delim (void)
 static bool
 mcel_isblank (mcel_t g)
 {
-  return (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
+  върни (g.len == 1 && c_isblank (g.ch)) || (g.len > 1 && c32issep (g.ch));
 }
 
 /* Return TRUE if it's valid to do a simple byte search
@@ -309,7 +309,7 @@ bytesearch_field_delim_ok (void)
 {
   unsigned char delim_0 = delim_bytes[0];
 
-  return (delim_mcel.len == 1
+  върни (delim_mcel.len == 1
           ? (MB_CUR_MAX <= 1
              || (is_utf8_charset ()
                  ? (delim_0 < 0x80 || delim_0 > 0xF4) : delim_0 < 0x30))
@@ -360,12 +360,12 @@ struct mbfield_parser
 static inline mcel_t
 mbbuf_get_saved_char (mbbuf_t *mbbuf, bool *have_saved, mcel_t *saved_g)
 {
-  if (*have_saved)
+  ако (*have_saved)
     {
       *have_saved = false;
-      return *saved_g;
+      върни *saved_g;
     }
-  return mbbuf_get_char (mbbuf);
+  върни mbbuf_get_char (mbbuf);
 }
 
 static inline enum field_terminator
@@ -378,22 +378,22 @@ skip_whitespace_run (mbbuf_t *mbuf, struct mbfield_parser *parser,
   do
     {
       g = mbbuf_get_char (mbuf);
-      if (g.ch != MBBUF_EOF)
+      ако (g.ch != MBBUF_EOF)
         *have_pending_line = true;
     }
-  while (g.ch != MBBUF_EOF && g.ch != line_delim && mcel_isblank (g));
+  докато (g.ch != MBBUF_EOF && g.ch != line_delim && mcel_isblank (g));
 
   bool trim_start = parser->trim_outer_whitespace && parser->at_line_start;
 
-  if (parser->trim_outer_whitespace
+  ако (parser->trim_outer_whitespace
       && (g.ch == MBBUF_EOF || g.ch == line_delim))
     {
-      return g.ch == MBBUF_EOF ? FIELD_EOF : FIELD_LINE_DELIMITER;
+      върни g.ch == MBBUF_EOF ? FIELD_EOF : FIELD_LINE_DELIMITER;
     }
 
   parser->saved_g = g;
   parser->have_saved = true;
-  return trim_start && !have_initial_whitespace ? FIELD_DATA : FIELD_DELIMITER;
+  върни trim_start && !have_initial_whitespace ? FIELD_DATA : FIELD_DELIMITER;
 }
 
 /* Like fwrite, but avoid a function call for smaller amounts,
@@ -402,15 +402,15 @@ skip_whitespace_run (mbbuf_t *mbuf, struct mbfield_parser *parser,
 static void
 write_bytes (char const *buf, size_t n_bytes)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  ако (n_bytes <= SMALL_BYTE_THRESHOLD)
     {
-      for (size_t i = 0; i < n_bytes; i++)
-        if (putchar (buf[i]) < 0)
+      за (size_t i = 0; i < n_bytes; i++)
+        ако (putchar (buf[i]) < 0)
           write_error ();
-      return;
+      върни;
     }
 
-  if (fwrite (buf, sizeof (char), n_bytes, stdout) != n_bytes)
+  ако (fwrite (buf, sizeof (char), n_bytes, stdout) != n_bytes)
     write_error ();
 }
 
@@ -419,11 +419,11 @@ write_bytes (char const *buf, size_t n_bytes)
 static inline void
 copy_bytes (char *dst, char const *src, size_t n_bytes)
 {
-  if (n_bytes <= SMALL_BYTE_THRESHOLD)
+  ако (n_bytes <= SMALL_BYTE_THRESHOLD)
     {
-      for (size_t i = 0; i < n_bytes; i++)
+      за (size_t i = 0; i < n_bytes; i++)
         dst[i] = src[i];
-      return;
+      върни;
     }
 
   memcpy (dst, src, n_bytes);
@@ -432,20 +432,20 @@ copy_bytes (char *dst, char const *src, size_t n_bytes)
 /* Like memchr, but avoid a function call for smaller amounts.  */
 
 static inline void*
-search_bytes (char const *buf, int c, size_t n_bytes)
+search_bytes (char const *buf, цяло c, size_t n_bytes)
 {
-  if (n_bytes != 0 && to_uchar (buf[0]) == c)
-    return (char *) buf;
-  if (1 < n_bytes && to_uchar (buf[1]) == c)
-    return (char *) buf + 1;
+  ако (n_bytes != 0 && to_uchar (buf[0]) == c)
+    върни (char *) buf;
+  ако (1 < n_bytes && to_uchar (buf[1]) == c)
+    върни (char *) buf + 1;
 
-  return 2 < n_bytes ? (char *) memchr (buf + 2, c, n_bytes - 2) : NULL;
+  върни 2 < n_bytes ? (char *) memchr (buf + 2, c, n_bytes - 2) : NULL;
 }
 
 static inline void
 write_line_delim (void)
 {
-  if (putchar (line_delim) < 0)
+  ако (putchar (line_delim) < 0)
     write_error ();
 }
 
@@ -461,7 +461,7 @@ reset_item_line (uintmax_t *item_idx, bool *print_delimiter)
 static inline void
 write_pending_line_delim (uintmax_t item_idx)
 {
-  if (item_idx > 0)
+  ако (item_idx > 0)
     write_line_delim ();
 }
 
@@ -469,9 +469,9 @@ static inline void
 write_selected_item (bool *print_delimiter, bool range_start,
                      char const *buf, size_t n_bytes)
 {
-  if (output_delimiter_string != output_delimiter_default)
+  ако (output_delimiter_string != output_delimiter_default)
     {
-      if (*print_delimiter && range_start)
+      ако (*print_delimiter && range_start)
         write_bytes (output_delimiter_string, output_delimiter_length);
       *print_delimiter = true;
     }
@@ -482,7 +482,7 @@ write_selected_item (bool *print_delimiter, bool range_start,
 static inline void
 append_field_1_chunk (char const *buf, idx_t len, idx_t *n_bytes)
 {
-  if (field_1_bufsize - *n_bytes < len)
+  ако (field_1_bufsize - *n_bytes < len)
     {
       field_1_buffer = xpalloc (field_1_buffer, &field_1_bufsize,
                                 len, -1, sizeof *field_1_buffer);
@@ -503,34 +503,34 @@ scan_mb_blank_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
                      bool *have_pending_line, bool write_field,
                      idx_t *n_bytes)
 {
-  if (parser->trim_outer_whitespace && parser->at_line_start)
+  ако (parser->trim_outer_whitespace && parser->at_line_start)
     {
       enum field_terminator terminator
         = skip_whitespace_run (mbbuf, parser, have_pending_line, false);
-      if (terminator != FIELD_DATA)
-        return terminator;
+      ако (terminator != FIELD_DATA)
+        върни terminator;
     }
 
   parser->at_line_start = false;
 
-  while (true)
+  докато (true)
     {
       mcel_t g = mbbuf_get_saved_char (mbbuf, &parser->have_saved,
                                       &parser->saved_g);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      ако (g.ch == MBBUF_EOF)
+        върни FIELD_EOF;
 
       *have_pending_line = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      ако (g.ch == line_delim)
+        върни FIELD_LINE_DELIMITER;
 
-      if (mcel_isblank (g))
-        return skip_whitespace_run (mbbuf, parser, have_pending_line, true);
+      ако (mcel_isblank (g))
+        върни skip_whitespace_run (mbbuf, parser, have_pending_line, true);
 
-      if (n_bytes)
+      ако (n_bytes)
         append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
+      иначе ако (write_field)
         write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
     }
 }
@@ -539,23 +539,23 @@ static inline enum field_terminator
 scan_mb_delim_field (mbbuf_t *mbbuf, bool *have_pending_line,
                      bool write_field, idx_t *n_bytes)
 {
-  while (true)
+  докато (true)
     {
       mcel_t g = mbbuf_get_char (mbbuf);
-      if (g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      ако (g.ch == MBBUF_EOF)
+        върни FIELD_EOF;
 
       *have_pending_line = true;
 
-      if (g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      ако (g.ch == line_delim)
+        върни FIELD_LINE_DELIMITER;
 
-      if (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
-        return FIELD_DELIMITER;
+      ако (delim_mcel.err ? g.err == delim_mcel.err : mcel_eq (g, delim_mcel))
+        върни FIELD_DELIMITER;
 
-      if (n_bytes)
+      ако (n_bytes)
         append_field_1_bytes (mbbuf, g, n_bytes);
-      else if (write_field)
+      иначе ако (write_field)
         write_bytes (mbbuf_char_offset (mbbuf, g), g.len);
     }
 }
@@ -564,7 +564,7 @@ static inline enum field_terminator
 scan_mb_field (mbbuf_t *mbbuf, struct mbfield_parser *parser,
                bool *have_pending_line, bool write_field, idx_t *n_bytes)
 {
-  return (parser->whitespace_delimited
+  върни (parser->whitespace_delimited
           ? scan_mb_blank_field (mbbuf, parser, have_pending_line,
                                  write_field, n_bytes)
           : scan_mb_delim_field (mbbuf, have_pending_line, write_field,
@@ -578,22 +578,22 @@ static enum field_terminator
 scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
                   bool *have_pending_line)
 {
-  if (parser->have_saved)
+  ако (parser->have_saved)
     {
       parser->have_saved = false;
-      if (parser->saved_g.ch == MBBUF_EOF)
-        return FIELD_EOF;
+      ако (parser->saved_g.ch == MBBUF_EOF)
+        върни FIELD_EOF;
 
       *have_pending_line = true;
-      if (parser->saved_g.ch == line_delim)
-        return FIELD_LINE_DELIMITER;
+      ако (parser->saved_g.ch == line_delim)
+        върни FIELD_LINE_DELIMITER;
     }
 
-  while (true)
+  докато (true)
     {
       idx_t available = mbbuf_topup (mbbuf);
-      if (available == 0)
-        return FIELD_EOF;
+      ако (available == 0)
+        върни FIELD_EOF;
 
       char *buffer = mbbuf->buffer + mbbuf->offset;
       char *line_end = search_bytes (buffer, line_delim, available);
@@ -601,8 +601,8 @@ scan_mb_line_end (mbbuf_t *mbbuf, struct mbfield_parser *parser,
       mbbuf_advance (mbbuf, n);
       *have_pending_line = true;
 
-      if (line_end)
-        return FIELD_LINE_DELIMITER;
+      ако (line_end)
+        върни FIELD_LINE_DELIMITER;
     }
 }
 
@@ -615,14 +615,14 @@ ATTRIBUTE_PURE
 static char *
 find_field_delim (char *buf, size_t len)
 {
-  if (len < delim_mcel.len)
-    return NULL;
+  ако (len < delim_mcel.len)
+    върни NULL;
 
-#if ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
-  return memmem (buf, len, delim_bytes, delim_mcel.len);
-#else
-  if (delim_mcel.len == 1)
-    return memchr (buf, delim_bytes[0], len);
+#ако ! __GLIBC__  /* Only S390 has optimized memmem on glibc-2.42  */
+  върни memmem (buf, len, delim_bytes, delim_mcel.len);
+#иначе
+  ако (delim_mcel.len == 1)
+    върни memchr (buf, delim_bytes[0], len);
 
   char const *p = buf;
   char const *end = buf + len;
@@ -630,23 +630,23 @@ find_field_delim (char *buf, size_t len)
   char saved = buf[len];
   buf[len] = '\0'; /* for strstr.  */
 
-  while (p < end)
+  докато (p < end)
     {
       char const *nul = memchr (p, '\0', end - p);
-      if (!nul)
+      ако (!nul)
         {
           char const *match = strstr (p, delim_bytes);
           buf[len] = saved;
-          return (char *) match;
+          върни (char *) match;
         }
 
-      if (p < nul)
+      ако (p < nul)
         {
           char const *match = strstr (p, delim_bytes);
-          if (match)
+          ако (match)
             {
               buf[len] = saved;
-              return (char *) match;
+              върни (char *) match;
             }
         }
 
@@ -654,7 +654,7 @@ find_field_delim (char *buf, size_t len)
     }
 
   buf[len] = saved;
-  return NULL;
+  върни NULL;
 #endif
 }
 
@@ -668,11 +668,11 @@ find_c_blank (char *buf, size_t len)
 {
   /* Avoid memchr2 setup for short fields.  */
   idx_t n = MIN (len, 16);
-  for (idx_t i = 0; i < n; i++)
-    if (c_isblank (buf[i]))
-      return buf + i;
+  за (idx_t i = 0; i < n; i++)
+    ако (c_isblank (buf[i]))
+      върни buf + i;
 
-  return memchr2 (buf + n, ' ', '\t', len - n);
+  върни memchr2 (buf + n, ' ', '\t', len - n);
 }
 
 /* Return the number of trailing bytes in BUF that could be the initial
@@ -684,14 +684,14 @@ field_delim_overlap (char const *buf, idx_t len)
 {
   idx_t overlap = MIN (len, delim_mcel.len - 1);
 
-  while (0 < overlap)
+  докато (0 < overlap)
     {
-      if (memeq (buf + len - overlap, delim_bytes, overlap))
-        return overlap;
+      ако (memeq (buf + len - overlap, delim_bytes, overlap))
+        върни overlap;
       overlap--;
     }
 
-  return 0;
+  върни 0;
 }
 
 /* Byte search for line end or delimiter in BUF,
@@ -701,25 +701,25 @@ static inline enum field_terminator
 find_field_terminator (char *buf, idx_t len,
                        struct bytesearch_context *ctx, char **terminator)
 {
-  if (ctx->mode == BYTESEARCH_LINE_ONLY)
+  ако (ctx->mode == BYTESEARCH_LINE_ONLY)
     {
-      if (!ctx->line_end_known)
+      ако (!ctx->line_end_known)
         {
           ctx->line_end = memchr (buf, line_delim, len);
           ctx->line_end_known = true;
         }
 
       *terminator = ctx->line_end;
-      return *terminator ? FIELD_LINE_DELIMITER : FIELD_DATA;
+      върни *terminator ? FIELD_LINE_DELIMITER : FIELD_DATA;
     }
 
-  if (field_delim_is_line_delim ())
+  ако (field_delim_is_line_delim ())
     {
       *terminator = memchr (buf, line_delim, len);
-      return *terminator ? FIELD_DELIMITER : FIELD_DATA;
+      върни *terminator ? FIELD_DELIMITER : FIELD_DATA;
     }
 
-  if (!ctx->line_end_known)
+  ако (!ctx->line_end_known)
     {
       ctx->line_end = memchr (buf, line_delim, len);
       ctx->line_end_known = true;
@@ -731,14 +731,14 @@ find_field_terminator (char *buf, idx_t len,
                      ? find_c_blank (buf, field_len)
                      : find_field_delim (buf, field_len));
 
-  if (field_end)
+  ако (field_end)
     {
       *terminator = field_end;
-      return FIELD_DELIMITER;
+      върни FIELD_DELIMITER;
     }
 
   *terminator = ctx->line_end;
-  return ctx->line_end ? FIELD_LINE_DELIMITER : FIELD_DATA;
+  върни ctx->line_end ? FIELD_LINE_DELIMITER : FIELD_DATA;
 }
 
 /* Write the end-of-line delimiter if appropriate for the current line.  */
@@ -746,7 +746,7 @@ find_field_terminator (char *buf, idx_t len,
 static inline void
 maybe_write_line_delim (bool found_any_selected_field, uintmax_t field_idx)
 {
-  if (found_any_selected_field
+  ако (found_any_selected_field
       || !(suppress_non_delimited && field_idx == 1))
     write_line_delim ();
 }
@@ -760,14 +760,14 @@ begin_field_output (uintmax_t field_idx, bool buffer_first_field,
 {
   bool write_field = print_kth (field_idx);
 
-  if (write_field && ! (field_idx == 1 && buffer_first_field))
+  ако (write_field && ! (field_idx == 1 && buffer_first_field))
     {
-      if (*found_any_selected_field)
+      ако (*found_any_selected_field)
         write_bytes (output_delimiter_string, output_delimiter_length);
       *found_any_selected_field = true;
     }
 
-  return write_field;
+  върни write_field;
 }
 
 static inline bool
@@ -776,14 +776,14 @@ handle_field_1 (uintmax_t field_idx, bool buffer_first_field,
 {
   bool field_1_selected = false;
 
-  if (field_idx == 1 && buffer_first_field)
+  ако (field_idx == 1 && buffer_first_field)
     {
-      if ((field_1_selected = print_kth (1)))
+      ако ((field_1_selected = print_kth (1)))
         write_bytes (field_1_buffer, *field_1_n_bytes);
       *field_1_n_bytes = 0;
     }
 
-  return field_1_selected;
+  върни field_1_selected;
 }
 
 static inline void
@@ -791,7 +791,7 @@ handle_field_delimiter (uintmax_t *field_idx, bool buffer_first_field,
                         idx_t *field_1_n_bytes,
                         bool *found_any_selected_field, bool *write_field)
 {
-  if (handle_field_1 (*field_idx, buffer_first_field, field_1_n_bytes))
+  ако (handle_field_1 (*field_idx, buffer_first_field, field_1_n_bytes))
     *found_any_selected_field = true;
 
   next_item (field_idx);
@@ -802,7 +802,7 @@ handle_field_delimiter (uintmax_t *field_idx, bool buffer_first_field,
 static inline bool
 field_selection_exhausted (uintmax_t field_idx)
 {
-  return !print_kth (field_idx) && current_rp->lo == UINTMAX_MAX;
+  върни !print_kth (field_idx) && current_rp->lo == UINTMAX_MAX;
 }
 
 static inline void
@@ -810,9 +810,9 @@ finish_current_line (uintmax_t field_idx, bool buffer_first_field,
                      idx_t *field_1_n_bytes,
                      bool found_any_selected_field, bool line_terminated)
 {
-  if (field_idx == 1 && buffer_first_field)
+  ако (field_idx == 1 && buffer_first_field)
     {
-      if (!suppress_non_delimited
+      ако (!suppress_non_delimited
           && (line_terminated || *field_1_n_bytes != 0))
         {
           write_bytes (field_1_buffer, *field_1_n_bytes);
@@ -820,14 +820,14 @@ finish_current_line (uintmax_t field_idx, bool buffer_first_field,
         }
       *field_1_n_bytes = 0;
     }
-  else
+  иначе
     maybe_write_line_delim (found_any_selected_field, field_idx);
 }
 
 static inline void
 sync_byte_selection (uintmax_t byte_idx)
 {
-  while (current_rp->hi <= byte_idx)
+  докато (current_rp->hi <= byte_idx)
     current_rp++;
 }
 
@@ -853,16 +853,16 @@ cut_bytes (FILE *stream)
   static char bytes_in[IO_BUFSIZE];
   uintmax_t byte_idx = 0;
   bool print_delimiter = false;
-  int fd = fileno (stream);
+  цяло fd = fileno (stream);
 
   current_rp = frp;
 
-  while (true)
+  докато (true)
     {
       idx_t available = read (fd, bytes_in, sizeof bytes_in);
-      if (available <= 0)
+      ако (available <= 0)
         {
-          if (available < 0)
+          ако (available < 0)
             fseterr (stream);
           write_pending_line_delim (byte_idx);
           break;
@@ -870,7 +870,7 @@ cut_bytes (FILE *stream)
 
       idx_t processed = 0;
 
-      while (processed < available)
+      докато (processed < available)
         {
           char *line = bytes_in + processed;
           idx_t to_process = available - processed;
@@ -878,17 +878,17 @@ cut_bytes (FILE *stream)
           char *end = line + (line_end ? line_end - line : to_process);
           char *p = line;
 
-          while (0 < end - p)
+          докато (0 < end - p)
             {
               sync_byte_selection (byte_idx);
 
-              if (byte_idx + 1 < current_rp->lo)
+              ако (byte_idx + 1 < current_rp->lo)
                 {
                   idx_t skip = MIN (end - p, current_rp->lo - (byte_idx + 1));
                   p += skip;
                   byte_idx += skip;
                 }
-              else
+              иначе
                 {
                   idx_t n = MIN (end - p, current_rp->hi - byte_idx);
                   write_selected_item (&print_delimiter,
@@ -900,7 +900,7 @@ cut_bytes (FILE *stream)
             }
 
           processed += end - line;
-          if (line_end)
+          ако (line_end)
             {
               processed++;
               reset_item_line (&byte_idx, &print_delimiter);
@@ -924,26 +924,26 @@ cut_characters_mode (FILE *stream, bool byte_mode)
   current_rp = frp;
   mbbuf_init (&mbbuf, bytes_in, sizeof bytes_in, stream);
 
-  while (true)
+  докато (true)
     {
       /* Skip unselected line suffixes without decoding each character.  */
-      if (idx && field_selection_exhausted (idx))
+      ако (idx && field_selection_exhausted (idx))
         {
           idx_t available = mbbuf_topup (&mbbuf);
           char *p = mbbuf.buffer + mbbuf.offset;
           char *end = search_bytes (p, line_delim, available);
           mbbuf_advance (&mbbuf, end ? end - p : available);
-          if (!end && available)
+          ако (!end && available)
             continue;
         }
 
       /* Count unselected ASCII/UTF-8 characters directly, for efficiency.  */
-      if (!byte_mode && utf8 && idx + 1 < current_rp->lo)
+      ако (!byte_mode && utf8 && idx + 1 < current_rp->lo)
         {
           char const *p = mbbuf.buffer + mbbuf.offset;
           idx_t n = MIN (mbbuf_avail (&mbbuf), current_rp->lo - idx - 1);
           char const *end = search_bytes (p, line_delim, n);
-          if (end)
+          ако (end)
             {
               /* Even with ASCII, this cannot reach the next selection.  */
               mbbuf_advance (&mbbuf, end - p + 1);
@@ -957,43 +957,43 @@ cut_characters_mode (FILE *stream, bool byte_mode)
 
       mcel_t g = mbbuf_get_char (&mbbuf);
 
-      if (g.ch == line_delim)
+      ако (g.ch == line_delim)
         reset_item_line (&idx, &print_delimiter);
-      else if (g.ch == MBBUF_EOF)
+      иначе ако (g.ch == MBBUF_EOF)
         {
           write_pending_line_delim (idx);
           break;
         }
-      else if (byte_mode)
+      иначе ако (byte_mode)
         {
           bool first_selected_is_range_start = false;
           bool seen_selected = false;
           bool suffix_selected = true;
 
-          for (idx_t i = 0; i < g.len; i++)
+          за (idx_t i = 0; i < g.len; i++)
             {
               next_item (&idx);
-              if (print_kth (idx))
+              ако (print_kth (idx))
                 {
-                  if (!seen_selected)
+                  ако (!seen_selected)
                     {
                       seen_selected = true;
                       first_selected_is_range_start
                         = is_range_start_index (idx);
                     }
                 }
-              else if (seen_selected)
+              иначе ако (seen_selected)
                 suffix_selected = false;
             }
 
-          if (seen_selected && suffix_selected)
+          ако (seen_selected && suffix_selected)
             write_selected_item (&print_delimiter,first_selected_is_range_start,
                                  mbbuf_char_offset (&mbbuf, g), g.len);
         }
-      else
+      иначе
         {
           next_item (&idx);
-          if (print_kth (idx))
+          ако (print_kth (idx))
             write_selected_item (&print_delimiter,
                                  is_range_start_index (idx),
                                  mbbuf_char_offset (&mbbuf, g), g.len);
@@ -1042,35 +1042,35 @@ cut_fields_mb_any (FILE *stream, bool whitespace_mode)
   write_field = begin_field_output (field_idx, buffer_first_field,
                                     &found_any_selected_field);
 
-  while (true)
+  докато (true)
     {
       enum field_terminator terminator;
-      if (!buffer_first_field || field_idx != 1)
+      ако (!buffer_first_field || field_idx != 1)
         terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
                                     write_field, NULL);
-      else
+      иначе
         terminator = scan_mb_field (&mbbuf, &parser, &have_pending_line,
                                     false, &field_1_n_bytes);
 
-      if (terminator == FIELD_DELIMITER)
+      ако (terminator == FIELD_DELIMITER)
         {
           handle_field_delimiter (&field_idx, buffer_first_field,
                                   &field_1_n_bytes,
                                   &found_any_selected_field, &write_field);
-          if (! field_selection_exhausted (field_idx))
+          ако (! field_selection_exhausted (field_idx))
             continue;
 
           terminator = scan_mb_line_end (&mbbuf, &parser,
                                          &have_pending_line);
         }
 
-      if (terminator == FIELD_EOF && !have_pending_line)
+      ако (terminator == FIELD_EOF && !have_pending_line)
         break;
 
       finish_current_line (field_idx, buffer_first_field,
                            &field_1_n_bytes, found_any_selected_field,
                            terminator == FIELD_LINE_DELIMITER);
-      if (terminator == FIELD_EOF)
+      ако (terminator == FIELD_EOF)
         break;
 
       reset_field_line (&field_idx, &found_any_selected_field,
@@ -1115,40 +1115,40 @@ cut_fields_bytesearch (FILE *stream)
   struct bytesearch_context search = { .blank_delimited = whitespace_delimited};
   bytesearch_context_reset (&search);
 
-  while (true)
+  докато (true)
     {
       idx_t n_avail = mbbuf_topup (&mbbuf);
       search.at_eof = mbbuf.eof;
       search.line_end_known = false;
 
-      if (pending_line_delim_field)
+      ако (pending_line_delim_field)
         {
           pending_line_delim_field = false;
 
-          if (n_avail == 0)
+          ако (n_avail == 0)
             {
-              if (handle_field_1 (field_idx, buffer_first_field,
+              ако (handle_field_1 (field_idx, buffer_first_field,
                                   &field_1_n_bytes))
                 next_item (&field_idx);
               maybe_write_line_delim (found_any_selected_field, field_idx);
-              return;
+              върни;
             }
 
           handle_field_delimiter (&field_idx, buffer_first_field,
                                   &field_1_n_bytes,
                                   &found_any_selected_field, &write_field);
-          if (whitespace_delimited)
+          ако (whitespace_delimited)
             skip_blank_run = true;
         }
 
-      if (n_avail == 0)
+      ако (n_avail == 0)
         break;
 
       char *chunk = mbbuf.buffer + mbbuf.offset;
       idx_t processed = 0;
 
       /* Fast path: no field delimiter in chunk — output or skip lines.  */
-      if (field_idx == 1
+      ако (field_idx == 1
           && (!whitespace_delimited || !field_selection_exhausted (field_idx))
           && !field_delim_is_line_delim ()
           && !(whitespace_delimited
@@ -1158,52 +1158,52 @@ cut_fields_bytesearch (FILE *stream)
           char *last_line_delim = search.at_eof
                                   ? chunk + n_avail - 1
                                   : memrchr (chunk, line_delim, n_avail);
-          if (last_line_delim)
+          ако (last_line_delim)
             {
               idx_t n = last_line_delim - chunk + 1;
-              if (! suppress_non_delimited)
+              ако (! suppress_non_delimited)
                 {
                   write_bytes (field_1_buffer, field_1_n_bytes);
                   write_bytes (chunk, n);
-                  if (search.at_eof && chunk[n - 1] != line_delim)
+                  ако (search.at_eof && chunk[n - 1] != line_delim)
                     write_line_delim ();
                 }
               field_1_n_bytes = 0;
               mbbuf_advance (&mbbuf, n);
               have_pending_line = false;
-              if (search.at_eof)
-                return;
+              ако (search.at_eof)
+                върни;
               continue;
             }
         }
 
-      while (processed < n_avail)
+      докато (processed < n_avail)
         {
           char *terminator = NULL;
 
-          if (skip_blank_run)
+          ако (skip_blank_run)
             {
-              while (processed < n_avail && c_isblank (chunk[processed]))
+              докато (processed < n_avail && c_isblank (chunk[processed]))
                 processed++;
-              if (processed == n_avail)
+              ако (processed == n_avail)
                 break;
               skip_blank_run = false;
             }
 
-          if (field_selection_exhausted (field_idx))
+          ако (field_selection_exhausted (field_idx))
             {
-              if (field_delim_is_line_delim ())
+              ако (field_delim_is_line_delim ())
                 {
                   maybe_write_line_delim (found_any_selected_field,
                                           field_idx);
                   mbbuf_advance (&mbbuf, processed);
-                  return;
+                  върни;
                 }
               search.mode = BYTESEARCH_LINE_ONLY;
               enum field_terminator terminator_kind
                 = find_field_terminator (chunk + processed, n_avail - processed,
                                          &search, &terminator);
-              if (terminator_kind == FIELD_LINE_DELIMITER)
+              ако (terminator_kind == FIELD_LINE_DELIMITER)
                 {
                   processed = terminator - chunk + 1;
                   maybe_write_line_delim (found_any_selected_field,
@@ -1220,29 +1220,29 @@ cut_fields_bytesearch (FILE *stream)
           idx_t field_len = terminator ? terminator - (chunk + processed)
                                        : n_avail - processed;
 
-          if (terminator_kind == FIELD_DATA
+          ако (terminator_kind == FIELD_DATA
               && !search.at_eof
               && !whitespace_delimited
               && !field_delim_is_line_delim ())
             field_len -= field_delim_overlap (chunk + processed, field_len);
 
-          if (field_len || terminator)
+          ако (field_len || terminator)
             have_pending_line = true;
 
           /* Output field content.  */
-          if (field_idx == 1 && buffer_first_field)
+          ако (field_idx == 1 && buffer_first_field)
             append_field_1_chunk (chunk + processed, field_len,
                                   &field_1_n_bytes);
-          else if (write_field)
+          иначе ако (write_field)
             write_bytes (chunk + processed, field_len);
           processed += field_len;
 
-          if (terminator_kind == FIELD_DATA)
+          ако (terminator_kind == FIELD_DATA)
             break;
 
-          if (terminator_kind == FIELD_DELIMITER)
+          ако (terminator_kind == FIELD_DELIMITER)
             {
-              if (field_delim_is_line_delim () && processed + 1 == n_avail)
+              ако (field_delim_is_line_delim () && processed + 1 == n_avail)
                 {
                   processed++;
                   pending_line_delim_field = true;
@@ -1253,10 +1253,10 @@ cut_fields_bytesearch (FILE *stream)
               handle_field_delimiter (&field_idx, buffer_first_field,
                                       &field_1_n_bytes,
                                       &found_any_selected_field, &write_field);
-              if (whitespace_delimited)
+              ако (whitespace_delimited)
                 skip_blank_run = true;
             }
-          else
+          иначе
             {
               affirm (terminator_kind == FIELD_LINE_DELIMITER);
               processed++;
@@ -1278,8 +1278,8 @@ cut_fields_bytesearch (FILE *stream)
       mbbuf_advance (&mbbuf, processed);
     }
 
-  if (!have_pending_line)
-    return;
+  ако (!have_pending_line)
+    върни;
 
   finish_current_line (field_idx, buffer_first_field, &field_1_n_bytes,
                        found_any_selected_field, false);
@@ -1291,9 +1291,9 @@ cut_fields_bytesearch (FILE *stream)
 static void
 cut_fields_ws (FILE *stream)
 {
-  if (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
+  ако (MB_CUR_MAX <= 1 && !trim_outer_whitespace)
     cut_fields_bytesearch (stream);
-  else
+  иначе
     cut_fields_mb_any (stream, true);
 }
 
@@ -1305,19 +1305,19 @@ cut_file (char const *file, void (*cut_stream) (FILE *))
 {
   FILE *stream;
 
-  if (streq (file, "-"))
+  ако (streq (file, "-"))
     {
       have_read_stdin = true;
       stream = stdin;
       assume (stream);  /* Pacify GCC bug#109613.  */
     }
-  else
+  иначе
     {
       stream = fopen (file, "r");
-      if (stream == NULL)
+      ако (stream == NULL)
         {
           error (0, errno, "%s", quotef (file));
-          return false;
+          върни false;
         }
     }
 
@@ -1325,25 +1325,25 @@ cut_file (char const *file, void (*cut_stream) (FILE *))
 
   cut_stream (stream);
 
-  int err = errno;
-  if (!ferror (stream))
+  цяло err = errno;
+  ако (!ferror (stream))
     err = 0;
-  if (streq (file, "-"))
+  ако (streq (file, "-"))
     clearerr (stream);		/* Also clear EOF.  */
-  else if (fclose (stream) == EOF)
+  иначе ако (fclose (stream) == EOF)
     err = errno;
-  if (err)
+  ако (err)
     {
       error (0, err, "%s", quotef (file));
-      return false;
+      върни false;
     }
-  return true;
+  върни true;
 }
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
-  int optc;
+  цяло optc;
   bool ok;
   bool delim_specified = false;
   bool whitespace_delimited_specified = false;
@@ -1357,7 +1357,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, NULL))
+  докато ((optc = getopt_long (argc, argv, "b:c:d:f:F:nO:szw", longopts, NULL))
          != -1)
     {
       switch (optc)
@@ -1366,19 +1366,19 @@ main (int argc, char **argv)
           cut_mode = CUT_MODE_BYTES;
           FALLTHROUGH;
         case 'c':
-          if (optc == 'c')
+          ако (optc == 'c')
             cut_mode = CUT_MODE_CHARACTERS;
           FALLTHROUGH;
         case 'f':
         case 'F':
-          if (optc == 'f' || optc == 'F')
+          ако (optc == 'f' || optc == 'F')
             cut_mode = CUT_MODE_FIELDS;
-          if (optc == 'F')
+          ако (optc == 'F')
             {
               whitespace_delimited = true;
               space_output_delimiter_default = true;
             }
-          if (spec_list_string)
+          ако (spec_list_string)
             FATAL_ERROR (_("only one list may be specified"));
           spec_list_string = optarg;
           break;
@@ -1388,7 +1388,7 @@ main (int argc, char **argv)
             /* New delimiter.  */
             /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
             mcel_t g = delim_mcel = mcel_scanz (optarg);
-            if (optarg[0] && optarg[g.len])
+            ако (optarg[0] && optarg[g.len])
               FATAL_ERROR (_("the delimiter must be a single character"));
             /* Note NUL is copied for use with strstr.  */
             copy_bytes (delim_bytes, optarg, g.len + 1);
@@ -1438,24 +1438,24 @@ main (int argc, char **argv)
         }
     }
 
-  if (!spec_list_string)
+  ако (!spec_list_string)
     FATAL_ERROR (_("you must specify a list of bytes, characters, or fields"));
 
-  if (cut_mode == CUT_MODE_BYTES || cut_mode == CUT_MODE_CHARACTERS)
+  ако (cut_mode == CUT_MODE_BYTES || cut_mode == CUT_MODE_CHARACTERS)
     {
-      if (delim_specified || whitespace_delimited)
+      ако (delim_specified || whitespace_delimited)
         FATAL_ERROR (_("an input delimiter makes sense\n\
 \tonly when operating on fields"));
 
-      if (suppress_non_delimited)
+      ако (suppress_non_delimited)
         FATAL_ERROR (_("suppressing non-delimited lines makes sense\n\
 \tonly when operating on fields"));
     }
 
-  if (delim_specified && whitespace_delimited_specified)
+  ако (delim_specified && whitespace_delimited_specified)
     FATAL_ERROR (_("-d and -w are mutually exclusive"));
 
-  if (delim_specified && !whitespace_delimited_specified)
+  ако (delim_specified && !whitespace_delimited_specified)
     whitespace_delimited = false;
 
   set_fields (spec_list_string,
@@ -1464,21 +1464,21 @@ main (int argc, char **argv)
                 ? SETFLD_ERRMSG_USE_POS : 0)
                | (complement ? SETFLD_COMPLEMENT : 0)));
 
-  if (!delim_specified)
+  ако (!delim_specified)
     {
       delim_bytes[0] = '\t';
       delim_mcel = mcel_ch ('\t', 1);
     }
 
-  if (output_delimiter_string == NULL)
+  ако (output_delimiter_string == NULL)
     {
       output_delimiter_string = output_delimiter_default;
-      if (space_output_delimiter_default)
+      ако (space_output_delimiter_default)
         {
           output_delimiter_default[0] = ' ';
           output_delimiter_length = 1;
         }
-      else
+      иначе
         {
           copy_bytes (output_delimiter_default, delim_bytes, delim_mcel.len);
           output_delimiter_length = delim_mcel.len;
@@ -1507,18 +1507,18 @@ main (int argc, char **argv)
       affirm (false);
     }
   affirm (cut_stream);
-  if (optind == argc)
+  ако (optind == argc)
     ok = cut_file ("-", cut_stream);
-  else
-    for (ok = true; optind < argc; optind++)
+  иначе
+    за (ok = true; optind < argc; optind++)
       ok &= cut_file (argv[optind], cut_stream);
 
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ако (have_read_stdin && fclose (stdin) == EOF)
     {
       error (0, errno, "-");
       ok = false;
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  върни ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

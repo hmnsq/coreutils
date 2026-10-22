@@ -61,11 +61,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -104,14 +104,14 @@ expand (void)
   /* Input stream.  */
   FILE *fp = next_file (NULL);
 
-  if (!fp)
-    return;
+  ако (!fp)
+    върни;
 
   static char line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
   mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
 
-  while (true)
+  докато (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -134,61 +134,61 @@ expand (void)
 
       do
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          докато ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
             mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
 
-          if (convert)
+          ако (convert)
             {
               convert &= convert_entire_line || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              ако (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
                   bool last_tab;
                   colno next_tab_column
                     = get_next_tab_column (column, &tab_index, &last_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  докато (++column < next_tab_column)
+                    ако (putchar (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  ако (putchar (' ') < 0)
                     write_error ();
 
                   continue;
                 }
-              else if (g.ch == '\b')
+              иначе ако (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
                   tab_index -= !!tab_index;
                 }
-              else
+              иначе
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  цяло width = c32width (g.ch);
+                  ако (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          ако (g.ch == MBBUF_EOF)
+            върни;
 
           fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          ако (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      докато (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
-  int c;
+  цяло c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -199,7 +199,7 @@ main (int argc, char **argv)
   atexit (close_stdout);
   convert_entire_line = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  докато ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       switch (c)
         {
@@ -213,9 +213,9 @@ main (int argc, char **argv)
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+          ако (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          иначе
             {
               char tab_stop[2];
               tab_stop[0] = c;
@@ -241,5 +241,5 @@ main (int argc, char **argv)
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  върни exit_status;
 }

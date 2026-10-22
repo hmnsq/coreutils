@@ -64,11 +64,11 @@ static struct option const longopts[] =
 };
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -111,31 +111,31 @@ Wrap input lines in each FILE, writing to standard output.\n\
 static size_t
 adjust_column (size_t column, mcel_t g)
 {
-  if (counting_mode != COUNT_BYTES)
+  ако (counting_mode != COUNT_BYTES)
     {
-      if (g.ch == '\b')
+      ако (g.ch == '\b')
         column -= !!column;
-      else if (g.ch == '\r')
+      иначе ако (g.ch == '\r')
         column = 0;
-      else if (g.ch == '\t')
+      иначе ако (g.ch == '\t')
         column += TAB_WIDTH - column % TAB_WIDTH;
-      else
+      иначе
         {
-          int width = (counting_mode == COUNT_CHARACTERS
+          цяло width = (counting_mode == COUNT_CHARACTERS
                        ? 1 : c32width (g.ch));
           /* Default to a width of 1 if there is an invalid character.  */
           column += width < 0 ? 1 : width;
         }
     }
-  else
+  иначе
     column += g.len;
-  return column;
+  върни column;
 }
 
 static void
 write_out (char const *line, size_t line_len, bool newline)
 {
-  if (fwrite (line, sizeof (char), line_len, stdout) != line_len
+  ако (fwrite (line, sizeof (char), line_len, stdout) != line_len
       || (newline && putchar ('\n') < 0))
     write_error ();
 }
@@ -153,29 +153,29 @@ fold_file (char const *filename, size_t width)
   static char line_out[IO_BUFSIZE];
   static char line_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  int saved_errno;
+  цяло saved_errno;
 
-  if (streq (filename, "-"))
+  ако (streq (filename, "-"))
     {
       istream = stdin;
       have_read_stdin = true;
     }
-  else
+  иначе
     istream = fopen (filename, "r");
 
-  if (istream == NULL)
+  ако (istream == NULL)
     {
       error (0, errno, "%s", quotef (filename));
-      return false;
+      върни false;
     }
 
   fadvise (istream, FADVISE_SEQUENTIAL);
   mbbuf_init (&mbbuf, line_in, sizeof line_in, istream);
 
   mcel_t g;
-  while ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
+  докато ((g = mbbuf_get_char (&mbbuf)).ch != MBBUF_EOF)
     {
-      if (g.ch == '\n')
+      ако (g.ch == '\n')
         {
           write_out (line_out, offset_out, /*newline=*/ true);
           column = offset_out = 0;
@@ -184,29 +184,29 @@ fold_file (char const *filename, size_t width)
     rescan:
       column = adjust_column (column, g);
 
-      if (column > width)
+      ако (column > width)
         {
           /* This character would make the line too long.
              Print the line plus a newline, and make this character
              start the next line. */
-          if (break_spaces)
+          ако (break_spaces)
             {
-              int space_length = 0;
+              цяло space_length = 0;
               idx_t logical_end = offset_out;
               char *logical_p = line_out;
               char *logical_lim = logical_p + logical_end;
 
-              for (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
+              за (mcel_t g2; logical_p < logical_lim; logical_p += g2.len)
                 {
                   g2 = mcel_scan (logical_p, logical_lim);
-                  if (c32issep (g2.ch))
+                  ако (c32issep (g2.ch))
                     {
                       space_length = g2.len;
                       logical_end = logical_p - line_out;
                     }
                 }
 
-              if (space_length)
+              ако (space_length)
                 {
                   logical_end += space_length;
                   /* Found a blank.  Don't output the part after it. */
@@ -219,7 +219,7 @@ fold_file (char const *filename, size_t width)
                   column = 0;
                   char *printed_p = line_out;
                   char *printed_lim = printed_p + offset_out;
-                  for (mcel_t g2; printed_p < printed_lim;
+                  за (mcel_t g2; printed_p < printed_lim;
                        printed_p += g2.len)
                     {
                       g2 = mcel_scan (printed_p, printed_lim);
@@ -229,7 +229,7 @@ fold_file (char const *filename, size_t width)
                 }
             }
 
-          if (offset_out == 0)
+          ако (offset_out == 0)
             {
               memcpy (line_out, mbbuf_char_offset (&mbbuf, g), g.len);
               offset_out += g.len;
@@ -243,7 +243,7 @@ fold_file (char const *filename, size_t width)
 
       /* This can occur if we have read characters with a width of
          zero.  */
-      if (sizeof line_out <= offset_out + g.len)
+      ако (sizeof line_out <= offset_out + g.len)
         {
           write_out (line_out, offset_out, /*newline=*/ false);
           offset_out = 0;
@@ -254,31 +254,31 @@ fold_file (char const *filename, size_t width)
     }
 
   saved_errno = errno;
-  if (!ferror (istream))
+  ако (!ferror (istream))
     saved_errno = 0;
 
-  if (offset_out)
+  ако (offset_out)
     write_out (line_out, offset_out, /*newline=*/ false);
 
-  if (streq (filename, "-"))
+  ако (streq (filename, "-"))
     clearerr (istream);
-  else if (fclose (istream) != 0 && !saved_errno)
+  иначе ако (fclose (istream) != 0 && !saved_errno)
     saved_errno = errno;
 
-  if (saved_errno)
+  ако (saved_errno)
     {
       error (0, saved_errno, "%s", quotef (filename));
-      return false;
+      върни false;
     }
 
-  return true;
+  върни true;
 }
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
   size_t width = 80;
-  int optc;
+  цяло optc;
   bool ok;
 
   initialize_main (&argc, &argv);
@@ -289,7 +289,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  докато ((optc = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
     {
       char optargbuf[2];
 
@@ -309,9 +309,9 @@ main (int argc, char **argv)
 
         case '0': case '1': case '2': case '3': case '4':
         case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+          ако (optarg)
             optarg--;
-          else
+          иначе
             {
               optargbuf[0] = optc;
               optargbuf[1] = '\0';
@@ -333,17 +333,17 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc == optind)
+  ако (argc == optind)
     ok = fold_file ("-", width);
-  else
+  иначе
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
+      за (цяло i = optind; i < argc; i++)
         ok &= fold_file (argv[i], width);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ако (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  върни ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

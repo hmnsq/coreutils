@@ -40,11 +40,11 @@ enum
   };
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s COMMAND [ARG]...\n\
@@ -60,7 +60,7 @@ Run COMMAND, ignoring hangup signals.\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       printf (_("\n\
 If standard input is a terminal, redirect it from an unreadable file.\n\
-If standard output is a terminal, append output to 'nohup.out' if possible,\n\
+If standard output is a terminal, append output to 'nohup.out' ако possible,\n\
 '$HOME/nohup.out' otherwise.\n\
 If standard error is a terminal, redirect it to standard output.\n\
 To save output to FILE, use '%s COMMAND > FILE'.\n"),
@@ -74,12 +74,12 @@ To save output to FILE, use '%s COMMAND > FILE'.\n"),
 
 /* GCC 13 gets confused by the dup2 calls
    <https://gcc.gnu.org/PR109839>.  */
-#if 13 <= __GNUC__
+#ако 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-fd-leak"
 #endif
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -91,7 +91,7 @@ main (int argc, char **argv)
      for env, exec, nice, time, and xargs where it requires internal
      failure give something in the range 1-125.  For consistency with
      other tools, fail with EXIT_CANCELED unless POSIXLY_CORRECT.  */
-  int exit_internal_failure = (getenv ("POSIXLY_CORRECT")
+  цяло exit_internal_failure = (getenv ("POSIXLY_CORRECT")
                                ? POSIX_NOHUP_FAILURE : EXIT_CANCELED);
   initialize_exit_failure (exit_internal_failure);
   atexit (close_stdout);
@@ -100,7 +100,7 @@ main (int argc, char **argv)
                                    Version, false, usage, AUTHORS,
                                    (char const *) NULL);
 
-  if (argc <= optind)
+  ако (argc <= optind)
     {
       error (0, 0, _("missing operand"));
       usage (exit_internal_failure);
@@ -114,12 +114,12 @@ main (int argc, char **argv)
   /* If standard input is a tty, replace it with /dev/null if possible.
      Note that it is deliberately opened for *writing*,
      to ensure any read evokes an error.  */
-  if (ignoring_input)
+  ако (ignoring_input)
     {
-      if (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
+      ако (fd_reopen (STDIN_FILENO, "/dev/null", O_WRONLY, 0) < 0)
         error (exit_internal_failure, errno,
                _("failed to render standard input unusable"));
-      if (!redirecting_stdout && !redirecting_stderr)
+      ако (!redirecting_stdout && !redirecting_stderr)
         error (0, 0, _("ignoring input"));
     }
 
@@ -127,37 +127,37 @@ main (int argc, char **argv)
      First try nohup.out, then $HOME/nohup.out.  If standard error is
      a tty and standard output is closed, open nohup.out or
      $HOME/nohup.out without redirecting anything.  */
-  int out_fd = STDOUT_FILENO;
-  if (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
+  цяло out_fd = STDOUT_FILENO;
+  ако (redirecting_stdout || (redirecting_stderr && stdout_is_closed))
     {
       char *in_home = NULL;
       char const *file = "nohup.out";
-      int flags = O_CREAT | O_WRONLY | O_APPEND;
+      цяло flags = O_CREAT | O_WRONLY | O_APPEND;
       mode_t mode = S_IRUSR | S_IWUSR;
       mode_t umask_value = umask (0);
       out_fd = (redirecting_stdout
                 ? fd_reopen (STDOUT_FILENO, file, flags, mode)
                 : open (file, flags, mode));
 
-      if (out_fd < 0)
+      ако (out_fd < 0)
         {
-          int saved_errno = errno;
+          цяло saved_errno = errno;
           char const *home = getenv ("HOME");
-          if (home)
+          ако (home)
             {
               in_home = file_name_concat (home, file, NULL);
               out_fd = (redirecting_stdout
                         ? fd_reopen (STDOUT_FILENO, in_home, flags, mode)
                         : open (in_home, flags, mode));
             }
-          if (out_fd < 0)
+          ако (out_fd < 0)
             {
-              int saved_errno2 = errno;
+              цяло saved_errno2 = errno;
               error (0, saved_errno, _("failed to open %s"), quoteaf (file));
-              if (in_home)
+              ако (in_home)
                 error (0, saved_errno2, _("failed to open %s"),
                        quoteaf (in_home));
-              return exit_internal_failure;
+              върни exit_internal_failure;
             }
           file = in_home;
         }
@@ -172,8 +172,8 @@ main (int argc, char **argv)
     }
 
   /* If standard error is a tty, redirect it.  */
-  int saved_stderr_fd = STDERR_FILENO;
-  if (redirecting_stderr)
+  цяло saved_stderr_fd = STDERR_FILENO;
+  ако (redirecting_stderr)
     {
       /* Save a copy of stderr before redirecting, so we can use the original
          if execve fails.  It's no big deal if this dup fails.  It might
@@ -182,18 +182,18 @@ main (int argc, char **argv)
       saved_stderr_fd = fcntl (STDERR_FILENO, F_DUPFD_CLOEXEC,
                                STDERR_FILENO + 1);
 
-      if (!redirecting_stdout)
+      ако (!redirecting_stdout)
         error (0, 0,
                _(ignoring_input
                  ? N_("ignoring input and redirecting standard error "
                       "to standard output")
                  : N_("redirecting standard error to standard output")));
 
-      if (dup2 (out_fd, STDERR_FILENO) < 0)
+      ако (dup2 (out_fd, STDERR_FILENO) < 0)
         error (exit_internal_failure, errno,
                _("failed to redirect standard error"));
 
-      if (stdout_is_closed)
+      ако (stdout_is_closed)
         close (out_fd);
     }
 
@@ -203,8 +203,8 @@ main (int argc, char **argv)
      encountered a write failure, there is no need to try calling
      error() again, particularly since we may have just changed the
      underlying fd out from under stderr.  */
-  if (ferror (stderr))
-    return exit_internal_failure;
+  ако (ferror (stderr))
+    върни exit_internal_failure;
 
   /* Windows does not support SIGHUP.  */
 #ifdef SIGHUP
@@ -213,8 +213,8 @@ main (int argc, char **argv)
 
   char **cmd = argv + optind;
   execvp (*cmd, cmd);
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
-  int saved_errno = errno;
+  цяло exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  цяло saved_errno = errno;
 
   /* The execve failed.  Output a diagnostic to stderr only if:
      - stderr was initially redirected to a non-tty, or
@@ -222,8 +222,8 @@ main (int argc, char **argv)
      can dup2 it to point back to that same tty.
      In other words, output the diagnostic if possible, but only if
      it will go to the original stderr.  */
-  if (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
+  ако (dup2 (saved_stderr_fd, STDERR_FILENO) == STDERR_FILENO)
     error (0, saved_errno, _("failed to run command %s"), quoteaf (*cmd));
 
-  return exit_status;
+  върни exit_status;
 }

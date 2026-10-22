@@ -72,11 +72,11 @@ static struct item *loop = NULL;
 static size_t n_strings = 0;
 
 void
-usage (int status)
+usage (цяло status)
 {
-  if (status != EXIT_SUCCESS)
+  ако (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  иначе
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -102,9 +102,9 @@ new_item (char const *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
   struct item *k = xzalloc (sizeof *k);
-  if (str)
+  ако (str)
     k->str = xstrdup (str);
-  return k;
+  върни k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -119,64 +119,64 @@ static struct item *
 search_item (struct item *root, char const *str)
 {
   struct item *p, *q, *r, *s, *t;
-  int a;
+  цяло a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  ако (root->right == NULL)
+    върни (root->right = new_item (str));
 
   /* A1. Initialize.  */
   t = root;
   s = p = root->right;
 
-  while (true)
+  докато (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      ако (a == 0)
+        върни p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
+      ако (a < 0)
         q = p->left;
-      else
+      иначе
         q = p->right;
 
-      if (q == NULL)
+      ако (q == NULL)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
+          ако (a < 0)
             p->left = q;
-          else
+          иначе
             p->right = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          ако (a < 0)
             {
               r = p = s->left;
               a = -1;
             }
-          else
+          иначе
             {
               affirm (0 < a);
               r = p = s->right;
               a = 1;
             }
 
-          while (p != q)
+          докато (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              цяло cmp = strcmp (str, p->str);
+              ако (cmp < 0)
                 {
                   p->balance = -1;
                   p = p->left;
                 }
-              else
+              иначе
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
@@ -185,32 +185,32 @@ search_item (struct item *root, char const *str)
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          ако (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              върни q;
             }
 
-          if (r->balance == a)
+          ако (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              ако (a < 0)
                 {
                   s->left = r->right;
                   r->right = s;
                 }
-              else
+              иначе
                 {
                   s->right = r->left;
                   r->left = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          иначе
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              ако (a < 0)
                 {
                   p = r->right;
                   r->right = p->left;
@@ -218,7 +218,7 @@ search_item (struct item *root, char const *str)
                   s->left = p->right;
                   p->right = s;
                 }
-              else
+              иначе
                 {
                   p = r->left;
                   r->left = p->right;
@@ -229,24 +229,24 @@ search_item (struct item *root, char const *str)
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              ако (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              иначе ако (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
+          ако (s == t->right)
             t->right = p;
-          else
+          иначе
             t->left = p;
 
-          return q;
+          върни q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      ако (q->balance)
         {
           t = p;
           s = q;
@@ -265,7 +265,7 @@ record_relation (struct item *j, struct item *k)
 {
   struct successor *p;
 
-  if (!streq (j->str, k->str))
+  ако (!streq (j->str, k->str))
     {
       k->count++;
       p = xmalloc (sizeof *p);
@@ -279,24 +279,24 @@ static bool
 count_items (MAYBE_UNUSED struct item *unused)
 {
   n_strings++;
-  return false;
+  върни false;
 }
 
 static bool
 scan_zeros (struct item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  ако (k->count == 0 && !k->printed)
     {
-      if (head == NULL)
+      ако (head == NULL)
         head = k;
-      else
+      иначе
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  върни false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -320,33 +320,33 @@ scan_zeros (struct item *k)
 static bool
 detect_loop (struct item *k)
 {
-  if (k->count > 0)
+  ако (k->count > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      ако (loop == NULL)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      иначе
         {
           struct successor **p = &k->top;
 
-          while (*p)
+          докато (*p)
             {
-              if ((*p)->suc == loop)
+              ако ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  ако (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      докато (loop)
                         {
                           struct item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          ако (loop == k)
                             {
                               /* Remove relation.  */
                               struct successor *s = *p;
@@ -362,7 +362,7 @@ detect_loop (struct item *k)
                           loop = tmp;
                         }
 
-                      while (loop)
+                      докато (loop)
                         {
                           struct item *tmp = loop->qlink;
 
@@ -372,9 +372,9 @@ detect_loop (struct item *k)
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      върни true;
                     }
-                  else
+                  иначе
                     {
                       k->qlink = loop;
                       loop = k;
@@ -387,7 +387,7 @@ detect_loop (struct item *k)
         }
     }
 
-  return false;
+  върни false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
@@ -396,21 +396,21 @@ detect_loop (struct item *k)
 static bool
 recurse_tree (struct item *root, bool (*action) (struct item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  ако (root->left == NULL && root->right == NULL)
+    върни (*action) (root);
+  иначе
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      ако (root->left != NULL)
+        ако (recurse_tree (root->left, action))
+          върни true;
+      ако ((*action) (root))
+        върни true;
+      ако (root->right != NULL)
+        ако (recurse_tree (root->right, action))
+          върни true;
     }
 
-  return false;
+  върни false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
@@ -419,7 +419,7 @@ recurse_tree (struct item *root, bool (*action) (struct item *))
 static void
 walk_tree (struct item *root, bool (*action) (struct item *))
 {
-  if (root->right)
+  ако (root->right)
     recurse_tree (root->right, action);
 }
 
@@ -437,20 +437,20 @@ tsort (char const *file)
   /* Initialize the head of the tree holding the strings we're sorting.  */
   struct item *root = new_item (NULL);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  ако (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  докато (true)
     {
       /* T2. Next Relation.  */
       size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      ако (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          ако (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
           break;
         }
@@ -458,7 +458,7 @@ tsort (char const *file)
       affirm (len != 0);
 
       k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      ако (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
@@ -468,19 +468,19 @@ tsort (char const *file)
       j = k;
     }
 
-  if (k != NULL)
+  ако (k != NULL)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
   walk_tree (root, count_items);
 
-  while (n_strings > 0)
+  докато (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
       walk_tree (root, scan_zeros);
 
-      while (head)
+      докато (head)
         {
           struct successor *p = head->top;
 
@@ -490,10 +490,10 @@ tsort (char const *file)
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          докато (p)
             {
               p->suc->count--;
-              if (p->suc->count == 0)
+              ако (p->suc->count == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -507,7 +507,7 @@ tsort (char const *file)
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      ако (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
@@ -516,19 +516,19 @@ tsort (char const *file)
           /* Print the loop and remove a relation to break it.  */
           do
             walk_tree (root, detect_loop);
-          while (loop);
+          докато (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  ако (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+цяло
+main (цяло argc, char **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,7 +538,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  докато (true)
     {
       static struct option const long_options[] =
         {
@@ -546,9 +546,9 @@ main (int argc, char **argv)
           {GETOPT_VERSION_OPTION_DECL},
           {NULL, 0, NULL, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      цяло c = getopt_long (argc, argv, "w", long_options, NULL);
 
-      if (c == -1)
+      ако (c == -1)
         break;
 
       switch (c)
@@ -565,7 +565,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (1 < argc - optind)
+  ако (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
