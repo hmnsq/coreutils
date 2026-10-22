@@ -21,16 +21,16 @@
 
    Written by David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "quote.h"
 
 /* Exit statuses.  */
-enum
+எண்ணிக்கை
   {
     TTY_STDIN_NOTTY = 1,
     TTY_USAGE = 2,
@@ -44,32 +44,32 @@ enum
 #define AUTHORS proper_name ("David MacKenzie")
 
 /* If true, return an exit status but produce no output. */
-static bool silent;
+நிலையான bool silent;
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"silent", no_argument, NULL, 's'},
-  {"quiet", no_argument, NULL, 's'},
+  {"silent", no_argument, வெற்று, 's'},
+  {"quiet", no_argument, வெற்று, 's'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
-Print the file name of the terminal connected to standard input.\n\
+Print the file name of the terminal connected to standard உள்ளீடு.\n\
 \n\
 "), stdout);
       oputs (_("\
   -s, --silent, --quiet\n\
-         print nothing, only return an exit status\n\
+         print nothing, only திரும்பு an exit status\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -78,10 +78,10 @@ Print the file name of the terminal connected to standard input.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int optc;
+  முழு optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -92,46 +92,46 @@ main (int argc, char **argv)
   initialize_exit_failure (TTY_WRITE_ERROR);
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "s", longopts, NULL)) != -1)
+  போது ((optc = getopt_long (argc, argv, "s", longopts, வெற்று)) != -1)
     {
-      switch (optc)
+      தேர்வு (optc)
         {
-        case 's':
+        நிலை 's':
           silent = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (TTY_USAGE);
         }
     }
 
-  if (optind < argc)
+  எனில் (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (TTY_USAGE);
     }
 
-  if (silent)
-    return isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
+  எனில் (silent)
+    திரும்பு isatty (STDIN_FILENO) ? EXIT_SUCCESS : TTY_STDIN_NOTTY;
 
-  int status;
-  char const *tty = ttyname (STDIN_FILENO);
+  முழு status;
+  எழுத்து மாறிலி *tty = ttyname (STDIN_FILENO);
 
-  if (tty)
+  எனில் (tty)
     status = EXIT_SUCCESS;
-  else
+  இல்லையெனில்
     {
-      int ttyname_err = errno;
-      if (isatty (STDIN_FILENO))
+      முழு ttyname_err = errno;
+      எனில் (isatty (STDIN_FILENO))
         error (TTY_TTYNAME_FAILURE, ttyname_err, _("ttyname error"));
       tty = _("not a tty");
       status = TTY_STDIN_NOTTY;
     }
 
   puts (tty);
-  return status;
+  திரும்பு status;
 }

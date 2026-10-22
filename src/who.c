@@ -23,19 +23,19 @@
    idle: -u
 */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ "system.h"
 
-#include "c-ctype.h"
-#include "canon-host.h"
-#include "readutmp.h"
-#include "hard-locale.h"
-#include "quote.h"
-#include "xvasprintf.h"
+#அந்தர்பாவ "c-ctype.h"
+#அந்தர்பாவ "canon-host.h"
+#அந்தர்பாவ "readutmp.h"
+#அந்தர்பாவ "hard-locale.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "xvasprintf.h"
 
 #ifdef TTY_GROUP_NAME
 # include <grp.h>
@@ -51,206 +51,206 @@
 
 #ifdef RUN_LVL
 # define UT_TYPE_RUN_LVL(U) ((U)->ut_type == RUN_LVL)
-#else
+#இல்லையெனில்
 # define UT_TYPE_RUN_LVL(U) false
 #endif
 
 #ifdef INIT_PROCESS
 # define UT_TYPE_INIT_PROCESS(U) ((U)->ut_type == INIT_PROCESS)
-#else
+#இல்லையெனில்
 # define UT_TYPE_INIT_PROCESS(U) false
 #endif
 
 #ifdef DEAD_PROCESS
 # define UT_TYPE_DEAD_PROCESS(U) ((U)->ut_type == DEAD_PROCESS)
-#else
+#இல்லையெனில்
 # define UT_TYPE_DEAD_PROCESS(U) false
 #endif
 
 #ifdef NEW_TIME
 # define UT_TYPE_NEW_TIME(U) ((U)->ut_type == NEW_TIME)
-#else
+#இல்லையெனில்
 # define UT_TYPE_NEW_TIME(U) false
 #endif
 
 #define IDLESTR_LEN 6
 
-#if HAVE_STRUCT_XTMP_UT_PID
+#எனில் HAVE_STRUCT_XTMP_UT_PID
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
-  sprintf (Var, "%ld", (long int) (Utmp_ent->ut_pid))
-#else
+  எழுத்து Var[INT_STRLEN_BOUND (Utmp_ent->ut_pid) + 1]; \
+  sprintf (Var, "%ld", (long முழு) (Utmp_ent->ut_pid))
+#இல்லையெனில்
 # define PIDSTR_DECL_AND_INIT(Var, Utmp_ent) \
-  char const *Var = ""
+  எழுத்து மாறிலி *Var = ""
 #endif
 
-#if HAVE_STRUCT_XTMP_UT_ID
+#எனில் HAVE_STRUCT_XTMP_UT_ID
 # define UT_ID(U) ((U)->ut_id)
-#else
+#இல்லையெனில்
 # define UT_ID(U) "??"
 #endif
 
 /* If true, attempt to canonicalize hostnames via a DNS lookup. */
-static bool do_lookup;
+நிலையான bool do_lookup;
 
 /* If true, display only a list of usernames and count of
    the users logged on.
    Ignored for 'who am i'.  */
-static bool short_list;
+நிலையான bool short_list;
 
 /* If true, display only name, line, and time fields.  */
-static bool short_output;
+நிலையான bool short_output;
 
 /* If true, display the hours:minutes since each user has touched
    the keyboard, or "." if within the last minute, or "old" if
    not within the last day.  */
-static bool include_idle;
+நிலையான bool include_idle;
 
 /* If true, display a line at the top describing each field.  */
-static bool include_heading;
+நிலையான bool include_heading;
 
 /* If true, display a '+' for each user if mesg y, a '-' if mesg n,
    or a '?' if their tty cannot be statted. */
-static bool include_mesg;
+நிலையான bool include_mesg;
 
 /* If true, display process termination & exit status.  */
-static bool include_exit;
+நிலையான bool include_exit;
 
 /* If true, display the last boot time.  */
-static bool need_boottime;
+நிலையான bool need_boottime;
 
 /* If true, display dead processes.  */
-static bool need_deadprocs;
+நிலையான bool need_deadprocs;
 
 /* If true, display processes waiting for user login.  */
-static bool need_login;
+நிலையான bool need_login;
 
 /* If true, display processes started by init.  */
-static bool need_initspawn;
+நிலையான bool need_initspawn;
 
 /* If true, display the last clock change.  */
-static bool need_clockchange;
+நிலையான bool need_clockchange;
 
 /* If true, display the current runlevel.  */
-static bool need_runlevel;
+நிலையான bool need_runlevel;
 
 /* If true, display user processes.  */
-static bool need_users;
+நிலையான bool need_users;
 
 /* If true, display info only for the controlling tty.  */
-static bool my_line_only;
+நிலையான bool my_வரி_only;
 
 /* The strftime format to use for login times, and its expected
    output width.  */
-static char const *time_format;
-static int time_format_width;
+நிலையான எழுத்து மாறிலி *time_format;
+நிலையான முழு time_format_width;
 
 /* for long options with no corresponding short option, use enum */
-enum
+எண்ணிக்கை
 {
   LOOKUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"all", no_argument, NULL, 'a'},
-  {"boot", no_argument, NULL, 'b'},
-  {"count", no_argument, NULL, 'q'},
-  {"dead", no_argument, NULL, 'd'},
-  {"heading", no_argument, NULL, 'H'},
-  {"login", no_argument, NULL, 'l'},
-  {"lookup", no_argument, NULL, LOOKUP_OPTION},
-  {"message", no_argument, NULL, 'T'},
-  {"mesg", no_argument, NULL, 'T'},
-  {"process", no_argument, NULL, 'p'},
-  {"runlevel", no_argument, NULL, 'r'},
-  {"short", no_argument, NULL, 's'},
-  {"time", no_argument, NULL, 't'},
-  {"users", no_argument, NULL, 'u'},
-  {"writable", no_argument, NULL, 'T'},
+  {"all", no_argument, வெற்று, 'a'},
+  {"boot", no_argument, வெற்று, 'b'},
+  {"count", no_argument, வெற்று, 'q'},
+  {"dead", no_argument, வெற்று, 'd'},
+  {"heading", no_argument, வெற்று, 'H'},
+  {"login", no_argument, வெற்று, 'l'},
+  {"lookup", no_argument, வெற்று, LOOKUP_OPTION},
+  {"message", no_argument, வெற்று, 'T'},
+  {"mesg", no_argument, வெற்று, 'T'},
+  {"process", no_argument, வெற்று, 'p'},
+  {"runlevel", no_argument, வெற்று, 'r'},
+  {"short", no_argument, வெற்று, 's'},
+  {"time", no_argument, வெற்று, 't'},
+  {"users", no_argument, வெற்று, 'u'},
+  {"writable", no_argument, வெற்று, 'T'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* Return a string representing the time between WHEN and now.
    BOOTTIME is the time of last reboot.
    FIXME: locale? */
-static char const *
+நிலையான எழுத்து மாறிலி *
 idle_string (time_t when, time_t boottime)
 {
-  static time_t now = TYPE_MINIMUM (time_t);
+  நிலையான time_t now = TYPE_MINIMUM (time_t);
 
-  if (now == TYPE_MINIMUM (time_t))
+  எனில் (now == TYPE_MINIMUM (time_t))
     time (&now);
 
-  int seconds_idle;
-  if (boottime < when && when <= now
+  முழு seconds_idle;
+  எனில் (boottime < when && when <= now
       && ! ckd_sub (&seconds_idle, now, when)
       && seconds_idle < 24 * 60 * 60)
     {
-      if (seconds_idle < 60)
-        return "  .  ";
-      else
+      எனில் (seconds_idle < 60)
+        திரும்பு "  .  ";
+      இல்லையெனில்
         {
-          static char idle_hhmm[IDLESTR_LEN];
+          நிலையான எழுத்து idle_hhmm[IDLESTR_LEN];
           sprintf (idle_hhmm, "%02d:%02d",
                    seconds_idle / (60 * 60),
                    (seconds_idle % (60 * 60)) / 60);
-          return idle_hhmm;
+          திரும்பு idle_hhmm;
         }
     }
 
-  return _(" old ");
+  திரும்பு _(" old ");
 }
 
 /* Return a time string.  */
-static char const *
-time_string (STRUCT_UTMP const *utmp_ent)
+நிலையான எழுத்து மாறிலி *
+time_string (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  static char buf[INT_STRLEN_BOUND (intmax_t) + sizeof "-%m-%d %H:%M"];
-  struct tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
+  நிலையான எழுத்து buf[INT_STRLEN_BOUND (intmax_t) + அளவு "-%m-%d %H:%M"];
+  கட்டமைப்பு tm *tmp = localtime (&utmp_ent->ut_ts.tv_sec);
 
-  if (tmp)
+  எனில் (tmp)
     {
-      strftime (buf, sizeof buf, time_format, tmp);
-      return buf;
+      strftime (buf, அளவு buf, time_format, tmp);
+      திரும்பு buf;
     }
-  else
-    return timetostr (utmp_ent->ut_ts.tv_sec, buf);
+  இல்லையெனில்
+    திரும்பு timetostr (utmp_ent->ut_ts.tv_sec, buf);
 }
 
 /* Print formatted output line. Uses mostly arbitrary field sizes, probably
    will need tweaking if any of the localization stuff is done, or for 64 bit
    pids, etc. */
-static void
-print_line (char const *user, const char state,
-            char const *line,
-            char const *time_str, char const *idle, char const *pid,
-            char const *comment, char const *exitstr)
+நிலையான வெறுமை
+print_வரி (எழுத்து மாறிலி *user, மாறிலி எழுத்து state,
+            எழுத்து மாறிலி *வரி,
+            எழுத்து மாறிலி *time_str, எழுத்து மாறிலி *idle, எழுத்து மாறிலி *pid,
+            எழுத்து மாறிலி *comment, எழுத்து மாறிலி *exitstr)
 {
-  static char mesg[3] = { ' ', 'x', '\0' };
-  char *buf;
-  char x_idle[1 + IDLESTR_LEN + 1];
-  char x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
-  char *x_exitstr;
+  நிலையான எழுத்து mesg[3] = { ' ', 'x', '\0' };
+  எழுத்து *buf;
+  எழுத்து x_idle[1 + IDLESTR_LEN + 1];
+  எழுத்து x_pid[1 + INT_STRLEN_BOUND (pid_t) + 1];
+  எழுத்து *x_exitstr;
 
   mesg[1] = state;
 
-  if (include_idle && !short_output && strlen (idle) < sizeof x_idle - 1)
+  எனில் (include_idle && !short_output && strlen (idle) < அளவு x_idle - 1)
     sprintf (x_idle, " %-6s", idle);
-  else
+  இல்லையெனில்
     *x_idle = '\0';
 
-  if (!short_output && strlen (pid) < sizeof x_pid - 1)
+  எனில் (!short_output && strlen (pid) < அளவு x_pid - 1)
     sprintf (x_pid, " %10s", pid);
-  else
+  இல்லையெனில்
     *x_pid = '\0';
 
   x_exitstr = xmalloc (include_exit ? 1 + MAX (12, strlen (exitstr)) + 1 : 1);
-  if (include_exit)
+  எனில் (include_exit)
     sprintf (x_exitstr, " %-12s", exitstr);
-  else
+  இல்லையெனில்
     *x_exitstr = '\0';
 
   buf = xasprintf ("%-8s"
@@ -264,7 +264,7 @@ print_line (char const *user, const char state,
                    ,
                    user ? user : "   .",
                    include_mesg ? mesg : "",
-                   line,
+                   வரி,
                    time_format_width,
                    time_str,
                    x_idle,
@@ -279,178 +279,178 @@ print_line (char const *user, const char state,
 
   {
     /* Remove any trailing spaces.  */
-    char *p = buf + strlen (buf);
-    while (*--p == ' ')
+    எழுத்து *p = buf + strlen (buf);
+    போது (*--p == ' ')
       /* empty */;
     *(p + 1) = '\0';
   }
 
   puts (buf);
-  free (buf);
-  free (x_exitstr);
+  விடுவி (buf);
+  விடுவி (x_exitstr);
 }
 
 /* Return true if a terminal device given as PSTAT allows other users
    to send messages to; false otherwise */
-static bool
-is_tty_writable (struct stat const *pstat)
+நிலையான bool
+is_tty_writable (கட்டமைப்பு stat மாறிலி *pstat)
 {
 #ifdef TTY_GROUP_NAME
   /* Ensure the group of the TTY device matches TTY_GROUP_NAME, more info at
      https://bugzilla.redhat.com/454261 */
-  struct group *ttygr = getgrnam (TTY_GROUP_NAME);
-  if (!ttygr || (pstat->st_gid != ttygr->gr_gid))
-    return false;
+  கட்டமைப்பு group *ttygr = getgrnam (TTY_GROUP_NAME);
+  எனில் (!ttygr || (pstat->st_gid != ttygr->gr_gid))
+    திரும்பு false;
 #endif
 
-  return pstat->st_mode & S_IWGRP;
+  திரும்பு pstat->st_mode & S_IWGRP;
 }
 
 /* Send properly parsed USER_PROCESS info to print_line.  The most
    recent boot time is BOOTTIME. */
-static void
-print_user (STRUCT_UTMP const *utmp_ent, time_t boottime)
+நிலையான வெறுமை
+print_user (STRUCT_UTMP மாறிலி *utmp_ent, time_t boottime)
 {
-  struct stat stats;
+  கட்டமைப்பு stat stats;
   time_t last_change;
-  char mesg;
-  char idlestr[IDLESTR_LEN + 1];
+  எழுத்து mesg;
+  எழுத்து idlestr[IDLESTR_LEN + 1];
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
-  static char *hoststr;
-#if HAVE_STRUCT_XTMP_UT_HOST
-  static idx_t hostlen;
+  நிலையான எழுத்து *hoststr;
+#எனில் HAVE_STRUCT_XTMP_UT_HOST
+  நிலையான idx_t hostlen;
 #endif
 
   /* If ut_line contains a space, the device name starts after the space.  */
-  char *line = utmp_ent->ut_line;
-  char *space = strchr (line, ' ');
-  line = space ? space + 1 : line;
+  எழுத்து *வரி = utmp_ent->ut_வரி;
+  எழுத்து *space = strchr (வரி, ' ');
+  வரி = space ? space + 1 : வரி;
 
-  int dirfd;
-  if (IS_ABSOLUTE_FILE_NAME (line))
+  முழு dirfd;
+  எனில் (IS_ABSOLUTE_FILE_NAME (வரி))
     dirfd = AT_FDCWD;
-  else
+  இல்லையெனில்
     {
-      static int dev_dirfd;
-      if (!dev_dirfd)
+      நிலையான முழு dev_dirfd;
+      எனில் (!dev_dirfd)
         {
           dev_dirfd = open ("/dev", O_PATHSEARCH | O_DIRECTORY);
-          if (dev_dirfd < 0)
+          எனில் (dev_dirfd < 0)
             dev_dirfd = AT_FDCWD - 1;
         }
       dirfd = dev_dirfd;
     }
 
-  if (AT_FDCWD <= dirfd && fstatat (dirfd, line, &stats, 0) == 0)
+  எனில் (AT_FDCWD <= dirfd && fstatat (dirfd, வரி, &stats, 0) == 0)
     {
       mesg = is_tty_writable (&stats) ? '+' : '-';
       last_change = stats.st_atime;
     }
-  else
+  இல்லையெனில்
     {
       mesg = '?';
       last_change = 0;
     }
 
-  if (last_change)
+  எனில் (last_change)
     sprintf (idlestr, "%.*s", IDLESTR_LEN, idle_string (last_change, boottime));
-  else
+  இல்லையெனில்
     sprintf (idlestr, "  ?");
 
-#if HAVE_STRUCT_XTMP_UT_HOST
-  if (utmp_ent->ut_host[0])
+#எனில் HAVE_STRUCT_XTMP_UT_HOST
+  எனில் (utmp_ent->ut_host[0])
     {
-      char *host = NULL;
-      char *display = NULL;
-      char *ut_host = utmp_ent->ut_host;
+      எழுத்து *host = வெற்று;
+      எழுத்து *display = வெற்று;
+      எழுத்து *ut_host = utmp_ent->ut_host;
 
       /* Look for an X display.  */
       display = strchr (ut_host, ':');
-      if (display)
+      எனில் (display)
         *display++ = '\0';
 
-      if (*ut_host && do_lookup)
+      எனில் (*ut_host && do_lookup)
         {
           /* See if we can canonicalize it.  */
           host = canon_host (ut_host);
         }
 
-      if (! host)
+      எனில் (! host)
         host = ut_host;
 
-      if (display)
+      எனில் (display)
         {
           idx_t needed = strlen (host) + strlen (display) + 4;
-          if (hostlen < needed)
+          எனில் (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              விடுவி (hoststr);
+              hoststr = xpalloc (வெற்று, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          எழுத்து *p = hoststr;
           *p++ = '(';
           p = stpcpy (p, host);
           *p++ = ':';
           strcpy (stpcpy (p, display), ")");
         }
-      else
+      இல்லையெனில்
         {
           idx_t needed = strlen (host) + 3;
-          if (hostlen < needed)
+          எனில் (hostlen < needed)
             {
-              free (hoststr);
-              hoststr = xpalloc (NULL, &hostlen, needed - hostlen, -1, 1);
+              விடுவி (hoststr);
+              hoststr = xpalloc (வெற்று, &hostlen, needed - hostlen, -1, 1);
             }
-          char *p = hoststr;
+          எழுத்து *p = hoststr;
           *p++ = '(';
           strcpy (stpcpy (p, host), ")");
         }
 
-      if (host != ut_host)
-        free (host);
+      எனில் (host != ut_host)
+        விடுவி (host);
     }
-  else
+  இல்லையெனில்
     {
-      if (hostlen < 1)
+      எனில் (hostlen < 1)
         hoststr = xpalloc (hoststr, &hostlen, 1, -1, 1);
       *hoststr = '\0';
     }
 #endif
 
-  print_line (utmp_ent->ut_user, mesg,
-              utmp_ent->ut_line,
+  print_வரி (utmp_ent->ut_user, mesg,
+              utmp_ent->ut_வரி,
               time_string (utmp_ent), idlestr, pidstr,
               hoststr ? hoststr : "", "");
 }
 
-static void
-print_boottime (STRUCT_UTMP const *utmp_ent)
+நிலையான வெறுமை
+print_boottime (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  print_line ("", ' ', _("system boot"),
+  print_வரி ("", ' ', _("system boot"),
               time_string (utmp_ent), "", "", "", "");
 }
 
-static char *
-make_id_equals_comment (STRUCT_UTMP const *utmp_ent)
+நிலையான எழுத்து *
+make_id_equals_comment (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  char const *id = UT_ID (utmp_ent);
+  எழுத்து மாறிலி *id = UT_ID (utmp_ent);
   idx_t idlen = strlen (id);
-  char const *prefix = _("id=");
+  எழுத்து மாறிலி *prefix = _("id=");
   idx_t prefixlen = strlen (prefix);
-  char *comment = xmalloc (prefixlen + idlen + 1);
-  char *p = mempcpy (comment, prefix, prefixlen);
+  எழுத்து *comment = xmalloc (prefixlen + idlen + 1);
+  எழுத்து *p = mempcpy (comment, prefix, prefixlen);
   p = mempcpy (p, id, idlen);
   *p = '\0';
-  return comment;
+  திரும்பு comment;
 }
 
-static void
-print_deadprocs (STRUCT_UTMP const *utmp_ent)
+நிலையான வெறுமை
+print_deadprocs (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  static char *exitstr;
-  char *comment = make_id_equals_comment (utmp_ent);
+  நிலையான எழுத்து *exitstr;
+  எழுத்து *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  if (!exitstr)
+  எனில் (!exitstr)
     exitstr = xmalloc (strlen (_("term="))
                        + INT_STRLEN_BOUND (utmp_ent->ut_exit.e_termination) + 1
                        + strlen (_("exit="))
@@ -461,81 +461,81 @@ print_deadprocs (STRUCT_UTMP const *utmp_ent)
 
   /* FIXME: add idle time? */
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  print_வரி ("", ' ', utmp_ent->ut_வரி,
               time_string (utmp_ent), "", pidstr, comment, exitstr);
-  free (comment);
+  விடுவி (comment);
 }
 
-static void
-print_login (STRUCT_UTMP const *utmp_ent)
+நிலையான வெறுமை
+print_login (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  எழுத்து *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
   /* FIXME: add idle time? */
 
-  print_line (_("LOGIN"), ' ', utmp_ent->ut_line,
+  print_வரி (_("LOGIN"), ' ', utmp_ent->ut_வரி,
               time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  விடுவி (comment);
 }
 
-static void
-print_initspawn (STRUCT_UTMP const *utmp_ent)
+நிலையான வெறுமை
+print_initspawn (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  char *comment = make_id_equals_comment (utmp_ent);
+  எழுத்து *comment = make_id_equals_comment (utmp_ent);
   PIDSTR_DECL_AND_INIT (pidstr, utmp_ent);
 
-  print_line ("", ' ', utmp_ent->ut_line,
+  print_வரி ("", ' ', utmp_ent->ut_வரி,
               time_string (utmp_ent), "", pidstr, comment, "");
-  free (comment);
+  விடுவி (comment);
 }
 
-static void
-print_clockchange (STRUCT_UTMP const *utmp_ent)
+நிலையான வெறுமை
+print_clockchange (STRUCT_UTMP மாறிலி *utmp_ent)
 {
   /* FIXME: handle NEW_TIME & OLD_TIME both */
-  print_line ("", ' ', _("clock change"),
+  print_வரி ("", ' ', _("clock change"),
               time_string (utmp_ent), "", "", "", "");
 }
 
-static void
-print_runlevel (STRUCT_UTMP const *utmp_ent)
+நிலையான வெறுமை
+print_runlevel (STRUCT_UTMP மாறிலி *utmp_ent)
 {
-  static char *runlevline, *comment;
-  unsigned char last = utmp_ent->ut_pid / 256;
-  unsigned char curr = utmp_ent->ut_pid % 256;
+  நிலையான எழுத்து *runlevline, *comment;
+  unsigned எழுத்து last = utmp_ent->ut_pid / 256;
+  unsigned எழுத்து curr = utmp_ent->ut_pid % 256;
 
-  if (!runlevline)
+  எனில் (!runlevline)
     runlevline = xmalloc (strlen (_("run-level")) + 3);
   sprintf (runlevline, "%s %c", _("run-level"), curr);
 
-  if (!comment)
+  எனில் (!comment)
     comment = xmalloc (strlen (_("last=")) + 2);
   sprintf (comment, "%s%c", _("last="), (last == 'N') ? 'S' : last);
 
-  print_line ("", ' ', runlevline, time_string (utmp_ent),
+  print_வரி ("", ' ', runlevline, time_string (utmp_ent),
               "", "", c_isprint (last) ? comment : "", "");
 }
 
 /* Print the username of each valid entry and the number of valid entries
    in UTMP_BUF, which should have N elements. */
-static void
-list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
+நிலையான வெறுமை
+list_entries_who (idx_t n, STRUCT_UTMP மாறிலி *utmp_buf)
 {
   idx_t entries = 0;
 
-  while (n--)
+  போது (n--)
     {
-      if (IS_USER_PROCESS (utmp_buf))
+      எனில் (IS_USER_PROCESS (utmp_buf))
         {
-          char *trimmed_name;
+          எழுத்து *trimmed_name;
 
           trimmed_name = extract_trimmed_name (utmp_buf);
 
-          if (entries)
+          எனில் (entries)
             putchar (' ');
           fputs (trimmed_name, stdout);
-          free (trimmed_name);
+          விடுவி (trimmed_name);
           entries++;
         }
       utmp_buf++;
@@ -543,57 +543,57 @@ list_entries_who (idx_t n, STRUCT_UTMP const *utmp_buf)
   printf (_("\n# users=%td\n"), entries);
 }
 
-static void
-print_heading (void)
+நிலையான வெறுமை
+print_heading (வெறுமை)
 {
-  print_line (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
+  print_வரி (_("NAME"), ' ', _("LINE"), _("TIME"), _("IDLE"),
               _("PID"), _("COMMENT"), _("EXIT"));
 }
 
 /* Display UTMP_BUF, which should have N entries. */
-static void
-scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
+நிலையான வெறுமை
+scan_entries (idx_t n, STRUCT_UTMP மாறிலி *utmp_buf)
 {
-  char *ttyname_b IF_LINT ( = NULL);
+  எழுத்து *ttyname_b IF_LINT ( = வெற்று);
   time_t boottime = TYPE_MINIMUM (time_t);
 
-  if (include_heading)
+  எனில் (include_heading)
     print_heading ();
 
-  if (my_line_only)
+  எனில் (my_வரி_only)
     {
       ttyname_b = ttyname (STDIN_FILENO);
-      if (!ttyname_b)
-        return;
-      if (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
-        ttyname_b += sizeof "/dev/" - 1;	/* Discard /dev/ prefix.  */
+      எனில் (!ttyname_b)
+        திரும்பு;
+      எனில் (STRNCMP_LIT (ttyname_b, "/dev/") == 0)
+        ttyname_b += அளவு "/dev/" - 1;	/* Discard /dev/ prefix.  */
     }
 
-  while (n--)
+  போது (n--)
     {
-      if (!my_line_only
-          || str_endswith (utmp_buf->ut_line, ttyname_b))
+      எனில் (!my_வரி_only
+          || str_endswith (utmp_buf->ut_வரி, ttyname_b))
         {
-          if (need_users && IS_USER_PROCESS (utmp_buf))
+          எனில் (need_users && IS_USER_PROCESS (utmp_buf))
             print_user (utmp_buf, boottime);
-          else if (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
+          இல்லையெனில் எனில் (need_runlevel && UT_TYPE_RUN_LVL (utmp_buf))
             print_runlevel (utmp_buf);
-          else if (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
+          இல்லையெனில் எனில் (need_boottime && UT_TYPE_BOOT_TIME (utmp_buf))
             print_boottime (utmp_buf);
           /* I've never seen one of these, so I don't know what it should
              look like :^)
              FIXME: handle OLD_TIME also, perhaps show the delta? */
-          else if (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
+          இல்லையெனில் எனில் (need_clockchange && UT_TYPE_NEW_TIME (utmp_buf))
             print_clockchange (utmp_buf);
-          else if (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
+          இல்லையெனில் எனில் (need_initspawn && UT_TYPE_INIT_PROCESS (utmp_buf))
             print_initspawn (utmp_buf);
-          else if (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
+          இல்லையெனில் எனில் (need_login && UT_TYPE_LOGIN_PROCESS (utmp_buf))
             print_login (utmp_buf);
-          else if (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
+          இல்லையெனில் எனில் (need_deadprocs && UT_TYPE_DEAD_PROCESS (utmp_buf))
             print_deadprocs (utmp_buf);
         }
 
-      if (UT_TYPE_BOOT_TIME (utmp_buf))
+      எனில் (UT_TYPE_BOOT_TIME (utmp_buf))
         boottime = utmp_buf->ut_ts.tv_sec;
 
       utmp_buf++;
@@ -602,30 +602,30 @@ scan_entries (idx_t n, STRUCT_UTMP const *utmp_buf)
 
 /* Display a list of who is on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read the file.  */
-static void
-who (char const *filename, int options)
+நிலையான வெறுமை
+who (எழுத்து மாறிலி *filename, முழு options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  if (short_list)
+  எனில் (short_list)
     options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  எனில் (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
-  if (short_list)
+  எனில் (short_list)
     list_entries_who (n_users, utmp_buf);
-  else
+  இல்லையெனில்
     scan_entries (n_users, utmp_buf);
 
-  free (utmp_buf);
+  விடுவி (utmp_buf);
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]... [ FILE | ARG1 ARG2 ]\n"), program_name);
       fputs (_("\
@@ -644,7 +644,7 @@ Print information about users who are currently logged in.\n\
   -d, --dead        print dead processes\n\
 "));
       oputs (_("\
-  -H, --heading     print line of column headings\n\
+  -H, --heading     print வரி of column headings\n\
 "));
       oputs (_("\
   -l, --login       print system login processes\n\
@@ -653,19 +653,19 @@ Print information about users who are currently logged in.\n\
       --lookup      attempt to canonicalize hostnames via DNS\n\
 "));
       oputs (_("\
-  -m                only hostname and user associated with standard input\n\
+  -m                only hostname and user associated with standard உள்ளீடு\n\
 "));
       oputs (_("\
   -p, --process     print active processes spawned by init\n\
 "));
       oputs (_("\
-  -q, --count       all login names and number of users logged on\n\
+  -q, --மொத்தம்       all login names and எண் of users logged on\n\
 "));
       oputs (_("\
   -r, --runlevel    print current runlevel\n\
 "));
       oputs (_("\
-  -s, --short       print only name, line, and time (default)\n\
+  -s, --short       print only name, வரி, and time (இயல்பு)\n\
 "));
       oputs (_("\
   -t, --time        print last system clock change\n\
@@ -694,10 +694,10 @@ If ARG1 ARG2 given, -m presumed: 'am i' or 'mom likes' are usual.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int optc;
+  முழு optc;
   bool assumptions = true;
 
   initialize_main (&argc, &argv);
@@ -708,12 +708,12 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, NULL))
+  போது ((optc = getopt_long (argc, argv, "abdlmpqrstuwHT", longopts, வெற்று))
          != -1)
     {
-      switch (optc)
+      தேர்வு (optc)
         {
-        case 'a':
+        நிலை 'a':
           need_boottime = true;
           need_deadprocs = true;
           need_login = true;
@@ -725,122 +725,122 @@ main (int argc, char **argv)
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 'b':
+        நிலை 'b':
           need_boottime = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 'd':
+        நிலை 'd':
           need_deadprocs = true;
           include_idle = true;
           include_exit = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 'H':
+        நிலை 'H':
           include_heading = true;
-          break;
+          நிறுத்து;
 
-        case 'l':
+        நிலை 'l':
           need_login = true;
           include_idle = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 'm':
-          my_line_only = true;
-          break;
+        நிலை 'm':
+          my_வரி_only = true;
+          நிறுத்து;
 
-        case 'p':
+        நிலை 'p':
           need_initspawn = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 'q':
+        நிலை 'q':
           short_list = true;
-          break;
+          நிறுத்து;
 
-        case 'r':
+        நிலை 'r':
           need_runlevel = true;
           include_idle = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 's':
+        நிலை 's':
           short_output = true;
-          break;
+          நிறுத்து;
 
-        case 't':
+        நிலை 't':
           need_clockchange = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case 'T':
-        case 'w':
+        நிலை 'T':
+        நிலை 'w':
           include_mesg = true;
-          break;
+          நிறுத்து;
 
-        case 'u':
+        நிலை 'u':
           need_users = true;
           include_idle = true;
           assumptions = false;
-          break;
+          நிறுத்து;
 
-        case LOOKUP_OPTION:
+        நிலை LOOKUP_OPTION:
           do_lookup = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (assumptions)
+  எனில் (assumptions)
     {
       need_users = true;
       short_output = true;
     }
 
-  if (include_exit)
+  எனில் (include_exit)
     {
       short_output = false;
     }
 
-  if (hard_locale (LC_TIME))
+  எனில் (hard_locale (LC_TIME))
     {
       time_format = "%Y-%m-%d %H:%M";
       time_format_width = 4 + 1 + 2 + 1 + 2 + 1 + 2 + 1 + 2;
     }
-  else
+  இல்லையெனில்
     {
       time_format = "%b %e %H:%M";
       time_format_width = 3 + 1 + 2 + 1 + 2 + 1 + 2;
     }
 
-  switch (argc - optind)
+  தேர்வு (argc - optind)
     {
-    case 2:			/* who <blurf> <glop> */
-      my_line_only = true;
+    நிலை 2:			/* who <blurf> <glop> */
+      my_வரி_only = true;
       FALLTHROUGH;
-    case -1:
-    case 0:			/* who */
+    நிலை -1:
+    நிலை 0:			/* who */
       who (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      நிறுத்து;
 
-    case 1:			/* who <utmp file> */
+    நிலை 1:			/* who <utmp file> */
       who (argv[optind], 0);
-      break;
+      நிறுத்து;
 
-    default:			/* lose */
+    இயல்பு:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

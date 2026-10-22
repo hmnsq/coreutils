@@ -16,23 +16,23 @@
 
 /* Written by Richard M. Stallman and David MacKenzie. */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "linebuffer.h"
-#include "fadvise.h"
-#include "mcel.h"
-#include "posixver.h"
-#include "skipchars.h"
-#include "stdio--.h"
-#include "xstrtol.h"
-#include "memcasecmp.h"
-#include "quote.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "argmatch.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "linebuffer.h"
+#அந்தர்பாவ "fadvise.h"
+#அந்தர்பாவ "mcel.h"
+#அந்தர்பாவ "posixver.h"
+#அந்தர்பாவ "skipchars.h"
+#அந்தர்பாவ "stdio--.h"
+#அந்தர்பாவ "xstrtol.h"
+#அந்தர்பாவ "memcasecmp.h"
+#அந்தர்பாவ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "uniq"
@@ -41,38 +41,38 @@
   proper_name ("Richard M. Stallman"), \
   proper_name ("David MacKenzie")
 
-static void
-swap_lines (struct linebuffer **a, struct linebuffer **b)
+நிலையான வெறுமை
+swap_வரிகள் (கட்டமைப்பு linebuffer **a, கட்டமைப்பு linebuffer **b)
 {
-  struct linebuffer *tmp = *a;
+  கட்டமைப்பு linebuffer *tmp = *a;
   *a = *b;
   *b = tmp;
 }
 
 /* Number of fields to skip on each line when doing comparisons. */
-static idx_t skip_fields = false;
+நிலையான idx_t skip_fields = false;
 
 /* Number of chars to skip after skipping any fields. */
-static idx_t skip_chars = false;
+நிலையான idx_t skip_chars = false;
 
 /* Number of chars to compare. */
-static idx_t check_chars = IDX_MAX;
+நிலையான idx_t check_chars = IDX_MAX;
 
 /* Whether to precede the output lines with a count of the number of
    times they occurred in the input. */
-static bool count_occurrences = false;
+நிலையான bool மொத்தம்_occurrences = false;
 
 /* Which lines to output: unique lines, the first of a group of
    repeated lines, and the second and subsequent of a group of
    repeated lines.  */
-static bool output_unique = true;
-static bool output_first_repeated = true;
-static bool output_later_repeated = false;
+நிலையான bool output_unique = true;
+நிலையான bool output_first_repeated = true;
+நிலையான bool output_later_repeated = false;
 
 /* If true, ignore case when comparing.  */
-static bool ignore_case;
+நிலையான bool ignore_case;
 
-enum delimit_method
+எண்ணிக்கை delimit_method
 {
   /* No delimiters output.  --all-repeated[=none] */
   DM_NONE,
@@ -84,20 +84,20 @@ enum delimit_method
   DM_SEPARATE
 };
 
-static char const *const delimit_method_string[] =
+நிலையான எழுத்து மாறிலி *மாறிலி delimit_method_string[] =
 {
-  "none", "prepend", "separate", NULL
+  "none", "prepend", "separate", வெற்று
 };
 
-static enum delimit_method const delimit_method_map[] =
+நிலையான எண்ணிக்கை delimit_method மாறிலி delimit_method_map[] =
 {
   DM_NONE, DM_PREPEND, DM_SEPARATE
 };
 
 /* Select whether/how to delimit groups of duplicate lines.  */
-static enum delimit_method delimit_groups = DM_NONE;
+நிலையான எண்ணிக்கை delimit_method delimit_groups = DM_NONE;
 
-enum grouping_method
+எண்ணிக்கை grouping_method
 {
   /* No grouping, when "--group" isn't used */
   GM_NONE,
@@ -115,76 +115,76 @@ enum grouping_method
   GM_BOTH
 };
 
-static char const *const grouping_method_string[] =
+நிலையான எழுத்து மாறிலி *மாறிலி grouping_method_string[] =
 {
-  "prepend", "append", "separate", "both", NULL
+  "prepend", "append", "separate", "both", வெற்று
 };
 
-static enum grouping_method const grouping_method_map[] =
+நிலையான எண்ணிக்கை grouping_method மாறிலி grouping_method_map[] =
 {
   GM_PREPEND, GM_APPEND, GM_SEPARATE, GM_BOTH
 };
 
-static enum grouping_method grouping = GM_NONE;
+நிலையான எண்ணிக்கை grouping_method grouping = GM_NONE;
 
-enum
+எண்ணிக்கை
 {
   GROUP_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"count", no_argument, NULL, 'c'},
-  {"repeated", no_argument, NULL, 'd'},
-  {"all-repeated", optional_argument, NULL, 'D'},
-  {"group", optional_argument, NULL, GROUP_OPTION},
-  {"ignore-case", no_argument, NULL, 'i'},
-  {"unique", no_argument, NULL, 'u'},
-  {"skip-fields", required_argument, NULL, 'f'},
-  {"skip-chars", required_argument, NULL, 's'},
-  {"check-chars", required_argument, NULL, 'w'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"count", no_argument, வெற்று, 'c'},
+  {"repeated", no_argument, வெற்று, 'd'},
+  {"all-repeated", optional_argument, வெற்று, 'D'},
+  {"group", optional_argument, வெற்று, GROUP_OPTION},
+  {"ignore-case", no_argument, வெற்று, 'i'},
+  {"unique", no_argument, வெற்று, 'u'},
+  {"skip-fields", required_argument, வெற்று, 'f'},
+  {"skip-chars", required_argument, வெற்று, 's'},
+  {"check-chars", required_argument, வெற்று, 'w'},
+  {"zero-terminated", no_argument, வெற்று, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
-Usage: %s [OPTION]... [INPUT [OUTPUT]]\n\
+Usage: %s [OPTION]... [உள்ளீடு_2 [OUTPUT]]\n\
 "),
               program_name);
       fputs (_("\
-Filter adjacent matching lines from INPUT (or standard input),\n\
+Filter adjacent matching வரிகள் from உள்ளீடு_2 (or standard உள்ளீடு),\n\
 writing to OUTPUT (or standard output).\n\
 \n\
-With no options, matching lines are merged to the first occurrence.\n\
+With no options, matching வரிகள் are merged to the first occurrence.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
      oputs (_("\
-  -c, --count\n\
-         prefix lines by the number of occurrences\n\
+  -c, --மொத்தம்\n\
+         prefix வரிகள் by the எண் of occurrences\n\
 "));
      oputs (_("\
   -d, --repeated\n\
-         only print duplicate lines, one for each group\n\
+         only print duplicate வரிகள், one க்கு each group\n\
 "));
      oputs (_("\
   -D\n\
-         print all duplicate lines\n\
+         print all duplicate வரிகள்\n\
 "));
      oputs (_("\
       --all-repeated[=METHOD]\n\
-         like -D, but allow separating groups with an empty line;\n\
-         METHOD={none(default),prepend,separate}\n\
+         like -D, but allow separating groups with an empty வரி;\n\
+         METHOD={none(இயல்பு),prepend,separate}\n\
 "));
      oputs (_("\
   -f, --skip-fields=N\n\
@@ -192,12 +192,12 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
       --group[=METHOD]\n\
-         show all items, separating groups with an empty line;\n\
-         METHOD={separate(default),prepend,append,both}\n\
+         show all பொருட்கள், separating groups with an empty வரி;\n\
+         METHOD={separate(இயல்பு),prepend,append,both}\n\
 "));
      oputs (_("\
-  -i, --ignore-case\n\
-         ignore differences in case when comparing\n\
+  -i, --ignore-நிலை\n\
+         ignore differences in நிலை when comparing\n\
 "));
      oputs (_("\
   -s, --skip-chars=N\n\
@@ -205,15 +205,15 @@ With no options, matching lines are merged to the first occurrence.\n\
 "));
      oputs (_("\
   -u, --unique\n\
-         only print unique lines\n\
+         only print unique வரிகள்\n\
 "));
      oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         வரி delimiter is NUL, not newline\n\
 "));
      oputs (_("\
   -w, --check-chars=N\n\
-         compare no more than N characters in lines\n\
+         compare no more than N characters in வரிகள்\n\
 "));
      oputs (HELP_OPTION_DESCRIPTION);
      oputs (VERSION_OPTION_DESCRIPTION);
@@ -224,75 +224,75 @@ characters.  Fields are skipped before chars.\n\
 "), stdout);
      fputs (_("\
 \n\
-'uniq' does not detect repeated lines unless they are adjacent.\n\
-You may want to sort the input first, or use 'sort -u' without 'uniq'.\n\
+'uniq' does not detect repeated வரிகள் unless they are adjacent.\n\
+You may want to sort the உள்ளீடு first, or use 'sort -u' without 'uniq'.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
   exit (status);
 }
 
-static bool
-strict_posix2 (void)
+நிலையான bool
+strict_posix2 (வெறுமை)
 {
-  int posix_ver = posix2_version ();
-  return 200112 <= posix_ver && posix_ver < 200809;
+  முழு posix_ver = posix2_version ();
+  திரும்பு 200112 <= posix_ver && posix_ver < 200809;
 }
 
 /* Convert OPT to idx_t, reporting an error using MSGID if OPT is
    invalid.  Silently convert too-large values to IDX_MAX.  */
 
-static idx_t
-size_opt (char const *opt, char const *msgid)
+நிலையான idx_t
+size_opt (எழுத்து மாறிலி *opt, எழுத்து மாறிலி *msgid)
 {
   intmax_t size;
-  if (LONGINT_OVERFLOW < xstrtoimax (opt, NULL, 10, &size, "")
+  எனில் (LONGINT_OVERFLOW < xstrtoimax (opt, வெற்று, 10, &size, "")
       || size < 0)
     error (EXIT_FAILURE, 0, "%s: %s", opt, _(msgid));
-  return MIN (size, IDX_MAX);
+  திரும்பு MIN (size, IDX_MAX);
 }
 
-static bool
+நிலையான bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  திரும்பு g.ch == '\n' || c32issep (g.ch);
 }
 
 /* Given a linebuffer LINE,
    return a pointer to the beginning of the line's field to be compared.
    Store into *PLEN the length in bytes of FIELD.  */
 
-static char *
-find_field (struct linebuffer const *line, idx_t *plen)
+நிலையான எழுத்து *
+find_field (கட்டமைப்பு linebuffer மாறிலி *வரி, idx_t *plen)
 {
-  char *lp = line->buffer;
-  char const *lim = lp + line->length - 1;
+  எழுத்து *lp = வரி->buffer;
+  எழுத்து மாறிலி *lim = lp + வரி->length - 1;
 
-  for (idx_t i = skip_fields; 0 < i && lp < lim; i--)
+  க்கு (idx_t i = skip_fields; 0 < i && lp < lim; i--)
     {
       lp = skip_buf_matching (lp, lim, newline_or_blank, true);
       lp = skip_buf_matching (lp, lim, newline_or_blank, false);
     }
 
-  for (idx_t i = skip_chars; 0 < i && lp < lim; i--)
+  க்கு (idx_t i = skip_chars; 0 < i && lp < lim; i--)
     lp += mcel_scan (lp, lim).len;
 
   /* Compute the length in bytes cheaply if possible; otherwise, scan.  */
   idx_t len;
-  if (lim - lp <= check_chars)
+  எனில் (lim - lp <= check_chars)
     len = lim - lp;
-  else if (MB_CUR_MAX <= 1)
+  இல்லையெனில் எனில் (MB_CUR_MAX <= 1)
     len = check_chars;
-  else
+  இல்லையெனில்
     {
-      char *ep = lp;
-      for (idx_t i = check_chars; 0 < i && ep < lim; i--)
+      எழுத்து *ep = lp;
+      க்கு (idx_t i = check_chars; 0 < i && ep < lim; i--)
         ep += mcel_scan (ep, lim).len;
       len = ep - lp;
     }
 
   *plen = len;
-  return lp;
+  திரும்பு lp;
 }
 
 /* Return false if two strings OLD and NEW match, true if not.
@@ -300,13 +300,13 @@ find_field (struct linebuffer const *line, idx_t *plen)
    but rather to the beginnings of the fields to compare.
    OLDLEN and NEWLEN are their lengths. */
 
-static bool
-different (char *old, char *new, idx_t oldlen, idx_t newlen)
+நிலையான bool
+different (எழுத்து *old, எழுத்து *new, idx_t oldlen, idx_t newlen)
 {
-  if (ignore_case)
-    return oldlen != newlen || memcasecmp (old, new, oldlen);
-  else
-    return oldlen != newlen || memcmp (old, new, oldlen);
+  எனில் (ignore_case)
+    திரும்பு oldlen != newlen || memcasecmp (old, new, oldlen);
+  இல்லையெனில்
+    திரும்பு oldlen != newlen || memcmp (old, new, oldlen);
 }
 
 /* Output the line in linebuffer LINE to standard output
@@ -315,51 +315,51 @@ different (char *old, char *new, idx_t oldlen, idx_t newlen)
    If requested, print the number of times it occurred, as well;
    LINECOUNT + 1 is the number of times that the line occurred. */
 
-static void
-writeline (struct linebuffer const *line,
+நிலையான வெறுமை
+writeline (கட்டமைப்பு linebuffer மாறிலி *வரி,
            bool match, intmax_t linecount)
 {
-  if (! (linecount == 0 ? output_unique
+  எனில் (! (linecount == 0 ? output_unique
          : !match ? output_first_repeated
          : output_later_repeated))
-    return;
+    திரும்பு;
 
-  if (count_occurrences)
+  எனில் (மொத்தம்_occurrences)
     {
-      char buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
-      char *end = buf + sizeof buf;
-      char *p = end;
+      எழுத்து buf[7 + INT_BUFSIZE_BOUND (intmax_t)];
+      எழுத்து *end = buf + அளவு buf;
+      எழுத்து *p = end;
       *--p = ' ';
       intmax_t i = linecount + 1;
       affirm (0 < i);
-      do
+      செய்
         *--p = '0' + i % 10;
-      while ((i /= 10));
+      போது ((i /= 10));
       /* 7 characters, padded with spaces if LINECOUNT + 1 is too small.  */
-      while (end - p < 8)
+      போது (end - p < 8)
         *--p = ' ';
-      const idx_t nbytes = end - p;
-      if (fwrite (p, sizeof (char), nbytes, stdout) != nbytes)
+      மாறிலி idx_t nbytes = end - p;
+      எனில் (fwrite (p, அளவு (எழுத்து), nbytes, stdout) != nbytes)
         write_error ();
     }
 
-  if (fwrite (line->buffer, sizeof (char), line->length, stdout)
-      != line->length)
+  எனில் (fwrite (வரி->buffer, அளவு (எழுத்து), வரி->length, stdout)
+      != வரி->length)
     write_error ();
 }
 
 /* Process input file INFILE with output to OUTFILE.
    If either is "-", use the standard I/O stream for it instead. */
 
-static void
-check_file (char const *infile, char const *outfile, char delimiter)
+நிலையான வெறுமை
+check_file (எழுத்து மாறிலி *infile, எழுத்து மாறிலி *outfile, எழுத்து delimiter)
 {
-  struct linebuffer lb1, lb2;
-  struct linebuffer *thisline, *prevline;
+  கட்டமைப்பு linebuffer lb1, lb2;
+  கட்டமைப்பு linebuffer *thisline, *prevline;
 
-  if (! (streq (infile, "-") || freopen (infile, "r", stdin)))
+  எனில் (! (streq (infile, "-") || freopen (infile, "r", stdin)))
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  if (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
+  எனில் (! (streq (outfile, "-") || freopen (outfile, "w", stdout)))
     error (EXIT_FAILURE, errno, "%s", quotef (outfile));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
@@ -385,128 +385,128 @@ check_file (char const *infile, char const *outfile, char delimiter)
 
      3. All other cases.
   */
-  if (output_unique && output_first_repeated && !count_occurrences)
+  எனில் (output_unique && output_first_repeated && !மொத்தம்_occurrences)
     {
-      char *prevfield = NULL;
+      எழுத்து *prevfield = வெற்று;
       idx_t prevlen;
       bool first_group_printed = false;
 
-      while (!feof (stdin)
+      போது (!feof (stdin)
              && readlinebuffer_delim (thisline, stdin, delimiter))
         {
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          எழுத்து *thisfield = find_field (thisline, &thislen);
           bool new_group = (!prevfield
                             || different (thisfield, prevfield,
                                           thislen, prevlen));
 
-          if (new_group && grouping != GM_NONE
+          எனில் (new_group && grouping != GM_NONE
               && (grouping == GM_PREPEND || grouping == GM_BOTH
                   || (first_group_printed && (grouping == GM_APPEND
                                               || grouping == GM_SEPARATE))))
             putchar (delimiter);
 
-          if (new_group || grouping != GM_NONE)
+          எனில் (new_group || grouping != GM_NONE)
             {
-              if (fwrite (thisline->buffer, sizeof (char), thisline->length,
+              எனில் (fwrite (thisline->buffer, அளவு (எழுத்து), thisline->length,
                   stdout) != thisline->length)
                 write_error ();
 
-              swap_lines (&prevline, &thisline);
+              swap_வரிகள் (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
               first_group_printed = true;
             }
         }
-      if ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
+      எனில் ((grouping == GM_BOTH || grouping == GM_APPEND) && first_group_printed)
         putchar (delimiter);
     }
-  else
+  இல்லையெனில்
     {
-      if (!readlinebuffer_delim (prevline, stdin, delimiter))
-        goto closefiles;
+      எனில் (!readlinebuffer_delim (prevline, stdin, delimiter))
+        செல் closefiles;
 
       idx_t prevlen;
-      char *prevfield = find_field (prevline, &prevlen);
-      intmax_t match_count = 0;
+      எழுத்து *prevfield = find_field (prevline, &prevlen);
+      intmax_t match_மொத்தம் = 0;
       bool first_delimiter = true;
 
-      while (!feof (stdin))
+      போது (!feof (stdin))
         {
-          if (!readlinebuffer_delim (thisline, stdin, delimiter))
+          எனில் (!readlinebuffer_delim (thisline, stdin, delimiter))
             {
-              if (ferror (stdin))
-                goto closefiles;
-              break;
+              எனில் (ferror (stdin))
+                செல் closefiles;
+              நிறுத்து;
             }
           idx_t thislen;
-          char *thisfield = find_field (thisline, &thislen);
+          எழுத்து *thisfield = find_field (thisline, &thislen);
           bool match = !different (thisfield, prevfield, thislen, prevlen);
-          match_count += match;
+          match_மொத்தம் += match;
 
-          if (match_count == INTMAX_MAX)
+          எனில் (match_மொத்தம் == INTMAX_MAX)
             {
-              if (count_occurrences)
+              எனில் (மொத்தம்_occurrences)
                 error (EXIT_FAILURE, 0, _("too many repeated lines"));
-              match_count--;
+              match_மொத்தம்--;
             }
 
-          if (delimit_groups != DM_NONE)
+          எனில் (delimit_groups != DM_NONE)
             {
-              if (!match)
+              எனில் (!match)
                 {
-                  if (match_count) /* a previous match */
+                  எனில் (match_மொத்தம்) /* a previous match */
                     first_delimiter = false; /* Only used when DM_SEPARATE */
                 }
-              else if (match_count == 1)
+              இல்லையெனில் எனில் (match_மொத்தம் == 1)
                 {
-                  if ((delimit_groups == DM_PREPEND)
+                  எனில் ((delimit_groups == DM_PREPEND)
                       || (delimit_groups == DM_SEPARATE
                           && !first_delimiter))
                     putchar (delimiter);
                 }
             }
 
-          if (!match || output_later_repeated)
+          எனில் (!match || output_later_repeated)
             {
-              writeline (prevline, match, match_count);
-              swap_lines (&prevline, &thisline);
+              writeline (prevline, match, match_மொத்தம்);
+              swap_வரிகள் (&prevline, &thisline);
               prevfield = thisfield;
               prevlen = thislen;
-              if (!match)
-                match_count = 0;
+              எனில் (!match)
+                match_மொத்தம் = 0;
             }
         }
 
-      writeline (prevline, false, match_count);
+      writeline (prevline, false, match_மொத்தம்);
     }
 
  closefiles:
-  if (ferror (stdin) || fclose (stdin) != 0)
+  எனில் (ferror (stdin) || fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, _("error reading %s"), quoteaf (infile));
 
   /* stdout is handled via the atexit-invoked close_stdout function.  */
 
-  free (lb1.buffer);
-  free (lb2.buffer);
+  விடுவி (lb1.buffer);
+  விடுவி (lb2.buffer);
 }
 
-enum Skip_field_option_type
+எண்ணிக்கை Skip_field_option_type
   {
     SFO_NONE,
     SFO_OBSOLETE,
     SFO_NEW
   };
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int optc = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  enum Skip_field_option_type skip_field_option_type = SFO_NONE;
-  int nfiles = 0;
-  char const *file[2];
-  char delimiter = '\n';	/* change with --zero-terminated, -z */
+  முழு optc = 0;
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != வெற்று);
+  எண்ணிக்கை Skip_field_option_type skip_field_option_type = SFO_NONE;
+  முழு nfiles = 0;
+  எழுத்து மாறிலி *file[2];
+  எழுத்து delimiter = '\n';	/* change with --zero-terminated, -z */
   bool output_option_used = false;   /* if true, one of -u/-d/-D/-c was used */
 
   file[0] = file[1] = "-";
@@ -518,134 +518,134 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  போது (true)
     {
       /* Parse an operand with leading "+" as a file after "--" was
          seen; or if pedantic and a file was seen; or if not
          obsolete.  */
 
-      if (optc == -1
+      எனில் (optc == -1
           || (posixly_correct && nfiles != 0)
           || ((optc = getopt_long (argc, argv,
                                    "-0123456789Dcdf:is:uw:z",
-                                   longopts, NULL))
+                                   longopts, வெற்று))
               == -1))
         {
-          if (argc <= optind)
-            break;
-          if (nfiles == 2)
+          எனில் (argc <= optind)
+            நிறுத்து;
+          எனில் (nfiles == 2)
             {
               error (0, 0, _("extra operand %s"), quote (argv[optind]));
               usage (EXIT_FAILURE);
             }
           file[nfiles++] = argv[optind++];
         }
-      else switch (optc)
+      இல்லையெனில் தேர்வு (optc)
         {
-        case 1:
+        நிலை 1:
           {
             intmax_t size;
-            if (optarg[0] == '+'
+            எனில் (optarg[0] == '+'
                 && ! strict_posix2 ()
-                && (xstrtoimax (optarg, NULL, 10, &size, "")
+                && (xstrtoimax (optarg, வெற்று, 10, &size, "")
                     <= LONGINT_OVERFLOW))
               skip_chars = MIN (size, IDX_MAX);
-            else if (nfiles == 2)
+            இல்லையெனில் எனில் (nfiles == 2)
               {
                 error (0, 0, _("extra operand %s"), quote (optarg));
                 usage (EXIT_FAILURE);
               }
-            else
+            இல்லையெனில்
               file[nfiles++] = optarg;
           }
-          break;
+          நிறுத்து;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        நிலை '0':
+        நிலை '1':
+        நிலை '2':
+        நிலை '3':
+        நிலை '4':
+        நிலை '5':
+        நிலை '6':
+        நிலை '7':
+        நிலை '8':
+        நிலை '9':
           {
-            if (skip_field_option_type == SFO_NEW)
+            எனில் (skip_field_option_type == SFO_NEW)
               skip_fields = 0;
 
-            if (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
+            எனில் (!DECIMAL_DIGIT_ACCUMULATE (skip_fields, optc - '0'))
               skip_fields = IDX_MAX;
 
             skip_field_option_type = SFO_OBSOLETE;
           }
-          break;
+          நிறுத்து;
 
-        case 'c':
-          count_occurrences = true;
+        நிலை 'c':
+          மொத்தம்_occurrences = true;
           output_option_used = true;
-          break;
+          நிறுத்து;
 
-        case 'd':
+        நிலை 'd':
           output_unique = false;
           output_option_used = true;
-          break;
+          நிறுத்து;
 
-        case 'D':
+        நிலை 'D':
           output_unique = false;
           output_later_repeated = true;
-          if (optarg == NULL)
+          எனில் (optarg == வெற்று)
             delimit_groups = DM_NONE;
-          else
+          இல்லையெனில்
             delimit_groups = XARGMATCH ("--all-repeated", optarg,
                                         delimit_method_string,
                                         delimit_method_map);
           output_option_used = true;
-          break;
+          நிறுத்து;
 
-        case GROUP_OPTION:
-          if (optarg == NULL)
+        நிலை GROUP_OPTION:
+          எனில் (optarg == வெற்று)
             grouping = GM_SEPARATE;
-          else
+          இல்லையெனில்
             grouping = XARGMATCH ("--group", optarg,
                                   grouping_method_string,
                                   grouping_method_map);
-          break;
+          நிறுத்து;
 
-        case 'f':
+        நிலை 'f':
           skip_field_option_type = SFO_NEW;
           skip_fields = size_opt (optarg,
                                   N_("invalid number of fields to skip"));
-          break;
+          நிறுத்து;
 
-        case 'i':
+        நிலை 'i':
           ignore_case = true;
-          break;
+          நிறுத்து;
 
-        case 's':
+        நிலை 's':
           skip_chars = size_opt (optarg,
                                  N_("invalid number of bytes to skip"));
-          break;
+          நிறுத்து;
 
-        case 'u':
+        நிலை 'u':
           output_first_repeated = false;
           output_option_used = true;
-          break;
+          நிறுத்து;
 
-        case 'w':
+        நிலை 'w':
           check_chars = size_opt (optarg,
                                   N_("invalid number of bytes to compare"));
-          break;
+          நிறுத்து;
 
-        case 'z':
+        நிலை 'z':
           delimiter = '\0';
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
@@ -654,20 +654,20 @@ main (int argc, char **argv)
      avoid the need to specify a grouping method to --all-repeated.
      It was thought best to avoid deprecating those parameters though
      and keep --group separate to other options.  */
-  if (grouping != GM_NONE && output_option_used)
+  எனில் (grouping != GM_NONE && output_option_used)
     {
       error (0, 0, _("--group is mutually exclusive with -c/-d/-D/-u"));
       usage (EXIT_FAILURE);
     }
 
-  if (grouping != GM_NONE && count_occurrences)
+  எனில் (grouping != GM_NONE && மொத்தம்_occurrences)
     {
       error (0, 0,
            _("grouping and printing repeat counts is meaningless"));
       usage (EXIT_FAILURE);
     }
 
-  if (count_occurrences && output_later_repeated)
+  எனில் (மொத்தம்_occurrences && output_later_repeated)
     {
       error (0, 0,
            _("printing all duplicated lines and repeat counts is meaningless"));
@@ -676,5 +676,5 @@ main (int argc, char **argv)
 
   check_file (file[0], file[1], delimiter);
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

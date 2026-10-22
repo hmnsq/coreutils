@@ -20,17 +20,17 @@
    sort) in Donald E. Knuth, The Art of Computer Programming, Volume
    1/Fundamental Algorithms, page 262.  */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "readtokens.h"
-#include "stdio--.h"
-#include "quote.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "fadvise.h"
+#அந்தர்பாவ "readtokens.h"
+#அந்தர்பாவ "stdio--.h"
+#அந்தர்பாவ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "tsort"
@@ -41,42 +41,42 @@
 #define DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+கட்டமைப்பு successor
 {
-  struct item *suc;
-  struct successor *next;
+  கட்டமைப்பு item *suc;
+  கட்டமைப்பு successor *next;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+கட்டமைப்பு item
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  எழுத்து மாறிலி *str;
+  கட்டமைப்பு item *இடது, *வலது;
+  signed எழுத்து balance; /* -1, 0, or +1 */
   bool printed;
-  size_t count;
-  struct item *qlink;
-  struct successor *top;
+  size_t மொத்தம்;
+  கட்டமைப்பு item *qlink;
+  கட்டமைப்பு successor *உச்சி;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+நிலையான கட்டமைப்பு item *head = வெற்று;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+நிலையான கட்டமைப்பு item *zeros = வெற்று;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+நிலையான கட்டமைப்பு item *loop = வெற்று;
 
 /* The number of strings to sort.  */
-static size_t n_strings = 0;
+நிலையான size_t n_strings = 0;
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -97,14 +97,14 @@ Write totally ordered list consistent with the partial ordering in FILE.\n\
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+நிலையான கட்டமைப்பு item *
+new_item (எழுத்து மாறிலி *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  கட்டமைப்பு item *k = xzalloc (அளவு *k);
+  எனில் (str)
     k->str = xstrdup (str);
-  return k;
+  திரும்பு k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,138 +115,138 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+நிலையான கட்டமைப்பு item *
+தேடல்_item (கட்டமைப்பு item *வேர், எழுத்து மாறிலி *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  கட்டமைப்பு item *p, *q, *r, *s, *t;
+  முழு a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  எனில் (வேர்->வலது == வெற்று)
+    திரும்பு (வேர்->வலது = new_item (str));
 
   /* A1. Initialize.  */
-  t = root;
-  s = p = root->right;
+  t = வேர்;
+  s = p = வேர்->வலது;
 
-  while (true)
+  போது (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      எனில் (a == 0)
+        திரும்பு p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
-        q = p->left;
-      else
-        q = p->right;
+      எனில் (a < 0)
+        q = p->இடது;
+      இல்லையெனில்
+        q = p->வலது;
 
-      if (q == NULL)
+      எனில் (q == வெற்று)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
-            p->left = q;
-          else
-            p->right = q;
+          எனில் (a < 0)
+            p->இடது = q;
+          இல்லையெனில்
+            p->வலது = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          எனில் (a < 0)
             {
-              r = p = s->left;
+              r = p = s->இடது;
               a = -1;
             }
-          else
+          இல்லையெனில்
             {
               affirm (0 < a);
-              r = p = s->right;
+              r = p = s->வலது;
               a = 1;
             }
 
-          while (p != q)
+          போது (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              முழு cmp = strcmp (str, p->str);
+              எனில் (cmp < 0)
                 {
                   p->balance = -1;
-                  p = p->left;
+                  p = p->இடது;
                 }
-              else
+              இல்லையெனில்
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
-                  p = p->right;
+                  p = p->வலது;
                 }
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          எனில் (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              திரும்பு q;
             }
 
-          if (r->balance == a)
+          எனில் (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              எனில் (a < 0)
                 {
-                  s->left = r->right;
-                  r->right = s;
+                  s->இடது = r->வலது;
+                  r->வலது = s;
                 }
-              else
+              இல்லையெனில்
                 {
-                  s->right = r->left;
-                  r->left = s;
+                  s->வலது = r->இடது;
+                  r->இடது = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          இல்லையெனில்
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              எனில் (a < 0)
                 {
-                  p = r->right;
-                  r->right = p->left;
-                  p->left = r;
-                  s->left = p->right;
-                  p->right = s;
+                  p = r->வலது;
+                  r->வலது = p->இடது;
+                  p->இடது = r;
+                  s->இடது = p->வலது;
+                  p->வலது = s;
                 }
-              else
+              இல்லையெனில்
                 {
-                  p = r->left;
-                  r->left = p->right;
-                  p->right = r;
-                  s->right = p->left;
-                  p->left = s;
+                  p = r->இடது;
+                  r->இடது = p->வலது;
+                  p->வலது = r;
+                  s->வலது = p->இடது;
+                  p->இடது = s;
                 }
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              எனில் (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              இல்லையெனில் எனில் (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
-            t->right = p;
-          else
-            t->left = p;
+          எனில் (s == t->வலது)
+            t->வலது = p;
+          இல்லையெனில்
+            t->இடது = p;
 
-          return q;
+          திரும்பு q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      எனில் (q->balance)
         {
           t = p;
           s = q;
@@ -260,43 +260,43 @@ search_item (struct item *root, char const *str)
 
 /* Record the fact that J precedes K.  */
 
-static void
-record_relation (struct item *j, struct item *k)
+நிலையான வெறுமை
+record_relation (கட்டமைப்பு item *j, கட்டமைப்பு item *k)
 {
-  struct successor *p;
+  கட்டமைப்பு successor *p;
 
-  if (!streq (j->str, k->str))
+  எனில் (!streq (j->str, k->str))
     {
-      k->count++;
-      p = xmalloc (sizeof *p);
+      k->மொத்தம்++;
+      p = xmalloc (அளவு *p);
       p->suc = k;
-      p->next = j->top;
-      j->top = p;
+      p->next = j->உச்சி;
+      j->உச்சி = p;
     }
 }
 
-static bool
-count_items (MAYBE_UNUSED struct item *unused)
+நிலையான bool
+மொத்தம்_பொருட்கள் (MAYBE_UNUSED கட்டமைப்பு item *unused)
 {
   n_strings++;
-  return false;
+  திரும்பு false;
 }
 
-static bool
-scan_zeros (struct item *k)
+நிலையான bool
+scan_zeros (கட்டமைப்பு item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  எனில் (k->மொத்தம் == 0 && !k->printed)
     {
-      if (head == NULL)
+      எனில் (head == வெற்று)
         head = k;
-      else
+      இல்லையெனில்
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  திரும்பு false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -317,68 +317,68 @@ scan_zeros (struct item *k)
    loop has completely been constructed.  If the loop was found, the
    global variable LOOP will be null.  */
 
-static bool
-detect_loop (struct item *k)
+நிலையான bool
+detect_loop (கட்டமைப்பு item *k)
 {
-  if (k->count > 0)
+  எனில் (k->மொத்தம் > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      எனில் (loop == வெற்று)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      இல்லையெனில்
         {
-          struct successor **p = &k->top;
+          கட்டமைப்பு successor **p = &k->உச்சி;
 
-          while (*p)
+          போது (*p)
             {
-              if ((*p)->suc == loop)
+              எனில் ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  எனில் (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      போது (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          கட்டமைப்பு item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          எனில் (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
-                              s->suc->count--;
+                              கட்டமைப்பு successor *s = *p;
+                              s->suc->மொத்தம்--;
                               *p = s->next;
-                              IF_LINT (free (s));
-                              break;
+                              IF_LINT (விடுவி (s));
+                              நிறுத்து;
                             }
 
                           /* Tidy things up since we might have to
                              detect another loop.  */
-                          loop->qlink = NULL;
+                          loop->qlink = வெற்று;
                           loop = tmp;
                         }
 
-                      while (loop)
+                      போது (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          கட்டமைப்பு item *tmp = loop->qlink;
 
-                          loop->qlink = NULL;
+                          loop->qlink = வெற்று;
                           loop = tmp;
                         }
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      திரும்பு true;
                     }
-                  else
+                  இல்லையெனில்
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      நிறுத்து;
                     }
                 }
 
@@ -387,102 +387,102 @@ detect_loop (struct item *k)
         }
     }
 
-  return false;
+  திரும்பு false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
-static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+நிலையான bool
+recurse_மரம் (கட்டமைப்பு item *வேர், bool (*action) (கட்டமைப்பு item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  எனில் (வேர்->இடது == வெற்று && வேர்->வலது == வெற்று)
+    திரும்பு (*action) (வேர்);
+  இல்லையெனில்
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      எனில் (வேர்->இடது != வெற்று)
+        எனில் (recurse_மரம் (வேர்->இடது, action))
+          திரும்பு true;
+      எனில் ((*action) (வேர்))
+        திரும்பு true;
+      எனில் (வேர்->வலது != வெற்று)
+        எனில் (recurse_மரம் (வேர்->வலது, action))
+          திரும்பு true;
     }
 
-  return false;
+  திரும்பு false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
-static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+நிலையான வெறுமை
+walk_மரம் (கட்டமைப்பு item *வேர், bool (*action) (கட்டமைப்பு item *))
 {
-  if (root->right)
-    recurse_tree (root->right, action);
+  எனில் (வேர்->வலது)
+    recurse_மரம் (வேர்->வலது, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
-static _Noreturn void
-tsort (char const *file)
+நிலையான _Noreturn வெறுமை
+tsort (எழுத்து மாறிலி *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
+  கட்டமைப்பு item *j = வெற்று;
+  கட்டமைப்பு item *k = வெற்று;
   token_buffer tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  கட்டமைப்பு item *வேர் = new_item (வெற்று);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  எனில் (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  போது (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      size_t len = readtoken (stdin, DELIM, அளவு (DELIM) - 1, &tokenbuffer);
+      எனில் (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          எனில் (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          நிறுத்து;
         }
 
       affirm (len != 0);
 
-      k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      k = தேடல்_item (வேர், tokenbuffer.buffer);
+      எனில் (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
-          k = NULL;
+          k = வெற்று;
         }
 
       j = k;
     }
 
-  if (k != NULL)
+  எனில் (k != வெற்று)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
-  walk_tree (root, count_items);
+  walk_மரம் (வேர், மொத்தம்_பொருட்கள்);
 
-  while (n_strings > 0)
+  போது (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
-      walk_tree (root, scan_zeros);
+      walk_மரம் (வேர், scan_zeros);
 
-      while (head)
+      போது (head)
         {
-          struct successor *p = head->top;
+          கட்டமைப்பு successor *p = head->உச்சி;
 
           /* T5. Output front of queue.  */
           puts (head->str);
@@ -490,10 +490,10 @@ tsort (char const *file)
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          போது (p)
             {
-              p->suc->count--;
-              if (p->suc->count == 0)
+              p->suc->மொத்தம்--;
+              எனில் (p->suc->மொத்தம் == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -507,28 +507,28 @@ tsort (char const *file)
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      எனில் (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
           ok = false;
 
           /* Print the loop and remove a relation to break it.  */
-          do
-            walk_tree (root, detect_loop);
-          while (loop);
+          செய்
+            walk_மரம் (வேர், detect_loop);
+          போது (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  எனில் (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,34 +538,34 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  போது (true)
     {
-      static struct option const long_options[] =
+      நிலையான கட்டமைப்பு option மாறிலி long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
           {GETOPT_VERSION_OPTION_DECL},
-          {NULL, 0, NULL, 0}
+          {வெற்று, 0, வெற்று, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      முழு c = getopt_long (argc, argv, "w", long_options, வெற்று);
 
-      if (c == -1)
-        break;
+      எனில் (c == -1)
+        நிறுத்து;
 
-      switch (c)
+      தேர்வு (c)
         {
-        case 'w':
-          break;
+        நிலை 'w':
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (1 < argc - optind)
+  எனில் (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);

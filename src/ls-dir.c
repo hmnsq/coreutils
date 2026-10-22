@@ -1,2 +1,2 @@
-#include "ls.h"
-enum ls_modes ls_mode = LS_MULTI_COL;
+#அந்தர்பாவ "ls.h"
+எண்ணிக்கை ls_modes ls_mode = LS_MULTI_COL;

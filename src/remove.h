@@ -20,7 +20,7 @@
 
 # include "dev-ino.h"
 
-enum rm_interactive
+எண்ணிக்கை rm_interactive
 {
   /* Start with any number larger than 1, so that any legacy tests
      against values of 0 or 1 will fail.  */
@@ -29,13 +29,13 @@ enum rm_interactive
   RMI_NEVER
 };
 
-struct rm_options
+கட்டமைப்பு rm_options
 {
   /* If true, ignore nonexistent files.  */
   bool ignore_missing_files;
 
   /* If true, query the user about whether to remove each file.  */
-  enum rm_interactive interactive;
+  எண்ணிக்கை rm_interactive interactive;
 
   /* FIXME: remove  */
   /* If true, do not traverse into (or remove) any directory that is
@@ -54,11 +54,11 @@ struct rm_options
 
   /* Pointer to the device and inode numbers of '/', when --recursive
      and preserving '/'.  Otherwise null.  */
-  struct dev_ino *root_dev_ino;
+  கட்டமைப்பு dev_ino *வேர்_dev_ino;
 
   /* If true, do not traverse into (or remove) any directory that is
      the root of a file system.  I.e., a separate device.  */
-  bool preserve_all_root;
+  bool preserve_all_வேர்;
 
   /* If nonzero, stdin is a tty.  */
   bool stdin_tty;
@@ -75,7 +75,7 @@ struct rm_options
   bool require_restore_cwd;
 };
 
-enum RM_status
+எண்ணிக்கை RM_status
 {
   /* These must be listed in order of increasing seriousness. */
   RM_OK = 2,
@@ -89,15 +89,15 @@ enum RM_status
   ((S) == RM_OK || (S) == RM_USER_ACCEPTED || (S) == RM_USER_DECLINED \
    || (S) == RM_ERROR)
 
-# define UPDATE_STATUS(S, New_value)				\
-  do								\
+# define UPDATE_STATUS(S, New_மதிப்பு)				\
+  செய்								\
     {								\
-      if ((New_value) == RM_ERROR				\
-          || ((New_value) == RM_USER_DECLINED && (S) == RM_OK))	\
-        (S) = (New_value);					\
+      எனில் ((New_மதிப்பு) == RM_ERROR				\
+          || ((New_மதிப்பு) == RM_USER_DECLINED && (S) == RM_OK))	\
+        (S) = (New_மதிப்பு);					\
     }								\
-  while (0)
+  போது (0)
 
-extern enum RM_status rm (char *const *file, struct rm_options const *x);
+வெளி எண்ணிக்கை RM_status rm (எழுத்து *மாறிலி *file, கட்டமைப்பு rm_options மாறிலி *x);
 
 #endif

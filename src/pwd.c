@@ -14,43 +14,43 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "quote.h"
-#include "root-dev-ino.h"
-#include "xgetcwd.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "root-dev-ino.h"
+#அந்தர்பாவ "xgetcwd.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "pwd"
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-struct file_name
+கட்டமைப்பு file_name
 {
   idx_t n_alloc;
-  char *buf COUNTED_BY (n_alloc);
-  char *start;
+  எழுத்து *buf COUNTED_BY (n_alloc);
+  எழுத்து *start;
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"logical", no_argument, NULL, 'L'},
-  {"physical", no_argument, NULL, 'P'},
+  {"logical", no_argument, வெற்று, 'L'},
+  {"physical", no_argument, வெற்று, 'P'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -59,7 +59,7 @@ Print the full filename of the current working directory.\n\
 "), stdout);
       oputs (_("\
   -L, --logical\n\
-         use PWD from environment, even if it contains symlinks\n\
+         use PWD from environment, even எனில் it contains symlinks\n\
 "));
       oputs (_("\
   -P, --physical\n\
@@ -76,44 +76,44 @@ If no option is specified, -P is assumed.\n\
   exit (status);
 }
 
-static void
-file_name_free (struct file_name *p)
+நிலையான வெறுமை
+file_name_free (கட்டமைப்பு file_name *p)
 {
-  free (p->buf);
-  free (p);
+  விடுவி (p->buf);
+  விடுவி (p);
 }
 
-static struct file_name *
-file_name_init (void)
+நிலையான கட்டமைப்பு file_name *
+file_name_init (வெறுமை)
 {
-  struct file_name *p = xmalloc (sizeof *p);
+  கட்டமைப்பு file_name *p = xmalloc (அளவு *p);
 
   /* Start with a buffer larger than likely file names, but beware of systems
      on which PATH_MAX is very large -- e.g., INT_MAX.  */
-  int init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
+  முழு init_alloc = 2 * MIN (PATH_MAX, 16 * 1024);
   p->n_alloc = init_alloc;
 
   p->buf = xmalloc (init_alloc);
   p->start = p->buf + init_alloc - 1;
   p->start[0] = '\0';
-  return p;
+  திரும்பு p;
 }
 
 /* Prepend the name S of length S_LEN, to the growing file_name, P.  */
-static void
-file_name_prepend (struct file_name *p, char const *s, size_t s_len)
+நிலையான வெறுமை
+file_name_prepend (கட்டமைப்பு file_name *p, எழுத்து மாறிலி *s, size_t s_len)
 {
   idx_t n_free = p->start - p->buf;
-  if (n_free < 1 + s_len)
+  எனில் (n_free < 1 + s_len)
     {
       /* Call xpalloc with NULL not p->buf, since with the latter
          we'd end up copying the data twice: once via realloc, then again
          to align it with the end of the new buffer.  By passing NULL we
          copy it only once.  */
       idx_t n_used = p->n_alloc - n_free;
-      char *buf = xpalloc (NULL, &p->n_alloc, 1 + s_len - n_free, -1, 1);
+      எழுத்து *buf = xpalloc (வெற்று, &p->n_alloc, 1 + s_len - n_free, -1, 1);
       p->start = memcpy (buf + p->n_alloc - n_used, p->start, n_used);
-      free (p->buf);
+      விடுவி (p->buf);
       p->buf = buf;
     }
 
@@ -123,19 +123,19 @@ file_name_prepend (struct file_name *p, char const *s, size_t s_len)
 }
 
 /* Return a string (malloc'd) consisting of N '/'-separated ".." components.  */
-static char *
+நிலையான எழுத்து *
 nth_parent (size_t n)
 {
-  char *buf = xnmalloc (3, n);
-  char *p = buf;
+  எழுத்து *buf = xnmalloc (3, n);
+  எழுத்து *p = buf;
 
-  for (size_t i = 0; i < n; i++)
+  க்கு (size_t i = 0; i < n; i++)
     {
       memcpy (p, "../", 3);
       p += 3;
     }
   p[-1] = '\0';
-  return buf;
+  திரும்பு buf;
 }
 
 /* Determine the basename of the current directory, where DOT_SB is the
@@ -149,22 +149,22 @@ nth_parent (size_t n)
    PARENT_HEIGHT is 1.  This is solely for diagnostics.
    Exit nonzero upon error.  */
 
-static void
-find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
+நிலையான வெறுமை
+find_dir_entry (கட்டமைப்பு stat *dot_sb, கட்டமைப்பு file_name *file_name,
                 size_t parent_height)
 {
   DIR *dirp = opendir ("..");
-  if (dirp == NULL)
+  எனில் (dirp == வெற்று)
     error (EXIT_FAILURE, errno, _("cannot open directory %s"),
            quote (nth_parent (parent_height)));
 
-  int fd = dirfd (dirp);
-  if ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
+  முழு fd = dirfd (dirp);
+  எனில் ((0 <= fd ? fchdir (fd) : chdir ("..")) < 0)
     error (EXIT_FAILURE, errno, _("failed to chdir to %s"),
            quote (nth_parent (parent_height)));
 
-  struct stat parent_sb;
-  if ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
+  கட்டமைப்பு stat parent_sb;
+  எனில் ((0 <= fd ? fstat (fd, &parent_sb) : stat (".", &parent_sb)) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"),
            quote (nth_parent (parent_height)));
 
@@ -173,53 +173,53 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
   bool use_lstat = (parent_sb.st_dev != dot_sb->st_dev);
 
   bool found = false;
-  while (true)
+  போது (true)
     {
-      struct dirent const *dp;
+      கட்டமைப்பு dirent மாறிலி *dp;
 
       errno = 0;
-      if ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == NULL)
+      எனில் ((dp = readdir_ignoring_dot_and_dotdot (dirp)) == வெற்று)
         {
-          if (errno)
+          எனில் (errno)
             {
               /* Save/restore errno across closedir call.  */
-              int e = errno;
+              முழு e = errno;
               closedir (dirp);
               errno = e;
 
               /* Arrange to give a diagnostic after exiting this loop.  */
-              dirp = NULL;
+              dirp = வெற்று;
             }
-          break;
+          நிறுத்து;
         }
 
       ino_t ino = D_INO (dp);
 
-      struct stat ent_sb;
-      if (ino == NOT_AN_INODE_NUMBER || use_lstat)
+      கட்டமைப்பு stat ent_sb;
+      எனில் (ino == NOT_AN_INODE_எண் || use_lstat)
         {
-          if (lstat (dp->d_name, &ent_sb) < 0)
+          எனில் (lstat (dp->d_name, &ent_sb) < 0)
             {
               /* Skip any entry we can't stat.  */
-              continue;
+              தொடர்;
             }
           ino = ent_sb.st_ino;
         }
 
-      if (ino != dot_sb->st_ino)
-        continue;
+      எனில் (ino != dot_sb->st_ino)
+        தொடர்;
 
       /* If we're not crossing a device boundary, then a simple i-node
          match is enough.  */
-      if ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
+      எனில் ( ! use_lstat || ent_sb.st_dev == dot_sb->st_dev)
         {
           file_name_prepend (file_name, dp->d_name, _D_EXACT_NAMLEN (dp));
           found = true;
-          break;
+          நிறுத்து;
         }
     }
 
-  if (dirp == NULL || closedir (dirp) != 0)
+  எனில் (dirp == வெற்று || closedir (dirp) != 0)
     {
       /* Note that this diagnostic serves for both readdir
          and closedir failures.  */
@@ -227,7 +227,7 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
              quote (nth_parent (parent_height)));
     }
 
-  if ( ! found)
+  எனில் ( ! found)
     error (EXIT_FAILURE, 0,
            _("couldn't find directory entry in %s with matching i-node"),
            quote (nth_parent (parent_height)));
@@ -258,71 +258,71 @@ find_dir_entry (struct stat *dot_sb, struct file_name *file_name,
    in case the unreadable directory is close enough to the root that
    getcwd works from there.  */
 
-static void
-robust_getcwd (struct file_name *file_name)
+நிலையான வெறுமை
+robust_getcwd (கட்டமைப்பு file_name *file_name)
 {
   size_t height = 1;
-  struct dev_ino dev_ino_buf;
-  struct dev_ino *root_dev_ino = get_root_dev_ino (&dev_ino_buf);
+  கட்டமைப்பு dev_ino dev_ino_buf;
+  கட்டமைப்பு dev_ino *வேர்_dev_ino = get_வேர்_dev_ino (&dev_ino_buf);
 
-  if (root_dev_ino == NULL)
+  எனில் (வேர்_dev_ino == வெற்று)
     error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
            quoteaf ("/"));
 
-  struct stat dot_sb;
-  if (stat (".", &dot_sb) < 0)
+  கட்டமைப்பு stat dot_sb;
+  எனில் (stat (".", &dot_sb) < 0)
     error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf ("."));
 
-  while (true)
+  போது (true)
     {
       /* If we've reached the root, we're done.  */
-      if (PSAME_INODE (&dot_sb, root_dev_ino))
-        break;
+      எனில் (PSAME_INODE (&dot_sb, வேர்_dev_ino))
+        நிறுத்து;
 
       find_dir_entry (&dot_sb, file_name, height++);
     }
 
   /* See if a leading slash is needed; file_name_prepend adds one.  */
-  if (file_name->start[0] == '\0')
+  எனில் (file_name->start[0] == '\0')
     file_name_prepend (file_name, "", 0);
 }
 
 
 /* Return PWD from the environment if it is acceptable for 'pwd -L'
    output, otherwise NULL.  */
-static char const *
-logical_getcwd (void)
+நிலையான எழுத்து மாறிலி *
+logical_getcwd (வெறுமை)
 {
-  char const *wd = getenv ("PWD");
+  எழுத்து மாறிலி *wd = getenv ("PWD");
 
   /* Textual validation first.  */
-  if (!wd || wd[0] != '/')
-    return NULL;
-  char const *p = wd;
-  while ((p = strstr (p, "/.")))
+  எனில் (!wd || wd[0] != '/')
+    திரும்பு வெற்று;
+  எழுத்து மாறிலி *p = wd;
+  போது ((p = strstr (p, "/.")))
     {
-      if (!p[2] || p[2] == '/'
+      எனில் (!p[2] || p[2] == '/'
           || (p[2] == '.' && (!p[3] || p[3] == '/')))
-        return NULL;
+        திரும்பு வெற்று;
       p++;
     }
 
   /* System call validation.  */
-  struct stat st1;
-  struct stat st2;
-  if (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
-    return wd;
-  return NULL;
+  கட்டமைப்பு stat st1;
+  கட்டமைப்பு stat st2;
+  எனில் (stat (wd, &st1) == 0 && stat (".", &st2) == 0 && psame_inode (&st1, &st2))
+    திரும்பு wd;
+  திரும்பு வெற்று;
 }
 
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   /* POSIX requires a default of -L, but most scripts expect -P.
      Currently shells default to -L, while stand-alone
      pwd implementations default to -P.  */
-  bool logical = (getenv ("POSIXLY_CORRECT") != NULL);
+  bool logical = (getenv ("POSIXLY_CORRECT") != வெற்று);
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -332,55 +332,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  போது (true)
     {
-      int c = getopt_long (argc, argv, "LP", longopts, NULL);
-      if (c == -1)
-        break;
-      switch (c)
+      முழு c = getopt_long (argc, argv, "LP", longopts, வெற்று);
+      எனில் (c == -1)
+        நிறுத்து;
+      தேர்வு (c)
         {
-        case 'L':
+        நிலை 'L':
           logical = true;
-          break;
-        case 'P':
+          நிறுத்து;
+        நிலை 'P':
           logical = false;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (optind < argc)
+  எனில் (optind < argc)
     error (0, 0, _("ignoring non-option arguments"));
 
-  if (logical)
+  எனில் (logical)
     {
-      char const *wd = logical_getcwd ();
-      if (wd)
+      எழுத்து மாறிலி *wd = logical_getcwd ();
+      எனில் (wd)
         {
           puts (wd);
-          return EXIT_SUCCESS;
+          திரும்பு EXIT_SUCCESS;
         }
     }
 
-  char *wd = xgetcwd ();
-  if (wd != NULL)
+  எழுத்து *wd = xgetcwd ();
+  எனில் (wd != வெற்று)
     {
       puts (wd);
-      free (wd);
+      விடுவி (wd);
     }
-  else
+  இல்லையெனில்
     {
-      struct file_name *file_name = file_name_init ();
+      கட்டமைப்பு file_name *file_name = file_name_init ();
       robust_getcwd (file_name);
       puts (file_name->start);
       file_name_free (file_name);
     }
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

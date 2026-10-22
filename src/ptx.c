@@ -17,20 +17,20 @@
 
    François Pinard <pinard@iro.umontreal.ca> */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include <regex.h>
-#include "argmatch.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "octhexdigits.h"
-#include "quote.h"
-#include "read-file.h"
-#include "stdio--.h"
-#include "xstrtol.h"
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ <regex.h>
+#அந்தர்பாவ "argmatch.h"
+#அந்தர்பாவ "c-ctype.h"
+#அந்தர்பாவ "fadvise.h"
+#அந்தர்பாவ "octhexdigits.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "read-file.h"
+#அந்தர்பாவ "stdio--.h"
+#அந்தர்பாவ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "ptx"
@@ -45,7 +45,7 @@
 
 /* Debugging the memory allocator.  */
 
-#if WITH_DMALLOC
+#எனில் WITH_DMALLOC
 # define MALLOC_FUNC_CHECK 1
 # include <dmalloc.h>
 #endif
@@ -59,7 +59,7 @@
 
 /* Program options.  */
 
-enum Format
+எண்ணிக்கை Format
 {
   UNKNOWN_FORMAT,		/* output format still unknown */
   DUMB_FORMAT,			/* output for a dumb terminal */
@@ -67,56 +67,56 @@ enum Format
   TEX_FORMAT			/* output for 'TeX' or 'LaTeX' */
 };
 
-static bool gnu_extensions = true;	/* trigger all GNU extensions */
-static bool auto_reference = false;	/* refs are 'file_name:line_number:' */
-static bool input_reference = false;	/* refs at beginning of input lines */
-static bool right_reference = false;	/* output refs after right context  */
-static idx_t line_width = -1;		/* output line width in characters */
-static idx_t gap_size = 3;	/* number of spaces between output fields */
-static char const *truncation_string = "/";
+நிலையான bool gnu_extensions = true;	/* trigger all GNU extensions */
+நிலையான bool auto_reference = false;	/* refs are 'file_name:line_number:' */
+நிலையான bool உள்ளீடு_reference = false;	/* refs at beginning of input lines */
+நிலையான bool வலது_reference = false;	/* output refs after right context  */
+நிலையான idx_t வரி_width = -1;		/* output line width in characters */
+நிலையான idx_t gap_size = 3;	/* number of spaces between output fields */
+நிலையான எழுத்து மாறிலி *truncation_string = "/";
                                 /* string used to mark line truncations */
-static char const *macro_name = "xx";	/* macro name for roff or TeX output */
-static enum Format output_format = UNKNOWN_FORMAT;
+நிலையான எழுத்து மாறிலி *macro_name = "xx";	/* macro name for roff or TeX output */
+நிலையான எண்ணிக்கை Format output_format = UNKNOWN_FORMAT;
                                 /* output format */
 
-static bool ignore_case = false;	/* fold lower to upper for sorting */
-static char const *break_file = NULL; /* name of the 'Break chars' file */
-static char const *only_file = NULL;	/* name of the 'Only words' file */
-static char const *ignore_file = NULL; /* name of the 'Ignore words' file */
+நிலையான bool ignore_case = false;	/* fold lower to upper for sorting */
+நிலையான எழுத்து மாறிலி *break_file = வெற்று; /* name of the 'Break chars' file */
+நிலையான எழுத்து மாறிலி *only_file = வெற்று;	/* name of the 'Only words' file */
+நிலையான எழுத்து மாறிலி *ignore_file = வெற்று; /* name of the 'Ignore words' file */
 
 /* Options that use regular expressions.  */
-struct regex_data
+கட்டமைப்பு regex_data
 {
   /* The original regular expression, as a string.  */
-  char const *string;
+  எழுத்து மாறிலி *string;
 
   /* The compiled regular expression, and its fastmap.  */
-  struct re_pattern_buffer pattern;
-  char fastmap[UCHAR_MAX + 1];
+  கட்டமைப்பு re_pattern_buffer pattern;
+  எழுத்து fastmap[UCHAR_MAX + 1];
 };
 
-static struct regex_data context_regex;	/* end of context */
-static struct regex_data word_regex;	/* keyword */
+நிலையான கட்டமைப்பு regex_data context_regex;	/* end of context */
+நிலையான கட்டமைப்பு regex_data word_regex;	/* keyword */
 
 /* A BLOCK delimit a region in memory of arbitrary size, like the copy of a
    whole file.  A WORD is similar, except it is intended for smaller regions.
    A WORD_TABLE may contain several WORDs.  */
 
-typedef struct
+வகைவரை கட்டமைப்பு
   {
-    char *start;		/* pointer to beginning of region */
-    char *end;			/* pointer to end + 1 of region */
+    எழுத்து *start;		/* pointer to beginning of region */
+    எழுத்து *end;			/* pointer to end + 1 of region */
   }
 BLOCK;
 
-typedef struct
+வகைவரை கட்டமைப்பு
   {
-    char *start;		/* pointer to beginning of region */
+    எழுத்து *start;		/* pointer to beginning of region */
     idx_t size;			/* length of the region */
   }
 WORD;
 
-typedef struct
+வகைவரை கட்டமைப்பு
   {
     idx_t alloc;		/* allocated length */
     idx_t length;		/* number of used entries */
@@ -127,72 +127,72 @@ WORD_TABLE;
 /* Pattern description tables.  */
 
 /* For each character, provide its folded equivalent.  */
-static unsigned char folded_chars[CHAR_SET_SIZE];
+நிலையான unsigned எழுத்து folded_chars[CHAR_SET_SIZE];
 
 /* End of context pattern register indices.  */
-static struct re_registers context_regs;
+நிலையான கட்டமைப்பு re_registers context_regs;
 
 /* Keyword pattern register indices.  */
-static struct re_registers word_regs;
+நிலையான கட்டமைப்பு re_registers word_regs;
 
 /* A word characters fastmap is used only when no word regexp has been
    provided.  A word is then made up of a sequence of one or more characters
    allowed by the fastmap.  Contains !0 if character allowed in word.  Not
    only this is faster in most cases, but it simplifies the implementation
    of the Break files.  */
-static char word_fastmap[CHAR_SET_SIZE];
+நிலையான எழுத்து word_fastmap[CHAR_SET_SIZE];
 
 /* Maximum length of any word read.  */
-static idx_t maximum_word_length;
+நிலையான idx_t maximum_word_length;
 
 /* Maximum width of any reference used.  */
-static idx_t reference_max_width;
+நிலையான idx_t reference_max_width;
 
 /* Ignore and Only word tables.  */
 
-static WORD_TABLE ignore_table;	/* table of words to ignore */
-static WORD_TABLE only_table;		/* table of words to select */
+நிலையான WORD_TABLE ignore_table;	/* table of words to ignore */
+நிலையான WORD_TABLE only_table;		/* table of words to select */
 
 /* Source text table, and scanning macros.  */
 
-static int number_input_files;	/* number of text input files */
-static intmax_t total_line_count;	/* total number of lines seen so far */
-static char const **input_file_name;	/* array of text input file names */
-static intmax_t *file_line_count;	/* array of line count values at end */
+நிலையான முழு எண்_உள்ளீடு_files;	/* number of text input files */
+நிலையான intmax_t total_வரி_மொத்தம்;	/* total number of lines seen so far */
+நிலையான எழுத்து மாறிலி **உள்ளீடு_file_name;	/* array of text input file names */
+நிலையான intmax_t *file_வரி_மொத்தம்;	/* array of line count values at end */
 
-static BLOCK *text_buffers;	/* files to study */
+நிலையான BLOCK *text_buffers;	/* files to study */
 
 /* SKIP_NON_WHITE used only for getting or skipping the reference.  */
 
 #define SKIP_NON_WHITE(cursor, limit) \
-  while (cursor < limit && ! isspace (to_uchar (*cursor)))		\
+  போது (cursor < limit && ! isspace (to_uchar (*cursor)))		\
     cursor++
 
 #define SKIP_WHITE(cursor, limit) \
-  while (cursor < limit && isspace (to_uchar (*cursor)))		\
+  போது (cursor < limit && isspace (to_uchar (*cursor)))		\
     cursor++
 
 #define SKIP_WHITE_BACKWARDS(cursor, start) \
-  while (cursor > start && isspace (to_uchar (cursor[-1])))		\
+  போது (cursor > start && isspace (to_uchar (cursor[-1])))		\
     cursor--
 
 /* Always advance by at least one byte, lest a nullable word regexp
    such as 'a*' match the empty string and loop forever.  */
 
 #define SKIP_SOMETHING(cursor, limit) \
-  if (word_regex.string)						\
+  எனில் (word_regex.string)						\
     {									\
-      regoff_t count;							\
-      count = re_match (&word_regex.pattern, cursor, limit - cursor,	\
-                        0, NULL);					\
-      if (count == -2)							\
+      regoff_t மொத்தம்;							\
+      மொத்தம் = re_match (&word_regex.pattern, cursor, limit - cursor,	\
+                        0, வெற்று);					\
+      எனில் (மொத்தம் == -2)							\
         matcher_error ();						\
-      cursor += count <= 0 ? 1 : count;					\
+      cursor += மொத்தம் <= 0 ? 1 : மொத்தம்;					\
     }									\
-  else if (word_fastmap[to_uchar (*cursor)])				\
-    while (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
+  இல்லையெனில் எனில் (word_fastmap[to_uchar (*cursor)])				\
+    போது (cursor < limit && word_fastmap[to_uchar (*cursor)])		\
       cursor++;								\
-  else									\
+  இல்லையெனில்									\
     cursor++
 
 /* Occurrences table.
@@ -222,42 +222,42 @@ static BLOCK *text_buffers;	/* files to study */
    start of the reference field, and it fits in ptrdiff_t and is usually
    negative.  */
 
-typedef struct
+வகைவரை கட்டமைப்பு
   {
-    WORD key;			/* description of the keyword */
-    ptrdiff_t left;		/* distance to left context start */
-    ptrdiff_t right;		/* distance to right context end */
+    WORD சாவி;			/* description of the keyword */
+    ptrdiff_t இடது;		/* distance to left context start */
+    ptrdiff_t வலது;		/* distance to right context end */
     intmax_t reference;		/* reference descriptor */
-    int file_index;		/* corresponding file  */
+    முழு file_index;		/* corresponding file  */
   }
 OCCURS;
 
 /* The various OCCURS tables are indexed by the language.  But the time
    being, there is no such multiple language support.  */
 
-static OCCURS *occurs_table[1];	/* all words retained from the read text */
-static idx_t occurs_alloc[1];	/* allocated size of occurs_table */
-static idx_t number_of_occurs[1]; /* number of used slots in occurs_table */
+நிலையான OCCURS *occurs_table[1];	/* all words retained from the read text */
+நிலையான idx_t occurs_alloc[1];	/* allocated size of occurs_table */
+நிலையான idx_t எண்_of_occurs[1]; /* number of used slots in occurs_table */
 
 
 /* Communication among output routines.  */
 
 /* Indicate if special output processing is requested for each character.  */
-static char edited_flag[CHAR_SET_SIZE];
+நிலையான எழுத்து edited_flag[CHAR_SET_SIZE];
 
 /* Half of line width, reference excluded.  */
-static idx_t half_line_width;
+நிலையான idx_t half_வரி_width;
 
 /* Maximum width of before field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t before_max_width;
+நிலையான ptrdiff_t before_max_width;
 
 /* Maximum width of keyword-and-after field.
    FIXME: Is this nonnegative?  That is, should this be idx_t?  */
-static ptrdiff_t keyafter_max_width;
+நிலையான ptrdiff_t keyafter_max_width;
 
 /* Length of string that flags truncation.  */
-static idx_t truncation_string_length;
+நிலையான idx_t truncation_string_length;
 
 /* When context is limited by lines, wraparound may happen on final output:
    the 'head' pointer gives access to some supplementary left context which
@@ -265,123 +265,123 @@ static idx_t truncation_string_length;
    access to some supplementary right context which will be seen at the
    beginning of the output line. */
 
-static BLOCK tail;		/* tail field */
-static bool tail_truncation;	/* flag truncation after the tail field */
+நிலையான BLOCK tail;		/* tail field */
+நிலையான bool tail_truncation;	/* flag truncation after the tail field */
 
-static BLOCK before;		/* before field */
-static bool before_truncation;	/* flag truncation before the before field */
+நிலையான BLOCK before;		/* before field */
+நிலையான bool before_truncation;	/* flag truncation before the before field */
 
-static BLOCK keyafter;		/* keyword-and-after field */
-static bool keyafter_truncation; /* flag truncation after the keyafter field */
+நிலையான BLOCK keyafter;		/* keyword-and-after field */
+நிலையான bool keyafter_truncation; /* flag truncation after the keyafter field */
 
-static BLOCK head;		/* head field */
-static bool head_truncation;	/* flag truncation before the head field */
+நிலையான BLOCK head;		/* head field */
+நிலையான bool head_truncation;	/* flag truncation before the head field */
 
-static BLOCK reference;		/* reference field for input reference mode */
+நிலையான BLOCK reference;		/* reference field for input reference mode */
 
 /* Miscellaneous routines.  */
 
 /* Diagnose an error in the regular expression matcher.  Then exit.  */
 
-static _Noreturn void
-matcher_error (void)
+நிலையான _Noreturn வெறுமை
+matcher_error (வெறுமை)
 {
   error (EXIT_FAILURE, errno, _("error in regular expression matcher"));
 }
 
 /* Unescape STRING in-place.  */
 
-static void
-unescape_string (char *string)
+நிலையான வெறுமை
+unescape_string (எழுத்து *string)
 {
-  char *cursor;			/* cursor in result */
-  int value;			/* value of \nnn escape */
-  int length;			/* length of \nnn escape */
+  எழுத்து *cursor;			/* cursor in result */
+  முழு மதிப்பு;			/* value of \nnn escape */
+  முழு length;			/* length of \nnn escape */
 
   cursor = string;
 
-  while (*string)
+  போது (*string)
     {
-      if (*string == '\\')
+      எனில் (*string == '\\')
         {
           string++;
-          switch (*string)
+          தேர்வு (*string)
             {
-            case 'x':		/* \xhhh escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
+            நிலை 'x':		/* \xhhh escape, 3 chars maximum */
+              மதிப்பு = 0;
+              க்கு (length = 0, string++;
                    length < 3 && c_isxdigit (*string);
                    length++, string++)
-                value = value * 16 + fromhex (*string);
-              if (length == 0)
+                மதிப்பு = மதிப்பு * 16 + fromhex (*string);
+              எனில் (length == 0)
                 {
                   *cursor++ = '\\';
                   *cursor++ = 'x';
                 }
-              else
-                *cursor++ = value;
-              break;
+              இல்லையெனில்
+                *cursor++ = மதிப்பு;
+              நிறுத்து;
 
-            case '0':		/* \0ooo escape, 3 chars maximum */
-              value = 0;
-              for (length = 0, string++;
+            நிலை '0':		/* \0ooo escape, 3 chars maximum */
+              மதிப்பு = 0;
+              க்கு (length = 0, string++;
                    length < 3 && isoct (*string);
                    length++, string++)
-                value = value * 8 + fromoct (*string);
-              *cursor++ = value;
-              break;
+                மதிப்பு = மதிப்பு * 8 + fromoct (*string);
+              *cursor++ = மதிப்பு;
+              நிறுத்து;
 
-            case 'a':		/* alert */
+            நிலை 'a':		/* alert */
               *cursor++ = '\a';
               string++;
-              break;
+              நிறுத்து;
 
-            case 'b':		/* backspace */
+            நிலை 'b':		/* backspace */
               *cursor++ = '\b';
               string++;
-              break;
+              நிறுத்து;
 
-            case 'c':		/* cancel the rest of the output */
-              while (*string)
+            நிலை 'c':		/* cancel the rest of the output */
+              போது (*string)
                 string++;
-              break;
+              நிறுத்து;
 
-            case 'f':		/* form feed */
+            நிலை 'f':		/* form feed */
               *cursor++ = '\f';
               string++;
-              break;
+              நிறுத்து;
 
-            case 'n':		/* new line */
+            நிலை 'n':		/* new line */
               *cursor++ = '\n';
               string++;
-              break;
+              நிறுத்து;
 
-            case 'r':		/* carriage return */
+            நிலை 'r':		/* carriage return */
               *cursor++ = '\r';
               string++;
-              break;
+              நிறுத்து;
 
-            case 't':		/* horizontal tab */
+            நிலை 't':		/* horizontal tab */
               *cursor++ = '\t';
               string++;
-              break;
+              நிறுத்து;
 
-            case 'v':		/* vertical tab */
+            நிலை 'v':		/* vertical tab */
               *cursor++ = '\v';
               string++;
-              break;
+              நிறுத்து;
 
-            case '\0':		/* lone backslash at end of string */
+            நிலை '\0':		/* lone backslash at end of string */
               /* ignore it */
-              break;
+              நிறுத்து;
 
-            default:
+            இயல்பு:
               *cursor++ = '\\';
               *cursor++ = *string++;
-              break;
+              நிறுத்து;
             }
         }
-      else
+      இல்லையெனில்
         *cursor++ = *string++;
     }
 
@@ -392,20 +392,20 @@ unescape_string (char *string)
 | Compile the regex represented by REGEX, diagnose and abort if any error.  |
 `--------------------------------------------------------------------------*/
 
-static void
-compile_regex (struct regex_data *regex)
+நிலையான வெறுமை
+compile_regex (கட்டமைப்பு regex_data *regex)
 {
-  struct re_pattern_buffer *pattern = &regex->pattern;
-  char const *string = regex->string;
-  char const *message;
+  கட்டமைப்பு re_pattern_buffer *pattern = &regex->pattern;
+  எழுத்து மாறிலி *string = regex->string;
+  எழுத்து மாறிலி *message;
 
-  pattern->buffer = NULL;
+  pattern->buffer = வெற்று;
   pattern->allocated = 0;
   pattern->fastmap = regex->fastmap;
-  pattern->translate = ignore_case ? folded_chars : NULL;
+  pattern->translate = ignore_case ? folded_chars : வெற்று;
 
   message = re_compile_pattern (string, strlen (string), pattern);
-  if (message)
+  எனில் (message)
     error (EXIT_FAILURE, 0, _("%s (for regexp %s)"), message, quote (string));
 
   /* The fastmap should be compiled before 're_match'.  The following
@@ -420,13 +420,13 @@ compile_regex (struct regex_data *regex)
 | regexps.								  |
 `------------------------------------------------------------------------*/
 
-static void
-initialize_regex (void)
+நிலையான வெறுமை
+initialize_regex (வெறுமை)
 {
   /* Initialize the case folding table.  */
 
-  if (ignore_case)
-    for (int character = 0; character < CHAR_SET_SIZE; character++)
+  எனில் (ignore_case)
+    க்கு (முழு character = 0; character < CHAR_SET_SIZE; character++)
       folded_chars[character] = toupper (character);
 
   /* Unless the user already provided a description of the end of line or
@@ -436,17 +436,17 @@ initialize_regex (void)
      extensions are enabled, use end of sentence like in GNU emacs.  If
      disabled, use end of lines.  */
 
-  if (context_regex.string)
+  எனில் (context_regex.string)
     {
-      if (!*context_regex.string)
-        context_regex.string = NULL;
+      எனில் (!*context_regex.string)
+        context_regex.string = வெற்று;
     }
-  else if (gnu_extensions && !input_reference)
+  இல்லையெனில் எனில் (gnu_extensions && !உள்ளீடு_reference)
     context_regex.string = "[.?!][]\"')}]*\\($\\|\t\\|  \\)[ \t\n]*";
-  else
+  இல்லையெனில்
     context_regex.string = "\n";
 
-  if (context_regex.string)
+  எனில் (context_regex.string)
     compile_regex (&context_regex);
 
   /* If the user has already provided a non-empty regexp to describe
@@ -457,19 +457,19 @@ initialize_regex (void)
      include almost everything, even punctuation; stop only on white
      space.  */
 
-  if (word_regex.string)
+  எனில் (word_regex.string)
     compile_regex (&word_regex);
-  else if (!break_file)
+  இல்லையெனில் எனில் (!break_file)
     {
-      if (gnu_extensions)
+      எனில் (gnu_extensions)
         {
 
           /* Simulate \w+.  */
 
-          for (int character = 0; character < CHAR_SET_SIZE; character++)
+          க்கு (முழு character = 0; character < CHAR_SET_SIZE; character++)
             word_fastmap[character] = !! isalpha (character);
         }
-      else
+      இல்லையெனில்
         {
 
           /* Simulate [^ \t\n]+.  */
@@ -493,8 +493,8 @@ initialize_regex (void)
 | compression is ever reinstated, it should be in output routines.	  |
 `------------------------------------------------------------------------*/
 
-static void
-swallow_file_in_memory (char const *file_name, BLOCK *block)
+நிலையான வெறுமை
+swallow_file_in_memory (எழுத்து மாறிலி *file_name, BLOCK *block)
 {
   size_t used_length;		/* used length in memory buffer */
 
@@ -502,15 +502,15 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
      input, which is already opened.  In all other cases, open the file from
      its name.  */
   bool using_stdin = !file_name || !*file_name || streq (file_name, "-");
-  if (using_stdin)
+  எனில் (using_stdin)
     block->start = fread_file (stdin, 0, &used_length);
-  else
+  இல்லையெனில்
     block->start = read_file (file_name, 0, &used_length);
 
-  if (!block->start)
+  எனில் (!block->start)
     error (EXIT_FAILURE, errno, "%s", quotef (using_stdin ? "-" : file_name));
 
-  if (using_stdin)
+  எனில் (using_stdin)
     clearerr (stdin);
 
   block->end = block->start + used_length;
@@ -526,35 +526,35 @@ swallow_file_in_memory (char const *file_name, BLOCK *block)
 | If a word is indeed a prefix of the other, the shorter should go first.   |
 `--------------------------------------------------------------------------*/
 
-static int
-compare_words (const void *void_first, const void *void_second)
+நிலையான முழு
+compare_சொற்கள் (மாறிலி வெறுமை *void_first, மாறிலி வெறுமை *void_second)
 {
-  WORD const *first = void_first;
-  WORD const *second = void_second;
+  WORD மாறிலி *first = void_first;
+  WORD மாறிலி *second = void_second;
   idx_t length = MIN (first->size, second->size);
 
-  if (ignore_case)
+  எனில் (ignore_case)
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      க்கு (idx_t counter = 0; counter < length; counter++)
         {
-          int value = (folded_chars[to_uchar (first->start[counter])]
+          முழு மதிப்பு = (folded_chars[to_uchar (first->start[counter])]
                        - folded_chars[to_uchar (second->start[counter])]);
-          if (value != 0)
-            return value;
+          எனில் (மதிப்பு != 0)
+            திரும்பு மதிப்பு;
         }
     }
-  else
+  இல்லையெனில்
     {
-      for (idx_t counter = 0; counter < length; counter++)
+      க்கு (idx_t counter = 0; counter < length; counter++)
         {
-          int value = (to_uchar (first->start[counter])
+          முழு மதிப்பு = (to_uchar (first->start[counter])
                        - to_uchar (second->start[counter]));
-          if (value != 0)
-            return value;
+          எனில் (மதிப்பு != 0)
+            திரும்பு மதிப்பு;
         }
     }
 
-  return _GL_CMP (first->size, second->size);
+  திரும்பு _GL_CMP (first->size, second->size);
 }
 
 /*-----------------------------------------------------------------------.
@@ -563,16 +563,16 @@ compare_words (const void *void_first, const void *void_second)
 | pointer comparison.							 |
 `-----------------------------------------------------------------------*/
 
-static int
-compare_occurs (const void *void_first, const void *void_second)
+நிலையான முழு
+compare_occurs (மாறிலி வெறுமை *void_first, மாறிலி வெறுமை *void_second)
 {
-#define first ((const OCCURS *) void_first)
-#define second ((const OCCURS *) void_second)
-  int value;
+#define first ((மாறிலி OCCURS *) void_first)
+#define second ((மாறிலி OCCURS *) void_second)
+  முழு மதிப்பு;
 
-  value = compare_words (&first->key, &second->key);
-  return (value ? value
-          : _GL_CMP (first->key.start, second->key.start));
+  மதிப்பு = compare_சொற்கள் (&first->சாவி, &second->சாவி);
+  திரும்பு (மதிப்பு ? மதிப்பு
+          : _GL_CMP (first->சாவி.start, second->சாவி.start));
 #undef first
 #undef second
 }
@@ -580,23 +580,23 @@ compare_occurs (const void *void_first, const void *void_second)
 /* True if WORD appears in TABLE.  Uses a binary search.  */
 
 ATTRIBUTE_PURE
-static bool
-search_table (WORD *word, WORD_TABLE *table)
+நிலையான bool
+தேடல்_table (WORD *word, WORD_TABLE *table)
 {
   idx_t lo = 0;
   idx_t hi = table->length;
-  while (lo < hi)
+  போது (lo < hi)
     {
-      idx_t middle = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
-      int value = compare_words (word, table->start + middle);
-      if (value < 0)
-        hi = middle;
-      else if (value > 0)
-        lo = middle + 1;
-      else
-        return true;
+      idx_t நடு = (lo >> 1) + (hi >> 1) + (lo & hi & 1);
+      முழு மதிப்பு = compare_சொற்கள் (word, table->start + நடு);
+      எனில் (மதிப்பு < 0)
+        hi = நடு;
+      இல்லையெனில் எனில் (மதிப்பு > 0)
+        lo = நடு + 1;
+      இல்லையெனில்
+        திரும்பு true;
     }
-  return false;
+  திரும்பு false;
 }
 
 /*---------------------------------------------------------------------.
@@ -605,13 +605,13 @@ search_table (WORD *word, WORD_TABLE *table)
 | stabilized throughout the comparison routine.			       |
 `---------------------------------------------------------------------*/
 
-static void
-sort_found_occurs (void)
+நிலையான வெறுமை
+sort_found_occurs (வெறுமை)
 {
 
   /* Only one language for the time being.  */
-  if (number_of_occurs[0])
-    qsort (occurs_table[0], number_of_occurs[0], sizeof **occurs_table,
+  எனில் (எண்_of_occurs[0])
+    qsort (occurs_table[0], எண்_of_occurs[0], அளவு **occurs_table,
            compare_occurs);
 }
 
@@ -623,8 +623,8 @@ sort_found_occurs (void)
 | allowed except those found in the file.  Characters may be repeated.  |
 `----------------------------------------------------------------------*/
 
-static void
-digest_break_file (char const *file_name)
+நிலையான வெறுமை
+digest_break_file (எழுத்து மாறிலி *file_name)
 {
   BLOCK file_contents;		/* to receive a copy of the file */
 
@@ -633,11 +633,11 @@ digest_break_file (char const *file_name)
   /* Make the fastmap and record the file contents in it.  */
 
   memset (word_fastmap, 1, CHAR_SET_SIZE);
-  for (char *cursor = file_contents.start; cursor < file_contents.end;
+  க்கு (எழுத்து *cursor = file_contents.start; cursor < file_contents.end;
        cursor++)
     word_fastmap[to_uchar (*cursor)] = 0;
 
-  if (!gnu_extensions)
+  எனில் (!gnu_extensions)
     {
 
       /* If GNU extensions are enabled, the only way to avoid newline as
@@ -653,7 +653,7 @@ digest_break_file (char const *file_name)
 
   /* Return the space of the file, which is no more required.  */
 
-  free (file_contents.start);
+  விடுவி (file_contents.start);
 }
 
 /*-----------------------------------------------------------------------.
@@ -663,52 +663,52 @@ digest_break_file (char const *file_name)
 | needed for newlines, which are useless; however, the reading is fast.	 |
 `-----------------------------------------------------------------------*/
 
-static void
-digest_word_file (char const *file_name, WORD_TABLE *table)
+நிலையான வெறுமை
+digest_word_file (எழுத்து மாறிலி *file_name, WORD_TABLE *table)
 {
   BLOCK file_contents;		/* to receive a copy of the file */
-  char *cursor;			/* cursor in file copy */
-  char *word_start;		/* start of the current word */
+  எழுத்து *cursor;			/* cursor in file copy */
+  எழுத்து *word_start;		/* start of the current word */
 
   swallow_file_in_memory (file_name, &file_contents);
 
-  table->start = NULL;
+  table->start = வெற்று;
   table->alloc = 0;
   table->length = 0;
 
   /* Read the whole file.  */
 
   cursor = file_contents.start;
-  while (cursor < file_contents.end)
+  போது (cursor < file_contents.end)
     {
 
       /* Read one line, and save the word in contains.  */
 
       word_start = cursor;
-      while (cursor < file_contents.end && *cursor != '\n')
+      போது (cursor < file_contents.end && *cursor != '\n')
         cursor++;
 
       /* Record the word in table if it is not empty.  */
 
-      if (cursor > word_start)
+      எனில் (cursor > word_start)
         {
-          if (table->length == table->alloc)
+          எனில் (table->length == table->alloc)
             table->start = xpalloc (table->start, &table->alloc, 1, -1,
-                                    sizeof *table->start);
-          idx_t const table_idx = table->length++;
+                                    அளவு *table->start);
+          idx_t மாறிலி table_idx = table->length++;
           table->start[table_idx].start = word_start;
           table->start[table_idx].size = cursor - word_start;
         }
 
       /* This test allows for an incomplete line at end of file.  */
 
-      if (cursor < file_contents.end)
+      எனில் (cursor < file_contents.end)
         cursor++;
     }
 
   /* Finally, sort all the words read.  */
 
-  qsort (table->start, table->length, sizeof table->start[0], compare_words);
+  qsort (table->start, table->length, அளவு table->start[0], compare_சொற்கள்);
 }
 
 /* Keyword recognition and selection.  */
@@ -717,23 +717,23 @@ digest_word_file (char const *file_name, WORD_TABLE *table)
 | For each keyword in the source text, constructs an OCCURS structure.  |
 `----------------------------------------------------------------------*/
 
-static void
-find_occurs_in_text (int file_index)
+நிலையான வெறுமை
+find_occurs_in_text (முழு file_index)
 {
-  char *scan;			/* for scanning the source text */
-  char *line_start;		/* start of the current input line */
-  char *line_scan;		/* newlines scanned until this point */
+  எழுத்து *scan;			/* for scanning the source text */
+  எழுத்து *வரி_start;		/* start of the current input line */
+  எழுத்து *வரி_scan;		/* newlines scanned until this point */
   idx_t reference_length;	/* length of reference in input mode */
-  WORD possible_key;		/* possible key, to ease searches */
+  WORD possible_சாவி;		/* possible key, to ease searches */
   OCCURS *occurs_cursor;	/* current OCCURS under construction */
 
-  char *context_start;		/* start of left context */
-  char *context_end;		/* end of right context */
-  char *word_start;		/* start of word */
-  char *word_end;		/* end of word */
-  char *next_context_start;	/* next start of left context */
+  எழுத்து *context_start;		/* start of left context */
+  எழுத்து *context_end;		/* end of right context */
+  எழுத்து *word_start;		/* start of word */
+  எழுத்து *word_end;		/* end of word */
+  எழுத்து *next_context_start;	/* next start of left context */
 
-  const BLOCK *text_buffer = &text_buffers[file_index];
+  மாறிலி BLOCK *text_buffer = &text_buffers[file_index];
 
   /* reference_length is always used within 'if (input_reference)'.
      However, GNU C diagnoses that it may be used uninitialized.  The
@@ -750,18 +750,18 @@ find_occurs_in_text (int file_index)
      found inside it.  Also, unconditionally assigning these variable has
      the happy effect of shutting up lint.  */
 
-  line_start = text_buffer->start;
-  line_scan = line_start;
-  if (input_reference)
+  வரி_start = text_buffer->start;
+  வரி_scan = வரி_start;
+  எனில் (உள்ளீடு_reference)
     {
-      SKIP_NON_WHITE (line_scan, text_buffer->end);
-      reference_length = line_scan - line_start;
-      SKIP_WHITE (line_scan, text_buffer->end);
+      SKIP_NON_WHITE (வரி_scan, text_buffer->end);
+      reference_length = வரி_scan - வரி_start;
+      SKIP_WHITE (வரி_scan, text_buffer->end);
     }
 
   /* Process the whole buffer, one line or one sentence at a time.  */
 
-  for (char *cursor = text_buffer->start;
+  க்கு (எழுத்து *cursor = text_buffer->start;
        cursor < text_buffer->end;
        cursor = next_context_start)
     {
@@ -781,26 +781,26 @@ find_occurs_in_text (int file_index)
          sentence at the end of the buffer.  */
 
       next_context_start = text_buffer->end;
-      if (context_regex.string)
-        switch (re_search (&context_regex.pattern, cursor,
+      எனில் (context_regex.string)
+        தேர்வு (re_தேடல் (&context_regex.pattern, cursor,
                            text_buffer->end - cursor,
                            0, text_buffer->end - cursor, &context_regs))
           {
-          case -2:
+          நிலை -2:
             matcher_error ();
 
-          case -1:
-            break;
+          நிலை -1:
+            நிறுத்து;
 
-          case 0:
+          நிலை 0:
             error (EXIT_FAILURE, 0,
                    _("error: regular expression has a match of length zero:"
                      " %s"),
                    quote (context_regex.string));
 
-          default:
+          இயல்பு:
             next_context_start = cursor + context_regs.end[0];
-            break;
+            நிறுத்து;
           }
 
       /* Include the separator into the right context, but not any suffix
@@ -813,26 +813,26 @@ find_occurs_in_text (int file_index)
       /* Read and process a single input line or sentence, one word at a
          time.  */
 
-      while (true)
+      போது (true)
         {
-          if (word_regex.string)
+          எனில் (word_regex.string)
 
             /* If a word regexp has been compiled, use it to skip at the
                beginning of the next word.  If there is no such word, exit
                the loop.  */
 
             {
-              regoff_t r = re_search (&word_regex.pattern, cursor,
+              regoff_t r = re_தேடல் (&word_regex.pattern, cursor,
                                       context_end - cursor,
                                       0, context_end - cursor, &word_regs);
-              if (r == -2)
+              எனில் (r == -2)
                 matcher_error ();
-              if (r == -1)
-                break;
+              எனில் (r == -1)
+                நிறுத்து;
               word_start = cursor + word_regs.start[0];
               word_end = cursor + word_regs.end[0];
             }
-          else
+          இல்லையெனில்
 
             /* Avoid re_search and use the fastmap to skip to the
                beginning of the next word.  If there is no more word in
@@ -840,16 +840,16 @@ find_occurs_in_text (int file_index)
 
             {
               scan = cursor;
-              while (scan < context_end
+              போது (scan < context_end
                      && !word_fastmap[to_uchar (*scan)])
                 scan++;
 
-              if (scan == context_end)
-                break;
+              எனில் (scan == context_end)
+                நிறுத்து;
 
               word_start = scan;
 
-              while (scan < context_end
+              போது (scan < context_end
                      && word_fastmap[to_uchar (*scan)])
                 scan++;
 
@@ -863,10 +863,10 @@ find_occurs_in_text (int file_index)
           /* Skip any zero length word.  Just advance a single position,
              then go fetch the next word.  */
 
-          if (word_end == word_start)
+          எனில் (word_end == word_start)
             {
               cursor++;
-              continue;
+              தொடர்;
             }
 
           /* This is a genuine, non empty word, so save it as a possible
@@ -876,33 +876,33 @@ find_occurs_in_text (int file_index)
              are actually kept or rejected, because backward jumps at output
              generation time may fall in *any* word.  */
 
-          possible_key.start = cursor;
-          possible_key.size = word_end - word_start;
-          cursor += possible_key.size;
+          possible_சாவி.start = cursor;
+          possible_சாவி.size = word_end - word_start;
+          cursor += possible_சாவி.size;
 
-          if (possible_key.size > maximum_word_length)
-            maximum_word_length = possible_key.size;
+          எனில் (possible_சாவி.size > maximum_word_length)
+            maximum_word_length = possible_சாவி.size;
 
           /* In input reference mode, update 'line_start' from its previous
              value.  Count the lines just in case auto reference mode is
              also selected. If it happens that the word just matched is
              indeed part of a reference; just ignore it.  */
 
-          if (input_reference)
+          எனில் (உள்ளீடு_reference)
             {
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              போது (வரி_scan < possible_சாவி.start)
+                எனில் (*வரி_scan == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
-                    reference_length = line_scan - line_start;
+                    total_வரி_மொத்தம்++;
+                    வரி_scan++;
+                    வரி_start = வரி_scan;
+                    SKIP_NON_WHITE (வரி_scan, text_buffer->end);
+                    reference_length = வரி_scan - வரி_start;
                   }
-                else
-                  line_scan++;
-              if (line_scan > possible_key.start)
-                continue;
+                இல்லையெனில்
+                  வரி_scan++;
+              எனில் (வரி_scan > possible_சாவி.start)
+                தொடர்;
             }
 
           /* Ignore the word if an 'Ignore words' table exists and if it is
@@ -915,23 +915,23 @@ find_occurs_in_text (int file_index)
              tables, the Ignore table could then reject words that would
              have been previously accepted by the Only table.  */
 
-          if (ignore_file && search_table (&possible_key, &ignore_table))
-            continue;
-          if (only_file && !search_table (&possible_key, &only_table))
-            continue;
+          எனில் (ignore_file && தேடல்_table (&possible_சாவி, &ignore_table))
+            தொடர்;
+          எனில் (only_file && !தேடல்_table (&possible_சாவி, &only_table))
+            தொடர்;
 
           /* A non-empty word has been found.  First of all, insure
              proper allocation of the next OCCURS, and make a pointer to
              where it will be constructed.  */
 
-          if (number_of_occurs[0] == occurs_alloc[0])
+          எனில் (எண்_of_occurs[0] == occurs_alloc[0])
             occurs_table[0] = xpalloc (occurs_table[0], &occurs_alloc[0],
-                                       1, -1, sizeof *occurs_table[0]);
-          occurs_cursor = occurs_table[0] + number_of_occurs[0];
+                                       1, -1, அளவு *occurs_table[0]);
+          occurs_cursor = occurs_table[0] + எண்_of_occurs[0];
 
           /* Define the reference field, if any.  */
 
-          if (auto_reference)
+          எனில் (auto_reference)
             {
 
               /* While auto referencing, update 'line_start' from its
@@ -940,20 +940,20 @@ find_occurs_in_text (int file_index)
                  advanced earlier, and the following loop is never really
                  executed.  */
 
-              while (line_scan < possible_key.start)
-                if (*line_scan == '\n')
+              போது (வரி_scan < possible_சாவி.start)
+                எனில் (*வரி_scan == '\n')
                   {
-                    total_line_count++;
-                    line_scan++;
-                    line_start = line_scan;
-                    SKIP_NON_WHITE (line_scan, text_buffer->end);
+                    total_வரி_மொத்தம்++;
+                    வரி_scan++;
+                    வரி_start = வரி_scan;
+                    SKIP_NON_WHITE (வரி_scan, text_buffer->end);
                   }
-                else
-                  line_scan++;
+                இல்லையெனில்
+                  வரி_scan++;
 
-              occurs_cursor->reference = total_line_count;
+              occurs_cursor->reference = total_வரி_மொத்தம்;
             }
-          else if (input_reference)
+          இல்லையெனில் எனில் (உள்ளீடு_reference)
             {
 
               /* If only input referencing, 'line_start' has been computed
@@ -961,14 +961,14 @@ find_occurs_in_text (int file_index)
                  of the reference.  The reference position is simply the
                  value of 'line_start'.  */
 
-              occurs_cursor->reference = line_start - possible_key.start;
-              if (reference_length > reference_max_width)
+              occurs_cursor->reference = வரி_start - possible_சாவி.start;
+              எனில் (reference_length > reference_max_width)
                 reference_max_width = reference_length;
             }
 
           /* Exclude the reference from the context in simple cases.  */
 
-          if (input_reference && line_start == context_start)
+          எனில் (உள்ளீடு_reference && வரி_start == context_start)
             {
               SKIP_NON_WHITE (context_start, context_end);
               SKIP_WHITE (context_start, context_end);
@@ -976,12 +976,12 @@ find_occurs_in_text (int file_index)
 
           /* Completes the OCCURS structure.  */
 
-          occurs_cursor->key = possible_key;
-          occurs_cursor->left = context_start - possible_key.start;
-          occurs_cursor->right = context_end - possible_key.start;
+          occurs_cursor->சாவி = possible_சாவி;
+          occurs_cursor->இடது = context_start - possible_சாவி.start;
+          occurs_cursor->வலது = context_end - possible_சாவி.start;
           occurs_cursor->file_index = file_index;
 
-          number_of_occurs[0]++;
+          எண்_of_occurs[0]++;
         }
     }
 }
@@ -992,10 +992,10 @@ find_occurs_in_text (int file_index)
 | Prints some NUMBER of spaces on stdout.  |
 `-----------------------------------------*/
 
-static void
-print_spaces (ptrdiff_t number)
+நிலையான வெறுமை
+print_spaces (ptrdiff_t எண்)
 {
-  for (ptrdiff_t counter = number; counter > 0; counter--)
+  க்கு (ptrdiff_t counter = எண்; counter > 0; counter--)
     putchar (' ');
 }
 
@@ -1003,57 +1003,57 @@ print_spaces (ptrdiff_t number)
 | Prints the field provided by FIELD.  |
 `-------------------------------------*/
 
-static void
+நிலையான வெறுமை
 print_field (BLOCK field)
 {
   /* Whitespace is not really compressed.  Instead, each white space
      character (tab, vt, ht etc.) is printed as one single space.  */
 
-  for (char *cursor = field.start; cursor < field.end; cursor++)
+  க்கு (எழுத்து *cursor = field.start; cursor < field.end; cursor++)
     {
-      unsigned char character = *cursor;
-      if (edited_flag[character])
+      unsigned எழுத்து character = *cursor;
+      எனில் (edited_flag[character])
         {
           /* Handle cases which are specific to 'roff' or TeX.  All
              white space processing is done as the default case of
              this switch.  */
 
-          switch (character)
+          தேர்வு (character)
             {
-            case '"':
+            நிலை '"':
               /* In roff output format, double any quote.  */
               putchar ('"');
               putchar ('"');
-              break;
+              நிறுத்து;
 
-            case '$':
-            case '%':
-            case '&':
-            case '#':
-            case '_':
+            நிலை '$':
+            நிலை '%':
+            நிலை '&':
+            நிலை '#':
+            நிலை '_':
               /* In TeX output format, precede these with a backslash.  */
               putchar ('\\');
               putchar (character);
-              break;
+              நிறுத்து;
 
-            case '{':
-            case '}':
+            நிலை '{':
+            நிலை '}':
               /* In TeX output format, precede these with a backslash and
                  force mathematical mode.  */
               printf ("$\\%c$", character);
-              break;
+              நிறுத்து;
 
-            case '\\':
+            நிலை '\\':
               /* In TeX output mode, request production of a backslash.  */
               fputs ("\\backslash{}", stdout);
-              break;
+              நிறுத்து;
 
-            default:
+            இயல்பு:
               /* Any other flagged character produces a single space.  */
               putchar (' ');
             }
         }
-      else
+      இல்லையெனில்
         putchar (*cursor);
     }
 }
@@ -1065,26 +1065,26 @@ print_field (BLOCK field)
 | readings, compute and fix some output parameter values.	      |
 `--------------------------------------------------------------------*/
 
-static void
-fix_output_parameters (void)
+நிலையான வெறுமை
+fix_output_parameters (வெறுமை)
 {
   /* In auto reference mode, the maximum width of this field is
      precomputed and subtracted from the overall line width.  Add one for
      the column which separate the file name from the line number.  */
 
-  if (auto_reference)
+  எனில் (auto_reference)
     {
       reference_max_width = 0;
-      for (int file_index = 0; file_index < number_input_files; file_index++)
+      க்கு (முழு file_index = 0; file_index < எண்_உள்ளீடு_files; file_index++)
         {
-          intmax_t line_ordinal = file_line_count[file_index] + 1;
-          if (file_index > 0)
-            line_ordinal -= file_line_count[file_index - 1];
-          char ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
-          idx_t reference_width = sprintf (ordinal_string, "%jd", line_ordinal);
-          if (input_file_name[file_index])
-            reference_width += strlen (input_file_name[file_index]);
-          if (reference_width > reference_max_width)
+          intmax_t வரி_ordinal = file_வரி_மொத்தம்[file_index] + 1;
+          எனில் (file_index > 0)
+            வரி_ordinal -= file_வரி_மொத்தம்[file_index - 1];
+          எழுத்து ordinal_string[INT_BUFSIZE_BOUND (intmax_t)];
+          idx_t reference_width = sprintf (ordinal_string, "%jd", வரி_ordinal);
+          எனில் (உள்ளீடு_file_name[file_index])
+            reference_width += strlen (உள்ளீடு_file_name[file_index]);
+          எனில் (reference_width > reference_max_width)
             reference_max_width = reference_width;
         }
       reference_max_width++;
@@ -1094,8 +1094,8 @@ fix_output_parameters (void)
   /* If the reference appears to the left of the output line, reserve some
      space for it right away, including one gap size.  */
 
-  if ((auto_reference || input_reference) && !right_reference)
-    line_width = MAX (0, line_width - (reference_max_width + gap_size));
+  எனில் ((auto_reference || உள்ளீடு_reference) && !வலது_reference)
+    வரி_width = MAX (0, வரி_width - (reference_max_width + gap_size));
 
   /* The output lines, minimally, will contain from left to right a left
      context, a gap, and a keyword followed by the right context with no
@@ -1109,20 +1109,20 @@ fix_output_parameters (void)
      on a case by case basis.  It is worth noting that it cannot happen that
      both the tail and head fields are used at once.  */
 
-  half_line_width = line_width >> 1;
-  before_max_width = half_line_width - gap_size;
-  keyafter_max_width = half_line_width;
+  half_வரி_width = வரி_width >> 1;
+  before_max_width = half_வரி_width - gap_size;
+  keyafter_max_width = half_வரி_width;
 
   /* If truncation_string is the empty string, make it null to speed up
      tests.  In this case, truncation_string_length will never get used, so
      there is no need to set it.  */
 
-  if (truncation_string && *truncation_string)
+  எனில் (truncation_string && *truncation_string)
     truncation_string_length = strlen (truncation_string);
-  else
-    truncation_string = NULL;
+  இல்லையெனில்
+    truncation_string = வெற்று;
 
-  if (gnu_extensions)
+  எனில் (gnu_extensions)
     {
 
       /* When flagging truncation at the left of the keyword, the
@@ -1150,7 +1150,7 @@ fix_output_parameters (void)
       before_max_width -= 2 * truncation_string_length;
       keyafter_max_width -= 2 * truncation_string_length;
     }
-  else
+  இல்லையெனில்
     {
 
       /* I never figured out exactly how UNIX' ptx plans the output width
@@ -1162,43 +1162,43 @@ fix_output_parameters (void)
       keyafter_max_width -= 2 * truncation_string_length + 1;
     }
 
-  if (before_max_width < 0)
+  எனில் (before_max_width < 0)
     before_max_width = 0;
 
   /* Compute which characters need special output processing.  Initialize
      by flagging any white space character.  Some systems do not consider
      form feed as a space character, but we do.  */
 
-  for (int character = 0; character < CHAR_SET_SIZE; character++)
+  க்கு (முழு character = 0; character < CHAR_SET_SIZE; character++)
     edited_flag[character] = !! isspace (character);
   edited_flag['\f'] = 1;
 
   /* Complete the special character flagging according to selected output
      format.  */
 
-  switch (output_format)
+  தேர்வு (output_format)
     {
-    case UNKNOWN_FORMAT:
+    நிலை UNKNOWN_FORMAT:
       /* Should never happen.  */
 
-    case DUMB_FORMAT:
-      break;
+    நிலை DUMB_FORMAT:
+      நிறுத்து;
 
-    case ROFF_FORMAT:
+    நிலை ROFF_FORMAT:
 
       /* 'Quote' characters should be doubled.  */
 
       edited_flag['"'] = 1;
-      break;
+      நிறுத்து;
 
-    case TEX_FORMAT:
+    நிலை TEX_FORMAT:
 
       /* Various characters need special processing.  */
 
-      for (char const *cursor = "$%&#_{}\\"; *cursor; cursor++)
+      க்கு (எழுத்து மாறிலி *cursor = "$%&#_{}\\"; *cursor; cursor++)
         edited_flag[to_uchar (*cursor)] = 1;
 
-      break;
+      நிறுத்து;
     }
 }
 
@@ -1207,19 +1207,19 @@ fix_output_parameters (void)
 | pointer to some OCCURS.					    |
 `------------------------------------------------------------------*/
 
-static void
+நிலையான வெறுமை
 define_all_fields (OCCURS *occurs)
 {
   ptrdiff_t tail_max_width;	/* allowable width of tail field */
   ptrdiff_t head_max_width;	/* allowable width of head field */
-  char *cursor;			/* running cursor in source text */
-  char *left_context_start;	/* start of left context */
-  char *right_context_end;	/* end of right context */
-  char *left_field_start;	/* conservative start for 'head'/'before' */
-  char const *file_name;	/* file name for reference */
-  intmax_t line_ordinal;	/* line ordinal for reference */
-  char const *buffer_start;	/* start of buffered file for this occurs */
-  char const *buffer_end;	/* end of buffered file for this occurs */
+  எழுத்து *cursor;			/* running cursor in source text */
+  எழுத்து *இடது_context_start;	/* start of left context */
+  எழுத்து *வலது_context_end;	/* end of right context */
+  எழுத்து *இடது_field_start;	/* conservative start for 'head'/'before' */
+  எழுத்து மாறிலி *file_name;	/* file name for reference */
+  intmax_t வரி_ordinal;	/* line ordinal for reference */
+  எழுத்து மாறிலி *buffer_start;	/* start of buffered file for this occurs */
+  எழுத்து மாறிலி *buffer_end;	/* end of buffered file for this occurs */
 
   /* Define 'keyafter', start of left context and end of right context.
      'keyafter' starts at the saved position for keyword and extend to the
@@ -1227,25 +1227,25 @@ define_all_fields (OCCURS *occurs)
      not beyond maximum allowed width for 'keyafter' field or limit for the
      right context.  Suffix spaces will be removed afterwards.  */
 
-  keyafter.start = occurs->key.start;
-  keyafter.end = keyafter.start + occurs->key.size;
-  left_context_start = keyafter.start + occurs->left;
-  right_context_end = keyafter.start + occurs->right;
+  keyafter.start = occurs->சாவி.start;
+  keyafter.end = keyafter.start + occurs->சாவி.size;
+  இடது_context_start = keyafter.start + occurs->இடது;
+  வலது_context_end = keyafter.start + occurs->வலது;
 
   buffer_start = text_buffers[occurs->file_index].start;
   buffer_end = text_buffers[occurs->file_index].end;
 
   cursor = keyafter.end;
-  while (cursor < right_context_end
+  போது (cursor < வலது_context_end
          && cursor <= keyafter.start + keyafter_max_width)
     {
       keyafter.end = cursor;
-      SKIP_SOMETHING (cursor, right_context_end);
+      SKIP_SOMETHING (cursor, வலது_context_end);
     }
-  if (cursor <= keyafter.start + keyafter_max_width)
+  எனில் (cursor <= keyafter.start + keyafter_max_width)
     keyafter.end = cursor;
 
-  keyafter_truncation = truncation_string && keyafter.end < right_context_end;
+  keyafter_truncation = truncation_string && keyafter.end < வலது_context_end;
 
   SKIP_WHITE_BACKWARDS (keyafter.end, keyafter.start);
 
@@ -1261,14 +1261,14 @@ define_all_fields (OCCURS *occurs)
      beginning of 'head' or 'before' fields, we will skip forward words or
      delimiters until we get sufficiently near.  */
 
-  if (-occurs->left > half_line_width + maximum_word_length)
+  எனில் (-occurs->இடது > half_வரி_width + maximum_word_length)
     {
-      left_field_start
-        = keyafter.start - (half_line_width + maximum_word_length);
-      SKIP_SOMETHING (left_field_start, keyafter.start);
+      இடது_field_start
+        = keyafter.start - (half_வரி_width + maximum_word_length);
+      SKIP_SOMETHING (இடது_field_start, keyafter.start);
     }
-  else
-    left_field_start = keyafter.start + occurs->left;
+  இல்லையெனில்
+    இடது_field_start = keyafter.start + occurs->இடது;
 
   /* 'before' certainly ends at the keyword, but not including separating
      spaces.  It starts after than the saved value for the left context, by
@@ -1276,20 +1276,20 @@ define_all_fields (OCCURS *occurs)
      before field.  There will be no prefix spaces either.  'before' only
      advances by skipping single separators or whole words. */
 
-  before.start = left_field_start;
+  before.start = இடது_field_start;
   before.end = keyafter.start;
   SKIP_WHITE_BACKWARDS (before.end, before.start);
 
-  while (before.start + before_max_width < before.end)
+  போது (before.start + before_max_width < before.end)
     SKIP_SOMETHING (before.start, before.end);
 
-  if (truncation_string)
+  எனில் (truncation_string)
     {
       cursor = before.start;
       SKIP_WHITE_BACKWARDS (cursor, buffer_start);
-      before_truncation = cursor > left_context_start;
+      before_truncation = cursor > இடது_context_start;
     }
-  else
+  இல்லையெனில்
     before_truncation = false;
 
   SKIP_WHITE (before.start, buffer_end);
@@ -1304,40 +1304,40 @@ define_all_fields (OCCURS *occurs)
   tail_max_width
     = before_max_width - (before.end - before.start) - gap_size;
 
-  if (tail_max_width > 0)
+  எனில் (tail_max_width > 0)
     {
       tail.start = keyafter.end;
       SKIP_WHITE (tail.start, buffer_end);
 
       tail.end = tail.start;
       cursor = tail.end;
-      while (cursor < right_context_end
+      போது (cursor < வலது_context_end
              && cursor < tail.start + tail_max_width)
         {
           tail.end = cursor;
-          SKIP_SOMETHING (cursor, right_context_end);
+          SKIP_SOMETHING (cursor, வலது_context_end);
         }
 
-      if (cursor < tail.start + tail_max_width)
+      எனில் (cursor < tail.start + tail_max_width)
         tail.end = cursor;
 
-      if (tail.end > tail.start)
+      எனில் (tail.end > tail.start)
         {
           keyafter_truncation = false;
-          tail_truncation = truncation_string && tail.end < right_context_end;
+          tail_truncation = truncation_string && tail.end < வலது_context_end;
         }
-      else
+      இல்லையெனில்
         tail_truncation = false;
 
       SKIP_WHITE_BACKWARDS (tail.end, tail.start);
     }
-  else
+  இல்லையெனில்
     {
 
       /* No place left for a tail field.  */
 
-      tail.start = NULL;
-      tail.end = NULL;
+      tail.start = வெற்று;
+      tail.end = வெற்று;
       tail_truncation = false;
     }
 
@@ -1350,55 +1350,55 @@ define_all_fields (OCCURS *occurs)
   head_max_width
     = keyafter_max_width - (keyafter.end - keyafter.start) - gap_size;
 
-  if (head_max_width > 0)
+  எனில் (head_max_width > 0)
     {
       head.end = before.start;
       SKIP_WHITE_BACKWARDS (head.end, buffer_start);
 
-      head.start = left_field_start;
-      while (head.start + head_max_width < head.end)
+      head.start = இடது_field_start;
+      போது (head.start + head_max_width < head.end)
         SKIP_SOMETHING (head.start, head.end);
 
-      if (head.end > head.start)
+      எனில் (head.end > head.start)
         {
           before_truncation = false;
           head_truncation = (truncation_string
-                             && head.start > left_context_start);
+                             && head.start > இடது_context_start);
         }
-      else
+      இல்லையெனில்
         head_truncation = false;
 
       SKIP_WHITE (head.start, head.end);
     }
-  else
+  இல்லையெனில்
     {
 
       /* No place left for a head field.  */
 
-      head.start = NULL;
-      head.end = NULL;
+      head.start = வெற்று;
+      head.end = வெற்று;
       head_truncation = false;
     }
 
-  if (auto_reference)
+  எனில் (auto_reference)
     {
 
       /* Construct the reference text in preallocated space from the file
          name and the line number.  Standard input yields an empty file name.
          Ensure line numbers are 1 based, even if they are computed 0 based.  */
 
-      file_name = input_file_name[occurs->file_index];
-      if (!file_name)
+      file_name = உள்ளீடு_file_name[occurs->file_index];
+      எனில் (!file_name)
         file_name = "";
 
-      line_ordinal = occurs->reference + 1;
-      if (occurs->file_index > 0)
-        line_ordinal -= file_line_count[occurs->file_index - 1];
+      வரி_ordinal = occurs->reference + 1;
+      எனில் (occurs->file_index > 0)
+        வரி_ordinal -= file_வரி_மொத்தம்[occurs->file_index - 1];
 
-      char *file_end = stpcpy (reference.start, file_name);
-      reference.end = file_end + sprintf (file_end, ":%jd", line_ordinal);
+      எழுத்து *file_end = stpcpy (reference.start, file_name);
+      reference.end = file_end + sprintf (file_end, ":%jd", வரி_ordinal);
     }
-  else if (input_reference)
+  இல்லையெனில் எனில் (உள்ளீடு_reference)
     {
 
       /* Reference starts at saved position for reference and extends right
@@ -1406,7 +1406,7 @@ define_all_fields (OCCURS *occurs)
 
       reference.start = keyafter.start + occurs->reference;
       reference.end = reference.start;
-      SKIP_NON_WHITE (reference.end, right_context_end);
+      SKIP_NON_WHITE (reference.end, வலது_context_end);
     }
 }
 
@@ -1416,21 +1416,21 @@ define_all_fields (OCCURS *occurs)
 | Output the current output fields as one line for 'troff' or 'nroff'.  |
 `----------------------------------------------------------------------*/
 
-static void
-output_one_roff_line (void)
+நிலையான வெறுமை
+output_one_roff_வரி (வெறுமை)
 {
   /* Output the 'tail' field.  */
 
   printf (".%s \"", macro_name);
   print_field (tail);
-  if (tail_truncation)
+  எனில் (tail_truncation)
     fputs (truncation_string, stdout);
   putchar ('"');
 
   /* Output the 'before' field.  */
 
   fputs (" \"", stdout);
-  if (before_truncation)
+  எனில் (before_truncation)
     fputs (truncation_string, stdout);
   print_field (before);
   putchar ('"');
@@ -1439,21 +1439,21 @@ output_one_roff_line (void)
 
   fputs (" \"", stdout);
   print_field (keyafter);
-  if (keyafter_truncation)
+  எனில் (keyafter_truncation)
     fputs (truncation_string, stdout);
   putchar ('"');
 
   /* Output the 'head' field.  */
 
   fputs (" \"", stdout);
-  if (head_truncation)
+  எனில் (head_truncation)
     fputs (truncation_string, stdout);
   print_field (head);
   putchar ('"');
 
   /* Conditionally output the 'reference' field.  */
 
-  if (auto_reference || input_reference)
+  எனில் (auto_reference || உள்ளீடு_reference)
     {
       fputs (" \"", stdout);
       print_field (reference);
@@ -1467,12 +1467,12 @@ output_one_roff_line (void)
 | Output the current output fields as one line for 'TeX'.  |
 `---------------------------------------------------------*/
 
-static void
-output_one_tex_line (void)
+நிலையான வெறுமை
+output_one_tex_வரி (வெறுமை)
 {
-  BLOCK key;			/* key field, isolated */
+  BLOCK சாவி;			/* key field, isolated */
   BLOCK after;			/* after field, isolated */
-  char *cursor;			/* running cursor in source text */
+  எழுத்து *cursor;			/* running cursor in source text */
 
   printf ("\\%s ", macro_name);
   putchar ('{');
@@ -1480,19 +1480,19 @@ output_one_tex_line (void)
   fputs ("}{", stdout);
   print_field (before);
   fputs ("}{", stdout);
-  key.start = keyafter.start;
+  சாவி.start = keyafter.start;
   after.end = keyafter.end;
   cursor = keyafter.start;
   SKIP_SOMETHING (cursor, keyafter.end);
-  key.end = cursor;
+  சாவி.end = cursor;
   after.start = cursor;
-  print_field (key);
+  print_field (சாவி);
   fputs ("}{", stdout);
   print_field (after);
   fputs ("}{", stdout);
   print_field (head);
   putchar ('}');
-  if (auto_reference || input_reference)
+  எனில் (auto_reference || உள்ளீடு_reference)
     {
       putchar ('{');
       print_field (reference);
@@ -1505,12 +1505,12 @@ output_one_tex_line (void)
 | Output the current output fields as one line for a dumb terminal.  |
 `-------------------------------------------------------------------*/
 
-static void
-output_one_dumb_line (void)
+நிலையான வெறுமை
+output_one_dumb_வரி (வெறுமை)
 {
-  if (!right_reference)
+  எனில் (!வலது_reference)
     {
-      if (auto_reference)
+      எனில் (auto_reference)
         {
 
           /* Output the 'reference' field, in such a way that GNU emacs
@@ -1524,7 +1524,7 @@ output_one_dumb_line (void)
                         - (reference.end - reference.start)
                         - 1);
         }
-      else
+      இல்லையெனில்
         {
 
           /* Output the 'reference' field and its following gap.  */
@@ -1536,28 +1536,28 @@ output_one_dumb_line (void)
         }
     }
 
-  if (tail.start < tail.end)
+  எனில் (tail.start < tail.end)
     {
       /* Output the 'tail' field.  */
 
       print_field (tail);
-      if (tail_truncation)
+      எனில் (tail_truncation)
         fputs (truncation_string, stdout);
 
-      print_spaces (half_line_width - gap_size
+      print_spaces (half_வரி_width - gap_size
                     - (before.end - before.start)
                     - (before_truncation ? truncation_string_length : 0)
                     - (tail.end - tail.start)
                     - (tail_truncation ? truncation_string_length : 0));
     }
-  else
-    print_spaces (half_line_width - gap_size
+  இல்லையெனில்
+    print_spaces (half_வரி_width - gap_size
                   - (before.end - before.start)
                   - (before_truncation ? truncation_string_length : 0));
 
   /* Output the 'before' field.  */
 
-  if (before_truncation)
+  எனில் (before_truncation)
     fputs (truncation_string, stdout);
   print_field (before);
 
@@ -1566,30 +1566,30 @@ output_one_dumb_line (void)
   /* Output the 'keyafter' field.  */
 
   print_field (keyafter);
-  if (keyafter_truncation)
+  எனில் (keyafter_truncation)
     fputs (truncation_string, stdout);
 
-  if (head.start < head.end)
+  எனில் (head.start < head.end)
     {
       /* Output the 'head' field.  */
 
-      print_spaces (half_line_width
+      print_spaces (half_வரி_width
                     - (keyafter.end - keyafter.start)
                     - (keyafter_truncation ? truncation_string_length : 0)
                     - (head.end - head.start)
                     - (head_truncation ? truncation_string_length : 0));
-      if (head_truncation)
+      எனில் (head_truncation)
         fputs (truncation_string, stdout);
       print_field (head);
     }
-  else
+  இல்லையெனில்
 
-    if ((auto_reference || input_reference) && right_reference)
-      print_spaces (half_line_width
+    எனில் ((auto_reference || உள்ளீடு_reference) && வலது_reference)
+      print_spaces (half_வரி_width
                     - (keyafter.end - keyafter.start)
                     - (keyafter_truncation ? truncation_string_length : 0));
 
-  if ((auto_reference || input_reference) && right_reference)
+  எனில் ((auto_reference || உள்ளீடு_reference) && வலது_reference)
     {
       /* Output the 'reference' field.  */
 
@@ -1605,8 +1605,8 @@ output_one_dumb_line (void)
 | appropriate format.							  |
 `------------------------------------------------------------------------*/
 
-static void
-generate_all_output (void)
+நிலையான வெறுமை
+generate_all_output (வெறுமை)
 {
   OCCURS *occurs_cursor;	/* current keyword entry being processed */
 
@@ -1614,19 +1614,19 @@ generate_all_output (void)
      line contexts or references are not used, in which case these variables
      would never be computed.  */
 
-  tail.start = NULL;
-  tail.end = NULL;
+  tail.start = வெற்று;
+  tail.end = வெற்று;
   tail_truncation = false;
 
-  head.start = NULL;
-  head.end = NULL;
+  head.start = வெற்று;
+  head.end = வெற்று;
   head_truncation = false;
 
   /* Loop over all keyword occurrences.  */
 
   occurs_cursor = occurs_table[0];
 
-  for (idx_t occurs_index = 0; occurs_index < number_of_occurs[0];
+  க்கு (idx_t occurs_index = 0; occurs_index < எண்_of_occurs[0];
        occurs_index++)
     {
       /* Compute the exact size of every field and whenever truncation flags
@@ -1636,22 +1636,22 @@ generate_all_output (void)
 
       /* Produce one output line according to selected format.  */
 
-      switch (output_format)
+      தேர்வு (output_format)
         {
-        case UNKNOWN_FORMAT:
+        நிலை UNKNOWN_FORMAT:
           /* Should never happen.  */
 
-        case DUMB_FORMAT:
-          output_one_dumb_line ();
-          break;
+        நிலை DUMB_FORMAT:
+          output_one_dumb_வரி ();
+          நிறுத்து;
 
-        case ROFF_FORMAT:
-          output_one_roff_line ();
-          break;
+        நிலை ROFF_FORMAT:
+          output_one_roff_வரி ();
+          நிறுத்து;
 
-        case TEX_FORMAT:
-          output_one_tex_line ();
-          break;
+        நிலை TEX_FORMAT:
+          output_one_tex_வரி ();
+          நிறுத்து;
         }
 
       /* Advance the cursor into the occurs table.  */
@@ -1666,19 +1666,19 @@ generate_all_output (void)
 | Print program identification and options, then exit.  |
 `------------------------------------------------------*/
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
-Usage: %s [OPTION]... [INPUT]...   (without -G)\n\
-  or:  %s -G [OPTION]... [INPUT [OUTPUT]]\n"),
+Usage: %s [OPTION]... [உள்ளீடு_2]...   (without -G)\n\
+  or:  %s -G [OPTION]... [உள்ளீடு_2 [OUTPUT]]\n"),
               program_name, program_name);
       fputs (_("\
-Output a permuted index, including context, of the words in the input files.\n\
+Output a permuted index, including context, of the சொற்கள் in the உள்ளீடு files.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -1691,8 +1691,8 @@ Output a permuted index, including context, of the words in the input files.\n\
   -G, --traditional              behave more like System V 'ptx'\n\
 "));
       oputs (_("\
-  -F, --flag-truncation=STRING   use STRING for flagging line truncations.\n\
-                                 The default is '/'\n\
+  -F, --flag-truncation=STRING   use STRING க்கு flagging வரி truncations.\n\
+                                 The இயல்பு is '/'\n\
 "));
       oputs (_("\
   -M, --macro-name=STRING        macro name to use instead of 'xx'\n\
@@ -1701,10 +1701,10 @@ Output a permuted index, including context, of the words in the input files.\n\
   -O, --format=roff              generate output as roff directives\n\
 "));
       oputs (_("\
-  -R, --right-side-refs          put references at right, not counted in -w\n\
+  -R, --வலது-side-refs          put references at வலது, not counted in -w\n\
 "));
       oputs (_("\
-  -S, --sentence-regexp=REGEXP   for end of lines or end of sentences\n\
+  -S, --sentence-regexp=REGEXP   க்கு end of வரிகள் or end of sentences\n\
 "));
       oputs (_("\
   -T, --format=tex               generate output as TeX directives\n\
@@ -1713,28 +1713,28 @@ Output a permuted index, including context, of the words in the input files.\n\
   -W, --word-regexp=REGEXP       use REGEXP to match each keyword\n\
 "));
       oputs (_("\
-  -b, --break-file=FILE          word break characters in this FILE\n\
+  -b, --நிறுத்து-file=FILE          word நிறுத்து characters in this FILE\n\
 "));
       oputs (_("\
-  -f, --ignore-case              fold lower case to upper case for sorting\n\
+  -f, --ignore-நிலை              fold lower நிலை to upper நிலை க்கு sorting\n\
 "));
       oputs (_("\
-  -g, --gap-size=NUMBER          gap size in columns between output fields\n\
+  -g, --gap-size=எண்_2          gap size in columns between output fields\n\
 "));
       oputs (_("\
-  -i, --ignore-file=FILE         read ignore word list from FILE\n\
+  -i, --ignore-file=FILE         பட ignore word list from FILE\n\
 "));
       oputs (_("\
-  -o, --only-file=FILE           read only word list from this FILE\n\
+  -o, --only-file=FILE           பட only word list from this FILE\n\
 "));
       oputs (_("\
-  -r, --references               first field of each line is a reference\n\
+  -r, --references               first field of each வரி is a reference\n\
 "));
       oputs (_("\
-  -t, --typeset-mode             change the default width from 72 to 100\n\
+  -t, --typeset-mode             change the இயல்பு width from 72 to 100\n\
 "));
       oputs (_("\
-  -w, --width=NUMBER             output width in columns, reference excluded\n\
+  -w, --width=எண்_2             output width in columns, reference excluded\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -1750,50 +1750,50 @@ Output a permuted index, including context, of the words in the input files.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   FORMAT_OPTION = CHAR_MAX + 1
 };
 
 /* Long options equivalences.  */
-static struct option const long_options[] =
+நிலையான கட்டமைப்பு option மாறிலி long_options[] =
 {
-  {"auto-reference", no_argument, NULL, 'A'},
-  {"break-file", required_argument, NULL, 'b'},
-  {"flag-truncation", required_argument, NULL, 'F'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"gap-size", required_argument, NULL, 'g'},
-  {"ignore-file", required_argument, NULL, 'i'},
-  {"macro-name", required_argument, NULL, 'M'},
-  {"only-file", required_argument, NULL, 'o'},
-  {"references", no_argument, NULL, 'r'},
-  {"right-side-refs", no_argument, NULL, 'R'},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"sentence-regexp", required_argument, NULL, 'S'},
-  {"traditional", no_argument, NULL, 'G'},
-  {"typeset-mode", no_argument, NULL, 't'},
-  {"width", required_argument, NULL, 'w'},
-  {"word-regexp", required_argument, NULL, 'W'},
+  {"auto-reference", no_argument, வெற்று, 'A'},
+  {"break-file", required_argument, வெற்று, 'b'},
+  {"flag-truncation", required_argument, வெற்று, 'F'},
+  {"ignore-case", no_argument, வெற்று, 'f'},
+  {"gap-size", required_argument, வெற்று, 'g'},
+  {"ignore-file", required_argument, வெற்று, 'i'},
+  {"macro-name", required_argument, வெற்று, 'M'},
+  {"only-file", required_argument, வெற்று, 'o'},
+  {"references", no_argument, வெற்று, 'r'},
+  {"right-side-refs", no_argument, வெற்று, 'R'},
+  {"format", required_argument, வெற்று, FORMAT_OPTION},
+  {"sentence-regexp", required_argument, வெற்று, 'S'},
+  {"traditional", no_argument, வெற்று, 'G'},
+  {"typeset-mode", no_argument, வெற்று, 't'},
+  {"width", required_argument, வெற்று, 'w'},
+  {"word-regexp", required_argument, வெற்று, 'W'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {வெற்று, 0, வெற்று, 0},
 };
 
-static char const *const format_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி format_args[] =
 {
-  "roff", "tex", NULL
+  "roff", "tex", வெற்று
 };
 
-static enum Format const format_vals[] =
+நிலையான எண்ணிக்கை Format மாறிலி format_vals[] =
 {
   ROFF_FORMAT, TEX_FORMAT
 };
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int optchar;			/* argument character */
-  int file_index;		/* index in text input file arrays */
+  முழு optchar;			/* argument character */
+  முழு file_index;		/* index in text input file arrays */
 
   /* Decode program options.  */
 
@@ -1805,107 +1805,107 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
-                                long_options, NULL),
+  போது (optchar = getopt_long (argc, argv, "AF:GM:ORS:TW:b:i:fg:o:trw:",
+                                long_options, வெற்று),
          optchar != EOF)
     {
-      switch (optchar)
+      தேர்வு (optchar)
         {
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
 
-        case 'G':
+        நிலை 'G':
           gnu_extensions = false;
-          break;
+          நிறுத்து;
 
-        case 'b':
+        நிலை 'b':
           break_file = optarg;
-          break;
+          நிறுத்து;
 
-        case 'f':
+        நிலை 'f':
           ignore_case = true;
-          break;
+          நிறுத்து;
 
-        case 'g':
+        நிலை 'g':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            எனில் (! (xstrtoimax (optarg, வெற்று, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid gap width: %s"),
                      quote (optarg));
             gap_size = tmp;
-            break;
+            நிறுத்து;
           }
 
-        case 'i':
+        நிலை 'i':
           ignore_file = optarg;
-          break;
+          நிறுத்து;
 
-        case 'o':
+        நிலை 'o':
           only_file = optarg;
-          break;
+          நிறுத்து;
 
-        case 'r':
-          input_reference = true;
-          break;
+        நிலை 'r':
+          உள்ளீடு_reference = true;
+          நிறுத்து;
 
-        case 't':
-          if (line_width < 0)
-            line_width = 100;
-          break;
+        நிலை 't':
+          எனில் (வரி_width < 0)
+            வரி_width = 100;
+          நிறுத்து;
 
-        case 'w':
+        நிலை 'w':
           {
             intmax_t tmp;
-            if (! (xstrtoimax (optarg, NULL, 0, &tmp, "") == LONGINT_OK
+            எனில் (! (xstrtoimax (optarg, வெற்று, 0, &tmp, "") == LONGINT_OK
                    && 0 < tmp && tmp <= IDX_MAX))
               error (EXIT_FAILURE, 0, _("invalid line width: %s"),
                      quote (optarg));
-            line_width = tmp;
-            break;
+            வரி_width = tmp;
+            நிறுத்து;
           }
 
-        case 'A':
+        நிலை 'A':
           auto_reference = true;
-          break;
+          நிறுத்து;
 
-        case 'F':
+        நிலை 'F':
           truncation_string = optarg;
           unescape_string (optarg);
-          break;
+          நிறுத்து;
 
-        case 'M':
+        நிலை 'M':
           macro_name = optarg;
-          break;
+          நிறுத்து;
 
-        case 'O':
+        நிலை 'O':
           output_format = ROFF_FORMAT;
-          break;
+          நிறுத்து;
 
-        case 'R':
-          right_reference = true;
-          break;
+        நிலை 'R':
+          வலது_reference = true;
+          நிறுத்து;
 
-        case 'S':
+        நிலை 'S':
           context_regex.string = optarg;
           unescape_string (optarg);
-          break;
+          நிறுத்து;
 
-        case 'T':
+        நிலை 'T':
           output_format = TEX_FORMAT;
-          break;
+          நிறுத்து;
 
-        case 'W':
+        நிலை 'W':
           word_regex.string = optarg;
           unescape_string (optarg);
-          if (!*word_regex.string)
-            word_regex.string = NULL;
-          break;
+          எனில் (!*word_regex.string)
+            word_regex.string = வெற்று;
+          நிறுத்து;
 
-        case FORMAT_OPTION:
+        நிலை FORMAT_OPTION:
           output_format = XARGMATCH ("--format", optarg,
                                      format_args, format_vals);
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
@@ -1913,67 +1913,67 @@ main (int argc, char **argv)
         }
     }
 
-  if (line_width < 0)
-    line_width = 72;
+  எனில் (வரி_width < 0)
+    வரி_width = 72;
 
   /* Process remaining arguments.  If GNU extensions are enabled, process
      all arguments as input parameters.  If disabled, accept at most two
      arguments, the second of which is an output parameter.  */
 
-  if (optind == argc)
+  எனில் (optind == argc)
     {
 
       /* No more argument simply means: read standard input.  */
 
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers =    xmalloc (sizeof *text_buffers);
-      number_input_files = 1;
-      input_file_name[0] = NULL;
+      உள்ளீடு_file_name = xmalloc (அளவு *உள்ளீடு_file_name);
+      file_வரி_மொத்தம் = xmalloc (அளவு *file_வரி_மொத்தம்);
+      text_buffers =    xmalloc (அளவு *text_buffers);
+      எண்_உள்ளீடு_files = 1;
+      உள்ளீடு_file_name[0] = வெற்று;
     }
-  else if (gnu_extensions)
+  இல்லையெனில் எனில் (gnu_extensions)
     {
-      number_input_files = argc - optind;
-      input_file_name = xnmalloc (number_input_files, sizeof *input_file_name);
-      file_line_count = xnmalloc (number_input_files, sizeof *file_line_count);
-      text_buffers    = xnmalloc (number_input_files, sizeof *text_buffers);
+      எண்_உள்ளீடு_files = argc - optind;
+      உள்ளீடு_file_name = xnmalloc (எண்_உள்ளீடு_files, அளவு *உள்ளீடு_file_name);
+      file_வரி_மொத்தம் = xnmalloc (எண்_உள்ளீடு_files, அளவு *file_வரி_மொத்தம்);
+      text_buffers    = xnmalloc (எண்_உள்ளீடு_files, அளவு *text_buffers);
 
-      for (file_index = 0; file_index < number_input_files; file_index++)
+      க்கு (file_index = 0; file_index < எண்_உள்ளீடு_files; file_index++)
         {
-          if (!*argv[optind] || streq (argv[optind], "-"))
-            input_file_name[file_index] = NULL;
-          else
-            input_file_name[file_index] = argv[optind];
+          எனில் (!*argv[optind] || streq (argv[optind], "-"))
+            உள்ளீடு_file_name[file_index] = வெற்று;
+          இல்லையெனில்
+            உள்ளீடு_file_name[file_index] = argv[optind];
           optind++;
         }
     }
-  else
+  இல்லையெனில்
     {
 
       /* There is one necessary input file.  */
 
-      number_input_files = 1;
-      input_file_name = xmalloc (sizeof *input_file_name);
-      file_line_count = xmalloc (sizeof *file_line_count);
-      text_buffers    = xmalloc (sizeof *text_buffers);
-      if (!*argv[optind] || streq (argv[optind], "-"))
-        input_file_name[0] = NULL;
-      else
-        input_file_name[0] = argv[optind];
+      எண்_உள்ளீடு_files = 1;
+      உள்ளீடு_file_name = xmalloc (அளவு *உள்ளீடு_file_name);
+      file_வரி_மொத்தம் = xmalloc (அளவு *file_வரி_மொத்தம்);
+      text_buffers    = xmalloc (அளவு *text_buffers);
+      எனில் (!*argv[optind] || streq (argv[optind], "-"))
+        உள்ளீடு_file_name[0] = வெற்று;
+      இல்லையெனில்
+        உள்ளீடு_file_name[0] = argv[optind];
       optind++;
 
       /* Redirect standard output, only if requested.  */
 
-      if (optind < argc)
+      எனில் (optind < argc)
         {
-          if (! freopen (argv[optind], "w", stdout))
+          எனில் (! freopen (argv[optind], "w", stdout))
             error (EXIT_FAILURE, errno, "%s", quotef (argv[optind]));
           optind++;
         }
 
       /* Diagnose any other argument as an error.  */
 
-      if (optind < argc)
+      எனில் (optind < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind]));
           usage (EXIT_FAILURE);
@@ -1983,7 +1983,7 @@ main (int argc, char **argv)
   /* If the output format has not been explicitly selected, choose dumb
      terminal format if GNU extensions are enabled, else 'roff' format.  */
 
-  if (output_format == UNKNOWN_FORMAT)
+  எனில் (output_format == UNKNOWN_FORMAT)
     output_format = gnu_extensions ? DUMB_FORMAT : ROFF_FORMAT;
 
   /* Initialize the main tables.  */
@@ -1992,49 +1992,49 @@ main (int argc, char **argv)
 
   /* Read 'Break character' file, if any.  */
 
-  if (break_file)
+  எனில் (break_file)
     digest_break_file (break_file);
 
   /* Read 'Ignore words' file and 'Only words' files, if any.  If any of
      these files is empty, reset the name of the file to null, to avoid
      unnecessary calls to search_table. */
 
-  if (ignore_file)
+  எனில் (ignore_file)
     {
       digest_word_file (ignore_file, &ignore_table);
-      if (ignore_table.length == 0)
-        ignore_file = NULL;
+      எனில் (ignore_table.length == 0)
+        ignore_file = வெற்று;
     }
 
-  if (only_file)
+  எனில் (only_file)
     {
       digest_word_file (only_file, &only_table);
-      if (only_table.length == 0)
-        only_file = NULL;
+      எனில் (only_table.length == 0)
+        only_file = வெற்று;
     }
 
   /* Prepare to study all the input files.  */
 
-  number_of_occurs[0] = 0;
-  total_line_count = 0;
+  எண்_of_occurs[0] = 0;
+  total_வரி_மொத்தம் = 0;
   maximum_word_length = 0;
   reference_max_width = 0;
 
-  for (file_index = 0; file_index < number_input_files; file_index++)
+  க்கு (file_index = 0; file_index < எண்_உள்ளீடு_files; file_index++)
     {
       BLOCK *text_buffer = text_buffers + file_index;
 
       /* Read the file contents into memory, then study it.  */
 
-      swallow_file_in_memory (input_file_name[file_index], text_buffer);
+      swallow_file_in_memory (உள்ளீடு_file_name[file_index], text_buffer);
       find_occurs_in_text (file_index);
 
       /* Maintain for each file how many lines has been read so far when its
          end is reached.  Incrementing the count first is a simple kludge to
          handle a possible incomplete line at end of file.  */
 
-      total_line_count++;
-      file_line_count[file_index] = total_line_count;
+      total_வரி_மொத்தம்++;
+      file_வரி_மொத்தம்[file_index] = total_வரி_மொத்தம்;
     }
 
   /* Do the output process phase.  */
@@ -2045,5 +2045,5 @@ main (int argc, char **argv)
 
   /* All done.  */
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

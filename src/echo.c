@@ -14,12 +14,12 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "assure.h"
-#include "c-ctype.h"
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "echo"
@@ -30,11 +30,11 @@
 
 /* If true, interpret backslash escapes by default.  */
 #ifndef DEFAULT_ECHO_TO_XPG
-enum { DEFAULT_ECHO_TO_XPG = false };
+எண்ணிக்கை { DEFAULT_ECHO_TO_XPG = false };
 #endif
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
@@ -49,11 +49,11 @@ Echo the STRING(s) to standard output.\n\
 \n\
 "), stdout);
   oputs (_("\
-  -n     do not output the trailing newline\n\
+  -n     செய் not output the trailing newline\n\
 "));
   oputs (_(DEFAULT_ECHO_TO_XPG
            ? N_("\
-  -e     enable interpretation of backslash escapes (default)\n\
+  -e     enable interpretation of backslash escapes (இயல்பு)\n\
 ")
            : N_("\
   -e     enable interpretation of backslash escapes\n\
@@ -63,7 +63,7 @@ Echo the STRING(s) to standard output.\n\
   -E     disable interpretation of backslash escapes\n\
 ")
            : N_("\
-  -E     disable interpretation of backslash escapes (default)\n\
+  -E     disable interpretation of backslash escapes (இயல்பு)\n\
 ")));
   oputs (HELP_OPTION_DESCRIPTION);
   oputs (VERSION_OPTION_DESCRIPTION);
@@ -79,14 +79,14 @@ If -e is in effect, the following sequences are recognized:\n\
   \\c      produce no further output\n\
   \\e      escape\n\
   \\f      form feed\n\
-  \\n      new line\n\
-  \\r      carriage return\n\
+  \\n      new வரி\n\
+  \\r      carriage திரும்பு\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
   fputs (_("\
-  \\0NNN   byte with octal value NNN (1 to 3 digits)\n\
-  \\xHH    byte with hexadecimal value HH (1 to 2 digits)\n\
+  \\0NNN   byte with octal மதிப்பு NNN (1 to 3 digits)\n\
+  \\xHH    byte with hexadecimal மதிப்பு HH (1 to 2 digits)\n\
 "), stdout);
   printf (USAGE_BUILTIN_WARNING, PROGRAM_NAME);
   fputs (_("\n\
@@ -98,18 +98,18 @@ as it avoids problems when outputting option-like strings.\n\
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
-hextobin (unsigned char c)
+நிலையான முழு
+hextobin (unsigned எழுத்து c)
 {
-  switch (c)
+  தேர்வு (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    இயல்பு: திரும்பு c - '0';
+    நிலை 'a': நிலை 'A': திரும்பு 10;
+    நிலை 'b': நிலை 'B': திரும்பு 11;
+    நிலை 'c': நிலை 'C': திரும்பு 12;
+    நிலை 'd': நிலை 'D': திரும்பு 13;
+    நிலை 'e': நிலை 'E': திரும்பு 14;
+    நிலை 'f': நிலை 'F': திரும்பு 15;
     }
 }
 
@@ -117,8 +117,8 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
@@ -141,60 +141,60 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  எனில் (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      எனில் (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      எனில் (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+                       (எழுத்து *) வெற்று);
+          திரும்பு EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  எனில் (allow_options)
+    போது (argc > 0 && *argv[0] == '-')
       {
-        char const *temp = argv[0] + 1;
+        எழுத்து மாறிலி *temp = argv[0] + 1;
         size_t i;
 
         /* If it appears that we are handling options, then make sure that
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
-          switch (temp[i])
+        க்கு (i = 0; temp[i]; i++)
+          தேர்வு (temp[i])
             {
-            case 'e': case 'E': case 'n':
-              break;
-            default:
-              goto just_echo;
+            நிலை 'e': நிலை 'E': நிலை 'n':
+              நிறுத்து;
+            இயல்பு:
+              செல் just_echo;
             }
 
-        if (i == 0)
-          goto just_echo;
+        எனில் (i == 0)
+          செல் just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
-          switch (*temp++)
+        போது (*temp)
+          தேர்வு (*temp++)
             {
-            case 'e':
+            நிலை 'e':
               do_v9 = true;
-              break;
+              நிறுத்து;
 
-            case 'E':
+            நிலை 'E':
               do_v9 = false;
-              break;
+              நிறுத்து;
 
-            case 'n':
+            நிலை 'n':
               display_return = false;
-              break;
+              நிறுத்து;
             }
 
         argc--;
@@ -203,84 +203,84 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  எனில் (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      போது (argc > 0)
         {
-          char const *s = argv[0];
-          unsigned char c;
+          எழுத்து மாறிலி *s = argv[0];
+          unsigned எழுத்து c;
 
-          while ((c = *s++))
+          போது ((c = *s++))
             {
-              if (c == '\\' && *s)
+              எனில் (c == '\\' && *s)
                 {
-                  switch (c = *s++)
+                  தேர்வு (c = *s++)
                     {
-                    case 'a': c = '\a'; break;
-                    case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
-                    case 'e': c = '\x1B'; break;
-                    case 'f': c = '\f'; break;
-                    case 'n': c = '\n'; break;
-                    case 'r': c = '\r'; break;
-                    case 't': c = '\t'; break;
-                    case 'v': c = '\v'; break;
-                    case 'x':
+                    நிலை 'a': c = '\a'; நிறுத்து;
+                    நிலை 'b': c = '\b'; நிறுத்து;
+                    நிலை 'c': திரும்பு EXIT_SUCCESS;
+                    நிலை 'e': c = '\x1B'; நிறுத்து;
+                    நிலை 'f': c = '\f'; நிறுத்து;
+                    நிலை 'n': c = '\n'; நிறுத்து;
+                    நிலை 'r': c = '\r'; நிறுத்து;
+                    நிலை 't': c = '\t'; நிறுத்து;
+                    நிலை 'v': c = '\v'; நிறுத்து;
+                    நிலை 'x':
                       {
-                        unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
-                          goto not_an_escape;
+                        unsigned எழுத்து ch = *s;
+                        எனில் (! c_isxdigit (ch))
+                          செல் not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        எனில் (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
                           }
                       }
-                      break;
-                    case '0':
+                      நிறுத்து;
+                    நிலை '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
-                        break;
+                      எனில் (! ('0' <= *s && *s <= '7'))
+                        நிறுத்து;
                       c = *s++;
                       FALLTHROUGH;
-                    case '1': case '2': case '3':
-                    case '4': case '5': case '6': case '7':
+                    நிலை '1': நிலை '2': நிலை '3':
+                    நிலை '4': நிலை '5': நிலை '6': நிலை '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      எனில் ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      எனில் ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      break;
-                    case '\\': break;
+                      நிறுத்து;
+                    நிலை '\\': நிறுத்து;
 
                     not_an_escape:
-                    default:  putchar ('\\'); break;
+                    இயல்பு:  putchar ('\\'); நிறுத்து;
                     }
                 }
               putchar (c);
             }
           argc--;
           argv++;
-          if (argc > 0)
+          எனில் (argc > 0)
             putchar (' ');
         }
     }
-  else
+  இல்லையெனில்
     {
-      while (argc > 0)
+      போது (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
+          எனில் (argc > 0)
             putchar (' ');
         }
     }
 
-  if (display_return)
+  எனில் (display_return)
     putchar ('\n');
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

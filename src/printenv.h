@@ -17,28 +17,28 @@
 #ifndef PRINTENV_H
 # define PRINTENV_H 1
 
-static inline void
-print_envvar (char const *entry, char terminator, bool quoted)
+நிலையான உள்வரி வெறுமை
+print_envvar (எழுத்து மாறிலி *entry, எழுத்து terminator, bool quoted)
 {
-  if (! quoted)
+  எனில் (! quoted)
     fputs (entry, stdout);
-  else
+  இல்லையெனில்
     {
-      idx_t const entry_len = strlen (entry);
-      char const *equal = memchr (entry, '=', entry_len);
+      idx_t மாறிலி entry_len = strlen (entry);
+      எழுத்து மாறிலி *equal = memchr (entry, '=', entry_len);
 
       /* If the parent process manipulates ENVIRON directly, it is possible
          that an entry does not contain an equal sign.  */
-      idx_t const var_len = equal ? equal - entry : entry_len;
+      idx_t மாறிலி var_len = equal ? equal - entry : entry_len;
       fputs (quoteN_mem (entry, var_len), stdout);
 
-      if (equal)
+      எனில் (equal)
         {
           putchar ('=');
-          char const *val = equal + 1;
-          idx_t const val_len = entry_len - (val - entry);
+          எழுத்து மாறிலி *val = equal + 1;
+          idx_t மாறிலி val_len = entry_len - (val - entry);
           /* Prefer "VAR=" over "VAR=''".  */
-          if (0 < val_len)
+          எனில் (0 < val_len)
             fputs (quoteN_mem (val, val_len), stdout);
         }
     }

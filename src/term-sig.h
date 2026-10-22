@@ -3,7 +3,7 @@
 
 # include <signal.h>
 
-static int const term_sig[] =
+நிலையான முழு மாறிலி term_sig[] =
   {
     SIGALRM, /* our timeout.  */
     SIGINT,  /* Ctrl-C at terminal for example.  */

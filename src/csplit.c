@@ -17,24 +17,24 @@
 /* Written by Stuart Kemp, cpsrk@groper.jcu.edu.au.
    Modified by David MacKenzie, djm@gnu.ai.mit.edu. */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <getopt.h>
-#include <sys/types.h>
-#include <signal.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <signal.h>
 
-#include "system.h"
+#அந்தர்பாவ "system.h"
 
-#include <regex.h>
+#அந்தர்பாவ <regex.h>
 
-#include "c-ctype.h"
-#include "fd-reopen.h"
-#include "quote.h"
-#include "safe-read.h"
-#include "stdio--.h"
-#include "term-sig.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#அந்தர்பாவ "c-ctype.h"
+#அந்தர்பாவ "fd-reopen.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "safe-read.h"
+#அந்தர்பாவ "stdio--.h"
+#அந்தர்பாவ "term-sig.h"
+#அந்தர்பாவ "xdectoint.h"
+#அந்தர்பாவ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "csplit"
@@ -47,16 +47,16 @@
 #define DEFAULT_PREFIX	"xx"
 
 /* A compiled pattern arg. */
-struct control
+கட்டமைப்பு control
 {
   intmax_t offset;		/* Offset from regexp to split at. */
-  intmax_t lines_required;	/* Number of lines required. */
+  intmax_t வரிகள்_required;	/* Number of lines required. */
   intmax_t repeat;		/* Repeat count. */
-  int argnum;			/* ARGV index. */
+  முழு argnum;			/* ARGV index. */
   bool repeat_forever;		/* True if '*' used as a repeat count. */
   bool ignore;			/* If true, produce no output (for regexp). */
   bool regexpr;			/* True if regular expression was used. */
-  struct re_pattern_buffer re_compiled;	/* Compiled regular expression. */
+  கட்டமைப்பு re_pattern_buffer re_compiled;	/* Compiled regular expression. */
 };
 
 /* Initial size of data area in buffers. */
@@ -72,138 +72,138 @@ struct control
 #endif
 
 /* A string with a length count. */
-struct cstring
+கட்டமைப்பு cstring
 {
   idx_t len;
-  char *str;
+  எழுத்து *str;
 };
 
 /* Pointers to the beginnings of lines in the buffer area.
    These structures are linked together if needed. */
-struct line
+கட்டமைப்பு வரி
 {
   idx_t used;			/* Number of offsets used in this struct. */
-  idx_t insert_index;		/* Next offset to use when inserting line. */
+  idx_t செருகு_index;		/* Next offset to use when inserting line. */
   idx_t retrieve_index;	/* Next index to use when retrieving line. */
-  struct cstring starts[CTRL_SIZE]; /* Lines in the data area. */
-  struct line *next;		/* Next in linked list. */
+  கட்டமைப்பு cstring starts[CTRL_SIZE]; /* Lines in the data area. */
+  கட்டமைப்பு வரி *next;		/* Next in linked list. */
 };
 
 /* The structure to hold the input lines.
    Contains a pointer to the data area and a list containing
    pointers to the individual lines. */
-struct buffer_record
+கட்டமைப்பு buffer_record
 {
   idx_t bytes_alloc;		/* Size of the buffer area. */
   idx_t bytes_used;		/* Bytes used in the buffer area. */
-  intmax_t start_line;		/* First line number in this buffer. */
+  intmax_t start_வரி;		/* First line number in this buffer. */
   intmax_t first_available;	/* First line that can be retrieved. */
-  idx_t num_lines;		/* Number of complete lines in this buffer. */
-  char *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
-  struct line *line_start;	/* Head of list of pointers to lines. */
-  struct line *curr_line;	/* The line start record currently in use. */
-  struct buffer_record *next;
+  idx_t இலக்கம்_வரிகள்;		/* Number of complete lines in this buffer. */
+  எழுத்து *buffer COUNTED_BY (bytes_alloc);	/* Data area. */
+  கட்டமைப்பு வரி *வரி_start;	/* Head of list of pointers to lines. */
+  கட்டமைப்பு வரி *curr_வரி;	/* The line start record currently in use. */
+  கட்டமைப்பு buffer_record *next;
 };
 
-static void close_output_file (void);
-static void create_output_file (void);
-static void delete_all_files (bool);
-static void save_line_to_file (const struct cstring *line);
+நிலையான வெறுமை close_output_file (வெறுமை);
+நிலையான வெறுமை create_output_file (வெறுமை);
+நிலையான வெறுமை delete_all_files (bool);
+நிலையான வெறுமை save_வரி_to_file (மாறிலி கட்டமைப்பு cstring *வரி);
 
 /* Start of buffer list. */
-static struct buffer_record *head = NULL;
+நிலையான கட்டமைப்பு buffer_record *head = வெற்று;
 
 /* Partially read line. */
-static char *hold_area = NULL;
+நிலையான எழுத்து *hold_area = வெற்று;
 
 /* Number of bytes in 'hold_area'. */
-static idx_t hold_count = 0;
+நிலையான idx_t hold_மொத்தம் = 0;
 
 /* Number of the last line in the buffers. */
-static intmax_t last_line_number = 0;
+நிலையான intmax_t last_வரி_எண் = 0;
 
 /* Number of the line currently being examined. */
-static intmax_t current_line = 0;
+நிலையான intmax_t current_வரி = 0;
 
 /* If true, we have read EOF. */
-static bool have_read_eof = false;
+நிலையான bool have_read_eof = false;
 
 /* Name of output files. */
-static char *volatile filename_space = NULL;
+நிலையான எழுத்து *நிலையற்ற filename_space = வெற்று;
 
 /* Prefix part of output file names. */
-static char const *volatile prefix = DEFAULT_PREFIX;
+நிலையான எழுத்து மாறிலி *நிலையற்ற prefix = DEFAULT_PREFIX;
 
 /* Suffix part of output file names. */
-static char *volatile suffix = NULL;
+நிலையான எழுத்து *நிலையற்ற suffix = வெற்று;
 
 /* Number of digits to use in output file names. */
-static int volatile digits = 2;
+நிலையான முழு நிலையற்ற digits = 2;
 
 /* Number of files created so far. */
-static int volatile files_created = 0;
+நிலையான முழு நிலையற்ற files_created = 0;
 
 /* Number of bytes written to current file. */
-static intmax_t bytes_written;
+நிலையான intmax_t bytes_written;
 
 /* Output file pointer. */
-static FILE *output_stream = NULL;
+நிலையான FILE *output_stream = வெற்று;
 
 /* Output file name. */
-static char *output_filename = NULL;
+நிலையான எழுத்து *output_filename = வெற்று;
 
 /* Perhaps it would be cleaner to pass arg values instead of indexes. */
-static char **global_argv;
+நிலையான எழுத்து **global_argv;
 
 /* If true, do not print the count of bytes in each output file. */
-static bool suppress_count;
+நிலையான bool suppress_மொத்தம்;
 
 /* If true, remove output files on error. */
-static bool volatile remove_files = true;
+நிலையான bool நிலையற்ற remove_files = true;
 
 /* If true, remove all output files which have a zero length. */
-static bool elide_empty_files;
+நிலையான bool elide_empty_files;
 
 /* If true, suppress the lines that match the PATTERN */
-static bool suppress_matched;
+நிலையான bool suppress_matched;
 
 /* The compiled pattern arguments, which determine how to split
    the input file. */
-static struct control *controls;
+நிலையான கட்டமைப்பு control *controls;
 
 /* Number of elements in 'controls'. */
-static idx_t control_used;
+நிலையான idx_t control_used;
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+நிலையான sigset_t caught_signals;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   SUPPRESS_MATCHED_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"digits", required_argument, NULL, 'n'},
-  {"quiet", no_argument, NULL, 'q'},  /* Deprecated.  */
-  {"silent", no_argument, NULL, 's'},
-  {"keep-files", no_argument, NULL, 'k'},
-  {"elide-empty-files", no_argument, NULL, 'z'},
-  {"prefix", required_argument, NULL, 'f'},
-  {"suffix-format", required_argument, NULL, 'b'},
-  {"suppress-matched", no_argument, NULL, SUPPRESS_MATCHED_OPTION},
+  {"digits", required_argument, வெற்று, 'n'},
+  {"quiet", no_argument, வெற்று, 'q'},  /* Deprecated.  */
+  {"silent", no_argument, வெற்று, 's'},
+  {"keep-files", no_argument, வெற்று, 'k'},
+  {"elide-empty-files", no_argument, வெற்று, 'z'},
+  {"prefix", required_argument, வெற்று, 'f'},
+  {"suffix-format", required_argument, வெற்று, 'b'},
+  {"suppress-matched", no_argument, வெற்று, SUPPRESS_MATCHED_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* Optionally remove files created so far; then exit.
    Called when an error detected. */
 
-static void
-cleanup (void)
+நிலையான வெறுமை
+cleanup (வெறுமை)
 {
   sigset_t oldset;
 
@@ -211,117 +211,117 @@ cleanup (void)
 
   sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
   delete_all_files (false);
-  sigprocmask (SIG_SETMASK, &oldset, NULL);
+  sigprocmask (SIG_SETMASK, &oldset, வெற்று);
 }
 
-static _Noreturn void
-cleanup_fatal (void)
+நிலையான _Noreturn வெறுமை
+cleanup_fatal (வெறுமை)
 {
   cleanup ();
   exit (EXIT_FAILURE);
 }
 
-extern void
-xalloc_die (void)
+வெளி வெறுமை
+xalloc_die (வெறுமை)
 {
   error (0, 0, "%s", _("memory exhausted"));
   cleanup_fatal ();
 }
 
-static void
-interrupt_handler (int sig)
+நிலையான வெறுமை
+interrupt_handler (முழு sig)
 {
   delete_all_files (true);
-  signal (sig, SIG_DFL);
+  சமிக்ஞை (sig, SIG_DFL);
   /* The signal has been reset to SIG_DFL, but blocked during this
      handler.  Force the default action of this signal once the
      handler returns and the block is removed.  */
-  raise (sig);
+  எழுப்பு (sig);
 }
 
 /* Keep track of NUM bytes of a partial line in buffer START.
    These bytes will be retrieved later when another large buffer is read.  */
 
-static void
-save_to_hold_area (char *start, idx_t num)
+நிலையான வெறுமை
+save_to_hold_area (எழுத்து *start, idx_t இலக்கம்)
 {
-  free (hold_area);
+  விடுவி (hold_area);
   hold_area = start;
-  hold_count = num;
+  hold_மொத்தம் = இலக்கம்;
 }
 
 /* Read up to MAX_N_BYTES bytes from the input stream into DEST.
    Return the number of bytes read. */
 
-static idx_t
-read_input (char *dest, idx_t max_n_bytes)
+நிலையான idx_t
+read_உள்ளீடு (எழுத்து *dest, idx_t max_n_bytes)
 {
-  if (max_n_bytes == 0)
-    return 0;
+  எனில் (max_n_bytes == 0)
+    திரும்பு 0;
 
   ptrdiff_t bytes_read = safe_read (STDIN_FILENO, dest, max_n_bytes);
 
-  if (bytes_read == 0)
+  எனில் (bytes_read == 0)
     have_read_eof = true;
 
-  if (bytes_read < 0)
+  எனில் (bytes_read < 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return bytes_read;
+  திரும்பு bytes_read;
 }
 
 /* Initialize existing line record P. */
 
-static void
-clear_line_control (struct line *p)
+நிலையான வெறுமை
+clear_வரி_control (கட்டமைப்பு வரி *p)
 {
   p->used = 0;
-  p->insert_index = 0;
+  p->செருகு_index = 0;
   p->retrieve_index = 0;
 }
 
 /* Return a new, initialized line record. */
 
-static struct line *
-new_line_control (void)
+நிலையான கட்டமைப்பு வரி *
+new_வரி_control (வெறுமை)
 {
-  struct line *p = xmalloc (sizeof *p);
+  கட்டமைப்பு வரி *p = xmalloc (அளவு *p);
 
-  p->next = NULL;
-  clear_line_control (p);
+  p->next = வெற்று;
+  clear_வரி_control (p);
 
-  return p;
+  திரும்பு p;
 }
 
 /* Record LINE_START, which is the address of the start of a line
    of length LINE_LEN in the large buffer, in the lines buffer of B. */
 
-static void
-keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
+நிலையான வெறுமை
+keep_new_வரி (கட்டமைப்பு buffer_record *b, எழுத்து *வரி_start, idx_t வரி_len)
 {
-  struct line *l;
+  கட்டமைப்பு வரி *l;
 
   /* If there is no existing area to keep line info, get some. */
-  if (b->line_start == NULL)
-    b->line_start = b->curr_line = new_line_control ();
+  எனில் (b->வரி_start == வெற்று)
+    b->வரி_start = b->curr_வரி = new_வரி_control ();
 
   /* If existing area for lines is full, get more. */
-  if (b->curr_line->used == CTRL_SIZE)
+  எனில் (b->curr_வரி->used == CTRL_SIZE)
     {
-      b->curr_line->next = new_line_control ();
-      b->curr_line = b->curr_line->next;
+      b->curr_வரி->next = new_வரி_control ();
+      b->curr_வரி = b->curr_வரி->next;
     }
 
-  l = b->curr_line;
+  l = b->curr_வரி;
 
   /* Record the start of the line, and update counters. */
-  l->starts[l->insert_index].str = line_start;
-  l->starts[l->insert_index].len = line_len;
+  l->starts[l->செருகு_index].str = வரி_start;
+  l->starts[l->செருகு_index].len = வரி_len;
   l->used++;
-  l->insert_index++;
+  l->செருகு_index++;
 }
 
 /* Scan the buffer in B for newline characters
@@ -332,106 +332,106 @@ keep_new_line (struct buffer_record *b, char *line_start, idx_t line_len)
    a pointer is kept to this area, which will be used when
    the next buffer is filled. */
 
-static idx_t
-record_line_starts (struct buffer_record *b)
+நிலையான idx_t
+record_வரி_starts (கட்டமைப்பு buffer_record *b)
 {
-  char *line_start;		/* Start of current line. */
-  idx_t lines;			/* Number of lines found. */
-  idx_t line_length;		/* Length of each line found. */
+  எழுத்து *வரி_start;		/* Start of current line. */
+  idx_t வரிகள்;			/* Number of lines found. */
+  idx_t வரி_length;		/* Length of each line found. */
 
-  if (b->bytes_used == 0)
-    return 0;
+  எனில் (b->bytes_used == 0)
+    திரும்பு 0;
 
-  lines = 0;
-  line_start = b->buffer;
-  char *buffer_end = line_start + b->bytes_used;
+  வரிகள் = 0;
+  வரி_start = b->buffer;
+  எழுத்து *buffer_end = வரி_start + b->bytes_used;
   *buffer_end = '\n';
 
-  while (true)
+  போது (true)
     {
-      char *line_end = rawmemchr (line_start, '\n');
-      if (line_end == buffer_end)
-        break;
-      line_length = line_end - line_start + 1;
-      keep_new_line (b, line_start, line_length);
-      line_start = line_end + 1;
-      lines++;
+      எழுத்து *வரி_end = rawmemchr (வரி_start, '\n');
+      எனில் (வரி_end == buffer_end)
+        நிறுத்து;
+      வரி_length = வரி_end - வரி_start + 1;
+      keep_new_வரி (b, வரி_start, வரி_length);
+      வரி_start = வரி_end + 1;
+      வரிகள்++;
     }
 
   /* Check for an incomplete last line. */
-  idx_t bytes_left = buffer_end - line_start;
-  if (bytes_left)
+  idx_t bytes_இடது = buffer_end - வரி_start;
+  எனில் (bytes_இடது)
     {
-      if (have_read_eof)
+      எனில் (have_read_eof)
         {
-          keep_new_line (b, line_start, bytes_left);
-          lines++;
+          keep_new_வரி (b, வரி_start, bytes_இடது);
+          வரிகள்++;
         }
-      else
-        save_to_hold_area (ximemdup (line_start, bytes_left), bytes_left);
+      இல்லையெனில்
+        save_to_hold_area (ximemdup (வரி_start, bytes_இடது), bytes_இடது);
     }
 
-  b->num_lines = lines;
-  b->first_available = b->start_line = last_line_number + 1;
-  last_line_number += lines;
+  b->இலக்கம்_வரிகள் = வரிகள்;
+  b->first_available = b->start_வரி = last_வரி_எண் + 1;
+  last_வரி_எண் += வரிகள்;
 
-  return lines;
+  திரும்பு வரிகள்;
 }
 
 /* Work around <https://gcc.gnu.org/PR109614>.  */
-#if 13 <= __GNUC__
+#எனில் 13 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wanalyzer-mismatching-deallocation"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-after-free"
 # pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
 #endif
 
-static void
-free_buffer (struct buffer_record *buf)
+நிலையான வெறுமை
+free_buffer (கட்டமைப்பு buffer_record *buf)
 {
-  for (struct line *l = buf->line_start; l;)
+  க்கு (கட்டமைப்பு வரி *l = buf->வரி_start; l;)
     {
-      struct line *n = l->next;
-      free (l);
+      கட்டமைப்பு வரி *n = l->next;
+      விடுவி (l);
       l = n;
     }
-  free (buf->buffer);
-  free (buf);
+  விடுவி (buf->buffer);
+  விடுவி (buf);
 }
 
 /* Return a new buffer of at least MINSIZE bytes.  */
 
-static ATTRIBUTE_DEALLOC (free_buffer, 1)
-struct buffer_record *
+நிலையான ATTRIBUTE_DEALLOC (free_buffer, 1)
+கட்டமைப்பு buffer_record *
 get_new_buffer (idx_t min_size)
 {
-  struct buffer_record *new_buffer = xmalloc (sizeof *new_buffer);
+  கட்டமைப்பு buffer_record *new_buffer = xmalloc (அளவு *new_buffer);
   new_buffer->bytes_alloc = 0;
-  new_buffer->buffer = xpalloc (NULL, &new_buffer->bytes_alloc, min_size,
+  new_buffer->buffer = xpalloc (வெற்று, &new_buffer->bytes_alloc, min_size,
                                 -1, 1);
   new_buffer->bytes_used = 0;
-  new_buffer->start_line = new_buffer->first_available = last_line_number + 1;
-  new_buffer->num_lines = 0;
-  new_buffer->line_start = new_buffer->curr_line = NULL;
-  new_buffer->next = NULL;
+  new_buffer->start_வரி = new_buffer->first_available = last_வரி_எண் + 1;
+  new_buffer->இலக்கம்_வரிகள் = 0;
+  new_buffer->வரி_start = new_buffer->curr_வரி = வெற்று;
+  new_buffer->next = வெற்று;
 
-  return new_buffer;
+  திரும்பு new_buffer;
 }
 
 /* Append buffer BUF to the linked list of buffers that contain
    some data yet to be processed. */
 
-static void
-save_buffer (struct buffer_record *buf)
+நிலையான வெறுமை
+save_buffer (கட்டமைப்பு buffer_record *buf)
 {
-  buf->next = NULL;
-  buf->curr_line = buf->line_start;
+  buf->next = வெற்று;
+  buf->curr_வரி = buf->வரி_start;
 
-  if (head == NULL)
+  எனில் (head == வெற்று)
     head = buf;
-  else
+  இல்லையெனில்
     {
-      struct buffer_record *p;
-      for (p = head; p->next; p = p->next)
+      கட்டமைப்பு buffer_record *p;
+      க்கு (p = head; p->next; p = p->next)
         /* Do nothing. */ ;
       p->next = buf;
     }
@@ -450,45 +450,45 @@ save_buffer (struct buffer_record *buf)
    Return true if a new buffer was obtained, otherwise false
    (in which case end-of-file must have been encountered). */
 
-static bool
-load_buffer (void)
+நிலையான bool
+load_buffer (வெறுமை)
 {
-  if (have_read_eof)
-    return false;
+  எனில் (have_read_eof)
+    திரும்பு false;
 
   /* We must make the buffer at least as large as the amount of data
      in the partial line left over from the last call,
      plus room for a sentinel '\n'. */
-  idx_t bytes_wanted = MAX (START_SIZE, hold_count + 1);
+  idx_t bytes_wanted = MAX (START_SIZE, hold_மொத்தம் + 1);
 
-  while (true)
+  போது (true)
     {
-      struct buffer_record *b = get_new_buffer (bytes_wanted);
+      கட்டமைப்பு buffer_record *b = get_new_buffer (bytes_wanted);
       idx_t bytes_alloc = b->bytes_alloc;
       idx_t bytes_avail = bytes_alloc;
-      char *p = b->buffer;
+      எழுத்து *p = b->buffer;
 
       /* First check the 'holding' area for a partial line. */
-      if (hold_count)
+      எனில் (hold_மொத்தம்)
         {
-          p = mempcpy (p, hold_area, hold_count);
-          b->bytes_used += hold_count;
-          bytes_avail -= hold_count;
-          hold_count = 0;
+          p = mempcpy (p, hold_area, hold_மொத்தம்);
+          b->bytes_used += hold_மொத்தம்;
+          bytes_avail -= hold_மொத்தம்;
+          hold_மொத்தம் = 0;
         }
 
-      b->bytes_used += read_input (p, bytes_avail - 1);
+      b->bytes_used += read_உள்ளீடு (p, bytes_avail - 1);
 
-      if (record_line_starts (b) != 0)
+      எனில் (record_வரி_starts (b) != 0)
         {
           save_buffer (b);
-          return true;
+          திரும்பு true;
         }
 
       free_buffer (b);
-      if (have_read_eof)
-        return false;
-      if (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
+      எனில் (have_read_eof)
+        திரும்பு false;
+      எனில் (ckd_add (&bytes_wanted, bytes_alloc, bytes_alloc >> 1))
         xalloc_die ();
     }
 }
@@ -496,54 +496,54 @@ load_buffer (void)
 /* Return the line number of the first line that has not yet been retrieved.
    Return 0 if no lines available.  */
 
-static intmax_t
-get_first_line_in_buffer (void)
+நிலையான intmax_t
+get_first_வரி_in_buffer (வெறுமை)
 {
-  if (head == NULL && !load_buffer ())
-    return 0;
+  எனில் (head == வெற்று && !load_buffer ())
+    திரும்பு 0;
 
-  return head->first_available;
+  திரும்பு head->first_available;
 }
 
 /* Return a pointer to the logical first line in the buffer and make the
    next line the logical first line.
    Return NULL if there is no more input. */
 
-static struct cstring *
-remove_line (void)
+நிலையான கட்டமைப்பு cstring *
+remove_வரி (வெறுமை)
 {
   /* If non-null, this is the buffer for which the previous call
      returned the final line.  So now, presuming that line has been
      processed, we can free the buffer and reset this pointer.  */
-  static struct buffer_record *prev_buf = NULL;
+  நிலையான கட்டமைப்பு buffer_record *prev_buf = வெற்று;
 
-  struct cstring *line;		/* Return value. */
-  struct line *l;		/* For convenience. */
+  கட்டமைப்பு cstring *வரி;		/* Return value. */
+  கட்டமைப்பு வரி *l;		/* For convenience. */
 
-  if (prev_buf)
+  எனில் (prev_buf)
     {
       free_buffer (prev_buf);
-      prev_buf = NULL;
+      prev_buf = வெற்று;
     }
 
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  எனில் (head == வெற்று && !load_buffer ())
+    திரும்பு வெற்று;
 
-  if (current_line < head->first_available)
-    current_line = head->first_available;
+  எனில் (current_வரி < head->first_available)
+    current_வரி = head->first_available;
 
   ++(head->first_available);
 
-  l = head->curr_line;
+  l = head->curr_வரி;
 
-  line = &l->starts[l->retrieve_index];
+  வரி = &l->starts[l->retrieve_index];
 
   /* Advance index to next line. */
-  if (++l->retrieve_index == l->used)
+  எனில் (++l->retrieve_index == l->used)
     {
       /* Go on to the next line record. */
-      head->curr_line = l->next;
-      if (head->curr_line == NULL || head->curr_line->used == 0)
+      head->curr_வரி = l->next;
+      எனில் (head->curr_வரி == வெற்று || head->curr_வரி->used == 0)
         {
           /* Go on to the next data block.
              but first record the current one so we can free it
@@ -553,59 +553,59 @@ remove_line (void)
         }
     }
 
-  return line;
+  திரும்பு வரி;
 }
 
 /* Search the buffers for line LINENUM, reading more input if necessary.
    Return a pointer to the line, or NULL if it is not found in the file. */
 
-static struct cstring *
-find_line (intmax_t linenum)
+நிலையான கட்டமைப்பு cstring *
+find_வரி (intmax_t linenum)
 {
-  if (head == NULL && !load_buffer ())
-    return NULL;
+  எனில் (head == வெற்று && !load_buffer ())
+    திரும்பு வெற்று;
 
-  if (linenum < head->start_line)
-    return NULL;
+  எனில் (linenum < head->start_வரி)
+    திரும்பு வெற்று;
 
-  for (struct buffer_record *b = head;;)
+  க்கு (கட்டமைப்பு buffer_record *b = head;;)
     {
-      if (linenum < b->start_line + b->num_lines)
+      எனில் (linenum < b->start_வரி + b->இலக்கம்_வரிகள்)
         {
           /* The line is in this buffer. */
-          struct line *l;
+          கட்டமைப்பு வரி *l;
           idx_t offset;	/* How far into the buffer the line is. */
 
-          l = b->line_start;
-          offset = linenum - b->start_line;
+          l = b->வரி_start;
+          offset = linenum - b->start_வரி;
           /* Find the control record. */
-          while (offset >= CTRL_SIZE)
+          போது (offset >= CTRL_SIZE)
             {
               l = l->next;
               offset -= CTRL_SIZE;
             }
-          return &l->starts[offset];
+          திரும்பு &l->starts[offset];
         }
-      if (b->next == NULL && !load_buffer ())
-        return NULL;
+      எனில் (b->next == வெற்று && !load_buffer ())
+        திரும்பு வெற்று;
       b = b->next;		/* Try the next data block. */
     }
 }
 
 /* Return true if at least one more line is available for input. */
 
-static bool
-no_more_lines (void)
+நிலையான bool
+no_more_வரிகள் (வெறுமை)
 {
-  return find_line (current_line + 1) == NULL;
+  திரும்பு find_வரி (current_வரி + 1) == வெற்று;
 }
 
 /* Open NAME as standard input.  */
 
-static void
-set_input_file (char const *name)
+நிலையான வெறுமை
+set_உள்ளீடு_file (எழுத்து மாறிலி *name)
 {
-  if (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
+  எனில் (! streq (name, "-") && fd_reopen (STDIN_FILENO, name, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (name));
 }
@@ -615,62 +615,62 @@ set_input_file (char const *name)
    If IGNORE is true, do not output lines selected here.
    ARGNUM is the index in ARGV of the current pattern. */
 
-static void
-write_to_file (intmax_t last_line, bool ignore, int argnum)
+நிலையான வெறுமை
+write_to_file (intmax_t last_வரி, bool ignore, முழு argnum)
 {
-  struct cstring *line;
-  intmax_t first_line;		/* First available input line. */
-  intmax_t lines;		/* Number of lines to output. */
+  கட்டமைப்பு cstring *வரி;
+  intmax_t first_வரி;		/* First available input line. */
+  intmax_t வரிகள்;		/* Number of lines to output. */
 
-  first_line = get_first_line_in_buffer ();
+  first_வரி = get_first_வரி_in_buffer ();
 
-  if (! first_line || first_line > last_line)
+  எனில் (! first_வரி || first_வரி > last_வரி)
     {
       error (0, 0, _("%s: line number out of range"),
              quote (global_argv[argnum]));
       cleanup_fatal ();
     }
 
-  lines = last_line - first_line;
+  வரிகள் = last_வரி - first_வரி;
 
-  for (intmax_t i = 0; i < lines; i++)
+  க்கு (intmax_t i = 0; i < வரிகள்; i++)
     {
-      line = remove_line ();
-      if (line == NULL)
+      வரி = remove_வரி ();
+      எனில் (வரி == வெற்று)
         {
           error (0, 0, _("%s: line number out of range"),
                  quote (global_argv[argnum]));
           cleanup_fatal ();
         }
-      if (!ignore)
-        save_line_to_file (line);
+      எனில் (!ignore)
+        save_வரி_to_file (வரி);
     }
 }
 
 /* Output any lines left after all regexps have been processed. */
 
-static void
-dump_rest_of_file (void)
+நிலையான வெறுமை
+dump_rest_of_file (வெறுமை)
 {
-  struct cstring *line;
+  கட்டமைப்பு cstring *வரி;
 
-  while ((line = remove_line ()) != NULL)
-    save_line_to_file (line);
+  போது ((வரி = remove_வரி ()) != வெற்று)
+    save_வரி_to_file (வரி);
 }
 
 /* Handle an attempt to read beyond EOF under the control of record P,
    on iteration REPETITION if nonzero. */
 
-static void
-handle_line_error (const struct control *p, intmax_t repetition)
+நிலையான வெறுமை
+handle_வரி_error (மாறிலி கட்டமைப்பு control *p, intmax_t repetition)
 {
-  char buf[INT_BUFSIZE_BOUND (intmax_t)];
+  எழுத்து buf[INT_BUFSIZE_BOUND (intmax_t)];
 
   fprintf (stderr, _("%s: %s: line number out of range"),
-           program_name, quote (imaxtostr (p->lines_required, buf)));
-  if (repetition)
+           program_name, quote (imaxtostr (p->வரிகள்_required, buf)));
+  எனில் (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  இல்லையெனில்
     fprintf (stderr, "\n");
 
   cleanup_fatal ();
@@ -681,54 +681,54 @@ handle_line_error (const struct control *p, intmax_t repetition)
    P is the control record.
    REPETITION is the repetition number. */
 
-static void
-process_line_count (const struct control *p, intmax_t repetition)
+நிலையான வெறுமை
+process_வரி_மொத்தம் (மாறிலி கட்டமைப்பு control *p, intmax_t repetition)
 {
   intmax_t linenum;
-  intmax_t last_line_to_save = p->lines_required * (repetition + 1);
+  intmax_t last_வரி_to_save = p->வரிகள்_required * (repetition + 1);
 
   create_output_file ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file.
      When suppressing matched lines, check before the loop. */
-  if (no_more_lines () && suppress_matched)
-    handle_line_error (p, repetition);
+  எனில் (no_more_வரிகள் () && suppress_matched)
+    handle_வரி_error (p, repetition);
 
-  if (!(linenum = get_first_line_in_buffer ()))
-    handle_line_error (p, repetition);
+  எனில் (!(linenum = get_first_வரி_in_buffer ()))
+    handle_வரி_error (p, repetition);
 
-  while (linenum++ < last_line_to_save)
+  போது (linenum++ < last_வரி_to_save)
     {
-      struct cstring *line = remove_line ();
-      if (line == NULL)
-        handle_line_error (p, repetition);
-      save_line_to_file (line);
+      கட்டமைப்பு cstring *வரி = remove_வரி ();
+      எனில் (வரி == வெற்று)
+        handle_வரி_error (p, repetition);
+      save_வரி_to_file (வரி);
     }
 
   close_output_file ();
 
-  if (suppress_matched)
-    remove_line ();
+  எனில் (suppress_matched)
+    remove_வரி ();
 
   /* Ensure that the line number specified is not 1 greater than
      the number of lines in the file. */
-  if (no_more_lines () && !suppress_matched)
-    handle_line_error (p, repetition);
+  எனில் (no_more_வரிகள் () && !suppress_matched)
+    handle_வரி_error (p, repetition);
 }
 
-static void
-regexp_error (struct control *p, intmax_t repetition, bool ignore)
+நிலையான வெறுமை
+regexp_error (கட்டமைப்பு control *p, intmax_t repetition, bool ignore)
 {
   fprintf (stderr, _("%s: %s: match not found"),
            program_name, quote (global_argv[p->argnum]));
 
-  if (repetition)
+  எனில் (repetition)
     fprintf (stderr, _(" on repetition %jd\n"), repetition);
-  else
+  இல்லையெனில்
     fprintf (stderr, "\n");
 
-  if (!ignore)
+  எனில் (!ignore)
     {
       dump_rest_of_file ();
       close_output_file ();
@@ -740,128 +740,128 @@ regexp_error (struct control *p, intmax_t repetition, bool ignore)
    it unless P->IGNORE is true.
    REPETITION is this repeat-count; 0 means the first time. */
 
-static void
-process_regexp (struct control *p, intmax_t repetition)
+நிலையான வெறுமை
+process_regexp (கட்டமைப்பு control *p, intmax_t repetition)
 {
-  struct cstring *line;		/* From input file. */
-  idx_t line_len;		/* To make "$" in regexps work. */
-  intmax_t break_line;		/* First line number of next file. */
+  கட்டமைப்பு cstring *வரி;		/* From input file. */
+  idx_t வரி_len;		/* To make "$" in regexps work. */
+  intmax_t break_வரி;		/* First line number of next file. */
   bool ignore = p->ignore;	/* If true, skip this section. */
   regoff_t ret;
 
-  if (!ignore)
+  எனில் (!ignore)
     create_output_file ();
 
   /* If there is no offset for the regular expression, or
      it is positive, then it is not necessary to buffer the lines. */
 
-  if (p->offset >= 0)
+  எனில் (p->offset >= 0)
     {
-      while (true)
+      போது (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          வரி = find_வரி (++current_வரி);
+          எனில் (வரி == வெற்று)
             {
-              if (p->repeat_forever)
+              எனில் (p->repeat_forever)
                 {
-                  if (!ignore)
+                  எனில் (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              இல்லையெனில்
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          வரி_len = வரி->len;
+          எனில் (வரி->str[வரி_len - 1] == '\n')
+            வரி_len--;
+          ret = re_தேடல் (&p->re_compiled, வரி->str, வரி_len,
+                           0, வரி_len, வெற்று);
+          எனில் (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret == -1)
+          எனில் (ret == -1)
             {
-              line = remove_line ();
-              if (!ignore)
-                save_line_to_file (line);
+              வரி = remove_வரி ();
+              எனில் (!ignore)
+                save_வரி_to_file (வரி);
             }
-          else
-            break;
+          இல்லையெனில்
+            நிறுத்து;
         }
     }
-  else
+  இல்லையெனில்
     {
       /* Buffer the lines. */
-      while (true)
+      போது (true)
         {
-          line = find_line (++current_line);
-          if (line == NULL)
+          வரி = find_வரி (++current_வரி);
+          எனில் (வரி == வெற்று)
             {
-              if (p->repeat_forever)
+              எனில் (p->repeat_forever)
                 {
-                  if (!ignore)
+                  எனில் (!ignore)
                     {
                       dump_rest_of_file ();
                       close_output_file ();
                     }
                   exit (EXIT_SUCCESS);
                 }
-              else
+              இல்லையெனில்
                 regexp_error (p, repetition, ignore);
             }
-          line_len = line->len;
-          if (line->str[line_len - 1] == '\n')
-            line_len--;
-          ret = re_search (&p->re_compiled, line->str, line_len,
-                           0, line_len, NULL);
-          if (ret == -2)
+          வரி_len = வரி->len;
+          எனில் (வரி->str[வரி_len - 1] == '\n')
+            வரி_len--;
+          ret = re_தேடல் (&p->re_compiled, வரி->str, வரி_len,
+                           0, வரி_len, வெற்று);
+          எனில் (ret == -2)
             {
               error (0, 0, _("error in regular expression search"));
               cleanup_fatal ();
             }
-          if (ret != -1)
-            break;
+          எனில் (ret != -1)
+            நிறுத்து;
         }
     }
 
   /* Account for any offset from this regexp. */
-  break_line = current_line + p->offset;
+  break_வரி = current_வரி + p->offset;
 
-  write_to_file (break_line, ignore, p->argnum);
+  write_to_file (break_வரி, ignore, p->argnum);
 
-  if (!ignore)
+  எனில் (!ignore)
     close_output_file ();
 
-  if (p->offset > 0)
-    current_line = break_line;
+  எனில் (p->offset > 0)
+    current_வரி = break_வரி;
 
-  if (suppress_matched)
-    remove_line ();
+  எனில் (suppress_matched)
+    remove_வரி ();
 }
 
 /* Split the input file according to the control records we have built. */
 
-static void
-split_file (void)
+நிலையான வெறுமை
+split_file (வெறுமை)
 {
-  for (idx_t i = 0; i < control_used; i++)
+  க்கு (idx_t i = 0; i < control_used; i++)
     {
-      if (controls[i].regexpr)
+      எனில் (controls[i].regexpr)
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          க்கு (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
             process_regexp (&controls[i], j);
         }
-      else
+      இல்லையெனில்
         {
-          for (intmax_t j = 0; (controls[i].repeat_forever
+          க்கு (intmax_t j = 0; (controls[i].repeat_forever
                        || j <= controls[i].repeat); j++)
-            process_line_count (&controls[i], j);
+            process_வரி_மொத்தம் (&controls[i], j);
         }
     }
 
@@ -877,46 +877,46 @@ split_file (void)
    not guarantee this for the functions called below, but we don't
    know of any hosts where this implementation isn't safe.  */
 
-static char *
-make_filename (int num)
+நிலையான எழுத்து *
+make_filename (முழு இலக்கம்)
 {
   strcpy (filename_space, prefix);
-  if (suffix)
-    sprintf (filename_space + strlen (prefix), suffix, num);
-  else
-    sprintf (filename_space + strlen (prefix), "%0*d", digits, num);
-  return filename_space;
+  எனில் (suffix)
+    sprintf (filename_space + strlen (prefix), suffix, இலக்கம்);
+  இல்லையெனில்
+    sprintf (filename_space + strlen (prefix), "%0*d", digits, இலக்கம்);
+  திரும்பு filename_space;
 }
 
 /* Create the next output file. */
 
-static void
-create_output_file (void)
+நிலையான வெறுமை
+create_output_file (வெறுமை)
 {
-  int nfiles = files_created;
+  முழு nfiles = files_created;
   bool fopen_ok;
-  int fopen_errno;
+  முழு fopen_errno;
 
   output_filename = make_filename (nfiles);
 
-  if (nfiles == INT_MAX)
+  எனில் (nfiles == INT_MAX)
     {
       fopen_ok = false;
       fopen_errno = EOVERFLOW;
     }
-  else
+  இல்லையெனில்
     {
       /* Create the output file in a critical section, to avoid races.  */
       sigset_t oldset;
       sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
       output_stream = fopen (output_filename, "w");
-      fopen_ok = (output_stream != NULL);
+      fopen_ok = (output_stream != வெற்று);
       fopen_errno = errno;
       files_created = nfiles + fopen_ok;
-      sigprocmask (SIG_SETMASK, &oldset, NULL);
+      sigprocmask (SIG_SETMASK, &oldset, வெற்று);
     }
 
-  if (! fopen_ok)
+  எனில் (! fopen_ok)
     {
       error (0, fopen_errno, "%s", quotef (output_filename));
       cleanup_fatal ();
@@ -927,16 +927,16 @@ create_output_file (void)
 /* If requested, delete all the files we have created.  This function
    must be called only from critical sections.  */
 
-static void
+நிலையான வெறுமை
 delete_all_files (bool in_signal_handler)
 {
-  if (! remove_files)
-    return;
+  எனில் (! remove_files)
+    திரும்பு;
 
-  for (int i = files_created; 0 <= --i; )
+  க்கு (முழு i = files_created; 0 <= --i; )
     {
-      char const *name = make_filename (i);
-      if (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
+      எழுத்து மாறிலி *name = make_filename (i);
+      எனில் (unlink (name) != 0 && errno != ENOENT && !in_signal_handler)
         error (0, errno, "%s", quotef (name));
     }
 
@@ -946,81 +946,81 @@ delete_all_files (bool in_signal_handler)
 /* Close the current output file and print the count
    of characters in this file. */
 
-static void
-close_output_file (void)
+நிலையான வெறுமை
+close_output_file (வெறுமை)
 {
-  if (output_stream)
+  எனில் (output_stream)
     {
-      if (ferror (output_stream))
+      எனில் (ferror (output_stream))
         {
           error (0, 0, _("write error for %s"), quoteaf (output_filename));
-          output_stream = NULL;
+          output_stream = வெற்று;
           cleanup_fatal ();
         }
-      if (fclose (output_stream) != 0)
+      எனில் (fclose (output_stream) != 0)
         {
           error (0, errno, "%s", quotef (output_filename));
-          output_stream = NULL;
+          output_stream = வெற்று;
           cleanup_fatal ();
         }
-      if (bytes_written == 0 && elide_empty_files)
+      எனில் (bytes_written == 0 && elide_empty_files)
         {
           sigset_t oldset;
           bool unlink_ok;
-          int unlink_errno;
+          முழு unlink_errno;
 
           /* Remove the output file in a critical section, to avoid races.  */
           sigprocmask (SIG_BLOCK, &caught_signals, &oldset);
           unlink_ok = (unlink (output_filename) == 0);
           unlink_errno = errno;
           files_created--;
-          sigprocmask (SIG_SETMASK, &oldset, NULL);
+          sigprocmask (SIG_SETMASK, &oldset, வெற்று);
 
-          if (! unlink_ok && unlink_errno != ENOENT)
+          எனில் (! unlink_ok && unlink_errno != ENOENT)
             error (0, unlink_errno, "%s", quotef (output_filename));
         }
-      else
+      இல்லையெனில்
         {
-          if (!suppress_count)
+          எனில் (!suppress_மொத்தம்)
             fprintf (stdout, "%jd\n", bytes_written);
         }
-      output_stream = NULL;
+      output_stream = வெற்று;
     }
 }
 
 /* Save line LINE to the output file and
    increment the character count for the current file. */
 
-static void
-save_line_to_file (const struct cstring *line)
+நிலையான வெறுமை
+save_வரி_to_file (மாறிலி கட்டமைப்பு cstring *வரி)
 {
-  idx_t l = fwrite (line->str, sizeof (char), line->len, output_stream);
-  if (l != line->len)
+  idx_t l = fwrite (வரி->str, அளவு (எழுத்து), வரி->len, output_stream);
+  எனில் (l != வரி->len)
     {
       error (0, errno, _("write error for %s"), quoteaf (output_filename));
-      output_stream = NULL;
+      output_stream = வெற்று;
       cleanup_fatal ();
     }
-  bytes_written += line->len;
+  bytes_written += வரி->len;
 }
 
 /* Return a new, initialized control record. */
 
-static struct control *
-new_control_record (void)
+நிலையான கட்டமைப்பு control *
+new_control_record (வெறுமை)
 {
-  static idx_t control_allocated = 0; /* Total space allocated. */
-  struct control *p;
+  நிலையான idx_t control_allocated = 0; /* Total space allocated. */
+  கட்டமைப்பு control *p;
 
-  if (control_used == control_allocated)
-    controls = xpalloc (controls, &control_allocated, 1, -1, sizeof *controls);
+  எனில் (control_used == control_allocated)
+    controls = xpalloc (controls, &control_allocated, 1, -1, அளவு *controls);
   p = &controls[control_used++];
   p->regexpr = false;
   p->repeat = 0;
   p->repeat_forever = false;
-  p->lines_required = 0;
+  p->வரிகள்_required = 0;
   p->offset = 0;
-  return p;
+  திரும்பு p;
 }
 
 /* Check if there is a numeric offset after a regular expression.
@@ -1028,10 +1028,10 @@ new_control_record (void)
    P is the control record for this regular expression.
    NUM is the numeric part of STR. */
 
-static void
-check_for_offset (struct control *p, char const *str, char const *num)
+நிலையான வெறுமை
+check_for_offset (கட்டமைப்பு control *p, எழுத்து மாறிலி *str, எழுத்து மாறிலி *இலக்கம்)
 {
-  if (xstrtoimax (num, NULL, 10, &p->offset, "") != LONGINT_OK)
+  எனில் (xstrtoimax (இலக்கம், வெற்று, 10, &p->offset, "") != LONGINT_OK)
     error (EXIT_FAILURE, 0, _("%s: integer expected after delimiter"),
            quote (str));
 }
@@ -1041,23 +1041,23 @@ check_for_offset (struct control *p, char const *str, char const *num)
    and store its value in P.
    ARGNUM is the ARGV index of STR. */
 
-static void
-parse_repeat_count (int argnum, struct control *p, char *str)
+நிலையான வெறுமை
+parse_repeat_மொத்தம் (முழு argnum, கட்டமைப்பு control *p, எழுத்து *str)
 {
-  char *end;
+  எழுத்து *end;
 
   end = str + strlen (str) - 1;
-  if (*end != '}')
+  எனில் (*end != '}')
     error (EXIT_FAILURE, 0, _("%s: '}' is required in repeat count"),
            quote (str));
   *end = '\0';
 
-  if (str + 1 == end - 1 && *(str + 1) == '*')
+  எனில் (str + 1 == end - 1 && *(str + 1) == '*')
     p->repeat_forever = true;
-  else
+  இல்லையெனில்
     {
       uintmax_t val;
-      if (xstrtoumax (str + 1, NULL, 10, &val, "") != LONGINT_OK
+      எனில் (xstrtoumax (str + 1, வெற்று, 10, &val, "") != LONGINT_OK
           || ckd_add (&p->repeat, val, 0))
         {
           error (EXIT_FAILURE, 0,
@@ -1075,17 +1075,17 @@ parse_repeat_count (int argnum, struct control *p, char *str)
    ARGNUM is the ARGV index of STR.
    Unless IGNORE is true, mark these lines for output. */
 
-static struct control *
-extract_regexp (int argnum, bool ignore, char const *str)
+நிலையான கட்டமைப்பு control *
+extract_regexp (முழு argnum, bool ignore, எழுத்து மாறிலி *str)
 {
   idx_t len;			/* Number of bytes in this regexp. */
-  char delim = *str;
-  char const *closing_delim;
-  struct control *p;
-  char const *err;
+  எழுத்து delim = *str;
+  எழுத்து மாறிலி *closing_delim;
+  கட்டமைப்பு control *p;
+  எழுத்து மாறிலி *err;
 
   closing_delim = strrchr (str + 1, delim);
-  if (closing_delim == NULL)
+  எனில் (closing_delim == வெற்று)
     error (EXIT_FAILURE, 0,
            _("%s: closing delimiter '%c' missing"), str, delim);
 
@@ -1095,72 +1095,72 @@ extract_regexp (int argnum, bool ignore, char const *str)
   p->ignore = ignore;
 
   p->regexpr = true;
-  p->re_compiled.buffer = NULL;
+  p->re_compiled.buffer = வெற்று;
   p->re_compiled.allocated = 0;
   p->re_compiled.fastmap = xmalloc (UCHAR_MAX + 1);
-  p->re_compiled.translate = NULL;
+  p->re_compiled.translate = வெற்று;
   re_syntax_options =
     RE_SYNTAX_POSIX_BASIC & ~RE_CONTEXT_INVALID_DUP & ~RE_NO_EMPTY_RANGES;
   err = re_compile_pattern (str + 1, len, &p->re_compiled);
-  if (err)
+  எனில் (err)
     {
       error (0, 0, _("%s: invalid regular expression: %s"), quote (str), err);
       cleanup_fatal ();
     }
 
-  if (closing_delim[1])
+  எனில் (closing_delim[1])
     check_for_offset (p, str, closing_delim + 1);
 
-  return p;
+  திரும்பு p;
 }
 
 /* Extract the break patterns from args START through ARGC - 1 of ARGV.
    After each pattern, check if the next argument is a repeat count. */
 
-static void
-parse_patterns (int argc, int start, char **argv)
+நிலையான வெறுமை
+parse_patterns (முழு argc, முழு start, எழுத்து **argv)
 {
-  struct control *p;		/* New control record created. */
-  static intmax_t last_val = 0;
+  கட்டமைப்பு control *p;		/* New control record created. */
+  நிலையான intmax_t last_val = 0;
 
-  for (int i = start; i < argc; i++)
+  க்கு (முழு i = start; i < argc; i++)
     {
-      if (*argv[i] == '/' || *argv[i] == '%')
+      எனில் (*argv[i] == '/' || *argv[i] == '%')
         {
           p = extract_regexp (i, *argv[i] == '%', argv[i]);
         }
-      else
+      இல்லையெனில்
         {
           p = new_control_record ();
           p->argnum = i;
 
           uintmax_t val;
-          if (xstrtoumax (argv[i], NULL, 10, &val, "") != LONGINT_OK
+          எனில் (xstrtoumax (argv[i], வெற்று, 10, &val, "") != LONGINT_OK
               || INTMAX_MAX < val)
             error (EXIT_FAILURE, 0, _("%s: invalid pattern"), quote (argv[i]));
-          if (val == 0)
+          எனில் (val == 0)
             error (EXIT_FAILURE, 0,
                    _("%s: line number must be greater than zero"), argv[i]);
-          if (val < last_val)
+          எனில் (val < last_val)
             error (EXIT_FAILURE, 0,
                    _("line number %s is smaller than preceding line number,"
                      " %jd"), quote (argv[i]), last_val);
 
-          if (val == last_val)
+          எனில் (val == last_val)
             error (0, 0,
            _("warning: line number %s is the same as preceding line number"),
                    quote (argv[i]));
 
           last_val = val;
 
-          p->lines_required = val;
+          p->வரிகள்_required = val;
         }
 
-      if (i + 1 < argc && *argv[i + 1] == '{')
+      எனில் (i + 1 < argc && *argv[i + 1] == '{')
         {
           /* We have a repeat count. */
           i++;
-          parse_repeat_count (i, p, argv[i]);
+          parse_repeat_மொத்தம் (i, p, argv[i]);
         }
     }
 }
@@ -1168,34 +1168,34 @@ parse_patterns (int argc, int start, char **argv)
 
 
 /* Names for the printf format flags ' and #.  These can be ORed together.  */
-enum { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
+எண்ணிக்கை { FLAG_THOUSANDS = 1, FLAG_ALTERNATIVE = 2 };
 
 /* Scan the printf format flags in FORMAT, storing info about the
    flags into *FLAGS_PTR.  Return the number of flags found.  */
-static idx_t
-get_format_flags (char const *format, int *flags_ptr)
+நிலையான idx_t
+get_format_flags (எழுத்து மாறிலி *format, முழு *flags_ptr)
 {
-  int flags = 0;
+  முழு flags = 0;
 
-  for (idx_t count = 0; ; count++)
+  க்கு (idx_t மொத்தம் = 0; ; மொத்தம்++)
     {
-      switch (format[count])
+      தேர்வு (format[மொத்தம்])
         {
-        case '-':
-        case '0':
-          break;
+        நிலை '-':
+        நிலை '0':
+          நிறுத்து;
 
-        case '\'':
+        நிலை '\'':
           flags |= FLAG_THOUSANDS;
-          break;
+          நிறுத்து;
 
-        case '#':
+        நிலை '#':
           flags |= FLAG_ALTERNATIVE;
-          break;
+          நிறுத்து;
 
-        default:
+        இயல்பு:
           *flags_ptr = flags;
-          return count;
+          திரும்பு மொத்தம்;
         }
     }
 }
@@ -1203,41 +1203,41 @@ get_format_flags (char const *format, int *flags_ptr)
 /* Check that the printf format conversion specifier *FORMAT is valid
    and compatible with FLAGS.  Change it to 'd' if it is 'u',
    since the format will be used with a signed value.  */
-static void
-check_format_conv_type (char *format, int flags)
+நிலையான வெறுமை
+check_format_conv_type (எழுத்து *format, முழு flags)
 {
-  unsigned char ch = *format;
-  int compatible_flags = FLAG_THOUSANDS;
+  unsigned எழுத்து ch = *format;
+  முழு compatible_flags = FLAG_THOUSANDS;
 
-  switch (ch)
+  தேர்வு (ch)
     {
-    case 'd':
-    case 'i':
-      break;
+    நிலை 'd':
+    நிலை 'i':
+      நிறுத்து;
 
-    case 'u':
+    நிலை 'u':
       *format = 'd';
-      break;
+      நிறுத்து;
 
-    case 'o':
-    case 'x':
-    case 'X':
+    நிலை 'o':
+    நிலை 'x':
+    நிலை 'X':
       compatible_flags = FLAG_ALTERNATIVE;
-      break;
+      நிறுத்து;
 
-    case 0:
+    நிலை 0:
       error (EXIT_FAILURE, 0, _("missing conversion specifier in suffix"));
 
-    default:
-      if (isprint (ch))
+    இயல்பு:
+      எனில் (isprint (ch))
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: %c"), ch);
-      else
+      இல்லையெனில்
         error (EXIT_FAILURE, 0,
                _("invalid conversion specifier in suffix: \\%.3o"), ch);
     }
 
-  if (flags & ~ compatible_flags)
+  எனில் (flags & ~ compatible_flags)
     error (EXIT_FAILURE, 0,
            _("invalid flags in conversion specification: %%%c%c"),
            (flags & ~ compatible_flags & FLAG_ALTERNATIVE ? '#' : '\''), ch);
@@ -1246,42 +1246,42 @@ check_format_conv_type (char *format, int flags)
 /* Return the maximum number of bytes that can be generated by
    applying FORMAT to an int value.  If the format is
    invalid, diagnose the problem and exit.  */
-static idx_t
-max_out (char *format)
+நிலையான idx_t
+max_out (எழுத்து *format)
 {
   bool percent = false;
 
-  for (char *f = format; *f; f++)
-    if (*f == '%' && *++f != '%')
+  க்கு (எழுத்து *f = format; *f; f++)
+    எனில் (*f == '%' && *++f != '%')
       {
-        if (percent)
+        எனில் (percent)
           error (EXIT_FAILURE, 0,
                  _("too many %% conversion specifications in suffix"));
         percent = true;
-        int flags;
+        முழு flags;
         f += get_format_flags (f, &flags);
-        while (c_isdigit (*f))
+        போது (c_isdigit (*f))
           f++;
-        if (*f == '.')
-          while (c_isdigit (*++f))
-            continue;
+        எனில் (*f == '.')
+          போது (c_isdigit (*++f))
+            தொடர்;
         check_format_conv_type (f, flags);
       }
 
-  if (! percent)
+  எனில் (! percent)
     error (EXIT_FAILURE, 0,
            _("missing %% conversion specification in suffix"));
 
-  int maxlen = snprintf (NULL, 0, format, INT_MAX);
-  if (! (0 <= maxlen && maxlen <= IDX_MAX))
+  முழு maxlen = snprintf (வெற்று, 0, format, INT_MAX);
+  எனில் (! (0 <= maxlen && maxlen <= IDX_MAX))
     xalloc_die ();
-  return maxlen;
+  திரும்பு maxlen;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int optc;
+  முழு optc;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -1293,53 +1293,53 @@ main (int argc, char **argv)
 
   global_argv = argv;
 
-  while ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, NULL))
+  போது ((optc = getopt_long (argc, argv, "f:b:kn:sqz", longopts, வெற்று))
          != -1)
-    switch (optc)
+    தேர்வு (optc)
       {
-      case 'f':
+      நிலை 'f':
         prefix = optarg;
-        break;
+        நிறுத்து;
 
-      case 'b':
+      நிலை 'b':
         suffix = optarg;
-        break;
+        நிறுத்து;
 
-      case 'k':
+      நிலை 'k':
         remove_files = false;
-        break;
+        நிறுத்து;
 
-      case 'n':
+      நிலை 'n':
         digits = xdectoimax (optarg, 0, MIN (INT_MAX, IDX_MAX), "",
                              _("invalid number"), 0);
-        break;
+        நிறுத்து;
 
-      case 's':
-      case 'q':
-        suppress_count = true;
-        break;
+      நிலை 's':
+      நிலை 'q':
+        suppress_மொத்தம் = true;
+        நிறுத்து;
 
-      case 'z':
+      நிலை 'z':
         elide_empty_files = true;
-        break;
+        நிறுத்து;
 
-      case SUPPRESS_MATCHED_OPTION:
+      நிலை SUPPRESS_MATCHED_OPTION:
         suppress_matched = true;
-        break;
+        நிறுத்து;
 
       case_GETOPT_HELP_CHAR;
 
       case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-      default:
+      இயல்பு:
         usage (EXIT_FAILURE);
       }
 
-  if (argc - optind < 2)
+  எனில் (argc - optind < 2)
     {
-      if (argc <= optind)
+      எனில் (argc <= optind)
         error (0, 0, _("missing operand"));
-      else
+      இல்லையெனில்
         error (0, 0, _("missing operand after %s"), quote (argv[argc - 1]));
       usage (EXIT_FAILURE);
     }
@@ -1348,26 +1348,26 @@ main (int argc, char **argv)
   idx_t max_digit_string_len
     = (suffix
        ? max_out (suffix)
-       : MAX (INT_STRLEN_BOUND (int), digits));
+       : MAX (INT_STRLEN_BOUND (முழு), digits));
   idx_t filename_size;
-  if (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
+  எனில் (ckd_add (&filename_size, prefix_len, max_digit_string_len + 1))
     xalloc_die ();
   filename_space = ximalloc (filename_size);
 
-  set_input_file (argv[optind++]);
+  set_உள்ளீடு_file (argv[optind++]);
 
   parse_patterns (argc, optind, argv);
 
   {
-    enum { nsigs = countof (term_sig) };
+    எண்ணிக்கை { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    கட்டமைப்பு sigaction act;
 
     sigemptyset (&caught_signals);
-    for (int i = 0; i < nsigs; i++)
+    க்கு (முழு i = 0; i < nsigs; i++)
       {
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        sigaction (term_sig[i], வெற்று, &act);
+        எனில் (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -1375,28 +1375,28 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (int i = 0; i < nsigs; i++)
-      if (sigismember (&caught_signals, term_sig[i]))
-        sigaction (term_sig[i], &act, NULL);
+    க்கு (முழு i = 0; i < nsigs; i++)
+      எனில் (sigismember (&caught_signals, term_sig[i]))
+        sigaction (term_sig[i], &act, வெற்று);
   }
 
   split_file ();
 
-  if (close (STDIN_FILENO) != 0)
+  எனில் (close (STDIN_FILENO) != 0)
     {
       error (0, errno, _("read error"));
       cleanup_fatal ();
     }
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... FILE PATTERN...\n\
@@ -1408,7 +1408,7 @@ and output byte counts of each piece to standard output.\n\
 "), stdout);
        fputs (_("\
 \n\
-Read standard input if FILE is -\n\
+Read standard உள்ளீடு எனில் FILE is -\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
@@ -1423,19 +1423,19 @@ Read standard input if FILE is -\n\
 "));
       oputs (_("\
   -k, --keep-files\n\
-         do not remove output files on errors\n\
+         செய் not remove output files on errors\n\
 "));
       oputs (_("\
       --suppress-matched\n\
-         suppress the lines matching PATTERN\n\
+         suppress the வரிகள் matching PATTERN\n\
 "));
       oputs (_("\
   -n, --digits=DIGITS\n\
-         use specified number of digits instead of 2\n\
+         use specified எண் of digits instead of 2\n\
 "));
       oputs (_("\
   -s, --quiet, --silent\n\
-         do not print counts of output file sizes\n\
+         செய் not print counts of output file sizes\n\
 "));
       oputs (_("\
   -z, --elide-empty-files\n\
@@ -1446,13 +1446,13 @@ Read standard input if FILE is -\n\
       fputs (_("\
 \n\
 Each PATTERN may be:\n\
-  INTEGER            copy up to but not including specified line number\n\
-  /REGEXP/[OFFSET]   copy up to but not including a matching line\n\
-  %REGEXP%[OFFSET]   skip to, but not including a matching line\n\
-  {INTEGER}          repeat the previous pattern specified number of times\n\
+  INTEGER            copy up to but not including specified வரி எண்\n\
+  /REGEXP/[OFFSET]   copy up to but not including a matching வரி\n\
+  %REGEXP%[OFFSET]   skip to, but not including a matching வரி\n\
+  {INTEGER}          repeat the previous pattern specified எண் of times\n\
   {*}                repeat the previous pattern as many times as possible\n\
 \n\
-A line OFFSET is an integer optionally preceded by '+' or '-'\n\
+A வரி OFFSET is an integer optionally preceded by '+' or '-'\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }

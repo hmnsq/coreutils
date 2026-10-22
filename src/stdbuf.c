@@ -16,19 +16,19 @@
 
 /* Written by Pádraig Brady.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "assure.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "xreadlink.h"
-#include "xstrtol-error.h"
-#include "xstrtol.h"
-#include "c-ctype.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "filenamecat.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "xreadlink.h"
+#அந்தர்பாவ "xstrtol-error.h"
+#அந்தர்பாவ "xstrtol.h"
+#அந்தர்பாவ "c-ctype.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "stdbuf"
@@ -36,23 +36,23 @@
 
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
-static char *program_path;
+நிலையான எழுத்து *program_path;
 
-static struct
+நிலையான கட்டமைப்பு
 {
   size_t size;
-  int optc;
-  char *optarg;
+  முழு optc;
+  எழுத்து *optarg;
 } stdbuf[3];
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"input", required_argument, NULL, 'i'},
-  {"output", required_argument, NULL, 'o'},
-  {"error", required_argument, NULL, 'e'},
+  {"input", required_argument, வெற்று, 'i'},
+  {"output", required_argument, வெற்று, 'o'},
+  {"error", required_argument, வெற்று, 'e'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* Set size to the value of STR, interpreted as a decimal integer,
@@ -62,33 +62,33 @@ static struct option const longopts[] =
 
    This supports dd BLOCK size suffixes.
    Note we don't support dd's b=512, c=1, w=2 or 21x512MiB formats.  */
-static enum strtol_error
-parse_size (char const *str, size_t *size)
+நிலையான எண்ணிக்கை strtol_error
+parse_size (எழுத்து மாறிலி *str, size_t *size)
 {
   uintmax_t tmp_size;
-  enum strtol_error e = xstrtoumax (str, NULL, 10,
+  எண்ணிக்கை strtol_error e = xstrtoumax (str, வெற்று, 10,
                                     &tmp_size, "EGkKMPQRTYZ0");
-  if (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
+  எனில் (e == LONGINT_OK && ckd_add (size, tmp_size, 0))
     e = LONGINT_OVERFLOW;
-  return e;
+  திரும்பு e;
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s OPTION... COMMAND\n"), program_name);
       fputs (_("\
-Run COMMAND, with modified buffering operations for its standard streams.\n\
+Run COMMAND, with modified buffering operations க்கு its standard streams.\n\
 "), stdout);
 
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -i, --input=MODE   adjust standard input stream buffering\n\
+  -i, --உள்ளீடு=MODE   adjust standard உள்ளீடு stream buffering\n\
 "));
       oputs (_("\
   -o, --output=MODE  adjust standard output stream buffering\n\
@@ -99,22 +99,22 @@ Run COMMAND, with modified buffering operations for its standard streams.\n\
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\n\
-If MODE is 'L' the corresponding stream will be line buffered.\n\
-This option is invalid with standard input.\n"), stdout);
+If MODE is 'L' the corresponding stream will be வரி buffered.\n\
+This option is invalid with standard உள்ளீடு.\n"), stdout);
       fputs (_("\n\
 If MODE is '0' the corresponding stream will be unbuffered.\n\
 "), stdout);
       fputs (_("\n\
-Otherwise MODE is a number which may be followed by one of the following:\n\
-KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on for G,T,P,E,Z,Y,R,Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
-In this case the corresponding stream will be fully buffered with the buffer\n\
+Otherwise MODE is a எண் which may be followed by one of the following:\n\
+KB 1000, K 1024, MB 1000*1000, M 1024*1024, and so on க்கு G,T,P,E,Z,Y,R,Q.\n\
+இருமம்_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+In this நிலை the corresponding stream will be fully buffered with the buffer\n\
 size set to MODE bytes.\n\
 "), stdout);
       fputs (_("\n\
 NOTE: If COMMAND adjusts the buffering of its standard streams ('tee' does\n\
-for example) then that will override corresponding changes by 'stdbuf'.\n\
-Also some filters (like 'dd' and 'cat' etc.) don't use streams for I/O,\n\
+க்கு example) then that will override corresponding changes by 'stdbuf'.\n\
+Also some filters (like 'dd' and 'cat' etc.) don't use streams க்கு I/O,\n\
 and are thus unaffected by 'stdbuf' settings.\n\
 "), stdout);
       emit_exec_status (PROGRAM_NAME);
@@ -129,75 +129,75 @@ and are thus unaffected by 'stdbuf' settings.\n\
    search getenv("PATH"), readlink("/prof/self/exe"), getenv("_"),
    dladdr(), pstat_getpathname(), etc.  */
 
-static void
-set_program_path (char const *arg)
+நிலையான வெறுமை
+set_program_path (எழுத்து மாறிலி *arg)
 {
-  if (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
+  எனில் (strchr (arg, '/'))        /* Use absolute or relative paths directly.  */
     {
       program_path = dir_name (arg);
     }
-  else
+  இல்லையெனில்
     {
-      char *path = xreadlink ("/proc/self/exe");
-      if (path)
+      எழுத்து *path = xreadlink ("/proc/self/exe");
+      எனில் (path)
         program_path = dir_name (path);
-      else if ((path = getenv ("PATH")))
+      இல்லையெனில் எனில் ((path = getenv ("PATH")))
         {
           path = xstrdup (path);
-          for (char *dir = strtok (path, ":"); dir != NULL;
-               dir = strtok (NULL, ":"))
+          க்கு (எழுத்து *dir = strtok (path, ":"); dir != வெற்று;
+               dir = strtok (வெற்று, ":"))
             {
-              char *candidate = file_name_concat (dir, arg, NULL);
-              if (access (candidate, X_OK) == 0)
+              எழுத்து *candidate = file_name_concat (dir, arg, வெற்று);
+              எனில் (access (candidate, X_OK) == 0)
                 {
                   program_path = dir_name (candidate);
-                  free (candidate);
-                  break;
+                  விடுவி (candidate);
+                  நிறுத்து;
                 }
-              free (candidate);
+              விடுவி (candidate);
             }
         }
-      free (path);
+      விடுவி (path);
     }
 }
 
-static int
-optc_to_fileno (int c)
+நிலையான முழு
+optc_to_fileno (முழு c)
 {
-  int ret = -1;
+  முழு ret = -1;
 
-  switch (c)
+  தேர்வு (c)
     {
-    case 'e':
+    நிலை 'e':
       ret = STDERR_FILENO;
-      break;
-    case 'i':
+      நிறுத்து;
+    நிலை 'i':
       ret = STDIN_FILENO;
-      break;
-    case 'o':
+      நிறுத்து;
+    நிலை 'o':
       ret = STDOUT_FILENO;
-      break;
-    default:
+      நிறுத்து;
+    இயல்பு:
       affirm (false);
     }
 
-  return ret;
+  திரும்பு ret;
 }
 
-static void
-set_LD_PRELOAD (void)
+நிலையான வெறுமை
+set_LD_PRELOAD (வெறுமை)
 {
-  int ret;
+  முழு ret;
 #ifdef __APPLE__
-  char const *preload_env = "DYLD_INSERT_LIBRARIES";
-#elif defined _AIX
-  char const *preload_env = (sizeof (void *) < 8
+  எழுத்து மாறிலி *preload_env = "DYLD_INSERT_LIBRARIES";
+#அல்லதெனில் defined _AIX
+  எழுத்து மாறிலி *preload_env = (அளவு (வெறுமை *) < 8
                              ? "LDR_PRELOAD" : "LDR_PRELOAD64");
-#else
-  char const *preload_env = "LD_PRELOAD";
+#இல்லையெனில்
+  எழுத்து மாறிலி *preload_env = "LD_PRELOAD";
 #endif
-  char *old_libs = getenv (preload_env);
-  char *LD_PRELOAD;
+  எழுத்து *old_libs = getenv (preload_env);
+  எழுத்து *LD_PRELOAD;
 
   /* Note this would auto add the appropriate search path for "libstdbuf.so":
      gcc stdbuf.c -Wl,-rpath,'$ORIGIN' -Wl,-rpath,$PKGLIBEXECDIR
@@ -215,55 +215,55 @@ set_LD_PRELOAD (void)
      not supported due to the unusual need for controlling the stdio buffering
      of programs that are a different architecture to the default on the
      system (and that of stdbuf itself).  */
-  char const *const search_path[] = {
+  எழுத்து மாறிலி *மாறிலி தேடல்_path[] = {
     program_path,
     PKGLIBEXECDIR,
-    NULL
+    வெற்று
   };
 
-  char const *const *path = search_path;
-  char *libstdbuf;
+  எழுத்து மாறிலி *மாறிலி *path = தேடல்_path;
+  எழுத்து *libstdbuf;
 
-  while (true)
+  போது (true)
     {
-      struct stat sb;
+      கட்டமைப்பு stat sb;
 
-      if (!**path)              /* system default  */
+      எனில் (!**path)              /* system default  */
         {
           libstdbuf = xstrdup (LIB_NAME);
-          break;
+          நிறுத்து;
         }
       ret = asprintf (&libstdbuf, "%s/%s", *path, LIB_NAME);
-      if (ret < 0)
+      எனில் (ret < 0)
         xalloc_die ();
-      if (stat (libstdbuf, &sb) == 0)   /* file_exists  */
-        break;
-      free (libstdbuf);
+      எனில் (stat (libstdbuf, &sb) == 0)   /* file_exists  */
+        நிறுத்து;
+      விடுவி (libstdbuf);
 
       ++path;
-      if ( ! *path)
+      எனில் ( ! *path)
         error (EXIT_CANCELED, 0, _("failed to find %s"), quote (LIB_NAME));
     }
 
   /* FIXME: Do we need to support libstdbuf.dll, c:, '\' separators etc?  */
 
-  if (old_libs)
+  எனில் (old_libs)
     ret = asprintf (&LD_PRELOAD, "%s=%s:%s", preload_env, old_libs, libstdbuf);
-  else
+  இல்லையெனில்
     ret = asprintf (&LD_PRELOAD, "%s=%s", preload_env, libstdbuf);
 
-  if (ret < 0)
+  எனில் (ret < 0)
     xalloc_die ();
 
-  free (libstdbuf);
+  விடுவி (libstdbuf);
 
   ret = putenv (LD_PRELOAD);
 #ifdef __APPLE__
-  if (ret == 0)
+  எனில் (ret == 0)
     ret = setenv ("DYLD_FORCE_FLAT_NAMESPACE", "y", 1);
 #endif
 
-  if (ret != 0)
+  எனில் (ret != 0)
     error (EXIT_CANCELED, errno,
            _("failed to update the environment with %s"),
            quote (LD_PRELOAD));
@@ -272,29 +272,29 @@ set_LD_PRELOAD (void)
 /* Populate environ with _STDBUF_I=$MODE _STDBUF_O=$MODE _STDBUF_E=$MODE.
    Return TRUE if any environment variables set.   */
 
-static bool
-set_libstdbuf_options (void)
+நிலையான bool
+set_libstdbuf_options (வெறுமை)
 {
   bool env_set = false;
 
-  for (size_t i = 0; i < countof (stdbuf); i++)
+  க்கு (size_t i = 0; i < countof (stdbuf); i++)
     {
-      if (stdbuf[i].optarg)
+      எனில் (stdbuf[i].optarg)
         {
-          char *var;
-          int ret;
+          எழுத்து *var;
+          முழு ret;
 
-          if (*stdbuf[i].optarg == 'L')
+          எனில் (*stdbuf[i].optarg == 'L')
             ret = asprintf (&var, "%s%c=L", "_STDBUF_",
                             c_toupper (stdbuf[i].optc));
-          else
+          இல்லையெனில்
             ret = asprintf (&var, "%s%c=%zu", "_STDBUF_",
                             c_toupper (stdbuf[i].optc),
                             stdbuf[i].size);
-          if (ret < 0)
+          எனில் (ret < 0)
             xalloc_die ();
 
-          if (putenv (var) != 0)
+          எனில் (putenv (var) != 0)
             error (EXIT_CANCELED, errno,
                    _("failed to update the environment with %s"),
                    quote (var));
@@ -303,13 +303,13 @@ set_libstdbuf_options (void)
         }
     }
 
-  return env_set;
+  திரும்பு env_set;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int c;
+  முழு c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -320,24 +320,24 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+i:o:e:", longopts, NULL)) != -1)
+  போது ((c = getopt_long (argc, argv, "+i:o:e:", longopts, வெற்று)) != -1)
     {
-      int const oi = -1;
-      int opt_fileno;
+      முழு மாறிலி oi = -1;
+      முழு opt_fileno;
 
-      switch (c)
+      தேர்வு (c)
         {
         /* Old McDonald had a farm ei...  */
-        case 'e':
-        case 'i':
-        case 'o':
+        நிலை 'e':
+        நிலை 'i':
+        நிலை 'o':
           opt_fileno = optc_to_fileno (c);
           affirm (0 <= opt_fileno && opt_fileno < countof (stdbuf));
           stdbuf[opt_fileno].optc = c;
-          while (c_isspace (*optarg))
+          போது (c_isspace (*optarg))
             optarg++;
           stdbuf[opt_fileno].optarg = optarg;
-          if (c == 'i' && *optarg == 'L')
+          எனில் (c == 'i' && *optarg == 'L')
             {
               /* -oL will be by far the most common use of this utility,
                  but one could easily think -iL might have the same affect,
@@ -346,21 +346,21 @@ main (int argc, char **argv)
               usage (EXIT_CANCELED);
             }
 
-          if (!streq (optarg, "L"))
+          எனில் (!streq (optarg, "L"))
             {
-              enum strtol_error e = parse_size (optarg,
+              எண்ணிக்கை strtol_error e = parse_size (optarg,
                                                 &stdbuf[opt_fileno].size);
-              if (e != LONGINT_OK)
+              எனில் (e != LONGINT_OK)
                 xstrtol_fatal (e, oi, c, longopts, optarg);
             }
 
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_CANCELED);
         }
     }
@@ -369,13 +369,13 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify at least 1 command.  */
-  if (argc < 1)
+  எனில் (argc < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  if (! set_libstdbuf_options ())
+  எனில் (! set_libstdbuf_options ())
     {
       error (0, 0, _("you must specify a buffering mode option"));
       usage (EXIT_CANCELED);
@@ -384,14 +384,14 @@ main (int argc, char **argv)
   /* Try to preload libstdbuf first from the same path as
      stdbuf is running from.  */
   set_program_path (program_name);
-  if (!program_path)
+  எனில் (!program_path)
     program_path = xstrdup (PKGLIBDIR);  /* Need to init to non-null.  */
   set_LD_PRELOAD ();
-  free (program_path);
+  விடுவி (program_path);
 
   execvp (*argv, argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  முழு exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  திரும்பு exit_status;
 }

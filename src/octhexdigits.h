@@ -1,16 +1,16 @@
-static inline bool _GL_ATTRIBUTE_CONST
-isoct (char c)
+நிலையான உள்வரி bool _GL_ATTRIBUTE_CONST
+isoct (எழுத்து c)
 {
-  return '0' <= c && c <= '7';
+  திரும்பு '0' <= c && c <= '7';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromoct (char c)
+நிலையான உள்வரி முழு _GL_ATTRIBUTE_CONST
+fromoct (எழுத்து c)
 {
-  return c - '0';
+  திரும்பு c - '0';
 }
-static inline int _GL_ATTRIBUTE_CONST
-fromhex (char c)
+நிலையான உள்வரி முழு _GL_ATTRIBUTE_CONST
+fromhex (எழுத்து c)
 {
-  return ('a' <= c && c <= 'f' ? c - 'a' + 10
+  திரும்பு ('a' <= c && c <= 'f' ? c - 'a' + 10
           : 'A' <= c && c <= 'F' ? c - 'A' + 10 : c - '0');
 }

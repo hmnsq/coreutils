@@ -1,2 +1,2 @@
-#include "chown.h"
-enum chown_modes chown_mode = CHOWN_CHOWN;
+#அந்தர்பாவ "chown.h"
+எண்ணிக்கை chown_modes chown_mode = CHOWN_CHOWN;

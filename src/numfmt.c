@@ -14,27 +14,27 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <float.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <langinfo.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <float.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <langinfo.h>
 
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "mbswidth.h"
-#include "mcel.h"
-#include "quote.h"
-#include "skipchars.h"
-#include "system.h"
-#include "utf8.h"
-#include "xstrtol.h"
+#அந்தர்பாவ "argmatch.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "c-ctype.h"
+#அந்தர்பாவ "mbswidth.h"
+#அந்தர்பாவ "mcel.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "skipchars.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "utf8.h"
+#அந்தர்பாவ "xstrtol.h"
 
-#include "set-fields.h"
+#அந்தர்பாவ "set-fields.h"
 
-#if HAVE_FPSETPREC
+#எனில் HAVE_FPSETPREC
 # include <ieeefp.h>
 #endif
 
@@ -44,9 +44,9 @@
 #define AUTHORS proper_name ("Assaf Gordon")
 
 /* Exit code when some numbers fail to convert.  */
-enum { EXIT_CONVERSION_WARNINGS = 2 };
+எண்ணிக்கை { EXIT_CONVERSION_WARNINGS = 2 };
 
-enum
+எண்ணிக்கை
 {
   FROM_OPTION = CHAR_MAX + 1,
   FROM_UNIT_OPTION,
@@ -65,7 +65,7 @@ enum
   UNIT_SEPARATOR_OPTION
 };
 
-enum scale_type
+எண்ணிக்கை scale_type
 {
   scale_none,                   /* the default: no scaling.  */
   scale_auto,                   /* --from only.  */
@@ -74,28 +74,28 @@ enum scale_type
   scale_IEC_I                   /* 'i' suffix is required.  */
 };
 
-static char const *const scale_from_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி scale_from_args[] =
 {
-  "none", "auto", "si", "iec", "iec-i", NULL
+  "none", "auto", "si", "iec", "iec-i", வெற்று
 };
 
-static enum scale_type const scale_from_types[] =
+நிலையான எண்ணிக்கை scale_type மாறிலி scale_from_types[] =
 {
   scale_none, scale_auto, scale_SI, scale_IEC, scale_IEC_I
 };
 
-static char const *const scale_to_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி scale_to_args[] =
 {
-  "none", "si", "iec", "iec-i", NULL
+  "none", "si", "iec", "iec-i", வெற்று
 };
 
-static enum scale_type const scale_to_types[] =
+நிலையான எண்ணிக்கை scale_type மாறிலி scale_to_types[] =
 {
   scale_none, scale_SI, scale_IEC, scale_IEC_I
 };
 
 
-enum round_type
+எண்ணிக்கை round_type
 {
   round_ceiling,
   round_floor,
@@ -104,18 +104,18 @@ enum round_type
   round_nearest,
 };
 
-static char const *const round_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி round_args[] =
 {
-  "up", "down", "from-zero", "towards-zero", "nearest", NULL
+  "up", "down", "from-zero", "towards-zero", "nearest", வெற்று
 };
 
-static enum round_type const round_types[] =
+நிலையான எண்ணிக்கை round_type மாறிலி round_types[] =
 {
   round_ceiling, round_floor, round_from_zero, round_to_zero, round_nearest
 };
 
 
-enum inval_type
+எண்ணிக்கை inval_type
 {
   inval_abort,
   inval_fail,
@@ -123,345 +123,345 @@ enum inval_type
   inval_ignore
 };
 
-static char const *const inval_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி inval_args[] =
 {
-  "abort", "fail", "warn", "ignore", NULL
+  "abort", "fail", "warn", "ignore", வெற்று
 };
 
-static enum inval_type const inval_types[] =
+நிலையான எண்ணிக்கை inval_type மாறிலி inval_types[] =
 {
   inval_abort, inval_fail, inval_warn, inval_ignore
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"from", required_argument, NULL, FROM_OPTION},
-  {"from-unit", required_argument, NULL, FROM_UNIT_OPTION},
-  {"to", required_argument, NULL, TO_OPTION},
-  {"to-unit", required_argument, NULL, TO_UNIT_OPTION},
-  {"round", required_argument, NULL, ROUND_OPTION},
-  {"padding", required_argument, NULL, PADDING_OPTION},
-  {"suffix", required_argument, NULL, SUFFIX_OPTION},
-  {"unit-separator", required_argument, NULL, UNIT_SEPARATOR_OPTION},
-  {"grouping", no_argument, NULL, GROUPING_OPTION},
-  {"delimiter", required_argument, NULL, 'd'},
-  {"field", required_argument, NULL, FIELD_OPTION},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
-  {"header", optional_argument, NULL, HEADER_OPTION},
-  {"format", required_argument, NULL, FORMAT_OPTION},
-  {"invalid", required_argument, NULL, INVALID_OPTION},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"from", required_argument, வெற்று, FROM_OPTION},
+  {"from-unit", required_argument, வெற்று, FROM_UNIT_OPTION},
+  {"to", required_argument, வெற்று, TO_OPTION},
+  {"to-unit", required_argument, வெற்று, TO_UNIT_OPTION},
+  {"round", required_argument, வெற்று, ROUND_OPTION},
+  {"padding", required_argument, வெற்று, PADDING_OPTION},
+  {"suffix", required_argument, வெற்று, SUFFIX_OPTION},
+  {"unit-separator", required_argument, வெற்று, UNIT_SEPARATOR_OPTION},
+  {"grouping", no_argument, வெற்று, GROUPING_OPTION},
+  {"delimiter", required_argument, வெற்று, 'd'},
+  {"field", required_argument, வெற்று, FIELD_OPTION},
+  {"debug", no_argument, வெற்று, DEBUG_OPTION},
+  {"-debug", no_argument, வெற்று, DEV_DEBUG_OPTION},
+  {"header", optional_argument, வெற்று, HEADER_OPTION},
+  {"format", required_argument, வெற்று, FORMAT_OPTION},
+  {"invalid", required_argument, வெற்று, INVALID_OPTION},
+  {"zero-terminated", no_argument, வெற்று, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* Maximum number of digits we can safely handle
    without precision loss, if scaling is 'none'.  */
-enum { MAX_UNSCALED_DIGITS = LDBL_DIG };
+எண்ணிக்கை { MAX_UNSCALED_DIGITS = LDBL_DIG };
 
 /* Maximum number of digits we can work with.
    This is equivalent to 999Q.
    NOTE: 'long double' can handle more than that, but there's
          no official suffix assigned beyond Quetta (1000^10).  */
-enum { MAX_ACCEPTABLE_DIGITS = 33 };
+எண்ணிக்கை { MAX_ACCEPTABLE_DIGITS = 33 };
 
-static enum scale_type scale_from = scale_none;
-static enum scale_type scale_to = scale_none;
-static enum round_type round_style = round_from_zero;
-static enum inval_type inval_style = inval_abort;
-static char const *suffix = NULL;
-static char const *unit_separator = NULL;
-static uintmax_t from_unit_size = 1;
-static uintmax_t to_unit_size = 1;
-static int grouping = 0;
-static char *padding_buffer = NULL;
-static idx_t padding_buffer_size = 0;
-static intmax_t padding_width = 0;
-static int zero_padding_width = 0;
-static long int user_precision = -1;
-static char const *format_str = NULL;
-static char *format_str_prefix = NULL;
-static char *format_str_suffix = NULL;
+நிலையான எண்ணிக்கை scale_type scale_from = scale_none;
+நிலையான எண்ணிக்கை scale_type scale_to = scale_none;
+நிலையான எண்ணிக்கை round_type round_style = round_from_zero;
+நிலையான எண்ணிக்கை inval_type inval_style = inval_abort;
+நிலையான எழுத்து மாறிலி *suffix = வெற்று;
+நிலையான எழுத்து மாறிலி *unit_separator = வெற்று;
+நிலையான uintmax_t from_unit_size = 1;
+நிலையான uintmax_t to_unit_size = 1;
+நிலையான முழு grouping = 0;
+நிலையான எழுத்து *padding_buffer = வெற்று;
+நிலையான idx_t padding_buffer_size = 0;
+நிலையான intmax_t padding_width = 0;
+நிலையான முழு zero_padding_width = 0;
+நிலையான long முழு user_precision = -1;
+நிலையான எழுத்து மாறிலி *format_str = வெற்று;
+நிலையான எழுத்து *format_str_prefix = வெற்று;
+நிலையான எழுத்து *format_str_suffix = வெற்று;
 
 /* By default, any conversion error will terminate the program.  */
-static int conv_exit_code = EXIT_CONVERSION_WARNINGS;
+நிலையான முழு conv_exit_code = EXIT_CONVERSION_WARNINGS;
 
 
 /* auto-pad each line based on skipped whitespace.  */
-static int auto_padding = 0;
+நிலையான முழு auto_padding = 0;
 
 /* field delimiter - if NULL, blanks separate fields.  */
-static char const *delimiter = NULL;
+நிலையான எழுத்து மாறிலி *delimiter = வெற்று;
 
 /* line delimiter.  */
-static unsigned char line_delim = '\n';
+நிலையான unsigned எழுத்து வரி_delim = '\n';
 
 /* if non-zero, the first 'header' lines from STDIN are skipped.  */
-static uintmax_t header = 0;
+நிலையான uintmax_t header = 0;
 
 /* Debug for users: print warnings to STDERR about possible
    error (similar to sort's debug).  */
-static bool debug;
+நிலையான bool debug;
 
 /* will be set according to the current locale.  */
-static char const *decimal_point;
-static int decimal_point_length;
-static char const *thousands_sep;
-static int thousands_sep_length;
+நிலையான எழுத்து மாறிலி *decimal_point;
+நிலையான முழு decimal_point_length;
+நிலையான எழுத்து மாறிலி *thousands_sep;
+நிலையான முழு thousands_sep_length;
 
 /* debugging for developers.  Enables devmsg().  */
-static bool dev_debug = false;
+நிலையான bool dev_debug = false;
 
-static bool
+நிலையான bool
 newline_or_blank (mcel_t g)
 {
-  return g.ch == '\n' || c32issep (g.ch);
+  திரும்பு g.ch == '\n' || c32issep (g.ch);
 }
 
-static inline int
-default_scale_base (enum scale_type scale)
+நிலையான உள்வரி முழு
+default_scale_base (எண்ணிக்கை scale_type scale)
 {
-  switch (scale)
+  தேர்வு (scale)
     {
-    case scale_IEC:
-    case scale_IEC_I:
-      return 1024;
+    நிலை scale_IEC:
+    நிலை scale_IEC_I:
+      திரும்பு 1024;
 
-    case scale_none:
-    case scale_auto:
-    case scale_SI:
-    default:
-      return 1000;
+    நிலை scale_none:
+    நிலை scale_auto:
+    நிலை scale_SI:
+    இயல்பு:
+      திரும்பு 1000;
     }
 }
 
-static char const zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
-static char const *valid_suffixes = 1 + zero_and_valid_suffixes;
+நிலையான எழுத்து மாறிலி zero_and_valid_suffixes[] = "0KkMGTPEZYRQ";
+நிலையான எழுத்து மாறிலி *valid_suffixes = 1 + zero_and_valid_suffixes;
 
-static inline bool
-valid_suffix (const char suf)
+நிலையான உள்வரி bool
+valid_suffix (மாறிலி எழுத்து suf)
 {
-  return strchr (valid_suffixes, suf) != NULL;
+  திரும்பு strchr (valid_suffixes, suf) != வெற்று;
 }
 
-static inline int
-suffix_power (const char suf)
+நிலையான உள்வரி முழு
+suffix_power (மாறிலி எழுத்து suf)
 {
-  switch (suf)
+  தேர்வு (suf)
     {
-    case 'k':                  /* kilo.  */
-    case 'K':                  /* kilo or kibi.  */
-      return 1;
+    நிலை 'k':                  /* kilo.  */
+    நிலை 'K':                  /* kilo or kibi.  */
+      திரும்பு 1;
 
-    case 'M':                  /* mega or mebi.  */
-      return 2;
+    நிலை 'M':                  /* mega or mebi.  */
+      திரும்பு 2;
 
-    case 'G':                  /* giga or gibi.  */
-      return 3;
+    நிலை 'G':                  /* giga or gibi.  */
+      திரும்பு 3;
 
-    case 'T':                  /* tera or tebi.  */
-      return 4;
+    நிலை 'T':                  /* tera or tebi.  */
+      திரும்பு 4;
 
-    case 'P':                  /* peta or pebi.  */
-      return 5;
+    நிலை 'P':                  /* peta or pebi.  */
+      திரும்பு 5;
 
-    case 'E':                  /* exa or exbi.  */
-      return 6;
+    நிலை 'E':                  /* exa or exbi.  */
+      திரும்பு 6;
 
-    case 'Z':                  /* zetta or 2**70.  */
-      return 7;
+    நிலை 'Z':                  /* zetta or 2**70.  */
+      திரும்பு 7;
 
-    case 'Y':                  /* yotta or 2**80.  */
-      return 8;
+    நிலை 'Y':                  /* yotta or 2**80.  */
+      திரும்பு 8;
 
-    case 'R':                  /* ronna or 2**90.  */
-      return 9;
+    நிலை 'R':                  /* ronna or 2**90.  */
+      திரும்பு 9;
 
-    case 'Q':                  /* quetta or 2**100.  */
-      return 10;
+    நிலை 'Q':                  /* quetta or 2**100.  */
+      திரும்பு 10;
 
-    default:                   /* should never happen. assert?  */
-      return 0;
+    இயல்பு:                   /* should never happen. assert?  */
+      திரும்பு 0;
     }
 }
 
-static inline char const *
-suffix_power_char (int power)
+நிலையான உள்வரி எழுத்து மாறிலி *
+suffix_power_char (முழு power)
 {
-  switch (power)
+  தேர்வு (power)
     {
-    case 0:
-      return "";
+    நிலை 0:
+      திரும்பு "";
 
-    case 1:
-      return "K";
+    நிலை 1:
+      திரும்பு "K";
 
-    case 2:
-      return "M";
+    நிலை 2:
+      திரும்பு "M";
 
-    case 3:
-      return "G";
+    நிலை 3:
+      திரும்பு "G";
 
-    case 4:
-      return "T";
+    நிலை 4:
+      திரும்பு "T";
 
-    case 5:
-      return "P";
+    நிலை 5:
+      திரும்பு "P";
 
-    case 6:
-      return "E";
+    நிலை 6:
+      திரும்பு "E";
 
-    case 7:
-      return "Z";
+    நிலை 7:
+      திரும்பு "Z";
 
-    case 8:
-      return "Y";
+    நிலை 8:
+      திரும்பு "Y";
 
-    case 9:
-      return "R";
+    நிலை 9:
+      திரும்பு "R";
 
-    case 10:
-      return "Q";
+    நிலை 10:
+      திரும்பு "Q";
 
-    default:
-      return "(error)";
+    இயல்பு:
+      திரும்பு "(error)";
     }
 }
 
 /* Similar to 'powl(3)' but without requiring 'libm'.  */
-static long double
-powerld (long double base, ptrdiff_t x)
+நிலையான long இரட்டை
+powerld (long இரட்டை base, ptrdiff_t x)
 {
-  long double result = base;
-  if (x == 0)
-    return 1;                   /* note for test coverage: this is never
+  long இரட்டை result = base;
+  எனில் (x == 0)
+    திரும்பு 1;                   /* note for test coverage: this is never
                                    reached, as 'powerld' won't be called if
                                    there's no suffix, hence, no "power".  */
 
   /* TODO: check for overflow, inf?  */
-  while (--x)
+  போது (--x)
     result *= base;
-  return result;
+  திரும்பு result;
 }
 
 /* Similar to 'fabs(3)' but without requiring 'libm'.  */
-static inline long double
-absld (long double val)
+நிலையான உள்வரி long இரட்டை
+absld (long இரட்டை val)
 {
-  return val < 0 ? -val : val;
+  திரும்பு val < 0 ? -val : val;
 }
 
 /* Scale down 'val', returns 'updated val' and 'x', such that
      val*base^X = original val
      Similar to "frexpl(3)" but without requiring 'libm',
      allowing only integer scale, limited functionality and error checking.  */
-static long double
-expld (long double val, int base, int /*output */ *x)
+நிலையான long இரட்டை
+expld (long இரட்டை val, முழு base, முழு /*output */ *x)
 {
-  int power = 0;
+  முழு power = 0;
 
-  if (val >= -LDBL_MAX && val <= LDBL_MAX)
+  எனில் (val >= -LDBL_MAX && val <= LDBL_MAX)
     {
-      while (absld (val) >= base)
+      போது (absld (val) >= base)
         {
           ++power;
           val /= base;
         }
     }
-  if (x)
+  எனில் (x)
     *x = power;
-  return val;
+  திரும்பு val;
 }
 
 /* EXTREMELY limited 'ceil' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_ceiling (long double val)
+நிலையான உள்வரி intmax_t
+simple_round_ceiling (long இரட்டை val)
 {
   intmax_t intval = val;
-  if (intval < val)
+  எனில் (intval < val)
     intval++;
-  return intval;
+  திரும்பு intval;
 }
 
 /* EXTREMELY limited 'floor' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_floor (long double val)
+நிலையான உள்வரி intmax_t
+simple_round_floor (long இரட்டை val)
 {
-  return -simple_round_ceiling (-val);
+  திரும்பு -simple_round_ceiling (-val);
 }
 
 /* EXTREMELY limited 'round away from zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_from_zero (long double val)
+நிலையான உள்வரி intmax_t
+simple_round_from_zero (long இரட்டை val)
 {
-  return val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
+  திரும்பு val < 0 ? simple_round_floor (val) : simple_round_ceiling (val);
 }
 
 /* EXTREMELY limited 'round away to zero'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_to_zero (long double val)
+நிலையான உள்வரி intmax_t
+simple_round_to_zero (long இரட்டை val)
 {
-  return val;
+  திரும்பு val;
 }
 
 /* EXTREMELY limited 'round' - without 'libm'.
    Assumes values that fit in intmax_t.  */
-static inline intmax_t
-simple_round_nearest (long double val)
+நிலையான உள்வரி intmax_t
+simple_round_nearest (long இரட்டை val)
 {
-  return val < 0 ? val - 0.5 : val + 0.5;
+  திரும்பு val < 0 ? val - 0.5 : val + 0.5;
 }
 
 ATTRIBUTE_CONST
-static inline long double
-simple_round (long double val, enum round_type t)
+நிலையான உள்வரி long இரட்டை
+simple_round (long இரட்டை val, எண்ணிக்கை round_type t)
 {
   intmax_t rval;
   intmax_t intmax_mul = val / INTMAX_MAX;
-  val -= (long double) INTMAX_MAX * intmax_mul;
+  val -= (long இரட்டை) INTMAX_MAX * intmax_mul;
 
-  switch (t)
+  தேர்வு (t)
     {
-    case round_ceiling:
+    நிலை round_ceiling:
       rval = simple_round_ceiling (val);
-      break;
+      நிறுத்து;
 
-    case round_floor:
+    நிலை round_floor:
       rval = simple_round_floor (val);
-      break;
+      நிறுத்து;
 
-    case round_from_zero:
+    நிலை round_from_zero:
       rval = simple_round_from_zero (val);
-      break;
+      நிறுத்து;
 
-    case round_to_zero:
+    நிலை round_to_zero:
       rval = simple_round_to_zero (val);
-      break;
+      நிறுத்து;
 
-    case round_nearest:
+    நிலை round_nearest:
       rval = simple_round_nearest (val);
-      break;
+      நிறுத்து;
 
-    default:
+    இயல்பு:
       /* to silence the compiler - this should never happen.  */
-      return 0;
+      திரும்பு 0;
     }
 
-  return (long double) INTMAX_MAX * intmax_mul + rval;
+  திரும்பு (long இரட்டை) INTMAX_MAX * intmax_mul + rval;
 }
 
-enum simple_strtod_error
+எண்ணிக்கை simple_strtod_error
 {
   SSE_OK = 0,
   SSE_OK_PRECISION_LOSS,
   SSE_OVERFLOW,
-  SSE_INVALID_NUMBER,
+  SSE_INVALID_எண்,
 
   /* the following are returned by 'simple_strtod_human'.  */
   SSE_VALID_BUT_FORBIDDEN_SUFFIX,
@@ -485,60 +485,60 @@ enum simple_strtod_error
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_int (char const *input_str,
-                   char **endptr, long double *value, bool *negative)
+நிலையான எண்ணிக்கை simple_strtod_error
+simple_strtod_int (எழுத்து மாறிலி *உள்ளீடு_str,
+                   எழுத்து **endptr, long இரட்டை *மதிப்பு, bool *negative)
 {
-  enum simple_strtod_error e = SSE_OK;
+  எண்ணிக்கை simple_strtod_error e = SSE_OK;
 
-  long double val = 0;
-  int digits = 0;
+  long இரட்டை val = 0;
+  முழு digits = 0;
   bool found_digit = false;
 
-  if (*input_str == '-')
+  எனில் (*உள்ளீடு_str == '-')
     {
-      input_str++;
+      உள்ளீடு_str++;
       *negative = true;
     }
-  else
+  இல்லையெனில்
     *negative = false;
 
-  *endptr = (char *) input_str;
-  while (c_isdigit (**endptr))
+  *endptr = (எழுத்து *) உள்ளீடு_str;
+  போது (c_isdigit (**endptr))
     {
-      int digit = (**endptr) - '0';
+      முழு digit = (**endptr) - '0';
 
       found_digit = true;
 
-      if (val || digit)
+      எனில் (val || digit)
         digits++;
 
-      if (digits > MAX_UNSCALED_DIGITS)
+      எனில் (digits > MAX_UNSCALED_DIGITS)
         e = SSE_OK_PRECISION_LOSS;
 
-      if (digits > MAX_ACCEPTABLE_DIGITS)
-        return SSE_OVERFLOW;
+      எனில் (digits > MAX_ACCEPTABLE_DIGITS)
+        திரும்பு SSE_OVERFLOW;
 
       val *= 10;
       val += digit;
 
       ++(*endptr);
 
-      if (thousands_sep_length > 0
+      எனில் (thousands_sep_length > 0
           && STREQ_LEN (*endptr, thousands_sep, thousands_sep_length)
           && c_isdigit ((*endptr)[thousands_sep_length]))
         (*endptr) += thousands_sep_length;
     }
-  if (! found_digit
+  எனில் (! found_digit
       && ! STREQ_LEN (*endptr, decimal_point, decimal_point_length))
-    return SSE_INVALID_NUMBER;
-  if (*negative)
+    திரும்பு SSE_INVALID_எண்;
+  எனில் (*negative)
     val = -val;
 
-  if (value)
-    *value = val;
+  எனில் (மதிப்பு)
+    *மதிப்பு = val;
 
-  return e;
+  திரும்பு e;
 }
 
 /* Read a floating-point INPUT_STR represented as "NNNN[.NNNNN]",
@@ -555,39 +555,39 @@ simple_strtod_int (char const *input_str,
       SSE_OK_PRECISION_LOSS - if more than 18 digits were used.
       SSE_OVERFLOW          - if more than 33 digits (999Q) were used.
       SSE_INVALID_NUMBER    - if no digits were found.  */
-static enum simple_strtod_error
-simple_strtod_float (char const *input_str,
-                     char **endptr,
-                     long double *value,
+நிலையான எண்ணிக்கை simple_strtod_error
+simple_strtod_float (எழுத்து மாறிலி *உள்ளீடு_str,
+                     எழுத்து **endptr,
+                     long இரட்டை *மதிப்பு,
                      size_t *precision)
 {
   bool negative;
-  enum simple_strtod_error e = SSE_OK;
+  எண்ணிக்கை simple_strtod_error e = SSE_OK;
 
-  if (precision)
+  எனில் (precision)
     *precision = 0;
 
   /* TODO: accept locale'd grouped values for the integral part.  */
-  e = simple_strtod_int (input_str, endptr, value, &negative);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  e = simple_strtod_int (உள்ளீடு_str, endptr, மதிப்பு, &negative);
+  எனில் (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    திரும்பு e;
 
   /* optional decimal point + fraction.  */
-  if (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
+  எனில் (STREQ_LEN (*endptr, decimal_point, decimal_point_length))
     {
-      char *ptr2;
-      long double val_frac = 0;
+      எழுத்து *ptr2;
+      long இரட்டை val_frac = 0;
       bool neg_frac;
 
       (*endptr) += decimal_point_length;
-      enum simple_strtod_error e2 =
+      எண்ணிக்கை simple_strtod_error e2 =
         simple_strtod_int (*endptr, &ptr2, &val_frac, &neg_frac);
-      if (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
-        return e2;
-      if (e2 == SSE_OK_PRECISION_LOSS)
+      எனில் (e2 != SSE_OK && e2 != SSE_OK_PRECISION_LOSS)
+        திரும்பு e2;
+      எனில் (e2 == SSE_OK_PRECISION_LOSS)
         e = e2;                       /* propagate warning.  */
-      if (neg_frac)
-        return SSE_INVALID_NUMBER;
+      எனில் (neg_frac)
+        திரும்பு SSE_INVALID_எண்;
 
       /* number of digits in the fractions.  */
       ptrdiff_t exponent = ptr2 - *endptr;
@@ -596,20 +596,20 @@ simple_strtod_float (char const *input_str,
 
       /* TODO: detect loss of precision (only really 18 digits
          of precision across all digits (before and after '.')).  */
-      if (value)
+      எனில் (மதிப்பு)
         {
-          if (negative)
-            *value -= val_frac;
-          else
-            *value += val_frac;
+          எனில் (negative)
+            *மதிப்பு -= val_frac;
+          இல்லையெனில்
+            *மதிப்பு += val_frac;
         }
 
-      if (precision)
+      எனில் (precision)
         *precision = exponent;
 
       *endptr = ptr2;
     }
-  return e;
+  திரும்பு e;
 }
 
 /* Read a 'human' INPUT_STR represented as "NNNN[.NNNNN] + suffix",
@@ -631,73 +631,73 @@ simple_strtod_float (char const *input_str,
       SSE_VALID_BUT_FORBIDDEN_SUFFIX
       SSE_INVALID_SUFFIX
       SSE_MISSING_I_SUFFIX  */
-static enum simple_strtod_error
-simple_strtod_human (char const *input_str,
-                     char **endptr, long double *value, size_t *precision,
-                     enum scale_type allowed_scaling)
+நிலையான எண்ணிக்கை simple_strtod_error
+simple_strtod_human (எழுத்து மாறிலி *உள்ளீடு_str,
+                     எழுத்து **endptr, long இரட்டை *மதிப்பு, size_t *precision,
+                     எண்ணிக்கை scale_type allowed_scaling)
 {
-  int power = 0;
+  முழு power = 0;
   /* 'scale_auto' is checked below.  */
-  int scale_base = default_scale_base (allowed_scaling);
+  முழு scale_base = default_scale_base (allowed_scaling);
 
   devmsg ("simple_strtod_human:\n  input string: %s\n"
           "  locale decimal-point: %s\n"
           "  MAX_UNSCALED_DIGITS: %d\n",
-          quote_n (0, input_str),
+          quote_n (0, உள்ளீடு_str),
           quote_n (1, decimal_point),
           MAX_UNSCALED_DIGITS);
 
-  enum simple_strtod_error e =
-    simple_strtod_float (input_str, endptr, value, precision);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
-    return e;
+  எண்ணிக்கை simple_strtod_error e =
+    simple_strtod_float (உள்ளீடு_str, endptr, மதிப்பு, precision);
+  எனில் (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+    திரும்பு e;
 
   devmsg ("  parsed numeric value: %Lf\n"
-          "  input precision = %d\n", *value, (int)*precision);
+          "  input precision = %d\n", *மதிப்பு, (முழு)*precision);
 
-  while (**endptr)
+  போது (**endptr)
     {
       /* process suffix.  */
 
       /* Skip a single blank, NBSP or specified unit separator.
          Note an explicit empty --unit-sep should disable blank matching. */
       bool matched_unit_sep = false;
-      if (unit_separator)
+      எனில் (unit_separator)
         {
           size_t sep_len = strlen (unit_separator);
-          if (STREQ_LEN (*endptr, unit_separator, sep_len))
+          எனில் (STREQ_LEN (*endptr, unit_separator, sep_len))
             {
               matched_unit_sep = true;
               (*endptr) += sep_len;
             }
         }
-      if (!matched_unit_sep)
+      எனில் (!matched_unit_sep)
         {
           mcel_t g = mcel_scanz (*endptr);
-          if (c32issep (g.ch) || c32isnbspace (g.ch))
+          எனில் (c32issep (g.ch) || c32isnbspace (g.ch))
             (*endptr) += g.len;
         }
 
-      if (**endptr == '\0')
-        break;  /* Treat as no suffix.  */
+      எனில் (**endptr == '\0')
+        நிறுத்து;  /* Treat as no suffix.  */
 
-      if (!valid_suffix (**endptr))
+      எனில் (!valid_suffix (**endptr))
         {
           /* Trailing blanks are allowed.  */
           *endptr = skip_str_matching (*endptr, newline_or_blank, true);
-          if (**endptr == '\0')
-            break;
+          எனில் (**endptr == '\0')
+            நிறுத்து;
 
-          return SSE_INVALID_SUFFIX;
+          திரும்பு SSE_INVALID_SUFFIX;
         }
 
-      if (allowed_scaling == scale_none)
-        return SSE_VALID_BUT_FORBIDDEN_SUFFIX;
+      எனில் (allowed_scaling == scale_none)
+        திரும்பு SSE_VALID_BUT_FORBIDDEN_SUFFIX;
 
       power = suffix_power (**endptr);
       (*endptr)++;                     /* skip first suffix character.  */
 
-      if (allowed_scaling == scale_auto && **endptr == 'i')
+      எனில் (allowed_scaling == scale_auto && **endptr == 'i')
         {
           /* auto-scaling enabled, and the first suffix character
              is followed by an 'i' (e.g. Ki, Mi, Gi).  */
@@ -706,12 +706,12 @@ simple_strtod_human (char const *input_str,
           devmsg ("  Auto-scaling, found 'i', switching to base %d\n",
                   scale_base);
         }
-      else if (allowed_scaling == scale_IEC_I)
+      இல்லையெனில் எனில் (allowed_scaling == scale_IEC_I)
         {
-          if (**endptr == 'i')
+          எனில் (**endptr == 'i')
             (*endptr)++;
-          else
-            return SSE_MISSING_I_SUFFIX;
+          இல்லையெனில்
+            திரும்பு SSE_MISSING_I_SUFFIX;
         }
 
       *precision = 0;  /* Reset, to select precision based on scale.  */
@@ -719,57 +719,57 @@ simple_strtod_human (char const *input_str,
       /* Trailing blanks are allowed.  */
       *endptr = skip_str_matching (*endptr, newline_or_blank, true);
 
-      break;
+      நிறுத்து;
     }
 
-  long double multiplier = powerld (scale_base, power);
+  long இரட்டை multiplier = powerld (scale_base, power);
 
   devmsg ("  suffix power=%d^%d = %Lf\n", scale_base, power, multiplier);
 
   /* TODO: detect loss of precision and overflows.  */
-  (*value) = (*value) * multiplier;
+  (*மதிப்பு) = (*மதிப்பு) * multiplier;
 
-  devmsg ("  returning value: %Lf (%LG)\n", *value, *value);
+  devmsg ("  returning value: %Lf (%LG)\n", *மதிப்பு, *மதிப்பு);
 
-  return e;
+  திரும்பு e;
 }
 
 
-static void
-simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
+நிலையான வெறுமை
+simple_strtod_fatal (எண்ணிக்கை simple_strtod_error err, எழுத்து மாறிலி *உள்ளீடு_str)
 {
-  char const *msgid = NULL;
+  எழுத்து மாறிலி *msgid = வெற்று;
 
-  switch (err)
+  தேர்வு (err)
     {
-    case SSE_OVERFLOW:
+    நிலை SSE_OVERFLOW:
       msgid = N_("value too large to be converted: %s");
-      break;
+      நிறுத்து;
 
-    case SSE_INVALID_NUMBER:
+    நிலை SSE_INVALID_எண்:
       msgid = N_("invalid number: %s");
-      break;
+      நிறுத்து;
 
-    case SSE_VALID_BUT_FORBIDDEN_SUFFIX:
+    நிலை SSE_VALID_BUT_FORBIDDEN_SUFFIX:
       msgid = N_("rejecting suffix in input: %s (consider using --from)");
-      break;
+      நிறுத்து;
 
-    case SSE_INVALID_SUFFIX:
+    நிலை SSE_INVALID_SUFFIX:
       msgid = N_("invalid suffix in input: %s");
-      break;
+      நிறுத்து;
 
-    case SSE_MISSING_I_SUFFIX:
+    நிலை SSE_MISSING_I_SUFFIX:
       msgid = N_("missing 'i' suffix in input: %s (e.g Ki/Mi/Gi)");
-      break;
+      நிறுத்து;
 
-    case SSE_OK_PRECISION_LOSS:
-    case SSE_OK:
+    நிலை SSE_OK_PRECISION_LOSS:
+    நிலை SSE_OK:
       /* should never happen - this function isn't called when OK.  */
       affirm (false);
     }
 
-  if (inval_style != inval_ignore)
-    error (conv_exit_code, 0, gettext (msgid), quote (input_str));
+  எனில் (inval_style != inval_ignore)
+    error (conv_exit_code, 0, gettext (msgid), quote (உள்ளீடு_str));
 }
 
 /* Convert VAL to a human format string using PRECISION in BUF of size
@@ -777,24 +777,24 @@ simple_strtod_fatal (enum simple_strtod_error err, char const *input_str)
    the number of bytes needed to represent VAL.  If this number is not
    less than BUF_SIZE, the buffer is too small; if it is negative, the
    formatting failed for some reason.  */
-static int
-double_to_human (long double val, int precision,
-                 char *buf, idx_t buf_size,
-                 enum scale_type scale, int group, enum round_type round)
+நிலையான முழு
+double_to_human (long இரட்டை val, முழு precision,
+                 எழுத்து *buf, idx_t buf_size,
+                 எண்ணிக்கை scale_type scale, முழு group, எண்ணிக்கை round_type round)
 {
-  char fmt[sizeof "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
-  char *pfmt = fmt;
+  எழுத்து fmt[அளவு "%'0.*Lfi%s%s%s%s" + INT_STRLEN_BOUND (zero_padding_width)];
+  எழுத்து *pfmt = fmt;
   *pfmt++ = '%';
 
-  if (group)
+  எனில் (group)
     *pfmt++ = '\'';
 
-  if (zero_padding_width)
+  எனில் (zero_padding_width)
     pfmt += sprintf (pfmt, "0%d", zero_padding_width);
 
   devmsg ("double_to_human:\n");
 
-  if (scale == scale_none)
+  எனில் (scale == scale_none)
     {
       val *= powerld (10, precision);
       val = simple_round (val, round);
@@ -806,23 +806,23 @@ double_to_human (long double val, int precision,
 
       strcpy (pfmt, ".*Lf%s");
 
-      return snprintf (buf, buf_size, fmt, precision, val,
+      திரும்பு snprintf (buf, buf_size, fmt, precision, val,
                        suffix ? suffix : "");
     }
 
   /* Scaling requested by user. */
-  double scale_base = default_scale_base (scale);
+  இரட்டை scale_base = default_scale_base (scale);
 
   /* Normalize val to scale. */
-  int power = 0;
+  முழு power = 0;
   val = expld (val, scale_base, &power);
   devmsg ("  scaled value to %Lf * %0.f ^ %d\n", val, scale_base, power);
 
   /* Perform rounding. */
-  int power_adjust = 0;
-  if (user_precision != -1)
+  முழு power_adjust = 0;
+  எனில் (user_precision != -1)
     power_adjust = MIN (power * 3, user_precision);
-  else if (absld (val) < 10)
+  இல்லையெனில் எனில் (absld (val) < 10)
     {
       /* for values less than 10, we allow one decimal-point digit,
          so adjust before rounding. */
@@ -836,7 +836,7 @@ double_to_human (long double val, int precision,
   /* two special cases after rounding:
      1. a "999.99" can turn into 1000 - so scale down
      2. a "9.99" can turn into 10 - so don't display decimal-point.  */
-  if (absld (val) >= scale_base)
+  எனில் (absld (val) >= scale_base)
     {
       val /= scale_base;
       power++;
@@ -844,16 +844,16 @@ double_to_human (long double val, int precision,
 
   /* should "7.0" be printed as "7" ?
      if removing the ".0" is preferred, enable the fourth condition.  */
-  int show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
+  முழு show_decimal_point = (val != 0) && (absld (val) < 10) && (power > 0);
   /* && (absld (val) > simple_round_floor (val))) */
 
   devmsg ("  after rounding, value=%Lf * %0.f ^ %d\n", val, scale_base, power);
 
   strcpy (pfmt, ".*Lf%s%s%s%s");
 
-  int prec = user_precision == -1 ? show_decimal_point : user_precision;
+  முழு prec = user_precision == -1 ? show_decimal_point : user_precision;
 
-  return snprintf (buf, buf_size, fmt, prec, val,
+  திரும்பு snprintf (buf, buf_size, fmt, prec, val,
                    (power > 0 && unit_separator) ? unit_separator : "",
                    power == 1 && scale == scale_SI
                    ? "k" : suffix_power_char (power),
@@ -865,27 +865,27 @@ double_to_human (long double val, int precision,
    to an integral value.  Suffixes are handled as with --from=auto.
    Upon successful conversion, return that value.
    If it cannot be converted, give a diagnostic and exit.  */
-static uintmax_t
-unit_to_umax (char const *n_string)
+நிலையான uintmax_t
+unit_to_umax (எழுத்து மாறிலி *n_string)
 {
   strtol_error s_err;
-  char const *c_string = n_string;
-  char *t_string = NULL;
+  எழுத்து மாறிலி *c_string = n_string;
+  எழுத்து *t_string = வெற்று;
   size_t n_len = strlen (n_string);
-  char *end = NULL;
+  எழுத்து *end = வெற்று;
   uintmax_t n;
-  char const *suffixes = valid_suffixes;
+  எழுத்து மாறிலி *suffixes = valid_suffixes;
 
   /* Adjust suffixes so K=1000, Ki=1024, KiB=invalid.  */
-  if (n_len && ! c_isdigit (n_string[n_len - 1]))
+  எனில் (n_len && ! c_isdigit (n_string[n_len - 1]))
     {
       t_string = xmalloc (n_len + 2);
       end = t_string + n_len - 1;
       memcpy (t_string, n_string, n_len);
 
-      if (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
+      எனில் (*end == 'i' && 2 <= n_len && ! c_isdigit (*(end - 1)))
         *end = '\0';
-      else
+      இல்லையெனில்
         {
           *++end = 'B';
           *++end = '\0';
@@ -897,57 +897,57 @@ unit_to_umax (char const *n_string)
 
   s_err = xstrtoumax (c_string, &end, 10, &n, suffixes);
 
-  if (s_err != LONGINT_OK || *end || n == 0)
+  எனில் (s_err != LONGINT_OK || *end || n == 0)
     {
-      free (t_string);
+      விடுவி (t_string);
       error (EXIT_FAILURE, 0, _("invalid unit size: %s"), quote (n_string));
     }
 
-  free (t_string);
+  விடுவி (t_string);
 
-  return n;
+  திரும்பு n;
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
-Usage: %s [OPTION]... [NUMBER]...\n\
+Usage: %s [OPTION]... [எண்_2]...\n\
 "), program_name);
       fputs (_("\
-Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
+Reformat எண்_2(s), or the numbers from standard உள்ளீடு எனில் none are specified.\n\
 "), stdout);
       emit_mandatory_arg_note ();
       oputs (_("\
       --debug\n\
-         print warnings about invalid input\n\
+         print warnings about invalid உள்ளீடு\n\
 "));
       oputs (_("\
   -d, --delimiter=X\n\
-         use X instead of whitespace for field delimiter\n\
+         use X instead of whitespace க்கு field delimiter\n\
 "));
       oputs (_("\
       --field=FIELDS\n\
-         replace the numbers in these input fields (default=1);\n\
-         see FIELDS below for details\n\
+         replace the numbers in these உள்ளீடு fields (இயல்பு=1);\n\
+         see FIELDS below க்கு details\n\
 "));
       oputs (_("\
       --format=FORMAT\n\
          use printf style floating-point FORMAT;\n\
-         see FORMAT below for details\n\
+         see FORMAT below க்கு details\n\
 "));
       oputs (_("\
       --from=UNIT\n\
-         auto-scale input numbers to UNITs; default is 'none';\n\
-         see UNIT below for details\n\
+         auto-scale உள்ளீடு numbers to UNITs; இயல்பு is 'none';\n\
+         see UNIT below க்கு details\n\
 "));
       oputs (_("\
       --from-unit=N\n\
-         specify the input unit size (instead of the default 1)\n\
+         specify the உள்ளீடு unit size (instead of the இயல்பு 1)\n\
 "));
       oputs (_("\
       --grouping\n\
@@ -956,35 +956,35 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
       --header[=N]\n\
-         print (without converting) the first N header lines;\n\
-         N defaults to 1 if not specified\n\
+         print (without converting) the first N header வரிகள்;\n\
+         N defaults to 1 எனில் not specified\n\
 "));
       oputs (_("\
       --invalid=MODE\n\
-         failure mode for invalid numbers;\n\
-         MODE can be: abort (default), fail, warn, ignore\n\
+         failure mode க்கு invalid numbers;\n\
+         MODE can be: abort (இயல்பு), fail, warn, ignore\n\
 "));
       oputs (_("\
       --padding=N\n\
          pad the output to N characters;\n\
-         positive N will right-align, negative N will left-align;\n\
-         padding is ignored if the output is wider than N;\n\
-         the default is to automatically pad if a whitespace is found\n\
+         positive N will வலது-align, negative N will இடது-align;\n\
+         padding is ignored எனில் the output is wider than N;\n\
+         the இயல்பு is to automatically pad எனில் a whitespace is found\n\
 "));
       oputs (_("\
       --round=METHOD\n\
-         use METHOD for rounding when scaling; METHOD can be:\n\
-         up, down, from-zero (default), towards-zero, nearest\n\
+         use METHOD க்கு rounding when scaling; METHOD can be:\n\
+         up, down, from-zero (இயல்பு), towards-zero, nearest\n\
 "));
       oputs (_("\
       --suffix=SUFFIX\n\
          add SUFFIX to output numbers,\n\
-         and accept an optional SUFFIX in input numbers\n\
+         and accept an optional SUFFIX in உள்ளீடு numbers\n\
 "));
       oputs (_("\
       --unit-separator=SEP\n\
-         insert SEP between number and unit on output,\n\
-         and accept an optional SEP in input numbers\n\
+         செருகு SEP between எண் and unit on output,\n\
+         and accept an optional SEP in உள்ளீடு numbers\n\
 "));
       oputs (_("\
       --to=UNIT\n\
@@ -992,11 +992,11 @@ Reformat NUMBER(s), or the numbers from standard input if none are specified.\n\
 "));
       oputs (_("\
       --to-unit=N\n\
-         the output unit size (instead of the default 1)\n\
+         the output unit size (instead of the இயல்பு 1)\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         வரி delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -1032,7 +1032,7 @@ UNIT options:\n"), stdout);
       fputs (_("\n\
 FIELDS supports cut(1) style field ranges:\n\
   N    N'th field, counted from 1\n\
-  N-   from N'th field, to end of line\n\
+  N-   from N'th field, to end of வரி\n\
   N-M  from N'th to M'th field (inclusive)\n\
   -M   from first to M'th field (inclusive)\n\
   -    all fields\n\
@@ -1040,17 +1040,17 @@ Multiple fields/ranges can be separated with commas\n\
 "), stdout);
 
       fputs (_("\n\
-FORMAT must be suitable for printing one floating-point argument '%f'.\n\
-Optional quote (%'f) will enable --grouping (if supported by current locale).\n\
-Optional width value (%10f) will pad output. Optional zero (%010f) width\n\
-will zero pad the number. Optional negative values (%-10f) will left align.\n\
-Optional precision (%.1f) will override the input determined precision.\n\
+FORMAT must be suitable க்கு printing one floating-point argument '%f'.\n\
+Optional quote (%'f) will enable --grouping (எனில் supported by current locale).\n\
+Optional width மதிப்பு (%10f) will pad output. Optional zero (%010f) width\n\
+will zero pad the எண். Optional negative மதிப்புகள் (%-10f) will இடது align.\n\
+Optional precision (%.1f) will override the உள்ளீடு determined precision.\n\
 "), stdout);
 
       printf (_("\n\
-Exit status is 0 if all input numbers were successfully converted.\n\
-By default, %s will stop at the first conversion error with exit status 2.\n\
-With --invalid='fail' a warning is printed for each conversion error\n\
+Exit status is 0 எனில் all உள்ளீடு numbers were successfully converted.\n\
+By இயல்பு, %s will stop at the first conversion error with exit status 2.\n\
+With --invalid='fail' a warning is printed க்கு each conversion error\n\
 and the exit status is 2.  With --invalid='warn' each conversion error is\n\
 diagnosed, but the exit status is 0.  With --invalid='ignore' conversion\n\
 errors are not diagnosed and the exit status is 0.\n\
@@ -1095,73 +1095,73 @@ Examples:\n\
        padding_width, grouping,
        format_str_prefix, format_str_suffix
    2. The function aborts on any errors.  */
-static void
-parse_format_string (char const *fmt)
+நிலையான வெறுமை
+parse_format_string (எழுத்து மாறிலி *fmt)
 {
   size_t i;
   size_t prefix_len = 0;
   size_t suffix_pos;
-  char *endptr = NULL;
+  எழுத்து *endptr = வெற்று;
   bool zero_padding = false;
 
-  for (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  க்கு (i = 0; !(fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      எனில் (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
       prefix_len++;
     }
 
   i++;
-  while (true)
+  போது (true)
     {
       size_t skip = strspn (fmt + i, " ");
       i += skip;
-      if (fmt[i] == '\'')
+      எனில் (fmt[i] == '\'')
         {
           grouping = 1;
           i++;
         }
-      else if (fmt[i] == '0')
+      இல்லையெனில் எனில் (fmt[i] == '0')
         {
           zero_padding = true;
           i++;
         }
-      else if (! skip)
-        break;
+      இல்லையெனில் எனில் (! skip)
+        நிறுத்து;
     }
 
   intmax_t pad = strtoimax (fmt + i, &endptr, 10);
 
-  if (pad != 0)
+  எனில் (pad != 0)
     {
-      if (debug && padding_width && !(zero_padding && pad > 0))
+      எனில் (debug && padding_width && !(zero_padding && pad > 0))
         error (0, 0, _("--format padding overriding --padding"));
 
       /* Set padding width and alignment.  On overflow, set widths to
          large values that cause later code to avoid undefined behavior
          and fail at a reasonable point.  */
-      if (pad < 0)
+      எனில் (pad < 0)
         padding_width = pad;
-      else
+      இல்லையெனில்
         {
-          if (zero_padding)
+          எனில் (zero_padding)
             zero_padding_width = MIN (pad, INT_MAX);
-          else
+          இல்லையெனில்
             padding_width = pad;
         }
     }
   i = endptr - fmt;
 
-  if (fmt[i] == '\0')
+  எனில் (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
 
-  if (fmt[i] == '.')
+  எனில் (fmt[i] == '.')
     {
       i++;
       errno = 0;
       user_precision = strtol (fmt + i, &endptr, 10);
-      if (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
+      எனில் (errno == ERANGE || user_precision < 0 || SIZE_MAX < user_precision
           || c_isblank (fmt[i]) || fmt[i] == '+')
         {
           /* Note we disallow negative user_precision to be
@@ -1175,21 +1175,21 @@ parse_format_string (char const *fmt)
       i = endptr - fmt;
     }
 
-  if (fmt[i] != 'f')
+  எனில் (fmt[i] != 'f')
     error (EXIT_FAILURE, 0, _("invalid format %s,"
                               " directive must be %%[0]['][-][N][.][N]f"),
          quote (fmt));
   i++;
   suffix_pos = i;
 
-  for (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  க்கு (; fmt[i] != '\0'; i += (fmt[i] == '%') + 1)
+    எனில் (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
 
-  if (prefix_len)
+  எனில் (prefix_len)
     format_str_prefix = ximemdup0 (fmt, prefix_len);
-  if (fmt[suffix_pos] != '\0')
+  எனில் (fmt[suffix_pos] != '\0')
     format_str_suffix = xstrdup (fmt + suffix_pos);
 
   devmsg ("format String:\n  input: %s\n  grouping: %s\n"
@@ -1209,80 +1209,80 @@ parse_format_string (char const *fmt)
 
    If there are any trailing characters after the number
    (besides a valid suffix) - exits with an error.  */
-static enum simple_strtod_error
-parse_human_number (char const *str, long double /*output */ *value,
+நிலையான எண்ணிக்கை simple_strtod_error
+parse_human_எண் (எழுத்து மாறிலி *str, long இரட்டை /*output */ *மதிப்பு,
                     size_t *precision)
 {
-  char *ptr = NULL;
+  எழுத்து *ptr = வெற்று;
 
-  enum simple_strtod_error e =
-    simple_strtod_human (str, &ptr, value, precision, scale_from);
-  if (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
+  எண்ணிக்கை simple_strtod_error e =
+    simple_strtod_human (str, &ptr, மதிப்பு, precision, scale_from);
+  எனில் (e != SSE_OK && e != SSE_OK_PRECISION_LOSS)
     {
       simple_strtod_fatal (e, str);
-      return e;
+      திரும்பு e;
     }
 
-  if (ptr && *ptr != '\0')
+  எனில் (ptr && *ptr != '\0')
     {
-      if (inval_style != inval_ignore)
+      எனில் (inval_style != inval_ignore)
         error (conv_exit_code, 0, _("invalid suffix in input %s: %s"),
                quote_n (0, str), quote_n (1, ptr));
       e = SSE_INVALID_SUFFIX;
     }
-  return e;
+  திரும்பு e;
 }
 
 
 /* Print the given VAL, using the requested representation.
    The number is printed to STDOUT, with padding and alignment.  */
-static bool
-prepare_padded_number (const long double val, size_t precision,
+நிலையான bool
+prepare_padded_எண் (மாறிலி long இரட்டை val, size_t precision,
                        intmax_t *padding)
 {
   /* Generate Output. */
   size_t precision_used = user_precision == -1 ? precision : user_precision;
 
   /* Can't reliably print too-large values without auto-scaling. */
-  int x;
+  முழு x;
   expld (val, 10, &x);
 
-  if (scale_to == scale_none
+  எனில் (scale_to == scale_none
       && x + precision_used > MAX_UNSCALED_DIGITS)
     {
-      if (inval_style != inval_ignore)
+      எனில் (inval_style != inval_ignore)
         {
-          if (precision_used)
+          எனில் (precision_used)
             error (conv_exit_code, 0,
                    _("value/precision too large to be printed: '%Lg/%zu'"
                      " (consider using --to)"), val, precision_used);
-          else
+          இல்லையெனில்
             error (conv_exit_code, 0,
                    _("value too large to be printed: '%Lg'"
                      " (consider using --to)"), val);
         }
-      return false;
+      திரும்பு false;
     }
 
-  if (x > MAX_ACCEPTABLE_DIGITS - 1)
+  எனில் (x > MAX_ACCEPTABLE_DIGITS - 1)
     {
-      if (inval_style != inval_ignore)
+      எனில் (inval_style != inval_ignore)
         error (conv_exit_code, 0, _("value too large to be printed: '%Lg'"
                                     " (cannot handle values > 999Q)"), val);
-      return false;
+      திரும்பு false;
     }
 
-  while (true)
+  போது (true)
     {
-      int numlen = double_to_human (val, precision_used,
+      முழு numlen = double_to_human (val, precision_used,
                                     padding_buffer, padding_buffer_size,
                                     scale_to, grouping, round_style);
       ptrdiff_t growth;
-      if (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
+      எனில் (numlen < 0 || ckd_sub (&growth, numlen, padding_buffer_size - 1))
         error (EXIT_FAILURE, 0,
                _("failed to prepare value '%Lf' for printing"), val);
-      if (growth <= 0)
-        break;
+      எனில் (growth <= 0)
+        நிறுத்து;
       padding_buffer = xpalloc (padding_buffer, &padding_buffer_size,
                                 growth, -1, 1);
     }
@@ -1291,248 +1291,248 @@ prepare_padded_number (const long double val, size_t precision,
           val, quote (padding_buffer));
 
   intmax_t pad = 0;
-  if (padding_width)
+  எனில் (padding_width)
     {
-      int buf_width = mbswidth (padding_buffer,
+      முழு buf_width = mbswidth (padding_buffer,
                                 MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE);
-      if (0 <= buf_width)
+      எனில் (0 <= buf_width)
         {
-          if (padding_width < 0)
+          எனில் (padding_width < 0)
             {
-              if (padding_width < -buf_width)
+              எனில் (padding_width < -buf_width)
                 pad = padding_width + buf_width;
             }
-          else
+          இல்லையெனில்
             {
-              if (buf_width < padding_width)
+              எனில் (buf_width < padding_width)
                 pad = padding_width - buf_width;
             }
         }
     }
 
   *padding = pad;
-  return true;
+  திரும்பு true;
 }
 
-static void
-print_padded_number (intmax_t padding)
+நிலையான வெறுமை
+print_padded_எண் (intmax_t padding)
 {
-  if (format_str_prefix)
+  எனில் (format_str_prefix)
     fputs (format_str_prefix, stdout);
 
-  for (intmax_t p = padding; 0 < p; p--)
+  க்கு (intmax_t p = padding; 0 < p; p--)
     putchar (' ');
 
   fputs (padding_buffer, stdout);
 
-  for (intmax_t p = padding; p < 0; p++)
+  க்கு (intmax_t p = padding; p < 0; p++)
     putchar (' ');
 
-  if (format_str_suffix)
+  எனில் (format_str_suffix)
     fputs (format_str_suffix, stdout);
 }
 
 /* Converts the TEXT number string to the requested representation,
    and handles automatic suffix addition.  */
-static bool
-process_suffixed_number (char *text, long double *result,
-                         size_t *precision, long int field)
+நிலையான bool
+process_suffixed_எண் (எழுத்து *text, long இரட்டை *result,
+                         size_t *precision, long முழு field)
 {
-  char saved_suffix = '\0';
+  எழுத்து saved_suffix = '\0';
 
-  if (suffix)
+  எனில் (suffix)
     {
-      if (mbs_endswith (text, suffix))
+      எனில் (mbs_endswith (text, suffix))
         {
           saved_suffix = *(text + strlen (text) - strlen (suffix));
           *(text + strlen (text) - strlen (suffix)) = '\0';
           devmsg ("trimming suffix %s\n", quote (suffix));
         }
-      else
+      இல்லையெனில்
         devmsg ("no valid suffix found\n");
     }
 
   /* Skip blanks - always.  */
-  char *p = skip_str_matching (text, newline_or_blank, true);
+  எழுத்து *p = skip_str_matching (text, newline_or_blank, true);
 
   /* setup auto-padding.  */
-  if (auto_padding)
+  எனில் (auto_padding)
     {
       padding_width = text < p || 1 < field
                       ? mbswidth (text,
                                   MBSW_REJECT_INVALID | MBSW_REJECT_UNPRINTABLE)
                       : 0;
-      if (padding_width < 0)
+      எனில் (padding_width < 0)
         padding_width = strlen (text);
       devmsg ("setting Auto-Padding to %jd characters\n", padding_width);
     }
 
-  long double val = 0;
-  enum simple_strtod_error e = parse_human_number (p, &val, precision);
-  if (e == SSE_OK_PRECISION_LOSS && debug)
+  long இரட்டை val = 0;
+  எண்ணிக்கை simple_strtod_error e = parse_human_எண் (p, &val, precision);
+  எனில் (e == SSE_OK_PRECISION_LOSS && debug)
     error (0, 0, _("large input value %s: possible precision loss"),
            quote (p));
 
-  if (from_unit_size != 1 || to_unit_size != 1)
+  எனில் (from_unit_size != 1 || to_unit_size != 1)
     val = (val * from_unit_size) / to_unit_size;
 
   *result = val;
 
-  if (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
-    return true;
-  else
+  எனில் (e == SSE_OK || e == SSE_OK_PRECISION_LOSS)
+    திரும்பு true;
+  இல்லையெனில்
     {
-      if (saved_suffix)
+      எனில் (saved_suffix)
         *(text + strlen (text)) = saved_suffix;
-      return false;
+      திரும்பு false;
     }
 }
 
 /* Search for multi-byte character C in multi-byte string S.
    Return a pointer to the character, or NULL if not found.  */
 ATTRIBUTE_PURE
-static char *
-mbsmbchr (char const *s, char const *c)
+நிலையான எழுத்து *
+mbsmbchr (எழுத்து மாறிலி *s, எழுத்து மாறிலி *c)
 {
-  unsigned char uc = *c;
+  unsigned எழுத்து uc = *c;
    /* GB18030 is the most restrictive for the 0x30 optimization below.  */
-  if (uc < 0x30 || MB_CUR_MAX == 1)
-    return (char *) strchr (s, uc);
-  else if (is_utf8_charset ())
-    return (char *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
-  else
-    return *(c + 1) == '\0' ? mbschr (s, uc) : (char *) mbsstr (s, c);
+  எனில் (uc < 0x30 || MB_CUR_MAX == 1)
+    திரும்பு (எழுத்து *) strchr (s, uc);
+  இல்லையெனில் எனில் (is_utf8_charset ())
+    திரும்பு (எழுத்து *) (uc < 0x80 ? strchr (s, uc) : strstr (s, c));
+  இல்லையெனில்
+    திரும்பு *(c + 1) == '\0' ? mbschr (s, uc) : (எழுத்து *) mbsstr (s, c);
 }
 
 /* Return a pointer to the beginning of the next field in line.
    The line pointer is moved to the end of the next field. */
-static char *
-next_field (char **line)
+நிலையான எழுத்து *
+next_field (எழுத்து **வரி)
 {
-  char *field_start = *line;
-  char *field_end   = field_start;
+  எழுத்து *field_start = *வரி;
+  எழுத்து *field_end   = field_start;
 
-  if (delimiter)
+  எனில் (delimiter)
     {
-      if (! (field_end = mbsmbchr (field_start, delimiter)))
+      எனில் (! (field_end = mbsmbchr (field_start, delimiter)))
         field_end = strchr (field_start, '\0');
     }
-  else
+  இல்லையெனில்
     {
       /* keep any space prefix in the returned field */
       field_end = skip_str_matching (field_end, newline_or_blank, true);
       field_end = skip_str_matching (field_end, newline_or_blank, false);
     }
 
-  *line = field_end;
-  return field_start;
+  *வரி = field_end;
+  திரும்பு field_start;
 }
 
 ATTRIBUTE_PURE
-static bool
+நிலையான bool
 include_field (uintmax_t field)
 {
-  struct field_range_pair *p = frp;
-  if (!p)
-    return field == 1;
+  கட்டமைப்பு field_range_pair *p = frp;
+  எனில் (!p)
+    திரும்பு field == 1;
 
-  while (p->lo != UINTMAX_MAX)
+  போது (p->lo != UINTMAX_MAX)
     {
-      if (p->lo <= field && p->hi >= field)
-        return true;
+      எனில் (p->lo <= field && p->hi >= field)
+        திரும்பு true;
       ++p;
     }
-  return false;
+  திரும்பு false;
 }
 
 /* Convert and output the given field. If it is not included in the set
    of fields to process just output the original */
-static bool
-process_field (char *text, uintmax_t field)
+நிலையான bool
+process_field (எழுத்து *text, uintmax_t field)
 {
-  long double val = 0;
+  long இரட்டை val = 0;
   size_t precision = 0;
-  bool valid_number = true;
+  bool valid_எண் = true;
 
-  if (include_field (field))
+  எனில் (include_field (field))
     {
-      valid_number =
-        process_suffixed_number (text, &val, &precision, field);
+      valid_எண் =
+        process_suffixed_எண் (text, &val, &precision, field);
 
       intmax_t padding;
-      if (valid_number)
-        valid_number = prepare_padded_number (val, precision, &padding);
+      எனில் (valid_எண்)
+        valid_எண் = prepare_padded_எண் (val, precision, &padding);
 
-      if (valid_number)
-        print_padded_number (padding);
-      else
+      எனில் (valid_எண்)
+        print_padded_எண் (padding);
+      இல்லையெனில்
         fputs (text, stdout);
     }
-  else
+  இல்லையெனில்
     fputs (text, stdout);
 
-  return valid_number;
+  திரும்பு valid_எண்;
 }
 
 /* Convert number in a given line of text.
    NEWLINE specifies whether to output a '\n' for this "line".  */
-static int
-process_line (char *line, bool newline)
+நிலையான முழு
+process_வரி (எழுத்து *வரி, bool newline)
 {
-  char *next;
+  எழுத்து *next;
   uintmax_t field = 0;
-  bool valid_number = true;
+  bool valid_எண் = true;
 
-  while (true) {
+  போது (true) {
     ++field;
-    next = next_field (&line);
+    next = next_field (&வரி);
 
-    if (*line != '\0')
+    எனில் (*வரி != '\0')
       {
         /* NUL terminate the current field string and process */
-        char end_field = *line;
-        *line = '\0';
+        எழுத்து end_field = *வரி;
+        *வரி = '\0';
 
-        if (! process_field (next, field))
-          valid_number = false;
+        எனில் (! process_field (next, field))
+          valid_எண் = false;
 
-        if (delimiter != NULL)
+        எனில் (delimiter != வெற்று)
           fputs (delimiter, stdout);
-        else
+        இல்லையெனில்
           fputc (' ', stdout);
 
-        if (delimiter)
-          line += MAX (strlen (delimiter), 1);
-        else
+        எனில் (delimiter)
+          வரி += MAX (strlen (delimiter), 1);
+        இல்லையெனில்
           {
-            *line = end_field;
-            mcel_t g = mcel_scanz (line);
-            line += g.len;
+            *வரி = end_field;
+            mcel_t g = mcel_scanz (வரி);
+            வரி += g.len;
           }
       }
-    else
+    இல்லையெனில்
       {
         /* end of the line, process the last field and finish */
-        if (! process_field (next, field))
-          valid_number = false;
+        எனில் (! process_field (next, field))
+          valid_எண் = false;
 
-        break;
+        நிறுத்து;
       }
   }
 
-  if (newline)
-    putchar (line_delim);
+  எனில் (newline)
+    putchar (வரி_delim);
 
- if (ferror (stdout))
+ எனில் (ferror (stdout))
    write_error ();
 
-  return valid_number;
+  திரும்பு valid_எண்;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int valid_numbers = 1;
+  முழு valid_numbers = 1;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
@@ -1541,60 +1541,60 @@ main (int argc, char **argv)
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
-#if HAVE_FPSETPREC
+#எனில் HAVE_FPSETPREC
   /* Enabled extended precision if needed.  */
   fpsetprec (FP_PE);
 #endif
 
   decimal_point = nl_langinfo (RADIXCHAR);
-  if (decimal_point == NULL || strlen (decimal_point) == 0)
+  எனில் (decimal_point == வெற்று || strlen (decimal_point) == 0)
     decimal_point = ".";
   decimal_point_length = strlen (decimal_point);
 
   thousands_sep = nl_langinfo (THOUSEP);
-  if (thousands_sep == NULL)
+  எனில் (thousands_sep == வெற்று)
     thousands_sep = "";
   thousands_sep_length = strlen (thousands_sep);
 
   atexit (close_stdout);
 
-  while (true)
+  போது (true)
     {
-      int c = getopt_long (argc, argv, "d:z", longopts, NULL);
+      முழு c = getopt_long (argc, argv, "d:z", longopts, வெற்று);
 
-      if (c == -1)
-        break;
+      எனில் (c == -1)
+        நிறுத்து;
 
-      switch (c)
+      தேர்வு (c)
         {
-        case FROM_OPTION:
+        நிலை FROM_OPTION:
           scale_from = XARGMATCH ("--from", optarg,
                                   scale_from_args, scale_from_types);
-          break;
+          நிறுத்து;
 
-        case FROM_UNIT_OPTION:
+        நிலை FROM_UNIT_OPTION:
           from_unit_size = unit_to_umax (optarg);
-          break;
+          நிறுத்து;
 
-        case TO_OPTION:
+        நிலை TO_OPTION:
           scale_to =
             XARGMATCH ("--to", optarg, scale_to_args, scale_to_types);
-          break;
+          நிறுத்து;
 
-        case TO_UNIT_OPTION:
+        நிலை TO_UNIT_OPTION:
           to_unit_size = unit_to_umax (optarg);
-          break;
+          நிறுத்து;
 
-        case ROUND_OPTION:
+        நிலை ROUND_OPTION:
           round_style = XARGMATCH ("--round", optarg, round_args, round_types);
-          break;
+          நிறுத்து;
 
-        case GROUPING_OPTION:
+        நிலை GROUPING_OPTION:
           grouping = 1;
-          break;
+          நிறுத்து;
 
-        case PADDING_OPTION:
-          if (((xstrtoimax (optarg, NULL, 10, &padding_width, "")
+        நிலை PADDING_OPTION:
+          எனில் (((xstrtoimax (optarg, வெற்று, 10, &padding_width, "")
                 & ~LONGINT_OVERFLOW)
                != LONGINT_OK)
               || padding_width == 0)
@@ -1602,151 +1602,151 @@ main (int argc, char **argv)
                    quote (optarg));
           /* TODO: We probably want to apply a specific --padding
              to --header lines too.  */
-          break;
+          நிறுத்து;
 
-        case FIELD_OPTION:
-          if (n_frp)
+        நிலை FIELD_OPTION:
+          எனில் (n_frp)
             error (EXIT_FAILURE, 0, _("multiple field specifications"));
           set_fields (optarg, SETFLD_ALLOW_DASH);
-          break;
+          நிறுத்து;
 
-        case 'd':
+        நிலை 'd':
           /* Interpret -d '' to mean 'use the NUL byte as the delimiter.'  */
-          if (optarg[0] != '\0')
+          எனில் (optarg[0] != '\0')
             {
               mcel_t g = mcel_scanz (optarg);
               /* Note we always allow single bytes, especially since mcel
                  explicitly does not avoid https://sourceware.org/PR29511
                  I.e., we ignore g.err, and rely on g.len==1 with g.err.  */
-              if (optarg[g.len] != '\0')
+              எனில் (optarg[g.len] != '\0')
                 error (EXIT_FAILURE, 0,
                        _("the delimiter must be a single character"));
             }
           delimiter = optarg;
-          break;
+          நிறுத்து;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        நிலை 'z':
+          வரி_delim = '\0';
+          நிறுத்து;
 
-        case SUFFIX_OPTION:
+        நிலை SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          நிறுத்து;
 
-        case UNIT_SEPARATOR_OPTION:
+        நிலை UNIT_SEPARATOR_OPTION:
           unit_separator = optarg;
-          break;
+          நிறுத்து;
 
-        case DEBUG_OPTION:
+        நிலை DEBUG_OPTION:
           debug = true;
-          break;
+          நிறுத்து;
 
-        case DEV_DEBUG_OPTION:
+        நிலை DEV_DEBUG_OPTION:
           dev_debug = true;
           debug = true;
-          break;
+          நிறுத்து;
 
-        case HEADER_OPTION:
-          if (optarg)
+        நிலை HEADER_OPTION:
+          எனில் (optarg)
             {
-              if (xstrtoumax (optarg, NULL, 10, &header, "") != LONGINT_OK
+              எனில் (xstrtoumax (optarg, வெற்று, 10, &header, "") != LONGINT_OK
                   || header == 0)
                 error (EXIT_FAILURE, 0, _("invalid header value %s"),
                        quote (optarg));
             }
-          else
+          இல்லையெனில்
             {
               header = 1;
             }
-          break;
+          நிறுத்து;
 
-        case FORMAT_OPTION:
+        நிலை FORMAT_OPTION:
           format_str = optarg;
-          break;
+          நிறுத்து;
 
-        case INVALID_OPTION:
+        நிலை INVALID_OPTION:
           inval_style = XARGMATCH ("--invalid", optarg,
                                    inval_args, inval_types);
-          break;
+          நிறுத்து;
 
           case_GETOPT_HELP_CHAR;
           case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (format_str != NULL && grouping)
+  எனில் (format_str != வெற்று && grouping)
     error (EXIT_FAILURE, 0, _("--grouping cannot be combined with --format"));
 
-  if (debug && ! locale_ok)
+  எனில் (debug && ! locale_ok)
     error (0, 0, _("failed to set locale"));
 
   /* Warn about no-op.  */
-  if (debug && scale_from == scale_none && scale_to == scale_none
-      && !grouping && (padding_width == 0) && (format_str == NULL))
+  எனில் (debug && scale_from == scale_none && scale_to == scale_none
+      && !grouping && (padding_width == 0) && (format_str == வெற்று))
     error (0, 0, _("no conversion option specified"));
 
-  if (debug && unit_separator && delimiter == NULL)
+  எனில் (debug && unit_separator && delimiter == வெற்று)
     error (0, 0,
            _("field delimiters have higher precedence than unit separators"));
 
-  if (format_str)
+  எனில் (format_str)
     parse_format_string (format_str);
 
-  if (grouping)
+  எனில் (grouping)
     {
-      if (scale_to != scale_none)
+      எனில் (scale_to != scale_none)
         error (EXIT_FAILURE, 0, _("grouping cannot be combined with --to"));
-      if (debug && thousands_sep_length == 0)
+      எனில் (debug && thousands_sep_length == 0)
         error (0, 0, _("grouping has no effect in this locale"));
     }
 
-  auto_padding = (padding_width == 0 && delimiter == NULL);
+  auto_padding = (padding_width == 0 && delimiter == வெற்று);
 
-  if (inval_style != inval_abort)
+  எனில் (inval_style != inval_abort)
     conv_exit_code = 0;
 
-  if (argc > optind)
+  எனில் (argc > optind)
     {
-      if (debug && header)
+      எனில் (debug && header)
         error (0, 0, _("--header ignored with command-line input"));
 
-      for (; optind < argc; optind++)
-        valid_numbers &= process_line (argv[optind], true);
+      க்கு (; optind < argc; optind++)
+        valid_numbers &= process_வரி (argv[optind], true);
     }
-  else
+  இல்லையெனில்
     {
-      char *line = NULL;
-      size_t line_allocated = 0;
+      எழுத்து *வரி = வெற்று;
+      size_t வரி_allocated = 0;
       ssize_t len;
 
-      while (header-- && getdelim (&line, &line_allocated,
-                                   line_delim, stdin) > 0)
+      போது (header-- && getdelim (&வரி, &வரி_allocated,
+                                   வரி_delim, stdin) > 0)
         {
-          if (fputs (line, stdout) == EOF)
+          எனில் (fputs (வரி, stdout) == EOF)
             write_error ();
         }
 
-      while ((len = getdelim (&line, &line_allocated,
-                              line_delim, stdin)) > 0)
+      போது ((len = getdelim (&வரி, &வரி_allocated,
+                              வரி_delim, stdin)) > 0)
         {
-          bool newline = line[len - 1] == line_delim;
-          if (newline)
-            line[len - 1] = '\0';
-          valid_numbers &= process_line (line, newline);
+          bool newline = வரி[len - 1] == வரி_delim;
+          எனில் (newline)
+            வரி[len - 1] = '\0';
+          valid_numbers &= process_வரி (வரி, newline);
         }
 
-      if (ferror (stdin))
+      எனில் (ferror (stdin))
         error (EXIT_FAILURE, errno, _("error reading input"));
     }
 
-  if (debug && !valid_numbers)
+  எனில் (debug && !valid_numbers)
     error (0, 0, _("failed to convert some of the input numbers"));
 
-  int exit_status = EXIT_SUCCESS;
-  if (!valid_numbers
+  முழு exit_status = EXIT_SUCCESS;
+  எனில் (!valid_numbers
       && inval_style != inval_warn && inval_style != inval_ignore)
     exit_status = EXIT_CONVERSION_WARNINGS;
 

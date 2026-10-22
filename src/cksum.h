@@ -1,4 +1,4 @@
-enum Algorithm
+எண்ணிக்கை Algorithm
 {
   bsd,
   sysv,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+வெளி எண்ணிக்கை Algorithm cksum_algorithm;

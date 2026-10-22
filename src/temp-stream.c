@@ -15,18 +15,18 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <stdio.h>
+#அந்தர்பாவ <stdio.h>
 
-#include "stdlib--.h"  /* For mkstemp that returns safer FDs.  */
-#include "system.h"
-#include "tmpdir.h"
+#அந்தர்பாவ "stdlib--.h"  /* For mkstemp that returns safer FDs.  */
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "tmpdir.h"
 
-#include "temp-stream.h"
+#அந்தர்பாவ "temp-stream.h"
 
 
-#if defined __MSDOS__ || defined _WIN32
+#எனில் defined __MSDOS__ || defined _WIN32
 /* Define this to non-zero on systems for which the regular mechanism
    (of unlinking an open file and expecting to be able to write, seek
    back to the beginning, then reread it) doesn't work.  E.g., on Windows
@@ -34,7 +34,7 @@
 # define DONT_UNLINK_WHILE_OPEN 1
 #endif
 
-#if DONT_UNLINK_WHILE_OPEN
+#எனில் DONT_UNLINK_WHILE_OPEN
 
 /* FIXME-someday: remove all of this DONT_UNLINK_WHILE_OPEN junk.
    Using atexit like this is wrong, since it can fail
@@ -42,20 +42,20 @@
    But this isn't a big deal, since the code is used only on WOE/DOS
    systems, and few people invoke tac on that many nonseekable files.  */
 
-static char const *file_to_remove;
-static FILE *fp_to_close;
+நிலையான எழுத்து மாறிலி *file_to_remove;
+நிலையான FILE *fp_to_close;
 
-static void
-unlink_tempfile (void)
+நிலையான வெறுமை
+unlink_tempfile (வெறுமை)
 {
   fclose (fp_to_close);
   unlink (file_to_remove);
 }
 
-static void
-record_or_unlink_tempfile (char const *fn, FILE *fp)
+நிலையான வெறுமை
+record_or_unlink_tempfile (எழுத்து மாறிலி *fn, FILE *fp)
 {
-  if (!file_to_remove)
+  எனில் (!file_to_remove)
     {
       file_to_remove = fn;
       fp_to_close = fp;
@@ -63,10 +63,10 @@ record_or_unlink_tempfile (char const *fn, FILE *fp)
     }
 }
 
-#else
+#இல்லையெனில்
 
-static void
-record_or_unlink_tempfile (char const *fn, MAYBE_UNUSED FILE *fp)
+நிலையான வெறுமை
+record_or_unlink_tempfile (எழுத்து மாறிலி *fn, MAYBE_UNUSED FILE *fp)
 {
   unlink (fn);
 }
@@ -81,31 +81,31 @@ record_or_unlink_tempfile (char const *fn, MAYBE_UNUSED FILE *fp)
 
    Returns TRUE on success.  */
 bool
-temp_stream (FILE **fp, char **file_name)
+temp_stream (FILE **fp, எழுத்து **file_name)
 {
-  static char *tempfile = NULL;
-  static FILE *tmp_fp;
-  if (tempfile == NULL)
+  நிலையான எழுத்து *tempfile = வெற்று;
+  நிலையான FILE *tmp_fp;
+  எனில் (tempfile == வெற்று)
     {
-      char *tempbuf = NULL;
+      எழுத்து *tempbuf = வெற்று;
       size_t tempbuf_len = 128;
 
-      while (true)
+      போது (true)
         {
-          if (! (tempbuf = realloc (tempbuf, tempbuf_len)))
+          எனில் (! (tempbuf = realloc (tempbuf, tempbuf_len)))
             {
               error (0, errno, _("failed to make temporary file name"));
-              return false;
+              திரும்பு false;
             }
 
-          if (path_search (tempbuf, tempbuf_len, NULL, "cutmp", true) == 0)
-            break;
+          எனில் (path_தேடல் (tempbuf, tempbuf_len, வெற்று, "cutmp", true) == 0)
+            நிறுத்து;
 
-          if (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
+          எனில் (errno != EINVAL || PATH_MAX / 2 < tempbuf_len)
             {
               error (0, errno == EINVAL ? ENAMETOOLONG : errno,
                      _("failed to make temporary file name"));
-              return false;
+              திரும்பு false;
             }
 
           tempbuf_len *= 2;
@@ -122,43 +122,43 @@ temp_stream (FILE **fp, char **file_name)
          FIXME: clean up upon fatal signal.  Don't block them, in case
          $TMPDIR is a remote file system.  */
 
-      int fd = mkstemp (tempfile);
-      if (fd < 0)
+      முழு fd = mkstemp (tempfile);
+      எனில் (fd < 0)
         {
           error (0, errno, _("failed to create temporary file %s"),
                  quoteaf (tempfile));
-          goto Reset;
+          செல் Reset;
         }
 
-      tmp_fp = fdopen (fd, (O_BINARY ? "w+b" : "w+"));
-      if (! tmp_fp)
+      tmp_fp = fdopen (fd, (O_இருமம் ? "w+b" : "w+"));
+      எனில் (! tmp_fp)
         {
           error (0, errno, _("failed to open %s for writing"),
                  quoteaf (tempfile));
           close (fd);
           unlink (tempfile);
         Reset:
-          free (tempfile);
-          tempfile = NULL;
-          return false;
+          விடுவி (tempfile);
+          tempfile = வெற்று;
+          திரும்பு false;
         }
 
       record_or_unlink_tempfile (tempfile, tmp_fp);
     }
-  else
+  இல்லையெனில்
     {
       clearerr (tmp_fp);
-      if (fseeko (tmp_fp, 0, SEEK_SET) < 0
+      எனில் (fseeko (tmp_fp, 0, SEEK_SET) < 0
           || ftruncate (fileno (tmp_fp), 0) < 0)
         {
           error (0, errno, _("failed to rewind stream for %s"),
                  quoteaf (tempfile));
-          return false;
+          திரும்பு false;
         }
     }
 
   *fp = tmp_fp;
-  if (file_name)
+  எனில் (file_name)
     *file_name = tempfile;
-  return true;
+  திரும்பு true;
 }

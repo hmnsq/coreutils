@@ -19,31 +19,31 @@
    TODO:
    * support -p REGEX as in BSD's split.
    * support --suppress-matched as in csplit.  */
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <spawn.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <signal.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <sys/wait.h>
+#அந்தர்பாவ <spawn.h>
 
-#include "system.h"
-#include "alignalloc.h"
-#include "assure.h"
-#include "fadvise.h"
-#include "fd-reopen.h"
-#include "fcntl--.h"
-#include "full-write.h"
-#include "ioblksize.h"
-#include "quote.h"
-#include "sig2str.h"
-#include "sys-limits.h"
-#include "temp-stream.h"
-#include "unistd--.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
-#include "xstrtol.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "alignalloc.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "fadvise.h"
+#அந்தர்பாவ "fd-reopen.h"
+#அந்தர்பாவ "fcntl--.h"
+#அந்தர்பாவ "full-write.h"
+#அந்தர்பாவ "ioblksize.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "sig2str.h"
+#அந்தர்பாவ "sys-limits.h"
+#அந்தர்பாவ "temp-stream.h"
+#அந்தர்பாவ "unistd--.h"
+#அந்தர்பாவ "xbinary-io.h"
+#அந்தர்பாவ "xdectoint.h"
+#அந்தர்பாவ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "split"
@@ -53,84 +53,84 @@
   proper_name ("Richard M. Stallman")
 
 /* Shell command to filter through, instead of creating files.  */
-static char const *filter_command;
+நிலையான எழுத்து மாறிலி *filter_command;
 
 /* Process ID of the filter.  */
-static pid_t filter_pid;
+நிலையான pid_t filter_pid;
 
-static struct
+நிலையான கட்டமைப்பு
 {
   /* The number of open pipes.  */
-  int n_pipes;
+  முழு n_pipes;
 
   /* The number of allocated pipes.  */
   idx_t n_pipes_alloc;
 
   /* Array of open pipes.  */
-  int *pipes COUNTED_BY (n_pipes);
+  முழு *pipes COUNTED_BY (n_pipes);
 } open_pipes;
 
 /* Whether SIGPIPE has the default action, when --filter is used.  */
-static bool default_SIGPIPE;
+நிலையான bool default_SIGPIPE;
 
 /* Base name of output files.  */
-static char const *outbase = "x";
+நிலையான எழுத்து மாறிலி *outbase = "x";
 
 /* Name of output files.  */
-static char *outfile;
+நிலையான எழுத்து *outfile;
 
 /* Pointer to the end of the prefix in OUTFILE.
    Suffixes are inserted here.  */
-static char *outfile_mid;
+நிலையான எழுத்து *outfile_mid;
 
 /* Generate new suffix when suffixes are exhausted.  */
-static bool suffix_auto = true;
+நிலையான bool suffix_auto = true;
 
 /* Length of OUTFILE's suffix.  */
-static idx_t suffix_length;
+நிலையான idx_t suffix_length;
 
 /* Alphabet of characters to use in suffix.  */
-static char const *suffix_alphabet = "abcdefghijklmnopqrstuvwxyz";
+நிலையான எழுத்து மாறிலி *suffix_alphabet = "abcdefghijklmnopqrstuvwxyz";
 
 /* Numerical suffix start value.  */
-static char const *numeric_suffix_start;
+நிலையான எழுத்து மாறிலி *numeric_suffix_start;
 
 /* Additional suffix to append to output file names.  */
-static char const *additional_suffix;
+நிலையான எழுத்து மாறிலி *additional_suffix;
 
 /* Name of input file.  May be "-".  */
-static char const *infile = "-";
+நிலையான எழுத்து மாறிலி *infile = "-";
 
 /* stat buf for input file.  */
-static struct stat in_stat_buf;
+நிலையான கட்டமைப்பு stat in_stat_buf;
 
 /* Descriptor on which output file is open.  */
-static int output_desc = -1;
+நிலையான முழு output_desc = -1;
 
 /* If true, print a diagnostic on standard error just before each
    output file is opened. */
-static bool verbose;
+நிலையான bool verbose;
 
 /* If true, don't generate zero length output files. */
-static bool elide_empty_files;
+நிலையான bool elide_empty_files;
 
 /* If true, in round robin mode, immediately copy
    input to output, which is much slower, so disabled by default.  */
-static bool unbuffered;
+நிலையான bool unbuffered;
 
 /* The character marking end of line.  Defaults to \n below.  */
-static int eolchar = -1;
+நிலையான முழு eolchar = -1;
 
 /* The split mode to use.  */
-enum Split_type
+எண்ணிக்கை Split_type
 {
-  type_undef, type_bytes, type_byteslines, type_lines, type_digits,
-  type_chunk_bytes, type_chunk_lines, type_rr
+  type_undef, type_bytes, type_byteslines, type_வரிகள், type_digits,
+  type_chunk_bytes, type_chunk_வரிகள், type_rr
 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   VERBOSE_OPTION = CHAR_MAX + 1,
   FILTER_OPTION,
@@ -138,97 +138,97 @@ enum
   ADDITIONAL_SUFFIX_OPTION
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"bytes", required_argument, NULL, 'b'},
-  {"lines", required_argument, NULL, 'l'},
-  {"line-bytes", required_argument, NULL, 'C'},
-  {"number", required_argument, NULL, 'n'},
-  {"elide-empty-files", no_argument, NULL, 'e'},
-  {"unbuffered", no_argument, NULL, 'u'},
-  {"suffix-length", required_argument, NULL, 'a'},
-  {"additional-suffix", required_argument, NULL,
+  {"bytes", required_argument, வெற்று, 'b'},
+  {"lines", required_argument, வெற்று, 'l'},
+  {"line-bytes", required_argument, வெற்று, 'C'},
+  {"number", required_argument, வெற்று, 'n'},
+  {"elide-empty-files", no_argument, வெற்று, 'e'},
+  {"unbuffered", no_argument, வெற்று, 'u'},
+  {"suffix-length", required_argument, வெற்று, 'a'},
+  {"additional-suffix", required_argument, வெற்று,
    ADDITIONAL_SUFFIX_OPTION},
-  {"numeric-suffixes", optional_argument, NULL, 'd'},
-  {"hex-suffixes", optional_argument, NULL, 'x'},
-  {"filter", required_argument, NULL, FILTER_OPTION},
-  {"verbose", no_argument, NULL, VERBOSE_OPTION},
-  {"separator", required_argument, NULL, 't'},
-  {"-io-blksize", required_argument, NULL,
+  {"numeric-suffixes", optional_argument, வெற்று, 'd'},
+  {"hex-suffixes", optional_argument, வெற்று, 'x'},
+  {"filter", required_argument, வெற்று, FILTER_OPTION},
+  {"verbose", no_argument, வெற்று, VERBOSE_OPTION},
+  {"separator", required_argument, வெற்று, 't'},
+  {"-io-blksize", required_argument, வெற்று,
    IO_BLKSIZE_OPTION}, /* do not document */
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* Return true if the errno value, ERR, is ignorable.  */
-static inline bool
-ignorable (int err)
+நிலையான உள்வரி bool
+ignorable (முழு err)
 {
-  return filter_command && err == EPIPE;
+  திரும்பு filter_command && err == EPIPE;
 }
 
-static void
-set_suffix_length (intmax_t n_units, enum Split_type split_type)
+நிலையான வெறுமை
+set_suffix_length (intmax_t n_units, எண்ணிக்கை Split_type split_type)
 {
 #define DEFAULT_SUFFIX_LENGTH 2
 
-  int suffix_length_needed = 0;
+  முழு suffix_length_needed = 0;
 
   /* The suffix auto length feature is incompatible with
      a user specified start value as the generated suffixes
      are not all consecutive.  */
-  if (numeric_suffix_start)
+  எனில் (numeric_suffix_start)
     suffix_auto = false;
 
   /* Auto-calculate the suffix length if the number of files is given.  */
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines
+  எனில் (split_type == type_chunk_bytes || split_type == type_chunk_வரிகள்
       || split_type == type_rr)
     {
       intmax_t n_units_end = n_units - 1;
-      if (numeric_suffix_start)
+      எனில் (numeric_suffix_start)
         {
           intmax_t n_start;
-          strtol_error e = xstrtoimax (numeric_suffix_start, NULL, 10,
+          strtol_error e = xstrtoimax (numeric_suffix_start, வெற்று, 10,
                                        &n_start, "");
-          if (e == LONGINT_OK && n_start < n_units)
+          எனில் (e == LONGINT_OK && n_start < n_units)
             {
               /* Restrict auto adjustment so we don't keep
                  incrementing a suffix size arbitrarily,
                  as that would break sort order for files
                  generated from multiple split runs.  */
-              if (ckd_add (&n_units_end, n_units_end, n_start))
+              எனில் (ckd_add (&n_units_end, n_units_end, n_start))
                 n_units_end = INTMAX_MAX;
             }
 
         }
       idx_t alphabet_len = strlen (suffix_alphabet);
-      do
+      செய்
         suffix_length_needed++;
-      while (n_units_end /= alphabet_len);
+      போது (n_units_end /= alphabet_len);
 
       suffix_auto = false;
     }
 
-  if (suffix_length)            /* set by user */
+  எனில் (suffix_length)            /* set by user */
     {
-      if (suffix_length < suffix_length_needed)
+      எனில் (suffix_length < suffix_length_needed)
         error (EXIT_FAILURE, 0,
                _("the suffix length needs to be at least %d"),
                suffix_length_needed);
       suffix_auto = false;
-      return;
+      திரும்பு;
     }
-  else
+  இல்லையெனில்
     suffix_length = MAX (DEFAULT_SUFFIX_LENGTH, suffix_length_needed);
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE [PREFIX]]\n\
@@ -236,7 +236,7 @@ Usage: %s [OPTION]... [FILE [PREFIX]]\n\
               program_name);
       fputs (_("\
 Output pieces of FILE to PREFIXaa, PREFIXab, ...;\n\
-default size is 1000 lines, and default PREFIX is 'x'.\n\
+இயல்பு size is 1000 வரிகள், and இயல்பு PREFIX is 'x'.\n\
 "), stdout);
 
       emit_stdin_note ();
@@ -244,7 +244,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 
       oprintf (_("\
   -a, --suffix-length=N\n\
-         generate suffixes of length N (default %d)\n\
+         generate suffixes of length N (இயல்பு %d)\n\
 "), DEFAULT_SUFFIX_LENGTH);
       oputs (_("\
       --additional-suffix=SUFFIX\n\
@@ -255,7 +255,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
          put SIZE bytes per output file\n\
 "));
       oputs (_("\
-  -C, --line-bytes=SIZE\n\
+  -C, --வரி-bytes=SIZE\n\
          put at most SIZE bytes of records per output file\n\
 "));
       oputs (_("\
@@ -264,7 +264,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --numeric-suffixes[=FROM]\n\
-         same as -d, but allow setting the start value\n\
+         same as -d, but allow setting the start மதிப்பு\n\
 "));
       oputs (_("\
   -x\n\
@@ -272,22 +272,22 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
       --hex-suffixes[=FROM]\n\
-         same as -x, but allow setting the start value\n\
+         same as -x, but allow setting the start மதிப்பு\n\
 "));
       oputs (_("\
   -e, --elide-empty-files\n\
-         do not generate empty output files with '-n'\n\
+         செய் not generate empty output files with '-n'\n\
 "));
       oputs (_("\
       --filter=COMMAND\n\
-         write to shell COMMAND; file name is $FILE\n\
+         லிக to shell COMMAND; file name is $FILE\n\
 "));
       oputs (_("\
-  -l, --lines=NUMBER\n\
-         put NUMBER lines/records per output file\n\
+  -l, --வரிகள்=எண்_2\n\
+         put எண்_2 வரிகள்/records per output file\n\
 "));
       oputs (_("\
-  -n, --number=CHUNKS\n\
+  -n, --எண்=CHUNKS\n\
          generate CHUNKS output files; see explanation below\n\
 "));
       oputs (_("\
@@ -297,7 +297,7 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
 "));
       oputs (_("\
   -u, --unbuffered\n\
-         immediately copy input to output with '-n r/...'\n\
+         immediately copy உள்ளீடு to output with '-n r/...'\n\
 "));
       oputs (_("\
       --verbose\n\
@@ -308,16 +308,16 @@ default size is 1000 lines, and default PREFIX is 'x'.\n\
       emit_size_note ();
       fputs (_("\n\
 CHUNKS may be:\n\
-  N       split into N files based on size of input\n\
+  N       split into N files based on size of உள்ளீடு\n\
   K/N     output Kth of N to standard output\n\
-  l/N     split into N files without splitting lines/records\n\
-  l/K/N   output Kth of N to standard output without splitting lines/records\n\
+  l/N     split into N files without splitting வரிகள்/records\n\
+  l/K/N   output Kth of N to standard output without splitting வரிகள்/records\n\
   r/N     like 'l' but use round robin distribution\n\
   r/K/N   likewise but only output Kth of N to standard output\n\
 "), stdout);
       fputs (_("\n\
 -n (except -nr) will buffer to $TMPDIR, defaulting to /tmp,\n\
-if the input size cannot easily be determined.\n\
+எனில் the உள்ளீடு size cannot easily be determined.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -327,34 +327,34 @@ if the input size cannot easily be determined.\n\
 /* Copy the data in FD to a temporary file, then make that file FD.
    Use BUF, of size BUFSIZE, to copy.  Return the number of
    bytes copied, or -1 (setting errno) on error.  */
-static off_t
-copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
+நிலையான off_t
+copy_to_tmpfile (முழு fd, எழுத்து *buf, idx_t bufsize)
 {
   FILE *tmp;
-  if (!temp_stream (&tmp, NULL))
-    return -1;
+  எனில் (!temp_stream (&tmp, வெற்று))
+    திரும்பு -1;
   off_t copied = 0;
   off_t r;
 
-  while (0 < (r = read (fd, buf, bufsize)))
+  போது (0 < (r = பட (fd, buf, bufsize)))
     {
-      if (fwrite (buf, 1, r, tmp) != r)
-        return -1;
-      if (ckd_add (&copied, copied, r))
+      எனில் (fwrite (buf, 1, r, tmp) != r)
+        திரும்பு -1;
+      எனில் (ckd_add (&copied, copied, r))
         {
           errno = EOVERFLOW;
-          return -1;
+          திரும்பு -1;
         }
     }
 
-  if (r < 0)
-    return r;
+  எனில் (r < 0)
+    திரும்பு r;
   r = dup2 (fileno (tmp), fd);
-  if (r < 0)
-    return r;
-  if (fclose (tmp) < 0)
-    return -1;
-  return copied;
+  எனில் (r < 0)
+    திரும்பு r;
+  எனில் (fclose (tmp) < 0)
+    திரும்பு -1;
+  திரும்பு copied;
 }
 
 /* Return the number of bytes that can be read from FD with status ST.
@@ -362,70 +362,70 @@ copy_to_tmpfile (int fd, char *buf, idx_t bufsize)
    and advance the file position by the number of bytes read.  On
    input error, set errno and return -1.  */
 
-static off_t
-input_file_size (int fd, struct stat const *st, char *buf, idx_t bufsize)
+நிலையான off_t
+உள்ளீடு_file_size (முழு fd, கட்டமைப்பு stat மாறிலி *st, எழுத்து *buf, idx_t bufsize)
 {
   off_t size = 0;
-  do
+  செய்
     {
-      ssize_t n_read = read (fd, buf + size, bufsize - size);
-      if (n_read <= 0)
-        return n_read < 0 ? n_read : size;
+      ssize_t n_read = பட (fd, buf + size, bufsize - size);
+      எனில் (n_read <= 0)
+        திரும்பு n_read < 0 ? n_read : size;
       size += n_read;
     }
-  while (size < bufsize);
+  போது (size < bufsize);
 
   off_t cur, end;
-  if ((usable_st_size (st) && st->st_size < size)
+  எனில் ((usable_st_size (st) && st->st_size < size)
       || (cur = lseek (fd, 0, SEEK_CUR)) < 0
       || cur < size /* E.g., /dev/zero on GNU/Linux.  */
       || (end = lseek (fd, 0, SEEK_END)) < 0)
     {
-      char *tmpbuf = xmalloc (bufsize);
+      எழுத்து *tmpbuf = xmalloc (bufsize);
       end = copy_to_tmpfile (fd, tmpbuf, bufsize);
-      free (tmpbuf);
-      if (end < 0)
-        return end;
+      விடுவி (tmpbuf);
+      எனில் (end < 0)
+        திரும்பு end;
       cur = 0;
     }
 
-  if (end == OFF_T_MAX /* E.g., /dev/zero on GNU/Hurd.  */
+  எனில் (end == OFF_T_MAX /* E.g., /dev/zero on GNU/Hurd.  */
       || (cur < end && ckd_add (&size, size, end - cur)))
     {
       errno = EOVERFLOW;
-      return -1;
+      திரும்பு -1;
     }
 
-  if (cur < end)
+  எனில் (cur < end)
     {
       off_t r = lseek (fd, cur, SEEK_SET);
-      if (r < 0)
-        return r;
+      எனில் (r < 0)
+        திரும்பு r;
     }
 
-  return size;
+  திரும்பு size;
 }
 
 /* Compute the next sequential output file name and store it into the
    string 'outfile'.  */
 
-static void
-next_file_name (void)
+நிலையான வெறுமை
+next_file_name (வெறுமை)
 {
   /* Index in suffix_alphabet of each character in the suffix.  */
-  static idx_t *sufindex;
-  static idx_t outbase_length;
-  static idx_t outfile_length;
-  static idx_t addsuf_length;
+  நிலையான idx_t *sufindex;
+  நிலையான idx_t outbase_length;
+  நிலையான idx_t outfile_length;
+  நிலையான idx_t addsuf_length;
 
-  if (! outfile)
+  எனில் (! outfile)
     {
       bool overflow, widen;
 
 new_name:
       widen = !! outfile_length;
 
-      if (! widen)
+      எனில் (! widen)
         {
           /* Allocate and initialize the first file name.  */
 
@@ -434,7 +434,7 @@ new_name:
           overflow = ckd_add (&outfile_length, outbase_length + addsuf_length,
                               suffix_length);
         }
-      else
+      இல்லையெனில்
         {
           /* Reallocate and initialize a new wider file name.
              We do this by subsuming the unchanging part of
@@ -447,13 +447,13 @@ new_name:
 
       idx_t outfile_size;
       overflow |= ckd_add (&outfile_size, outfile_length, 1);
-      if (overflow)
+      எனில் (overflow)
         xalloc_die ();
       outfile = xirealloc (outfile, outfile_size);
 
-      if (! widen)
+      எனில் (! widen)
         memcpy (outfile, outbase, outbase_length);
-      else
+      இல்லையெனில்
         {
           /* Append the last alphabet character to the file name prefix.  */
           outfile[outbase_length] = suffix_alphabet[sufindex[0]];
@@ -462,14 +462,14 @@ new_name:
 
       outfile_mid = outfile + outbase_length;
       memset (outfile_mid, suffix_alphabet[0], suffix_length);
-      if (additional_suffix)
+      எனில் (additional_suffix)
         memcpy (outfile_mid + suffix_length, additional_suffix, addsuf_length);
       outfile[outfile_length] = 0;
 
-      free (sufindex);
-      sufindex = xicalloc (suffix_length, sizeof *sufindex);
+      விடுவி (sufindex);
+      sufindex = xicalloc (suffix_length, அளவு *sufindex);
 
-      if (numeric_suffix_start)
+      எனில் (numeric_suffix_start)
         {
           affirm (! widen);
 
@@ -479,37 +479,37 @@ new_name:
 
           /* Update the suffix index.  */
           idx_t *sufindex_end = sufindex + suffix_length;
-          while (i-- != 0)
+          போது (i-- != 0)
             *--sufindex_end = numeric_suffix_start[i] - '0';
         }
 
-#if ! _POSIX_NO_TRUNC && HAVE_PATHCONF && defined _PC_NAME_MAX
+#எனில் ! _POSIX_NO_TRUNC && HAVE_PATHCONF && defined _PC_NAME_MAX
       /* POSIX requires that if the output file name is too long for
          its directory, 'split' must fail without creating any files.
          This must be checked for explicitly on operating systems that
          silently truncate file names.  */
       {
-        char *dir = dir_name (outfile);
+        எழுத்து *dir = dir_name (outfile);
         long name_max = pathconf (dir, _PC_NAME_MAX);
-        if (0 <= name_max && name_max < base_len (last_component (outfile)))
+        எனில் (0 <= name_max && name_max < base_len (last_component (outfile)))
           error (EXIT_FAILURE, ENAMETOOLONG, "%s", quotef (outfile));
-        free (dir);
+        விடுவி (dir);
       }
 #endif
     }
-  else
+  இல்லையெனில்
     {
       /* Increment the suffix in place, if possible.  */
 
       idx_t i = suffix_length;
-      while (i-- != 0)
+      போது (i-- != 0)
         {
           sufindex[i]++;
-          if (suffix_auto && i == 0 && ! suffix_alphabet[sufindex[0] + 1])
-            goto new_name;
+          எனில் (suffix_auto && i == 0 && ! suffix_alphabet[sufindex[0] + 1])
+            செல் new_name;
           outfile_mid[i] = suffix_alphabet[sufindex[i]];
-          if (outfile_mid[i])
-            return;
+          எனில் (outfile_mid[i])
+            திரும்பு;
           sufindex[i] = 0;
           outfile_mid[i] = suffix_alphabet[sufindex[i]];
         }
@@ -519,43 +519,43 @@ new_name:
 
 /* Create or truncate a file.  */
 
-static int
-create (char const *name)
+நிலையான முழு
+create (எழுத்து மாறிலி *name)
 {
-  if (!filter_command)
+  எனில் (!filter_command)
     {
-      if (verbose)
+      எனில் (verbose)
         fprintf (stdout, _("creating file %s\n"), quoteaf (name));
 
-      int oflags = O_WRONLY | O_CREAT | O_BINARY;
-      int fd = open (name, oflags | O_EXCL, MODE_RW_UGO);
-      if (0 <= fd || errno != EEXIST)
-        return fd;
+      முழு oflags = O_WRONLY | O_CREAT | O_இருமம்;
+      முழு fd = open (name, oflags | O_EXCL, MODE_RW_UGO);
+      எனில் (0 <= fd || errno != EEXIST)
+        திரும்பு fd;
       fd = open (name, oflags, MODE_RW_UGO);
-      if (fd < 0)
-        return fd;
-      struct stat out_stat_buf;
-      if (fstat (fd, &out_stat_buf) != 0)
+      எனில் (fd < 0)
+        திரும்பு fd;
+      கட்டமைப்பு stat out_stat_buf;
+      எனில் (fstat (fd, &out_stat_buf) != 0)
         error (EXIT_FAILURE, errno, _("failed to stat %s"), quoteaf (name));
-      if (psame_inode (&in_stat_buf, &out_stat_buf))
+      எனில் (psame_inode (&in_stat_buf, &out_stat_buf))
         error (EXIT_FAILURE, 0, _("%s would overwrite input; aborting"),
                quoteaf (name));
-      if (ftruncate (fd, 0) < 0
+      எனில் (ftruncate (fd, 0) < 0
           && (S_ISREG (out_stat_buf.st_mode) || S_TYPEISSHM (&out_stat_buf)))
         error (EXIT_FAILURE, errno, _("%s: error truncating"), quotef (name));
 
-      return fd;
+      திரும்பு fd;
     }
-  else
+  இல்லையெனில்
     {
-      if (setenv ("FILE", name, 1) != 0)
+      எனில் (setenv ("FILE", name, 1) != 0)
         error (EXIT_FAILURE, errno,
                _("failed to set FILE environment variable"));
-      if (verbose)
+      எனில் (verbose)
         fprintf (stdout, _("executing with FILE=%s\n"), quotef (name));
 
-      int result;
-      int fd_pair[2];
+      முழு result;
+      முழு fd_pair[2];
       pid_t child_pid;
 
       posix_spawnattr_t attr;
@@ -563,10 +563,10 @@ create (char const *name)
 
       sigset_t set;
       sigemptyset (&set);
-      if (default_SIGPIPE)
+      எனில் (default_SIGPIPE)
         sigaddset (&set, SIGPIPE);
 
-      if (   (result = posix_spawnattr_init (&attr))
+      எனில் (   (result = posix_spawnattr_init (&attr))
           || (result = posix_spawnattr_setflags (&attr,
                                                  (POSIX_SPAWN_USEVFORK
                                                   | POSIX_SPAWN_SETSIGDEF)))
@@ -575,19 +575,19 @@ create (char const *name)
          )
         error (EXIT_FAILURE, result, _("posix_spawn initialization failed"));
 
-      if (pipe (fd_pair) != 0)
+      எனில் (pipe (fd_pair) != 0)
         error (EXIT_FAILURE, errno, _("failed to create pipe"));
 
       /* We have to close any pipes that were opened during an
          earlier call, otherwise this process will be holding a
          write-pipe that will prevent the earlier process from
          reading an EOF on the corresponding read-pipe.  */
-      for (int i = 0; i < open_pipes.n_pipes; ++i)
-        if ((result = posix_spawn_file_actions_addclose (&actions,
+      க்கு (முழு i = 0; i < open_pipes.n_pipes; ++i)
+        எனில் ((result = posix_spawn_file_actions_addclose (&actions,
                                                          open_pipes.pipes[i])))
-          break;
+          நிறுத்து;
 
-      if (   result
+      எனில் (   result
           || (result = posix_spawn_file_actions_addclose (&actions, fd_pair[1]))
           || (fd_pair[0] != STDIN_FILENO
               && (   (result = posix_spawn_file_actions_adddup2 (&actions,
@@ -599,83 +599,83 @@ create (char const *name)
         error (EXIT_FAILURE, result, _("posix_spawn setup failed"));
 
 
-      char const *shell_prog = getenv ("SHELL");
-      if (shell_prog == NULL)
+      எழுத்து மாறிலி *shell_prog = getenv ("SHELL");
+      எனில் (shell_prog == வெற்று)
         shell_prog = "/bin/sh";
-      char const *const argv[] = { last_component (shell_prog), "-c",
-                                   filter_command, NULL };
+      எழுத்து மாறிலி *மாறிலி argv[] = { last_component (shell_prog), "-c",
+                                   filter_command, வெற்று };
 
       result = posix_spawn (&child_pid, shell_prog, &actions, &attr,
-                            (char * const *) argv, environ);
-      if (result != 0)
+                            (எழுத்து * மாறிலி *) argv, environ);
+      எனில் (result != 0)
         error (EXIT_FAILURE, errno, _("failed to run command: \"%s -c %s\""),
                shell_prog, filter_command);
 
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
 
-      if (close (fd_pair[0]) != 0)
+      எனில் (close (fd_pair[0]) != 0)
         error (EXIT_FAILURE, errno, _("failed to close input pipe"));
       filter_pid = child_pid;
-      if (open_pipes.n_pipes == open_pipes.n_pipes_alloc)
+      எனில் (open_pipes.n_pipes == open_pipes.n_pipes_alloc)
         open_pipes.pipes = xpalloc (open_pipes.pipes, &open_pipes.n_pipes_alloc,
                                     1, MIN (INT_MAX, IDX_MAX),
-                                    sizeof *open_pipes.pipes);
-      idx_t const pipe_idx = open_pipes.n_pipes++;
+                                    அளவு *open_pipes.pipes);
+      idx_t மாறிலி pipe_idx = open_pipes.n_pipes++;
       open_pipes.pipes[pipe_idx] = fd_pair[1];
-      return fd_pair[1];
+      திரும்பு fd_pair[1];
     }
 }
 
 /* Close the output file, and do any associated cleanup.
    If FP and FD are both specified, they refer to the same open file;
    in this case FP is closed, but FD is still used in cleanup.  */
-static void
-closeout (FILE *fp, int fd, pid_t pid, char const *name)
+நிலையான வெறுமை
+closeout (FILE *fp, முழு fd, pid_t pid, எழுத்து மாறிலி *name)
 {
-  if (fp != NULL && fclose (fp) != 0 && ! ignorable (errno))
+  எனில் (fp != வெற்று && fclose (fp) != 0 && ! ignorable (errno))
     error (EXIT_FAILURE, errno, "%s", quotef (name));
-  if (fd >= 0)
+  எனில் (fd >= 0)
     {
-      if (fp == NULL && close (fd) < 0)
+      எனில் (fp == வெற்று && close (fd) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (name));
-      for (int j = 0; j < open_pipes.n_pipes; ++j)
+      க்கு (முழு j = 0; j < open_pipes.n_pipes; ++j)
         {
-          if (open_pipes.pipes[j] == fd)
+          எனில் (open_pipes.pipes[j] == fd)
             {
-              idx_t const last_idx = open_pipes.n_pipes - 1;
+              idx_t மாறிலி last_idx = open_pipes.n_pipes - 1;
               open_pipes.pipes[j] = open_pipes.pipes[last_idx];
               open_pipes.n_pipes--;
-              break;
+              நிறுத்து;
             }
         }
     }
-  if (pid > 0)
+  எனில் (pid > 0)
     {
-      int wstatus;
-      if (waitpid (pid, &wstatus, 0) < 0)
+      முழு wstatus;
+      எனில் (waitpid (pid, &wstatus, 0) < 0)
         error (EXIT_FAILURE, errno, _("waiting for child process"));
-      else if (WIFSIGNALED (wstatus))
+      இல்லையெனில் எனில் (WIFSIGNALED (wstatus))
         {
-          int sig = WTERMSIG (wstatus);
-          if (sig != SIGPIPE)
+          முழு sig = WTERMSIG (wstatus);
+          எனில் (sig != SIGPIPE)
             {
-              char signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (int))];
-              if (sig2str (sig, signame) != 0)
+              எழுத்து signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (முழு))];
+              எனில் (sig2str (sig, signame) != 0)
                 sprintf (signame, "%d", sig);
               error (sig + 128, 0,
                      _("with FILE=%s, signal %s from command: %s"),
                      quotef (name), signame, filter_command);
             }
         }
-      else if (WIFEXITED (wstatus))
+      இல்லையெனில் எனில் (WIFEXITED (wstatus))
         {
-          int ex = WEXITSTATUS (wstatus);
-          if (ex != 0)
+          முழு ex = WEXITSTATUS (wstatus);
+          எனில் (ex != 0)
             error (ex, 0, _("with FILE=%s, exit %d from command: %s"),
                    quotef (name), ex, filter_command);
         }
-      else
+      இல்லையெனில்
         {
           /* shouldn't happen.  */
           error (EXIT_FAILURE, 0,
@@ -689,27 +689,27 @@ closeout (FILE *fp, int fd, pid_t pid, char const *name)
    Otherwise add to the same output file already in use.
    Return true if successful.  */
 
-static bool
-cwrite (bool new_file_flag, char const *bp, idx_t bytes)
+நிலையான bool
+cwrite (bool new_file_flag, எழுத்து மாறிலி *bp, idx_t bytes)
 {
-  if (new_file_flag)
+  எனில் (new_file_flag)
     {
-      if (!bp && bytes == 0 && elide_empty_files)
-        return true;
-      closeout (NULL, output_desc, filter_pid, outfile);
+      எனில் (!bp && bytes == 0 && elide_empty_files)
+        திரும்பு true;
+      closeout (வெற்று, output_desc, filter_pid, outfile);
       next_file_name ();
       output_desc = create (outfile);
-      if (output_desc < 0)
+      எனில் (output_desc < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (outfile));
     }
 
-  if (full_write (output_desc, bp, bytes) == bytes)
-    return true;
-  else
+  எனில் (full_write (output_desc, bp, bytes) == bytes)
+    திரும்பு true;
+  இல்லையெனில்
     {
-      if (! ignorable (errno))
+      எனில் (! ignorable (errno))
         error (EXIT_FAILURE, errno, "%s", quotef (outfile));
-      return false;
+      திரும்பு false;
     }
 }
 
@@ -719,9 +719,9 @@ cwrite (bool new_file_flag, char const *bp, idx_t bytes)
    If INITIAL_READ is nonnegative,
    BUF contains the first INITIAL_READ input bytes.  */
 
-static void
+நிலையான வெறுமை
 bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
-             char *buf, idx_t bufsize, ssize_t initial_read,
+             எழுத்து *buf, idx_t bufsize, ssize_t initial_read,
              intmax_t max_files)
 {
   bool new_file_flag = true;
@@ -730,57 +730,57 @@ bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
   intmax_t to_write = n_bytes + (0 < rem_bytes);
   bool eof = ! to_write;
 
-  while (! eof)
+  போது (! eof)
     {
       ssize_t n_read;
-      if (0 <= initial_read)
+      எனில் (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
           eof = n_read < bufsize;
         }
-      else
+      இல்லையெனில்
         {
-          if (! filter_ok
+          எனில் (! filter_ok
               && 0 <= lseek (STDIN_FILENO, to_write, SEEK_CUR))
             {
               to_write = n_bytes + (opened + 1 < rem_bytes);
               new_file_flag = true;
             }
 
-          n_read = read (STDIN_FILENO, buf, bufsize);
-          if (n_read < 0)
+          n_read = பட (STDIN_FILENO, buf, bufsize);
+          எனில் (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
           eof = n_read == 0;
         }
-      char *bp_out = buf;
-      while (0 < to_write && to_write <= n_read)
+      எழுத்து *bp_out = buf;
+      போது (0 < to_write && to_write <= n_read)
         {
-          if (filter_ok || new_file_flag)
+          எனில் (filter_ok || new_file_flag)
             filter_ok = cwrite (new_file_flag, bp_out, to_write);
           opened += new_file_flag;
           new_file_flag = !max_files || (opened < max_files);
-          if (! filter_ok && ! new_file_flag)
+          எனில் (! filter_ok && ! new_file_flag)
             {
               /* If filters no longer accepting input, stop reading.  */
               n_read = 0;
               eof = true;
-              break;
+              நிறுத்து;
             }
           bp_out += to_write;
           n_read -= to_write;
           to_write = n_bytes + (opened < rem_bytes);
         }
-      if (0 < n_read)
+      எனில் (0 < n_read)
         {
-          if (filter_ok || new_file_flag)
+          எனில் (filter_ok || new_file_flag)
             filter_ok = cwrite (new_file_flag, bp_out, n_read);
           opened += new_file_flag;
           new_file_flag = false;
-          if (! filter_ok && opened == max_files)
+          எனில் (! filter_ok && opened == max_files)
             {
               /* If filters no longer accepting input, stop reading.  */
-              break;
+              நிறுத்து;
             }
           to_write -= n_read;
         }
@@ -789,45 +789,45 @@ bytes_split (intmax_t n_bytes, intmax_t rem_bytes,
   /* Ensure NUMBER files are created, which truncates
      any existing files or notifies any consumers on fifos.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  while (opened++ < max_files)
-    cwrite (true, NULL, 0);
+  போது (opened++ < max_files)
+    cwrite (true, வெற்று, 0);
 }
 
 /* Split into pieces of exactly N_LINES lines.
    Use buffer BUF, whose size is BUFSIZE.  */
 
-static void
-lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
+நிலையான வெறுமை
+வரிகள்_split (intmax_t n_வரிகள், எழுத்து *buf, idx_t bufsize)
 {
   ssize_t n_read;
-  char *bp, *bp_out, *eob;
+  எழுத்து *bp, *bp_out, *eob;
   bool new_file_flag = true;
   intmax_t n = 0;
 
-  do
+  செய்
     {
-      n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      n_read = பட (STDIN_FILENO, buf, bufsize);
+      எனில் (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
       bp = bp_out = buf;
       eob = bp + n_read;
       *eob = eolchar;
-      while (true)
+      போது (true)
         {
           bp = rawmemchr (bp, eolchar);
-          if (bp == eob)
+          எனில் (bp == eob)
             {
-              if (eob != bp_out) /* do not write 0 bytes! */
+              எனில் (eob != bp_out) /* do not write 0 bytes! */
                 {
                   idx_t len = eob - bp_out;
                   cwrite (new_file_flag, bp_out, len);
                   new_file_flag = false;
                 }
-              break;
+              நிறுத்து;
             }
 
           ++bp;
-          if (++n >= n_lines)
+          எனில் (++n >= n_வரிகள்)
             {
               cwrite (new_file_flag, bp_out, bp - bp_out);
               bp_out = bp;
@@ -836,50 +836,50 @@ lines_split (intmax_t n_lines, char *buf, idx_t bufsize)
             }
         }
     }
-  while (n_read);
+  போது (n_read);
 }
 
 /* Split into pieces that are as large as possible while still not more
    than N_BYTES bytes, and are split on line boundaries except
    where lines longer than N_BYTES bytes occur. */
 
-static void
-line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
+நிலையான வெறுமை
+வரி_bytes_split (intmax_t n_bytes, எழுத்து *buf, idx_t bufsize)
 {
   ssize_t n_read;
   intmax_t n_out = 0;      /* for each split.  */
   idx_t n_hold = 0;
-  char *hold = NULL;        /* for lines > bufsize.  */
+  எழுத்து *hold = வெற்று;        /* for lines > bufsize.  */
   idx_t hold_size = 0;
-  bool split_line = false;  /* Whether a \n was output in a split.  */
+  bool split_வரி = false;  /* Whether a \n was output in a split.  */
 
-  do
+  செய்
     {
-      n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      n_read = பட (STDIN_FILENO, buf, bufsize);
+      எனில் (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      idx_t n_left = n_read;
-      char *sob = buf;
-      while (n_left)
+      idx_t n_இடது = n_read;
+      எழுத்து *sob = buf;
+      போது (n_இடது)
         {
           idx_t split_rest = 0;
-          char *eoc = NULL;
-          char *eol;
+          எழுத்து *eoc = வெற்று;
+          எழுத்து *eol;
 
           /* Determine End Of Chunk and/or End of Line,
              which are used below to select what to write or buffer.  */
-          if (n_bytes - n_out - n_hold <= n_left)
+          எனில் (n_bytes - n_out - n_hold <= n_இடது)
             {
               /* Have enough for split.  */
               split_rest = n_bytes - n_out - n_hold;
               eoc = sob + split_rest - 1;
               eol = memrchr (sob, eolchar, split_rest);
             }
-          else
-            eol = memrchr (sob, eolchar, n_left);
+          இல்லையெனில்
+            eol = memrchr (sob, eolchar, n_இடது);
 
           /* Output hold space if possible.  */
-          if (n_hold && !(!eol && n_out))
+          எனில் (n_hold && !(!eol && n_out))
             {
               cwrite (n_out == 0, hold, n_hold);
               n_out += n_hold;
@@ -887,58 +887,58 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
             }
 
           /* Output to eol if present.  */
-          if (eol)
+          எனில் (eol)
             {
-              split_line = true;
+              split_வரி = true;
               idx_t n_write = eol - sob + 1;
               cwrite (n_out == 0, sob, n_write);
               n_out += n_write;
-              n_left -= n_write;
+              n_இடது -= n_write;
               sob += n_write;
-              if (eoc)
+              எனில் (eoc)
                 split_rest -= n_write;
             }
 
           /* Output to eoc or eob if possible.  */
-          if (n_left && !split_line)
+          எனில் (n_இடது && !split_வரி)
             {
-              idx_t n_write = eoc ? split_rest : n_left;
+              idx_t n_write = eoc ? split_rest : n_இடது;
               cwrite (n_out == 0, sob, n_write);
               n_out += n_write;
-              n_left -= n_write;
+              n_இடது -= n_write;
               sob += n_write;
-              if (eoc)
+              எனில் (eoc)
                 split_rest -= n_write;
             }
 
           /* Update hold if needed.  */
-          if ((eoc && split_rest) || (!eoc && n_left))
+          எனில் ((eoc && split_rest) || (!eoc && n_இடது))
             {
-              idx_t n_buf = eoc ? split_rest : n_left;
-              if (hold_size - n_hold < n_buf)
+              idx_t n_buf = eoc ? split_rest : n_இடது;
+              எனில் (hold_size - n_hold < n_buf)
                 hold = xpalloc (hold, &hold_size, n_buf - (hold_size - n_hold),
-                                -1, sizeof *hold);
+                                -1, அளவு *hold);
               memcpy (hold + n_hold, sob, n_buf);
               n_hold += n_buf;
-              n_left -= n_buf;
+              n_இடது -= n_buf;
               sob += n_buf;
             }
 
           /* Reset for new split.  */
-          if (eoc)
+          எனில் (eoc)
             {
               n_out = 0;
-              split_line = false;
+              split_வரி = false;
             }
         }
     }
-  while (n_read);
+  போது (n_read);
 
   /* Handle no eol at end of file.  */
-  if (n_hold)
+  எனில் (n_hold)
     cwrite (n_out == 0, hold, n_hold);
 
-  free (hold);
+  விடுவி (hold);
 }
 
 /* -n l/[K/]N: Write lines to files of approximately file size / N.
@@ -949,8 +949,8 @@ line_bytes_split (intmax_t n_bytes, char *buf, idx_t bufsize)
    can be larger or smaller than the partition size, and even empty
    if a line is so long as to completely overlap the partition.  */
 
-static void
-lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
+நிலையான வெறுமை
+வரிகள்_chunk_split (intmax_t k, intmax_t n, எழுத்து *buf, idx_t bufsize,
                    ssize_t initial_read, off_t file_size)
 {
   affirm (n && k <= n);
@@ -963,18 +963,18 @@ lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
   bool new_file_flag = true;
   bool chunk_truncated = false;
 
-  if (k > 1 && 0 < file_size)
+  எனில் (k > 1 && 0 < file_size)
     {
       /* Start reading 1 byte before kth chunk of file.  */
       off_t start = (k - 1) * chunk_size + MIN (k - 1, rem_bytes) - 1;
-      if (start < initial_read)
+      எனில் (start < initial_read)
         {
           memmove (buf, buf + start, initial_read - start);
           initial_read -= start;
         }
-      else
+      இல்லையெனில்
         {
-          if (initial_read < start
+          எனில் (initial_read < start
               && lseek (STDIN_FILENO, start - initial_read, SEEK_CUR) < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
           initial_read = -1;
@@ -984,53 +984,53 @@ lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
       chunk_end = start + 1;
     }
 
-  while (n_written < file_size)
+  போது (n_written < file_size)
     {
-      char *bp = buf, *eob;
+      எழுத்து *bp = buf, *eob;
       ssize_t n_read;
-      if (0 <= initial_read)
+      எனில் (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
         }
-      else
+      இல்லையெனில்
         {
-          n_read = read (STDIN_FILENO, buf,
+          n_read = பட (STDIN_FILENO, buf,
                          MIN (bufsize, file_size - n_written));
-          if (n_read < 0)
+          எனில் (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
         }
-      if (n_read == 0)
-        break; /* eof.  */
+      எனில் (n_read == 0)
+        நிறுத்து; /* eof.  */
       chunk_truncated = false;
       eob = buf + n_read;
 
-      while (bp != eob)
+      போது (bp != eob)
         {
           idx_t to_write;
           bool next = false;
 
           /* Begin looking for '\n' at last byte of chunk.  */
           off_t skip = MIN (n_read, MAX (0, chunk_end - 1 - n_written));
-          char *bp_out = memchr (bp + skip, eolchar, n_read - skip);
-          if (bp_out)
+          எழுத்து *bp_out = memchr (bp + skip, eolchar, n_read - skip);
+          எனில் (bp_out)
             {
               bp_out++;
               next = true;
             }
-          else
+          இல்லையெனில்
             bp_out = eob;
           to_write = bp_out - bp;
 
-          if (k == chunk_no)
+          எனில் (k == chunk_no)
             {
               /* We don't use the stdout buffer here since we're writing
                  large chunks from an existing file, so it's more efficient
                  to write out directly.  */
-              if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
+              எனில் (full_write (STDOUT_FILENO, bp, to_write) != to_write)
                 write_error ();
             }
-          else if (! k)
+          இல்லையெனில் எனில் (! k)
             cwrite (new_file_flag, bp, to_write);
           n_written += to_write;
           bp += to_write;
@@ -1039,44 +1039,44 @@ lines_chunk_split (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
 
           /* A line could have been so long that it skipped
              entire chunks. So create empty files in that case.  */
-          while (next || chunk_end <= n_written)
+          போது (next || chunk_end <= n_written)
             {
-              if (!next && bp == eob)
+              எனில் (!next && bp == eob)
                 {
                   /* replenish buf, before going to next chunk.  */
                   chunk_truncated = true;
-                  break;
+                  நிறுத்து;
                 }
-              if (k == chunk_no)
-                return;
+              எனில் (k == chunk_no)
+                திரும்பு;
               chunk_end += chunk_size + (chunk_no < rem_bytes);
               chunk_no++;
-              if (chunk_end <= n_written)
+              எனில் (chunk_end <= n_written)
                 {
-                  if (! k)
-                    cwrite (true, NULL, 0);
+                  எனில் (! k)
+                    cwrite (true, வெற்று, 0);
                 }
-              else
+              இல்லையெனில்
                 next = false;
             }
         }
     }
 
-  if (chunk_truncated)
+  எனில் (chunk_truncated)
     chunk_no++;
 
   /* Ensure NUMBER files are created, which truncates
      any existing files or notifies any consumers on fifos.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  if (!k)
-    while (chunk_no++ <= n)
-      cwrite (true, NULL, 0);
+  எனில் (!k)
+    போது (chunk_no++ <= n)
+      cwrite (true, வெற்று, 0);
 }
 
 /* -n K/N: Extract Kth of N chunks.  */
 
-static void
-bytes_chunk_extract (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
+நிலையான வெறுமை
+bytes_chunk_extract (intmax_t k, intmax_t n, எழுத்து *buf, idx_t bufsize,
                      ssize_t initial_read, off_t file_size)
 {
   off_t start;
@@ -1087,52 +1087,52 @@ bytes_chunk_extract (intmax_t k, intmax_t n, char *buf, idx_t bufsize,
   start = (k - 1) * (file_size / n) + MIN (k - 1, file_size % n);
   end = k == n ? file_size : k * (file_size / n) + MIN (k, file_size % n);
 
-  if (start < initial_read)
+  எனில் (start < initial_read)
     {
       memmove (buf, buf + start, initial_read - start);
       initial_read -= start;
     }
-  else
+  இல்லையெனில்
     {
-      if (initial_read < start
+      எனில் (initial_read < start
           && lseek (STDIN_FILENO, start - initial_read, SEEK_CUR) < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
       initial_read = -1;
     }
 
-  while (start < end)
+  போது (start < end)
     {
       ssize_t n_read;
-      if (0 <= initial_read)
+      எனில் (0 <= initial_read)
         {
           n_read = initial_read;
           initial_read = -1;
         }
-      else
+      இல்லையெனில்
         {
-          n_read = read (STDIN_FILENO, buf, bufsize);
-          if (n_read < 0)
+          n_read = பட (STDIN_FILENO, buf, bufsize);
+          எனில் (n_read < 0)
             error (EXIT_FAILURE, errno, "%s", quotef (infile));
         }
-      if (n_read == 0)
-        break; /* eof.  */
+      எனில் (n_read == 0)
+        நிறுத்து; /* eof.  */
       n_read = MIN (n_read, end - start);
-      if (full_write (STDOUT_FILENO, buf, n_read) != n_read
+      எனில் (full_write (STDOUT_FILENO, buf, n_read) != n_read
           && ! ignorable (errno))
         error (EXIT_FAILURE, errno, "%s", quotef ("-"));
       start += n_read;
     }
 }
 
-typedef struct of_info
+வகைவரை கட்டமைப்பு of_info
 {
-  char *of_name;
-  int ofd;
+  எழுத்து *of_name;
+  முழு ofd;
   FILE *ofile;
   pid_t opid;
 } of_t;
 
-enum
+எண்ணிக்கை
 {
   OFD_NEW = -1,
   OFD_APPEND = -2
@@ -1143,24 +1143,24 @@ enum
    Return whether we came under file resource pressure.
    If so, it's probably best to close each file when finished with it.  */
 
-static bool
+நிலையான bool
 ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
 {
   bool file_limit = false;
 
-  if (files[i_check].ofd <= OFD_NEW)
+  எனில் (files[i_check].ofd <= OFD_NEW)
     {
-      int fd;
+      முழு fd;
       idx_t i_reopen = i_check ? i_check - 1 : nfiles - 1;
 
       /* Another process could have opened a file in between the calls to
          close and open, so we should keep trying until open succeeds or
          we've closed all of our files.  */
-      while (true)
+      போது (true)
         {
-          if (files[i_check].ofd == OFD_NEW)
+          எனில் (files[i_check].ofd == OFD_NEW)
             fd = create (files[i_check].of_name);
-          else /* OFD_APPEND  */
+          இல்லையெனில் /* OFD_APPEND  */
             {
               /* Attempt to append to previously opened file.
                  We use O_NONBLOCK to support writing to fifos,
@@ -1177,43 +1177,43 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
                  I.e., we don't support restarting filters, as that would
                  put too much burden on users specifying --filter commands.  */
               fd = open (files[i_check].of_name,
-                         O_WRONLY | O_BINARY | O_APPEND | O_NONBLOCK);
+                         O_WRONLY | O_இருமம் | O_APPEND | O_NONBLOCK);
             }
 
-          if (0 <= fd)
-            break;
+          எனில் (0 <= fd)
+            நிறுத்து;
 
-          if (!(errno == EMFILE || errno == ENFILE))
+          எனில் (!(errno == EMFILE || errno == ENFILE))
             error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].of_name));
 
           file_limit = true;
 
           /* Search backwards for an open file to close.  */
-          while (files[i_reopen].ofd < 0)
+          போது (files[i_reopen].ofd < 0)
             {
               i_reopen = i_reopen ? i_reopen - 1 : nfiles - 1;
               /* No more open files to close, exit with E[NM]FILE.  */
-              if (i_reopen == i_check)
+              எனில் (i_reopen == i_check)
                 error (EXIT_FAILURE, errno, "%s",
                        quotef (files[i_check].of_name));
             }
 
-          if (fclose (files[i_reopen].ofile) != 0)
+          எனில் (fclose (files[i_reopen].ofile) != 0)
             error (EXIT_FAILURE, errno, "%s", quotef (files[i_reopen].of_name));
-          files[i_reopen].ofile = NULL;
+          files[i_reopen].ofile = வெற்று;
           files[i_reopen].ofd = OFD_APPEND;
         }
 
       files[i_check].ofd = fd;
       FILE *ofile = fdopen (fd, "a");
-      if (!ofile)
+      எனில் (!ofile)
         error (EXIT_FAILURE, errno, "%s", quotef (files[i_check].of_name));
       files[i_check].ofile = ofile;
       files[i_check].opid = filter_pid;
       filter_pid = 0;
     }
 
-  return file_limit;
+  திரும்பு file_limit;
 }
 
 /* -n r/[K/]N: Divide file into N chunks in round robin fashion.
@@ -1223,112 +1223,112 @@ ofile_open (of_t *files, idx_t i_check, idx_t nfiles)
    If we run out of file resources, then we revert
    to opening and closing each file for each line.  */
 
-static void
-lines_rr (intmax_t k, intmax_t n, char *buf, idx_t bufsize, of_t **filesp)
+நிலையான வெறுமை
+வரிகள்_rr (intmax_t k, intmax_t n, எழுத்து *buf, idx_t bufsize, of_t **filesp)
 {
   bool wrapped = false;
   bool wrote = false;
   bool file_limit;
   idx_t i_file;
-  of_t *files IF_LINT (= NULL);
-  intmax_t line_no;
+  of_t *files IF_LINT (= வெற்று);
+  intmax_t வரி_no;
 
-  if (k)
-    line_no = 1;
-  else
+  எனில் (k)
+    வரி_no = 1;
+  இல்லையெனில்
     {
-      if (IDX_MAX < n)
+      எனில் (IDX_MAX < n)
         xalloc_die ();
-      files = *filesp = xinmalloc (n, sizeof *files);
+      files = *filesp = xinmalloc (n, அளவு *files);
 
       /* Generate output file names. */
-      for (i_file = 0; i_file < n; i_file++)
+      க்கு (i_file = 0; i_file < n; i_file++)
         {
           next_file_name ();
           files[i_file].of_name = xstrdup (outfile);
           files[i_file].ofd = OFD_NEW;
-          files[i_file].ofile = NULL;
+          files[i_file].ofile = வெற்று;
           files[i_file].opid = 0;
         }
       i_file = 0;
       file_limit = false;
     }
 
-  while (true)
+  போது (true)
     {
-      char *bp = buf, *eob;
-      ssize_t n_read = read (STDIN_FILENO, buf, bufsize);
-      if (n_read < 0)
+      எழுத்து *bp = buf, *eob;
+      ssize_t n_read = பட (STDIN_FILENO, buf, bufsize);
+      எனில் (n_read < 0)
         error (EXIT_FAILURE, errno, "%s", quotef (infile));
-      else if (n_read == 0)
-        break; /* eof.  */
+      இல்லையெனில் எனில் (n_read == 0)
+        நிறுத்து; /* eof.  */
       eob = buf + n_read;
 
-      while (bp != eob)
+      போது (bp != eob)
         {
           idx_t to_write;
           bool next = false;
 
           /* Find end of line. */
-          char *bp_out = memchr (bp, eolchar, eob - bp);
-          if (bp_out)
+          எழுத்து *bp_out = memchr (bp, eolchar, eob - bp);
+          எனில் (bp_out)
             {
               bp_out++;
               next = true;
             }
-          else
+          இல்லையெனில்
             bp_out = eob;
           to_write = bp_out - bp;
 
-          if (k)
+          எனில் (k)
             {
-              if (line_no == k && unbuffered)
+              எனில் (வரி_no == k && unbuffered)
                 {
-                  if (full_write (STDOUT_FILENO, bp, to_write) != to_write)
+                  எனில் (full_write (STDOUT_FILENO, bp, to_write) != to_write)
                     write_error ();
                 }
-              else if (line_no == k && fwrite (bp, to_write, 1, stdout) != 1)
+              இல்லையெனில் எனில் (வரி_no == k && fwrite (bp, to_write, 1, stdout) != 1)
                 {
                   write_error ();
                 }
-              if (next)
-                line_no = (line_no == n) ? 1 : line_no + 1;
+              எனில் (next)
+                வரி_no = (வரி_no == n) ? 1 : வரி_no + 1;
             }
-          else
+          இல்லையெனில்
             {
               /* Secure file descriptor. */
               file_limit |= ofile_open (files, i_file, n);
-              if (unbuffered)
+              எனில் (unbuffered)
                 {
                   /* Note writing to fd, rather than flushing the FILE gives
                      an 8% performance benefit, due to reduced data copying.  */
-                  if (full_write (files[i_file].ofd, bp, to_write) != to_write
+                  எனில் (full_write (files[i_file].ofd, bp, to_write) != to_write
                       && ! ignorable (errno))
                     error (EXIT_FAILURE, errno, "%s",
                            quotef (files[i_file].of_name));
                 }
-              else if (fwrite (bp, to_write, 1, files[i_file].ofile) != 1
+              இல்லையெனில் எனில் (fwrite (bp, to_write, 1, files[i_file].ofile) != 1
                        && ! ignorable (errno))
                 error (EXIT_FAILURE, errno, "%s",
                        quotef (files[i_file].of_name));
 
-              if (! ignorable (errno))
+              எனில் (! ignorable (errno))
                 wrote = true;
 
-              if (file_limit)
+              எனில் (file_limit)
                 {
-                  if (fclose (files[i_file].ofile) != 0)
+                  எனில் (fclose (files[i_file].ofile) != 0)
                     error (EXIT_FAILURE, errno, "%s",
                            quotef (files[i_file].of_name));
-                  files[i_file].ofile = NULL;
+                  files[i_file].ofile = வெற்று;
                   files[i_file].ofd = OFD_APPEND;
                 }
-              if (next && ++i_file == n)
+              எனில் (next && ++i_file == n)
                 {
                   wrapped = true;
                   /* If no filters are accepting input, stop reading.  */
-                  if (! wrote)
-                    goto no_filters;
+                  எனில் (! wrote)
+                    செல் no_filters;
                   wrote = false;
                   i_file = 0;
                 }
@@ -1343,14 +1343,14 @@ no_filters:
      and to signal any waiting fifo consumers.
      Also, close any open file descriptors.
      FIXME: Should we do this before EXIT_FAILURE?  */
-  if (!k)
+  எனில் (!k)
     {
       idx_t ceiling = wrapped ? n : i_file;
-      for (i_file = 0; i_file < n; i_file++)
+      க்கு (i_file = 0; i_file < n; i_file++)
         {
-          if (i_file >= ceiling && !elide_empty_files)
+          எனில் (i_file >= ceiling && !elide_empty_files)
             file_limit |= ofile_open (files, i_file, n);
-          if (files[i_file].ofd >= 0)
+          எனில் (files[i_file].ofd >= 0)
             closeout (files[i_file].ofile, files[i_file].ofd,
                       files[i_file].opid, files[i_file].of_name);
           files[i_file].ofd = OFD_APPEND;
@@ -1359,17 +1359,17 @@ no_filters:
 }
 
 #define FAIL_ONLY_ONE_WAY()					\
-  do								\
+  செய்								\
     {								\
       error (0, 0, _("cannot split in more than one way"));	\
       usage (EXIT_FAILURE);					\
     }								\
-  while (0)
+  போது (0)
 
 /* Report a string-to-integer conversion failure MSGID with ARG.  */
 
-static _Noreturn void
-strtoint_die (char const *msgid, char const *arg)
+நிலையான _Noreturn வெறுமை
+strtoint_die (எழுத்து மாறிலி *msgid, எழுத்து மாறிலி *arg)
 {
   error (EXIT_FAILURE, errno == EINVAL ? 0 : errno, "%s: %s",
          gettext (msgid), quote (arg));
@@ -1384,48 +1384,48 @@ strtoint_die (char const *msgid, char const *arg)
    If the number cannot be parsed, diagnose with MSG.
    Return the number parsed, or an INTMAX_MAX on overflow.  */
 
-static intmax_t
-parse_n_units (char const *arg, char const *multipliers, char const *msgid)
+நிலையான intmax_t
+parse_n_units (எழுத்து மாறிலி *arg, எழுத்து மாறிலி *multipliers, எழுத்து மாறிலி *msgid)
 {
   intmax_t n;
-  if (OVERFLOW_OK < xstrtoimax (arg, NULL, 10, &n, multipliers) || n < 1)
+  எனில் (OVERFLOW_OK < xstrtoimax (arg, வெற்று, 10, &n, multipliers) || n < 1)
     strtoint_die (msgid, arg);
-  return n;
+  திரும்பு n;
 }
 
 /* Parse K/N syntax of chunk options.  */
 
-static void
-parse_chunk (intmax_t *k_units, intmax_t *n_units, char const *arg)
+நிலையான வெறுமை
+parse_chunk (intmax_t *k_units, intmax_t *n_units, எழுத்து மாறிலி *arg)
 {
-  char *argend;
+  எழுத்து *argend;
   strtol_error e = xstrtoimax (arg, &argend, 10, n_units, "");
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && *argend == '/')
+  எனில் (e == LONGINT_INVALID_SUFFIX_CHAR && *argend == '/')
     {
       *k_units = *n_units;
       *n_units = parse_n_units (argend + 1, "",
                                 N_("invalid number of chunks"));
-      if (! (0 < *k_units && *k_units <= *n_units))
+      எனில் (! (0 < *k_units && *k_units <= *n_units))
         error (EXIT_FAILURE, 0, "%s: %s", _("invalid chunk number"),
                quote_mem (arg, argend - arg));
     }
-  else if (! (e <= OVERFLOW_OK && 0 < *n_units))
+  இல்லையெனில் எனில் (! (e <= OVERFLOW_OK && 0 < *n_units))
     strtoint_die (N_("invalid number of chunks"), arg);
 }
 
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  enum Split_type split_type = type_undef;
+  எண்ணிக்கை Split_type split_type = type_undef;
   idx_t in_blk_size = 0;	/* optimal block size of input file device */
   idx_t page_size = getpagesize ();
   intmax_t k_units = 0;
   intmax_t n_units = 0;
 
-  static char const multipliers[] = "bEGKkMmPQRTYZ0";
-  int c;
-  int digits_optind = 0;
+  நிலையான எழுத்து மாறிலி multipliers[] = "bEGKkMmPQRTYZ0";
+  முழு c;
+  முழு digits_optind = 0;
   off_t file_size = OFF_T_MAX;
 
   initialize_main (&argc, &argv);
@@ -1438,27 +1438,27 @@ main (int argc, char **argv)
 
   /* Parse command line options.  */
 
-  while (true)
+  போது (true)
     {
       /* This is the argv-index of the option we will read next.  */
-      int this_optind = optind ? optind : 1;
+      முழு this_optind = optind ? optind : 1;
 
       c = getopt_long (argc, argv, "0123456789C:a:b:del:n:t:ux",
-                       longopts, NULL);
-      if (c == -1)
-        break;
+                       longopts, வெற்று);
+      எனில் (c == -1)
+        நிறுத்து;
 
-      switch (c)
+      தேர்வு (c)
         {
-        case 'a':
+        நிலை 'a':
           suffix_length = xdectoimax (optarg, 0, IDX_MAX,
                                       "", _("invalid suffix length"), 0);
-          break;
+          நிறுத்து;
 
-        case ADDITIONAL_SUFFIX_OPTION:
+        நிலை ADDITIONAL_SUFFIX_OPTION:
           {
-            int suffix_len = strlen (optarg);
-            if (last_component (optarg) != optarg
+            முழு suffix_len = strlen (optarg);
+            எனில் (last_component (optarg) != optarg
                 || (suffix_len && ISSLASH (optarg[suffix_len - 1])))
               {
                 error (0, 0,
@@ -1468,66 +1468,66 @@ main (int argc, char **argv)
               }
           }
           additional_suffix = optarg;
-          break;
+          நிறுத்து;
 
-        case 'b':
-          if (split_type != type_undef)
+        நிலை 'b':
+          எனில் (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
           split_type = type_bytes;
           n_units = parse_n_units (optarg, multipliers,
                                    N_("invalid number of bytes"));
-          break;
+          நிறுத்து;
 
-        case 'l':
-          if (split_type != type_undef)
+        நிலை 'l':
+          எனில் (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
-          split_type = type_lines;
+          split_type = type_வரிகள்;
           n_units = parse_n_units (optarg, "", N_("invalid number of lines"));
-          break;
+          நிறுத்து;
 
-        case 'C':
-          if (split_type != type_undef)
+        நிலை 'C':
+          எனில் (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
           split_type = type_byteslines;
           n_units = parse_n_units (optarg, multipliers,
                                    N_("invalid number of lines"));
-          break;
+          நிறுத்து;
 
-        case 'n':
-          if (split_type != type_undef)
+        நிலை 'n':
+          எனில் (split_type != type_undef)
             FAIL_ONLY_ONE_WAY ();
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          போது (isspace (to_uchar (*optarg)))
             optarg++;
-          if (STRNCMP_LIT (optarg, "r/") == 0)
+          எனில் (STRNCMP_LIT (optarg, "r/") == 0)
             {
               split_type = type_rr;
               optarg += 2;
             }
-          else if (STRNCMP_LIT (optarg, "l/") == 0)
+          இல்லையெனில் எனில் (STRNCMP_LIT (optarg, "l/") == 0)
             {
-              split_type = type_chunk_lines;
+              split_type = type_chunk_வரிகள்;
               optarg += 2;
             }
-          else
+          இல்லையெனில்
             split_type = type_chunk_bytes;
           parse_chunk (&k_units, &n_units, optarg);
-          break;
+          நிறுத்து;
 
-        case 'u':
+        நிலை 'u':
           unbuffered = true;
-          break;
+          நிறுத்து;
 
-        case 't':
+        நிலை 't':
           {
-            char neweol = optarg[0];
-            if (! neweol)
+            எழுத்து neweol = optarg[0];
+            எனில் (! neweol)
               error (EXIT_FAILURE, 0, _("empty record separator"));
-            if (optarg[1])
+            எனில் (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                எனில் (streq (optarg, "\\0"))
                   neweol = '\0';
-                else
+                இல்லையெனில்
                   {
                     /* Provoke with 'split -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -1538,7 +1538,7 @@ main (int argc, char **argv)
                   }
               }
             /* Make it explicit we don't support multiple separators.  */
-            if (0 <= eolchar && neweol != eolchar)
+            எனில் (0 <= eolchar && neweol != eolchar)
               {
                 error (EXIT_FAILURE, 0,
                        _("multiple separator characters specified"));
@@ -1546,42 +1546,42 @@ main (int argc, char **argv)
 
             eolchar = neweol;
           }
-          break;
+          நிறுத்து;
 
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-          if (split_type == type_undef)
+        நிலை '0':
+        நிலை '1':
+        நிலை '2':
+        நிலை '3':
+        நிலை '4':
+        நிலை '5':
+        நிலை '6':
+        நிலை '7':
+        நிலை '8':
+        நிலை '9':
+          எனில் (split_type == type_undef)
             {
               split_type = type_digits;
               n_units = 0;
             }
-          if (split_type != type_undef && split_type != type_digits)
+          எனில் (split_type != type_undef && split_type != type_digits)
             FAIL_ONLY_ONE_WAY ();
-          if (digits_optind != 0 && digits_optind != this_optind)
+          எனில் (digits_optind != 0 && digits_optind != this_optind)
             n_units = 0;	/* More than one number given; ignore other. */
           digits_optind = this_optind;
-          if (ckd_mul (&n_units, n_units, 10)
+          எனில் (ckd_mul (&n_units, n_units, 10)
               || ckd_add (&n_units, n_units, c - '0'))
             n_units = INTMAX_MAX;
-          break;
+          நிறுத்து;
 
-        case 'd':
-        case 'x':
-          if (c == 'd')
+        நிலை 'd':
+        நிலை 'x':
+          எனில் (c == 'd')
             suffix_alphabet = "0123456789";
-          else
+          இல்லையெனில்
             suffix_alphabet = "0123456789abcdef";
-          if (optarg)
+          எனில் (optarg)
             {
-              if (strlen (optarg) != strspn (optarg, suffix_alphabet))
+              எனில் (strlen (optarg) != strspn (optarg, suffix_alphabet))
                 {
                   error (0, 0,
                          (c == 'd') ?
@@ -1590,46 +1590,46 @@ main (int argc, char **argv)
                          quote (optarg));
                   usage (EXIT_FAILURE);
                 }
-              else
+              இல்லையெனில்
                 {
                   /* Skip any leading zero.  */
-                  while (*optarg == '0' && *(optarg + 1) != '\0')
+                  போது (*optarg == '0' && *(optarg + 1) != '\0')
                     optarg++;
                   numeric_suffix_start = optarg;
                 }
             }
-          break;
+          நிறுத்து;
 
-        case 'e':
+        நிலை 'e':
           elide_empty_files = true;
-          break;
+          நிறுத்து;
 
-        case FILTER_OPTION:
+        நிலை FILTER_OPTION:
           filter_command = optarg;
-          break;
+          நிறுத்து;
 
-        case IO_BLKSIZE_OPTION:
+        நிலை IO_BLKSIZE_OPTION:
           in_blk_size = xnumtoumax (optarg, 10, 1,
                                     MIN (SYS_BUFSIZE_MAX,
                                          MIN (IDX_MAX, SIZE_MAX) - 1),
                                     multipliers, _("invalid IO block size"),
                                     0, XTOINT_MIN_RANGE);
-          break;
+          நிறுத்து;
 
-        case VERBOSE_OPTION:
+        நிலை VERBOSE_OPTION:
           verbose = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (k_units != 0 && filter_command)
+  எனில் (k_units != 0 && filter_command)
     {
       error (0, 0, _("--filter does not process a chunk extracted to "
                      "standard output"));
@@ -1637,32 +1637,32 @@ main (int argc, char **argv)
     }
 
   /* Handle default case.  */
-  if (split_type == type_undef)
+  எனில் (split_type == type_undef)
     {
-      split_type = type_lines;
+      split_type = type_வரிகள்;
       n_units = 1000;
     }
 
-  if (n_units == 0)
+  எனில் (n_units == 0)
     {
       error (0, 0, _("invalid number of lines: %s"), quote ("0"));
       usage (EXIT_FAILURE);
     }
 
-  if (eolchar < 0)
+  எனில் (eolchar < 0)
     eolchar = '\n';
 
   set_suffix_length (n_units, split_type);
 
   /* Get out the filename arguments.  */
 
-  if (optind < argc)
+  எனில் (optind < argc)
     infile = argv[optind++];
 
-  if (optind < argc)
+  எனில் (optind < argc)
     outbase = argv[optind++];
 
-  if (optind < argc)
+  எனில் (optind < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -1670,7 +1670,7 @@ main (int argc, char **argv)
 
   /* Check that the suffix length is large enough for the numerical
      suffix start value.  */
-  if (numeric_suffix_start && strlen (numeric_suffix_start) > suffix_length)
+  எனில் (numeric_suffix_start && strlen (numeric_suffix_start) > suffix_length)
     {
       error (0, 0, _("numerical suffix start value is too large "
                      "for the suffix length"));
@@ -1678,37 +1678,37 @@ main (int argc, char **argv)
     }
 
   /* Open the input file.  */
-  if (! streq (infile, "-")
+  எனில் (! streq (infile, "-")
       && fd_reopen (STDIN_FILENO, infile, O_RDONLY, 0) < 0)
     error (EXIT_FAILURE, errno, _("cannot open %s for reading"),
            quoteaf (infile));
 
   /* Binary I/O is safer when byte counts are used.  */
-  xset_binary_mode (STDIN_FILENO, O_BINARY);
+  xset_இருமம்_mode (STDIN_FILENO, O_இருமம்);
 
   /* Advise the kernel of our access pattern.  */
   fdadvise (STDIN_FILENO, 0, 0, FADVISE_SEQUENTIAL);
 
   /* Get the optimal block size of input device and make a buffer.  */
 
-  if (fstat (STDIN_FILENO, &in_stat_buf) != 0)
+  எனில் (fstat (STDIN_FILENO, &in_stat_buf) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
 
-  if (in_blk_size == 0)
+  எனில் (in_blk_size == 0)
     {
       in_blk_size = io_blksize (&in_stat_buf);
-      if (SYS_BUFSIZE_MAX < in_blk_size)
+      எனில் (SYS_BUFSIZE_MAX < in_blk_size)
         in_blk_size = SYS_BUFSIZE_MAX;
     }
 
-  char *buf = xalignalloc (page_size, in_blk_size + 1);
+  எழுத்து *buf = xalignalloc (page_size, in_blk_size + 1);
   ssize_t initial_read = -1;
 
-  if (split_type == type_chunk_bytes || split_type == type_chunk_lines)
+  எனில் (split_type == type_chunk_bytes || split_type == type_chunk_வரிகள்)
     {
-      file_size = input_file_size (STDIN_FILENO, &in_stat_buf,
+      file_size = உள்ளீடு_file_size (STDIN_FILENO, &in_stat_buf,
                                    buf, in_blk_size);
-      if (file_size < 0)
+      எனில் (file_size < 0)
         error (EXIT_FAILURE, errno, _("%s: cannot determine file size"),
                quotef (infile));
       initial_read = MIN (file_size, in_blk_size);
@@ -1716,54 +1716,54 @@ main (int argc, char **argv)
 
   /* When filtering, closure of one pipe must not terminate the process,
      as there may still be other streams expecting input from us.  */
-  if (filter_command)
-    default_SIGPIPE = signal (SIGPIPE, SIG_IGN) == SIG_DFL;
+  எனில் (filter_command)
+    default_SIGPIPE = சமிக்ஞை (SIGPIPE, SIG_IGN) == SIG_DFL;
 
-  switch (split_type)
+  தேர்வு (split_type)
     {
-    case type_digits:
-    case type_lines:
-      lines_split (n_units, buf, in_blk_size);
-      break;
+    நிலை type_digits:
+    நிலை type_வரிகள்:
+      வரிகள்_split (n_units, buf, in_blk_size);
+      நிறுத்து;
 
-    case type_bytes:
+    நிலை type_bytes:
       bytes_split (n_units, 0, buf, in_blk_size, -1, 0);
-      break;
+      நிறுத்து;
 
-    case type_byteslines:
-      line_bytes_split (n_units, buf, in_blk_size);
-      break;
+    நிலை type_byteslines:
+      வரி_bytes_split (n_units, buf, in_blk_size);
+      நிறுத்து;
 
-    case type_chunk_bytes:
-      if (k_units == 0)
+    நிலை type_chunk_bytes:
+      எனில் (k_units == 0)
         bytes_split (file_size / n_units, file_size % n_units,
                      buf, in_blk_size, initial_read, n_units);
-      else
+      இல்லையெனில்
         bytes_chunk_extract (k_units, n_units, buf, in_blk_size, initial_read,
                              file_size);
-      break;
+      நிறுத்து;
 
-    case type_chunk_lines:
-      lines_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
+    நிலை type_chunk_வரிகள்:
+      வரிகள்_chunk_split (k_units, n_units, buf, in_blk_size, initial_read,
                          file_size);
-      break;
+      நிறுத்து;
 
-    case type_rr:
+    நிலை type_rr:
       /* Note, this is like 'sed -n ${k}~${n}p' when k > 0,
          but the functionality is provided for symmetry.  */
       {
         of_t *files;
-        lines_rr (k_units, n_units, buf, in_blk_size, &files);
+        வரிகள்_rr (k_units, n_units, buf, in_blk_size, &files);
       }
-      break;
+      நிறுத்து;
 
-    case type_undef: default:
+    நிலை type_undef: இயல்பு:
       affirm (false);
     }
 
-  if (close (STDIN_FILENO) != 0)
+  எனில் (close (STDIN_FILENO) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (infile));
-  closeout (NULL, output_desc, filter_pid, outfile);
+  closeout (வெற்று, output_desc, filter_pid, outfile);
 
   main_exit (EXIT_SUCCESS);
 }

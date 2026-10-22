@@ -16,14 +16,14 @@
 
 /* Written by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
-#include "xgethostname.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "long-options.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "xgethostname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "hostname"
@@ -31,29 +31,29 @@
 #define AUTHORS proper_name ("Jim Meyering")
 
 #ifndef HAVE_SETHOSTNAME
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# எனில் defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
 #  include <sys/systeminfo.h>
 # endif
 
-static int
-sethostname (char const *name, size_t namelen)
+நிலையான முழு
+sethostname (எழுத்து மாறிலி *name, size_t namelen)
 {
-# if defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
+# எனில் defined HAVE_SYSINFO && defined HAVE_SYS_SYSTEMINFO_H
   /* Using sysinfo() is the SVR4 mechanism to set a hostname. */
-  return (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
-# else
+  திரும்பு (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
+# இல்லையெனில்
   errno = ENOTSUP;
-  return -1;
+  திரும்பு -1;
 # endif
 }
 #endif
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [NAME]\n\
@@ -69,10 +69,10 @@ Print or set the hostname of the current system.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  char *hostname;
+  எழுத்து *hostname;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -84,26 +84,26 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (எழுத்து மாறிலி *) வெற்று);
 
-  if (optind + 1 < argc)
+  எனில் (optind + 1 < argc)
      {
        error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
        usage (EXIT_FAILURE);
      }
 
-  if (optind + 1 == argc)
+  எனில் (optind + 1 == argc)
     {
       /* Set hostname to operand.  */
-      char const *name = argv[optind];
-      if (sethostname (name, strlen (name)) != 0)
+      எழுத்து மாறிலி *name = argv[optind];
+      எனில் (sethostname (name, strlen (name)) != 0)
         error (EXIT_FAILURE, errno, _("cannot set name to %s"),
                quote (name));
     }
-  else
+  இல்லையெனில்
     {
       hostname = xgethostname ();
-      if (hostname == NULL)
+      எனில் (hostname == வெற்று)
         error (EXIT_FAILURE, errno, _("cannot determine hostname"));
       puts (hostname);
     }

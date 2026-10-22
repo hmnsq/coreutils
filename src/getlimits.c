@@ -16,17 +16,17 @@
 
 /* Written by Pádraig Brady  */
 
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
-#include <signal.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <float.h>
+#அந்தர்பாவ <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#அந்தர்பாவ <signal.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <float.h>
 
-#include "errno-iter.h"
-#include "ftoastr.h"
-#include "system.h"
-#include "ioblksize.h"
-#include "long-options.h"
+#அந்தர்பாவ "errno-iter.h"
+#அந்தர்பாவ "ftoastr.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "ioblksize.h"
+#அந்தர்பாவ "long-options.h"
 
 #define PROGRAM_NAME "getlimits"
 
@@ -75,19 +75,19 @@
 #define UID_T_MIN 0
 #define GID_T_MIN 0
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s\n\
 "), program_name);
 
       fputs (_("\
-Output platform dependent limits in a format useful for shell scripts.\n\
+Output platform dependent limits in a format useful க்கு shell scripts.\n\
 \n\
 "), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
@@ -101,49 +101,49 @@ Output platform dependent limits in a format useful for shell scripts.\n\
    representation is BUF + 1.  Do this in-place, in the buffer.
    Return a pointer to the result, which is normally BUF + 1, but is
    BUF if the representation grew in size.  */
-static char const *
-decimal_absval_add_one (char *buf)
+நிலையான எழுத்து மாறிலி *
+decimal_absval_add_one (எழுத்து *buf)
 {
   bool negative = (buf[1] == '-');
-  char *absnum = buf + 1 + negative;
-  char *p = absnum + strlen (absnum);
+  எழுத்து *absnum = buf + 1 + negative;
+  எழுத்து *p = absnum + strlen (absnum);
   absnum[-1] = '0';
-  while (*--p == '9')
+  போது (*--p == '9')
     *p = '0';
   ++*p;
-  char *result = MIN (absnum, p);
-  if (negative)
+  எழுத்து *result = MIN (absnum, p);
+  எனில் (negative)
     *--result = '-';
-  return result;
+  திரும்பு result;
 }
 
 #define PRINT_FLOATTYPE(N, T, FTOASTR, BUFSIZE)                         \
-static void                                                             \
+நிலையான வெறுமை                                                             \
 N (T x)                                                                 \
 {                                                                       \
-  char buf[BUFSIZE];                                                    \
-  FTOASTR (buf, sizeof buf, FTOASTR_LEFT_JUSTIFY, 0, x);                \
+  எழுத்து buf[BUFSIZE];                                                    \
+  FTOASTR (buf, அளவு buf, FTOASTR_இடது_JUSTIFY, 0, x);                \
   puts (buf);                                                           \
 }
 
-PRINT_FLOATTYPE (print_FLT, float, ftoastr, FLT_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_DBL, double, dtoastr, DBL_BUFSIZE_BOUND)
-PRINT_FLOATTYPE (print_LDBL, long double, ldtoastr, LDBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_FLT, தசம, ftoastr, FLT_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_DBL, இரட்டை, dtoastr, DBL_BUFSIZE_BOUND)
+PRINT_FLOATTYPE (print_LDBL, long இரட்டை, ldtoastr, LDBL_BUFSIZE_BOUND)
 
-static int
-print_errno (void *name, int e)
+நிலையான முழு
+print_errno (வெறுமை *name, முழு e)
 {
-  char const *err_name = name ? name : strerrorname_np (e);
-  if (err_name)
+  எழுத்து மாறிலி *err_name = name ? name : strerrorname_np (e);
+  எனில் (err_name)
     printf ("%s=%s\n", err_name,
             quotearg_style (shell_escape_quoting_style, strerror (e)));
-  return 0;
+  திரும்பு 0;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  char limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
+  எழுத்து limit[1 + MAX (INT_BUFSIZE_BOUND (intmax_t),
                       INT_BUFSIZE_BOUND (uintmax_t))];
 
   initialize_main (&argc, &argv);
@@ -156,13 +156,13 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    VERSION, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (எழுத்து மாறிலி *) வெற்று);
 
 #define print_int(TYPE)                                                  \
   sprintf (limit + 1, "%ju", (uintmax_t) {TYPE##_MAX});                  \
   printf (#TYPE"_MAX=%s\n", limit + 1);                                  \
   printf (#TYPE"_OFLOW=%s\n", decimal_absval_add_one (limit));           \
-  if (TYPE##_MIN)                                                        \
+  எனில் (TYPE##_MIN)                                                        \
     {                                                                    \
       sprintf (limit + 1, "%jd", (intmax_t) {TYPE##_MIN});               \
       printf (#TYPE"_MIN=%s\n", limit + 1);                              \
@@ -204,20 +204,20 @@ main (int argc, char **argv)
   printf ("IO_BUFSIZE=%ju\n", (uintmax_t) {IO_BUFSIZE});
 
   /* Errnos */
-  errno_iterate (print_errno, NULL);
+  errno_iterate (print_errno, வெற்று);
   /* Common errno aliases */
-#if defined ENOTEMPTY && ENOTEMPTY == EEXIST
-  print_errno ((char*)"ENOTEMPTY", EEXIST);
+#எனில் defined ENOTEMPTY && ENOTEMPTY == EEXIST
+  print_errno ((எழுத்து*)"ENOTEMPTY", EEXIST);
 #endif
-#if defined ENOTSUP && ENOTSUP == EOPNOTSUPP
-  print_errno ((char*)"ENOTSUP", EOPNOTSUPP);
+#எனில் defined ENOTSUP && ENOTSUP == EOPNOTSUPP
+  print_errno ((எழுத்து*)"ENOTSUP", EOPNOTSUPP);
 #endif
-#if defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
-  print_errno ((char*)"EWOULDBLOCK", EAGAIN);
+#எனில் defined EWOULDBLOCK && EWOULDBLOCK == EAGAIN
+  print_errno ((எழுத்து*)"EWOULDBLOCK", EAGAIN);
 #endif
-#if defined EDEADLOCK && EDEADLOCK == EDEADLK
-  print_errno ((char*)"EDEADLOCK", EDEADLK);
+#எனில் defined EDEADLOCK && EDEADLOCK == EDEADLK
+  print_errno ((எழுத்து*)"EDEADLOCK", EDEADLK);
 #endif
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

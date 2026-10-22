@@ -27,18 +27,18 @@
 
    David MacKenzie and Richard Mlynarik */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <getopt.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <getopt.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "printenv.h"
-#include "xbinary-io.h"
+#அந்தர்பாவ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "printenv.h"
+#அந்தர்பாவ "xbinary-io.h"
 
 /* Exit status for syntax errors, etc.  */
-enum { PRINTENV_FAILURE = 2 };
+எண்ணிக்கை { PRINTENV_FAILURE = 2 };
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "printenv"
@@ -49,41 +49,41 @@ enum { PRINTENV_FAILURE = 2 };
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   QUOTING_STYLE_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"null", no_argument, NULL, '0'},
-  {"quoting-style", required_argument, NULL, QUOTING_STYLE_OPTION},
+  {"null", no_argument, வெற்று, '0'},
+  {"quoting-style", required_argument, வெற்று, QUOTING_STYLE_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION] [VARIABLE]...\n\
-Print the values of the specified environment VARIABLE(s).\n\
-If no VARIABLE is specified, print name and value pairs for them all.\n\
+Print the மதிப்புகள் of the specified environment VARIABLE(s).\n\
+If no VARIABLE is specified, print name and மதிப்பு pairs க்கு them all.\n\
 \n\
 "),
               program_name);
       oputs (_("\
   -0, --null\n\
-         end each output line with NUL, not newline\n\
+         end each output வரி with NUL, not newline\n\
 "));
       oputs (_("\
       --quoting-style=WORD\n\
-         use quoting style WORD for names and values:\n\
+         use quoting style WORD க்கு names and மதிப்புகள்:\n\
            literal, locale, shell, shell-always,\n\
            shell-escape, shell-escape-always, c, escape\n\
 "));
@@ -95,11 +95,11 @@ If no VARIABLE is specified, print name and value pairs for them all.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   bool opt_nul_terminate_output = false;
-  int quoting_style_opt = -1;
+  முழு quoting_style_opt = -1;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -110,79 +110,79 @@ main (int argc, char **argv)
   initialize_exit_failure (PRINTENV_FAILURE);
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "+0", longopts, NULL)) != -1)
+  முழு optc;
+  போது ((optc = getopt_long (argc, argv, "+0", longopts, வெற்று)) != -1)
     {
-      switch (optc)
+      தேர்வு (optc)
         {
-        case '0':
+        நிலை '0':
           opt_nul_terminate_output = true;
           quoting_style_opt = literal_quoting_style;
-          break;
-        case QUOTING_STYLE_OPTION:
+          நிறுத்து;
+        நிலை QUOTING_STYLE_OPTION:
           quoting_style_opt = XARGMATCH ("--quoting-style", optarg,
                                          quoting_style_args,
                                          quoting_style_vals);
-          break;
+          நிறுத்து;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        இயல்பு:
           usage (PRINTENV_FAILURE);
         }
     }
 
   bool quote_output = false;
-  int qs = quoting_style_opt;
-  if (qs < 0 && isatty (STDOUT_FILENO))
+  முழு qs = quoting_style_opt;
+  எனில் (qs < 0 && isatty (STDOUT_FILENO))
     {
       qs = getenv_quoting_style ();
-      if (qs < 0)
+      எனில் (qs < 0)
         qs = shell_escape_quoting_style;
     }
-  if (0 <= qs && qs != literal_quoting_style)
+  எனில் (0 <= qs && qs != literal_quoting_style)
     {
-      set_quoting_style (NULL, qs);
+      set_quoting_style (வெற்று, qs);
       quote_output = true;
     }
 
-  idx_t const n_args = argc - optind;
+  idx_t மாறிலி n_args = argc - optind;
   bool ok;
-  char const terminator = opt_nul_terminate_output ? '\0' : '\n';
+  எழுத்து மாறிலி terminator = opt_nul_terminate_output ? '\0' : '\n';
 
-  if (opt_nul_terminate_output)
-    xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  எனில் (opt_nul_terminate_output)
+    xset_இருமம்_mode (STDOUT_FILENO, O_இருமம்);
 
-  if (n_args <= 0)
+  எனில் (n_args <= 0)
     {
-      for (char **env = environ; *env != NULL; ++env)
+      க்கு (எழுத்து **env = environ; *env != வெற்று; ++env)
         print_envvar (*env, terminator, quote_output);
       ok = true;
     }
-  else
+  இல்லையெனில்
     {
-      int matches = 0;
+      முழு matches = 0;
 
-      for (int i = optind; i < argc; ++i)
+      க்கு (முழு i = optind; i < argc; ++i)
         {
           bool matched = false;
 
           /* 'printenv a=b' is silent, even if 'a=b=c' is in environ.  */
-          if (strchr (argv[i], '='))
-            continue;
+          எனில் (strchr (argv[i], '='))
+            தொடர்;
 
-          for (char **env = environ; *env; ++env)
+          க்கு (எழுத்து **env = environ; *env; ++env)
             {
-              char const *ep = *env;
-              char const *ap = argv[i];
-              while (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
+              எழுத்து மாறிலி *ep = *env;
+              எழுத்து மாறிலி *ap = argv[i];
+              போது (*ep != '\0' && *ap != '\0' && *ep++ == *ap++)
                 {
-                  if (*ep == '=' && *ap == '\0')
+                  எனில் (*ep == '=' && *ap == '\0')
                     {
-                      char const *val = ep + 1;
+                      எழுத்து மாறிலி *val = ep + 1;
                       fputs (quote_output ? quoteN (val) : val, stdout);
                       putchar (terminator);
                       matched = true;
-                      break;
+                      நிறுத்து;
                     }
                 }
             }
@@ -193,5 +193,5 @@ main (int argc, char **argv)
       ok = (matches == argc - optind);
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  திரும்பு ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

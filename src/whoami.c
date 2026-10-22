@@ -18,26 +18,26 @@
 /* Equivalent to 'id -un'. */
 /* Written by Richard Mlynarik. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <pwd.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "long-options.h"
+#அந்தர்பாவ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "whoami"
 
 #define AUTHORS proper_name ("Richard Mlynarik")
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]...\n"), program_name);
       fputs (_("\
@@ -52,8 +52,8 @@ Same as id -un.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   uid_t NO_UID = -1;
 
@@ -67,9 +67,9 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (எழுத்து மாறிலி *) வெற்று);
 
-  if (optind != argc)
+  எனில் (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
@@ -77,10 +77,10 @@ main (int argc, char **argv)
 
   errno = 0;
   uid_t uid = geteuid ();
-  struct passwd *pw = uid == NO_UID && errno ? NULL : getpwuid (uid);
-  if (!pw)
+  கட்டமைப்பு passwd *pw = uid == NO_UID && errno ? வெற்று : getpwuid (uid);
+  எனில் (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %ju"),
            (uintmax_t) uid);
   puts (pw->pw_name);
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

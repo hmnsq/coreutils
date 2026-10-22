@@ -14,38 +14,38 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
-#include "quote.h"
+#அந்தர்பாவ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "basename"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static bool quote_output;
+நிலையான bool quote_output;
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"multiple", no_argument, NULL, 'a'},
-  {"suffix", required_argument, NULL, 's'},
-  {"zero", no_argument, NULL, 'z'},
+  {"multiple", no_argument, வெற்று, 'a'},
+  {"suffix", required_argument, வெற்று, 's'},
+  {"zero", no_argument, வெற்று, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s NAME [SUFFIX]\n\
@@ -69,7 +69,7 @@ If specified, also remove a trailing SUFFIX.\n\
 "));
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output வரி with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -90,16 +90,16 @@ Examples:\n\
 /* Remove SUFFIX from the end of NAME if it is there, unless NAME
    consists entirely of SUFFIX.  */
 
-static void
-remove_suffix (char *name, char const *suffix, idx_t suffix_len)
+நிலையான வெறுமை
+remove_suffix (எழுத்து *name, எழுத்து மாறிலி *suffix, idx_t suffix_len)
 {
-  char *np = name + strlen (name);
-  char const *sp = suffix + suffix_len;
+  எழுத்து *np = name + strlen (name);
+  எழுத்து மாறிலி *sp = suffix + suffix_len;
 
-  while (np > name && sp > suffix)
-    if (*--np != *--sp)
-      return;
-  if (np > name)
+  போது (np > name && sp > suffix)
+    எனில் (*--np != *--sp)
+      திரும்பு;
+  எனில் (np > name)
     *np = '\0';
 }
 
@@ -107,11 +107,11 @@ remove_suffix (char *name, char const *suffix, idx_t suffix_len)
    length of SUFFIX_LEN bytes, remove the trailing SUFFIX.
    Finally, output the result string.  */
 
-static void
-perform_basename (char const *string, char const *suffix, idx_t suffix_len,
+நிலையான வெறுமை
+perform_basename (எழுத்து மாறிலி *string, எழுத்து மாறிலி *suffix, idx_t suffix_len,
                   bool use_nuls)
 {
-  char *name = base_name (string);
+  எழுத்து *name = base_name (string);
   strip_trailing_slashes (name);
 
   /* Per POSIX, 'basename // /' must return '//' on platforms with
@@ -120,21 +120,21 @@ perform_basename (char const *string, char const *suffix, idx_t suffix_len,
      skipping suffix stripping if base_name returned an absolute path
      or a drive letter (only possible if name is a file-system
      root).  */
-  if (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
+  எனில் (0 < suffix_len && IS_RELATIVE_FILE_NAME (name)
       && ! FILE_SYSTEM_PREFIX_LEN (name))
     remove_suffix (name, suffix, suffix_len);
 
   fputs (quote_output ? quoteN (name) : name, stdout);
   putchar (use_nuls ? '\0' : '\n');
-  free (name);
+  விடுவி (name);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   bool multiple_names = false;
   bool use_nuls = false;
-  char const *suffix = NULL;
+  எழுத்து மாறிலி *suffix = வெற்று;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -144,72 +144,72 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  போது (true)
     {
-      int c = getopt_long (argc, argv, "+as:z", longopts, NULL);
+      முழு c = getopt_long (argc, argv, "+as:z", longopts, வெற்று);
 
-      if (c == -1)
-        break;
+      எனில் (c == -1)
+        நிறுத்து;
 
-      switch (c)
+      தேர்வு (c)
         {
-        case 's':
+        நிலை 's':
           suffix = optarg;
           /* -s implies -a, so...  */
           FALLTHROUGH;
 
-        case 'a':
+        நிலை 'a':
           multiple_names = true;
-          break;
+          நிறுத்து;
 
-        case 'z':
+        நிலை 'z':
           use_nuls = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  எனில் (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (! multiple_names)
+  எனில் (! multiple_names)
     {
-      if (optind + 2 == argc)
+      எனில் (optind + 2 == argc)
         suffix = argv[optind + 1];
-      else if (optind + 2 < argc)
+      இல்லையெனில் எனில் (optind + 2 < argc)
         {
           error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  எனில் (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      முழு qs = getenv_quoting_style ();
+      எனில் (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      எனில் (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (வெற்று, qs);
           quote_output = true;
         }
     }
 
   idx_t suffix_len = suffix ? strlen (suffix) : 0;
 
-  char **file = argv + optind;
-  int n_files = multiple_names ? argc - optind : 1;
+  எழுத்து **file = argv + optind;
+  முழு n_files = multiple_names ? argc - optind : 1;
 
-  for (int i = 0; i < n_files; ++i)
+  க்கு (முழு i = 0; i < n_files; ++i)
     perform_basename (file[i], suffix, suffix_len, use_nuls);
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

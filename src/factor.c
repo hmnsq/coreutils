@@ -77,18 +77,18 @@
 */
 
 
-#include <config.h>
-#include <getopt.h>
-#include <stdbit.h>
-#include <stdio.h>
-#include <gmp.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <stdbit.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <gmp.h>
 
-#include "system.h"
-#include "assure.h"
-#include "full-write.h"
-#include "quote.h"
-#include "readtokens.h"
-#include "xstrtol.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "full-write.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "readtokens.h"
+#அந்தர்பாவ "xstrtol.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "factor"
@@ -99,7 +99,7 @@
   proper_name_lite ("Niels Moller", "Niels M\303\266ller")
 
 /* Token delimiters when reading from a file.  */
-static char const DELIM[] = "\n\t ";
+நிலையான எழுத்து மாறிலி DELIM[] = "\n\t ";
 
 /* GMP uses the unsigned integer type mp_limb_t as its word in
    multiprecision arithmetic.  This code uses the same word for single
@@ -119,7 +119,7 @@ static char const DELIM[] = "\n\t ";
    and the notation (a1,a0) stands for B*a1 + a0.  */
 #ifdef GMP_LIMB_BITS
 # define W_TYPE_SIZE GMP_LIMB_BITS
-#else
+#இல்லையெனில்
 /* An older GMP, or mini-gmp; guess the usual value.  */
 # define W_TYPE_SIZE ULONG_WIDTH
 #endif
@@ -137,25 +137,25 @@ static_assert (MP_LIMB_MAX >> (W_TYPE_SIZE - 1) == 1);
 static_assert (INT_MAX < MP_LIMB_MAX);
 
 #ifndef USE_LONGLONG_H
-# if (defined INT32_MAX && defined UINT32_MAX \
+# எனில் (defined INT32_MAX && defined UINT32_MAX \
       && defined INT64_MAX && defined UINT64_MAX)
 #  define USE_LONGLONG_H true
-# else
+# இல்லையெனில்
 #  define USE_LONGLONG_H false
 # endif
 #endif
 
-#if USE_LONGLONG_H
+#எனில் USE_LONGLONG_H
 
 /* Make definitions for longlong.h to make it do what it can do for us */
 
-typedef mp_limb_t UWtype;
-typedef unsigned int UHWtype;
+வகைவரை mp_limb_t UWtype;
+வகைவரை unsigned முழு UHWtype;
 # undef UDWtype
-typedef int32_t SItype;
-typedef uint32_t USItype;
-typedef int64_t DItype;
-typedef uint64_t UDItype;
+வகைவரை int32_t SItype;
+வகைவரை uint32_t USItype;
+வகைவரை int64_t DItype;
+வகைவரை uint64_t UDItype;
 # define LONGLONG_STANDALONE     /* Don't require GMP's longlong.h mdep files */
 
 /* FIXME make longlong.h really standalone, so that ASSERT, __GMP_DECLSPEC
@@ -163,24 +163,24 @@ typedef uint64_t UDItype;
 # define ASSERT(x)
 # define __GMP_DECLSPEC
 # ifndef __GMP_GNUC_PREREQ
-#  if defined __GNUC__ && defined __GNUC_MINOR__
+#  எனில் defined __GNUC__ && defined __GNUC_MINOR__
 #   define __GMP_GNUC_PREREQ(a, b) ((a) < __GNUC__ + ((b) <= __GNUC_MINOR__))
-#  else
+#  இல்லையெனில்
 #   define __GMP_GNUC_PREREQ(a, b) false
 #  endif
 # endif
 
 /* longlong.h uses these macros only in certain system compiler combinations.
    Ensure usage to pacify -Wunused-macros.  */
-# if defined ASSERT || defined __GMP_DECLSPEC || defined __GMP_GNUC_PREREQ
+# எனில் defined ASSERT || defined __GMP_DECLSPEC || defined __GMP_GNUC_PREREQ
 # endif
 
 /* longlong.h uses casts even when useless.  */
-# if 14 <= __GNUC__
+# எனில் 14 <= __GNUC__
 #  pragma GCC diagnostic ignored "-Wuseless-cast"
 # endif
 
-# if _ARCH_PPC
+# எனில் _ARCH_PPC
 #  define HAVE_HOST_CPU_FAMILY_powerpc 1
 # endif
 # include "longlong.h"
@@ -189,75 +189,75 @@ typedef uint64_t UDItype;
 /* 2*3*5*7*11...*101 fits in 128 bits, and has 26 prime factors.
    This code can be extended in the future as needed; show as an example
    2*3*5*7*11...*193 which fits in 257 bits, and has 44 prime factors.  */
-#if 2 * W_TYPE_SIZE <= 128
-enum { MAX_NFACTS = 26 };
-#elif 2 * W_TYPE_SIZE <= 257
-enum { MAX_NFACTS = 44 };
-#else
+#எனில் 2 * W_TYPE_SIZE <= 128
+எண்ணிக்கை { MAX_NFACTS = 26 };
+#அல்லதெனில் 2 * W_TYPE_SIZE <= 257
+எண்ணிக்கை { MAX_NFACTS = 44 };
+#இல்லையெனில்
 # error "configuration has a wide word; please update MAX_NFACTS definition"
 #endif
 
-enum
+எண்ணிக்கை
 {
   DEV_DEBUG_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+நிலையான கட்டமைப்பு option மாறிலி long_options[] =
 {
-  {"exponents", no_argument, NULL, 'h'},
-  {"-debug", no_argument, NULL, DEV_DEBUG_OPTION},
+  {"exponents", no_argument, வெற்று, 'h'},
+  {"-debug", no_argument, வெற்று, DEV_DEBUG_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* If true, use p^e output format.  */
-static bool print_exponents;
+நிலையான bool print_exponents;
 
 /* This represents an unsigned integer twice as wide as a word.  */
-typedef struct { mp_limb_t uu[2]; } uuint;
+வகைவரை கட்டமைப்பு { mp_limb_t uu[2]; } uuint;
 
 /* Accessors and constructors for the type.  Programs should not
    access the type's internals directly, in case some future version
    replaces the type with unsigned __int256 or whatever.  */
-static mp_limb_t lo (uuint u) { return u.uu[0]; }
-static mp_limb_t hi (uuint u) { return u.uu[1]; }
-static void hiset (uuint *u, mp_limb_t hi) { u->uu[1] = hi; }
-static bool hi_is_set (uuint const *pu) { return pu->uu[1] != 0; }
-static void
+நிலையான mp_limb_t lo (uuint u) { திரும்பு u.uu[0]; }
+நிலையான mp_limb_t hi (uuint u) { திரும்பு u.uu[1]; }
+நிலையான வெறுமை hiset (uuint *u, mp_limb_t hi) { u->uu[1] = hi; }
+நிலையான bool hi_is_set (uuint மாறிலி *pu) { திரும்பு pu->uu[1] != 0; }
+நிலையான வெறுமை
 uuset (mp_limb_t *phi, mp_limb_t *plo, uuint uu)
 {
   *phi = hi (uu);
   *plo = lo (uu);
 }
-static uuint
+நிலையான uuint
 make_uuint (mp_limb_t hi, mp_limb_t lo)
 {
-  return (uuint) {{lo, hi}};
+  திரும்பு (uuint) {{lo, hi}};
 }
 
 /* BIG_POWER_OF_10 is a positive power of 10 that fits in a word.
    The larger it is, the more efficient the code will likely be.
    LOG_BIG_POWER_OF_10 = log (BIG_POWER_OF_10).  */
-#if W_TYPE_SIZE < 4
+#எனில் W_TYPE_SIZE < 4
 # error "Configuration error; platform word is impossibly narrow"
-#elif W_TYPE_SIZE < 30
+#அல்லதெனில் W_TYPE_SIZE < 30
 /* An unusually narrow word.  */
-static mp_limb_t const BIG_POWER_OF_10 = 10;
-enum { LOG_BIG_POWER_OF_10 = 1 };
-#elif W_TYPE_SIZE < 64
+நிலையான mp_limb_t மாறிலி BIG_POWER_OF_10 = 10;
+எண்ணிக்கை { LOG_BIG_POWER_OF_10 = 1 };
+#அல்லதெனில் W_TYPE_SIZE < 64
 /* Almost surely a 32-bit word.  */
-static mp_limb_t const BIG_POWER_OF_10 = 1000000000;
-enum { LOG_BIG_POWER_OF_10 = 9 };
-#elif W_TYPE_SIZE < 128
+நிலையான mp_limb_t மாறிலி BIG_POWER_OF_10 = 1000000000;
+எண்ணிக்கை { LOG_BIG_POWER_OF_10 = 9 };
+#அல்லதெனில் W_TYPE_SIZE < 128
 /* Almost surely a 64-bit word.  */
-static mp_limb_t const BIG_POWER_OF_10 = 10000000000000000000llu;
-enum { LOG_BIG_POWER_OF_10 = 19 };
-#else
+நிலையான mp_limb_t மாறிலி BIG_POWER_OF_10 = 10000000000000000000llu;
+எண்ணிக்கை { LOG_BIG_POWER_OF_10 = 19 };
+#இல்லையெனில்
 /* An unusually wide word.  */
-static mp_limb_t const BIG_POWER_OF_10 =
+நிலையான mp_limb_t மாறிலி BIG_POWER_OF_10 =
   (mp_limb_t) 10000000000000000000llu * 10000000000000000000llu;
-enum { LOG_BIG_POWER_OF_10 = 38 };
+எண்ணிக்கை { LOG_BIG_POWER_OF_10 = 38 };
 #endif
 
 /* Check that struct factors can use unsigned char to record a uuint's
@@ -268,7 +268,7 @@ static_assert (2 * W_TYPE_SIZE - 1 <= UCHAR_MAX);
 static_assert (MAX_NFACTS <= UCHAR_MAX);
 
 /* Prime factors of a uuint.  At most one is a uuint.  */
-struct factors
+கட்டமைப்பு factors
 {
   /* If PLARGE.uu[1] is nonzero, PLARGE is a double-word prime factor
      with multiplicity 1; otherwise, PLARGE is not a factor and
@@ -278,55 +278,55 @@ struct factors
   /* Distinct single-word prime factors, their multiplicities,
      and their number.  */
   mp_limb_t     p[MAX_NFACTS];
-  unsigned char e[MAX_NFACTS];
-  unsigned char nfactors;
+  unsigned எழுத்து e[MAX_NFACTS];
+  unsigned எழுத்து nfactors;
 };
 
 /* An mpz's prime factor and multiplicity.  */
-struct mp_factor
+கட்டமைப்பு mp_factor
 {
   mpz_t p;
   mp_bitcnt_t e;
 };
 
 /* Prime factors of an mpz_t.  */
-struct mp_factors
+கட்டமைப்பு mp_factors
 {
   idx_t nfactors;
   idx_t nalloc;
 
   /* A vector of distinct prime factors, a count of the factors,
      and the number of allocated slots in the vector.  */
-  struct mp_factor *f COUNTED_BY (nfactors);
+  கட்டமைப்பு mp_factor *f COUNTED_BY (nfactors);
 };
 
-static void factor (struct factors *, mp_limb_t, mp_limb_t);
-static void factor_up (struct factors *, mp_limb_t, mp_limb_t, idx_t);
+நிலையான வெறுமை factor (கட்டமைப்பு factors *, mp_limb_t, mp_limb_t);
+நிலையான வெறுமை factor_up (கட்டமைப்பு factors *, mp_limb_t, mp_limb_t, idx_t);
 
 /* Set (w1,w0) = u * v.  */
 #ifndef umul_ppmm
 /* Speed things up if there is an unsigned type uuroom_t that is wide
    enough to hold two words.  */
-# if W_TYPE_SIZE <= UINTMAX_WIDTH / 2
+# எனில் W_TYPE_SIZE <= UINTMAX_WIDTH / 2
 #  define uuroom_t uintmax_t
 # elif W_TYPE_SIZE <= 64 && defined __SIZEOF_INT128__
 #  define uuroom_t unsigned __int128
 # endif
 # ifdef uuroom_t
 #  define umul_ppmm(w1, w0, u, v)		\
-    do {					\
+    செய் {					\
       uuroom_t _u = u, _w = _u * (v);		\
       (w1) = _w >> W_TYPE_SIZE;			\
       (w0) = _w;				\
-    } while (false)
+    } போது (false)
 # endif
 #endif
 #ifndef umul_ppmm
-static mp_limb_t const __ll_B = (mp_limb_t) 1 << (W_TYPE_SIZE / 2);
-static mp_limb_t __ll_lowpart (mp_limb_t t) { return t & (__ll_B - 1); }
-static mp_limb_t __ll_highpart (mp_limb_t t) { return t >> (W_TYPE_SIZE / 2); }
+நிலையான mp_limb_t மாறிலி __ll_B = (mp_limb_t) 1 << (W_TYPE_SIZE / 2);
+நிலையான mp_limb_t __ll_lowpart (mp_limb_t t) { திரும்பு t & (__ll_B - 1); }
+நிலையான mp_limb_t __ll_highpart (mp_limb_t t) { திரும்பு t >> (W_TYPE_SIZE / 2); }
 # define umul_ppmm(w1, w0, u, v)                                        \
-  do {                                                                  \
+  செய் {                                                                  \
     mp_limb_t __u = u, __v = v,						\
                                                                         \
       __ul = __ll_lowpart (__u),					\
@@ -340,30 +340,30 @@ static mp_limb_t __ll_highpart (mp_limb_t t) { return t >> (W_TYPE_SIZE / 2); }
       __x3 = __uh * __vh;						\
                                                                         \
     __x1 += __ll_highpart (__x0);/* This can't give carry.  */		\
-    if (ckd_add (&__x1, __x1, __x2))	/* Did this give a carry?  */	\
+    எனில் (ckd_add (&__x1, __x1, __x2))	/* Did this give a carry?  */	\
       __x3 += __ll_B;		/* Yes, add it in the proper pos.  */	\
                                                                         \
     (w1) = __x3 + __ll_highpart (__x1);                                 \
     (w0) = (__x1 << W_TYPE_SIZE / 2) + __ll_lowpart (__x0);             \
-  } while (false)
+  } போது (false)
 #endif
 
 /* Set (q,r) to the quotient and remainder of dividing (n1,n0) by d.  */
-#if !defined udiv_qrnnd || defined UDIV_NEEDS_NORMALIZATION
+#எனில் !defined udiv_qrnnd || defined UDIV_NEEDS_NORMALIZATION
 /* Define our own, not needing normalization.  This function is
    currently not performance critical, so keep it simple.  Similar to
    the mod macro below.  */
 # undef udiv_qrnnd
 # define udiv_qrnnd(q, r, n1, n0, d)                                    \
-  do {                                                                  \
+  செய் {                                                                  \
     mp_limb_t __d1 = d, __d0 = 0, __q = 0, __r1 = n1, __r0 = n0;	\
                                                                         \
     affirm (__r1 < __d1);                                               \
-    for (int __i = W_TYPE_SIZE; __i > 0; __i--)                         \
+    க்கு (முழு __i = W_TYPE_SIZE; __i > 0; __i--)                         \
       {                                                                 \
         rsh2 (__d1, __d0, __d1, __d0, 1);                               \
         __q <<= 1;                                                      \
-        if (ge2 (__r1, __r0, __d1, __d0))                               \
+        எனில் (ge2 (__r1, __r0, __d1, __d0))                               \
           {                                                             \
             __q++;                                                      \
             sub_ddmmss (__r1, __r0, __r1, __r0, __d1, __d0);            \
@@ -371,45 +371,45 @@ static mp_limb_t __ll_highpart (mp_limb_t t) { return t >> (W_TYPE_SIZE / 2); }
       }                                                                 \
     (r) = __r0;                                                         \
     (q) = __q;                                                          \
-  } while (false)
+  } போது (false)
 #endif
 
 /* Set (sh,sl) = (ah,al) + (bh,bl).  Overflow wraps around.  */
-#if !defined add_ssaaaa
+#எனில் !defined add_ssaaaa
 # define add_ssaaaa(sh, sl, ah, al, bh, bl)                             \
    ((sh) = (ah) + (bh) + ckd_add (&(sl), al, bl))
 #endif
 
 /* Set (rh,rl) = (ah,al) >> cnt, where 0 < cnt < W_TYPE_SIZE.  */
 #define rsh2(rh, rl, ah, al, cnt)                                       \
-  do {                                                                  \
+  செய் {                                                                  \
     (rl) = ((ah) << (W_TYPE_SIZE - (cnt))) | ((al) >> (cnt));           \
     (rh) = (ah) >> (cnt);                                               \
-  } while (false)
+  } போது (false)
 
 /* Set (rh,rl) = (ah,al) << cnt, where 0 < cnt < W_TYPE_SIZE.
    Overflow wraps around.  */
 #define lsh2(rh, rl, ah, al, cnt)                                       \
-  do {                                                                  \
+  செய் {                                                                  \
     (rh) = ((ah) << cnt) | ((al) >> (W_TYPE_SIZE - (cnt)));             \
     (rl) = (al) << (cnt);                                               \
-  } while (false)
+  } போது (false)
 
 /* (ah,hl) < (bh,bl)?  */
-static bool
+நிலையான bool
 lt2 (mp_limb_t ah, mp_limb_t al, mp_limb_t bh, mp_limb_t bl)
 {
   mp_limb_t dh, dl;
   bool vh = ckd_sub (&dh, ah, bh);
   mp_limb_t vl = ckd_sub (&dl, al, bl);
-  return vh | ckd_sub (&dh, dh, vl);
+  திரும்பு vh | ckd_sub (&dh, dh, vl);
 }
 
 /* (ah,hl) >= (bh,bl)?  */
-static bool
+நிலையான bool
 ge2 (mp_limb_t ah, mp_limb_t al, mp_limb_t bh, mp_limb_t bl)
 {
-  return !lt2 (ah, al, bh, bl);
+  திரும்பு !lt2 (ah, al, bh, bl);
 }
 
 /* Set (rh,rl) = (ah,al) - (bh,bl).  Overflow wraps around.  */
@@ -420,10 +420,10 @@ ge2 (mp_limb_t ah, mp_limb_t al, mp_limb_t bh, mp_limb_t bl)
 
 /* Set r = (a - b) mod n, where a < n & b <= n.  */
 #define submod(r,a,b,n)                                                 \
-  do {                                                                  \
+  செய் {                                                                  \
     mp_limb_t _s, _t = -ckd_sub (&_s, a, b);				\
     (r) = ((n) & _t) + _s;						\
-  } while (false)
+  } போது (false)
 
 /* Set r = (a + b) mod n, where a < n & b <= n.  */
 #define addmod(r,a,b,n)                                                 \
@@ -433,65 +433,65 @@ ge2 (mp_limb_t ah, mp_limb_t al, mp_limb_t bh, mp_limb_t bl)
    most significant bit of n1 must be clear.  The destination variables must be
    distinct from the mod operand.  */
 #define addmod2(r1, r0, a1, a0, b1, b0, n1, n0)                         \
-  do {                                                                  \
+  செய் {                                                                  \
     add_ssaaaa (r1, r0, a1, a0, b1, b0);				\
-    if (ge2 (r1, r0, n1, n0))						\
+    எனில் (ge2 (r1, r0, n1, n0))						\
       sub_ddmmss (r1, r0, r1, r0, n1, n0);				\
-  } while (false)
+  } போது (false)
 #define submod2(r1, r0, a1, a0, b1, b0, n1, n0)                         \
-  do {                                                                  \
+  செய் {                                                                  \
     bool _v1 = ckd_sub (&(r1), a1, b1);					\
     mp_limb_t _v0 = ckd_sub (&(r0), a0, b0);				\
-    if (_v1 | ckd_sub (&(r1), r1, _v0))					\
+    எனில் (_v1 | ckd_sub (&(r1), r1, _v0))					\
       add_ssaaaa (r1, r0, r1, r0, n1, n0);				\
-  } while (false)
+  } போது (false)
 
 /* Return 0 if x < B/2, MP_LIMB_MAX otherwise.  */
-static mp_limb_t
+நிலையான mp_limb_t
 highbit_to_mask (mp_limb_t x)
 {
-  return - (x >> (W_TYPE_SIZE - 1));
+  திரும்பு - (x >> (W_TYPE_SIZE - 1));
 }
 
 /* Return (a1,a0) mod (d1,d0), where d1 != 0.  */
-ATTRIBUTE_PURE static uuint
+ATTRIBUTE_PURE நிலையான uuint
 mod2 (mp_limb_t a1, mp_limb_t a0, mp_limb_t d1, mp_limb_t d0)
 {
   affirm (d1 != 0);
 
-  if (a1)
+  எனில் (a1)
     {
-      int cntd = stdc_leading_zeros (d1);
-      int cnta = stdc_leading_zeros (a1);
-      int cnt = cntd - cnta;
-      if (0 < cnt)
+      முழு cntd = stdc_leading_zeros (d1);
+      முழு cnta = stdc_leading_zeros (a1);
+      முழு cnt = cntd - cnta;
+      எனில் (0 < cnt)
         {
           lsh2 (d1, d0, d1, d0, cnt);
-          for (int i = 0; i < cnt; i++)
+          க்கு (முழு i = 0; i < cnt; i++)
             {
-              if (ge2 (a1, a0, d1, d0))
+              எனில் (ge2 (a1, a0, d1, d0))
                 sub_ddmmss (a1, a0, a1, a0, d1, d0);
               rsh2 (d1, d0, d1, d0, 1);
             }
         }
     }
 
-  return make_uuint (a1, a0);
+  திரும்பு make_uuint (a1, a0);
 }
 
 /* Return the greatest common divisor of a and b,
    where b is odd.  */
 ATTRIBUTE_CONST
-static mp_limb_t
+நிலையான mp_limb_t
 gcd_odd (mp_limb_t a, mp_limb_t b)
 {
-  if (a == 0)
-    return b;
+  எனில் (a == 0)
+    திரும்பு b;
 
   /* Take out least significant one bit, to make room for sign */
   b >>= 1;
 
-  for (;;)
+  க்கு (;;)
     {
       mp_limb_t t;
       mp_limb_t bgta;
@@ -500,8 +500,8 @@ gcd_odd (mp_limb_t a, mp_limb_t b)
       mp_limb_t ao = a >> stdc_trailing_zeros (a);
 
       t = (ao >> 1) - b;
-      if (t == 0)
-        return ao;
+      எனில் (t == 0)
+        திரும்பு ao;
 
       bgta = highbit_to_mask (t);
 
@@ -515,102 +515,102 @@ gcd_odd (mp_limb_t a, mp_limb_t b)
 
 /* Return the greatest common divisor of (a1,a0) and (b1,b0),
    where (b1,b0) is odd.  */
-ATTRIBUTE_PURE static uuint
+ATTRIBUTE_PURE நிலையான uuint
 gcd2_odd (mp_limb_t a1, mp_limb_t a0, mp_limb_t b1, mp_limb_t b0)
 {
   affirm (b0 & 1);
 
-  if (!a0)
+  எனில் (!a0)
     {
       a0 = a1, a1 = 0;
-      if (!a0)
-        return make_uuint (b1, b0);
+      எனில் (!a0)
+        திரும்பு make_uuint (b1, b0);
     }
-  goto make_A_odd;
+  செல் make_A_odd;
 
-  for (;;)
+  க்கு (;;)
     {
-      if ((b1 | a1) == 0)
-        return make_uuint (0, gcd_odd (b0, a0));
+      எனில் ((b1 | a1) == 0)
+        திரும்பு make_uuint (0, gcd_odd (b0, a0));
 
-      if (lt2 (b1, b0, a1, a0))
+      எனில் (lt2 (b1, b0, a1, a0))
         {
           sub_ddmmss (a1, a0, a1, a0, b1, b0);
-          if (!a0)
+          எனில் (!a0)
             a0 = a1, a1 = 0;
         make_A_odd:
           assume (a0);
-          int ctz = stdc_trailing_zeros (a0);
-          if (ctz)
+          முழு ctz = stdc_trailing_zeros (a0);
+          எனில் (ctz)
             rsh2 (a1, a0, a1, a0, ctz);
         }
-      else
+      இல்லையெனில்
         {
           sub_ddmmss (b1, b0, b1, b0, a1, a0);
-          if (!b0)
+          எனில் (!b0)
             {
               b0 = b1, b1 = 0;
-              if (!b0)
-                break;
+              எனில் (!b0)
+                நிறுத்து;
             }
-          int ctz = stdc_trailing_zeros (b0);
-          if (ctz)
+          முழு ctz = stdc_trailing_zeros (b0);
+          எனில் (ctz)
             rsh2 (b1, b0, b1, b0, ctz);
         }
     }
 
-  return make_uuint (a1, a0);
+  திரும்பு make_uuint (a1, a0);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
-static void
-factor_insert_multiplicity (struct factors *factors,
-                            mp_limb_t prime, int m)
+நிலையான வெறுமை
+factor_செருகு_multiplicity (கட்டமைப்பு factors *factors,
+                            mp_limb_t பகாஎண், முழு m)
 {
-  int nfactors = factors->nfactors;
+  முழு nfactors = factors->nfactors;
   mp_limb_t *p = factors->p;
-  unsigned char *e = factors->e;
+  unsigned எழுத்து *e = factors->e;
 
   /* Locate position for insert new or increment e.  */
-  int i;
-  for (i = nfactors; 0 < i; i--)
+  முழு i;
+  க்கு (i = nfactors; 0 < i; i--)
     {
-      if (p[i - 1] < prime)
-        break;
-      if (p[i - 1] == prime)
+      எனில் (p[i - 1] < பகாஎண்)
+        நிறுத்து;
+      எனில் (p[i - 1] == பகாஎண்)
         {
           e[i - 1] += m;
-          return;
+          திரும்பு;
         }
     }
 
   factors->nfactors = nfactors + 1;
-  memmove (&p[i + 1], &p[i], (nfactors - i) * sizeof *p);
-  memmove (&e[i + 1], &e[i], (nfactors - i) * sizeof *e);
+  memmove (&p[i + 1], &p[i], (nfactors - i) * அளவு *p);
+  memmove (&e[i + 1], &e[i], (nfactors - i) * அளவு *e);
   e[i] = m;
-  p[i] = prime;
+  p[i] = பகாஎண்;
 }
 
 /* Store into FACTORS a prime factor PRIME.  */
-static void
-factor_insert (struct factors *factors, mp_limb_t prime)
+நிலையான வெறுமை
+factor_செருகு (கட்டமைப்பு factors *factors, mp_limb_t பகாஎண்)
 {
-  factor_insert_multiplicity (factors, prime, 1);
+  factor_செருகு_multiplicity (factors, பகாஎண், 1);
 }
 
 /* Store into FACTORS a prime factor (P1,P0).  If P1 != 0,
    FACTORS must not already contain a large prime factor.  */
-static void
-factor_insert_large (struct factors *factors,
+நிலையான வெறுமை
+factor_செருகு_large (கட்டமைப்பு factors *factors,
                      mp_limb_t p1, mp_limb_t p0)
 {
-  if (p1 > 0)
+  எனில் (p1 > 0)
     {
       affirm (!hi_is_set (&factors->plarge));
       factors->plarge = make_uuint (p1, p0);
     }
-  else
-    factor_insert (factors, p0);
+  இல்லையெனில்
+    factor_செருகு (factors, p0);
 }
 
 #ifndef mpz_inits
@@ -620,15 +620,15 @@ factor_insert_large (struct factors *factors,
 # define mpz_inits(...) mpz_va_init (mpz_init, __VA_ARGS__)
 # define mpz_clears(...) mpz_va_init (mpz_clear, __VA_ARGS__)
 
-static void
-mpz_va_init (void (*mpz_single_init)(mpz_t), ...)
+நிலையான வெறுமை
+mpz_va_init (வெறுமை (*mpz_single_init)(mpz_t), ...)
 {
   va_list ap;
 
   va_start (ap, mpz_single_init);
 
   mpz_t *mpz;
-  while ((mpz = va_arg (ap, mpz_t *)))
+  போது ((mpz = va_arg (ap, mpz_t *)))
     mpz_single_init (*mpz);
 
   va_end (ap);
@@ -637,7 +637,7 @@ mpz_va_init (void (*mpz_single_init)(mpz_t), ...)
 
 #ifndef mpn_tdiv_qr
 
-static void
+நிலையான வெறுமை
 copy_mpn_from_mpz (mp_limb_t *p, mp_size_t n, mpz_t z)
 {
   mp_size_t zsize = mpz_size (z);
@@ -645,90 +645,90 @@ copy_mpn_from_mpz (mp_limb_t *p, mp_size_t n, mpz_t z)
   mpn_zero (p + zsize, n - zsize);
 }
 
-static void
+நிலையான வெறுமை
 mpn_tdiv_qr (mp_limb_t *qp, mp_limb_t *rp, MAYBE_UNUSED mp_size_t qxn,
-             mp_limb_t const *np, mp_size_t nn,
-             mp_limb_t const *dp, mp_size_t dn)
+             mp_limb_t மாறிலி *np, mp_size_t nn,
+             mp_limb_t மாறிலி *dp, mp_size_t dn)
 {
   mpz_t q, r, n, d;
-  mpz_inits (q, r, NULL);
+  mpz_inits (q, r, வெற்று);
   mpz_tdiv_qr (q, r, mpz_roinit_n (n, np, nn), mpz_roinit_n (d, dp, dn));
   copy_mpn_from_mpz (qp, nn - dn + 1, q);
   copy_mpn_from_mpz (rp, dn, r);
-  mpz_clears (q, r, NULL);
+  mpz_clears (q, r, வெற்று);
 }
 #endif
 
-static struct mp_factors mp_factor (mpz_t);
+நிலையான கட்டமைப்பு mp_factors mp_factor (mpz_t);
 
 /* Return an empty set of factors.  */
-static struct mp_factors
-mp_no_factors (void)
+நிலையான கட்டமைப்பு mp_factors
+mp_no_factors (வெறுமை)
 {
-  return (struct mp_factors) {0};
+  திரும்பு (கட்டமைப்பு mp_factors) {0};
 }
 
 /* Free storage allocated for FACTORS, making it uninitialized.  */
-static void
-mp_factor_clear (struct mp_factors *factors)
+நிலையான வெறுமை
+mp_factor_clear (கட்டமைப்பு mp_factors *factors)
 {
-  struct mp_factor *f = factors->f;
-  for (idx_t i = 0; i < factors->nfactors; i++)
+  கட்டமைப்பு mp_factor *f = factors->f;
+  க்கு (idx_t i = 0; i < factors->nfactors; i++)
     mpz_clear (f[i].p);
-  free (f);
+  விடுவி (f);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
-static void
-mp_factor_insert (struct mp_factors *factors, mpz_t prime, mp_bitcnt_t m)
+நிலையான வெறுமை
+mp_factor_செருகு (கட்டமைப்பு mp_factors *factors, mpz_t பகாஎண், mp_bitcnt_t m)
 {
   idx_t nfactors = factors->nfactors;
-  struct mp_factor *f = factors->f;
+  கட்டமைப்பு mp_factor *f = factors->f;
   idx_t i;
 
   /* Locate position for insert new or increment e.  */
-  for (i = nfactors; 0 < i; i--)
+  க்கு (i = nfactors; 0 < i; i--)
     {
-      int sgn = mpz_cmp (f[i - 1].p, prime);
-      if (sgn < 0)
-        break;
-      if (sgn == 0)
+      முழு sgn = mpz_cmp (f[i - 1].p, பகாஎண்);
+      எனில் (sgn < 0)
+        நிறுத்து;
+      எனில் (sgn == 0)
         {
           f[i - 1].e += m;
-          return;
+          திரும்பு;
         }
     }
 
-  if (nfactors == factors->nalloc)
-    factors->f = f = xpalloc (f, &factors->nalloc, 1, -1, sizeof *f);
+  எனில் (nfactors == factors->nalloc)
+    factors->f = f = xpalloc (f, &factors->nalloc, 1, -1, அளவு *f);
 
   factors->nfactors = nfactors + 1;
-  memmove (&f[i + 1], &f[i], (nfactors - i) * sizeof *f);
+  memmove (&f[i + 1], &f[i], (nfactors - i) * அளவு *f);
   f[i].e = m;
-  mpz_init_set (f[i].p, prime);
+  mpz_init_set (f[i].p, பகாஎண்);
 }
 
 /* Store into FACTORS a prime factor PRIME with multiplicity M.  */
-static void
-mp_factor_insert1 (struct mp_factors *factors, mp_limb_t prime, mp_bitcnt_t m)
+நிலையான வெறுமை
+mp_factor_insert1 (கட்டமைப்பு mp_factors *factors, mp_limb_t பகாஎண், mp_bitcnt_t m)
 {
-  mpz_t pz = MPZ_ROINIT_N (&prime, 1);
-  mp_factor_insert (factors, pz, m);
+  mpz_t pz = MPZ_ROINIT_N (&பகாஎண், 1);
+  mp_factor_செருகு (factors, pz, m);
 }
 
 
 /* primes_ptab[i] is prime i, where the zeroth prime is 3.
    However, the last 7 entries are sentinels.  */
 #define P(a,b,c) a,
-static int_least16_t const primes_ptab[] = {
-#include "primes.h"
+நிலையான int_least16_t மாறிலி primes_ptab[] = {
+#அந்தர்பாவ "primes.h"
 0,0,0,0,0,0,0                           /* 7 sentinels for 8-way loop */
 };
 #undef P
 
-enum { PRIMES_PTAB_ENTRIES = countof (primes_ptab) - 8 + 1 };
+எண்ணிக்கை { PRIMES_PTAB_ENTRIES = countof (primes_ptab) - 8 + 1 };
 
-struct primes_dtab
+கட்டமைப்பு primes_dtab
 {
   mp_limb_t binv, lim;
 };
@@ -740,8 +740,8 @@ struct primes_dtab
    mp_limb_t arithmetic when multiplied by the ith prime.
    However, the last 7 entries of primes_dtab are sentinels.  */
 #define P(a,b,c) {b,c},
-static const struct primes_dtab primes_dtab[] = {
-#include "primes.h"
+நிலையான மாறிலி கட்டமைப்பு primes_dtab primes_dtab[] = {
+#அந்தர்பாவ "primes.h"
 {1,0},{1,0},{1,0},{1,0},{1,0},{1,0},{1,0} /* 7 sentinels for 8-way loop */
 };
 #undef P
@@ -752,7 +752,7 @@ static_assert (W_TYPE_SIZE <= WIDE_UINT_BITS);
 
 /* debugging for developers.  Enables devmsg().
    This flag is used only in the GMP code.  */
-static bool dev_debug = false;
+நிலையான bool dev_debug = false;
 
 /* Number of Miller-Rabin tests to run.  For more, see:
 
@@ -809,17 +809,17 @@ static bool dev_debug = false;
 
 /* The kernel of factor_using_division.  This function is called in a
    loop unrolled by hand.  */
-static inline mp_limb_t
-divblock (struct factors *factors, mp_limb_t t0, struct primes_dtab const *pd,
-          idx_t i, int ioff)
+நிலையான உள்வரி mp_limb_t
+divblock (கட்டமைப்பு factors *factors, mp_limb_t t0, கட்டமைப்பு primes_dtab மாறிலி *pd,
+          idx_t i, முழு ioff)
 {
-  for (;;)
+  க்கு (;;)
     {
       mp_limb_t q = t0 * pd[ioff].binv;
-      if (LIKELY (pd[ioff].lim < q))
-        return t0;
+      எனில் (LIKELY (pd[ioff].lim < q))
+        திரும்பு t0;
       t0 = q;
-      factor_insert (factors, primes_ptab[i + ioff]);
+      factor_செருகு (factors, primes_ptab[i + ioff]);
     }
 }
 
@@ -828,15 +828,15 @@ divblock (struct factors *factors, mp_limb_t t0, struct primes_dtab const *pd,
    However, primes less than prime I have
    already been considered, and need not be looked at again.
    Return (T1,T0) divided by the factors found.  */
-static uuint
-factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
+நிலையான uuint
+factor_using_division (கட்டமைப்பு factors *factors, mp_limb_t t1, mp_limb_t t0,
                        idx_t i)
 {
-  if (t0 % 2 == 0)
+  எனில் (t0 % 2 == 0)
     {
-      int cnt;
+      முழு cnt;
 
-      if (t0 == 0)
+      எனில் (t0 == 0)
         {
           assume (t1);
           cnt = stdc_trailing_zeros (t1);
@@ -844,39 +844,39 @@ factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
           t1 = 0;
           cnt += W_TYPE_SIZE;
         }
-      else
+      இல்லையெனில்
         {
           cnt = stdc_trailing_zeros (t0);
           rsh2 (t1, t0, t1, t0, cnt);
         }
 
-      factor_insert_multiplicity (factors, 2, cnt);
+      factor_செருகு_multiplicity (factors, 2, cnt);
     }
 
-  for (; t1 > 0 && i < PRIMES_PTAB_ENTRIES; i++)
+  க்கு (; t1 > 0 && i < PRIMES_PTAB_ENTRIES; i++)
     {
       mp_limb_t p = primes_ptab[i];
-      for (;;)
+      க்கு (;;)
         {
           mp_limb_t q1, q0, hi;
           MAYBE_UNUSED mp_limb_t lo;
 
           q0 = t0 * primes_dtab[i].binv;
           umul_ppmm (hi, lo, q0, p);
-          if (hi > t1)
-            break;
+          எனில் (hi > t1)
+            நிறுத்து;
           hi = t1 - hi;
           q1 = hi * primes_dtab[i].binv;
-          if (LIKELY (q1 > primes_dtab[i].lim))
-            break;
+          எனில் (LIKELY (q1 > primes_dtab[i].lim))
+            நிறுத்து;
           t1 = q1; t0 = q0;
-          factor_insert (factors, p);
+          factor_செருகு (factors, p);
         }
     }
 
-  for (; i < PRIMES_PTAB_ENTRIES; i += 8)
+  க்கு (; i < PRIMES_PTAB_ENTRIES; i += 8)
     {
-      const struct primes_dtab *pd = &primes_dtab[i];
+      மாறிலி கட்டமைப்பு primes_dtab *pd = &primes_dtab[i];
       t0 = divblock (factors, t0, pd, i, 0);
       t0 = divblock (factors, t0, pd, i, 1);
       t0 = divblock (factors, t0, pd, i, 2);
@@ -886,110 +886,110 @@ factor_using_division (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
       t0 = divblock (factors, t0, pd, i, 6);
       t0 = divblock (factors, t0, pd, i, 7);
 
-      if (PRIMES_PTAB_ENTRIES <= i + 8)
-        break;
+      எனில் (PRIMES_PTAB_ENTRIES <= i + 8)
+        நிறுத்து;
       int_least32_t p = primes_ptab[i + 8];
-      if (p * p > t0)
-        break;
+      எனில் (p * p > t0)
+        நிறுத்து;
     }
 
-  return make_uuint (t1, t0);
+  திரும்பு make_uuint (t1, t0);
 }
 
 /* Return the number of limbs in positive N.  */
-static mp_size_t
+நிலையான mp_size_t
 mp_size (mpz_t n)
 {
   /* Tell the compiler that N is positive; this can speed up access to N.  */
   assume (0 < mpz_sgn (n));
 
-  return mpz_size (n);
+  திரும்பு mpz_size (n);
 }
 
 /* Insert into MP_FACTORS the factors of N if N < B^2 / 2,
    and return true.  Otherwise, return false.
    Primes less than prime PRIME_IDX have
    already been considered, and need not be looked at again.  */
-static bool
-mp_finish_up_in_single (struct mp_factors *mp_factors, mpz_t n,
-                        idx_t prime_idx)
+நிலையான bool
+mp_finish_up_in_single (கட்டமைப்பு mp_factors *mp_factors, mpz_t n,
+                        idx_t பகாஎண்_idx)
 {
-  if (2 < mp_size (n))
-    return false;
+  எனில் (2 < mp_size (n))
+    திரும்பு false;
   mp_limb_t n1 = mpz_getlimbn (n, 1);
-  if (n1 >> (W_TYPE_SIZE - 1))
-    return false;
+  எனில் (n1 >> (W_TYPE_SIZE - 1))
+    திரும்பு false;
   mp_limb_t n0 = mpz_getlimbn (n, 0);
   mpz_set_ui (n, 1);
 
-  struct factors factors;
-  factor_up (&factors, n1, n0, prime_idx);
+  கட்டமைப்பு factors factors;
+  factor_up (&factors, n1, n0, பகாஎண்_idx);
 
-  if (hi_is_set (&factors.plarge))
+  எனில் (hi_is_set (&factors.plarge))
     {
       mpz_t p = MPZ_ROINIT_N (factors.plarge.uu, 2);
-      mp_factor_insert (mp_factors, p, 1);
+      mp_factor_செருகு (mp_factors, p, 1);
     }
 
-  for (int i = factors.nfactors; 0 < i; i--)
+  க்கு (முழு i = factors.nfactors; 0 < i; i--)
     {
       mpz_t p = MPZ_ROINIT_N (&factors.p[i - 1], 1);
-      mp_factor_insert (mp_factors, p, factors.e[i - 1]);
+      mp_factor_செருகு (mp_factors, p, factors.e[i - 1]);
     }
 
-  return true;
+  திரும்பு true;
 }
 
 /* Insert into MP_FACTORS the factors of N if N < B^2 / 2, and
    return true.  Otherwise, return false.  N must be odd.  */
-static bool
-mp_finish_in_single (struct mp_factors *mp_factors, mpz_t n)
+நிலையான bool
+mp_finish_in_single (கட்டமைப்பு mp_factors *mp_factors, mpz_t n)
 {
-  return mp_finish_up_in_single (mp_factors, n, 0);
+  திரும்பு mp_finish_up_in_single (mp_factors, n, 0);
 }
 
 /* Return some or all factors of T.
    Divide T by the factors found.  */
-static struct mp_factors
+நிலையான கட்டமைப்பு mp_factors
 mp_factor_using_division (mpz_t t)
 {
   devmsg ("[trial division] ");
-  struct mp_factors factors = mp_no_factors ();
+  கட்டமைப்பு mp_factors factors = mp_no_factors ();
 
   mp_bitcnt_t m = mpz_scan1 (t, 0);
-  if (m)
+  எனில் (m)
     {
       mpz_fdiv_q_2exp (t, t, m);
       mp_factor_insert1 (&factors, 2, m);
-      if (mp_finish_in_single (&factors, t))
-        return factors;
+      எனில் (mp_finish_in_single (&factors, t))
+        திரும்பு factors;
     }
 
-  for (idx_t i = 0; i < PRIMES_PTAB_ENTRIES; i++)
+  க்கு (idx_t i = 0; i < PRIMES_PTAB_ENTRIES; i++)
     {
       mp_limb_t d = primes_ptab[i];
-      for (m = 0; mpz_divisible_ui_p (t, d); m++)
+      க்கு (m = 0; mpz_divisible_ui_p (t, d); m++)
         {
           mpz_divexact_ui (t, t, d);
-          if (mp_finish_up_in_single (&factors, t, i))
+          எனில் (mp_finish_up_in_single (&factors, t, i))
             {
               mp_factor_insert1 (&factors, d, m + 1);
-              return factors;
+              திரும்பு factors;
             }
         }
-      if (m)
+      எனில் (m)
         mp_factor_insert1 (&factors, d, m);
-      static_assert (SQUARE_OF_FIRST_OMITTED_PRIME
+      static_assert (SQUARE_OF_FIRST_OMITTED_பகாஎண்
                      <= MIN (MP_LIMB_MAX, ULONG_MAX));
-      if (mpz_cmp_ui (t, d * d) < 0)
-        break;
+      எனில் (mpz_cmp_ui (t, d * d) < 0)
+        நிறுத்து;
     }
 
-  return factors;
+  திரும்பு factors;
 }
 
 /* Entry i contains (2i+1)^(-1) mod 2^8.  */
-static const unsigned char binvert_table[128] =
+நிலையான மாறிலி unsigned எழுத்து binvert_table[128] =
 {
   0x01, 0xAB, 0xCD, 0xB7, 0x39, 0xA3, 0xC5, 0xEF,
   0xF1, 0x1B, 0x3D, 0xA7, 0x29, 0x13, 0x35, 0xDF,
@@ -1010,25 +1010,25 @@ static const unsigned char binvert_table[128] =
 };
 
 /* Compute n^(-1) mod B.  n must be odd.  */
-static mp_limb_t
+நிலையான mp_limb_t
 binv_limb (mp_limb_t n)
 {
   mp_limb_t inv = binvert_table[(n / 2) & 0x7F];
-  if ( 8 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
-  if (16 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
-  if (32 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
-  for (int invbits = 64; invbits < W_TYPE_SIZE; invbits *= 2)
+  எனில் ( 8 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
+  எனில் (16 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
+  எனில் (32 < W_TYPE_SIZE) inv = 2 * inv - inv * inv * n;
+  க்கு (முழு invbits = 64; invbits < W_TYPE_SIZE; invbits *= 2)
     inv = 2 * inv - inv * inv * n;
-  return inv;
+  திரும்பு inv;
 }
 
 /* q = u / d, assuming d|u.  */
 #define divexact_21(q1, q0, u1, u0, d)                                  \
-  do {                                                                  \
+  செய் {                                                                  \
     mp_limb_t _di, _q0;							\
     _di = binv_limb (d);						\
     _q0 = (u0) * _di;                                                   \
-    if ((u1) >= (d))                                                    \
+    எனில் ((u1) >= (d))                                                    \
       {                                                                 \
         mp_limb_t _p1;							\
         MAYBE_UNUSED mp_limb_t _p0;					\
@@ -1036,47 +1036,47 @@ binv_limb (mp_limb_t n)
         (q1) = ((u1) - _p1) * _di;                                      \
         (q0) = _q0;                                                     \
       }                                                                 \
-    else                                                                \
+    இல்லையெனில்                                                                \
       {                                                                 \
         (q0) = _q0;                                                     \
         (q1) = 0;                                                       \
       }                                                                 \
-  } while (false)
+  } போது (false)
 
 /* x B (mod n).  */
 #define redcify(r_prim, r, n)                                           \
-  do {                                                                  \
+  செய் {                                                                  \
     MAYBE_UNUSED mp_limb_t _redcify_q;					\
     udiv_qrnnd (_redcify_q, r_prim, r, 0, n);                           \
-  } while (false)
+  } போது (false)
 
 /* x B^2 (mod n).  Requires x > 0, n1 < B/2.  */
 #define redcify2(r1, r0, x, n1, n0)                                     \
-  do {                                                                  \
+  செய் {                                                                  \
     mp_limb_t _r1, _r0, _i;						\
-    if ((x) < (n1))                                                     \
+    எனில் ((x) < (n1))                                                     \
       {                                                                 \
         _r1 = (x); _r0 = 0;                                             \
         _i = W_TYPE_SIZE;                                               \
       }                                                                 \
-    else                                                                \
+    இல்லையெனில்                                                                \
       {                                                                 \
         _r1 = 0; _r0 = (x);                                             \
         _i = 2 * W_TYPE_SIZE;                                           \
       }                                                                 \
-    while (_i-- > 0)                                                    \
+    போது (_i-- > 0)                                                    \
       {                                                                 \
         lsh2 (_r1, _r0, _r1, _r0, 1);                                   \
-        if (ge2 (_r1, _r0, n1, n0))					\
+        எனில் (ge2 (_r1, _r0, n1, n0))					\
           sub_ddmmss (_r1, _r0, _r1, _r0, n1, n0);			\
       }                                                                 \
     (r1) = _r1;                                                         \
     (r0) = _r0;                                                         \
-  } while (false)
+  } போது (false)
 
 /* Modular two-word multiplication, r = a * b mod m, with mi = m^(-1) mod B.
    Both a and b must be in redc form, the result will be in redc form too.  */
-static inline mp_limb_t
+நிலையான உள்வரி mp_limb_t
 mulredc (mp_limb_t a, mp_limb_t b, mp_limb_t m, mp_limb_t mi)
 {
   mp_limb_t rh, rl, q, th, xh;
@@ -1085,16 +1085,16 @@ mulredc (mp_limb_t a, mp_limb_t b, mp_limb_t m, mp_limb_t mi)
   umul_ppmm (rh, rl, a, b);
   q = rl * mi;
   umul_ppmm (th, tl, q, m);
-  if (ckd_sub (&xh, rh, th))
+  எனில் (ckd_sub (&xh, rh, th))
     xh += m;
 
-  return xh;
+  திரும்பு xh;
 }
 
 /* Modular two-word multiplication, r = a * b mod m, with mi = m^(-1) mod B.
    Both a and b must be in redc form, the result will be in redc form too.
    For performance reasons, the most significant bit of m must be clear.  */
-static mp_limb_t
+நிலையான mp_limb_t
 mulredc2 (mp_limb_t *r1p,
           mp_limb_t a1, mp_limb_t a0, mp_limb_t b1, mp_limb_t b0,
           mp_limb_t m1, mp_limb_t m0, mp_limb_t mi)
@@ -1154,63 +1154,63 @@ mulredc2 (mp_limb_t *r1p,
   add_ssaaaa (r1, r0, r1, r0, 0, t1);
   add_ssaaaa (r1, r0, r1, r0, s1, s0);
 
-  if (ge2 (r1, r0, m1, m0))
+  எனில் (ge2 (r1, r0, m1, m0))
     sub_ddmmss (r1, r0, r1, r0, m1, m0);
 
   *r1p = r1;
-  return r0;
+  திரும்பு r0;
 }
 
-static bool mp_prime_p (mpz_t);
+நிலையான bool mp_பகாஎண்_p (mpz_t);
 
 /* Is N prime?  N cannot be even or be a composite number less than
    SQUARE_OF_FIRST_OMITTED_PRIME.  */
-static bool
-prime_p (mp_limb_t n)
+நிலையான bool
+பகாஎண்_p (mp_limb_t n)
 {
-  if (n <= 1)
-    return false;
+  எனில் (n <= 1)
+    திரும்பு false;
 
   /* We have already cast out small primes.  */
-  if (n < SQUARE_OF_FIRST_OMITTED_PRIME)
-    return true;
+  எனில் (n < SQUARE_OF_FIRST_OMITTED_பகாஎண்)
+    திரும்பு true;
 
   mpz_t mn = MPZ_ROINIT_N (&n, 1);
-  return mp_prime_p (mn);
+  திரும்பு mp_பகாஎண்_p (mn);
 }
 
 /* Is (n1,n0) prime?  (n1,n0) cannot be even or be a composite number
    less than SQUARE_OF_FIRST_OMITTED_PRIME.  */
-static bool
+நிலையான bool
 prime2_p (mp_limb_t n1, mp_limb_t n0)
 {
-  if (n1 == 0)
-    return prime_p (n0);
+  எனில் (n1 == 0)
+    திரும்பு பகாஎண்_p (n0);
 
   uuint n = make_uuint (n1, n0);
   mpz_t mn = MPZ_ROINIT_N (n.uu, 2);
-  return mp_prime_p (mn);
+  திரும்பு mp_பகாஎண்_p (mn);
 }
 
 /* Is N prime?  N cannot be even or be a composite number less than
    SQUARE_OF_FIRST_OMITTED_PRIME.  */
-static bool
-mp_prime_p (mpz_t n)
+நிலையான bool
+mp_பகாஎண்_p (mpz_t n)
 {
-  if (mpz_cmp_ui (n, 1) <= 0)
-    return false;
+  எனில் (mpz_cmp_ui (n, 1) <= 0)
+    திரும்பு false;
 
   /* We have already cast out small primes.  */
-  if (mpz_cmp_ui (n, SQUARE_OF_FIRST_OMITTED_PRIME) < 0)
-    return true;
+  எனில் (mpz_cmp_ui (n, SQUARE_OF_FIRST_OMITTED_பகாஎண்) < 0)
+    திரும்பு true;
 
-  return !!mpz_probab_prime_p (n, MR_REPS);
+  திரும்பு !!mpz_probab_பகாஎண்_p (n, MR_REPS);
 }
 
 /* Insert into FACTORS the result of factoring N,
    using Pollard-rho with starting value A.  N must be odd.  */
-static void
-factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
+நிலையான வெறுமை
+factor_using_pollard_rho (கட்டமைப்பு factors *factors, mp_limb_t n, mp_limb_t a)
 {
   mp_limb_t x, z, y, P, t, ni, g;
 
@@ -1221,15 +1221,15 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
   addmod (x, P, P, n);          /* i.e., redcify(2) */
   y = z = x;
 
-  while (n != 1)
+  போது (n != 1)
     {
       affirm (a < n);
 
       ni = binv_limb (n);	/* FIXME: when could we use old 'ni' value?  */
 
-      for (;;)
+      க்கு (;;)
         {
-          do
+          செய்
             {
               x = mulredc (x, x, n, ni);
               addmod (x, x, a, n);
@@ -1237,19 +1237,19 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
               submod (t, z, x, n);
               P = mulredc (P, t, n, ni);
 
-              if ((k & 31) == 1)
+              எனில் ((k & 31) == 1)
                 {
-                  if (gcd_odd (P, n) != 1)
-                    goto factor_found;
+                  எனில் (gcd_odd (P, n) != 1)
+                    செல் factor_found;
                   y = x;
                 }
             }
-          while (--k != 0);
+          போது (--k != 0);
 
           z = x;
           k = l;
           l = 2 * l;
-          for (int_fast64_t i = 0; i < k; i++)
+          க்கு (int_fast64_t i = 0; i < k; i++)
             {
               x = mulredc (x, x, n, ni);
               addmod (x, x, a, n);
@@ -1258,7 +1258,7 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
         }
 
     factor_found:
-      do
+      செய்
         {
           y = mulredc (y, y, n, ni);
           addmod (y, y, a, n);
@@ -1266,26 +1266,26 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
           submod (t, z, y, n);
           g = gcd_odd (t, n);
         }
-      while (g == 1);
+      போது (g == 1);
 
-      if (n == g)
+      எனில் (n == g)
         {
           /* Found n itself as factor.  Restart with different params.  */
           factor_using_pollard_rho (factors, n, a + 1);
-          return;
+          திரும்பு;
         }
 
       n = n / g;
 
-      if (!prime_p (g))
+      எனில் (!பகாஎண்_p (g))
         factor_using_pollard_rho (factors, g, a + 1);
-      else
-        factor_insert (factors, g);
+      இல்லையெனில்
+        factor_செருகு (factors, g);
 
-      if (prime_p (n))
+      எனில் (பகாஎண்_p (n))
         {
-          factor_insert (factors, n);
-          break;
+          factor_செருகு (factors, n);
+          நிறுத்து;
         }
 
       x = x % n;
@@ -1294,8 +1294,8 @@ factor_using_pollard_rho (struct factors *factors, mp_limb_t n, mp_limb_t a)
     }
 }
 
-static void
-factor_using_pollard_rho2 (struct factors *factors,
+நிலையான வெறுமை
+factor_using_pollard_rho2 (கட்டமைப்பு factors *factors,
                            mp_limb_t n1, mp_limb_t n0, mp_limb_t a)
 {
   mp_limb_t x1, x0, z1, z0, y1, y0, P1, P0, t1, t0, g1, g0, r1m;
@@ -1308,13 +1308,13 @@ factor_using_pollard_rho2 (struct factors *factors,
   y1 = z1 = x1;
   y0 = z0 = x0;
 
-  while (n1 != 0 || n0 != 1)
+  போது (n1 != 0 || n0 != 1)
     {
       mp_limb_t ni = binv_limb (n0);
 
-      for (;;)
+      க்கு (;;)
         {
-          do
+          செய்
             {
               x0 = mulredc2 (&r1m, x1, x0, x1, x0, n1, n0, ni);
               x1 = r1m;
@@ -1324,20 +1324,20 @@ factor_using_pollard_rho2 (struct factors *factors,
               P0 = mulredc2 (&r1m, P1, P0, t1, t0, n1, n0, ni);
               P1 = r1m;
 
-              if ((k & 31) == 1)
+              எனில் ((k & 31) == 1)
                 {
                   uuset (&g1, &g0, gcd2_odd (P1, P0, n1, n0));
-                  if (g1 != 0 || g0 != 1)
-                    goto factor_found;
+                  எனில் (g1 != 0 || g0 != 1)
+                    செல் factor_found;
                   y1 = x1; y0 = x0;
                 }
             }
-          while (--k != 0);
+          போது (--k != 0);
 
           z1 = x1; z0 = x0;
           k = l;
           l = 2 * l;
-          for (int_fast64_t i = 0; i < k; i++)
+          க்கு (int_fast64_t i = 0; i < k; i++)
             {
               x0 = mulredc2 (&r1m, x1, x0, x1, x0, n1, n0, ni);
               x1 = r1m;
@@ -1347,7 +1347,7 @@ factor_using_pollard_rho2 (struct factors *factors,
         }
 
     factor_found:
-      do
+      செய்
         {
           y0 = mulredc2 (&r1m, y1, y0, y1, y0, n1, n0, ni);
           y1 = r1m;
@@ -1356,28 +1356,28 @@ factor_using_pollard_rho2 (struct factors *factors,
           submod2 (t1, t0, z1, z0, y1, y0, n1, n0);
           uuset (&g1, &g0, gcd2_odd (t1, t0, n1, n0));
         }
-      while (g1 == 0 && g0 == 1);
+      போது (g1 == 0 && g0 == 1);
 
-      if (g1 == 0)
+      எனில் (g1 == 0)
         {
           /* The found factor is one word, and > 1.  */
           divexact_21 (n1, n0, n1, n0, g0);     /* n = n / g */
 
-          if (!prime_p (g0))
+          எனில் (!பகாஎண்_p (g0))
             factor_using_pollard_rho (factors, g0, a + 1);
-          else
-            factor_insert (factors, g0);
+          இல்லையெனில்
+            factor_செருகு (factors, g0);
         }
-      else
+      இல்லையெனில்
         {
           /* The found factor is two words.  This is highly unlikely, thus hard
              to trigger.  Please be careful before you change this code!  */
 
-          if (n1 == g1 && n0 == g0)
+          எனில் (n1 == g1 && n0 == g0)
             {
               /* Found n itself as factor.  Restart with different params.  */
               factor_using_pollard_rho2 (factors, n1, n0, a + 1);
-              return;
+              திரும்பு;
             }
 
           /* Compute n = n / g.  Since the result will fit one word,
@@ -1386,28 +1386,28 @@ factor_using_pollard_rho2 (struct factors *factors,
           n0 = binv_limb (g0) * n0;
           n1 = 0;
 
-          if (!prime2_p (g1, g0))
+          எனில் (!prime2_p (g1, g0))
             factor_using_pollard_rho2 (factors, g1, g0, a + 1);
-          else
-            factor_insert_large (factors, g1, g0);
+          இல்லையெனில்
+            factor_செருகு_large (factors, g1, g0);
         }
 
-      if (n1 == 0)
+      எனில் (n1 == 0)
         {
-          if (prime_p (n0))
+          எனில் (பகாஎண்_p (n0))
             {
-              factor_insert (factors, n0);
-              break;
+              factor_செருகு (factors, n0);
+              நிறுத்து;
             }
 
           factor_using_pollard_rho (factors, n0, a);
-          return;
+          திரும்பு;
         }
 
-      if (prime2_p (n1, n0))
+      எனில் (prime2_p (n1, n0))
         {
-          factor_insert_large (factors, n1, n0);
-          break;
+          factor_செருகு_large (factors, n1, n0);
+          நிறுத்து;
         }
 
       uuset (&x1, &x0, mod2 (x1, x0, n1, n0));
@@ -1418,45 +1418,45 @@ factor_using_pollard_rho2 (struct factors *factors,
 
 /* Set RP = (AP + BP) mod MP.  All values are nonnegative and take up
    N>0 words, and AP and BP are both less than MP.  */
-static void
-mp_modadd (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
-           mp_limb_t const *mp, mp_size_t n)
+நிலையான வெறுமை
+mp_modadd (mp_limb_t *rp, mp_limb_t மாறிலி *ap, mp_limb_t மாறிலி *bp,
+           mp_limb_t மாறிலி *mp, mp_size_t n)
 {
   mp_limb_t cy = mpn_add_n (rp, ap, bp, n);
-  if (cy || mpn_cmp (rp, mp, n) >= 0)
+  எனில் (cy || mpn_cmp (rp, mp, n) >= 0)
     mpn_sub_n (rp, rp, mp, n);
 }
 
 /* Set RP = (AP - BP) mod MP.  All values are nonnegative and take up
    N>0 words, and AP and BP are both less than MP.  */
-static void
-mp_modsub (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
-           mp_limb_t const *mp, mp_size_t n)
+நிலையான வெறுமை
+mp_modsub (mp_limb_t *rp, mp_limb_t மாறிலி *ap, mp_limb_t மாறிலி *bp,
+           mp_limb_t மாறிலி *mp, mp_size_t n)
 {
   mp_limb_t cy = mpn_sub_n (rp, ap, bp, n);
-  if (cy)
+  எனில் (cy)
     mpn_add_n (rp, rp, mp, n);
 }
 
 /* Set RP = (AP - B0) mod MP.  All values are nonnegative, AP and MP
    both take up N>0 words, and AP < MP.  */
-static void
-mp_modadd_1 (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t b0,
-             mp_limb_t const *mp, mp_size_t n)
+நிலையான வெறுமை
+mp_modadd_1 (mp_limb_t *rp, mp_limb_t மாறிலி *ap, mp_limb_t b0,
+             mp_limb_t மாறிலி *mp, mp_size_t n)
 {
   mp_limb_t cy = mpn_add_1 (rp, ap, n, b0);
-  if (cy || mpn_cmp (rp, mp, n) >= 0)
+  எனில் (cy || mpn_cmp (rp, mp, n) >= 0)
     mpn_sub_n (rp, rp, mp, n);
 }
 
-static void
-mp_mulredc (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
-            mp_limb_t const *mp, mp_size_t n, mp_limb_t m0inv, mp_limb_t *tp)
+நிலையான வெறுமை
+mp_mulredc (mp_limb_t *rp, mp_limb_t மாறிலி *ap, mp_limb_t மாறிலி *bp,
+            mp_limb_t மாறிலி *mp, mp_size_t n, mp_limb_t m0inv, mp_limb_t *tp)
 {
   tp[n] = mpn_mul_1 (tp, ap, n, bp[0]);
   tp[0] = mpn_addmul_1 (tp, mp, n, tp[0] * m0inv);
 
-  for (mp_size_t i = 1; i < n; i++)
+  க்கு (mp_size_t i = 1; i < n; i++)
     {
       tp[n + i] = mpn_addmul_1 (tp + i, ap, n, bp[i]);
       tp[i] = mpn_addmul_1 (tp + i, mp, n, tp[i] * m0inv);
@@ -1471,16 +1471,16 @@ mp_mulredc (mp_limb_t *rp, mp_limb_t const *ap, mp_limb_t const *bp,
 
 /* Insert into FACTORS the result of factoring MP, of size N,
    using Pollard-rho with starting value A.  MP must be odd. */
-static void
-mp_factor_using_pollard_rho (struct mp_factors *factors,
-                             mp_limb_t const *mp, mp_size_t n,
+நிலையான வெறுமை
+mp_factor_using_pollard_rho (கட்டமைப்பு mp_factors *factors,
+                             mp_limb_t மாறிலி *mp, mp_size_t n,
                              mp_limb_t a)
 {
-  devmsg ("[pollard-rho (%lu)] ", (unsigned long int) a);
+  devmsg ("[pollard-rho (%lu)] ", (unsigned long முழு) a);
 
   static_assert (10 * MP_FACTOR_USING_POLLARD_RHO_N_MAX + 3
                  <= MIN (IDX_MAX, TYPE_MAXIMUM (mp_size_t)));
-  mp_limb_t *scratch = xinmalloc (10 * n + 3, sizeof *scratch);
+  mp_limb_t *scratch = xinmalloc (10 * n + 3, அளவு *scratch);
   mp_limb_t *qp = scratch + 2 * n + 1, *pp = qp + n + 2,
     *xp = pp + n, *yp = xp + n, *zp = yp + n,
     *tp = zp + n, *sp = tp + n, *gp = sp + n;
@@ -1496,9 +1496,9 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
 
   mp_limb_t m0inv = binv_limb (-mp[0]);
 
-  for (int_fast64_t k = 1; ; k *= 2)
+  க்கு (int_fast64_t k = 1; ; k *= 2)
     {
-      for (int_fast64_t i = k; 0 < i; i--)
+      க்கு (int_fast64_t i = k; 0 < i; i--)
         {
           mp_mulredc (tp, xp, xp, mp, n, m0inv, scratch);
           mp_modadd_1 (xp, tp, a, mp, n);
@@ -1506,24 +1506,24 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
           mp_modsub (tp, zp, xp, mp, n);
           mp_mulredc (pp, pp, tp, mp, n, m0inv, scratch);
 
-          if (i % 128 == 1)
+          எனில் (i % 128 == 1)
             {
-              if (mpn_zero_p (pp, n))
+              எனில் (mpn_zero_p (pp, n))
                 {
                   mp_factor_using_pollard_rho (factors, mp, n, a + 1);
-                  goto finish;
+                  செல் finish;
                 }
               mpn_copyi (tp, pp, n);
               mpn_copyi (sp, mp, n);
               gn = mpn_gcd (gp, tp, n, sp, n);
-              if (gn != 1 || gp[0] != 1)
-                goto factor_found;
+              எனில் (gn != 1 || gp[0] != 1)
+                செல் factor_found;
               mpn_copyi (yp, xp, n);
             }
         }
 
       mpn_copyi (zp, xp, n);
-      for (int_fast64_t i = 2 * k; 0 < i; i--)
+      க்கு (int_fast64_t i = 2 * k; 0 < i; i--)
         {
           mp_mulredc (tp, xp, xp, mp, n, m0inv, scratch);
           mp_modadd_1 (xp, tp, a, mp, n);
@@ -1532,7 +1532,7 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
     }
 
  factor_found:
-  do
+  செய்
     {
       mp_mulredc (tp, yp, yp, mp, n, m0inv, scratch);
       mp_modadd_1 (yp, tp, a, mp, n);
@@ -1540,26 +1540,26 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
       mpn_copyi (sp, mp, n);
       gn = mpn_gcd (gp, tp, n, sp, n);
     }
-  while (gn == 1 && gp[0] == 1);
+  போது (gn == 1 && gp[0] == 1);
 
   mpz_t g = MPZ_ROINIT_N (gp, gn);
   mpz_t m = MPZ_ROINIT_N ((mp_limb_t *) mp, n), q;
   mpz_init (q);
   mpz_divexact (q, m, g);
 
-  if (!mp_finish_in_single (factors, g))
+  எனில் (!mp_finish_in_single (factors, g))
     {
-      if (mp_prime_p (g))
-        mp_factor_insert (factors, g, 1);
-      else
+      எனில் (mp_பகாஎண்_p (g))
+        mp_factor_செருகு (factors, g, 1);
+      இல்லையெனில்
         mp_factor_using_pollard_rho (factors, gp, gn, a + 1);
     }
 
-  if (!mp_finish_in_single (factors, q))
+  எனில் (!mp_finish_in_single (factors, q))
     {
-      if (mp_prime_p (q))
-        mp_factor_insert (factors, q, 1);
-      else
+      எனில் (mp_பகாஎண்_p (q))
+        mp_factor_செருகு (factors, q, 1);
+      இல்லையெனில்
         {
           devmsg ("[composite factor--restarting pollard-rho] ");
           mp_factor_using_pollard_rho (factors, mpz_limbs_read (q),
@@ -1570,106 +1570,106 @@ mp_factor_using_pollard_rho (struct mp_factors *factors,
   mpz_clear (q);
 
  finish:
-  free (scratch);
+  விடுவி (scratch);
 }
 
 /* Insert into FACTORS the prime factors of the two-word number (T1,T0).
    Primes less than the prime with index PRIME_IDX
    have already been considered, and need not be looked at again.  */
-static void
-factor_up (struct factors *factors, mp_limb_t t1, mp_limb_t t0,
-           idx_t prime_idx)
+நிலையான வெறுமை
+factor_up (கட்டமைப்பு factors *factors, mp_limb_t t1, mp_limb_t t0,
+           idx_t பகாஎண்_idx)
 {
   factors->nfactors = 0;
   hiset (&factors->plarge, 0);
 
-  if (t1 == 0 && t0 < 2)
-    return;
+  எனில் (t1 == 0 && t0 < 2)
+    திரும்பு;
 
-  uuset (&t1, &t0, factor_using_division (factors, t1, t0, prime_idx));
+  uuset (&t1, &t0, factor_using_division (factors, t1, t0, பகாஎண்_idx));
 
-  if (t1 == 0 && t0 < 2)
-    return;
+  எனில் (t1 == 0 && t0 < 2)
+    திரும்பு;
 
-  if (prime2_p (t1, t0))
-    factor_insert_large (factors, t1, t0);
-  else
+  எனில் (prime2_p (t1, t0))
+    factor_செருகு_large (factors, t1, t0);
+  இல்லையெனில்
     {
-      if (t1 == 0)
+      எனில் (t1 == 0)
         factor_using_pollard_rho (factors, t0, 1);
-      else
+      இல்லையெனில்
         factor_using_pollard_rho2 (factors, t1, t0, 1);
     }
 }
 
 /* Compute the prime factors of the two-word number (T1,T0),
    and put the results in FACTORS.  */
-static void
-factor (struct factors *factors, mp_limb_t t1, mp_limb_t t0)
+நிலையான வெறுமை
+factor (கட்டமைப்பு factors *factors, mp_limb_t t1, mp_limb_t t0)
 {
   factor_up (factors, t1, t0, 0);
 }
 
 /* Return the prime factors of T.  */
-static struct mp_factors
+நிலையான கட்டமைப்பு mp_factors
 mp_factor (mpz_t t)
 {
-  struct mp_factors factors = mp_no_factors ();
+  கட்டமைப்பு mp_factors factors = mp_no_factors ();
 
-  if (mpz_sgn (t) != 0)
+  எனில் (mpz_sgn (t) != 0)
     {
       factors = mp_factor_using_division (t);
 
-      if (mpz_cmp_ui (t, 1) != 0)
+      எனில் (mpz_cmp_ui (t, 1) != 0)
         {
           devmsg ("[is number prime?] ");
-          if (mp_prime_p (t))
-            mp_factor_insert (&factors, t, 1);
-          else
+          எனில் (mp_பகாஎண்_p (t))
+            mp_factor_செருகு (&factors, t, 1);
+          இல்லையெனில்
             mp_factor_using_pollard_rho (&factors, mpz_limbs_read (t),
                                          mp_size (t), 1);
         }
     }
 
-  return factors;
+  திரும்பு factors;
 }
 
 /* Convert to *U the value represented by S, and return LONGINT_OK.
    Return LONGINT_OVERFLOW if S is composed of all digits but is too
    large to fit in *U, otherwise LONGINT_INVALID if S is not a valid
    positive integer.  */
-static strtol_error
-strtouuint (uuint *u, char const *s)
+நிலையான strtol_error
+strtouuint (uuint *u, எழுத்து மாறிலி *s)
 {
   mp_limb_t hi = 0, lo = *s++ - '0';
 
-  if (UNLIKELY (9 < lo))
-    return LONGINT_INVALID;
+  எனில் (UNLIKELY (9 < lo))
+    திரும்பு LONGINT_INVALID;
 
-  for (; LIKELY (0 <= *s - '0' && *s - '0' <= 9); s++)
+  க்கு (; LIKELY (0 <= *s - '0' && *s - '0' <= 9); s++)
     {
-      if (UNLIKELY (ckd_mul (&hi, hi, 10)))
-        goto overflow;
+      எனில் (UNLIKELY (ckd_mul (&hi, hi, 10)))
+        செல் overflow;
 
-      int lo_carry = (lo >> (W_TYPE_SIZE - 3)) + (lo >> (W_TYPE_SIZE - 1));
+      முழு lo_carry = (lo >> (W_TYPE_SIZE - 3)) + (lo >> (W_TYPE_SIZE - 1));
       lo_carry += 10 * lo < 2 * lo;
 
       lo = 10 * lo;
       lo_carry += ckd_add (&lo, lo, *s - '0');
-      if (UNLIKELY (ckd_add (&hi, hi, lo_carry)))
-        goto overflow;
+      எனில் (UNLIKELY (ckd_add (&hi, hi, lo_carry)))
+        செல் overflow;
     }
 
-  if (UNLIKELY (*s))
-    return LONGINT_INVALID;
+  எனில் (UNLIKELY (*s))
+    திரும்பு LONGINT_INVALID;
 
   *u = make_uuint (hi, lo);
-  return LONGINT_OK;
+  திரும்பு LONGINT_OK;
 
  overflow:
   /* Since s[0] caused the overflow, we know it is a valid integer.  */
   s++;
-  return s[strspn (s, "0123456789")] ? LONGINT_INVALID : LONGINT_OVERFLOW;
+  திரும்பு s[strspn (s, "0123456789")] ? LONGINT_INVALID : LONGINT_OVERFLOW;
 }
 
 /* FACTOR_PIPE_BUF is chosen to give good performance,
@@ -1681,9 +1681,9 @@ strtouuint (uuint *u, char const *s)
 # define _POSIX_PIPE_BUF 512
 #endif
 #ifdef PIPE_BUF
-enum { FACTOR_PIPE_BUF = PIPE_BUF };
-#else
-enum { FACTOR_PIPE_BUF = _POSIX_PIPE_BUF };
+எண்ணிக்கை { FACTOR_PIPE_BUF = PIPE_BUF };
+#இல்லையெனில்
+எண்ணிக்கை { FACTOR_PIPE_BUF = _POSIX_PIPE_BUF };
 #endif
 
 /* Structure and routines for buffering and outputting full lines, to
@@ -1700,19 +1700,19 @@ enum { FACTOR_PIPE_BUF = _POSIX_PIPE_BUF };
    line for a uuint plus the string length of a uuint - it'd be a bit
    of a pain to figure out exactly how small it can be without causing
    trouble.  */
-static char lbuf_buf[2 * FACTOR_PIPE_BUF];
-static idx_t lbuffered;
+நிலையான எழுத்து lbuf_buf[2 * FACTOR_PIPE_BUF];
+நிலையான idx_t lbuffered;
 
 /* Write complete LBUF to standard output.  */
-static void
-lbuf_flush (void)
+நிலையான வெறுமை
+lbuf_flush (வெறுமை)
 {
   idx_t size = lbuffered;
 
   /* Update lbuffered now, to avoid infinite recursion on write error.  */
   lbuffered = 0;
 
-  if (full_write (STDOUT_FILENO, lbuf_buf, size) != size)
+  எனில் (full_write (STDOUT_FILENO, lbuf_buf, size) != size)
     write_error ();
 }
 
@@ -1722,11 +1722,11 @@ lbuf_flush (void)
    and contains <= FACTOR_PIPE_BUF bytes, so consumers can read atomically.
    But if the first FACTOR_PIPE_BUF bytes contain no newlines,
    give up on atomicity and just write the first FACTOR_PIPE_BUF bytes.  */
-static void
-lbuf_half_flush (void)
+நிலையான வெறுமை
+lbuf_half_flush (வெறுமை)
 {
-  char *nl = memrchr (lbuf_buf, '\n', FACTOR_PIPE_BUF);
-  char *suffix = nl ? nl + 1 : lbuf_buf + FACTOR_PIPE_BUF;
+  எழுத்து *nl = memrchr (lbuf_buf, '\n', FACTOR_PIPE_BUF);
+  எழுத்து *suffix = nl ? nl + 1 : lbuf_buf + FACTOR_PIPE_BUF;
   idx_t prefix_size = suffix - lbuf_buf;
   idx_t suffix_size = lbuffered - prefix_size;
   lbuffered = prefix_size;
@@ -1736,80 +1736,80 @@ lbuf_half_flush (void)
 }
 
 /* Add a character C to lbuf_buf.  */
-static void
-lbuf_putc (char c)
+நிலையான வெறுமை
+lbuf_putc (எழுத்து c)
 {
   lbuf_buf[lbuffered++] = c;
 }
 
 /* Add a newline to lbuf_buf.  Then, if enough bytes are already
    buffered, write the buffer atomically to standard output.  */
-static void
-lbuf_putnl (void)
+நிலையான வெறுமை
+lbuf_putnl (வெறுமை)
 {
   lbuf_putc ('\n');
 
   /* Provide immediate output for interactive use.  */
-  static int line_buffered = -1;
-  if (line_buffered < 0)
-    line_buffered = isatty (STDOUT_FILENO);
+  நிலையான முழு வரி_buffered = -1;
+  எனில் (வரி_buffered < 0)
+    வரி_buffered = isatty (STDOUT_FILENO);
 
-  if (line_buffered)
+  எனில் (வரி_buffered)
     lbuf_flush ();
-  else if (FACTOR_PIPE_BUF <= lbuffered)
+  இல்லையெனில் எனில் (FACTOR_PIPE_BUF <= lbuffered)
     lbuf_half_flush ();
 }
 
 /* Append the string representation of I to lbuf_buf, followed by
    everything from BUFEND to lbuf_buf's end.  Use the area just before
    BUFEND temporarily.  */
-static void
-lbuf_putint_append (mp_limb_t i, char *bufend)
+நிலையான வெறுமை
+lbuf_putint_append (mp_limb_t i, எழுத்து *bufend)
 {
-  char *istr = bufend;
-  do
+  எழுத்து *istr = bufend;
+  செய்
     {
       *--istr = '0' + i % 10;
       i /= 10;
     }
-  while (i);
+  போது (i);
 
-  char *p = lbuf_buf + lbuffered;
-  do
+  எழுத்து *p = lbuf_buf + lbuffered;
+  செய்
     *p++ = *istr++;
-  while (istr < lbuf_buf + sizeof lbuf_buf);
+  போது (istr < lbuf_buf + அளவு lbuf_buf);
 
   lbuffered = p - lbuf_buf;
 }
 
 /* Append the string representation of I to lbuf_buf.  */
-static void
+நிலையான வெறுமை
 lbuf_putint (mp_limb_t i)
 {
-  lbuf_putint_append (i, lbuf_buf + sizeof lbuf_buf);
+  lbuf_putint_append (i, lbuf_buf + அளவு lbuf_buf);
 }
-static void
+நிலையான வெறுமை
 lbuf_putbitcnt (mp_bitcnt_t i)
 {
-  char *bufend = lbuf_buf + sizeof lbuf_buf;
-  for (; MP_LIMB_MAX < i; i /= 10)
+  எழுத்து *bufend = lbuf_buf + அளவு lbuf_buf;
+  க்கு (; MP_LIMB_MAX < i; i /= 10)
     *--bufend = '0' + i % 10;
   lbuf_putint_append (i, bufend);
 }
 
 /* Append the string representation of T to lbuf_buf.  */
-static void
+நிலையான வெறுமை
 print_uuint (uuint t)
 {
   mp_limb_t t1 = hi (t), t0 = lo (t);
-  char *bufend = lbuf_buf + sizeof lbuf_buf;
+  எழுத்து *bufend = lbuf_buf + அளவு lbuf_buf;
 
-  while (t1)
+  போது (t1)
     {
       mp_limb_t r = t1 % BIG_POWER_OF_10;
       t1 /= BIG_POWER_OF_10;
       udiv_qrnnd (t0, r, r, t0, BIG_POWER_OF_10);
-      for (int i = 0; i < LOG_BIG_POWER_OF_10; i++)
+      க்கு (முழு i = 0; i < LOG_BIG_POWER_OF_10; i++)
         {
           *--bufend = '0' + r % 10;
           r /= 10;
@@ -1820,57 +1820,57 @@ print_uuint (uuint t)
 }
 
 /* Buffer the mpz I to lbuf_buf, possibly writing if it is long.  */
-static void
-lbuf_putmpz (mpz_t const i)
+நிலையான வெறுமை
+lbuf_putmpz (mpz_t மாறிலி i)
 {
   idx_t sizeinbase = mpz_sizeinbase (i, 10);
-  char *lbuf_bufend = lbuf_buf + sizeof lbuf_buf;
-  char *p = lbuf_buf + lbuffered;
-  if (sizeinbase < lbuf_bufend - p)
+  எழுத்து *lbuf_bufend = lbuf_buf + அளவு lbuf_buf;
+  எழுத்து *p = lbuf_buf + lbuffered;
+  எனில் (sizeinbase < lbuf_bufend - p)
     {
       mpz_get_str (p, 10, i);
       p += sizeinbase;
       lbuffered = p - !p[-1] - lbuf_buf;
-      while (FACTOR_PIPE_BUF <= lbuffered)
+      போது (FACTOR_PIPE_BUF <= lbuffered)
         lbuf_half_flush ();
     }
-  else
+  இல்லையெனில்
     {
       lbuf_flush ();
-      char *istr = ximalloc (sizeinbase + 1);
+      எழுத்து *istr = ximalloc (sizeinbase + 1);
       mpz_get_str (istr, 10, i);
       idx_t istrlen = sizeinbase - !istr[sizeinbase - 1];
-      if (full_write (STDOUT_FILENO, istr, istrlen) != istrlen)
+      எனில் (full_write (STDOUT_FILENO, istr, istrlen) != istrlen)
         write_error ();
-      free (istr);
+      விடுவி (istr);
     }
 }
 
 /* Emit the factors of T, which is less than B^2 / 2.  */
-static void
+நிலையான வெறுமை
 print_factors_single (uuint t)
 {
-  struct factors factors;
+  கட்டமைப்பு factors factors;
 
   print_uuint (t);
   lbuf_putc (':');
 
   factor (&factors, hi (t), lo (t));
 
-  for (int j = 0; j < factors.nfactors; j++)
-    for (int k = 0; k < factors.e[j]; k++)
+  க்கு (முழு j = 0; j < factors.nfactors; j++)
+    க்கு (முழு k = 0; k < factors.e[j]; k++)
       {
         lbuf_putc (' ');
         print_uuint (make_uuint (0, factors.p[j]));
-        if (print_exponents && factors.e[j] > 1)
+        எனில் (print_exponents && factors.e[j] > 1)
           {
             lbuf_putc ('^');
             lbuf_putint (factors.e[j]);
-            break;
+            நிறுத்து;
           }
       }
 
-  if (hi_is_set (&factors.plarge))
+  எனில் (hi_is_set (&factors.plarge))
     {
       lbuf_putc (' ');
       print_uuint (factors.plarge);
@@ -1884,12 +1884,12 @@ print_factors_single (uuint t)
    For longer numbers, we prefer the MP algorithm even if the native algorithm
    has enough digits, because the algorithm is better.  The turnover point
    depends on the value.  */
-static bool
-print_factors (char const *input)
+நிலையான bool
+print_factors (எழுத்து மாறிலி *உள்ளீடு)
 {
   /* Skip initial spaces and '+'.  */
-  char const *str = input;
-  while (*str == ' ')
+  எழுத்து மாறிலி *str = உள்ளீடு;
+  போது (*str == ' ')
     str++;
   str += *str == '+';
 
@@ -1901,72 +1901,72 @@ print_factors (char const *input)
   strtol_error err = strtouuint (&u, str);
   mpz_t t;
 
-  switch (err)
+  தேர்வு (err)
     {
-    case LONGINT_OK:
-      if (hi (u) >> (W_TYPE_SIZE - 1) == 0)
+    நிலை LONGINT_OK:
+      எனில் (hi (u) >> (W_TYPE_SIZE - 1) == 0)
         {
           devmsg ("[using single-precision arithmetic] ");
           print_factors_single (u);
-          return true;
+          திரும்பு true;
         }
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
+    நிலை LONGINT_OVERFLOW:
       /* Try GMP.  */
-      if (0 <= mpz_init_set_str (t, str, 10))
-        break;
+      எனில் (0 <= mpz_init_set_str (t, str, 10))
+        நிறுத்து;
       FALLTHROUGH;
 
-    case LONGINT_INVALID:
-    case LONGINT_INVALID_SUFFIX_CHAR:
-    case LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW:
-    default:
-      error (0, 0, _("%s is not a valid positive integer"), quote (input));
-      return false;
+    நிலை LONGINT_INVALID:
+    நிலை LONGINT_INVALID_SUFFIX_CHAR:
+    நிலை LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW:
+    இயல்பு:
+      error (0, 0, _("%s is not a valid positive integer"), quote (உள்ளீடு));
+      திரும்பு false;
     }
 
   devmsg ("[using arbitrary-precision arithmetic] ");
-  if (MP_FACTOR_USING_POLLARD_RHO_N_MAX < mp_size (t))
+  எனில் (MP_FACTOR_USING_POLLARD_RHO_N_MAX < mp_size (t))
     xalloc_die ();
 
   lbuf_putmpz (t);
   lbuf_putc (':');
-  struct mp_factors factors = mp_factor (t);
+  கட்டமைப்பு mp_factors factors = mp_factor (t);
 
-  for (idx_t j = 0; j < factors.nfactors; j++)
-    for (mp_bitcnt_t k = 0; k < factors.f[j].e; k++)
+  க்கு (idx_t j = 0; j < factors.nfactors; j++)
+    க்கு (mp_bitcnt_t k = 0; k < factors.f[j].e; k++)
       {
         lbuf_putc (' ');
         lbuf_putmpz (factors.f[j].p);
-        if (print_exponents && factors.f[j].e > 1)
+        எனில் (print_exponents && factors.f[j].e > 1)
           {
             lbuf_putc ('^');
             lbuf_putbitcnt (factors.f[j].e);
-            break;
+            நிறுத்து;
           }
       }
 
   mp_factor_clear (&factors);
   mpz_clear (t);
   lbuf_putnl ();
-  return true;
+  திரும்பு true;
 }
 
 /* Output a usage diagnostic and exit with STATUS.  */
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
-Usage: %s [OPTION] [NUMBER]...\n\
+Usage: %s [OPTION] [எண்_2]...\n\
 "),
               program_name);
       fputs (_("\
-Print the prime factors of each specified integer NUMBER.  If none\n\
-are specified on the command line, read them from standard input.\n\
+Print the பகாஎண் factors of each specified integer எண்_2.  If none\n\
+are specified on the command வரி, பட them from standard உள்ளீடு.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -1981,34 +1981,34 @@ are specified on the command line, read them from standard input.\n\
 }
 
 /* Read numbers from stdin, one per line, and output their factors.  */
-static bool
-do_stdin (void)
+நிலையான bool
+do_stdin (வெறுமை)
 {
   bool ok = true;
   token_buffer tokenbuffer;
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  போது (true)
     {
-      size_t token_length = readtoken (stdin, DELIM, sizeof (DELIM) - 1,
+      size_t token_length = readtoken (stdin, DELIM, அளவு (DELIM) - 1,
                                        &tokenbuffer);
-      if (token_length == (size_t) -1)
+      எனில் (token_length == (size_t) -1)
         {
-          if (ferror (stdin))
+          எனில் (ferror (stdin))
             error (EXIT_FAILURE, errno, _("error reading input"));
-          break;
+          நிறுத்து;
         }
 
       ok &= print_factors (tokenbuffer.buffer);
     }
-  free (tokenbuffer.buffer);
+  விடுவி (tokenbuffer.buffer);
 
-  return ok;
+  திரும்பு ok;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -2018,24 +2018,24 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int c;
-  while ((c = getopt_long (argc, argv, "h", long_options, NULL)) != -1)
+  முழு c;
+  போது ((c = getopt_long (argc, argv, "h", long_options, வெற்று)) != -1)
     {
-      switch (c)
+      தேர்வு (c)
         {
-        case 'h':  /* NetBSD used -h for this functionality first.  */
+        நிலை 'h':  /* NetBSD used -h for this functionality first.  */
           print_exponents = true;
-          break;
+          நிறுத்து;
 
-        case DEV_DEBUG_OPTION:
+        நிலை DEV_DEBUG_OPTION:
           dev_debug = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
@@ -2043,15 +2043,15 @@ main (int argc, char **argv)
   atexit (lbuf_flush);
 
   bool ok;
-  if (argc <= optind)
+  எனில் (argc <= optind)
     ok = do_stdin ();
-  else
+  இல்லையெனில்
     {
       ok = true;
-      for (int i = optind; i < argc; i++)
-        if (! print_factors (argv[i]))
+      க்கு (முழு i = optind; i < argc; i++)
+        எனில் (! print_factors (argv[i]))
           ok = false;
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  திரும்பு ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

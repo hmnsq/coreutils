@@ -1,4 +1,4 @@
-enum ls_modes
+எண்ணிக்கை ls_modes
 {
   /* This is for the 'ls' program.  */
   LS_LS,
@@ -10,4 +10,4 @@ enum ls_modes
   LS_LONG_FORMAT
 };
 
-extern enum ls_modes ls_mode;
+வெளி எண்ணிக்கை ls_modes ls_mode;

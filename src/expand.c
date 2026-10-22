@@ -32,40 +32,40 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "ioblksize.h"
-#include "mcel.h"
-#include "mbbuf.h"
-#include "expand-common.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "ioblksize.h"
+#அந்தர்பாவ "mcel.h"
+#அந்தர்பாவ "mbbuf.h"
+#அந்தர்பாவ "expand-common.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "expand"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
-static char const shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
+நிலையான எழுத்து மாறிலி shortopts[] = "it:0::1::2::3::4::5::6::7::8::9::";
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"tabs", required_argument, NULL, 't'},
-  {"initial", no_argument, NULL, 'i'},
+  {"tabs", required_argument, வெற்று, 't'},
+  {"initial", no_argument, வெற்று, 'i'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -80,7 +80,7 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 
       oputs (_("\
   -i, --initial\n\
-         do not convert tabs after non blanks\n\
+         செய் not convert tabs after non blanks\n\
 "));
       oputs (_("\
   -t, --tabs=N\n\
@@ -98,20 +98,20 @@ Convert tabs in each FILE to spaces, writing to standard output.\n\
 /* Change tabs to spaces, writing to stdout.
    Read each file in 'file_list', in order.  */
 
-static void
-expand (void)
+நிலையான வெறுமை
+expand (வெறுமை)
 {
   /* Input stream.  */
-  FILE *fp = next_file (NULL);
+  FILE *fp = next_file (வெற்று);
 
-  if (!fp)
-    return;
+  எனில் (!fp)
+    திரும்பு;
 
-  static char line_in[IO_BUFSIZE];
+  நிலையான எழுத்து வரி_in[IO_BUFSIZE];
   mbbuf_t mbbuf;
-  mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+  mbbuf_init (&mbbuf, வரி_in, அளவு வரி_in, fp);
 
-  while (true)
+  போது (true)
     {
       /* Input character, or EOF.  */
       mcel_t g;
@@ -132,63 +132,63 @@ expand (void)
 
       /* Convert a line of text.  */
 
-      do
+      செய்
         {
-          while ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
+          போது ((g = mbbuf_get_char (&mbbuf)).ch == MBBUF_EOF
                  && (fp = next_file (fp)))
-            mbbuf_init (&mbbuf, line_in, sizeof line_in, fp);
+            mbbuf_init (&mbbuf, வரி_in, அளவு வரி_in, fp);
 
-          if (convert)
+          எனில் (convert)
             {
-              convert &= convert_entire_line || c32issep (g.ch);
+              convert &= convert_entire_வரி || c32issep (g.ch);
 
-              if (g.ch == '\t')
+              எனில் (g.ch == '\t')
                 {
                   /* Column the next input tab stop is on.  */
                   bool last_tab;
                   colno next_tab_column
                     = get_next_tab_column (column, &tab_index, &last_tab);
 
-                  while (++column < next_tab_column)
-                    if (putchar (' ') < 0)
+                  போது (++column < next_tab_column)
+                    எனில் (putchar (' ') < 0)
                       write_error ();
 
-                  if (putchar (' ') < 0)
+                  எனில் (putchar (' ') < 0)
                     write_error ();
 
-                  continue;
+                  தொடர்;
                 }
-              else if (g.ch == '\b')
+              இல்லையெனில் எனில் (g.ch == '\b')
                 {
                   /* Go back one column, and force recalculation of the
                      next tab stop.  */
                   column -= !!column;
                   tab_index -= !!tab_index;
                 }
-              else
+              இல்லையெனில்
                 {
-                  int width = c32width (g.ch);
-                  if (ckd_add (&column, column, width < 0 ? 1 : width))
+                  முழு width = c32width (g.ch);
+                  எனில் (ckd_add (&column, column, width < 0 ? 1 : width))
                     error (EXIT_FAILURE, 0, _("input line is too long"));
                 }
 
             }
 
-          if (g.ch == MBBUF_EOF)
-            return;
+          எனில் (g.ch == MBBUF_EOF)
+            திரும்பு;
 
-          fwrite (mbbuf_char_offset (&mbbuf, g), sizeof (char), g.len, stdout);
-          if (ferror (stdout))
+          fwrite (mbbuf_char_offset (&mbbuf, g), அளவு (எழுத்து), g.len, stdout);
+          எனில் (ferror (stdout))
             write_error ();
         }
-      while (g.ch != '\n');
+      போது (g.ch != '\n');
     }
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int c;
+  முழு c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -197,49 +197,49 @@ main (int argc, char **argv)
   textdomain (PACKAGE);
 
   atexit (close_stdout);
-  convert_entire_line = true;
+  convert_entire_வரி = true;
 
-  while ((c = getopt_long (argc, argv, shortopts, longopts, NULL)) != -1)
+  போது ((c = getopt_long (argc, argv, shortopts, longopts, வெற்று)) != -1)
     {
-      switch (c)
+      தேர்வு (c)
         {
-        case 'i':
-          convert_entire_line = false;
-          break;
+        நிலை 'i':
+          convert_entire_வரி = false;
+          நிறுத்து;
 
-        case 't':
+        நிலை 't':
           parse_tab_stops (optarg);
-          break;
+          நிறுத்து;
 
-        case '0': case '1': case '2': case '3': case '4':
-        case '5': case '6': case '7': case '8': case '9':
-          if (optarg)
+        நிலை '0': நிலை '1': நிலை '2': நிலை '3': நிலை '4':
+        நிலை '5': நிலை '6': நிலை '7': நிலை '8': நிலை '9':
+          எனில் (optarg)
             parse_tab_stops (optarg - 1);
-          else
+          இல்லையெனில்
             {
-              char tab_stop[2];
+              எழுத்து tab_stop[2];
               tab_stop[0] = c;
               tab_stop[1] = '\0';
               parse_tab_stops (tab_stop);
             }
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
   finalize_tab_stops ();
 
-  set_file_list (optind < argc ? &argv[optind] : NULL);
+  set_file_list (optind < argc ? &argv[optind] : வெற்று);
 
   expand ();
 
   cleanup_file_list_stdin ();
 
-  return exit_status;
+  திரும்பு exit_status;
 }

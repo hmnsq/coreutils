@@ -16,17 +16,17 @@
 
 /* Created by hacking who.c by Kaveh Ghazi ghazi@caip.rutgers.edu.  */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <stdio.h>
-#include <sys/types.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
+#அந்தர்பாவ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
-#include "fprintftime.h"
+#அந்தர்பாவ "long-options.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "readutmp.h"
+#அந்தர்பாவ "fprintftime.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "uptime"
@@ -36,120 +36,120 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Kaveh Ghazi")
 
-static int
-print_uptime (idx_t n, STRUCT_UTMP const *utmp_buf)
+நிலையான முழு
+print_uptime (idx_t n, STRUCT_UTMP மாறிலி *utmp_buf)
 {
-  int status = EXIT_SUCCESS;
+  முழு status = EXIT_SUCCESS;
   time_t boot_time = 0;
 
   /* Loop through all the utmp entries we just read and count up the valid
      ones, also in the process possibly gleaning boottime. */
   idx_t entries = 0;
-  for (idx_t i = 0; i < n; i++)
+  க்கு (idx_t i = 0; i < n; i++)
     {
-      STRUCT_UTMP const *this = &utmp_buf[i];
+      STRUCT_UTMP மாறிலி *this = &utmp_buf[i];
       entries += IS_USER_PROCESS (this);
-      if (UT_TYPE_BOOT_TIME (this))
+      எனில் (UT_TYPE_BOOT_TIME (this))
         boot_time = this->ut_ts.tv_sec;
     }
   /* The gnulib module 'readutmp' is supposed to provide a BOOT_TIME entry
      on all platforms.  */
-  if (boot_time == 0)
+  எனில் (boot_time == 0)
     {
       error (0, errno, _("couldn't get boot time"));
       status = EXIT_FAILURE;
     }
 
-  time_t time_now = time (NULL);
-  struct tm *tmn = time_now == (time_t) -1 ? NULL : localtime (&time_now);
+  time_t time_now = time (வெற்று);
+  கட்டமைப்பு tm *tmn = time_now == (time_t) -1 ? வெற்று : localtime (&time_now);
   /* procps' version of uptime also prints the seconds field, but
      previous versions of coreutils don't. */
-  if (tmn)
+  எனில் (tmn)
     /* TRANSLATORS: This prints the current clock time. */
     fprintftime (stdout, _(" %H:%M:%S  "), tmn, (timezone_t) 0, 0);
-  else
+  இல்லையெனில்
     {
       printf (_(" ??:????  "));
       status = EXIT_FAILURE;
     }
 
   intmax_t uptime;
-  if (time_now == (time_t) -1 || boot_time == 0
+  எனில் (time_now == (time_t) -1 || boot_time == 0
       || ckd_sub (&uptime, time_now, boot_time) || uptime < 0)
     {
       printf (_("up ???? days ??:??,  "));
       status = EXIT_FAILURE;
     }
-  else
+  இல்லையெனில்
     {
       intmax_t updays = uptime / 86400;
-      int uphours = uptime % 86400 / 3600;
-      int upmins = uptime % 86400 % 3600 / 60;
-      if (0 < updays)
+      முழு uphours = uptime % 86400 / 3600;
+      முழு upmins = uptime % 86400 % 3600 / 60;
+      எனில் (0 < updays)
         printf (ngettext ("up %jd day %2d:%02d,  ",
                           "up %jd days %2d:%02d,  ",
                           select_plural (updays)),
                 updays, uphours, upmins);
-      else
+      இல்லையெனில்
         printf (_("up %2d:%02d,  "), uphours, upmins);
     }
 
   printf (ngettext ("%td user", "%td users", select_plural (entries)),
           entries);
 
-  double avg[3];
-  int loads = getloadavg (avg, 3);
+  இரட்டை avg[3];
+  முழு loads = getloadavg (avg, 3);
 
-  if (loads == -1)
+  எனில் (loads == -1)
     putchar ('\n');
-  else
+  இல்லையெனில்
     {
-      if (loads > 0)
+      எனில் (loads > 0)
         printf (_(",  load average: %.2f"), avg[0]);
-      if (loads > 1)
+      எனில் (loads > 1)
         printf (", %.2f", avg[1]);
-      if (loads > 2)
+      எனில் (loads > 2)
         printf (", %.2f", avg[2]);
-      if (loads > 0)
+      எனில் (loads > 0)
         putchar ('\n');
     }
 
-  return status;
+  திரும்பு status;
 }
 
 /* Display the system uptime and the number of users on the system,
    according to utmp file FILENAME.  Use read_utmp OPTIONS to read the
    utmp file.  */
 
-static _Noreturn void
-uptime (char const *filename, int options)
+நிலையான _Noreturn வெறுமை
+uptime (எழுத்து மாறிலி *filename, முழு options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
-  int read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
+  முழு read_utmp_status = (read_utmp (filename, &n_users, &utmp_buf, options) < 0
                           ? EXIT_FAILURE : EXIT_SUCCESS);
-  if (read_utmp_status != EXIT_SUCCESS)
+  எனில் (read_utmp_status != EXIT_SUCCESS)
     {
       error (0, errno, "%s", quotef (filename));
       n_users = 0;
-      utmp_buf = NULL;
+      utmp_buf = வெற்று;
     }
 
-  int print_uptime_status = print_uptime (n_users, utmp_buf);
+  முழு print_uptime_status = print_uptime (n_users, utmp_buf);
   exit (MAX (read_utmp_status, print_uptime_status));
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
 Print the current time, the length of time the system has been up,\n\
-the number of users on the system, and the average number of jobs\n\
+the எண் of users on the system, and the average எண் of jobs\n\
 in the run queue over the last 1, 5 and 15 minutes."));
 #ifdef __linux__
       /* It would be better to introduce a configure test for this,
@@ -159,7 +159,7 @@ in the run queue over the last 1, 5 and 15 minutes."));
       printf (_("  \
 Processes in\n\
 an uninterruptible sleep state also contribute to the load average.\n"));
-#else
+#இல்லையெனில்
       printf (_("\n"));
 #endif
       printf (_("\
@@ -173,8 +173,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -186,19 +186,19 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (எழுத்து மாறிலி *) வெற்று);
 
-  switch (argc - optind)
+  தேர்வு (argc - optind)
     {
-    case 0:			/* uptime */
+    நிலை 0:			/* uptime */
       uptime (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      நிறுத்து;
 
-    case 1:			/* uptime <utmp file> */
+    நிலை 1:			/* uptime <utmp file> */
       uptime (argv[optind], 0);
-      break;
+      நிறுத்து;
 
-    default:			/* lose */
+    இயல்பு:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }

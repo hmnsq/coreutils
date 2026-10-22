@@ -20,45 +20,45 @@
 
    Ørn E. Hansen added NLS support in 1997.  */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <getopt.h>
-#include <pthread.h>
-#include <sys/resource.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <spawn.h>
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "c-ctype.h"
-#include "fadvise.h"
-#include "filevercmp.h"
-#include "findprog.h"
-#include "flexmember.h"
-#include "hard-locale.h"
-#include "hash.h"
-#include "heap.h"
-#include "ignore-value.h"
-#include "mbswidth.h"
-#include "nproc.h"
-#include "physmem.h"
-#include "posixver.h"
-#include "quote.h"
-#include "randread.h"
-#include "readtokens0.h"
-#include "stdlib--.h"
-#include "strnumcmp.h"
-#include "term-sig.h"
-#include "unistd--.h"
-#include "xmemcoll.h"
-#include "xnanosleep.h"
-#include "xstrtol.h"
-#include "xstrtol-error.h"
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <pthread.h>
+#அந்தர்பாவ <sys/resource.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <sys/wait.h>
+#அந்தர்பாவ <signal.h>
+#அந்தர்பாவ <spawn.h>
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "argmatch.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "c-ctype.h"
+#அந்தர்பாவ "fadvise.h"
+#அந்தர்பாவ "filevercmp.h"
+#அந்தர்பாவ "findprog.h"
+#அந்தர்பாவ "flexmember.h"
+#அந்தர்பாவ "hard-locale.h"
+#அந்தர்பாவ "hash.h"
+#அந்தர்பாவ "heap.h"
+#அந்தர்பாவ "ignore-value.h"
+#அந்தர்பாவ "mbswidth.h"
+#அந்தர்பாவ "nproc.h"
+#அந்தர்பாவ "physmem.h"
+#அந்தர்பாவ "posixver.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "randread.h"
+#அந்தர்பாவ "readtokens0.h"
+#அந்தர்பாவ "stdlib--.h"
+#அந்தர்பாவ "strnumcmp.h"
+#அந்தர்பாவ "term-sig.h"
+#அந்தர்பாவ "unistd--.h"
+#அந்தர்பாவ "xmemcoll.h"
+#அந்தர்பாவ "xnanosleep.h"
+#அந்தர்பாவ "xstrtol.h"
+#அந்தர்பாவ "xstrtol-error.h"
 
 #ifndef RLIMIT_DATA
-struct rlimit { size_t rlim_cur; };
+கட்டமைப்பு rlimit { size_t rlim_cur; };
 # define getrlimit(Resource, Rlp) (-1)
 #endif
 
@@ -69,14 +69,14 @@ struct rlimit { size_t rlim_cur; };
   proper_name ("Mike Haertel"), \
   proper_name ("Paul Eggert")
 
-#if HAVE_LANGINFO_CODESET
+#எனில் HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
 
-#if !defined OPEN_MAX && defined NR_OPEN
+#எனில் !defined OPEN_MAX && defined NR_OPEN
 # define OPEN_MAX NR_OPEN
 #endif
-#if !defined OPEN_MAX
+#எனில் !defined OPEN_MAX
 # define OPEN_MAX 20
 #endif
 
@@ -99,15 +99,15 @@ struct rlimit { size_t rlim_cur; };
    lines of gensort -a output is sorted slightly faster with --parallel=2
    than with --parallel=1.  By contrast, using --parallel=1 is about 10%
    faster than using --parallel=2 with a 64K-line input.  */
-enum { SUBTHREAD_LINES_HEURISTIC = 128 * 1024 };
-static_assert (4 <= SUBTHREAD_LINES_HEURISTIC);
+எண்ணிக்கை { SUBTHREAD_வரிகள்_HEURISTIC = 128 * 1024 };
+static_assert (4 <= SUBTHREAD_வரிகள்_HEURISTIC);
 
 /* The number of threads after which there are
    diminishing performance gains.  */
-enum { DEFAULT_MAX_THREADS = 8 };
+எண்ணிக்கை { DEFAULT_MAX_THREADS = 8 };
 
 /* Exit statuses.  */
-enum
+எண்ணிக்கை
   {
     /* POSIX says to exit with status 1 if invoked with -c and the
        input is not properly sorted.  */
@@ -118,7 +118,7 @@ enum
     SORT_FAILURE = 2
   };
 
-enum
+எண்ணிக்கை
   {
     /* The number of times we should try to spawn a compression process
        (we retry if the posix_spawnp call fails with EAGAIN).  We don't _need_
@@ -132,50 +132,50 @@ enum
     MAX_TRIES_DECOMPRESS = 9
   };
 
-enum
+எண்ணிக்கை
   {
     /* Level of the end-of-merge node, one level above the root. */
     MERGE_END = 0,
 
     /* Level of the root node in merge tree. */
-    MERGE_ROOT = 1
+    MERGE_வேர் = 1
   };
 
 /* The representation of the decimal point in the current locale.  */
-static char decimal_point;
+நிலையான எழுத்து decimal_point;
 
 /* Thousands separator; if outside char range, there is no separator.  */
-static int thousands_sep;
+நிலையான முழு thousands_sep;
 /* We currently ignore multi-byte grouping chars.  */
-static bool thousands_sep_ignored;
+நிலையான bool thousands_sep_ignored;
 
 /* Nonzero if the corresponding locales are hard.  */
-static bool hard_LC_COLLATE;
-#if HAVE_NL_LANGINFO
-static bool hard_LC_TIME;
+நிலையான bool hard_LC_COLLATE;
+#எனில் HAVE_NL_LANGINFO
+நிலையான bool hard_LC_TIME;
 #endif
 
 #define NONZERO(x) ((x) != 0)
 
 /* The kind of blanks for '-b' to skip in various options. */
-enum blanktype { bl_start, bl_end, bl_both };
+எண்ணிக்கை blanktype { bl_start, bl_end, bl_both };
 
 /* The character marking end of line. Default to \n. */
-static char eolchar = '\n';
+நிலையான எழுத்து eolchar = '\n';
 
 /* Lines are held in memory as counted strings. */
-struct line
+கட்டமைப்பு வரி
 {
-  char *text;			/* Text of the line. */
+  எழுத்து *text;			/* Text of the line. */
   size_t length;		/* Length including final newline. */
-  char *keybeg;			/* Start of first key. */
-  char *keylim;			/* Limit of first key. */
+  எழுத்து *keybeg;			/* Start of first key. */
+  எழுத்து *keylim;			/* Limit of first key. */
 };
 
 /* Input buffers. */
-struct buffer
+கட்டமைப்பு buffer
 {
-  char *buf;			/* Dynamically allocated buffer,
+  எழுத்து *buf;			/* Dynamically allocated buffer,
                                    partitioned into 3 regions:
                                    - input data;
                                    - unused area;
@@ -183,15 +183,15 @@ struct buffer
   size_t used;			/* Number of bytes used for input data.  */
   size_t nlines;		/* Number of lines in the line array.  */
   idx_t alloc;			/* Number of bytes allocated. */
-  size_t left;			/* Number of bytes left from previous reads. */
-  size_t line_bytes;		/* Number of bytes to reserve for each line. */
+  size_t இடது;			/* Number of bytes left from previous reads. */
+  size_t வரி_bytes;		/* Number of bytes to reserve for each line. */
   bool eof;			/* An EOF has been read.  */
 };
 
 /* Policy for sizing the main sort buffer.  INITIAL is the allocation
    to try first.  LIMIT is the largest allocation to try while reading
    normal input; a single input line can still force a larger buffer.  */
-struct sort_buffer_policy
+கட்டமைப்பு sort_buffer_policy
 {
   size_t initial;
   size_t limit;
@@ -199,14 +199,14 @@ struct sort_buffer_policy
 };
 
 /* Sort key.  */
-struct keyfield
+கட்டமைப்பு keyfield
 {
   size_t sword;			/* Zero-origin 'word' to start at. */
   size_t schar;			/* Additional characters to skip. */
   size_t eword;			/* Zero-origin last 'word' of key. */
   size_t echar;			/* Additional characters in field. */
-  bool const *ignore;		/* Boolean array of characters to ignore. */
-  char const *translate;	/* Translation applied to characters. */
+  bool மாறிலி *ignore;		/* Boolean array of characters to ignore. */
+  எழுத்து மாறிலி *translate;	/* Translation applied to characters. */
   bool skipsblanks;		/* Skip leading blanks when finding start.  */
   bool skipeblanks;		/* Skip leading blanks when finding end.  */
   bool numeric;			/* Flag for numeric comparison.  Handle
@@ -221,44 +221,44 @@ struct keyfield
   bool reverse;			/* Reverse the sense of comparison. */
   bool version;			/* sort by version number */
   bool traditional_used;	/* Traditional key option format is used. */
-  struct keyfield *next;	/* Next keyfield to try. */
+  கட்டமைப்பு keyfield *next;	/* Next keyfield to try. */
 };
 
-struct month
+கட்டமைப்பு month
 {
-  char const *name;
-  int val;
+  எழுத்து மாறிலி *name;
+  முழு val;
 };
 
 /* Binary merge tree node. */
-struct merge_node
+கட்டமைப்பு merge_முனை
 {
-  struct line *lo;              /* Lines to merge from LO child node. */
-  struct line *hi;              /* Lines to merge from HI child node. */
-  struct line *end_lo;          /* End of available lines from LO. */
-  struct line *end_hi;          /* End of available lines from HI. */
-  struct line **dest;           /* Pointer to destination of merge. */
+  கட்டமைப்பு வரி *lo;              /* Lines to merge from LO child node. */
+  கட்டமைப்பு வரி *hi;              /* Lines to merge from HI child node. */
+  கட்டமைப்பு வரி *end_lo;          /* End of available lines from LO. */
+  கட்டமைப்பு வரி *end_hi;          /* End of available lines from HI. */
+  கட்டமைப்பு வரி **dest;           /* Pointer to destination of merge. */
   size_t nlo;                   /* Total Lines remaining from LO. */
   size_t nhi;                   /* Total lines remaining from HI. */
-  struct merge_node *parent;    /* Parent node. */
-  struct merge_node *lo_child;  /* LO child node. */
-  struct merge_node *hi_child;  /* HI child node. */
-  unsigned int level;           /* Level in merge tree. */
+  கட்டமைப்பு merge_முனை *parent;    /* Parent node. */
+  கட்டமைப்பு merge_முனை *lo_child;  /* LO child node. */
+  கட்டமைப்பு merge_முனை *hi_child;  /* HI child node. */
+  unsigned முழு level;           /* Level in merge tree. */
   bool queued;                  /* Node is already in heap. */
   pthread_mutex_t lock;         /* Lock for node operations. */
 };
 
 /* Priority queue of merge nodes. */
-struct merge_node_queue
+கட்டமைப்பு merge_முனை_queue
 {
-  struct heap *priority_queue;  /* Priority queue of merge tree nodes. */
+  கட்டமைப்பு heap *priority_queue;  /* Priority queue of merge tree nodes. */
   pthread_mutex_t mutex;        /* Lock for queue operations. */
   pthread_cond_t cond;          /* Conditional wait for empty queue to populate
                                    when popping. */
 };
 
 /* Used to implement --unique (-u).  */
-static struct line saved_line;
+நிலையான கட்டமைப்பு வரி saved_வரி;
 
 /* FIXME: None of these tables work with multibyte character sets.
    Also, there are many other bugs when handling multibyte characters.
@@ -267,22 +267,22 @@ static struct line saved_line;
    tricky.  */
 
 /* Table of blanks.  */
-static bool blanks[UCHAR_LIM];
+நிலையான bool blanks[UCHAR_LIM];
 
 /* Table of non-printing characters. */
-static bool nonprinting[UCHAR_LIM];
+நிலையான bool nonprinting[UCHAR_LIM];
 
 /* Table of non-dictionary characters (not letters, digits, or blanks). */
-static bool nondictionary[UCHAR_LIM];
+நிலையான bool nondictionary[UCHAR_LIM];
 
 /* Translation table folding lower case to upper.  */
-static char fold_toupper[UCHAR_LIM];
+நிலையான எழுத்து fold_toupper[UCHAR_LIM];
 
 #define MONTHS_PER_YEAR 12
 
 /* Table mapping month names to integers.
    Alphabetic order allows binary search. */
-static struct month monthtab[] =
+நிலையான கட்டமைப்பு month monthtab[] =
 {
   {"APR", 4},
   {"AUG", 8},
@@ -302,7 +302,7 @@ static struct month monthtab[] =
 #define NMERGE_DEFAULT 16
 
 /* Minimum size for a merge or check buffer.  */
-#define MIN_MERGE_BUFFER_SIZE (2 + sizeof (struct line))
+#define MIN_MERGE_BUFFER_SIZE (2 + அளவு (கட்டமைப்பு வரி))
 
 /* Minimum sort size; the code might not work with smaller sizes.  */
 #define MIN_SORT_SIZE (nmerge * MIN_MERGE_BUFFER_SIZE)
@@ -310,20 +310,20 @@ static struct month monthtab[] =
 /* The number of bytes needed for a merge or check buffer, which can
    function relatively efficiently even if it holds only one line.  If
    a longer line is seen, this value is increased.  */
-static size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
+நிலையான size_t merge_buffer_size = MAX (MIN_MERGE_BUFFER_SIZE, 256 * 1024);
 
 /* The approximate maximum number of bytes of main memory to use, as
    specified by the user.  Zero if the user has not specified a size.  */
-static size_t sort_size;
+நிலையான size_t sort_size;
 
 /* The initial allocation factor for non-regular files.
    This is used, e.g., when reading from a pipe.
    Don't make it too big, since it is multiplied by ~130 to
    obtain the size of the actual buffer sort will allocate.
    Also, there may be 8 threads all doing this at the same time.  */
-#define INPUT_FILE_SIZE_GUESS (128 * 1024)
+#define உள்ளீடு_FILE_SIZE_GUESS (128 * 1024)
 
-static struct
+நிலையான கட்டமைப்பு
 {
   /* Number of temporary directory names used.  */
   idx_t n_dirs;
@@ -333,106 +333,106 @@ static struct
 
   /* Array of directory names in which any temporary files are
      to be created. */
-  char const **dirs COUNTED_BY (n_dirs);
+  எழுத்து மாறிலி **dirs COUNTED_BY (n_dirs);
 } temp_dirs;
 
 
 
 /* Flag to reverse the order of all comparisons. */
-static bool reverse;
+நிலையான bool reverse;
 
 /* Flag for stable sort.  This turns off the last ditch bytewise
    comparison of lines, and instead leaves lines in the same order
    they were read if all keys compare equal.  */
-static bool stable;
+நிலையான bool stable;
 
 /* An int value outside char range.  */
-enum { NON_CHAR = CHAR_MAX + 1 };
+எண்ணிக்கை { NON_CHAR = CHAR_MAX + 1 };
 
 /* If TAB has this value, blanks separate fields.  */
-enum { TAB_DEFAULT = CHAR_MAX + 1 };
+எண்ணிக்கை { TAB_DEFAULT = CHAR_MAX + 1 };
 
 /* Tab character separating fields.  If TAB_DEFAULT, then fields are
    separated by the empty string between a non-blank character and a blank
    character. */
-static int tab = TAB_DEFAULT;
+நிலையான முழு tab = TAB_DEFAULT;
 
 /* Flag to remove consecutive duplicate lines from the output.
    Only the last of a sequence of equal lines will be output. */
-static bool unique;
+நிலையான bool unique;
 
 /* Nonzero if any of the input files are the standard input. */
-static bool have_read_stdin;
+நிலையான bool have_read_stdin;
 
 /* List of key field comparisons to be tried.  */
-static struct keyfield *keylist;
+நிலையான கட்டமைப்பு keyfield *keylist;
 
 /* Program used to (de)compress temp files.  Must accept -d.  */
-static char const *compress_program;
+நிலையான எழுத்து மாறிலி *compress_program;
 
 /* Annotate the output with extra info to aid the user.  */
-static bool debug;
+நிலையான bool debug;
 
 /* Maximum number of files to merge in one go.  If more than this
    number are present, temp files will be used. */
-static unsigned int nmerge = NMERGE_DEFAULT;
+நிலையான unsigned முழு nmerge = NMERGE_DEFAULT;
 
 /* Whether SIGPIPE had the default disposition at startup.  */
-static bool default_SIGPIPE;
+நிலையான bool default_SIGPIPE;
 
 /* The list of temporary files. */
-struct tempnode
+கட்டமைப்பு tempnode
 {
-  struct tempnode *volatile next;
+  கட்டமைப்பு tempnode *நிலையற்ற next;
   pid_t pid;     /* The subprocess PID; undefined if state == UNCOMPRESSED.  */
-  char state;
-  char name[FLEXIBLE_ARRAY_MEMBER];
+  எழுத்து state;
+  எழுத்து name[FLEXIBLE_ARRAY_MEMBER];
 };
-static struct tempnode *volatile temphead;
-static struct tempnode *volatile *temptail = &temphead;
+நிலையான கட்டமைப்பு tempnode *நிலையற்ற temphead;
+நிலையான கட்டமைப்பு tempnode *நிலையற்ற *temptail = &temphead;
 
 /* Clean up any remaining temporary files.  */
 
-static void
-cleanup (void)
+நிலையான வெறுமை
+cleanup (வெறுமை)
 {
-  for (struct tempnode const *node = temphead; node; node = node->next)
-    unlink (node->name);
-  temphead = NULL;
+  க்கு (கட்டமைப்பு tempnode மாறிலி *முனை = temphead; முனை; முனை = முனை->next)
+    unlink (முனை->name);
+  temphead = வெற்று;
 }
 
 /* Handle interrupts and hangups. */
 
-static void
-sighandler (int sig)
+நிலையான வெறுமை
+sighandler (முழு sig)
 {
   cleanup ();
 
-  signal (sig, SIG_DFL);
-  raise (sig);
+  சமிக்ஞை (sig, SIG_DFL);
+  எழுப்பு (sig);
 }
 
 /* Report MESSAGE for FILE, then clean up and exit.
    If FILE is null, it represents standard output.  */
 
-static void
-sort_die (char const *message, char const *file)
+நிலையான வெறுமை
+sort_die (எழுத்து மாறிலி *message, எழுத்து மாறிலி *file)
 {
   /* If we got EPIPE writing to stdout (from a previous fwrite() or fclose()
      and SIGPIPE was originally SIG_DFL, mimic standard SIGPIPE behavior.  */
-  if (errno == EPIPE && !file && default_SIGPIPE)
+  எனில் (errno == EPIPE && !file && default_SIGPIPE)
     sighandler (SIGPIPE);
 
   error (SORT_FAILURE, errno, "%s: %s", message,
          quotef (file ? file : _("standard output")));
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -452,19 +452,19 @@ Ordering options:\n\
 "), stdout);
       oputs (_("\
   -b, --ignore-leading-blanks\n\
-         ignore leading blanks when finding sort keys in each line\n\
+         ignore leading blanks when finding sort சாவிகள் in each வரி\n\
 "));
       oputs (_("\
   -d, --dictionary-order\n\
          consider only blanks and alphanumeric characters\n\
 "));
       oputs (_("\
-  -f, --ignore-case\n\
-         fold lower case to upper case characters\n\
+  -f, --ignore-நிலை\n\
+         fold lower நிலை to upper நிலை characters\n\
 "));
       oputs (_("\
   -g, --general-numeric-sort\n\
-         compare according to general numerical value\n\
+         compare according to general numerical மதிப்பு\n\
 "));
       oputs (_("\
   -i, --ignore-nonprinting\n\
@@ -480,12 +480,12 @@ Ordering options:\n\
 "));
       oputs (_("\
   -n, --numeric-sort\n\
-         compare according to string numerical value;\n\
-         see full documentation for supported strings\n\
+         compare according to string numerical மதிப்பு;\n\
+         see full documentation க்கு supported strings\n\
 "));
       oputs (_("\
   -R, --random-sort\n\
-         shuffle, but group identical keys.  See also shuf(1)\n\
+         shuffle, but group identical சாவிகள்.  See also shuf(1)\n\
 "));
       oputs (_("\
       --random-source=FILE\n\
@@ -512,15 +512,15 @@ Other options:\n\
 "), stdout);
       oputs (_("\
       --batch-size=NMERGE\n\
-         merge at most NMERGE inputs at once; for more use temp files\n\
+         merge at most NMERGE inputs at once; க்கு more use temp files\n\
 "));
       oputs (_("\
   -c, --check, --check=diagnose-first\n\
-         check for sorted input; do not sort\n\
+         check க்கு sorted உள்ளீடு; செய் not sort\n\
 "));
       oputs (_("\
   -C, --check=quiet, --check=silent\n\
-         like -c, but do not report first bad line\n\
+         like -c, but செய் not report first bad வரி\n\
 "));
       oputs (_("\
       --compress-program=PROG\n\
@@ -528,26 +528,26 @@ Other options:\n\
 "));
       oputs (_("\
       --debug\n\
-         annotate the part of the line used to sort,\n\
+         annotate the part of the வரி used to sort,\n\
          and warn about questionable usage to standard error\n\
 "));
       oputs (_("\
       --files0-from=F\n\
-         read input from the files specified by NUL-terminated names in file F;\
+         பட உள்ளீடு from the files specified by NUL-terminated names in file F;\
 \n\
-         If F is -, read names from standard input\n\
+         If F is -, பட names from standard உள்ளீடு\n\
 "));
       oputs (_("\
-  -k, --key=KEYDEF\n\
-         sort via a key; KEYDEF gives location and type\n\
+  -k, --சாவி=KEYDEF\n\
+         sort via a சாவி; KEYDEF gives location and type\n\
 "));
       oputs (_("\
   -m, --merge\n\
-         merge already sorted files; do not sort\n\
+         merge already sorted files; செய் not sort\n\
 "));
       oputs (_("\
   -o, --output=FILE\n\
-         write result to FILE instead of standard output\n\
+         லிக result to FILE instead of standard output\n\
 "));
       oputs (_("\
   -s, --stable\n\
@@ -555,7 +555,7 @@ Other options:\n\
 "));
       oputs (_("\
   -S, --buffer-size=SIZE\n\
-         use SIZE for main memory buffer\n\
+         use SIZE க்கு முதன்மை memory buffer\n\
 "));
       oputs (_("\
   -t, --field-separator=SEP\n\
@@ -563,44 +563,44 @@ Other options:\n\
 "));
       oprintf (_("\
   -T, --temporary-directory=DIR\n\
-         use DIR for temporaries, not $TMPDIR or %s;\n\
+         use DIR க்கு temporaries, not $TMPDIR or %s;\n\
          multiple options specify multiple directories\n\
 "), DEFAULT_TMPDIR);
       oputs (_("\
       --parallel=N\n\
-         change the number of sorts run concurrently to N\n\
+         change the எண் of sorts run concurrently to N\n\
 "));
       oputs (_("\
   -u, --unique\n\
-         output only the first of lines with equal keys;\n\
-         with -c, check for strict ordering\n\
+         output only the first of வரிகள் with equal சாவிகள்;\n\
+         with -c, check க்கு strict ordering\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         வரி delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-KEYDEF is F[.C][OPTS][,F[.C][OPTS]] for start and stop position, where F is a\n\
-field number and C a character position in the field; both are origin 1, and\n\
-the stop position defaults to the line's end.  If neither -t nor -b is in\n\
+KEYDEF is F[.C][OPTS][,F[.C][OPTS]] க்கு start and stop position, where F is a\n\
+field எண் and C a character position in the field; both are origin 1, and\n\
+the stop position defaults to the வரி's end.  If neither -t nor -b is in\n\
 effect, characters in a field are counted from the beginning of the preceding\n\
 whitespace.  OPTS is one or more single-letter ordering options [bdfgiMhnRrV],\
 \n\
-which override global ordering options for that key.  If no key is given, use\n\
-the entire line as the key.  Use --debug to diagnose incorrect key usage.\n\
+which override global ordering options க்கு that சாவி.  If no சாவி is given, use\n\
+the entire வரி as the சாவி.  Use --debug to diagnose incorrect சாவி usage.\n\
 \n\
 SIZE may be followed by the following multiplicative suffixes:\n\
 "), stdout);
       fputs (_("\
-% 1% of memory, b 1, K 1024 (default), and so on for M, G, T, P, E, Z, Y, R, Q.\
+% 1% of memory, b 1, K 1024 (இயல்பு), and so on க்கு M, G, T, P, E, Z, Y, R, Q.\
 \n\n\
 *** WARNING ***\n\
 The locale specified by the environment affects sort order.\n\
 Set LC_ALL=C to get the traditional sort order that uses\n\
-native byte values.\n\
+native byte மதிப்புகள்.\n\
 "), stdout );
       emit_ancillary_info (PROGRAM_NAME);
     }
@@ -610,7 +610,7 @@ native byte values.\n\
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   CHECK_OPTION = CHAR_MAX + 1,
   COMPRESS_PROGRAM_OPTION,
@@ -622,41 +622,41 @@ enum
   PARALLEL_OPTION
 };
 
-static char const short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
+நிலையான எழுத்து மாறிலி short_options[] = "-bcCdfghik:mMno:rRsS:t:T:uVy:z";
 
-static struct option const long_options[] =
+நிலையான கட்டமைப்பு option மாறிலி long_options[] =
 {
-  {"ignore-leading-blanks", no_argument, NULL, 'b'},
-  {"check", optional_argument, NULL, CHECK_OPTION},
-  {"compress-program", required_argument, NULL, COMPRESS_PROGRAM_OPTION},
-  {"debug", no_argument, NULL, DEBUG_PROGRAM_OPTION},
-  {"dictionary-order", no_argument, NULL, 'd'},
-  {"ignore-case", no_argument, NULL, 'f'},
-  {"files0-from", required_argument, NULL, FILES0_FROM_OPTION},
-  {"general-numeric-sort", no_argument, NULL, 'g'},
-  {"ignore-nonprinting", no_argument, NULL, 'i'},
-  {"key", required_argument, NULL, 'k'},
-  {"merge", no_argument, NULL, 'm'},
-  {"month-sort", no_argument, NULL, 'M'},
-  {"numeric-sort", no_argument, NULL, 'n'},
-  {"human-numeric-sort", no_argument, NULL, 'h'},
-  {"version-sort", no_argument, NULL, 'V'},
-  {"random-sort", no_argument, NULL, 'R'},
-  {"random-source", required_argument, NULL, RANDOM_SOURCE_OPTION},
-  {"sort", required_argument, NULL, SORT_OPTION},
-  {"output", required_argument, NULL, 'o'},
-  {"reverse", no_argument, NULL, 'r'},
-  {"stable", no_argument, NULL, 's'},
-  {"batch-size", required_argument, NULL, NMERGE_OPTION},
-  {"buffer-size", required_argument, NULL, 'S'},
-  {"field-separator", required_argument, NULL, 't'},
-  {"temporary-directory", required_argument, NULL, 'T'},
-  {"unique", no_argument, NULL, 'u'},
-  {"zero-terminated", no_argument, NULL, 'z'},
-  {"parallel", required_argument, NULL, PARALLEL_OPTION},
+  {"ignore-leading-blanks", no_argument, வெற்று, 'b'},
+  {"check", optional_argument, வெற்று, CHECK_OPTION},
+  {"compress-program", required_argument, வெற்று, COMPRESS_PROGRAM_OPTION},
+  {"debug", no_argument, வெற்று, DEBUG_PROGRAM_OPTION},
+  {"dictionary-order", no_argument, வெற்று, 'd'},
+  {"ignore-case", no_argument, வெற்று, 'f'},
+  {"files0-from", required_argument, வெற்று, FILES0_FROM_OPTION},
+  {"general-numeric-sort", no_argument, வெற்று, 'g'},
+  {"ignore-nonprinting", no_argument, வெற்று, 'i'},
+  {"key", required_argument, வெற்று, 'k'},
+  {"merge", no_argument, வெற்று, 'm'},
+  {"month-sort", no_argument, வெற்று, 'M'},
+  {"numeric-sort", no_argument, வெற்று, 'n'},
+  {"human-numeric-sort", no_argument, வெற்று, 'h'},
+  {"version-sort", no_argument, வெற்று, 'V'},
+  {"random-sort", no_argument, வெற்று, 'R'},
+  {"random-source", required_argument, வெற்று, RANDOM_SOURCE_OPTION},
+  {"sort", required_argument, வெற்று, SORT_OPTION},
+  {"output", required_argument, வெற்று, 'o'},
+  {"reverse", no_argument, வெற்று, 'r'},
+  {"stable", no_argument, வெற்று, 's'},
+  {"batch-size", required_argument, வெற்று, NMERGE_OPTION},
+  {"buffer-size", required_argument, வெற்று, 'S'},
+  {"field-separator", required_argument, வெற்று, 't'},
+  {"temporary-directory", required_argument, வெற்று, 'T'},
+  {"unique", no_argument, வெற்று, 'u'},
+  {"zero-terminated", no_argument, வெற்று, 'z'},
+  {"parallel", required_argument, வெற்று, PARALLEL_OPTION},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0},
+  {வெற்று, 0, வெற்று, 0},
 };
 
 #define CHECK_TABLE \
@@ -664,13 +664,13 @@ static struct option const long_options[] =
   _ct_("silent",         'C') \
   _ct_("diagnose-first", 'c')
 
-static char const *const check_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி check_args[] =
 {
 #define _ct_(_s, _c) _s,
-  CHECK_TABLE NULL
+  CHECK_TABLE வெற்று
 #undef  _ct_
 };
-static char const check_types[] =
+நிலையான எழுத்து மாறிலி check_types[] =
 {
 #define _ct_(_s, _c) _c,
   CHECK_TABLE
@@ -685,13 +685,13 @@ static char const check_types[] =
   _st_("random",          'R') \
   _st_("version",         'V')
 
-static char const *const sort_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி sort_args[] =
 {
 #define _st_(_s, _c) _s,
-  SORT_TABLE NULL
+  SORT_TABLE வெற்று
 #undef  _st_
 };
-static char const sort_types[] =
+நிலையான எழுத்து மாறிலி sort_types[] =
 {
 #define _st_(_s, _c) _c,
   SORT_TABLE
@@ -699,73 +699,73 @@ static char const sort_types[] =
 };
 
 /* The set of signals that are caught.  */
-static sigset_t caught_signals;
+நிலையான sigset_t caught_signals;
 
 /* Critical section status.  */
-struct cs_status
+கட்டமைப்பு cs_status
 {
   bool valid;
   sigset_t sigs;
 };
 
 /* Enter a critical section.  */
-static void
-cs_enter (struct cs_status *status)
+நிலையான வெறுமை
+cs_enter (கட்டமைப்பு cs_status *status)
 {
-  int ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
+  முழு ret = pthread_sigmask (SIG_BLOCK, &caught_signals, &status->sigs);
   status->valid = ret == 0;
 }
 
 /* Leave a critical section.  */
-static void
-cs_leave (struct cs_status const *status)
+நிலையான வெறுமை
+cs_leave (கட்டமைப்பு cs_status மாறிலி *status)
 {
-  if (status->valid)
+  எனில் (status->valid)
     {
       /* Ignore failure when restoring the signal mask. */
-      pthread_sigmask (SIG_SETMASK, &status->sigs, NULL);
+      pthread_sigmask (SIG_SETMASK, &status->sigs, வெற்று);
     }
 }
 
 /* Possible states for a temp file.  If compressed, the file's status
    is unreaped or reaped, depending on whether 'sort' has waited for
    the subprocess to finish.  */
-enum { UNCOMPRESSED, UNREAPED, REAPED };
+எண்ணிக்கை { UNCOMPRESSED, UNREAPED, REAPED };
 
 /* A file to be sorted.  */
-struct sortfile
+கட்டமைப்பு sortfile
 {
   /* The file's name.  */
-  char const *name;
+  எழுத்து மாறிலி *name;
 
   /* Non-null if this is a temporary file, in which case NAME == TEMP->name.  */
-  struct tempnode *temp;
+  கட்டமைப்பு tempnode *temp;
 };
 
 /* Map PIDs of unreaped subprocesses to their struct tempnode objects.  */
-static Hash_table *proctab;
+நிலையான Hash_table *proctab;
 
-enum { INIT_PROCTAB_SIZE = 47 };
+எண்ணிக்கை { INIT_PROCTAB_SIZE = 47 };
 
-static size_t
-proctab_hasher (void const *entry, size_t tabsize)
+நிலையான size_t
+proctab_hasher (வெறுமை மாறிலி *entry, size_t tabsize)
 {
-  struct tempnode const *node = entry;
-  return node->pid % tabsize;
+  கட்டமைப்பு tempnode மாறிலி *முனை = entry;
+  திரும்பு முனை->pid % tabsize;
 }
 
-static bool
-proctab_comparator (void const *e1, void const *e2)
+நிலையான bool
+proctab_comparator (வெறுமை மாறிலி *e1, வெறுமை மாறிலி *e2)
 {
-  struct tempnode const *n1 = e1;
-  struct tempnode const *n2 = e2;
-  return n1->pid == n2->pid;
+  கட்டமைப்பு tempnode மாறிலி *n1 = e1;
+  கட்டமைப்பு tempnode மாறிலி *n2 = e2;
+  திரும்பு n1->pid == n2->pid;
 }
 
 /* The number of unreaped child processes.  */
-static pid_t nprocs;
+நிலையான pid_t nprocs;
 
-static bool delete_proc (pid_t);
+நிலையான bool delete_proc (pid_t);
 
 /* If PID is positive, wait for the child process with that PID to
    exit, and assume that PID has already been removed from the process
@@ -774,88 +774,88 @@ static bool delete_proc (pid_t);
    child's process ID.  However, if PID is 0 and no children have
    exited, return 0 without waiting.  */
 
-static pid_t
+நிலையான pid_t
 reap (pid_t pid)
 {
-  int status;
+  முழு status;
   pid_t cpid = waitpid ((pid ? pid : -1), &status, (pid ? 0 : WNOHANG));
 
-  if (cpid < 0)
+  எனில் (cpid < 0)
     error (SORT_FAILURE, errno, _("waiting for %s [-d]"),
            quoteaf (compress_program));
-  else if (0 < cpid && (0 < pid || delete_proc (cpid)))
+  இல்லையெனில் எனில் (0 < cpid && (0 < pid || delete_proc (cpid)))
     {
-      if (! WIFEXITED (status) || WEXITSTATUS (status))
+      எனில் (! WIFEXITED (status) || WEXITSTATUS (status))
         error (SORT_FAILURE, 0, _("%s [-d] terminated abnormally"),
                quoteaf (compress_program));
       --nprocs;
     }
 
-  return cpid;
+  திரும்பு cpid;
 }
 
 /* TEMP represents a new process; add it to the process table.  Create
    the process table the first time it's called.  */
 
-static void
-register_proc (struct tempnode *temp)
+நிலையான வெறுமை
+register_proc (கட்டமைப்பு tempnode *temp)
 {
-  if (! proctab)
+  எனில் (! proctab)
     {
-      proctab = hash_initialize (INIT_PROCTAB_SIZE, NULL,
+      proctab = hash_initialize (INIT_PROCTAB_SIZE, வெற்று,
                                  proctab_hasher,
                                  proctab_comparator,
-                                 NULL);
-      if (! proctab)
+                                 வெற்று);
+      எனில் (! proctab)
         xalloc_die ();
     }
 
   temp->state = UNREAPED;
 
-  if (! hash_insert (proctab, temp))
+  எனில் (! hash_செருகு (proctab, temp))
     xalloc_die ();
 }
 
 /* If PID is in the process table, remove it and return true.
    Otherwise, return false.  */
 
-static bool
+நிலையான bool
 delete_proc (pid_t pid)
 {
-  struct tempnode test;
+  கட்டமைப்பு tempnode test;
 
   test.pid = pid;
-  struct tempnode *node = hash_remove (proctab, &test);
-  if (! node)
-    return false;
-  node->state = REAPED;
-  return true;
+  கட்டமைப்பு tempnode *முனை = hash_remove (proctab, &test);
+  எனில் (! முனை)
+    திரும்பு false;
+  முனை->state = REAPED;
+  திரும்பு true;
 }
 
 /* Remove PID from the process table, and wait for it to exit if it
    hasn't already.  */
 
-static void
+நிலையான வெறுமை
 wait_proc (pid_t pid)
 {
-  if (delete_proc (pid))
+  எனில் (delete_proc (pid))
     reap (pid);
 }
 
 /* Reap any exited children.  Do not block; reap only those that have
    already exited.  */
 
-static void
-reap_exited (void)
+நிலையான வெறுமை
+reap_exited (வெறுமை)
 {
-  while (0 < nprocs && reap (0))
-    continue;
+  போது (0 < nprocs && reap (0))
+    தொடர்;
 }
 
 /* Reap at least one exited child, waiting if necessary.  */
 
-static void
-reap_some (void)
+நிலையான வெறுமை
+reap_some (வெறுமை)
 {
   reap (-1);
   reap_exited ();
@@ -863,23 +863,23 @@ reap_some (void)
 
 /* Reap all children, waiting if necessary.  */
 
-static void
-reap_all (void)
+நிலையான வெறுமை
+reap_all (வெறுமை)
 {
-  while (0 < nprocs)
+  போது (0 < nprocs)
     reap (-1);
 }
 
 /* Cleanup actions to take when exiting.  */
 
-static void
-exit_cleanup (void)
+நிலையான வெறுமை
+exit_cleanup (வெறுமை)
 {
-  if (temphead)
+  எனில் (temphead)
     {
       /* Clean up any remaining temporary files in a critical section so
          that a signal handler does not try to clean them too.  */
-      struct cs_status cs;
+      கட்டமைப்பு cs_status cs;
       cs_enter (&cs);
       cleanup ();
       cs_leave (&cs);
@@ -894,61 +894,61 @@ exit_cleanup (void)
    failure is due to file descriptor exhaustion and
    SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
-create_temp_file (int *pfd, bool survive_fd_exhaustion)
+நிலையான கட்டமைப்பு tempnode *
+create_temp_file (முழு *pfd, bool survive_fd_exhaustion)
 {
-  static char const slashbase[] = "/sortXXXXXX";
-  static idx_t temp_dir_index;
-  int fd;
-  int saved_errno;
-  char const *temp_dir = temp_dirs.dirs[temp_dir_index];
+  நிலையான எழுத்து மாறிலி slashbase[] = "/sortXXXXXX";
+  நிலையான idx_t temp_dir_index;
+  முழு fd;
+  முழு saved_errno;
+  எழுத்து மாறிலி *temp_dir = temp_dirs.dirs[temp_dir_index];
   size_t len = strlen (temp_dir);
-  struct tempnode *node =
-    xmalloc (FLEXSIZEOF (struct tempnode, name, len + sizeof slashbase));
-  char *file = node->name;
-  struct cs_status cs;
+  கட்டமைப்பு tempnode *முனை =
+    xmalloc (FLEXSIZEOF (கட்டமைப்பு tempnode, name, len + அளவு slashbase));
+  எழுத்து *file = முனை->name;
+  கட்டமைப்பு cs_status cs;
 
   memcpy (file, temp_dir, len);
-  memcpy (file + len, slashbase, sizeof slashbase);
-  node->next = NULL;
-  if (++temp_dir_index == temp_dirs.n_dirs)
+  memcpy (file + len, slashbase, அளவு slashbase);
+  முனை->next = வெற்று;
+  எனில் (++temp_dir_index == temp_dirs.n_dirs)
     temp_dir_index = 0;
 
   /* Create the temporary file in a critical section, to avoid races.  */
   cs_enter (&cs);
   fd = mkostemp (file, O_CLOEXEC);
-  if (0 <= fd)
+  எனில் (0 <= fd)
     {
-      *temptail = node;
-      temptail = &node->next;
+      *temptail = முனை;
+      temptail = &முனை->next;
     }
   saved_errno = errno;
   cs_leave (&cs);
   errno = saved_errno;
 
-  if (fd < 0)
+  எனில் (fd < 0)
     {
-      if (! (survive_fd_exhaustion && errno == EMFILE))
+      எனில் (! (survive_fd_exhaustion && errno == EMFILE))
         error (SORT_FAILURE, errno, _("cannot create temporary file in %s"),
                quoteaf (temp_dir));
-      free (node);
-      node = NULL;
+      விடுவி (முனை);
+      முனை = வெற்று;
     }
 
   *pfd = fd;
-  return node;
+  திரும்பு முனை;
 }
 
 /* Return a pointer to stdout status, or NULL on failure.  */
 
-static struct stat *
-get_outstatus (void)
+நிலையான கட்டமைப்பு stat *
+get_outstatus (வெறுமை)
 {
-  static int outstat_errno;
-  static struct stat outstat;
-  if (outstat_errno == 0)
+  நிலையான முழு outstat_errno;
+  நிலையான கட்டமைப்பு stat outstat;
+  எனில் (outstat_errno == 0)
     outstat_errno = fstat (STDOUT_FILENO, &outstat) == 0 ? -1 : errno;
-  return outstat_errno < 0 ? &outstat : NULL;
+  திரும்பு outstat_errno < 0 ? &outstat : வெற்று;
 }
 
 /* Return a stream for FILE, opened with mode HOW.  If HOW is "w",
@@ -999,127 +999,127 @@ get_outstatus (void)
    cache immediately after processing.  This is done implicitly
    however when the files are unlinked.  */
 
-static FILE *
-stream_open (char const *file, char const *how)
+நிலையான FILE *
+stream_open (எழுத்து மாறிலி *file, எழுத்து மாறிலி *how)
 {
   FILE *fp;
 
-  if (*how == 'r')
+  எனில் (*how == 'r')
     {
-      if (streq (file, "-"))
+      எனில் (streq (file, "-"))
         {
           have_read_stdin = true;
           fp = stdin;
         }
-      else
+      இல்லையெனில்
         {
-          int fd = open (file, O_RDONLY | O_CLOEXEC);
-          fp = fd < 0 ? NULL : fdopen (fd, how);
+          முழு fd = open (file, O_RDONLY | O_CLOEXEC);
+          fp = fd < 0 ? வெற்று : fdopen (fd, how);
         }
       fadvise (fp, FADVISE_SEQUENTIAL);
     }
-  else if (*how == 'w')
+  இல்லையெனில் எனில் (*how == 'w')
     {
-      if (file && ftruncate (STDOUT_FILENO, 0) != 0)
+      எனில் (file && ftruncate (STDOUT_FILENO, 0) != 0)
         {
-          int ftruncate_errno = errno;
-          struct stat *outst = get_outstatus ();
-          if (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
+          முழு ftruncate_errno = errno;
+          கட்டமைப்பு stat *outst = get_outstatus ();
+          எனில் (!outst || S_ISREG (outst->st_mode) || S_TYPEISSHM (outst))
             error (SORT_FAILURE, ftruncate_errno, _("%s: error truncating"),
                    quotef (file));
         }
       fp = stdout;
     }
-  else
+  இல்லையெனில்
     affirm (!"unexpected mode passed to stream_open");
 
-  return fp;
+  திரும்பு fp;
 }
 
 /* Same as stream_open, except always return a non-null value; die on
    failure.  */
 
-static FILE *
-xfopen (char const *file, char const *how)
+நிலையான FILE *
+xfopen (எழுத்து மாறிலி *file, எழுத்து மாறிலி *how)
 {
   FILE *fp = stream_open (file, how);
-  if (!fp)
+  எனில் (!fp)
     sort_die (_("open failed"), file);
-  return fp;
+  திரும்பு fp;
 }
 
 /* Close FP, whose name is FILE, and report any errors.  */
 
-static void
-xfclose (FILE *fp, char const *file)
+நிலையான வெறுமை
+xfclose (FILE *fp, எழுத்து மாறிலி *file)
 {
-  switch (fileno (fp))
+  தேர்வு (fileno (fp))
     {
-    case STDIN_FILENO:
+    நிலை STDIN_FILENO:
       /* Allow reading stdin from tty more than once.  */
       clearerr (fp);
-      break;
+      நிறுத்து;
 
-    case STDOUT_FILENO:
+    நிலை STDOUT_FILENO:
       /* Don't close stdout just yet.  close_stdout does that.  */
-      if (fflush (fp) != 0)
+      எனில் (fflush (fp) != 0)
         sort_die (_("fflush failed"), file);
-      break;
+      நிறுத்து;
 
-    default:
-      if (fclose (fp) != 0)
+    இயல்பு:
+      எனில் (fclose (fp) != 0)
         sort_die (_("close failed"), file);
-      break;
+      நிறுத்து;
     }
 }
 
 /* Move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not close-on-exec.  */
 
-static void
-move_fd (int oldfd, int newfd)
+நிலையான வெறுமை
+move_fd (முழு oldfd, முழு newfd)
 {
-  if (oldfd != newfd)
+  எனில் (oldfd != newfd)
     {
       /* These should never fail for our usage.  */
-      ignore_value (dup2 (oldfd, newfd));
-      ignore_value (close (oldfd));
+      ignore_மதிப்பு (dup2 (oldfd, newfd));
+      ignore_மதிப்பு (close (oldfd));
     }
 }
 
 /* Setup ACTION to move OLDFD to NEWFD.  If OLDFD != NEWFD, NEWFD is not
    close-on-exec.  Returns 0 if successful, or an error number otherwise.  */
 
-static int
+நிலையான முழு
 posix_spawn_file_actions_move_fd (posix_spawn_file_actions_t *actions,
-                                  int oldfd, int newfd)
+                                  முழு oldfd, முழு newfd)
 {
-  int result = 0;
-  if (oldfd != newfd)
+  முழு result = 0;
+  எனில் (oldfd != newfd)
     {
       result = posix_spawn_file_actions_adddup2 (actions, oldfd, newfd);
-      if (result == 0)
+      எனில் (result == 0)
         result = posix_spawn_file_actions_addclose (actions, oldfd);
     }
-  return result;
+  திரும்பு result;
 }
 
 /* Look up COMPRESS_PROGRAM in $PATH, and return the resolved program name.
    Upon error, return NULL with errno set.  */
 
-static char const *
-get_resolved_compress_program (void)
+நிலையான எழுத்து மாறிலி *
+get_resolved_compress_program (வெறுமை)
 {
   /* Use a cache, to perform the search only once.  */
-  static char const *resolved_compress_program_cache /* = NULL */;
+  நிலையான எழுத்து மாறிலி *resolved_compress_program_cache /* = NULL */;
 
-  if (resolved_compress_program_cache == NULL)
+  எனில் (resolved_compress_program_cache == வெற்று)
     {
       resolved_compress_program_cache =
-        find_in_given_path (compress_program, getenv ("PATH"), NULL, false);
+        find_in_given_path (compress_program, getenv ("PATH"), வெற்று, false);
       /* If resolved_compress_program_cache == NULL, errno is set here.  */
     }
 
-  return resolved_compress_program_cache;
+  திரும்பு resolved_compress_program_cache;
 }
 
 /* Execute COMPRESS_PROGRAM in a child process.  The child processes pid is
@@ -1127,15 +1127,15 @@ get_resolved_compress_program (void)
    a child process before giving up.  Return 0 on success, or an error number
    otherwise.  */
 
-static int
-pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
+நிலையான முழு
+pipe_child (pid_t *pid, முழு pipefds[2], முழு tempfd, bool decompress,
             size_t tries)
 {
-  char const *resolved_compress_program;
-  struct tempnode *saved_temphead;
-  double wait_retry = 0.25;
-  struct cs_status cs;
-  int result;
+  எழுத்து மாறிலி *resolved_compress_program;
+  கட்டமைப்பு tempnode *saved_temphead;
+  இரட்டை wait_retry = 0.25;
+  கட்டமைப்பு cs_status cs;
+  முழு result;
   posix_spawnattr_t attr;
   posix_spawn_file_actions_t actions;
 
@@ -1144,27 +1144,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      implementations/emulations of posix_spawn we get only a
      generic (fatal) error from the child in that case.  */
   resolved_compress_program = get_resolved_compress_program ();
-  if (resolved_compress_program == NULL)
-    return errno;
+  எனில் (resolved_compress_program == வெற்று)
+    திரும்பு errno;
 
-  if ((result = posix_spawnattr_init (&attr)))
-    return result;
-  if ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
+  எனில் ((result = posix_spawnattr_init (&attr)))
+    திரும்பு result;
+  எனில் ((result = posix_spawnattr_setflags (&attr, POSIX_SPAWN_USEVFORK))
       || (result = posix_spawn_file_actions_init (&actions)))
     {
       posix_spawnattr_destroy (&attr);
-      return result;
+      திரும்பு result;
     }
 
-  if (pipe2 (pipefds, O_CLOEXEC) < 0)
+  எனில் (pipe2 (pipefds, O_CLOEXEC) < 0)
     {
-      int saved_errno = errno;
+      முழு saved_errno = errno;
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return saved_errno;
+      திரும்பு saved_errno;
     }
 
-  if ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
+  எனில் ((result = posix_spawn_file_actions_addclose (&actions, STDIN_FILENO))
       || (result = posix_spawn_file_actions_addclose (&actions, STDOUT_FILENO))
       || (decompress
           ? ((result = posix_spawn_file_actions_addclose (&actions,
@@ -1186,14 +1186,14 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
       close (pipefds[1]);
       posix_spawnattr_destroy (&attr);
       posix_spawn_file_actions_destroy (&actions);
-      return result;
+      திரும்பு result;
     }
 
-  char const *const argv[] =
+  எழுத்து மாறிலி *மாறிலி argv[] =
     {
       resolved_compress_program,
-      decompress ? "-d" : NULL,
-      NULL
+      decompress ? "-d" : வெற்று,
+      வெற்று
     };
 
   /* At least NMERGE + 1 subprocesses are needed.  More could be created, but
@@ -1203,27 +1203,27 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
      previous merge finish (1 subprocess) in parallel with the current
      merge (NMERGE + 1 subprocesses).  */
 
-  if (nmerge + 1 < nprocs)
+  எனில் (nmerge + 1 < nprocs)
     reap_some ();
 
-  while (tries--)
+  போது (tries--)
     {
       /* This is so the child process won't delete our temp files
          if it receives a signal before exec-ing.  */
       cs_enter (&cs);
       saved_temphead = temphead;
-      temphead = NULL;
+      temphead = வெற்று;
 
       result = posix_spawnp (pid, resolved_compress_program, &actions, &attr,
-                             (char * const *) argv, environ);
+                             (எழுத்து * மாறிலி *) argv, environ);
 
       temphead = saved_temphead;
 
       cs_leave (&cs);
 
-      if (result != EAGAIN)
-        break;
-      else
+      எனில் (result != EAGAIN)
+        நிறுத்து;
+      இல்லையெனில்
         {
           /* [v]fork/clone are indicating resource constraints,
              so back-off for a while and retry.  */
@@ -1236,15 +1236,15 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
   posix_spawnattr_destroy (&attr);
   posix_spawn_file_actions_destroy (&actions);
 
-  if (result)
+  எனில் (result)
     {
       close (pipefds[0]);
       close (pipefds[1]);
     }
-  else
+  இல்லையெனில்
     ++nprocs;
 
-  return result;
+  திரும்பு result;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
@@ -1253,57 +1253,57 @@ pipe_child (pid_t *pid, int pipefds[2], int tempfd, bool decompress,
    fails, return NULL if the failure is due to file descriptor
    exhaustion and SURVIVE_FD_EXHAUSTION; otherwise, die.  */
 
-static struct tempnode *
+நிலையான கட்டமைப்பு tempnode *
 maybe_create_temp (FILE **pfp, bool survive_fd_exhaustion)
 {
-  int tempfd;
-  struct tempnode *node = create_temp_file (&tempfd, survive_fd_exhaustion);
-  if (! node)
-    return NULL;
+  முழு tempfd;
+  கட்டமைப்பு tempnode *முனை = create_temp_file (&tempfd, survive_fd_exhaustion);
+  எனில் (! முனை)
+    திரும்பு வெற்று;
 
-  node->state = UNCOMPRESSED;
+  முனை->state = UNCOMPRESSED;
 
-  if (compress_program)
+  எனில் (compress_program)
     {
-      int pipefds[2];
-      static int last_result = 0;
+      முழு pipefds[2];
+      நிலையான முழு last_result = 0;
 
-      int result = pipe_child (&node->pid, pipefds, tempfd, false,
+      முழு result = pipe_child (&முனை->pid, pipefds, tempfd, false,
                                MAX_TRIES_COMPRESS);
 
-      if (result)
+      எனில் (result)
         {
-          if (result != last_result)
+          எனில் (result != last_result)
             error (0, result, _("could not run compress program %s"),
                    quoteaf (compress_program));
         }
-      else
+      இல்லையெனில்
         {
           close (tempfd);
           close (pipefds[0]);
           tempfd = pipefds[1];
 
-          register_proc (node);
+          register_proc (முனை);
         }
 
       last_result = result;
     }
 
   *pfp = fdopen (tempfd, "w");
-  if (! *pfp)
-    sort_die (_("couldn't create temporary file"), node->name);
+  எனில் (! *pfp)
+    sort_die (_("couldn't create temporary file"), முனை->name);
 
-  return node;
+  திரும்பு முனை;
 }
 
 /* Create a temporary file and, if asked for, start a compressor
    to that file.  Set *PFP to the file handle and return the address
    of the new temp node.  Die on failure.  */
 
-static struct tempnode *
+நிலையான கட்டமைப்பு tempnode *
 create_temp (FILE **pfp)
 {
-  return maybe_create_temp (pfp, false);
+  திரும்பு maybe_create_temp (pfp, false);
 }
 
 /* Open a compressed temp file and start a decompression process through
@@ -1311,32 +1311,32 @@ create_temp (FILE **pfp)
    EMFILE) if we ran out of file descriptors, and die on any other
    kind of failure.  */
 
-static FILE *
-open_temp (struct tempnode *temp)
+நிலையான FILE *
+open_temp (கட்டமைப்பு tempnode *temp)
 {
-  int tempfd, pipefds[2];
-  FILE *fp = NULL;
+  முழு tempfd, pipefds[2];
+  FILE *fp = வெற்று;
 
-  if (temp->state == UNREAPED)
+  எனில் (temp->state == UNREAPED)
     wait_proc (temp->pid);
 
   tempfd = open (temp->name, O_RDONLY);
-  if (tempfd < 0)
-    return NULL;
+  எனில் (tempfd < 0)
+    திரும்பு வெற்று;
 
   pid_t child;
-  int result = pipe_child (&child, pipefds, tempfd, true,
+  முழு result = pipe_child (&child, pipefds, tempfd, true,
                            MAX_TRIES_DECOMPRESS);
 
-  if (result)
+  எனில் (result)
     {
-      if (result != EMFILE)
+      எனில் (result != EMFILE)
         error (SORT_FAILURE, result, _("could not run compress program %s -d"),
                quoteaf (compress_program));
       close (tempfd);
       errno = EMFILE;
     }
-  else
+  இல்லையெனில்
     {
       temp->pid = child;
       register_proc (temp);
@@ -1344,80 +1344,80 @@ open_temp (struct tempnode *temp)
       close (pipefds[1]);
 
       fp = fdopen (pipefds[0], "r");
-      if (! fp)
+      எனில் (! fp)
         {
-          int saved_errno = errno;
+          முழு saved_errno = errno;
           close (pipefds[0]);
           errno = saved_errno;
         }
     }
 
-  return fp;
+  திரும்பு fp;
 }
 
 /* Append DIR to the array of temporary directory names.  */
-static void
-add_temp_dir (char const *dir)
+நிலையான வெறுமை
+add_temp_dir (எழுத்து மாறிலி *dir)
 {
-  if (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
+  எனில் (temp_dirs.n_dirs == temp_dirs.n_dirs_alloc)
     temp_dirs.dirs = xpalloc (temp_dirs.dirs, &temp_dirs.n_dirs_alloc, 1, -1,
-                              sizeof *temp_dirs.dirs);
+                              அளவு *temp_dirs.dirs);
 
-  idx_t const dir_idx = temp_dirs.n_dirs++;
+  idx_t மாறிலி dir_idx = temp_dirs.n_dirs++;
   temp_dirs.dirs[dir_idx] = dir;
 }
 
 /* Remove NAME from the list of temporary files.  */
 
-static void
-zaptemp (char const *name)
+நிலையான வெறுமை
+zaptemp (எழுத்து மாறிலி *name)
 {
-  struct tempnode *volatile *pnode;
-  struct tempnode *node;
-  struct tempnode *next;
-  int unlink_status;
-  int unlink_errno = 0;
-  struct cs_status cs;
+  கட்டமைப்பு tempnode *நிலையற்ற *pnode;
+  கட்டமைப்பு tempnode *முனை;
+  கட்டமைப்பு tempnode *next;
+  முழு unlink_status;
+  முழு unlink_errno = 0;
+  கட்டமைப்பு cs_status cs;
 
-  for (pnode = &temphead; (node = *pnode)->name != name; pnode = &node->next)
-    continue;
+  க்கு (pnode = &temphead; (முனை = *pnode)->name != name; pnode = &முனை->next)
+    தொடர்;
 
-  if (node->state == UNREAPED)
-    wait_proc (node->pid);
+  எனில் (முனை->state == UNREAPED)
+    wait_proc (முனை->pid);
 
   /* Unlink the temporary file in a critical section to avoid races.  */
-  next = node->next;
+  next = முனை->next;
   cs_enter (&cs);
   unlink_status = unlink (name);
   unlink_errno = errno;
   *pnode = next;
   cs_leave (&cs);
 
-  if (unlink_status != 0)
+  எனில் (unlink_status != 0)
     error (0, unlink_errno, _("warning: cannot remove: %s"), quotef (name));
-  if (! next)
+  எனில் (! next)
     temptail = pnode;
-  free (node);
+  விடுவி (முனை);
 }
 
-#if HAVE_NL_LANGINFO
+#எனில் HAVE_NL_LANGINFO
 
-static int
-struct_month_cmp (void const *m1, void const *m2)
+நிலையான முழு
+struct_month_cmp (வெறுமை மாறிலி *m1, வெறுமை மாறிலி *m2)
 {
-  struct month const *month1 = m1;
-  struct month const *month2 = m2;
-  return strcmp (month1->name, month2->name);
+  கட்டமைப்பு month மாறிலி *month1 = m1;
+  கட்டமைப்பு month மாறிலி *month2 = m2;
+  திரும்பு strcmp (month1->name, month2->name);
 }
 
 #endif
 
 /* Initialize the character class tables. */
 
-static void
-inittables (void)
+நிலையான வெறுமை
+inittables (வெறுமை)
 {
-  for (size_t i = 0; i < UCHAR_LIM; ++i)
+  க்கு (size_t i = 0; i < UCHAR_LIM; ++i)
     {
       blanks[i] = i == '\n' || isblank (i);
       nondictionary[i] = ! blanks[i] && ! isalnum (i);
@@ -1425,28 +1425,28 @@ inittables (void)
       fold_toupper[i] = toupper (i);
     }
 
-#if HAVE_NL_LANGINFO
+#எனில் HAVE_NL_LANGINFO
   /* If we're not in the "C" locale, read different names for months.  */
-  if (hard_LC_TIME)
+  எனில் (hard_LC_TIME)
     {
-      for (size_t i = 0; i < MONTHS_PER_YEAR; i++)
+      க்கு (size_t i = 0; i < MONTHS_PER_YEAR; i++)
         {
-          char const *s;
+          எழுத்து மாறிலி *s;
           size_t s_len;
           size_t j, k;
-          char *name;
+          எழுத்து *name;
 
           s = nl_langinfo (ABMON_1 + i);
           s_len = strlen (s);
           monthtab[i].name = name = xmalloc (s_len + 1);
           monthtab[i].val = i + 1;
 
-          for (j = k = 0; j < s_len; j++)
-            if (! isblank (to_uchar (s[j])))
+          க்கு (j = k = 0; j < s_len; j++)
+            எனில் (! isblank (to_uchar (s[j])))
               name[k++] = fold_toupper[to_uchar (s[j])];
           name[k] = '\0';
         }
-      qsort (monthtab, MONTHS_PER_YEAR, sizeof *monthtab, struct_month_cmp);
+      qsort (monthtab, MONTHS_PER_YEAR, அளவு *monthtab, struct_month_cmp);
     }
 #endif
 }
@@ -1454,29 +1454,29 @@ inittables (void)
 /* Specify how many inputs may be merged at once.
    This may be set on the command-line with the
    --batch-size option. */
-static void
-specify_nmerge (int oi, char c, char const *s)
+நிலையான வெறுமை
+specify_nmerge (முழு oi, எழுத்து c, எழுத்து மாறிலி *s)
 {
   uintmax_t n;
-  struct rlimit rlimit;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &n, "");
+  கட்டமைப்பு rlimit rlimit;
+  எண்ணிக்கை strtol_error e = xstrtoumax (s, வெற்று, 10, &n, "");
 
   /* Try to find out how many file descriptors we'll be able
      to open.  We need at least nmerge + 3 (STDIN_FILENO,
      STDOUT_FILENO and STDERR_FILENO). */
-  unsigned int max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
+  unsigned முழு max_nmerge = ((getrlimit (RLIMIT_NOFILE, &rlimit) == 0
                               ? rlimit.rlim_cur
                               : OPEN_MAX)
                              - 3);
 
-  if (e == LONGINT_OK)
+  எனில் (e == LONGINT_OK)
     {
       nmerge = n;
-      if (nmerge != n)
+      எனில் (nmerge != n)
         e = LONGINT_OVERFLOW;
-      else
+      இல்லையெனில்
         {
-          if (nmerge < 2)
+          எனில் (nmerge < 2)
             {
               error (0, 0, _("invalid --%s argument %s"),
                      long_options[oi].name, quote (s));
@@ -1484,16 +1484,16 @@ specify_nmerge (int oi, char c, char const *s)
                      _("minimum --%s argument is %s"),
                      long_options[oi].name, quote ("2"));
             }
-          else if (max_nmerge < nmerge)
+          இல்லையெனில் எனில் (max_nmerge < nmerge)
             {
               e = LONGINT_OVERFLOW;
             }
-          else
-            return;
+          இல்லையெனில்
+            திரும்பு;
         }
     }
 
-  if (e == LONGINT_OVERFLOW)
+  எனில் (e == LONGINT_OVERFLOW)
     {
       error (0, 0, _("--%s argument %s too large"),
              long_options[oi].name, quote (s));
@@ -1501,58 +1501,58 @@ specify_nmerge (int oi, char c, char const *s)
              _("maximum --%s argument with current rlimit is %u"),
              long_options[oi].name, max_nmerge);
     }
-  else
+  இல்லையெனில்
     xstrtol_fatal (e, oi, c, long_options, s);
 }
 
 /* Specify the amount of main memory to use when sorting.  */
-static void
-specify_sort_size (int oi, char c, char const *s)
+நிலையான வெறுமை
+specify_sort_size (முழு oi, எழுத்து c, எழுத்து மாறிலி *s)
 {
   uintmax_t n;
-  char *suffix;
-  enum strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
+  எழுத்து *suffix;
+  எண்ணிக்கை strtol_error e = xstrtoumax (s, &suffix, 10, &n, "EgGkKmMPQRtTYZ");
 
   /* The default unit is KiB.  */
-  if (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
+  எனில் (e == LONGINT_OK && c_isdigit (suffix[-1]) && ckd_mul (&n, n, 1024))
     e = LONGINT_OVERFLOW;
 
   /* A 'b' suffix means bytes; a '%' suffix means percent of memory.  */
-  if (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
-    switch (suffix[0])
+  எனில் (e == LONGINT_INVALID_SUFFIX_CHAR && c_isdigit (suffix[-1]) && ! suffix[1])
+    தேர்வு (suffix[0])
       {
-      case 'b':
+      நிலை 'b':
         e = LONGINT_OK;
-        break;
+        நிறுத்து;
 
-      case '%':
+      நிலை '%':
         {
-          double mem = physmem_total () * n / 100;
+          இரட்டை mem = physmem_total () * n / 100;
 
           /* Use "<", not "<=", to avoid problems with rounding.  */
-          if (mem < UINTMAX_MAX)
+          எனில் (mem < UINTMAX_MAX)
             {
               n = mem;
               e = LONGINT_OK;
             }
-          else
+          இல்லையெனில்
             e = LONGINT_OVERFLOW;
         }
-        break;
+        நிறுத்து;
       }
 
-  if (e == LONGINT_OK)
+  எனில் (e == LONGINT_OK)
     {
       /* If multiple sort sizes are specified, take the maximum, so
          that option order does not matter.  */
-      if (n < sort_size)
-        return;
+      எனில் (n < sort_size)
+        திரும்பு;
 
       sort_size = n;
-      if (sort_size == n)
+      எனில் (sort_size == n)
         {
           sort_size = MAX (sort_size, MIN_SORT_SIZE);
-          return;
+          திரும்பு;
         }
 
       e = LONGINT_OVERFLOW;
@@ -1562,37 +1562,37 @@ specify_sort_size (int oi, char c, char const *s)
 }
 
 /* Specify the number of threads to spawn during internal sort.  */
-static size_t
-specify_nthreads (int oi, char c, char const *s)
+நிலையான size_t
+specify_nthreads (முழு oi, எழுத்து c, எழுத்து மாறிலி *s)
 {
   uintmax_t nthreads;
-  enum strtol_error e = xstrtoumax (s, NULL, 10, &nthreads, "");
-  if (e == LONGINT_OVERFLOW)
-    return SIZE_MAX;
-  if (e != LONGINT_OK)
+  எண்ணிக்கை strtol_error e = xstrtoumax (s, வெற்று, 10, &nthreads, "");
+  எனில் (e == LONGINT_OVERFLOW)
+    திரும்பு SIZE_MAX;
+  எனில் (e != LONGINT_OK)
     xstrtol_fatal (e, oi, c, long_options, s);
-  if (SIZE_MAX < nthreads)
+  எனில் (SIZE_MAX < nthreads)
     nthreads = SIZE_MAX;
-  if (nthreads == 0)
+  எனில் (nthreads == 0)
     error (SORT_FAILURE, 0, _("number in parallel must be nonzero"));
-  return nthreads;
+  திரும்பு nthreads;
 }
 
 /* Return the default sort size.  This is a growth limit, not necessarily
    the initial allocation size.  */
-static size_t
-default_sort_size (void)
+நிலையான size_t
+default_sort_size (வெறுமை)
 {
   /* Let SIZE be MEM, but no more than the maximum object size,
      total memory, or system resource limits.  Don't bother to check
      for values like RLIM_INFINITY since in practice they are not much
      less than SIZE_MAX.  */
   size_t size = SIZE_MAX;
-  struct rlimit rlimit;
-  if (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
+  கட்டமைப்பு rlimit rlimit;
+  எனில் (getrlimit (RLIMIT_DATA, &rlimit) == 0 && rlimit.rlim_cur < size)
     size = rlimit.rlim_cur;
 #ifdef RLIMIT_AS
-  if (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
+  எனில் (getrlimit (RLIMIT_AS, &rlimit) == 0 && rlimit.rlim_cur < size)
     size = rlimit.rlim_cur;
 #endif
 
@@ -1603,80 +1603,80 @@ default_sort_size (void)
 #ifdef RLIMIT_RSS
   /* Leave a 1/16 margin for RSS to leave room for code, stack, etc.
      Exceeding RSS is not fatal, but can be quite slow.  */
-  if (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
+  எனில் (getrlimit (RLIMIT_RSS, &rlimit) == 0 && rlimit.rlim_cur / 16 * 15 < size)
     size = rlimit.rlim_cur / 16 * 15;
 #endif
 
   /* Let MEM be available memory or 1/8 of total memory, whichever
      is greater.  */
-  double avail = physmem_available ();
-  double total = physmem_total ();
-  double mem = MAX (avail, total / 8);
+  இரட்டை avail = physmem_available ();
+  இரட்டை total = physmem_total ();
+  இரட்டை mem = MAX (avail, total / 8);
 
   /* Leave a 1/4 margin for physical memory.  */
-  if (total * 0.75 < size)
+  எனில் (total * 0.75 < size)
     size = total * 0.75;
 
   /* Return the minimum of MEM and SIZE, but no less than
      MIN_SORT_SIZE.  Avoid the MIN macro here, as it is not quite
      right when only one argument is floating point.  */
-  if (mem < size)
+  எனில் (mem < size)
     size = mem;
-  return MAX (size, MIN_SORT_SIZE);
+  திரும்பு MAX (size, MIN_SORT_SIZE);
 }
 
 /* Return true if *ALLOC has been adjusted to a size suitable for a sort
    buffer.  */
 
-static bool
-line_aligned_size (size_t *alloc)
+நிலையான bool
+வரி_aligned_size (size_t *alloc)
 {
   size_t size = *alloc;
-  size_t alignment = sizeof (struct line);
+  size_t alignment = அளவு (கட்டமைப்பு வரி);
   size_t padding = alignment - size % alignment;
   size_t aligned;
 
-  if (ckd_add (&aligned, size, padding))
-    return false;
+  எனில் (ckd_add (&aligned, size, padding))
+    திரும்பு false;
 
   *alloc = aligned;
-  return true;
+  திரும்பு true;
 }
 
 /* Return the default initial allocation for a growable sort buffer.  */
 
-static size_t
-default_initial_sort_size (size_t line_bytes)
+நிலையான size_t
+default_initial_sort_size (size_t வரி_bytes)
 {
-  size_t size = line_bytes + 2;
-  size_t input_size;
+  size_t size = வரி_bytes + 2;
+  size_t உள்ளீடு_size;
 
-  if (ckd_mul (&input_size, INPUT_FILE_SIZE_GUESS, line_bytes + 1)
-      || ckd_add (&size, size, input_size))
-    return SIZE_MAX;
+  எனில் (ckd_mul (&உள்ளீடு_size, உள்ளீடு_FILE_SIZE_GUESS, வரி_bytes + 1)
+      || ckd_add (&size, size, உள்ளீடு_size))
+    திரும்பு SIZE_MAX;
 
-  return MAX (size, MIN_SORT_SIZE);
+  திரும்பு MAX (size, MIN_SORT_SIZE);
 }
 
 /* Store into *WORST_CASE the allocation needed for FILE_SIZE input bytes
    in the worst case, where each input byte is a line delimiter except
    for a final non-delimiter byte.  Return false on overflow.  */
 
-static bool
-input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
+நிலையான bool
+உள்ளீடு_size_buffer_bytes (uintmax_t file_size, size_t வரி_bytes,
                          size_t *worst_case)
 {
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_உள்ளீடு_byte = வரி_bytes + 1;
 
-  if (SIZE_MAX / worst_case_per_input_byte < file_size)
-    return false;
+  எனில் (SIZE_MAX / worst_case_per_உள்ளீடு_byte < file_size)
+    திரும்பு false;
 
-  size_t size = file_size * worst_case_per_input_byte;
-  if (SIZE_MAX - size < 1)
-    return false;
+  size_t size = file_size * worst_case_per_உள்ளீடு_byte;
+  எனில் (SIZE_MAX - size < 1)
+    திரும்பு false;
 
   *worst_case = size + 1;
-  return true;
+  திரும்பு true;
 }
 
 /* Set *POLICY to the sort buffer policy to use with the input files identified
@@ -1686,76 +1686,76 @@ input_size_buffer_bytes (uintmax_t file_size, size_t line_bytes,
    information.  Do not exceed the size bound specified by the user
    (or a default size bound, if the user does not specify one).  */
 
-static void
-sort_buffer_policy (FILE *const *fps, size_t nfps,
-                    char *const *files, size_t nfiles,
-                    size_t line_bytes,
-                    struct sort_buffer_policy *policy)
+நிலையான வெறுமை
+sort_buffer_policy (FILE *மாறிலி *fps, size_t nfps,
+                    எழுத்து *மாறிலி *files, size_t nfiles,
+                    size_t வரி_bytes,
+                    கட்டமைப்பு sort_buffer_policy *policy)
 {
   size_t size_bound = sort_size ? sort_size : default_sort_size ();
   size_t initial_bound =
-    sort_size ? size_bound : default_initial_sort_size (line_bytes);
+    sort_size ? size_bound : default_initial_sort_size (வரி_bytes);
 
   /* In the worst case, each input byte is a newline.  */
-  size_t worst_case_per_input_byte = line_bytes + 1;
+  size_t worst_case_per_உள்ளீடு_byte = வரி_bytes + 1;
 
   /* Keep enough room for one extra input line and an extra byte.
      This extra room might be needed when preparing to read EOF.  */
-  size_t size = worst_case_per_input_byte + 1;
+  size_t size = worst_case_per_உள்ளீடு_byte + 1;
 
   initial_bound = MIN (initial_bound, size_bound);
   policy->limit = size_bound;
   policy->growth_failed = false;
 
-  for (size_t i = 0; i < nfiles; i++)
+  க்கு (size_t i = 0; i < nfiles; i++)
     {
-      struct stat st;
+      கட்டமைப்பு stat st;
       off_t file_size;
       size_t worst_case;
       bool known_size;
 
-      if (size_bound <= size)
+      எனில் (size_bound <= size)
         {
           policy->initial = size_bound;
-          return;
+          திரும்பு;
         }
 
-      if ((i < nfps ? fstat (fileno (fps[i]), &st)
+      எனில் ((i < nfps ? fstat (fileno (fps[i]), &st)
            : streq (files[i], "-") ? fstat (STDIN_FILENO, &st)
            : stat (files[i], &st))
           != 0)
         sort_die (_("stat failed"), files[i]);
 
       known_size = usable_st_size (&st) && 0 < st.st_size;
-      if (known_size)
+      எனில் (known_size)
         file_size = st.st_size;
-      else
+      இல்லையெனில்
         {
           /* The file has unknown size.  If the user specified a sort
              buffer size, use that; otherwise, guess the size.  */
-          if (sort_size)
+          எனில் (sort_size)
             {
               policy->initial = size_bound;
-              return;
+              திரும்பு;
             }
-          file_size = INPUT_FILE_SIZE_GUESS;
+          file_size = உள்ளீடு_FILE_SIZE_GUESS;
         }
 
       /* Add the amount of memory needed to represent the worst case
          where the input consists entirely of newlines followed by a
          single non-newline.  Check for overflow.  */
-      if (! input_size_buffer_bytes (file_size, line_bytes, &worst_case)
+      எனில் (! உள்ளீடு_size_buffer_bytes (file_size, வரி_bytes, &worst_case)
           || size_bound - size <= worst_case)
         {
           policy->initial = size_bound;
-          return;
+          திரும்பு;
         }
 
-      if (! known_size && ! sort_size
+      எனில் (! known_size && ! sort_size
           && (initial_bound <= size || initial_bound - size <= worst_case))
         {
           policy->initial = MAX (size, initial_bound);
-          return;
+          திரும்பு;
         }
 
       size += worst_case;
@@ -1768,159 +1768,159 @@ sort_buffer_policy (FILE *const *fps, size_t nfps,
    must be at least sizeof (struct line).  Allocate ALLOC bytes
    initially.  */
 
-static void
-initbuf (struct buffer *buf, size_t line_bytes, size_t alloc)
+நிலையான வெறுமை
+initbuf (கட்டமைப்பு buffer *buf, size_t வரி_bytes, size_t alloc)
 {
   /* Ensure that the line array is properly aligned.  If the desired
      size cannot be allocated, repeatedly halve it until allocation
      succeeds.  The smaller allocation may hurt overall performance,
      but that's better than failing.  */
-  while (true)
+  போது (true)
     {
-      if (! line_aligned_size (&alloc))
-        buf->buf = NULL;
-      else
+      எனில் (! வரி_aligned_size (&alloc))
+        buf->buf = வெற்று;
+      இல்லையெனில்
         buf->buf = malloc (alloc);
-      if (buf->buf)
-        break;
+      எனில் (buf->buf)
+        நிறுத்து;
       alloc /= 2;
-      if (alloc <= line_bytes + 1)
+      எனில் (alloc <= வரி_bytes + 1)
         xalloc_die ();
     }
 
-  buf->line_bytes = line_bytes;
+  buf->வரி_bytes = வரி_bytes;
   buf->alloc = alloc;
-  buf->used = buf->left = buf->nlines = 0;
+  buf->used = buf->இடது = buf->nlines = 0;
   buf->eof = false;
 }
 
 /* Return one past the limit of the line array.  */
 
-static inline struct line *
-buffer_linelim (struct buffer const *buf)
+நிலையான உள்வரி கட்டமைப்பு வரி *
+buffer_linelim (கட்டமைப்பு buffer மாறிலி *buf)
 {
-  void *linelim = buf->buf + buf->alloc;
-  return linelim;
+  வெறுமை *linelim = buf->buf + buf->alloc;
+  திரும்பு linelim;
 }
 
 /* Try to resize BUF to ALLOC bytes.  Return true if successful.  This
    preserves the input data and the line array, adjusting line pointers
    when the buffer base changes.  */
 
-static bool
-try_growbuf (struct buffer *buf, size_t alloc)
+நிலையான bool
+try_growbuf (கட்டமைப்பு buffer *buf, size_t alloc)
 {
-  if (! line_aligned_size (&alloc) || alloc <= buf->alloc)
-    return false;
+  எனில் (! வரி_aligned_size (&alloc) || alloc <= buf->alloc)
+    திரும்பு false;
 
-  char *newbuf = malloc (alloc);
-  if (! newbuf)
-    return false;
+  எழுத்து *newbuf = malloc (alloc);
+  எனில் (! newbuf)
+    திரும்பு false;
 
-  char *oldbuf = buf->buf;
-  struct line *old_linelim = buffer_linelim (buf);
-  struct line *old_line = old_linelim - buf->nlines;
+  எழுத்து *oldbuf = buf->buf;
+  கட்டமைப்பு வரி *old_linelim = buffer_linelim (buf);
+  கட்டமைப்பு வரி *old_வரி = old_linelim - buf->nlines;
 
   memcpy (newbuf, oldbuf, buf->used);
 
-  struct line *new_linelim = (void *) (newbuf + alloc);
-  struct line *new_line = new_linelim - buf->nlines;
-  memcpy (new_line, old_line, buf->nlines * sizeof *new_line);
+  கட்டமைப்பு வரி *new_linelim = (வெறுமை *) (newbuf + alloc);
+  கட்டமைப்பு வரி *new_வரி = new_linelim - buf->nlines;
+  memcpy (new_வரி, old_வரி, buf->nlines * அளவு *new_வரி);
 
-  for (struct line *line = new_line; line < new_linelim; line++)
+  க்கு (கட்டமைப்பு வரி *வரி = new_வரி; வரி < new_linelim; வரி++)
     {
-      line->text = newbuf + (line->text - oldbuf);
-      if (keylist)
+      வரி->text = newbuf + (வரி->text - oldbuf);
+      எனில் (keylist)
         {
-          line->keybeg = newbuf + (line->keybeg - oldbuf);
-          line->keylim = newbuf + (line->keylim - oldbuf);
+          வரி->keybeg = newbuf + (வரி->keybeg - oldbuf);
+          வரி->keylim = newbuf + (வரி->keylim - oldbuf);
         }
     }
 
-  free (oldbuf);
+  விடுவி (oldbuf);
   buf->buf = newbuf;
   buf->alloc = alloc;
-  return true;
+  திரும்பு true;
 }
 
 /* Try to grow BUF according to POLICY.  Return true if the buffer grew.  */
 
-static bool
-maybe_growbuf (struct buffer *buf, struct sort_buffer_policy *policy)
+நிலையான bool
+maybe_growbuf (கட்டமைப்பு buffer *buf, கட்டமைப்பு sort_buffer_policy *policy)
 {
-  if (! policy || policy->growth_failed || policy->limit <= buf->alloc)
-    return false;
+  எனில் (! policy || policy->growth_failed || policy->limit <= buf->alloc)
+    திரும்பு false;
 
   size_t alloc;
-  if (buf->alloc <= policy->limit / 3)
+  எனில் (buf->alloc <= policy->limit / 3)
     alloc = buf->alloc * 3;
-  else
+  இல்லையெனில்
     alloc = policy->limit;
 
-  if (try_growbuf (buf, alloc))
-    return true;
+  எனில் (try_growbuf (buf, alloc))
+    திரும்பு true;
 
   policy->growth_failed = true;
-  return false;
+  திரும்பு false;
 }
 
 /* Return a pointer to the first character of the field specified
    by KEY in LINE. */
 
-static char *
-begfield (struct line const *line, struct keyfield const *key)
+நிலையான எழுத்து *
+begfield (கட்டமைப்பு வரி மாறிலி *வரி, கட்டமைப்பு keyfield மாறிலி *சாவி)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t sword = key->sword;
-  size_t schar = key->schar;
+  எழுத்து *ptr = வரி->text, *lim = ptr + வரி->length - 1;
+  size_t sword = சாவி->sword;
+  size_t schar = சாவி->schar;
 
   /* The leading field separator itself is included in a field when -t
      is absent.  */
 
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && sword--)
+  எனில் (tab != TAB_DEFAULT)
+    போது (ptr < lim && sword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        எழுத்து *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim)
+        எனில் (ptr < lim)
           ++ptr;
       }
-  else
-    while (ptr < lim && sword--)
+  இல்லையெனில்
+    போது (ptr < lim && sword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        போது (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        போது (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
   /* If we're ignoring leading blanks when computing the Start
      of the field, skip past them here.  */
-  if (key->skipsblanks)
-    while (ptr < lim && blanks[to_uchar (*ptr)])
+  எனில் (சாவி->skipsblanks)
+    போது (ptr < lim && blanks[to_uchar (*ptr)])
       ++ptr;
 
   /* Advance PTR by SCHAR (if possible), but no further than LIM.  */
   size_t remaining_bytes = lim - ptr;
-  if (schar < remaining_bytes)
+  எனில் (schar < remaining_bytes)
     ptr += schar;
-  else
+  இல்லையெனில்
     ptr = lim;
 
-  return ptr;
+  திரும்பு ptr;
 }
 
 /* Return the limit of (a pointer to the first character after) the field
    in LINE specified by KEY. */
 
 ATTRIBUTE_PURE
-static char *
-limfield (struct line const *line, struct keyfield const *key)
+நிலையான எழுத்து *
+limfield (கட்டமைப்பு வரி மாறிலி *வரி, கட்டமைப்பு keyfield மாறிலி *சாவி)
 {
-  char *ptr = line->text, *lim = ptr + line->length - 1;
-  size_t eword = key->eword, echar = key->echar;
+  எழுத்து *ptr = வரி->text, *lim = ptr + வரி->length - 1;
+  size_t eword = சாவி->eword, echar = சாவி->echar;
 
-  if (echar == 0)
+  எனில் (echar == 0)
     eword++; /* Skip all of end field.  */
 
   /* Move PTR past EWORD fields or to one past the last byte on LINE,
@@ -1930,20 +1930,20 @@ limfield (struct line const *line, struct keyfield const *key)
      'beginning' is the first character following the delimiting TAB.
      Otherwise, leave PTR pointing at the first 'blank' character after
      the preceding field.  */
-  if (tab != TAB_DEFAULT)
-    while (ptr < lim && eword--)
+  எனில் (tab != TAB_DEFAULT)
+    போது (ptr < lim && eword--)
       {
-        char *sep = memchr (ptr, tab, lim - ptr);
+        எழுத்து *sep = memchr (ptr, tab, lim - ptr);
         ptr = sep ? sep : lim;
-        if (ptr < lim && (eword || echar))
+        எனில் (ptr < lim && (eword || echar))
           ++ptr;
       }
-  else
-    while (ptr < lim && eword--)
+  இல்லையெனில்
+    போது (ptr < lim && eword--)
       {
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+        போது (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
-        while (ptr < lim && !blanks[to_uchar (*ptr)])
+        போது (ptr < lim && !blanks[to_uchar (*ptr)])
           ++ptr;
       }
 
@@ -1979,42 +1979,42 @@ limfield (struct line const *line, struct keyfield const *key)
      */
 
   /* Make LIM point to the end of (one byte past) the current field.  */
-  if (tab != TAB_DEFAULT)
+  எனில் (tab != TAB_DEFAULT)
     {
-      char *newlim;
+      எழுத்து *newlim;
       newlim = memchr (ptr, tab, lim - ptr);
-      if (newlim)
+      எனில் (newlim)
         lim = newlim;
     }
-  else
+  இல்லையெனில்
     {
-      char *newlim;
+      எழுத்து *newlim;
       newlim = ptr;
-      while (newlim < lim && blanks[to_uchar (*newlim)])
+      போது (newlim < lim && blanks[to_uchar (*newlim)])
         ++newlim;
-      while (newlim < lim && !blanks[to_uchar (*newlim)])
+      போது (newlim < lim && !blanks[to_uchar (*newlim)])
         ++newlim;
       lim = newlim;
     }
 #endif
 
-  if (echar != 0) /* We need to skip over a portion of the end field.  */
+  எனில் (echar != 0) /* We need to skip over a portion of the end field.  */
     {
       /* If we're ignoring leading blanks when computing the End
          of the field, skip past them here.  */
-      if (key->skipeblanks)
-        while (ptr < lim && blanks[to_uchar (*ptr)])
+      எனில் (சாவி->skipeblanks)
+        போது (ptr < lim && blanks[to_uchar (*ptr)])
           ++ptr;
 
       /* Advance PTR by ECHAR (if possible), but no further than LIM.  */
       size_t remaining_bytes = lim - ptr;
-      if (echar < remaining_bytes)
+      எனில் (echar < remaining_bytes)
         ptr += echar;
-      else
+      இல்லையெனில்
         ptr = lim;
     }
 
-  return ptr;
+  திரும்பு ptr;
 }
 
 /* Fill BUF reading from FP, moving buf->left bytes from the end
@@ -2023,127 +2023,127 @@ limfield (struct line const *line, struct keyfield const *key)
    table too.  FILE is the name of the file corresponding to FP.
    Return true if some input was read.  */
 
-static bool
-fillbuf (struct buffer *buf, FILE *fp, char const *file,
-         struct sort_buffer_policy *policy)
+நிலையான bool
+fillbuf (கட்டமைப்பு buffer *buf, FILE *fp, எழுத்து மாறிலி *file,
+         கட்டமைப்பு sort_buffer_policy *policy)
 {
-  struct keyfield const *key = keylist;
-  char eol = eolchar;
-  size_t line_bytes = buf->line_bytes;
+  கட்டமைப்பு keyfield மாறிலி *சாவி = keylist;
+  எழுத்து eol = eolchar;
+  size_t வரி_bytes = buf->வரி_bytes;
   size_t mergesize = merge_buffer_size - MIN_MERGE_BUFFER_SIZE;
 
-  if (buf->eof)
-    return false;
+  எனில் (buf->eof)
+    திரும்பு false;
 
-  if (buf->used != buf->left)
+  எனில் (buf->used != buf->இடது)
     {
-      memmove (buf->buf, buf->buf + buf->used - buf->left, buf->left);
-      buf->used = buf->left;
+      memmove (buf->buf, buf->buf + buf->used - buf->இடது, buf->இடது);
+      buf->used = buf->இடது;
       buf->nlines = 0;
     }
 
-  while (true)
+  போது (true)
     {
-      char *ptr = buf->buf + buf->used;
-      struct line *linelim = buffer_linelim (buf);
-      struct line *line = linelim - buf->nlines;
-      size_t avail = (char *) linelim - buf->nlines * line_bytes - ptr;
-      char *line_start = buf->nlines ? line->text + line->length : buf->buf;
+      எழுத்து *ptr = buf->buf + buf->used;
+      கட்டமைப்பு வரி *linelim = buffer_linelim (buf);
+      கட்டமைப்பு வரி *வரி = linelim - buf->nlines;
+      size_t avail = (எழுத்து *) linelim - buf->nlines * வரி_bytes - ptr;
+      எழுத்து *வரி_start = buf->nlines ? வரி->text + வரி->length : buf->buf;
 
-      while (line_bytes + 1 < avail)
+      போது (வரி_bytes + 1 < avail)
         {
           /* Read as many bytes as possible, but do not read so many
              bytes that there might not be enough room for the
              corresponding line array.  The worst case is when the
              rest of the input file consists entirely of newlines,
              except that the last byte is not a newline.  */
-          size_t readsize = (avail - 1) / (line_bytes + 1);
+          size_t readsize = (avail - 1) / (வரி_bytes + 1);
           size_t bytes_read = fread (ptr, 1, readsize, fp);
-          char *ptrlim = ptr + bytes_read;
-          char *p;
+          எழுத்து *ptrlim = ptr + bytes_read;
+          எழுத்து *p;
           avail -= bytes_read;
 
-          if (bytes_read != readsize)
+          எனில் (bytes_read != readsize)
             {
-              if (ferror (fp))
+              எனில் (ferror (fp))
                 sort_die (_("read failed"), file);
-              if (feof (fp))
+              எனில் (feof (fp))
                 {
                   buf->eof = true;
-                  if (buf->buf == ptrlim)
-                    return false;
-                  if (line_start != ptrlim && ptrlim[-1] != eol)
+                  எனில் (buf->buf == ptrlim)
+                    திரும்பு false;
+                  எனில் (வரி_start != ptrlim && ptrlim[-1] != eol)
                     *ptrlim++ = eol;
                 }
             }
 
           /* Find and record each line in the just-read input.  */
-          while ((p = memchr (ptr, eol, ptrlim - ptr)))
+          போது ((p = memchr (ptr, eol, ptrlim - ptr)))
             {
               /* Delimit the line with NUL. This eliminates the need to
                  temporarily replace the last byte with NUL when calling
                  xmemcoll, which increases performance.  */
               *p = '\0';
               ptr = p + 1;
-              line--;
-              line->text = line_start;
-              line->length = ptr - line_start;
-              mergesize = MAX (mergesize, line->length);
-              avail -= line_bytes;
+              வரி--;
+              வரி->text = வரி_start;
+              வரி->length = ptr - வரி_start;
+              mergesize = MAX (mergesize, வரி->length);
+              avail -= வரி_bytes;
 
-              if (key)
+              எனில் (சாவி)
                 {
                   /* Precompute the position of the first key for
                      efficiency.  */
-                  line->keylim = (key->eword == SIZE_MAX
+                  வரி->keylim = (சாவி->eword == SIZE_MAX
                                   ? p
-                                  : limfield (line, key));
+                                  : limfield (வரி, சாவி));
 
-                  if (key->sword != SIZE_MAX)
-                    line->keybeg = begfield (line, key);
-                  else
+                  எனில் (சாவி->sword != SIZE_MAX)
+                    வரி->keybeg = begfield (வரி, சாவி);
+                  இல்லையெனில்
                     {
-                      if (key->skipsblanks)
-                        while (blanks[to_uchar (*line_start)])
-                          line_start++;
-                      line->keybeg = line_start;
+                      எனில் (சாவி->skipsblanks)
+                        போது (blanks[to_uchar (*வரி_start)])
+                          வரி_start++;
+                      வரி->keybeg = வரி_start;
                     }
                 }
 
-              line_start = ptr;
+              வரி_start = ptr;
             }
 
           ptr = ptrlim;
-          if (buf->eof)
-            break;
+          எனில் (buf->eof)
+            நிறுத்து;
         }
 
       buf->used = ptr - buf->buf;
-      buf->nlines = buffer_linelim (buf) - line;
-      if (buf->nlines != 0)
+      buf->nlines = buffer_linelim (buf) - வரி;
+      எனில் (buf->nlines != 0)
         {
-          if (! buf->eof && maybe_growbuf (buf, policy))
-            continue;
-          buf->left = ptr - line_start;
+          எனில் (! buf->eof && maybe_growbuf (buf, policy))
+            தொடர்;
+          buf->இடது = ptr - வரி_start;
           merge_buffer_size = mergesize + MIN_MERGE_BUFFER_SIZE;
-          return true;
+          திரும்பு true;
         }
 
       {
         /* The current input line is too long to fit in the buffer.
            Increase the buffer size and try again, keeping it properly
            aligned.  */
-        idx_t line_alloc = buf->alloc / sizeof (struct line);
-        buf->buf = xpalloc (buf->buf, &line_alloc, 1, -1, sizeof (struct line));
-        buf->alloc = line_alloc * sizeof (struct line);
+        idx_t வரி_alloc = buf->alloc / அளவு (கட்டமைப்பு வரி);
+        buf->buf = xpalloc (buf->buf, &வரி_alloc, 1, -1, அளவு (கட்டமைப்பு வரி));
+        buf->alloc = வரி_alloc * அளவு (கட்டமைப்பு வரி);
       }
     }
 }
 
 /* Table that maps characters to order-of-magnitude values.  */
-static char const unit_order[UCHAR_LIM] =
+நிலையான எழுத்து மாறிலி unit_order[UCHAR_LIM] =
   {
-#if ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
+#எனில் ! ('K' == 75 && 'M' == 77 && 'G' == 71 && 'T' == 84 && 'P' == 80 \
        && 'E' == 69 && 'Z' == 90 && 'Y' == 89 && 'R' == 82 && 'Q' == 81 \
        && 'k' == 107)
     /* This initializer syntax works on all C99 hosts.  For now, use
@@ -2152,7 +2152,7 @@ static char const unit_order[UCHAR_LIM] =
     ['K']=1, ['M']=2, ['G']=3, ['T']=4, ['P']=5, ['E']=6, ['Z']=7, ['Y']=8,
     ['R']=9, ['Q']=10,
     ['k']=1,
-#else
+#இல்லையெனில்
     /* Generate the following table with this command:
        perl -e 'my %a=(k=>1,K=>1,M=>2,G=>3,T=>4,P=>5,E=>6,Z=>7,Y=>8,R=>9,Q=>10);
        foreach my $i (0..255) {my $c=chr($i); $a{$c} ||= 0;print "$a{$c}, "}'\
@@ -2175,12 +2175,12 @@ static char const unit_order[UCHAR_LIM] =
    decimal_point chars only.  Returns the highest digit found in the number,
    or '\0' if no digit has been found.  Upon return *number points at the
    character that immediately follows after the given number.  */
-static char
-traverse_raw_number (char const **number)
+நிலையான எழுத்து
+traverse_raw_எண் (எழுத்து மாறிலி **எண்)
 {
-  char const *p = *number;
-  char ch;
-  char max_digit = '\0';
+  எழுத்து மாறிலி *p = *எண்;
+  எழுத்து ch;
+  எழுத்து max_digit = '\0';
   bool ends_with_thousands_sep = false;
 
   /* Scan to end of number.
@@ -2189,33 +2189,33 @@ traverse_raw_number (char const **number)
      to be lacking in units.
      FIXME: add support for multibyte thousands_sep and decimal_point.  */
 
-  while (c_isdigit (ch = *p++))
+  போது (c_isdigit (ch = *p++))
     {
-      if (max_digit < ch)
+      எனில் (max_digit < ch)
         max_digit = ch;
 
       /* Allow to skip only one occurrence of thousands_sep to avoid finding
          the unit in the next column in case thousands_sep matches as blank
          and is used as column delimiter.  */
       ends_with_thousands_sep = (*p == thousands_sep);
-      if (ends_with_thousands_sep)
+      எனில் (ends_with_thousands_sep)
         ++p;
     }
 
-  if (ends_with_thousands_sep)
+  எனில் (ends_with_thousands_sep)
     {
       /* thousands_sep not followed by digit is not allowed.  */
-      *number = p - 2;
-      return max_digit;
+      *எண் = p - 2;
+      திரும்பு max_digit;
     }
 
-  if (ch == decimal_point)
-    while (c_isdigit (ch = *p++))
-      if (max_digit < ch)
+  எனில் (ch == decimal_point)
+    போது (c_isdigit (ch = *p++))
+      எனில் (max_digit < ch)
         max_digit = ch;
 
-  *number = p - 1;
-  return max_digit;
+  *எண் = p - 1;
+  திரும்பு max_digit;
 }
 
 /* Return an integer that represents the order of magnitude of the
@@ -2224,36 +2224,36 @@ traverse_raw_number (char const **number)
    Negative numbers get negative orders; zero numbers have a zero order.  */
 
 ATTRIBUTE_PURE
-static int
-find_unit_order (char const *number)
+நிலையான முழு
+find_unit_order (எழுத்து மாறிலி *எண்)
 {
-  bool minus_sign = (*number == '-');
-  char const *p = number + minus_sign;
-  char max_digit = traverse_raw_number (&p);
-  if ('0' < max_digit)
+  bool minus_sign = (*எண் == '-');
+  எழுத்து மாறிலி *p = எண் + minus_sign;
+  எழுத்து max_digit = traverse_raw_எண் (&p);
+  எனில் ('0' < max_digit)
     {
-      unsigned char ch = *p;
-      int order = unit_order[ch];
-      return (minus_sign ? -order : order);
+      unsigned எழுத்து ch = *p;
+      முழு order = unit_order[ch];
+      திரும்பு (minus_sign ? -order : order);
     }
-  else
-    return 0;
+  இல்லையெனில்
+    திரும்பு 0;
 }
 
 /* Compare numbers A and B ending in units with SI or IEC prefixes
        <none/unknown> < K/k < M < G < T < P < E < Z < Y < R < Q */
 
 ATTRIBUTE_PURE
-static int
-human_numcompare (char const *a, char const *b)
+நிலையான முழு
+human_numcompare (எழுத்து மாறிலி *a, எழுத்து மாறிலி *b)
 {
-  while (blanks[to_uchar (*a)])
+  போது (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  போது (blanks[to_uchar (*b)])
     b++;
 
-  int diff = find_unit_order (a) - find_unit_order (b);
-  return (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
+  முழு diff = find_unit_order (a) - find_unit_order (b);
+  திரும்பு (diff ? diff : strnumcmp (a, b, decimal_point, thousands_sep));
 }
 
 /* Compare strings A and B as numbers without explicitly converting them to
@@ -2261,47 +2261,47 @@ human_numcompare (char const *a, char const *b)
    hideously fast. */
 
 ATTRIBUTE_PURE
-static int
-numcompare (char const *a, char const *b)
+நிலையான முழு
+numcompare (எழுத்து மாறிலி *a, எழுத்து மாறிலி *b)
 {
-  while (blanks[to_uchar (*a)])
+  போது (blanks[to_uchar (*a)])
     a++;
-  while (blanks[to_uchar (*b)])
+  போது (blanks[to_uchar (*b)])
     b++;
 
-  return strnumcmp (a, b, decimal_point, thousands_sep);
+  திரும்பு strnumcmp (a, b, decimal_point, thousands_sep);
 }
 
-static int
-nan_compare (long double a, long double b)
+நிலையான முழு
+nan_compare (long இரட்டை a, long இரட்டை b)
 {
-  char buf[2][sizeof "-nan""()" + CHAR_BIT * sizeof a];
-  snprintf (buf[0], sizeof buf[0], "%Lf", a);
-  snprintf (buf[1], sizeof buf[1], "%Lf", b);
-  return strcmp (buf[0], buf[1]);
+  எழுத்து buf[2][அளவு "-nan""()" + CHAR_BIT * அளவு a];
+  snprintf (buf[0], அளவு buf[0], "%Lf", a);
+  snprintf (buf[1], அளவு buf[1], "%Lf", b);
+  திரும்பு strcmp (buf[0], buf[1]);
 }
 
-static int
-general_numcompare (char const *sa, char const *sb)
+நிலையான முழு
+general_numcompare (எழுத்து மாறிலி *sa, எழுத்து மாறிலி *sb)
 {
   /* FIXME: maybe add option to try expensive FP conversion
      only if A and B can't be compared more cheaply/accurately.  */
 
-  char *ea;
-  char *eb;
-  long double a = strtold (sa, &ea);
-  long double b = strtold (sb, &eb);
+  எழுத்து *ea;
+  எழுத்து *eb;
+  long இரட்டை a = strtold (sa, &ea);
+  long இரட்டை b = strtold (sb, &eb);
 
   /* Put conversion errors at the start of the collating sequence.  */
-  if (sa == ea)
-    return sb == eb ? 0 : -1;
-  if (sb == eb)
-    return 1;
+  எனில் (sa == ea)
+    திரும்பு sb == eb ? 0 : -1;
+  எனில் (sb == eb)
+    திரும்பு 1;
 
   /* Sort numbers in the usual way, where -0 == +0.  Put NaNs after
      conversion errors but before numbers; sort them by internal
      bit-pattern, for lack of a more portable alternative.  */
-  return (a < b ? -1
+  திரும்பு (a < b ? -1
           : a > b ? 1
           : a == b ? 0
           : b == b ? -1
@@ -2312,57 +2312,57 @@ general_numcompare (char const *sa, char const *sb)
 /* Return an integer in 1..12 of the month name MONTH.
    Return 0 if the name in S is not recognized.  */
 
-static int
-getmonth (char const *month, char **ea)
+நிலையான முழு
+getmonth (எழுத்து மாறிலி *month, எழுத்து **ea)
 {
   size_t lo = 0;
   size_t hi = MONTHS_PER_YEAR;
 
-  while (blanks[to_uchar (*month)])
+  போது (blanks[to_uchar (*month)])
     month++;
 
-  do
+  செய்
     {
       size_t ix = (lo + hi) / 2;
-      char const *m = month;
-      char const *n = monthtab[ix].name;
+      எழுத்து மாறிலி *m = month;
+      எழுத்து மாறிலி *n = monthtab[ix].name;
 
-      for (;; m++, n++)
+      க்கு (;; m++, n++)
         {
-          if (!*n)
+          எனில் (!*n)
             {
-              if (ea)
-                *ea = (char *) m;
-              return monthtab[ix].val;
+              எனில் (ea)
+                *ea = (எழுத்து *) m;
+              திரும்பு monthtab[ix].val;
             }
-          if (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
+          எனில் (to_uchar (fold_toupper[to_uchar (*m)]) < to_uchar (*n))
             {
               hi = ix;
-              break;
+              நிறுத்து;
             }
-          else if (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
+          இல்லையெனில் எனில் (to_uchar (fold_toupper[to_uchar (*m)]) > to_uchar (*n))
             {
               lo = ix + 1;
-              break;
+              நிறுத்து;
             }
         }
     }
-  while (lo < hi);
+  போது (lo < hi);
 
-  return 0;
+  திரும்பு 0;
 }
 
 /* When using the OpenSSL implementation, dynamically link only if -R.
    This saves startup time in the usual (sans -R) case.  */
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+#எனில் DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
 /* In the typical case where md5.h does not #undef HAVE_OPENSSL_MD5,
    trick md5.h into declaring and using pointers to functions not functions.
    This causes the compiler's -lcrypto option to have no effect,
    as sort.o no longer uses any crypto symbols statically.  */
 
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic push
+# எனில் 14 <= __GNUC__
+#  pragma GCC diagnostic தள்ளு
 #  pragma GCC diagnostic ignored "-Wmissing-variable-declarations"
 # endif
 # define MD5_Init (*ptr_MD5_Init)
@@ -2370,11 +2370,11 @@ getmonth (char const *month, char **ea)
 # define MD5_Final (*ptr_MD5_Final)
 #endif
 
-#include "md5.h"
+#அந்தர்பாவ "md5.h"
 
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-# if 14 <= __GNUC__
-#  pragma GCC diagnostic pop
+#எனில் DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+# எனில் 14 <= __GNUC__
+#  pragma GCC diagnostic எடு
 # endif
 # include <dlfcn.h>
 
@@ -2387,66 +2387,66 @@ SD_ELF_NOTE_DLOPEN ("random-sort",
                     LIBCRYPTO_SONAME);
 
 /* Diagnose a dynamic linking failure.  */
-static void
-link_failure (void)
+நிலையான வெறுமை
+link_failure (வெறுமை)
 {
   error (SORT_FAILURE, 0, "%s", dlerror ());
 }
 
 /* Return a function pointer in HANDLE for SYMBOL.  */
-static void *
-symbol_address (void *handle, char const *symbol)
+நிலையான வெறுமை *
+குறியீடு_address (வெறுமை *handle, எழுத்து மாறிலி *குறியீடு)
 {
-  void *address = dlsym (handle, symbol);
-  if (!address)
+  வெறுமை *address = dlsym (handle, குறியீடு);
+  எனில் (!address)
     link_failure ();
-  return address;
+  திரும்பு address;
 }
 #endif
 
 /* Dynamically link the crypto library, if it needs linking.  */
-static void
-link_libcrypto (void)
+நிலையான வெறுமை
+link_libcrypto (வெறுமை)
 {
-#if DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
-  void *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
-  if (!handle)
+#எனில் DLOPEN_LIBCRYPTO && HAVE_OPENSSL_MD5
+  வெறுமை *handle = dlopen (LIBCRYPTO_SONAME, RTLD_LAZY | RTLD_GLOBAL);
+  எனில் (!handle)
     link_failure ();
-  ptr_MD5_Init = symbol_address (handle, "MD5_Init");
-  ptr_MD5_Update = symbol_address (handle, "MD5_Update");
-  ptr_MD5_Final = symbol_address (handle, "MD5_Final");
+  ptr_MD5_Init = குறியீடு_address (handle, "MD5_Init");
+  ptr_MD5_Update = குறியீடு_address (handle, "MD5_Update");
+  ptr_MD5_Final = குறியீடு_address (handle, "MD5_Final");
 #endif
 }
 
 /* A randomly chosen MD5 state, used for random comparison.  */
-static struct md5_ctx random_md5_state;
+நிலையான கட்டமைப்பு md5_ctx random_md5_state;
 
 /* Initialize the randomly chosen MD5 state.  */
 
-static void
-random_md5_state_init (char const *random_source)
+நிலையான வெறுமை
+random_md5_state_init (எழுத்து மாறிலி *random_source)
 {
-  unsigned char buf[MD5_DIGEST_SIZE];
-  struct randread_source *r = randread_new (random_source, sizeof buf);
-  if (! r)
+  unsigned எழுத்து buf[MD5_DIGEST_SIZE];
+  கட்டமைப்பு randread_source *r = randread_new (random_source, அளவு buf);
+  எனில் (! r)
     sort_die (_("open failed"), random_source ? random_source : "getrandom");
-  randread (r, buf, sizeof buf);
-  if (randread_free (r) != 0)
+  randread (r, buf, அளவு buf);
+  எனில் (randread_free (r) != 0)
     sort_die (_("close failed"), random_source);
   link_libcrypto ();
   md5_init_ctx (&random_md5_state);
-  md5_process_bytes (buf, sizeof buf, &random_md5_state);
+  md5_process_bytes (buf, அளவு buf, &random_md5_state);
 }
 
 /* This is like strxfrm, except it reports any error and exits.  */
 
-static size_t
-xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
+நிலையான size_t
+xstrxfrm (எழுத்து *restrict dest, எழுத்து மாறிலி *restrict src, size_t destsize)
 {
   errno = 0;
   size_t translated_size = strxfrm (dest, src, destsize);
 
-  if (errno)
+  எனில் (errno)
     {
       error (0, errno, _("string transformation failed"));
       error (0, 0, _("set LC_ALL='C' to work around the problem"));
@@ -2455,37 +2455,37 @@ xstrxfrm (char *restrict dest, char const *restrict src, size_t destsize)
              quotearg_n_style (0, locale_quoting_style, src));
     }
 
-  return translated_size;
+  திரும்பு translated_size;
 }
 
 /* Compare the keys TEXTA (of length LENA) and TEXTB (of length LENB)
    using one or more random hash functions.  TEXTA[LENA] and
    TEXTB[LENB] must be zero.  */
 
-static int
-compare_random (char *restrict texta, size_t lena,
-                char *restrict textb, size_t lenb)
+நிலையான முழு
+compare_random (எழுத்து *restrict texta, size_t lena,
+                எழுத்து *restrict textb, size_t lenb)
 {
   /* XFRM_DIFF records the equivalent of memcmp on the transformed
      data.  This is used to break ties if there is a checksum
      collision, and this is good enough given the astronomically low
      probability of a collision.  */
-  int xfrm_diff = 0;
+  முழு xfrm_diff = 0;
 
-  char stackbuf[4000];
-  char *buf = stackbuf;
-  size_t bufsize = sizeof stackbuf;
-  void *allocated = NULL;
-  uint32_t dig[2][MD5_DIGEST_SIZE / sizeof (uint32_t)];
-  struct md5_ctx s[2];
+  எழுத்து stackbuf[4000];
+  எழுத்து *buf = stackbuf;
+  size_t bufsize = அளவு stackbuf;
+  வெறுமை *allocated = வெற்று;
+  uint32_t dig[2][MD5_DIGEST_SIZE / அளவு (uint32_t)];
+  கட்டமைப்பு md5_ctx s[2];
   s[0] = s[1] = random_md5_state;
 
-  if (hard_LC_COLLATE)
+  எனில் (hard_LC_COLLATE)
     {
-      char const *lima = texta + lena;
-      char const *limb = textb + lenb;
+      எழுத்து மாறிலி *lima = texta + lena;
+      எழுத்து மாறிலி *limb = textb + lenb;
 
-      while (true)
+      போது (true)
         {
           /* Transform the text into the basis of comparison, so that byte
              strings that would otherwise considered to be equal are
@@ -2503,15 +2503,15 @@ compare_random (char *restrict texta, size_t lena,
              twice on typical implementations.  Don't worry about
              size_t overflow, as the guess need not be correct.  */
           size_t guess_bufsize = 3 * (lena + lenb) + 2;
-          if (bufsize < guess_bufsize)
+          எனில் (bufsize < guess_bufsize)
             {
               bufsize = MAX (guess_bufsize, bufsize * 3 / 2);
-              free (allocated);
+              விடுவி (allocated);
               buf = allocated = malloc (bufsize);
-              if (! buf)
+              எனில் (! buf)
                 {
                   buf = stackbuf;
-                  bufsize = sizeof stackbuf;
+                  bufsize = அளவு stackbuf;
                 }
             }
 
@@ -2520,21 +2520,21 @@ compare_random (char *restrict texta, size_t lena,
           bool a_fits = sizea <= bufsize;
           size_t sizeb =
             (textb < limb
-             ? (xstrxfrm ((a_fits ? buf + sizea : NULL), textb,
+             ? (xstrxfrm ((a_fits ? buf + sizea : வெற்று), textb,
                           (a_fits ? bufsize - sizea : 0))
                 + 1)
              : 0);
 
-          if (! (a_fits && sizea + sizeb <= bufsize))
+          எனில் (! (a_fits && sizea + sizeb <= bufsize))
             {
               bufsize = sizea + sizeb;
-              if (bufsize < SIZE_MAX / 3)
+              எனில் (bufsize < SIZE_MAX / 3)
                 bufsize = bufsize * 3 / 2;
-              free (allocated);
+              விடுவி (allocated);
               buf = allocated = xmalloc (bufsize);
-              if (texta < lima)
+              எனில் (texta < lima)
                 strxfrm (buf, texta, sizea);
-              if (textb < limb)
+              எனில் (textb < limb)
                 strxfrm (buf + sizea, textb, sizeb);
             }
 
@@ -2542,15 +2542,15 @@ compare_random (char *restrict texta, size_t lena,
              exiting the loop if both strings are exhausted.  When
              exiting the loop, prepare to finish off the tiebreaker
              comparison properly.  */
-          if (texta < lima)
+          எனில் (texta < lima)
             texta += strlen (texta) + 1;
-          if (textb < limb)
+          எனில் (textb < limb)
             textb += strlen (textb) + 1;
-          if (! (texta < lima || textb < limb))
+          எனில் (! (texta < lima || textb < limb))
             {
               lena = sizea; texta = buf;
               lenb = sizeb; textb = buf + sizea;
-              break;
+              நிறுத்து;
             }
 
           /* Accumulate the transformed data in the corresponding
@@ -2559,10 +2559,10 @@ compare_random (char *restrict texta, size_t lena,
           md5_process_bytes (buf + sizea, sizeb, &s[1]);
 
           /* Update the tiebreaker comparison of the transformed data.  */
-          if (! xfrm_diff)
+          எனில் (! xfrm_diff)
             {
               xfrm_diff = memcmp (buf, buf + sizea, MIN (sizea, sizeb));
-              if (! xfrm_diff)
+              எனில் (! xfrm_diff)
                 xfrm_diff = _GL_CMP (sizea, sizeb);
             }
         }
@@ -2571,55 +2571,55 @@ compare_random (char *restrict texta, size_t lena,
   /* Compute and compare the checksums.  */
   md5_process_bytes (texta, lena, &s[0]); md5_finish_ctx (&s[0], dig[0]);
   md5_process_bytes (textb, lenb, &s[1]); md5_finish_ctx (&s[1], dig[1]);
-  int diff = memcmp (dig[0], dig[1], sizeof dig[0]);
+  முழு diff = memcmp (dig[0], dig[1], அளவு dig[0]);
 
   /* Fall back on the tiebreaker if the checksums collide.  */
-  if (! diff)
+  எனில் (! diff)
     {
-      if (! xfrm_diff)
+      எனில் (! xfrm_diff)
         {
           xfrm_diff = memcmp (texta, textb, MIN (lena, lenb));
-          if (! xfrm_diff)
+          எனில் (! xfrm_diff)
             xfrm_diff = _GL_CMP (lena, lenb);
         }
 
       diff = xfrm_diff;
     }
 
-  free (allocated);
+  விடுவி (allocated);
 
-  return diff;
+  திரும்பு diff;
 }
 
 /* Return the printable width of the block of memory starting at
    TEXT and ending just before LIM, counting each tab as one byte.
    FIXME: Should we generally be counting non printable chars?  */
 
-static size_t
-debug_width (char const *text, char const *lim)
+நிலையான size_t
+debug_width (எழுத்து மாறிலி *text, எழுத்து மாறிலி *lim)
 {
   size_t width = mbsnwidth (text, lim - text, 0);
-  while (text < lim)
+  போது (text < lim)
     width += (*text++ == '\t');
-  return width;
+  திரும்பு width;
 }
 
 /* For debug mode, "underline" a key at the
    specified offset and screen width.  */
 
-static void
-mark_key (size_t offset, size_t width)
+நிலையான வெறுமை
+mark_சாவி (size_t offset, size_t width)
 {
-  while (offset--)
+  போது (offset--)
     putchar (' ');
 
-  if (!width)
+  எனில் (!width)
     printf (_("^ no match for key\n"));
-  else
+  இல்லையெனில்
     {
-      do
+      செய்
         putchar ('_');
-      while (--width);
+      போது (--width);
 
       putchar ('\n');
     }
@@ -2627,62 +2627,62 @@ mark_key (size_t offset, size_t width)
 
 /* Return true if KEY is a numeric key.  */
 
-static inline bool
-key_numeric (struct keyfield const *key)
+நிலையான உள்வரி bool
+சாவி_numeric (கட்டமைப்பு keyfield மாறிலி *சாவி)
 {
-  return key->numeric || key->general_numeric || key->human_numeric;
+  திரும்பு சாவி->numeric || சாவி->general_numeric || சாவி->human_numeric;
 }
 
 /* For LINE, output a debugging line that underlines KEY in LINE.
    If KEY is null, underline the whole line.  */
 
-static void
-debug_key (struct line const *line, struct keyfield const *key)
+நிலையான வெறுமை
+debug_சாவி (கட்டமைப்பு வரி மாறிலி *வரி, கட்டமைப்பு keyfield மாறிலி *சாவி)
 {
-  char *text = line->text;
-  char *beg = text;
-  char *lim = text + line->length - 1;
+  எழுத்து *text = வரி->text;
+  எழுத்து *beg = text;
+  எழுத்து *lim = text + வரி->length - 1;
 
-  if (key)
+  எனில் (சாவி)
     {
-      if (key->sword != SIZE_MAX)
-        beg = begfield (line, key);
-      if (key->eword != SIZE_MAX)
+      எனில் (சாவி->sword != SIZE_MAX)
+        beg = begfield (வரி, சாவி);
+      எனில் (சாவி->eword != SIZE_MAX)
         {
-          lim = limfield (line, key);
+          lim = limfield (வரி, சாவி);
           /* Treat field ends before field starts as empty fields.  */
           lim = MAX (beg, lim);
         }
 
-      if ((key->skipsblanks && key->sword == SIZE_MAX)
-          || key->month || key_numeric (key))
+      எனில் ((சாவி->skipsblanks && சாவி->sword == SIZE_MAX)
+          || சாவி->month || சாவி_numeric (சாவி))
         {
-          char saved = *lim;
+          எழுத்து saved = *lim;
           *lim = '\0';
 
-          while (blanks[to_uchar (*beg)])
+          போது (blanks[to_uchar (*beg)])
             beg++;
 
-          char *tighter_lim = beg;
+          எழுத்து *tighter_lim = beg;
 
-          if (lim < beg)
+          எனில் (lim < beg)
             tighter_lim = lim;
-          else if (key->month)
+          இல்லையெனில் எனில் (சாவி->month)
             getmonth (beg, &tighter_lim);
-          else if (key->general_numeric)
-            ignore_value (strtold (beg, &tighter_lim));
-          else if (key->numeric || key->human_numeric)
+          இல்லையெனில் எனில் (சாவி->general_numeric)
+            ignore_மதிப்பு (strtold (beg, &tighter_lim));
+          இல்லையெனில் எனில் (சாவி->numeric || சாவி->human_numeric)
             {
-              char const *p = beg + (beg < lim && *beg == '-');
-              char max_digit = traverse_raw_number (&p);
-              if ('0' <= max_digit)
+              எழுத்து மாறிலி *p = beg + (beg < lim && *beg == '-');
+              எழுத்து max_digit = traverse_raw_எண் (&p);
+              எனில் ('0' <= max_digit)
                 {
-                  unsigned char ch = *p;
-                  tighter_lim = (char *) p
-                    + (key->human_numeric && unit_order[ch]);
+                  unsigned எழுத்து ch = *p;
+                  tighter_lim = (எழுத்து *) p
+                    + (சாவி->human_numeric && unit_order[ch]);
                 }
             }
-          else
+          இல்லையெனில்
             tighter_lim = lim;
 
           *lim = saved;
@@ -2692,226 +2692,226 @@ debug_key (struct line const *line, struct keyfield const *key)
 
   size_t offset = debug_width (text, beg);
   size_t width = debug_width (beg, lim);
-  mark_key (offset, width);
+  mark_சாவி (offset, width);
 }
 
 /* Debug LINE by underlining its keys.  */
 
-static void
-debug_line (struct line const *line)
+நிலையான வெறுமை
+debug_வரி (கட்டமைப்பு வரி மாறிலி *வரி)
 {
-  struct keyfield const *key = keylist;
+  கட்டமைப்பு keyfield மாறிலி *சாவி = keylist;
 
-  do
-    debug_key (line, key);
-  while (key && ((key = key->next) || ! (unique || stable)));
+  செய்
+    debug_சாவி (வரி, சாவி);
+  போது (சாவி && ((சாவி = சாவி->next) || ! (unique || stable)));
 }
 
 /* Return whether sorting options specified for key.  */
 
-static bool
-default_key_compare (struct keyfield const *key)
+நிலையான bool
+default_சாவி_compare (கட்டமைப்பு keyfield மாறிலி *சாவி)
 {
-  return ! (key->ignore
-            || key->translate
-            || key->skipsblanks
-            || key->skipeblanks
-            || key_numeric (key)
-            || key->month
-            || key->version
-            || key->random
+  திரும்பு ! (சாவி->ignore
+            || சாவி->translate
+            || சாவி->skipsblanks
+            || சாவி->skipeblanks
+            || சாவி_numeric (சாவி)
+            || சாவி->month
+            || சாவி->version
+            || சாவி->random
             /* || key->reverse */
            );
 }
 
 /* Convert a key to the short options used to specify it.  */
 
-static void
-key_to_opts (struct keyfield const *key, char *opts)
+நிலையான வெறுமை
+சாவி_to_opts (கட்டமைப்பு keyfield மாறிலி *சாவி, எழுத்து *opts)
 {
-  if (key->skipsblanks || key->skipeblanks)
+  எனில் (சாவி->skipsblanks || சாவி->skipeblanks)
     *opts++ = 'b';/* either disables global -b  */
-  if (key->ignore == nondictionary)
+  எனில் (சாவி->ignore == nondictionary)
     *opts++ = 'd';
-  if (key->translate)
+  எனில் (சாவி->translate)
     *opts++ = 'f';
-  if (key->general_numeric)
+  எனில் (சாவி->general_numeric)
     *opts++ = 'g';
-  if (key->human_numeric)
+  எனில் (சாவி->human_numeric)
     *opts++ = 'h';
-  if (key->ignore == nonprinting)
+  எனில் (சாவி->ignore == nonprinting)
     *opts++ = 'i';
-  if (key->month)
+  எனில் (சாவி->month)
     *opts++ = 'M';
-  if (key->numeric)
+  எனில் (சாவி->numeric)
     *opts++ = 'n';
-  if (key->random)
+  எனில் (சாவி->random)
     *opts++ = 'R';
-  if (key->reverse)
+  எனில் (சாவி->reverse)
     *opts++ = 'r';
-  if (key->version)
+  எனில் (சாவி->version)
     *opts++ = 'V';
   *opts = '\0';
 }
 
 /* Output data independent key warnings to stderr.  */
 
-static void
-key_warnings (struct keyfield const *gkey, bool gkey_only)
+நிலையான வெறுமை
+சாவி_warnings (கட்டமைப்பு keyfield மாறிலி *gkey, bool gkey_only)
 {
-  struct keyfield ugkey = *gkey;
+  கட்டமைப்பு keyfield ugkey = *gkey;
   unsigned long keynum = 1;
   bool basic_numeric_field = false;
   bool general_numeric_field = false;
   bool basic_numeric_field_span = false;
   bool general_numeric_field_span = false;
 
-  for (struct keyfield *key = keylist; key; key = key->next, keynum++)
+  க்கு (கட்டமைப்பு keyfield *சாவி = keylist; சாவி; சாவி = சாவி->next, keynum++)
     {
-      if (key_numeric (key))
+      எனில் (சாவி_numeric (சாவி))
         {
-          if (key->general_numeric)
+          எனில் (சாவி->general_numeric)
             general_numeric_field = true;
-          else
+          இல்லையெனில்
             basic_numeric_field = true;
         }
 
-      if (key->traditional_used)
+      எனில் (சாவி->traditional_used)
         {
-          size_t sword = key->sword;
-          size_t eword = key->eword;
-          char tmp[INT_BUFSIZE_BOUND (uintmax_t)];
+          size_t sword = சாவி->sword;
+          size_t eword = சாவி->eword;
+          எழுத்து tmp[INT_BUFSIZE_BOUND (uintmax_t)];
           /* obsolescent syntax +A.x -B.y is equivalent to:
                -k A+1.x+1,B.y   (when y = 0)
                -k A+1.x+1,B+1.y (when y > 0)  */
-          char obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
-          char nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
-          char *po = obuf;
-          char *pn = nbuf;
+          எழுத்து obuf[INT_BUFSIZE_BOUND (sword) * 2 + 4]; /* +# -#  */
+          எழுத்து nbuf[INT_BUFSIZE_BOUND (sword) * 2 + 5]; /* -k #,#  */
+          எழுத்து *po = obuf;
+          எழுத்து *pn = nbuf;
 
-          if (sword == SIZE_MAX)
+          எனில் (sword == SIZE_MAX)
             sword++;
 
           po = stpcpy (stpcpy (po, "+"), umaxtostr (sword, tmp));
           pn = stpcpy (stpcpy (pn, "-k "), umaxtostr (sword + 1, tmp));
-          if (key->eword != SIZE_MAX)
+          எனில் (சாவி->eword != SIZE_MAX)
             {
               stpcpy (stpcpy (po, " -"), umaxtostr (eword + 1, tmp));
               stpcpy (stpcpy (pn, ","),
                       umaxtostr (eword + 1
-                                 + (key->echar == SIZE_MAX), tmp));
+                                 + (சாவி->echar == SIZE_MAX), tmp));
             }
           error (0, 0, _("obsolescent key %s used; consider %s instead"),
                  quote_n (0, obuf), quote_n (1, nbuf));
         }
 
       /* Warn about field specs that will never match.  */
-      bool zero_width = key->sword != SIZE_MAX && key->eword < key->sword;
-      if (zero_width)
+      bool zero_width = சாவி->sword != SIZE_MAX && சாவி->eword < சாவி->sword;
+      எனில் (zero_width)
         error (0, 0, _("key %lu has zero width and will be ignored"), keynum);
 
       /* Warn about significant leading blanks.  */
-      bool implicit_skip = key_numeric (key) || key->month;
-      bool line_offset = key->eword == 0 && key->echar != 0; /* -k1.x,1.y  */
-      if (!zero_width && !gkey_only && tab == TAB_DEFAULT && !line_offset
-          && ((!key->skipsblanks && !implicit_skip)
-              || (!key->skipsblanks && key->schar)
-              || (!key->skipeblanks && key->echar)))
+      bool implicit_skip = சாவி_numeric (சாவி) || சாவி->month;
+      bool வரி_offset = சாவி->eword == 0 && சாவி->echar != 0; /* -k1.x,1.y  */
+      எனில் (!zero_width && !gkey_only && tab == TAB_DEFAULT && !வரி_offset
+          && ((!சாவி->skipsblanks && !implicit_skip)
+              || (!சாவி->skipsblanks && சாவி->schar)
+              || (!சாவி->skipeblanks && சாவி->echar)))
         error (0, 0, _("leading blanks are significant in key %lu; "
                        "consider also specifying 'b'"), keynum);
 
       /* Warn about numeric comparisons spanning fields,
          as field delimiters could be interpreted as part
          of the number (maybe only in other locales).  */
-      if (!gkey_only && key_numeric (key))
+      எனில் (!gkey_only && சாவி_numeric (சாவி))
         {
-          size_t sword = key->sword + 1;
-          size_t eword = key->eword + 1;
-          if (!sword)
+          size_t sword = சாவி->sword + 1;
+          size_t eword = சாவி->eword + 1;
+          எனில் (!sword)
             sword++;
-          if (!eword || sword < eword)
+          எனில் (!eword || sword < eword)
             {
               error (0, 0, _("key %lu is numeric and spans multiple fields"),
                      keynum);
-              if (key->general_numeric)
+              எனில் (சாவி->general_numeric)
                 general_numeric_field_span = true;
-              else
+              இல்லையெனில்
                 basic_numeric_field_span = true;
             }
         }
 
       /* Flag global options not copied or specified in any key.  */
-      if (ugkey.ignore && (ugkey.ignore == key->ignore))
-        ugkey.ignore = NULL;
-      if (ugkey.translate && (ugkey.translate == key->translate))
-        ugkey.translate = NULL;
-      ugkey.skipsblanks &= !key->skipsblanks;
-      ugkey.skipeblanks &= !key->skipeblanks;
-      ugkey.month &= !key->month;
-      ugkey.numeric &= !key->numeric;
-      ugkey.general_numeric &= !key->general_numeric;
-      ugkey.human_numeric &= !key->human_numeric;
-      ugkey.random &= !key->random;
-      ugkey.version &= !key->version;
-      ugkey.reverse &= !key->reverse;
+      எனில் (ugkey.ignore && (ugkey.ignore == சாவி->ignore))
+        ugkey.ignore = வெற்று;
+      எனில் (ugkey.translate && (ugkey.translate == சாவி->translate))
+        ugkey.translate = வெற்று;
+      ugkey.skipsblanks &= !சாவி->skipsblanks;
+      ugkey.skipeblanks &= !சாவி->skipeblanks;
+      ugkey.month &= !சாவி->month;
+      ugkey.numeric &= !சாவி->numeric;
+      ugkey.general_numeric &= !சாவி->general_numeric;
+      ugkey.human_numeric &= !சாவி->human_numeric;
+      ugkey.random &= !சாவி->random;
+      ugkey.version &= !சாவி->version;
+      ugkey.reverse &= !சாவி->reverse;
     }
 
   /* Explicitly warn if field delimiters in this locale
      don't constrain numbers.  */
-  bool number_locale_warned = false;
-  if (basic_numeric_field_span)
+  bool எண்_locale_warned = false;
+  எனில் (basic_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      எனில் (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (thousands_sep)))
           : tab == thousands_sep)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "group separator in numbers"),
-                 quote (((char []) {thousands_sep, 0})));
-          number_locale_warned = true;
+                 quote (((எழுத்து []) {thousands_sep, 0})));
+          எண்_locale_warned = true;
         }
     }
-  if (basic_numeric_field_span || general_numeric_field_span)
+  எனில் (basic_numeric_field_span || general_numeric_field_span)
     {
-      if (tab == TAB_DEFAULT
+      எனில் (tab == TAB_DEFAULT
           ? thousands_sep != NON_CHAR && (isblank (to_uchar (decimal_point)))
           : tab == decimal_point)
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "decimal point in numbers"),
-                 quote (((char []) {decimal_point, 0})));
-          number_locale_warned = true;
+                 quote (((எழுத்து []) {decimal_point, 0})));
+          எண்_locale_warned = true;
         }
-      else if (tab == '-')
+      இல்லையெனில் எனில் (tab == '-')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "minus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((எழுத்து []) {tab, 0})));
         }
-      else if (general_numeric_field_span && tab == '+')
+      இல்லையெனில் எனில் (general_numeric_field_span && tab == '+')
         {
           error (0, 0,
                  _("field separator %s is treated as a "
                    "plus sign in numbers"),
-                 quote (((char []) {tab, 0})));
+                 quote (((எழுத்து []) {tab, 0})));
         }
     }
 
   /* Explicitly indicate the decimal point used in this locale,
      as it suggests that robust scripts need to consider
      setting the locale when comparing numbers.  */
-  if ((basic_numeric_field || general_numeric_field) && ! number_locale_warned)
+  எனில் ((basic_numeric_field || general_numeric_field) && ! எண்_locale_warned)
     {
       error (0, 0,
              _("numbers use %s as a decimal point in this locale"),
-             quote (((char []) {decimal_point, 0})));
+             quote (((எழுத்து []) {decimal_point, 0})));
 
     }
 
-  if (basic_numeric_field && thousands_sep_ignored)
+  எனில் (basic_numeric_field && thousands_sep_ignored)
     {
       error (0, 0,
              _("the multi-byte number group separator "
@@ -2920,55 +2920,55 @@ key_warnings (struct keyfield const *gkey, bool gkey_only)
 
   /* Warn about ignored global options flagged above.
      This clears all flags if UGKEY is the only one in the list.  */
-  if (!default_key_compare (&ugkey)
+  எனில் (!default_சாவி_compare (&ugkey)
       || (ugkey.reverse && (stable || unique) && keylist))
     {
       bool ugkey_reverse = ugkey.reverse;
-      if (!(stable || unique))
+      எனில் (!(stable || unique))
         ugkey.reverse = false;
       /* The following is too big, but guaranteed to be "big enough".  */
-      char opts[sizeof short_options];
-      key_to_opts (&ugkey, opts);
+      எழுத்து opts[அளவு short_options];
+      சாவி_to_opts (&ugkey, opts);
       error (0, 0,
              ngettext ("option '-%s' is ignored",
                        "options '-%s' are ignored",
                        select_plural (strlen (opts))), opts);
       ugkey.reverse = ugkey_reverse;
     }
-  if (ugkey.reverse && !(stable || unique) && keylist)
+  எனில் (ugkey.reverse && !(stable || unique) && keylist)
     error (0, 0, _("option '-r' only applies to last-resort comparison"));
 }
 
 /* Return either the sense of DIFF or its reverse, depending on REVERSED.
    If REVERSED, do not simply negate DIFF as that can mishandle INT_MIN.  */
 
-static int
-diff_reversed (int diff, bool reversed)
+நிலையான முழு
+diff_reversed (முழு diff, bool reversed)
 {
-  return reversed ? _GL_CMP (0, diff) : diff;
+  திரும்பு reversed ? _GL_CMP (0, diff) : diff;
 }
 
 /* Compare two lines A and B trying every key in sequence until there
    are no more keys or a difference is found. */
 
-static int
-keycompare (struct line const *a, struct line const *b)
+நிலையான முழு
+keycompare (கட்டமைப்பு வரி மாறிலி *a, கட்டமைப்பு வரி மாறிலி *b)
 {
-  struct keyfield *key = keylist;
+  கட்டமைப்பு keyfield *சாவி = keylist;
 
   /* For the first iteration only, the key positions have been
      precomputed for us. */
-  char *texta = a->keybeg;
-  char *textb = b->keybeg;
-  char *lima = a->keylim;
-  char *limb = b->keylim;
+  எழுத்து *texta = a->keybeg;
+  எழுத்து *textb = b->keybeg;
+  எழுத்து *lima = a->keylim;
+  எழுத்து *limb = b->keylim;
 
-  int diff;
+  முழு diff;
 
-  while (true)
+  போது (true)
     {
-      char const *translate = key->translate;
-      bool const *ignore = key->ignore;
+      எழுத்து மாறிலி *translate = சாவி->translate;
+      bool மாறிலி *ignore = சாவி->ignore;
 
       /* Treat field ends before field starts as empty fields.  */
       lima = MAX (texta, lima);
@@ -2978,21 +2978,21 @@ keycompare (struct line const *a, struct line const *b)
       size_t lena = lima - texta;
       size_t lenb = limb - textb;
 
-      if (hard_LC_COLLATE || key_numeric (key)
-          || key->month || key->random || key->version)
+      எனில் (hard_LC_COLLATE || சாவி_numeric (சாவி)
+          || சாவி->month || சாவி->random || சாவி->version)
         {
           /* Ordinarily use the keys in-place, temporarily null-terminated.  */
-          char *ta = texta;
-          char *tb = textb;
+          எழுத்து *ta = texta;
+          எழுத்து *tb = textb;
           size_t tlena = lena;
           size_t tlenb = lenb;
-          char enda = ta[tlena];
-          char endb = tb[tlenb];
+          எழுத்து enda = ta[tlena];
+          எழுத்து endb = tb[tlenb];
 
-          void *allocated = NULL;
-          char stackbuf[4000];
+          வெறுமை *allocated = வெற்று;
+          எழுத்து stackbuf[4000];
 
-          if (ignore || translate)
+          எனில் (ignore || translate)
             {
               /* Compute with copies of the keys, which are the result of
                  translating or ignoring characters, and which need their
@@ -3002,22 +3002,22 @@ keycompare (struct line const *a, struct line const *b)
 
               /* Allocate space for copies.  */
               size_t size = lena + 1 + lenb + 1;
-              if (size <= sizeof stackbuf)
+              எனில் (size <= அளவு stackbuf)
                 ta = stackbuf;
-              else
+              இல்லையெனில்
                 ta = allocated = xmalloc (size);
               tb = ta + lena + 1;
 
               /* Put into each copy a version of the key in which the
                  requested characters are ignored or translated.  */
-              for (tlena = i = 0; i < lena; i++)
-                if (! (ignore && ignore[to_uchar (texta[i])]))
+              க்கு (tlena = i = 0; i < lena; i++)
+                எனில் (! (ignore && ignore[to_uchar (texta[i])]))
                   ta[tlena++] = (translate
                                  ? translate[to_uchar (texta[i])]
                                  : texta[i]);
 
-              for (tlenb = i = 0; i < lenb; i++)
-                if (! (ignore && ignore[to_uchar (textb[i])]))
+              க்கு (tlenb = i = 0; i < lenb; i++)
+                எனில் (! (ignore && ignore[to_uchar (textb[i])]))
                   tb[tlenb++] = (translate
                                  ? translate[to_uchar (textb[i])]
                                  : textb[i]);
@@ -3026,151 +3026,151 @@ keycompare (struct line const *a, struct line const *b)
           ta[tlena] = '\0';
           tb[tlenb] = '\0';
 
-          if (key->numeric)
+          எனில் (சாவி->numeric)
             diff = numcompare (ta, tb);
-          else if (key->general_numeric)
+          இல்லையெனில் எனில் (சாவி->general_numeric)
             diff = general_numcompare (ta, tb);
-          else if (key->human_numeric)
+          இல்லையெனில் எனில் (சாவி->human_numeric)
             diff = human_numcompare (ta, tb);
-          else if (key->month)
-            diff = getmonth (ta, NULL) - getmonth (tb, NULL);
-          else if (key->random)
+          இல்லையெனில் எனில் (சாவி->month)
+            diff = getmonth (ta, வெற்று) - getmonth (tb, வெற்று);
+          இல்லையெனில் எனில் (சாவி->random)
             diff = compare_random (ta, tlena, tb, tlenb);
-          else if (key->version)
+          இல்லையெனில் எனில் (சாவி->version)
             diff = filenvercmp (ta, tlena, tb, tlenb);
-          else
+          இல்லையெனில்
             {
               /* Locale-dependent string sorting.  This is slower than
                  C-locale sorting, which is implemented below.  */
-              if (tlena == 0)
+              எனில் (tlena == 0)
                 diff = - NONZERO (tlenb);
-              else if (tlenb == 0)
+              இல்லையெனில் எனில் (tlenb == 0)
                 diff = 1;
-              else
+              இல்லையெனில்
                 diff = xmemcoll0 (ta, tlena + 1, tb, tlenb + 1);
             }
 
           ta[tlena] = enda;
           tb[tlenb] = endb;
 
-          free (allocated);
+          விடுவி (allocated);
         }
-      else if (ignore)
+      இல்லையெனில் எனில் (ignore)
         {
 #define CMP_WITH_IGNORE(A, B)						\
-  do									\
+  செய்									\
     {									\
-          while (true)							\
+          போது (true)							\
             {								\
-              while (texta < lima && ignore[to_uchar (*texta)])		\
+              போது (texta < lima && ignore[to_uchar (*texta)])		\
                 ++texta;						\
-              while (textb < limb && ignore[to_uchar (*textb)])		\
+              போது (textb < limb && ignore[to_uchar (*textb)])		\
                 ++textb;						\
-              if (! (texta < lima && textb < limb))			\
+              எனில் (! (texta < lima && textb < limb))			\
                 {							\
                   diff = (texta < lima) - (textb < limb);		\
-                  break;						\
+                  நிறுத்து;						\
                 }							\
               diff = to_uchar (A) - to_uchar (B);			\
-              if (diff)							\
-                break;							\
+              எனில் (diff)							\
+                நிறுத்து;							\
               ++texta;							\
               ++textb;							\
             }								\
                                                                         \
     }									\
-  while (0)
+  போது (0)
 
-          if (translate)
+          எனில் (translate)
             CMP_WITH_IGNORE (translate[to_uchar (*texta)],
                              translate[to_uchar (*textb)]);
-          else
+          இல்லையெனில்
             CMP_WITH_IGNORE (*texta, *textb);
         }
-      else
+      இல்லையெனில்
         {
           size_t lenmin = MIN (lena, lenb);
-          if (lenmin == 0)
+          எனில் (lenmin == 0)
             diff = 0;
-          else if (translate)
+          இல்லையெனில் எனில் (translate)
             {
               size_t i = 0;
-              do
+              செய்
                 {
                   diff = (to_uchar (translate[to_uchar (texta[i])])
                           - to_uchar (translate[to_uchar (textb[i])]));
-                  if (diff)
-                    break;
+                  எனில் (diff)
+                    நிறுத்து;
                   i++;
                 }
-              while (i < lenmin);
+              போது (i < lenmin);
             }
-          else
+          இல்லையெனில்
             diff = memcmp (texta, textb, lenmin);
 
-          if (! diff)
+          எனில் (! diff)
             diff = _GL_CMP (lena, lenb);
         }
 
-      if (diff)
-        break;
+      எனில் (diff)
+        நிறுத்து;
 
-      key = key->next;
-      if (! key)
-        return 0;
+      சாவி = சாவி->next;
+      எனில் (! சாவி)
+        திரும்பு 0;
 
       /* Find the beginning and limit of the next field.  */
-      if (key->eword != SIZE_MAX)
-        lima = limfield (a, key), limb = limfield (b, key);
-      else
+      எனில் (சாவி->eword != SIZE_MAX)
+        lima = limfield (a, சாவி), limb = limfield (b, சாவி);
+      இல்லையெனில்
         lima = a->text + a->length - 1, limb = b->text + b->length - 1;
 
-      if (key->sword != SIZE_MAX)
-        texta = begfield (a, key), textb = begfield (b, key);
-      else
+      எனில் (சாவி->sword != SIZE_MAX)
+        texta = begfield (a, சாவி), textb = begfield (b, சாவி);
+      இல்லையெனில்
         {
           texta = a->text, textb = b->text;
-          if (key->skipsblanks)
+          எனில் (சாவி->skipsblanks)
             {
-              while (texta < lima && blanks[to_uchar (*texta)])
+              போது (texta < lima && blanks[to_uchar (*texta)])
                 ++texta;
-              while (textb < limb && blanks[to_uchar (*textb)])
+              போது (textb < limb && blanks[to_uchar (*textb)])
                 ++textb;
             }
         }
     }
 
-  return diff_reversed (diff, key->reverse);
+  திரும்பு diff_reversed (diff, சாவி->reverse);
 }
 
 /* Compare two lines A and B, returning negative, zero, or positive
    depending on whether A compares less than, equal to, or greater than B. */
 
-static int
-compare (struct line const *a, struct line const *b)
+நிலையான முழு
+compare (கட்டமைப்பு வரி மாறிலி *a, கட்டமைப்பு வரி மாறிலி *b)
 {
-  int diff;
+  முழு diff;
   size_t alen, blen;
 
   /* First try to compare on the specified keys (if any).
      The only two cases with no key at all are unadorned sort,
      and unadorned sort -r. */
-  if (keylist)
+  எனில் (keylist)
     {
       diff = keycompare (a, b);
-      if (diff || unique || stable)
-        return diff;
+      எனில் (diff || unique || stable)
+        திரும்பு diff;
     }
 
   /* If the keys all compare equal (or no keys were specified)
      fall through to the default comparison.  */
   alen = a->length - 1, blen = b->length - 1;
 
-  if (alen == 0)
+  எனில் (alen == 0)
     diff = - NONZERO (blen);
-  else if (blen == 0)
+  இல்லையெனில் எனில் (blen == 0)
     diff = 1;
-  else if (hard_LC_COLLATE)
+  இல்லையெனில் எனில் (hard_LC_COLLATE)
     {
       /* xmemcoll0 is a performance enhancement as
          it will not unconditionally write '\0' after the
@@ -3178,14 +3178,14 @@ compare (struct line const *a, struct line const *b)
          a 3% increase in performance for short lines.  */
       diff = xmemcoll0 (a->text, alen + 1, b->text, blen + 1);
     }
-  else
+  இல்லையெனில்
     {
       diff = memcmp (a->text, b->text, MIN (alen, blen));
-      if (!diff)
+      எனில் (!diff)
         diff = _GL_CMP (alen, blen);
     }
 
-  return diff_reversed (diff, reverse);
+  திரும்பு diff_reversed (diff, reverse);
 }
 
 /* Write LINE to output stream FP; the output file's name is
@@ -3193,35 +3193,35 @@ compare (struct line const *a, struct line const *b)
    otherwise.  If debugging is enabled and FP is standard output,
    append some debugging information.  */
 
-static void
-write_line (struct line const *line, FILE *fp, char const *output_file)
+நிலையான வெறுமை
+write_வரி (கட்டமைப்பு வரி மாறிலி *வரி, FILE *fp, எழுத்து மாறிலி *output_file)
 {
-  char *buf = line->text;
-  size_t n_bytes = line->length;
-  char *ebuf = buf + n_bytes;
+  எழுத்து *buf = வரி->text;
+  size_t n_bytes = வரி->length;
+  எழுத்து *ebuf = buf + n_bytes;
 
-  if (!output_file && debug)
+  எனில் (!output_file && debug)
     {
       /* Convert TAB to '>' and EOL to \n, and then output debugging info.  */
-      char const *c = buf;
+      எழுத்து மாறிலி *c = buf;
 
-      while (c < ebuf)
+      போது (c < ebuf)
         {
-          char wc = *c++;
-          if (wc == '\t')
+          எழுத்து wc = *c++;
+          எனில் (wc == '\t')
             wc = '>';
-          else if (c == ebuf)
+          இல்லையெனில் எனில் (c == ebuf)
             wc = '\n';
-          if (fputc (wc, fp) == EOF)
+          எனில் (fputc (wc, fp) == EOF)
             sort_die (_("write failed"), output_file);
         }
 
-      debug_line (line);
+      debug_வரி (வரி);
     }
-  else
+  இல்லையெனில்
     {
       ebuf[-1] = eolchar;
-      if (fwrite (buf, 1, n_bytes, fp) != n_bytes)
+      எனில் (fwrite (buf, 1, n_bytes, fp) != n_bytes)
         sort_die (_("write failed"), output_file);
       ebuf[-1] = '\0';
     }
@@ -3232,85 +3232,85 @@ write_line (struct line const *line, FILE *fp, char const *output_file)
    diagnostic (FILE_NAME, line number, contents of line) to stderr if
    they are not in order.  */
 
-static bool
-check (char const *file_name, char checkonly)
+நிலையான bool
+check (எழுத்து மாறிலி *file_name, எழுத்து checkonly)
 {
   FILE *fp = xfopen (file_name, "r");
-  struct buffer buf;		/* Input buffer. */
-  struct line temp;		/* Copy of previous line. */
+  கட்டமைப்பு buffer buf;		/* Input buffer. */
+  கட்டமைப்பு வரி temp;		/* Copy of previous line. */
   size_t alloc = 0;
-  uintmax_t line_number = 0;
-  struct keyfield const *key = keylist;
+  uintmax_t வரி_எண் = 0;
+  கட்டமைப்பு keyfield மாறிலி *சாவி = keylist;
   bool nonunique = ! unique;
   bool ordered = true;
 
-  initbuf (&buf, sizeof (struct line),
+  initbuf (&buf, அளவு (கட்டமைப்பு வரி),
            MAX (merge_buffer_size, sort_size));
-  temp.text = NULL;
+  temp.text = வெற்று;
 
-  while (fillbuf (&buf, fp, file_name, NULL))
+  போது (fillbuf (&buf, fp, file_name, வெற்று))
     {
-      struct line const *line = buffer_linelim (&buf);
-      struct line const *linebase = line - buf.nlines;
+      கட்டமைப்பு வரி மாறிலி *வரி = buffer_linelim (&buf);
+      கட்டமைப்பு வரி மாறிலி *linebase = வரி - buf.nlines;
 
       /* Make sure the line saved from the old buffer contents is
          less than or equal to the first line of the new buffer. */
-      if (alloc && nonunique <= compare (&temp, line - 1))
+      எனில் (alloc && nonunique <= compare (&temp, வரி - 1))
         {
         found_disorder:
           {
-            if (checkonly == 'c')
+            எனில் (checkonly == 'c')
               {
-                struct line const *disorder_line = line - 1;
-                uintmax_t disorder_line_number =
-                  buffer_linelim (&buf) - disorder_line + line_number;
+                கட்டமைப்பு வரி மாறிலி *disorder_வரி = வரி - 1;
+                uintmax_t disorder_வரி_எண் =
+                  buffer_linelim (&buf) - disorder_வரி + வரி_எண்;
                 fprintf (stderr, _("%s: %s:%ju: disorder: "),
-                         program_name, file_name, disorder_line_number);
-                write_line (disorder_line, stderr, _("standard error"));
+                         program_name, file_name, disorder_வரி_எண்);
+                write_வரி (disorder_வரி, stderr, _("standard error"));
               }
 
             ordered = false;
-            break;
+            நிறுத்து;
           }
         }
 
       /* Compare each line in the buffer with its successor.  */
-      while (linebase < --line)
-        if (nonunique <= compare (line, line - 1))
-          goto found_disorder;
+      போது (linebase < --வரி)
+        எனில் (nonunique <= compare (வரி, வரி - 1))
+          செல் found_disorder;
 
-      line_number += buf.nlines;
+      வரி_எண் += buf.nlines;
 
       /* Save the last line of the buffer.  */
-      if (alloc < line->length)
+      எனில் (alloc < வரி->length)
         {
-          do
+          செய்
             {
               alloc *= 2;
-              if (! alloc)
+              எனில் (! alloc)
                 {
-                  alloc = line->length;
-                  break;
+                  alloc = வரி->length;
+                  நிறுத்து;
                 }
             }
-          while (alloc < line->length);
+          போது (alloc < வரி->length);
 
-          free (temp.text);
+          விடுவி (temp.text);
           temp.text = xmalloc (alloc);
         }
-      memcpy (temp.text, line->text, line->length);
-      temp.length = line->length;
-      if (key)
+      memcpy (temp.text, வரி->text, வரி->length);
+      temp.length = வரி->length;
+      எனில் (சாவி)
         {
-          temp.keybeg = temp.text + (line->keybeg - line->text);
-          temp.keylim = temp.text + (line->keylim - line->text);
+          temp.keybeg = temp.text + (வரி->keybeg - வரி->text);
+          temp.keylim = temp.text + (வரி->keylim - வரி->text);
         }
     }
 
   xfclose (fp, file_name);
-  free (buf.buf);
-  free (temp.text);
-  return ordered;
+  விடுவி (buf.buf);
+  விடுவி (temp.text);
+  திரும்பு ordered;
 }
 
 /* Open FILES (there are NFILES of them) and store the resulting array
@@ -3318,23 +3318,23 @@ check (char const *file_name, char checkonly)
    number of successfully opened files, setting errno if this value is
    less than NFILES.  */
 
-static size_t
-open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
+நிலையான size_t
+open_உள்ளீடு_files (கட்டமைப்பு sortfile *files, size_t nfiles, FILE ***pfps)
 {
-  FILE **fps = *pfps = xnmalloc (nfiles, sizeof *fps);
-  int i;
+  FILE **fps = *pfps = xnmalloc (nfiles, அளவு *fps);
+  முழு i;
 
   /* Open as many input files as we can.  */
-  for (i = 0; i < nfiles; i++)
+  க்கு (i = 0; i < nfiles; i++)
     {
       fps[i] = (files[i].temp && files[i].temp->state != UNCOMPRESSED
                 ? open_temp (files[i].temp)
                 : stream_open (files[i].name, "r"));
-      if (!fps[i])
-        break;
+      எனில் (!fps[i])
+        நிறுத்து;
     }
 
-  return i;
+  திரும்பு i;
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3345,52 +3345,52 @@ open_input_files (struct sortfile *files, size_t nfiles, FILE ***pfps)
    OUTPUT_FILE gives the name of the output file.  If it is null,
    the output file is standard output.  */
 
-static void
-mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
-          FILE *ofp, char const *output_file, FILE **fps)
+நிலையான வெறுமை
+mergefps (கட்டமைப்பு sortfile *files, size_t ntemps, size_t nfiles,
+          FILE *ofp, எழுத்து மாறிலி *output_file, FILE **fps)
 {
-  struct buffer *buffer = xnmalloc (nfiles, sizeof *buffer);
+  கட்டமைப்பு buffer *buffer = xnmalloc (nfiles, அளவு *buffer);
                                 /* Input buffers for each file. */
-  struct line saved;		/* Saved line storage for unique check. */
-  struct line const *savedline = NULL;
+  கட்டமைப்பு வரி saved;		/* Saved line storage for unique check. */
+  கட்டமைப்பு வரி மாறிலி *savedline = வெற்று;
                                 /* &saved if there is a saved line. */
   size_t savealloc = 0;		/* Size allocated for the saved line. */
-  struct line const **cur = xnmalloc (nfiles, sizeof *cur);
+  கட்டமைப்பு வரி மாறிலி **cur = xnmalloc (nfiles, அளவு *cur);
                                 /* Current line in each line table. */
-  struct line const **base = xnmalloc (nfiles, sizeof *base);
+  கட்டமைப்பு வரி மாறிலி **base = xnmalloc (nfiles, அளவு *base);
                                 /* Base of each line table.  */
-  size_t *ord = xnmalloc (nfiles, sizeof *ord);
+  size_t *ord = xnmalloc (nfiles, அளவு *ord);
                                 /* Table representing a permutation of fps,
                                    such that cur[ord[0]] is the smallest line
                                    and will be next output. */
   size_t t;
-  struct keyfield const *key = keylist;
-  saved.text = NULL;
+  கட்டமைப்பு keyfield மாறிலி *சாவி = keylist;
+  saved.text = வெற்று;
 
   /* Read initial lines from each input file. */
-  for (size_t i = 0; i < nfiles; )
+  க்கு (size_t i = 0; i < nfiles; )
     {
-      initbuf (&buffer[i], sizeof (struct line),
+      initbuf (&buffer[i], அளவு (கட்டமைப்பு வரி),
                MAX (merge_buffer_size, sort_size / nfiles));
-      if (fillbuf (&buffer[i], fps[i], files[i].name, NULL))
+      எனில் (fillbuf (&buffer[i], fps[i], files[i].name, வெற்று))
         {
-          struct line const *linelim = buffer_linelim (&buffer[i]);
+          கட்டமைப்பு வரி மாறிலி *linelim = buffer_linelim (&buffer[i]);
           cur[i] = linelim - 1;
           base[i] = linelim - buffer[i].nlines;
           i++;
         }
-      else
+      இல்லையெனில்
         {
           /* fps[i] is empty; eliminate it from future consideration.  */
           xfclose (fps[i], files[i].name);
-          if (i < ntemps)
+          எனில் (i < ntemps)
             {
               ntemps--;
               zaptemp (files[i].name);
             }
-          free (buffer[i].buf);
+          விடுவி (buffer[i].buf);
           --nfiles;
-          for (size_t j = i; j < nfiles; ++j)
+          க்கு (size_t j = i; j < nfiles; ++j)
             {
               files[j] = files[j + 1];
               fps[j] = fps[j + 1];
@@ -3401,45 +3401,45 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
   /* Set up the ord table according to comparisons among input lines.
      Since this only reorders two items if one is strictly greater than
      the other, it is stable. */
-  for (size_t i = 0; i < nfiles; ++i)
+  க்கு (size_t i = 0; i < nfiles; ++i)
     ord[i] = i;
-  for (size_t i = 1; i < nfiles; ++i)
-    if (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
+  க்கு (size_t i = 1; i < nfiles; ++i)
+    எனில் (0 < compare (cur[ord[i - 1]], cur[ord[i]]))
       t = ord[i - 1], ord[i - 1] = ord[i], ord[i] = t, i = 0;
 
   /* Repeatedly output the smallest line until no input remains. */
-  while (nfiles)
+  போது (nfiles)
     {
-      struct line const *smallest = cur[ord[0]];
+      கட்டமைப்பு வரி மாறிலி *smallest = cur[ord[0]];
 
       /* If uniquified output is turned on, output only the first of
          an identical series of lines. */
-      if (unique)
+      எனில் (unique)
         {
-          if (savedline && compare (savedline, smallest))
+          எனில் (savedline && compare (savedline, smallest))
             {
-              savedline = NULL;
-              write_line (&saved, ofp, output_file);
+              savedline = வெற்று;
+              write_வரி (&saved, ofp, output_file);
             }
-          if (!savedline)
+          எனில் (!savedline)
             {
               savedline = &saved;
-              if (savealloc < smallest->length)
+              எனில் (savealloc < smallest->length)
                 {
-                  do
-                    if (! savealloc)
+                  செய்
+                    எனில் (! savealloc)
                       {
                         savealloc = smallest->length;
-                        break;
+                        நிறுத்து;
                       }
-                  while ((savealloc *= 2) < smallest->length);
+                  போது ((savealloc *= 2) < smallest->length);
 
-                  free (saved.text);
+                  விடுவி (saved.text);
                   saved.text = xmalloc (savealloc);
                 }
               saved.length = smallest->length;
               memcpy (saved.text, smallest->text, saved.length);
-              if (key)
+              எனில் (சாவி)
                 {
                   saved.keybeg =
                     saved.text + (smallest->keybeg - smallest->text);
@@ -3448,36 +3448,36 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                 }
             }
         }
-      else
-        write_line (smallest, ofp, output_file);
+      இல்லையெனில்
+        write_வரி (smallest, ofp, output_file);
 
       /* Check if we need to read more lines into memory. */
-      if (base[ord[0]] < smallest)
+      எனில் (base[ord[0]] < smallest)
         cur[ord[0]] = smallest - 1;
-      else
+      இல்லையெனில்
         {
-          if (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
-                       NULL))
+          எனில் (fillbuf (&buffer[ord[0]], fps[ord[0]], files[ord[0]].name,
+                       வெற்று))
             {
-              struct line const *linelim = buffer_linelim (&buffer[ord[0]]);
+              கட்டமைப்பு வரி மாறிலி *linelim = buffer_linelim (&buffer[ord[0]]);
               cur[ord[0]] = linelim - 1;
               base[ord[0]] = linelim - buffer[ord[0]].nlines;
             }
-          else
+          இல்லையெனில்
             {
               /* We reached EOF on fps[ord[0]].  */
-              for (size_t i = 1; i < nfiles; ++i)
-                if (ord[i] > ord[0])
+              க்கு (size_t i = 1; i < nfiles; ++i)
+                எனில் (ord[i] > ord[0])
                   --ord[i];
               --nfiles;
               xfclose (fps[ord[0]], files[ord[0]].name);
-              if (ord[0] < ntemps)
+              எனில் (ord[0] < ntemps)
                 {
                   ntemps--;
                   zaptemp (files[ord[0]].name);
                 }
-              free (buffer[ord[0]].buf);
-              for (size_t i = ord[0]; i < nfiles; ++i)
+              விடுவி (buffer[ord[0]].buf);
+              க்கு (size_t i = ord[0]; i < nfiles; ++i)
                 {
                   fps[i] = fps[i + 1];
                   files[i] = files[i + 1];
@@ -3485,9 +3485,9 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
                   cur[i] = cur[i + 1];
                   base[i] = base[i + 1];
                 }
-              for (size_t i = 0; i < nfiles; ++i)
+              க்கு (size_t i = 0; i < nfiles; ++i)
                 ord[i] = ord[i + 1];
-              continue;
+              தொடர்;
             }
         }
 
@@ -3500,37 +3500,37 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
         size_t hi = nfiles;
         size_t probe = lo;
         size_t ord0 = ord[0];
-        size_t count_of_smaller_lines;
+        size_t மொத்தம்_of_smaller_வரிகள்;
 
-        while (lo < hi)
+        போது (lo < hi)
           {
-            int cmp = compare (cur[ord0], cur[ord[probe]]);
-            if (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
+            முழு cmp = compare (cur[ord0], cur[ord[probe]]);
+            எனில் (cmp < 0 || (cmp == 0 && ord0 < ord[probe]))
               hi = probe;
-            else
+            இல்லையெனில்
               lo = probe + 1;
             probe = (lo + hi) / 2;
           }
 
-        count_of_smaller_lines = lo - 1;
-        for (size_t j = 0; j < count_of_smaller_lines; j++)
+        மொத்தம்_of_smaller_வரிகள் = lo - 1;
+        க்கு (size_t j = 0; j < மொத்தம்_of_smaller_வரிகள்; j++)
           ord[j] = ord[j + 1];
-        ord[count_of_smaller_lines] = ord0;
+        ord[மொத்தம்_of_smaller_வரிகள்] = ord0;
       }
     }
 
-  if (unique && savedline)
+  எனில் (unique && savedline)
     {
-      write_line (&saved, ofp, output_file);
-      free (saved.text);
+      write_வரி (&saved, ofp, output_file);
+      விடுவி (saved.text);
     }
 
   xfclose (ofp, output_file);
-  free (fps);
-  free (buffer);
-  free (ord);
-  free (base);
-  free (cur);
+  விடுவி (fps);
+  விடுவி (buffer);
+  விடுவி (ord);
+  விடுவி (base);
+  விடுவி (cur);
 }
 
 /* Merge lines from FILES onto OFP.  NTEMPS is the number of temporary
@@ -3543,16 +3543,16 @@ mergefps (struct sortfile *files, size_t ntemps, size_t nfiles,
    less than NFILES if we ran low on file descriptors, but in this
    case it is never less than 2.  */
 
-static size_t
-mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
-            FILE *ofp, char const *output_file)
+நிலையான size_t
+mergefiles (கட்டமைப்பு sortfile *files, size_t ntemps, size_t nfiles,
+            FILE *ofp, எழுத்து மாறிலி *output_file)
 {
   FILE **fps;
-  size_t nopened = open_input_files (files, nfiles, &fps);
-  if (nopened < nfiles && nopened < 2)
+  size_t nopened = open_உள்ளீடு_files (files, nfiles, &fps);
+  எனில் (nopened < nfiles && nopened < 2)
     sort_die (_("open failed"), files[nopened].name);
   mergefps (files, ntemps, nopened, ofp, output_file, fps);
-  return nopened;
+  திரும்பு nopened;
 }
 
 /* Merge into T (of size NLINES) the two sorted arrays of lines
@@ -3561,35 +3561,35 @@ mergefiles (struct sortfile *files, size_t ntemps, size_t nfiles,
    T and LO point just past their respective arrays, and the arrays
    are in reverse order.  NLINES must be at least 2.  */
 
-static void
-mergelines (struct line *restrict t, size_t nlines,
-            struct line const *restrict lo)
+நிலையான வெறுமை
+mergelines (கட்டமைப்பு வரி *restrict t, size_t nlines,
+            கட்டமைப்பு வரி மாறிலி *restrict lo)
 {
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *hi = t - nlo;
+  கட்டமைப்பு வரி *hi = t - nlo;
 
-  while (true)
-    if (compare (lo - 1, hi - 1) <= 0)
+  போது (true)
+    எனில் (compare (lo - 1, hi - 1) <= 0)
       {
         *--t = *--lo;
-        if (! --nlo)
+        எனில் (! --nlo)
           {
             /* HI must equal T now, and there is no need to copy from
                HI to T. */
-            return;
+            திரும்பு;
           }
       }
-    else
+    இல்லையெனில்
       {
         *--t = *--hi;
-        if (! --nhi)
+        எனில் (! --nhi)
           {
-            do
+            செய்
               *--t = *--lo;
-            while (--nlo);
+            போது (--nlo);
 
-            return;
+            திரும்பு;
           }
       }
 }
@@ -3608,96 +3608,96 @@ mergelines (struct line *restrict t, size_t nlines,
    writes that this memory optimization was originally published by
    D. A. Bell, Comp J. 1 (1958), 75.  */
 
-static void
-sequential_sort (struct line *restrict lines, size_t nlines,
-                 struct line *restrict temp, bool to_temp)
+நிலையான வெறுமை
+sequential_sort (கட்டமைப்பு வரி *restrict வரிகள், size_t nlines,
+                 கட்டமைப்பு வரி *restrict temp, bool to_temp)
 {
-  if (nlines == 2)
+  எனில் (nlines == 2)
     {
       /* Declare 'swap' as int, not bool, to work around a bug
         <https://lists.gnu.org/r/bug-coreutils/2005-10/msg00086.html>
          in the IBM xlc 6.0.0.0 compiler in 64-bit mode.  */
-      int swap = (0 < compare (&lines[-1], &lines[-2]));
-      if (to_temp)
+      முழு swap = (0 < compare (&வரிகள்[-1], &வரிகள்[-2]));
+      எனில் (to_temp)
         {
-          temp[-1] = lines[-1 - swap];
-          temp[-2] = lines[-2 + swap];
+          temp[-1] = வரிகள்[-1 - swap];
+          temp[-2] = வரிகள்[-2 + swap];
         }
-      else if (swap)
+      இல்லையெனில் எனில் (swap)
         {
-          temp[-1] = lines[-1];
-          lines[-1] = lines[-2];
-          lines[-2] = temp[-1];
+          temp[-1] = வரிகள்[-1];
+          வரிகள்[-1] = வரிகள்[-2];
+          வரிகள்[-2] = temp[-1];
         }
     }
-  else
+  இல்லையெனில்
     {
       size_t nlo = nlines / 2;
       size_t nhi = nlines - nlo;
-      struct line *lo = lines;
-      struct line *hi = lines - nlo;
+      கட்டமைப்பு வரி *lo = வரிகள்;
+      கட்டமைப்பு வரி *hi = வரிகள் - nlo;
 
       sequential_sort (hi, nhi, temp - (to_temp ? nlo : 0), to_temp);
-      if (1 < nlo)
+      எனில் (1 < nlo)
         sequential_sort (lo, nlo, temp, !to_temp);
-      else if (!to_temp)
+      இல்லையெனில் எனில் (!to_temp)
         temp[-1] = lo[-1];
 
-      struct line *dest;
-      struct line const *sorted_lo;
-      if (to_temp)
+      கட்டமைப்பு வரி *dest;
+      கட்டமைப்பு வரி மாறிலி *sorted_lo;
+      எனில் (to_temp)
         {
           dest = temp;
-          sorted_lo = lines;
+          sorted_lo = வரிகள்;
         }
-      else
+      இல்லையெனில்
         {
-          dest = lines;
+          dest = வரிகள்;
           sorted_lo = temp;
         }
       mergelines (dest, nlines, sorted_lo);
     }
 }
 
-static struct merge_node *init_node (struct merge_node *restrict,
-                                     struct merge_node *restrict,
-                                     struct line *, size_t, size_t, bool);
+நிலையான கட்டமைப்பு merge_முனை *init_முனை (கட்டமைப்பு merge_முனை *restrict,
+                                     கட்டமைப்பு merge_முனை *restrict,
+                                     கட்டமைப்பு வரி *, size_t, size_t, bool);
 
 
 /* Create and return a merge tree for NTHREADS threads, sorting NLINES
    lines, with destination DEST.  */
-static struct merge_node *
-merge_tree_init (size_t nthreads, size_t nlines, struct line *dest)
+நிலையான கட்டமைப்பு merge_முனை *
+merge_மரம்_init (size_t nthreads, size_t nlines, கட்டமைப்பு வரி *dest)
 {
-  struct merge_node *merge_tree = xmalloc (2 * sizeof *merge_tree * nthreads);
+  கட்டமைப்பு merge_முனை *merge_மரம் = xmalloc (2 * அளவு *merge_மரம் * nthreads);
 
-  struct merge_node *root = merge_tree;
-  root->lo = root->hi = root->end_lo = root->end_hi = NULL;
-  root->dest = NULL;
-  root->nlo = root->nhi = nlines;
-  root->parent = NULL;
-  root->level = MERGE_END;
-  root->queued = false;
-  pthread_mutex_init (&root->lock, NULL);
+  கட்டமைப்பு merge_முனை *வேர் = merge_மரம்;
+  வேர்->lo = வேர்->hi = வேர்->end_lo = வேர்->end_hi = வெற்று;
+  வேர்->dest = வெற்று;
+  வேர்->nlo = வேர்->nhi = nlines;
+  வேர்->parent = வெற்று;
+  வேர்->level = MERGE_END;
+  வேர்->queued = false;
+  pthread_mutex_init (&வேர்->lock, வெற்று);
 
-  init_node (root, root + 1, dest, nthreads, nlines, false);
-  return merge_tree;
+  init_முனை (வேர், வேர் + 1, dest, nthreads, nlines, false);
+  திரும்பு merge_மரம்;
 }
 
 /* Destroy the merge tree. */
-static void
-merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
+நிலையான வெறுமை
+merge_மரம்_destroy (size_t nthreads, கட்டமைப்பு merge_முனை *merge_மரம்)
 {
   size_t n_nodes = nthreads * 2;
-  struct merge_node *node = merge_tree;
+  கட்டமைப்பு merge_முனை *முனை = merge_மரம்;
 
-  while (n_nodes--)
+  போது (n_nodes--)
     {
-      pthread_mutex_destroy (&node->lock);
-      node++;
+      pthread_mutex_destroy (&முனை->lock);
+      முனை++;
     }
 
-  free (merge_tree);
+  விடுவி (merge_மரம்);
 }
 
 /* Initialize a merge tree node and its descendants.  The node's
@@ -3707,82 +3707,82 @@ merge_tree_destroy (size_t nthreads, struct merge_node *merge_tree)
    TOTAL_LINES.  IS_LO_CHILD is true if the node is the low child of
    its parent.  */
 
-static struct merge_node *
-init_node (struct merge_node *restrict parent,
-           struct merge_node *restrict node_pool,
-           struct line *dest, size_t nthreads,
-           size_t total_lines, bool is_lo_child)
+நிலையான கட்டமைப்பு merge_முனை *
+init_முனை (கட்டமைப்பு merge_முனை *restrict parent,
+           கட்டமைப்பு merge_முனை *restrict முனை_pool,
+           கட்டமைப்பு வரி *dest, size_t nthreads,
+           size_t total_வரிகள், bool is_lo_child)
 {
   size_t nlines = (is_lo_child ? parent->nlo : parent->nhi);
   size_t nlo = nlines / 2;
   size_t nhi = nlines - nlo;
-  struct line *lo = dest - total_lines;
-  struct line *hi = lo - nlo;
-  struct line **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
+  கட்டமைப்பு வரி *lo = dest - total_வரிகள்;
+  கட்டமைப்பு வரி *hi = lo - nlo;
+  கட்டமைப்பு வரி **parent_end = (is_lo_child ? &parent->end_lo : &parent->end_hi);
 
-  struct merge_node *node = node_pool++;
-  node->lo = node->end_lo = lo;
-  node->hi = node->end_hi = hi;
-  node->dest = parent_end;
-  node->nlo = nlo;
-  node->nhi = nhi;
-  node->parent = parent;
-  node->level = parent->level + 1;
-  node->queued = false;
-  pthread_mutex_init (&node->lock, NULL);
+  கட்டமைப்பு merge_முனை *முனை = முனை_pool++;
+  முனை->lo = முனை->end_lo = lo;
+  முனை->hi = முனை->end_hi = hi;
+  முனை->dest = parent_end;
+  முனை->nlo = nlo;
+  முனை->nhi = nhi;
+  முனை->parent = parent;
+  முனை->level = parent->level + 1;
+  முனை->queued = false;
+  pthread_mutex_init (&முனை->lock, வெற்று);
 
-  if (nthreads > 1)
+  எனில் (nthreads > 1)
     {
       size_t lo_threads = nthreads / 2;
       size_t hi_threads = nthreads - lo_threads;
-      node->lo_child = node_pool;
-      node_pool = init_node (node, node_pool, lo, lo_threads,
-                             total_lines, true);
-      node->hi_child = node_pool;
-      node_pool = init_node (node, node_pool, hi, hi_threads,
-                             total_lines, false);
+      முனை->lo_child = முனை_pool;
+      முனை_pool = init_முனை (முனை, முனை_pool, lo, lo_threads,
+                             total_வரிகள், true);
+      முனை->hi_child = முனை_pool;
+      முனை_pool = init_முனை (முனை, முனை_pool, hi, hi_threads,
+                             total_வரிகள், false);
     }
-  else
+  இல்லையெனில்
     {
-      node->lo_child = NULL;
-      node->hi_child = NULL;
+      முனை->lo_child = வெற்று;
+      முனை->hi_child = வெற்று;
     }
-  return node_pool;
+  திரும்பு முனை_pool;
 }
 
 
 /* Compare two merge nodes A and B for priority.  */
 
-static int
-compare_nodes (void const *a, void const *b)
+நிலையான முழு
+compare_nodes (வெறுமை மாறிலி *a, வெறுமை மாறிலி *b)
 {
-  struct merge_node const *nodea = a;
-  struct merge_node const *nodeb = b;
-  if (nodea->level == nodeb->level)
-      return (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
-  return nodea->level < nodeb->level;
+  கட்டமைப்பு merge_முனை மாறிலி *nodea = a;
+  கட்டமைப்பு merge_முனை மாறிலி *nodeb = b;
+  எனில் (nodea->level == nodeb->level)
+      திரும்பு (nodea->nlo + nodea->nhi) < (nodeb->nlo + nodeb->nhi);
+  திரும்பு nodea->level < nodeb->level;
 }
 
 /* Lock a merge tree NODE.  */
 
-static inline void
-lock_node (struct merge_node *node)
+நிலையான உள்வரி வெறுமை
+lock_முனை (கட்டமைப்பு merge_முனை *முனை)
 {
-  pthread_mutex_lock (&node->lock);
+  pthread_mutex_lock (&முனை->lock);
 }
 
 /* Unlock a merge tree NODE. */
 
-static inline void
-unlock_node (struct merge_node *node)
+நிலையான உள்வரி வெறுமை
+unlock_முனை (கட்டமைப்பு merge_முனை *முனை)
 {
-  pthread_mutex_unlock (&node->lock);
+  pthread_mutex_unlock (&முனை->lock);
 }
 
 /* Destroy merge QUEUE. */
 
-static void
-queue_destroy (struct merge_node_queue *queue)
+நிலையான வெறுமை
+queue_destroy (கட்டமைப்பு merge_முனை_queue *queue)
 {
   heap_free (queue->priority_queue);
   pthread_cond_destroy (&queue->cond);
@@ -3792,43 +3792,43 @@ queue_destroy (struct merge_node_queue *queue)
 /* Initialize merge QUEUE, allocating space suitable for a maximum of
    NTHREADS threads.  */
 
-static void
-queue_init (struct merge_node_queue *queue, size_t nthreads)
+நிலையான வெறுமை
+queue_init (கட்டமைப்பு merge_முனை_queue *queue, size_t nthreads)
 {
   /* Though it's highly unlikely all nodes are in the heap at the same
      time, the heap should accommodate all of them.  Counting a null
      dummy head for the heap, reserve 2 * NTHREADS nodes.  */
   queue->priority_queue = heap_alloc (compare_nodes, 2 * nthreads);
-  pthread_mutex_init (&queue->mutex, NULL);
-  pthread_cond_init (&queue->cond, NULL);
+  pthread_mutex_init (&queue->mutex, வெற்று);
+  pthread_cond_init (&queue->cond, வெற்று);
 }
 
 /* Insert NODE into QUEUE.  The caller either holds a lock on NODE, or
    does not need to lock NODE.  */
 
-static void
-queue_insert (struct merge_node_queue *queue, struct merge_node *node)
+நிலையான வெறுமை
+queue_செருகு (கட்டமைப்பு merge_முனை_queue *queue, கட்டமைப்பு merge_முனை *முனை)
 {
   pthread_mutex_lock (&queue->mutex);
-  heap_insert (queue->priority_queue, node);
-  node->queued = true;
+  heap_செருகு (queue->priority_queue, முனை);
+  முனை->queued = true;
   pthread_cond_signal (&queue->cond);
   pthread_mutex_unlock (&queue->mutex);
 }
 
 /* Pop the top node off the priority QUEUE, lock the node, return it.  */
 
-static struct merge_node *
-queue_pop (struct merge_node_queue *queue)
+நிலையான கட்டமைப்பு merge_முனை *
+queue_எடு (கட்டமைப்பு merge_முனை_queue *queue)
 {
-  struct merge_node *node;
+  கட்டமைப்பு merge_முனை *முனை;
   pthread_mutex_lock (&queue->mutex);
-  while (! (node = heap_remove_top (queue->priority_queue)))
+  போது (! (முனை = heap_remove_உச்சி (queue->priority_queue)))
     pthread_cond_wait (&queue->cond, &queue->mutex);
   pthread_mutex_unlock (&queue->mutex);
-  lock_node (node);
-  node->queued = false;
-  return node;
+  lock_முனை (முனை);
+  முனை->queued = false;
+  திரும்பு முனை;
 }
 
 /* Output LINE to TFP, unless -u is specified and the line compares
@@ -3838,17 +3838,17 @@ queue_pop (struct merge_node_queue *queue)
    This function does not save the line for comparison later, so it is
    appropriate only for internal sort.  */
 
-static void
-write_unique (struct line const *line, FILE *tfp, char const *temp_output)
+நிலையான வெறுமை
+write_unique (கட்டமைப்பு வரி மாறிலி *வரி, FILE *tfp, எழுத்து மாறிலி *temp_output)
 {
-  if (unique)
+  எனில் (unique)
     {
-      if (saved_line.text && ! compare (line, &saved_line))
-        return;
-      saved_line = *line;
+      எனில் (saved_வரி.text && ! compare (வரி, &saved_வரி))
+        திரும்பு;
+      saved_வரி = *வரி;
     }
 
-  write_line (line, tfp, temp_output);
+  write_வரி (வரி, tfp, temp_output);
 }
 
 /* Merge the lines currently available to a NODE in the binary
@@ -3858,103 +3858,103 @@ write_unique (struct line const *line, FILE *tfp, char const *temp_output)
    If merging at the top level, send output to TFP.  TEMP_OUTPUT is
    the name of TFP, or is null if TFP is standard output.  */
 
-static void
-mergelines_node (struct merge_node *restrict node, size_t total_lines,
-                 FILE *tfp, char const *temp_output)
+நிலையான வெறுமை
+mergelines_முனை (கட்டமைப்பு merge_முனை *restrict முனை, size_t total_வரிகள்,
+                 FILE *tfp, எழுத்து மாறிலி *temp_output)
 {
-  struct line *lo_orig = node->lo;
-  struct line *hi_orig = node->hi;
-  size_t to_merge = MAX_MERGE (total_lines, node->level);
+  கட்டமைப்பு வரி *lo_orig = முனை->lo;
+  கட்டமைப்பு வரி *hi_orig = முனை->hi;
+  size_t to_merge = MAX_MERGE (total_வரிகள், முனை->level);
   size_t merged_lo;
   size_t merged_hi;
 
-  if (node->level > MERGE_ROOT)
+  எனில் (முனை->level > MERGE_வேர்)
     {
       /* Merge to destination buffer. */
-      struct line *dest = *node->dest;
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
-        if (compare (node->lo - 1, node->hi - 1) <= 0)
-          *--dest = *--node->lo;
-        else
-          *--dest = *--node->hi;
+      கட்டமைப்பு வரி *dest = *முனை->dest;
+      போது (முனை->lo != முனை->end_lo && முனை->hi != முனை->end_hi && to_merge--)
+        எனில் (compare (முனை->lo - 1, முனை->hi - 1) <= 0)
+          *--dest = *--முனை->lo;
+        இல்லையெனில்
+          *--dest = *--முனை->hi;
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - முனை->lo;
+      merged_hi = hi_orig - முனை->hi;
 
-      if (node->nhi == merged_hi)
-        while (node->lo != node->end_lo && to_merge--)
-          *--dest = *--node->lo;
-      else if (node->nlo == merged_lo)
-        while (node->hi != node->end_hi && to_merge--)
-          *--dest = *--node->hi;
-      *node->dest = dest;
+      எனில் (முனை->nhi == merged_hi)
+        போது (முனை->lo != முனை->end_lo && to_merge--)
+          *--dest = *--முனை->lo;
+      இல்லையெனில் எனில் (முனை->nlo == merged_lo)
+        போது (முனை->hi != முனை->end_hi && to_merge--)
+          *--dest = *--முனை->hi;
+      *முனை->dest = dest;
     }
-  else
+  இல்லையெனில்
     {
       /* Merge directly to output. */
-      while (node->lo != node->end_lo && node->hi != node->end_hi && to_merge--)
+      போது (முனை->lo != முனை->end_lo && முனை->hi != முனை->end_hi && to_merge--)
         {
-          if (compare (node->lo - 1, node->hi - 1) <= 0)
-            write_unique (--node->lo, tfp, temp_output);
-          else
-            write_unique (--node->hi, tfp, temp_output);
+          எனில் (compare (முனை->lo - 1, முனை->hi - 1) <= 0)
+            write_unique (--முனை->lo, tfp, temp_output);
+          இல்லையெனில்
+            write_unique (--முனை->hi, tfp, temp_output);
         }
 
-      merged_lo = lo_orig - node->lo;
-      merged_hi = hi_orig - node->hi;
+      merged_lo = lo_orig - முனை->lo;
+      merged_hi = hi_orig - முனை->hi;
 
-      if (node->nhi == merged_hi)
+      எனில் (முனை->nhi == merged_hi)
         {
-          while (node->lo != node->end_lo && to_merge--)
-            write_unique (--node->lo, tfp, temp_output);
+          போது (முனை->lo != முனை->end_lo && to_merge--)
+            write_unique (--முனை->lo, tfp, temp_output);
         }
-      else if (node->nlo == merged_lo)
+      இல்லையெனில் எனில் (முனை->nlo == merged_lo)
         {
-          while (node->hi != node->end_hi && to_merge--)
-            write_unique (--node->hi, tfp, temp_output);
+          போது (முனை->hi != முனை->end_hi && to_merge--)
+            write_unique (--முனை->hi, tfp, temp_output);
         }
     }
 
   /* Update NODE. */
-  merged_lo = lo_orig - node->lo;
-  merged_hi = hi_orig - node->hi;
-  node->nlo -= merged_lo;
-  node->nhi -= merged_hi;
+  merged_lo = lo_orig - முனை->lo;
+  merged_hi = hi_orig - முனை->hi;
+  முனை->nlo -= merged_lo;
+  முனை->nhi -= merged_hi;
 }
 
 /* Into QUEUE, insert NODE if it is not already queued, and if one of
    NODE's children has available lines and the other either has
    available lines or has exhausted its lines.  */
 
-static void
-queue_check_insert (struct merge_node_queue *queue, struct merge_node *node)
+நிலையான வெறுமை
+queue_check_செருகு (கட்டமைப்பு merge_முனை_queue *queue, கட்டமைப்பு merge_முனை *முனை)
 {
-  if (! node->queued)
+  எனில் (! முனை->queued)
     {
-      bool lo_avail = (node->lo - node->end_lo) != 0;
-      bool hi_avail = (node->hi - node->end_hi) != 0;
-      if (lo_avail ? hi_avail || ! node->nhi : hi_avail && ! node->nlo)
-        queue_insert (queue, node);
+      bool lo_avail = (முனை->lo - முனை->end_lo) != 0;
+      bool hi_avail = (முனை->hi - முனை->end_hi) != 0;
+      எனில் (lo_avail ? hi_avail || ! முனை->nhi : hi_avail && ! முனை->nlo)
+        queue_செருகு (queue, முனை);
     }
 }
 
 /* Into QUEUE, insert NODE's parent if the parent can now be worked on.  */
 
-static void
-queue_check_insert_parent (struct merge_node_queue *queue,
-                           struct merge_node *node)
+நிலையான வெறுமை
+queue_check_செருகு_parent (கட்டமைப்பு merge_முனை_queue *queue,
+                           கட்டமைப்பு merge_முனை *முனை)
 {
-  if (node->level > MERGE_ROOT)
+  எனில் (முனை->level > MERGE_வேர்)
     {
-      lock_node (node->parent);
-      queue_check_insert (queue, node->parent);
-      unlock_node (node->parent);
+      lock_முனை (முனை->parent);
+      queue_check_செருகு (queue, முனை->parent);
+      unlock_முனை (முனை->parent);
     }
-  else if (node->nlo + node->nhi == 0)
+  இல்லையெனில் எனில் (முனை->nlo + முனை->nhi == 0)
     {
       /* If the MERGE_ROOT NODE has finished merging, insert the
          MERGE_END node.  */
-      queue_insert (queue, node->parent);
+      queue_செருகு (queue, முனை->parent);
     }
 }
 
@@ -3964,72 +3964,72 @@ queue_check_insert_parent (struct merge_node_queue *queue,
    level, send output to TFP.  TEMP_OUTPUT is the name of TFP, or is
    null if TFP is standard output.  */
 
-static void
-merge_loop (struct merge_node_queue *queue,
-            size_t total_lines, FILE *tfp, char const *temp_output)
+நிலையான வெறுமை
+merge_loop (கட்டமைப்பு merge_முனை_queue *queue,
+            size_t total_வரிகள், FILE *tfp, எழுத்து மாறிலி *temp_output)
 {
-  while (true)
+  போது (true)
     {
-      struct merge_node *node = queue_pop (queue);
+      கட்டமைப்பு merge_முனை *முனை = queue_எடு (queue);
 
-      if (node->level == MERGE_END)
+      எனில் (முனை->level == MERGE_END)
         {
-          unlock_node (node);
+          unlock_முனை (முனை);
           /* Reinsert so other threads can pop it. */
-          queue_insert (queue, node);
-          break;
+          queue_செருகு (queue, முனை);
+          நிறுத்து;
         }
-      mergelines_node (node, total_lines, tfp, temp_output);
-      queue_check_insert (queue, node);
-      queue_check_insert_parent (queue, node);
+      mergelines_முனை (முனை, total_வரிகள், tfp, temp_output);
+      queue_check_செருகு (queue, முனை);
+      queue_check_செருகு_parent (queue, முனை);
 
-      unlock_node (node);
+      unlock_முனை (முனை);
     }
 }
 
 
-static void sortlines (struct line *restrict, size_t, size_t,
-                       struct merge_node *, struct merge_node_queue *,
-                       FILE *, char const *);
+நிலையான வெறுமை sortlines (கட்டமைப்பு வரி *restrict, size_t, size_t,
+                       கட்டமைப்பு merge_முனை *, கட்டமைப்பு merge_முனை_queue *,
+                       FILE *, எழுத்து மாறிலி *);
 
 /* Thread arguments for sortlines_thread. */
 
-struct thread_args
+கட்டமைப்பு thread_args
 {
   /* Source, i.e., the array of lines to sort.  This points just past
      the end of the array.  */
-  struct line *lines;
+  கட்டமைப்பு வரி *வரிகள்;
 
   /* Number of threads to use.  If 0 or 1, sort single-threaded.  */
   size_t nthreads;
 
   /* Number of lines in LINES and DEST.  */
-  size_t const total_lines;
+  size_t மாறிலி total_வரிகள்;
 
   /* Merge node. Lines from this node and this node's sibling will merged
      to this node's parent. */
-  struct merge_node *const node;
+  கட்டமைப்பு merge_முனை *மாறிலி முனை;
 
   /* The priority queue controlling available work for the entire
      internal sort.  */
-  struct merge_node_queue *const queue;
+  கட்டமைப்பு merge_முனை_queue *மாறிலி queue;
 
   /* If at the top level, the file to output to, and the file's name.
      If the file is standard output, the file's name is null.  */
   FILE *tfp;
-  char const *output_temp;
+  எழுத்து மாறிலி *output_temp;
 };
 
 /* Like sortlines, except with a signature acceptable to pthread_create.  */
 
-static void *
-sortlines_thread (void *data)
+நிலையான வெறுமை *
+sortlines_thread (வெறுமை *data)
 {
-  struct thread_args const *args = data;
-  sortlines (args->lines, args->nthreads, args->total_lines,
-             args->node, args->queue, args->tfp,
+  கட்டமைப்பு thread_args மாறிலி *args = data;
+  sortlines (args->வரிகள், args->nthreads, args->total_வரிகள்,
+             args->முனை, args->queue, args->tfp,
              args->output_temp);
-  return NULL;
+  திரும்பு வெற்று;
 }
 
 /* Sort lines, possibly in parallel.  The arguments are as in struct
@@ -4056,47 +4056,47 @@ sortlines_thread (void *data)
    merge. This continues until all lines at all nodes of the merge tree
    have been merged. */
 
-static void
-sortlines (struct line *restrict lines, size_t nthreads,
-           size_t total_lines, struct merge_node *node,
-           struct merge_node_queue *queue, FILE *tfp, char const *temp_output)
+நிலையான வெறுமை
+sortlines (கட்டமைப்பு வரி *restrict வரிகள், size_t nthreads,
+           size_t total_வரிகள், கட்டமைப்பு merge_முனை *முனை,
+           கட்டமைப்பு merge_முனை_queue *queue, FILE *tfp, எழுத்து மாறிலி *temp_output)
 {
-  size_t nlines = node->nlo + node->nhi;
+  size_t nlines = முனை->nlo + முனை->nhi;
 
   /* Calculate thread arguments. */
   size_t lo_threads = nthreads / 2;
   size_t hi_threads = nthreads - lo_threads;
   pthread_t thread;
-  struct thread_args args = {lines, lo_threads, total_lines,
-                             node->lo_child, queue, tfp, temp_output};
+  கட்டமைப்பு thread_args args = {வரிகள், lo_threads, total_வரிகள்,
+                             முனை->lo_child, queue, tfp, temp_output};
 
-  if (nthreads > 1 && SUBTHREAD_LINES_HEURISTIC <= nlines
-      && pthread_create (&thread, NULL, sortlines_thread, &args) == 0)
+  எனில் (nthreads > 1 && SUBTHREAD_வரிகள்_HEURISTIC <= nlines
+      && pthread_create (&thread, வெற்று, sortlines_thread, &args) == 0)
     {
-      sortlines (lines - node->nlo, hi_threads, total_lines,
-                 node->hi_child, queue, tfp, temp_output);
-      pthread_join (thread, NULL);
+      sortlines (வரிகள் - முனை->nlo, hi_threads, total_வரிகள்,
+                 முனை->hi_child, queue, tfp, temp_output);
+      pthread_join (thread, வெற்று);
     }
-  else
+  இல்லையெனில்
     {
       /* Nthreads = 1, this is a leaf NODE, or pthread_create failed.
          Sort with 1 thread. */
-      size_t nlo = node->nlo;
-      size_t nhi = node->nhi;
-      struct line *temp = lines - total_lines;
-      if (1 < nhi)
-        sequential_sort (lines - nlo, nhi, temp - nlo / 2, false);
-      if (1 < nlo)
-        sequential_sort (lines, nlo, temp, false);
+      size_t nlo = முனை->nlo;
+      size_t nhi = முனை->nhi;
+      கட்டமைப்பு வரி *temp = வரிகள் - total_வரிகள்;
+      எனில் (1 < nhi)
+        sequential_sort (வரிகள் - nlo, nhi, temp - nlo / 2, false);
+      எனில் (1 < nlo)
+        sequential_sort (வரிகள், nlo, temp, false);
 
       /* Update merge NODE. No need to lock yet. */
-      node->lo = lines;
-      node->hi = lines - nlo;
-      node->end_lo = lines - nlo;
-      node->end_hi = lines - nlo - nhi;
+      முனை->lo = வரிகள்;
+      முனை->hi = வரிகள் - nlo;
+      முனை->end_lo = வரிகள் - nlo;
+      முனை->end_hi = வரிகள் - nlo - nhi;
 
-      queue_insert (queue, node);
-      merge_loop (queue, total_lines, tfp, temp_output);
+      queue_செருகு (queue, முனை);
+      merge_loop (queue, total_வரிகள், tfp, temp_output);
     }
 }
 
@@ -4117,25 +4117,25 @@ sortlines (struct line *restrict lines, size_t nthreads,
    Catching these obscure cases would slow down performance in
    common cases.  */
 
-static void
-avoid_trashing_input (struct sortfile *files, size_t ntemps,
-                      size_t nfiles, char const *outfile)
+நிலையான வெறுமை
+avoid_trashing_உள்ளீடு (கட்டமைப்பு sortfile *files, size_t ntemps,
+                      size_t nfiles, எழுத்து மாறிலி *outfile)
 {
-  struct tempnode *tempcopy = NULL;
+  கட்டமைப்பு tempnode *tempcopy = வெற்று;
 
-  for (size_t i = ntemps; i < nfiles; i++)
+  க்கு (size_t i = ntemps; i < nfiles; i++)
     {
       bool is_stdin = streq (files[i].name, "-");
       bool same;
-      struct stat instat;
+      கட்டமைப்பு stat instat;
 
-      if (outfile && streq (outfile, files[i].name) && !is_stdin)
+      எனில் (outfile && streq (outfile, files[i].name) && !is_stdin)
         same = true;
-      else
+      இல்லையெனில்
         {
-          struct stat *outst = get_outstatus ();
-          if (!outst)
-            break;
+          கட்டமைப்பு stat *outst = get_outstatus ();
+          எனில் (!outst)
+            நிறுத்து;
 
           same = (((is_stdin
                     ? fstat (STDIN_FILENO, &instat)
@@ -4144,9 +4144,9 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
                   && psame_inode (&instat, outst));
         }
 
-      if (same)
+      எனில் (same)
         {
-          if (! tempcopy)
+          எனில் (! tempcopy)
             {
               FILE *tftp;
               tempcopy = create_temp (&tftp);
@@ -4168,15 +4168,15 @@ avoid_trashing_input (struct sortfile *files, size_t ntemps,
    Catching these obscure cases could slow down performance in
    common cases.  */
 
-static void
-check_inputs (char *const *files, size_t nfiles)
+நிலையான வெறுமை
+check_inputs (எழுத்து *மாறிலி *files, size_t nfiles)
 {
-  for (size_t i = 0; i < nfiles; i++)
+  க்கு (size_t i = 0; i < nfiles; i++)
     {
-      if (streq (files[i], "-"))
-        continue;
+      எனில் (streq (files[i], "-"))
+        தொடர்;
 
-      if (euidaccess (files[i], R_OK) != 0)
+      எனில் (euidaccess (files[i], R_OK) != 0)
         sort_die (_("cannot read"), files[i]);
     }
 }
@@ -4185,14 +4185,14 @@ check_inputs (char *const *files, size_t nfiles)
    and point stdout to it.  Do not truncate the file.
    Exit with a diagnostic on failure.  */
 
-static void
-check_output (char const *outfile)
+நிலையான வெறுமை
+check_output (எழுத்து மாறிலி *outfile)
 {
-  if (outfile)
+  எனில் (outfile)
     {
-      int oflags = O_WRONLY | O_BINARY | O_CLOEXEC | O_CREAT;
-      int outfd = open (outfile, oflags, MODE_RW_UGO);
-      if (outfd < 0)
+      முழு oflags = O_WRONLY | O_இருமம் | O_CLOEXEC | O_CREAT;
+      முழு outfd = open (outfile, oflags, MODE_RW_UGO);
+      எனில் (outfd < 0)
         sort_die (_("open failed"), outfile);
       move_fd (outfd, STDOUT_FILENO);
     }
@@ -4203,11 +4203,11 @@ check_output (char const *outfile)
    NFILES is the total number of files.  Put the output in
    OUTPUT_FILE; a null OUTPUT_FILE stands for standard output.  */
 
-static void
-merge (struct sortfile *files, size_t ntemps, size_t nfiles,
-       char const *output_file)
+நிலையான வெறுமை
+merge (கட்டமைப்பு sortfile *files, size_t ntemps, size_t nfiles,
+       எழுத்து மாறிலி *output_file)
 {
-  while (nmerge < nfiles)
+  போது (nmerge < nfiles)
     {
       /* Number of input files processed so far.  */
       size_t in;
@@ -4225,68 +4225,68 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       /* Do as many NMERGE-size merges as possible. In the case that
          nmerge is bogus, increment by the maximum number of file
          descriptors allowed.  */
-      for (out = in = 0; nmerge <= nfiles - in; out++)
+      க்கு (out = in = 0; nmerge <= nfiles - in; out++)
         {
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
+          கட்டமைப்பு tempnode *temp = create_temp (&tfp);
+          size_t இலக்கம்_merged = mergefiles (&files[in], MIN (ntemps, nmerge),
                                           nmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, இலக்கம்_merged);
           files[out].name = temp->name;
           files[out].temp = temp;
-          in += num_merged;
+          in += இலக்கம்_merged;
         }
 
       remainder = nfiles - in;
       cheap_slots = nmerge - out % nmerge;
 
-      if (cheap_slots < remainder)
+      எனில் (cheap_slots < remainder)
         {
           /* So many files remain that they can't all be put into the last
              NMERGE-sized output window.  Do one more merge.  Merge as few
              files as possible, to avoid needless I/O.  */
           size_t nshortmerge = remainder - cheap_slots + 1;
           FILE *tfp;
-          struct tempnode *temp = create_temp (&tfp);
-          size_t num_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
+          கட்டமைப்பு tempnode *temp = create_temp (&tfp);
+          size_t இலக்கம்_merged = mergefiles (&files[in], MIN (ntemps, nshortmerge),
                                           nshortmerge, tfp, temp->name);
-          ntemps -= MIN (ntemps, num_merged);
+          ntemps -= MIN (ntemps, இலக்கம்_merged);
           files[out].name = temp->name;
           files[out++].temp = temp;
-          in += num_merged;
+          in += இலக்கம்_merged;
         }
 
       /* Put the remaining input files into the last NMERGE-sized output
          window, so they will be merged in the next pass.  */
-      memmove (&files[out], &files[in], (nfiles - in) * sizeof *files);
+      memmove (&files[out], &files[in], (nfiles - in) * அளவு *files);
       ntemps += out;
       nfiles -= in - out;
     }
 
-  avoid_trashing_input (files, ntemps, nfiles, output_file);
+  avoid_trashing_உள்ளீடு (files, ntemps, nfiles, output_file);
 
   /* We aren't guaranteed that this final mergefiles will work, therefore we
      try to merge into the output, and then merge as much as we can into a
      temp file if we can't. Repeat.  */
 
-  while (true)
+  போது (true)
     {
       /* Merge directly into the output file if possible.  */
       FILE **fps;
-      size_t nopened = open_input_files (files, nfiles, &fps);
+      size_t nopened = open_உள்ளீடு_files (files, nfiles, &fps);
 
-      if (nopened == nfiles)
+      எனில் (nopened == nfiles)
         {
           FILE *ofp = stream_open (output_file, "w");
-          if (ofp)
+          எனில் (ofp)
             {
               mergefps (files, ntemps, nfiles, ofp, output_file, fps);
-              break;
+              நிறுத்து;
             }
-          if (errno != EMFILE || nopened <= 2)
+          எனில் (errno != EMFILE || nopened <= 2)
             sort_die (_("open failed"), output_file);
         }
-      else if (nopened <= 2)
+      இல்லையெனில் எனில் (nopened <= 2)
         sort_die (_("open failed"), files[nopened].name);
 
       /* We ran out of file descriptors.  Close one of the input
@@ -4295,14 +4295,14 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
          (e.g., some other process could open a file between the time
          we closed and tried to create).  */
       FILE *tfp;
-      struct tempnode *temp;
-      do
+      கட்டமைப்பு tempnode *temp;
+      செய்
         {
           nopened--;
           xfclose (fps[nopened], files[nopened].name);
           temp = maybe_create_temp (&tfp, ! (nopened <= 2));
         }
-      while (!temp);
+      போது (!temp);
 
       /* Merge into the newly allocated temporary.  */
       mergefps (&files[0], MIN (ntemps, nopened), nopened, tfp, temp->name,
@@ -4311,7 +4311,7 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
       files[0].name = temp->name;
       files[0].temp = temp;
 
-      memmove (&files[1], &files[nopened], (nfiles - nopened) * sizeof *files);
+      memmove (&files[1], &files[nopened], (nfiles - nopened) * அளவு *files);
       ntemps++;
       nfiles -= nopened - 1;
     }
@@ -4319,12 +4319,12 @@ merge (struct sortfile *files, size_t ntemps, size_t nfiles,
 
 /* Sort NFILES FILES onto OUTPUT_FILE.  Use at most NTHREADS threads.  */
 
-static void
-sort (char *const *files, size_t nfiles, char const *output_file,
+நிலையான வெறுமை
+sort (எழுத்து *மாறிலி *files, size_t nfiles, எழுத்து மாறிலி *output_file,
       size_t nthreads)
 {
-  struct buffer buf;
-  struct sort_buffer_policy policy;
+  கட்டமைப்பு buffer buf;
+  கட்டமைப்பு sort_buffer_policy policy;
   size_t ntemps = 0;
   bool output_file_created = false;
 
@@ -4332,117 +4332,117 @@ sort (char *const *files, size_t nfiles, char const *output_file,
   policy.initial = policy.limit = 0;
   policy.growth_failed = false;
 
-  while (nfiles)
+  போது (nfiles)
     {
-      char const *temp_output;
-      char const *file = *files;
+      எழுத்து மாறிலி *temp_output;
+      எழுத்து மாறிலி *file = *files;
       FILE *fp = xfopen (file, "r");
       FILE *tfp;
 
-      size_t bytes_per_line;
-      if (nthreads > 1)
+      size_t bytes_per_வரி;
+      எனில் (nthreads > 1)
         {
           /* Get log P. */
           size_t tmp = 1;
           size_t mult = 1;
-          while (tmp < nthreads)
+          போது (tmp < nthreads)
             {
               tmp *= 2;
               mult++;
             }
-          bytes_per_line = (mult * sizeof (struct line));
+          bytes_per_வரி = (mult * அளவு (கட்டமைப்பு வரி));
         }
-      else
-        bytes_per_line = sizeof (struct line) * 3 / 2;
+      இல்லையெனில்
+        bytes_per_வரி = அளவு (கட்டமைப்பு வரி) * 3 / 2;
 
-      if (! buf.alloc)
+      எனில் (! buf.alloc)
         {
-          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_line,
+          sort_buffer_policy (&fp, 1, files, nfiles, bytes_per_வரி,
                               &policy);
-          initbuf (&buf, bytes_per_line, policy.initial);
+          initbuf (&buf, bytes_per_வரி, policy.initial);
         }
       buf.eof = false;
       files++;
       nfiles--;
 
-      while (fillbuf (&buf, fp, file, &policy))
+      போது (fillbuf (&buf, fp, file, &policy))
         {
-          struct line *line;
+          கட்டமைப்பு வரி *வரி;
 
-          if (buf.eof && nfiles
-              && (bytes_per_line + 1
-                  < (buf.alloc - buf.used - bytes_per_line * buf.nlines)))
+          எனில் (buf.eof && nfiles
+              && (bytes_per_வரி + 1
+                  < (buf.alloc - buf.used - bytes_per_வரி * buf.nlines)))
             {
               /* End of file, but there is more input and buffer room.
                  Concatenate the next input file; this is faster in
                  the usual case.  */
-              buf.left = buf.used;
-              break;
+              buf.இடது = buf.used;
+              நிறுத்து;
             }
 
-          saved_line.text = NULL;
-          line = buffer_linelim (&buf);
-          if (buf.eof && !nfiles && !ntemps && !buf.left)
+          saved_வரி.text = வெற்று;
+          வரி = buffer_linelim (&buf);
+          எனில் (buf.eof && !nfiles && !ntemps && !buf.இடது)
             {
               xfclose (fp, file);
               tfp = xfopen (output_file, "w");
               temp_output = output_file;
               output_file_created = true;
             }
-          else
+          இல்லையெனில்
             {
               ++ntemps;
               temp_output = create_temp (&tfp)->name;
             }
-          if (1 < buf.nlines)
+          எனில் (1 < buf.nlines)
             {
-              if (nthreads > 1)
+              எனில் (nthreads > 1)
                 {
-                  struct merge_node_queue queue;
+                  கட்டமைப்பு merge_முனை_queue queue;
                   queue_init (&queue, nthreads);
-                  struct merge_node *merge_tree =
-                    merge_tree_init (nthreads, buf.nlines, line);
+                  கட்டமைப்பு merge_முனை *merge_மரம் =
+                    merge_மரம்_init (nthreads, buf.nlines, வரி);
 
-                  sortlines (line, nthreads, buf.nlines, merge_tree + 1,
+                  sortlines (வரி, nthreads, buf.nlines, merge_மரம் + 1,
                              &queue, tfp, temp_output);
 
-                  merge_tree_destroy (nthreads, merge_tree);
+                  merge_மரம்_destroy (nthreads, merge_மரம்);
                   queue_destroy (&queue);
                 }
-              else
+              இல்லையெனில்
                 {
-                  sequential_sort (line, buf.nlines,
-                                   line - buf.nlines, false);
-                  for (size_t i = 0; i < buf.nlines; i++)
-                    write_unique (line - i - 1, tfp, temp_output);
+                  sequential_sort (வரி, buf.nlines,
+                                   வரி - buf.nlines, false);
+                  க்கு (size_t i = 0; i < buf.nlines; i++)
+                    write_unique (வரி - i - 1, tfp, temp_output);
                 }
             }
-          else
-            write_unique (line - 1, tfp, temp_output);
+          இல்லையெனில்
+            write_unique (வரி - 1, tfp, temp_output);
 
           xfclose (tfp, temp_output);
 
-          if (output_file_created)
-            goto finish;
+          எனில் (output_file_created)
+            செல் finish;
         }
       xfclose (fp, file);
     }
 
  finish:
-  free (buf.buf);
+  விடுவி (buf.buf);
 
-  if (! output_file_created)
+  எனில் (! output_file_created)
     {
-      struct tempnode *node = temphead;
-      struct sortfile *tempfiles = xnmalloc (ntemps, sizeof *tempfiles);
-      for (size_t i = 0; node; i++)
+      கட்டமைப்பு tempnode *முனை = temphead;
+      கட்டமைப்பு sortfile *tempfiles = xnmalloc (ntemps, அளவு *tempfiles);
+      க்கு (size_t i = 0; முனை; i++)
         {
-          tempfiles[i].name = node->name;
-          tempfiles[i].temp = node;
-          node = node->next;
+          tempfiles[i].name = முனை->name;
+          tempfiles[i].temp = முனை;
+          முனை = முனை->next;
         }
       merge (tempfiles, ntemps, ntemps, output_file);
-      free (tempfiles);
+      விடுவி (tempfiles);
     }
 
   reap_all ();
@@ -4450,22 +4450,22 @@ sort (char *const *files, size_t nfiles, char const *output_file,
 
 /* Insert a malloc'd copy of key KEY_ARG at the end of the key list.  */
 
-static void
-insertkey (struct keyfield *key_arg)
+நிலையான வெறுமை
+insertkey (கட்டமைப்பு keyfield *சாவி_arg)
 {
-  struct keyfield **p;
-  struct keyfield *key = xmemdup (key_arg, sizeof *key);
+  கட்டமைப்பு keyfield **p;
+  கட்டமைப்பு keyfield *சாவி = xmemdup (சாவி_arg, அளவு *சாவி);
 
-  for (p = &keylist; *p; p = &(*p)->next)
-    continue;
-  *p = key;
-  key->next = NULL;
+  க்கு (p = &keylist; *p; p = &(*p)->next)
+    தொடர்;
+  *p = சாவி;
+  சாவி->next = வெற்று;
 }
 
 /* Report a bad field specification SPEC, with extra info MSGID.  */
 
-static void
-badfieldspec (char const *spec, char const *msgid)
+நிலையான வெறுமை
+badfieldspec (எழுத்து மாறிலி *spec, எழுத்து மாறிலி *msgid)
 {
   error (SORT_FAILURE, 0, _("%s: invalid field specification %s"),
          _(msgid), quote (spec));
@@ -4473,26 +4473,26 @@ badfieldspec (char const *spec, char const *msgid)
 
 /* Report incompatible options.  */
 
-static void
-incompatible_options (char const *opts)
+நிலையான வெறுமை
+incompatible_options (எழுத்து மாறிலி *opts)
 {
   error (SORT_FAILURE, 0, _("options '-%s' are incompatible"), (opts));
 }
 
 /* Check compatibility of ordering options.  */
 
-static void
-check_ordering_compatibility (void)
+நிலையான வெறுமை
+check_ordering_compatibility (வெறுமை)
 {
-  for (struct keyfield *key = keylist; key; key = key->next)
-    if (1 < (key->numeric + key->general_numeric + key->human_numeric
-             + key->month + (key->version | key->random | !!key->ignore)))
+  க்கு (கட்டமைப்பு keyfield *சாவி = keylist; சாவி; சாவி = சாவி->next)
+    எனில் (1 < (சாவி->numeric + சாவி->general_numeric + சாவி->human_numeric
+             + சாவி->month + (சாவி->version | சாவி->random | !!சாவி->ignore)))
       {
         /* The following is too big, but guaranteed to be "big enough".  */
-        char opts[sizeof short_options];
+        எழுத்து opts[அளவு short_options];
         /* Clear flags we're not interested in.  */
-        key->skipsblanks = key->skipeblanks = key->reverse = false;
-        key_to_opts (key, opts);
+        சாவி->skipsblanks = சாவி->skipeblanks = சாவி->reverse = false;
+        சாவி_to_opts (சாவி, opts);
         incompatible_options (opts);
       }
 }
@@ -4503,33 +4503,33 @@ check_ordering_compatibility (void)
    substitute SIZE_MAX.  If MSGID is null, return NULL after
    failure; otherwise, report MSGID and exit on failure.  */
 
-static char const *
-parse_field_count (char const *string, size_t *val, char const *msgid)
+நிலையான எழுத்து மாறிலி *
+parse_field_மொத்தம் (எழுத்து மாறிலி *string, size_t *val, எழுத்து மாறிலி *msgid)
 {
-  char *suffix;
+  எழுத்து *suffix;
   uintmax_t n;
 
-  switch (xstrtoumax (string, &suffix, 10, &n, ""))
+  தேர்வு (xstrtoumax (string, &suffix, 10, &n, ""))
     {
-    case LONGINT_OK:
-    case LONGINT_INVALID_SUFFIX_CHAR:
+    நிலை LONGINT_OK:
+    நிலை LONGINT_INVALID_SUFFIX_CHAR:
       *val = n;
-      if (*val == n)
-        break;
+      எனில் (*val == n)
+        நிறுத்து;
       FALLTHROUGH;
-    case LONGINT_OVERFLOW:
-    case LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
+    நிலை LONGINT_OVERFLOW:
+    நிலை LONGINT_OVERFLOW | LONGINT_INVALID_SUFFIX_CHAR:
       *val = SIZE_MAX;
-      break;
+      நிறுத்து;
 
-    case LONGINT_INVALID:
-      if (msgid)
+    நிலை LONGINT_INVALID:
+      எனில் (msgid)
         error (SORT_FAILURE, 0, _("%s: invalid count at start of %s"),
                _(msgid), quote (string));
-      return NULL;
+      திரும்பு வெற்று;
     }
 
-  return suffix;
+  திரும்பு suffix;
 }
 
 /* Set the ordering options for KEY specified in S.
@@ -4537,92 +4537,92 @@ parse_field_count (char const *string, size_t *val, char const *msgid)
    is not a valid ordering option.
    BLANKTYPE is the kind of blanks that 'b' should skip. */
 
-static char *
-set_ordering (char const *s, struct keyfield *key, enum blanktype blanktype)
+நிலையான எழுத்து *
+set_ordering (எழுத்து மாறிலி *s, கட்டமைப்பு keyfield *சாவி, எண்ணிக்கை blanktype blanktype)
 {
-  while (*s)
+  போது (*s)
     {
-      switch (*s)
+      தேர்வு (*s)
         {
-        case 'b':
-          if (blanktype == bl_start || blanktype == bl_both)
-            key->skipsblanks = true;
-          if (blanktype == bl_end || blanktype == bl_both)
-            key->skipeblanks = true;
-          break;
-        case 'd':
-          key->ignore = nondictionary;
-          break;
-        case 'f':
-          key->translate = fold_toupper;
-          break;
-        case 'g':
-          key->general_numeric = true;
-          break;
-        case 'h':
-          key->human_numeric = true;
-          break;
-        case 'i':
+        நிலை 'b':
+          எனில் (blanktype == bl_start || blanktype == bl_both)
+            சாவி->skipsblanks = true;
+          எனில் (blanktype == bl_end || blanktype == bl_both)
+            சாவி->skipeblanks = true;
+          நிறுத்து;
+        நிலை 'd':
+          சாவி->ignore = nondictionary;
+          நிறுத்து;
+        நிலை 'f':
+          சாவி->translate = fold_toupper;
+          நிறுத்து;
+        நிலை 'g':
+          சாவி->general_numeric = true;
+          நிறுத்து;
+        நிலை 'h':
+          சாவி->human_numeric = true;
+          நிறுத்து;
+        நிலை 'i':
           /* Option order should not matter, so don't let -i override
              -d.  -d implies -i, but -i does not imply -d.  */
-          if (! key->ignore)
-            key->ignore = nonprinting;
-          break;
-        case 'M':
-          key->month = true;
-          break;
-        case 'n':
-          key->numeric = true;
-          break;
-        case 'R':
-          key->random = true;
-          break;
-        case 'r':
-          key->reverse = true;
-          break;
-        case 'V':
-          key->version = true;
-          break;
-        default:
-          return (char *) s;
+          எனில் (! சாவி->ignore)
+            சாவி->ignore = nonprinting;
+          நிறுத்து;
+        நிலை 'M':
+          சாவி->month = true;
+          நிறுத்து;
+        நிலை 'n':
+          சாவி->numeric = true;
+          நிறுத்து;
+        நிலை 'R':
+          சாவி->random = true;
+          நிறுத்து;
+        நிலை 'r':
+          சாவி->reverse = true;
+          நிறுத்து;
+        நிலை 'V':
+          சாவி->version = true;
+          நிறுத்து;
+        இயல்பு:
+          திரும்பு (எழுத்து *) s;
         }
       ++s;
     }
-  return (char *) s;
+  திரும்பு (எழுத்து *) s;
 }
 
 /* Initialize KEY.  */
 
-static struct keyfield *
-key_init (struct keyfield *key)
+நிலையான கட்டமைப்பு keyfield *
+சாவி_init (கட்டமைப்பு keyfield *சாவி)
 {
-  memset (key, 0, sizeof *key);
-  key->eword = SIZE_MAX;
-  return key;
+  memset (சாவி, 0, அளவு *சாவி);
+  சாவி->eword = SIZE_MAX;
+  திரும்பு சாவி;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  struct keyfield *key;
-  struct keyfield key_buf;
-  struct keyfield gkey;
+  கட்டமைப்பு keyfield *சாவி;
+  கட்டமைப்பு keyfield சாவி_buf;
+  கட்டமைப்பு keyfield gkey;
   bool gkey_only = false;
-  char const *s;
-  int c = 0;
-  char checkonly = 0;
+  எழுத்து மாறிலி *s;
+  முழு c = 0;
+  எழுத்து checkonly = 0;
   bool mergeonly = false;
-  char *random_source = NULL;
+  எழுத்து *random_source = வெற்று;
   bool need_random = false;
   size_t nthreads = 0;
   size_t nfiles = 0;
-  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != NULL);
-  int posix_ver = posix2_version ();
+  bool posixly_correct = (getenv ("POSIXLY_CORRECT") != வெற்று);
+  முழு posix_ver = posix2_version ();
   bool traditional_usage = ! (200112 <= posix_ver && posix_ver < 200809);
-  char **files;
-  char *files_from = NULL;
-  struct Tokens tok;
-  char const *outfile = NULL;
+  எழுத்து **files;
+  எழுத்து *files_from = வெற்று;
+  கட்டமைப்பு Tokens tok;
+  எழுத்து மாறிலி *outfile = வெற்று;
   bool locale_ok;
 
   initialize_main (&argc, &argv);
@@ -4634,43 +4634,43 @@ main (int argc, char **argv)
   initialize_exit_failure (SORT_FAILURE);
 
   hard_LC_COLLATE = hard_locale (LC_COLLATE);
-#if HAVE_NL_LANGINFO
+#எனில் HAVE_NL_LANGINFO
   hard_LC_TIME = hard_locale (LC_TIME);
 #endif
 
   /* Get locale's representation of the decimal point.  */
   {
-    struct lconv const *locale = localeconv ();
+    கட்டமைப்பு lconv மாறிலி *locale = localeconv ();
 
     /* If the locale doesn't define a decimal point, or if the decimal
        point is multibyte, use the C locale's decimal point.  FIXME:
        add support for multibyte decimal points.  */
     decimal_point = locale->decimal_point[0];
-    if (! decimal_point || locale->decimal_point[1])
+    எனில் (! decimal_point || locale->decimal_point[1])
       decimal_point = '.';
 
     /* FIXME: add support for multibyte thousands separators.  */
     thousands_sep = locale->thousands_sep[0];
-    if (thousands_sep && locale->thousands_sep[1])
+    எனில் (thousands_sep && locale->thousands_sep[1])
       thousands_sep_ignored = true;
-    if (! thousands_sep || locale->thousands_sep[1])
+    எனில் (! thousands_sep || locale->thousands_sep[1])
       thousands_sep = NON_CHAR;
   }
 
   inittables ();
 
   {
-    enum { nsigs = countof (term_sig) };
+    எண்ணிக்கை { nsigs = countof (term_sig) };
 
-    struct sigaction act;
+    கட்டமைப்பு sigaction act;
 
     sigemptyset (&caught_signals);
-    for (size_t i = 0; i < nsigs; i++)
+    க்கு (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        sigaction (term_sig[i], NULL, &act);
-        if (act.sa_handler != SIG_IGN)
+        எனில் (term_sig[i] == SIGPIPE)
+          தொடர்;  /* Handled below.  */
+        sigaction (term_sig[i], வெற்று, &act);
+        எனில் (act.sa_handler != SIG_IGN)
           sigaddset (&caught_signals, term_sig[i]);
       }
 
@@ -4678,33 +4678,33 @@ main (int argc, char **argv)
     act.sa_mask = caught_signals;
     act.sa_flags = 0;
 
-    for (size_t i = 0; i < nsigs; i++)
+    க்கு (size_t i = 0; i < nsigs; i++)
       {
-        if (term_sig[i] == SIGPIPE)
-          continue;  /* Handled below.  */
-        if (sigismember (&caught_signals, term_sig[i]))
-          sigaction (term_sig[i], &act, NULL);
+        எனில் (term_sig[i] == SIGPIPE)
+          தொடர்;  /* Handled below.  */
+        எனில் (sigismember (&caught_signals, term_sig[i]))
+          sigaction (term_sig[i], &act, வெற்று);
       }
   }
-  signal (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
+  சமிக்ஞை (SIGCHLD, SIG_DFL); /* Don't inherit CHLD handling from parent.  */
 
   /* The signal mask is known, so it is safe to invoke exit_cleanup.  */
   atexit (exit_cleanup);
 
-  key_init (&gkey);
+  சாவி_init (&gkey);
   gkey.sword = SIZE_MAX;
 
-  files = xnmalloc (argc, sizeof *files);
+  files = xnmalloc (argc, அளவு *files);
 
-  while (true)
+  போது (true)
     {
       /* Parse an operand as a file after "--" was seen; or if
          pedantic and a file was seen, unless the POSIX version
          is not 1003.1-2001 and -c was not seen and the operand is
          "-o FILE" or "-oFILE".  */
-      int oi = -1;
+      முழு oi = -1;
 
-      if (c == -1
+      எனில் (c == -1
           || (posixly_correct && nfiles != 0
               && ! (traditional_usage
                     && ! checkonly
@@ -4715,42 +4715,42 @@ main (int argc, char **argv)
                                 long_options, &oi))
               == -1))
         {
-          if (argc <= optind)
-            break;
+          எனில் (argc <= optind)
+            நிறுத்து;
           files[nfiles++] = argv[optind++];
         }
-      else switch (c)
+      இல்லையெனில் தேர்வு (c)
         {
-        case 1:
-          key = NULL;
-          if (optarg[0] == '+')
+        நிலை 1:
+          சாவி = வெற்று;
+          எனில் (optarg[0] == '+')
             {
               bool minus_pos_usage = (optind != argc && argv[optind][0] == '-'
                                       && c_isdigit (argv[optind][1]));
               traditional_usage |= minus_pos_usage && !posixly_correct;
-              if (traditional_usage)
+              எனில் (traditional_usage)
                 {
                   /* Treat +POS1 [-POS2] as a key if possible; but silently
                      treat an operand as a file if it is not a valid +POS1.  */
-                  key = key_init (&key_buf);
-                  s = parse_field_count (optarg + 1, &key->sword, NULL);
-                  if (s && *s == '.')
-                    s = parse_field_count (s + 1, &key->schar, NULL);
-                  if (! (key->sword || key->schar))
-                    key->sword = SIZE_MAX;
-                  if (! s || *set_ordering (s, key, bl_start))
-                    key = NULL;
-                  else
+                  சாவி = சாவி_init (&சாவி_buf);
+                  s = parse_field_மொத்தம் (optarg + 1, &சாவி->sword, வெற்று);
+                  எனில் (s && *s == '.')
+                    s = parse_field_மொத்தம் (s + 1, &சாவி->schar, வெற்று);
+                  எனில் (! (சாவி->sword || சாவி->schar))
+                    சாவி->sword = SIZE_MAX;
+                  எனில் (! s || *set_ordering (s, சாவி, bl_start))
+                    சாவி = வெற்று;
+                  இல்லையெனில்
                     {
-                      if (minus_pos_usage)
+                      எனில் (minus_pos_usage)
                         {
-                          char const *optarg1 = argv[optind++];
-                          s = parse_field_count (optarg1 + 1, &key->eword,
+                          எழுத்து மாறிலி *optarg1 = argv[optind++];
+                          s = parse_field_மொத்தம் (optarg1 + 1, &சாவி->eword,
                                              N_("invalid number after '-'"));
-                          if (*s == '.')
-                            s = parse_field_count (s + 1, &key->echar,
+                          எனில் (*s == '.')
+                            s = parse_field_மொத்தம் (s + 1, &சாவி->echar,
                                                N_("invalid number after '.'"));
-                          if (!key->echar && key->eword)
+                          எனில் (!சாவி->echar && சாவி->eword)
                             {
                               /* obsolescent syntax +A.x -B.y is equivalent to:
                                    -k A+1.x+1,B.y   (when y = 0)
@@ -4758,158 +4758,158 @@ main (int argc, char **argv)
                                  So eword is decremented as in the -k case
                                  only when the end field (B) is specified and
                                  echar (y) is 0.  */
-                              key->eword--;
+                              சாவி->eword--;
                             }
-                          if (*set_ordering (s, key, bl_end))
+                          எனில் (*set_ordering (s, சாவி, bl_end))
                             badfieldspec (optarg1,
                                       N_("stray character in field spec"));
                         }
-                      key->traditional_used = true;
-                      insertkey (key);
+                      சாவி->traditional_used = true;
+                      insertkey (சாவி);
                     }
                 }
             }
-          if (! key)
+          எனில் (! சாவி)
             files[nfiles++] = optarg;
-          break;
+          நிறுத்து;
 
-        case SORT_OPTION:
+        நிலை SORT_OPTION:
           c = XARGMATCH ("--sort", optarg, sort_args, sort_types);
           FALLTHROUGH;
-        case 'b':
-        case 'd':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'M':
-        case 'n':
-        case 'r':
-        case 'R':
-        case 'V':
+        நிலை 'b':
+        நிலை 'd':
+        நிலை 'f':
+        நிலை 'g':
+        நிலை 'h':
+        நிலை 'i':
+        நிலை 'M':
+        நிலை 'n':
+        நிலை 'r':
+        நிலை 'R':
+        நிலை 'V':
           {
-            char str[2];
+            எழுத்து str[2];
             str[0] = c;
             str[1] = '\0';
             set_ordering (str, &gkey, bl_both);
           }
-          break;
+          நிறுத்து;
 
-        case CHECK_OPTION:
+        நிலை CHECK_OPTION:
           c = (optarg
                ? XARGMATCH ("--check", optarg, check_args, check_types)
                : 'c');
           FALLTHROUGH;
-        case 'c':
-        case 'C':
-          if (checkonly && checkonly != c)
+        நிலை 'c':
+        நிலை 'C':
+          எனில் (checkonly && checkonly != c)
             incompatible_options ("cC");
           checkonly = c;
-          break;
+          நிறுத்து;
 
-        case COMPRESS_PROGRAM_OPTION:
-          if (compress_program && !streq (compress_program, optarg))
+        நிலை COMPRESS_PROGRAM_OPTION:
+          எனில் (compress_program && !streq (compress_program, optarg))
             error (SORT_FAILURE, 0, _("multiple compress programs specified"));
           compress_program = optarg;
-          break;
+          நிறுத்து;
 
-        case DEBUG_PROGRAM_OPTION:
+        நிலை DEBUG_PROGRAM_OPTION:
           debug = true;
-          break;
+          நிறுத்து;
 
-        case FILES0_FROM_OPTION:
+        நிலை FILES0_FROM_OPTION:
           files_from = optarg;
-          break;
+          நிறுத்து;
 
-        case 'k':
-          key = key_init (&key_buf);
+        நிலை 'k':
+          சாவி = சாவி_init (&சாவி_buf);
 
           /* Get POS1. */
-          s = parse_field_count (optarg, &key->sword,
+          s = parse_field_மொத்தம் (optarg, &சாவி->sword,
                                  N_("invalid number at field start"));
-          if (! key->sword--)
+          எனில் (! சாவி->sword--)
             {
               /* Provoke with 'sort -k0' */
               badfieldspec (optarg, N_("field number is zero"));
             }
-          if (*s == '.')
+          எனில் (*s == '.')
             {
-              s = parse_field_count (s + 1, &key->schar,
+              s = parse_field_மொத்தம் (s + 1, &சாவி->schar,
                                      N_("invalid number after '.'"));
-              if (! key->schar--)
+              எனில் (! சாவி->schar--)
                 {
                   /* Provoke with 'sort -k1.0' */
                   badfieldspec (optarg, N_("character offset is zero"));
                 }
             }
-          if (! (key->sword || key->schar))
-            key->sword = SIZE_MAX;
-          s = set_ordering (s, key, bl_start);
-          if (*s != ',')
+          எனில் (! (சாவி->sword || சாவி->schar))
+            சாவி->sword = SIZE_MAX;
+          s = set_ordering (s, சாவி, bl_start);
+          எனில் (*s != ',')
             {
-              key->eword = SIZE_MAX;
-              key->echar = 0;
+              சாவி->eword = SIZE_MAX;
+              சாவி->echar = 0;
             }
-          else
+          இல்லையெனில்
             {
               /* Get POS2. */
-              s = parse_field_count (s + 1, &key->eword,
+              s = parse_field_மொத்தம் (s + 1, &சாவி->eword,
                                      N_("invalid number after ','"));
-              if (! key->eword--)
+              எனில் (! சாவி->eword--)
                 {
                   /* Provoke with 'sort -k1,0' */
                   badfieldspec (optarg, N_("field number is zero"));
                 }
-              if (*s == '.')
+              எனில் (*s == '.')
                 {
-                  s = parse_field_count (s + 1, &key->echar,
+                  s = parse_field_மொத்தம் (s + 1, &சாவி->echar,
                                          N_("invalid number after '.'"));
                 }
-              s = set_ordering (s, key, bl_end);
+              s = set_ordering (s, சாவி, bl_end);
             }
-          if (*s)
+          எனில் (*s)
             badfieldspec (optarg, N_("stray character in field spec"));
-          insertkey (key);
-          break;
+          insertkey (சாவி);
+          நிறுத்து;
 
-        case 'm':
+        நிலை 'm':
           mergeonly = true;
-          break;
+          நிறுத்து;
 
-        case NMERGE_OPTION:
+        நிலை NMERGE_OPTION:
           specify_nmerge (oi, c, optarg);
-          break;
+          நிறுத்து;
 
-        case 'o':
-          if (outfile && !streq (outfile, optarg))
+        நிலை 'o':
+          எனில் (outfile && !streq (outfile, optarg))
             error (SORT_FAILURE, 0, _("multiple output files specified"));
           outfile = optarg;
-          break;
+          நிறுத்து;
 
-        case RANDOM_SOURCE_OPTION:
-          if (random_source && !streq (random_source, optarg))
+        நிலை RANDOM_SOURCE_OPTION:
+          எனில் (random_source && !streq (random_source, optarg))
             error (SORT_FAILURE, 0, _("multiple random sources specified"));
           random_source = optarg;
-          break;
+          நிறுத்து;
 
-        case 's':
+        நிலை 's':
           stable = true;
-          break;
+          நிறுத்து;
 
-        case 'S':
+        நிலை 'S':
           specify_sort_size (oi, c, optarg);
-          break;
+          நிறுத்து;
 
-        case 't':
+        நிலை 't':
           {
-            char newtab = optarg[0];
-            if (! newtab)
+            எழுத்து newtab = optarg[0];
+            எனில் (! newtab)
               error (SORT_FAILURE, 0, _("empty tab"));
-            if (optarg[1])
+            எனில் (optarg[1])
               {
-                if (streq (optarg, "\\0"))
+                எனில் (streq (optarg, "\\0"))
                   newtab = '\0';
-                else
+                இல்லையெனில்
                   {
                     /* Provoke with 'sort -txx'.  Complain about
                        "multi-character tab" instead of "multibyte tab", so
@@ -4919,25 +4919,25 @@ main (int argc, char **argv)
                            quote (optarg));
                   }
               }
-            if (tab != TAB_DEFAULT && tab != newtab)
+            எனில் (tab != TAB_DEFAULT && tab != newtab)
               error (SORT_FAILURE, 0, _("incompatible tabs"));
             tab = newtab;
           }
-          break;
+          நிறுத்து;
 
-        case 'T':
+        நிலை 'T':
           add_temp_dir (optarg);
-          break;
+          நிறுத்து;
 
-        case PARALLEL_OPTION:
+        நிலை PARALLEL_OPTION:
           nthreads = specify_nthreads (oi, c, optarg);
-          break;
+          நிறுத்து;
 
-        case 'u':
+        நிலை 'u':
           unique = true;
-          break;
+          நிறுத்து;
 
-        case 'y':
+        நிலை 'y':
           /* Accept and ignore e.g. -y0 for compatibility with Solaris 2.x
              through Solaris 7.  It is also accepted by many non-Solaris
              "sort" implementations, e.g., AIX 5.2, HP-UX 11i v2, IRIX 6.5.
@@ -4948,24 +4948,24 @@ main (int argc, char **argv)
              emulate Solaris 8 and 9 "sort -y 100" which ignores the "100",
              and which in general ignores the argument after "-y" if it
              consists entirely of digits (it can even be empty).  */
-          if (optarg == argv[optind - 1])
+          எனில் (optarg == argv[optind - 1])
             {
-              char const *p;
-              for (p = optarg; c_isdigit (*p); p++)
-                continue;
+              எழுத்து மாறிலி *p;
+              க்கு (p = optarg; c_isdigit (*p); p++)
+                தொடர்;
               optind -= (*p != '\0');
             }
-          break;
+          நிறுத்து;
 
-        case 'z':
+        நிலை 'z':
           eolchar = 0;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (SORT_FAILURE);
         }
     }
@@ -4973,13 +4973,13 @@ main (int argc, char **argv)
   /* Ignore SIGPIPE so write failures are reported via EPIPE errno.
      For stdout, sort_die() will reraise SIGPIPE if it was originally SIG_DFL.
      For compression pipes, sort_die() will exit with SORT_FAILURE.  */
-  default_SIGPIPE = (signal (SIGPIPE, SIG_IGN) == SIG_DFL);
+  default_SIGPIPE = (சமிக்ஞை (SIGPIPE, SIG_IGN) == SIG_DFL);
 
-  if (files_from)
+  எனில் (files_from)
     {
       /* When using --files0-from=F, you may not specify any files
          on the command-line.  */
-      if (nfiles)
+      எனில் (nfiles)
         {
           error (0, 0, _("extra operand %s"), quoteaf (files[0]));
           fprintf (stderr, "%s\n",
@@ -4991,62 +4991,62 @@ main (int argc, char **argv)
 
       readtokens0_init (&tok);
 
-      if (! readtokens0 (stream, &tok))
+      எனில் (! readtokens0 (stream, &tok))
         error (SORT_FAILURE, 0, _("cannot read file names from %s"),
                quoteaf (files_from));
       xfclose (stream, files_from);
 
-      if (tok.n_tok)
+      எனில் (tok.n_tok)
         {
-          free (files);
+          விடுவி (files);
           files = tok.tok;
           nfiles = tok.n_tok;
-          for (size_t i = 0; i < nfiles; i++)
+          க்கு (size_t i = 0; i < nfiles; i++)
             {
-              if (streq (files[i], "-"))
+              எனில் (streq (files[i], "-"))
                 error (SORT_FAILURE, 0, _("when reading file names from "
                                           "standard input, "
                                           "no file name of %s allowed"),
                        quoteaf (files[i]));
-              else if (files[i][0] == '\0')
+              இல்லையெனில் எனில் (files[i][0] == '\0')
                 {
                   /* Using the standard 'filename:line-number:' prefix here is
                      not totally appropriate, since NUL is the separator,
                      not NL, but it might be better than nothing.  */
-                  unsigned long int file_number = i + 1;
+                  unsigned long முழு file_எண் = i + 1;
                   error (SORT_FAILURE, 0,
                          _("%s:%lu: invalid zero-length file name"),
-                         quotef (files_from), file_number);
+                         quotef (files_from), file_எண்);
                 }
             }
         }
-      else
+      இல்லையெனில்
         error (SORT_FAILURE, 0, _("no input from %s"),
                quoteaf (files_from));
     }
 
   /* Inheritance of global options to individual keys. */
-  for (key = keylist; key; key = key->next)
+  க்கு (சாவி = keylist; சாவி; சாவி = சாவி->next)
     {
-      if (default_key_compare (key) && !key->reverse)
+      எனில் (default_சாவி_compare (சாவி) && !சாவி->reverse)
         {
-          key->ignore = gkey.ignore;
-          key->translate = gkey.translate;
-          key->skipsblanks = gkey.skipsblanks;
-          key->skipeblanks = gkey.skipeblanks;
-          key->month = gkey.month;
-          key->numeric = gkey.numeric;
-          key->general_numeric = gkey.general_numeric;
-          key->human_numeric = gkey.human_numeric;
-          key->version = gkey.version;
-          key->random = gkey.random;
-          key->reverse = gkey.reverse;
+          சாவி->ignore = gkey.ignore;
+          சாவி->translate = gkey.translate;
+          சாவி->skipsblanks = gkey.skipsblanks;
+          சாவி->skipeblanks = gkey.skipeblanks;
+          சாவி->month = gkey.month;
+          சாவி->numeric = gkey.numeric;
+          சாவி->general_numeric = gkey.general_numeric;
+          சாவி->human_numeric = gkey.human_numeric;
+          சாவி->version = gkey.version;
+          சாவி->random = gkey.random;
+          சாவி->reverse = gkey.reverse;
         }
 
-      need_random |= key->random;
+      need_random |= சாவி->random;
     }
 
-  if (!keylist && !default_key_compare (&gkey))
+  எனில் (!keylist && !default_சாவி_compare (&gkey))
     {
       gkey_only = true;
       insertkey (&gkey);
@@ -5055,11 +5055,11 @@ main (int argc, char **argv)
 
   check_ordering_compatibility ();
 
-  if (debug)
+  எனில் (debug)
     {
-      if (checkonly || outfile)
+      எனில் (checkonly || outfile)
         {
-          static char opts[] = "X --debug";
+          நிலையான எழுத்து opts[] = "X --debug";
           opts[0] = (checkonly ? checkonly : 'o');
           incompatible_options (opts);
         }
@@ -5069,53 +5069,53 @@ main (int argc, char **argv)
 
       /* OpenBSD can only set some categories with LC_ALL above,
          so set LC_COLLATE explicitly to flag errors.  */
-      if (locale_ok)
+      எனில் (locale_ok)
         locale_ok = !! setlocale (LC_COLLATE, "");
-      if (! locale_ok)
+      எனில் (! locale_ok)
           error (0, 0, "%s", _("failed to set locale"));
-      if (hard_LC_COLLATE)
+      எனில் (hard_LC_COLLATE)
         error (0, 0, _("text ordering performed using %s sorting rules"),
-               quote (setlocale (LC_COLLATE, NULL)));
-      else
+               quote (setlocale (LC_COLLATE, வெற்று)));
+      இல்லையெனில்
         error (0, 0, "%s",
                _("text ordering performed using simple byte comparison"));
 
-      key_warnings (&gkey, gkey_only);
+      சாவி_warnings (&gkey, gkey_only);
     }
 
   reverse = gkey.reverse;
 
-  if (need_random)
+  எனில் (need_random)
     random_md5_state_init (random_source);
 
-  if (temp_dirs.n_dirs == 0)
+  எனில் (temp_dirs.n_dirs == 0)
     {
-      char const *tmp_dir = getenv ("TMPDIR");
+      எழுத்து மாறிலி *tmp_dir = getenv ("TMPDIR");
       add_temp_dir (tmp_dir ? tmp_dir : DEFAULT_TMPDIR);
     }
 
-  if (nfiles == 0)
+  எனில் (nfiles == 0)
     {
       nfiles = 1;
-      free (files);
-      files = xmalloc (sizeof *files);
-      *files = (char *) "-";
+      விடுவி (files);
+      files = xmalloc (அளவு *files);
+      *files = (எழுத்து *) "-";
     }
 
   /* Need to re-check that we meet the minimum requirement for memory
      usage with the final value for NMERGE. */
-  if (0 < sort_size)
+  எனில் (0 < sort_size)
     sort_size = MAX (sort_size, MIN_SORT_SIZE);
 
-  if (checkonly)
+  எனில் (checkonly)
     {
-      if (nfiles > 1)
+      எனில் (nfiles > 1)
         error (SORT_FAILURE, 0, _("extra operand %s not allowed with -%c"),
                quoteaf (files[1]), checkonly);
 
-      if (outfile)
+      எனில் (outfile)
         {
-          static char opts[] = {0, 'o', 0};
+          நிலையான எழுத்து opts[] = {0, 'o', 0};
           opts[0] = checkonly;
           incompatible_options (opts);
         }
@@ -5131,31 +5131,31 @@ main (int argc, char **argv)
   /* Check output is writable, or exit immediately.  */
   check_output (outfile);
 
-  if (mergeonly)
+  எனில் (mergeonly)
     {
-      struct sortfile *sortfiles = xcalloc (nfiles, sizeof *sortfiles);
+      கட்டமைப்பு sortfile *sortfiles = xcalloc (nfiles, அளவு *sortfiles);
 
-      for (size_t i = 0; i < nfiles; ++i)
+      க்கு (size_t i = 0; i < nfiles; ++i)
         sortfiles[i].name = files[i];
 
       merge (sortfiles, 0, nfiles, outfile);
     }
-  else
+  இல்லையெனில்
     {
-      if (!nthreads)
+      எனில் (!nthreads)
         {
-          unsigned long int np = num_processors (NPROC_CURRENT_OVERRIDABLE);
+          unsigned long முழு np = இலக்கம்_processors (NPROC_CURRENT_OVERRIDABLE);
           nthreads = MIN (np, DEFAULT_MAX_THREADS);
         }
 
       /* Avoid integer overflow later.  */
-      size_t nthreads_max = SIZE_MAX / (2 * sizeof (struct merge_node));
+      size_t nthreads_max = SIZE_MAX / (2 * அளவு (கட்டமைப்பு merge_முனை));
       nthreads = MIN (nthreads, nthreads_max);
 
       sort (files, nfiles, outfile, nthreads);
     }
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  எனில் (have_read_stdin && fclose (stdin) == EOF)
     sort_die (_("close failed"), "-");
 
   main_exit (EXIT_SUCCESS);

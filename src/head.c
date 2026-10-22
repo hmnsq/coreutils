@@ -23,20 +23,20 @@
 
    David MacKenzie <djm@gnu.ai.mit.edu> */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
+#அந்தர்பாவ "system.h"
 
-#include "assure.h"
-#include "c-ctype.h"
-#include "full-read.h"
-#include "stat-size.h"
-#include "xbinary-io.h"
-#include "xdectoint.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "c-ctype.h"
+#அந்தர்பாவ "full-read.h"
+#அந்தர்பாவ "stat-size.h"
+#அந்தர்பாவ "xbinary-io.h"
+#அந்தர்பாவ "xdectoint.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "head"
@@ -46,30 +46,30 @@
   proper_name ("Jim Meyering")
 
 /* Number of lines/chars/blocks to head. */
-#define DEFAULT_NUMBER 10
+#define DEFAULT_எண் 10
 
 /* Useful only when eliding tail bytes or lines.
    If true, skip the is-regular-file test used to determine whether
    to use the lseek optimization.  Instead, use the more general (and
    more expensive) code unconditionally. Intended solely for testing.  */
-static bool presume_input_pipe;
+நிலையான bool presume_உள்ளீடு_pipe;
 
 /* If true, print filename headers. */
-static bool print_headers;
+நிலையான bool print_headers;
 
 /* Character to split lines by. */
-static char line_end = '\n';
+நிலையான எழுத்து வரி_end = '\n';
 
 /* When to print the filename banners. */
-enum header_mode
+எண்ணிக்கை header_mode
 {
   multiple_files, always, never
 };
 
 /* Have we ever read standard input?  */
-static bool have_read_stdin;
+நிலையான bool have_read_stdin;
 
-enum Copy_fd_status
+எண்ணிக்கை Copy_fd_status
   {
     COPY_FD_OK = 0,
     COPY_FD_READ_ERROR,
@@ -78,55 +78,55 @@ enum Copy_fd_status
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
-  PRESUME_INPUT_PIPE_OPTION = CHAR_MAX + 1
+  PRESUME_உள்ளீடு_PIPE_OPTION = CHAR_MAX + 1
 };
 
-static struct option const long_options[] =
+நிலையான கட்டமைப்பு option மாறிலி long_options[] =
 {
-  {"bytes", required_argument, NULL, 'c'},
-  {"lines", required_argument, NULL, 'n'},
-  {"-presume-input-pipe", no_argument, NULL,
-   PRESUME_INPUT_PIPE_OPTION}, /* do not document */
-  {"quiet", no_argument, NULL, 'q'},
-  {"silent", no_argument, NULL, 'q'},
-  {"verbose", no_argument, NULL, 'v'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"bytes", required_argument, வெற்று, 'c'},
+  {"lines", required_argument, வெற்று, 'n'},
+  {"-presume-input-pipe", no_argument, வெற்று,
+   PRESUME_உள்ளீடு_PIPE_OPTION}, /* do not document */
+  {"quiet", no_argument, வெற்று, 'q'},
+  {"silent", no_argument, வெற்று, 'q'},
+  {"verbose", no_argument, வெற்று, 'v'},
+  {"zero-terminated", no_argument, வெற்று, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       printf (_("\
-Print the first %d lines of each FILE to standard output.\n\
+Print the first %d வரிகள் of each FILE to standard output.\n\
 With more than one FILE, precede each with a header giving the file name.\n\
-"), DEFAULT_NUMBER);
+"), DEFAULT_எண்);
 
       emit_stdin_note ();
       emit_mandatory_arg_note ();
 
       oputs (_("\
-  -c, --bytes=[-]NUM\n\
-         print the first NUM bytes of each file;\n\
-         with the leading '-', print all but the last NUM bytes of each file\n\
+  -c, --bytes=[-]இலக்கம்_2\n\
+         print the first இலக்கம்_2 bytes of each file;\n\
+         with the leading '-', print all but the last இலக்கம்_2 bytes of each file\n\
 "));
       oprintf (_("\
-  -n, --lines=[-]NUM\n\
-         print the first NUM lines instead of the first %d;\n\
-         with the leading '-', print all but the last NUM lines of each file\n\
-"), DEFAULT_NUMBER);
+  -n, --வரிகள்=[-]இலக்கம்_2\n\
+         print the first இலக்கம்_2 வரிகள் instead of the first %d;\n\
+         with the leading '-', print all but the last இலக்கம்_2 வரிகள் of each file\n\
+"), DEFAULT_எண்);
       oputs (_("\
   -q, --quiet, --silent\n\
          never print headers giving file names\n\
@@ -137,48 +137,48 @@ With more than one FILE, precede each with a header giving the file name.\n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         வரி delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-NUM may have a multiplier suffix:\n\
+இலக்கம்_2 may have a multiplier suffix:\n\
 b 512, kB 1000, K 1024, MB 1000*1000, M 1024*1024,\n\
-GB 1000*1000*1000, G 1024*1024*1024, and so on for T, P, E, Z, Y, R, Q.\n\
-Binary prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
+GB 1000*1000*1000, G 1024*1024*1024, and so on க்கு T, P, E, Z, Y, R, Q.\n\
+இருமம்_2 prefixes can be used, too: KiB=K, MiB=M, and so on.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
   exit (status);
 }
 
-static void
-diagnose_read_failure (char const *filename)
+நிலையான வெறுமை
+diagnose_read_failure (எழுத்து மாறிலி *filename)
 {
   error (0, errno, _("error reading %s"), quoteaf (filename));
 }
 
-static void
-diagnose_copy_fd_failure (enum Copy_fd_status err, char const *filename)
+நிலையான வெறுமை
+diagnose_copy_fd_failure (எண்ணிக்கை Copy_fd_status err, எழுத்து மாறிலி *filename)
 {
-  switch (err)
+  தேர்வு (err)
     {
-    case COPY_FD_READ_ERROR:
+    நிலை COPY_FD_READ_ERROR:
       diagnose_read_failure (filename);
-      break;
-    case COPY_FD_UNEXPECTED_EOF:
+      நிறுத்து;
+    நிலை COPY_FD_UNEXPECTED_EOF:
       error (0, errno, _("%s: file has shrunk too much"), quotef (filename));
-      break;
-    case COPY_FD_OK: default:
+      நிறுத்து;
+    நிலை COPY_FD_OK: இயல்பு:
       affirm (false);
     }
 }
 
-static void
-write_header (char const *filename)
+நிலையான வெறுமை
+write_header (எழுத்து மாறிலி *filename)
 {
-  static bool first_file = true;
+  நிலையான bool first_file = true;
 
   printf ("%s==> %s <==\n", (first_file ? "" : "\n"), quotef (filename));
   first_file = false;
@@ -187,10 +187,10 @@ write_header (char const *filename)
 /* Write N_BYTES from BUFFER to stdout.
    Exit immediately on error with a single diagnostic.  */
 
-static void
-xwrite_stdout (char const *buffer, size_t n_bytes)
+நிலையான வெறுமை
+xwrite_stdout (எழுத்து மாறிலி *buffer, size_t n_bytes)
 {
-  if (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
+  எனில் (n_bytes > 0 && fwrite (buffer, 1, n_bytes, stdout) < n_bytes)
     {
       clearerr (stdout); /* To avoid redundant close_stdout diagnostic.  */
       fpurge (stdout);
@@ -202,33 +202,33 @@ xwrite_stdout (char const *buffer, size_t n_bytes)
 /* Copy no more than N_BYTES from file descriptor SRC_FD to stdout.
    Return an appropriate indication of success or read failure.  */
 
-static enum Copy_fd_status
-copy_fd (int src_fd, uintmax_t n_bytes)
+நிலையான எண்ணிக்கை Copy_fd_status
+copy_fd (முழு src_fd, uintmax_t n_bytes)
 {
-  char buf[BUFSIZ];
+  எழுத்து buf[BUFSIZ];
 
   /* Copy the file contents.  */
-  while (0 < n_bytes)
+  போது (0 < n_bytes)
     {
-      idx_t n_to_read = MIN (n_bytes, sizeof buf);
-      ssize_t n_read = read (src_fd, buf, n_to_read);
-      if (n_read < 0)
-        return COPY_FD_READ_ERROR;
+      idx_t n_to_read = MIN (n_bytes, அளவு buf);
+      ssize_t n_read = பட (src_fd, buf, n_to_read);
+      எனில் (n_read < 0)
+        திரும்பு COPY_FD_READ_ERROR;
 
       n_bytes -= n_read;
 
-      if (n_read == 0 && n_bytes != 0)
-        return COPY_FD_UNEXPECTED_EOF;
+      எனில் (n_read == 0 && n_bytes != 0)
+        திரும்பு COPY_FD_UNEXPECTED_EOF;
 
       xwrite_stdout (buf, n_read);
     }
 
-  return COPY_FD_OK;
+  திரும்பு COPY_FD_OK;
 }
 
 /* Report an lseek failure at OFFSET compared to WHENCE, for FILENAME.  */
-static void
-elseek_diagnostic (off_t offset, int whence, char const *filename)
+நிலையான வெறுமை
+elseek_diagnostic (off_t offset, முழு whence, எழுத்து மாறிலி *filename)
 {
   intmax_t off = offset;
   error (0, errno,
@@ -243,15 +243,15 @@ elseek_diagnostic (off_t offset, int whence, char const *filename)
    SEEK_CUR.  Return the resulting offset.  Give a diagnostic and
    return -1 if lseek fails.  */
 
-static off_t
-elseek (int fd, off_t offset, int whence, char const *filename)
+நிலையான off_t
+elseek (முழு fd, off_t offset, முழு whence, எழுத்து மாறிலி *filename)
 {
   off_t new_offset = lseek (fd, offset, whence);
 
-  if (new_offset < 0)
+  எனில் (new_offset < 0)
     elseek_diagnostic (offset, whence, filename);
 
-  return new_offset;
+  திரும்பு new_offset;
 }
 
 /* For an input file with name FILENAME and descriptor FD,
@@ -261,8 +261,8 @@ elseek (int fd, off_t offset, int whence, char const *filename)
    just before the elided bytes before returning.
    Return true upon success.
    Give a diagnostic and return false upon error.  */
-static bool
-elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
+நிலையான bool
+elide_tail_bytes_pipe (எழுத்து மாறிலி *filename, முழு fd, uintmax_t n_elide,
                        off_t current_pos)
 {
   uintmax_t desired_pos = current_pos;
@@ -281,7 +281,7 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 # define HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD 1024 * 1024
 #endif
 
-#if HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD < 2 * READ_BUFSIZE
+#எனில் HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD < 2 * READ_BUFSIZE
 # error "HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD must be at least 2 * READ_BUFSIZE"
 #endif
 
@@ -298,39 +298,39 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
   static_assert (READ_BUFSIZE <= IDX_MAX);
   static_assert (HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD <= IDX_MAX - READ_BUFSIZE);
-  if (n_elide <= HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD)
+  எனில் (n_elide <= HEAD_TAIL_PIPE_BYTECOUNT_THRESHOLD)
     {
       idx_t in_elide = n_elide;
       bool first = true;
       bool eof = false;
       idx_t n_to_read = READ_BUFSIZE + n_elide;
-      char *b[2];
+      எழுத்து *b[2];
       b[0] = xnmalloc (2, n_to_read);
       b[1] = b[0] + n_to_read;
 
-      for (bool i = false; ! eof ; i = !i)
+      க்கு (bool i = false; ! eof ; i = !i)
         {
           idx_t n_read = full_read (fd, b[i], n_to_read);
           idx_t delta = 0;
-          if (n_read < n_to_read)
+          எனில் (n_read < n_to_read)
             {
-              if (errno != 0)
+              எனில் (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  break;
+                  நிறுத்து;
                 }
 
               /* reached EOF */
-              if (n_read <= in_elide)
+              எனில் (n_read <= in_elide)
                 {
-                  if (first)
+                  எனில் (first)
                     {
                       /* The input is no larger than the number of bytes
                          to elide.  So there's nothing to output, and
                          we're done.  */
                     }
-                  else
+                  இல்லையெனில்
                     {
                       delta = in_elide - n_read;
                     }
@@ -340,30 +340,30 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
           /* Output any (but maybe just part of the) elided data from
              the previous round.  */
-          if (! first)
+          எனில் (! first)
             {
               desired_pos += in_elide - delta;
               xwrite_stdout (b[!i] + READ_BUFSIZE, in_elide - delta);
             }
           first = false;
 
-          if (in_elide < n_read)
+          எனில் (in_elide < n_read)
             {
               desired_pos += n_read - in_elide;
               xwrite_stdout (b[i], n_read - in_elide);
             }
         }
 
-      free (b[0]);
+      விடுவி (b[0]);
     }
-  else
+  இல்லையெனில்
     {
       /* Read blocks of size READ_BUFSIZE, until we've read at least n_elide
          bytes.  Then, for each new buffer we read, also write an old one.  */
 
       bool eof = false;
       idx_t n_read;
-      char **b = NULL;
+      எழுத்து **b = வெற்று;
 
       idx_t remainder = n_elide % READ_BUFSIZE;
       /* The number of buffers needed to hold n_elide bytes plus one
@@ -375,33 +375,33 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
       bool buffered_enough = false;
       idx_t i, i_next;
-      for (i = 0, i_next = 1; !eof; i = i_next, i_next = (i_next + 1) % n_bufs)
+      க்கு (i = 0, i_next = 1; !eof; i = i_next, i_next = (i_next + 1) % n_bufs)
         {
-          if (n_array_alloc == i)
+          எனில் (n_array_alloc == i)
             b = xpalloc (b, &n_array_alloc, 1, MIN (n_bufs, PTRDIFF_MAX),
-                         sizeof *b);
+                         அளவு *b);
 
-          if (! buffered_enough)
+          எனில் (! buffered_enough)
             {
               b[i] = xmalloc (READ_BUFSIZE);
               n_alloc = i + 1;
             }
           n_read = full_read (fd, b[i], READ_BUFSIZE);
-          if (n_read < READ_BUFSIZE)
+          எனில் (n_read < READ_BUFSIZE)
             {
-              if (errno != 0)
+              எனில் (errno != 0)
                 {
                   diagnose_read_failure (filename);
                   ok = false;
-                  goto free_mem;
+                  செல் free_mem;
                 }
               eof = true;
             }
 
-          if (i + 1 == n_bufs)
+          எனில் (i + 1 == n_bufs)
             buffered_enough = true;
 
-          if (buffered_enough)
+          எனில் (buffered_enough)
             {
               desired_pos += n_read;
               xwrite_stdout (b[i_next], n_read);
@@ -410,21 +410,21 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 
       /* Output the remainder: rem bytes from b[i] + n_read.  */
       idx_t rem = READ_BUFSIZE - remainder;
-      if (buffered_enough)
+      எனில் (buffered_enough)
         {
-          idx_t n_bytes_left_in_b_i = READ_BUFSIZE - n_read;
+          idx_t n_bytes_இடது_in_b_i = READ_BUFSIZE - n_read;
           desired_pos += rem;
-          if (rem < n_bytes_left_in_b_i)
+          எனில் (rem < n_bytes_இடது_in_b_i)
             {
               xwrite_stdout (b[i] + n_read, rem);
             }
-          else
+          இல்லையெனில்
             {
-              xwrite_stdout (b[i] + n_read, n_bytes_left_in_b_i);
-              xwrite_stdout (b[i_next], rem - n_bytes_left_in_b_i);
+              xwrite_stdout (b[i] + n_read, n_bytes_இடது_in_b_i);
+              xwrite_stdout (b[i_next], rem - n_bytes_இடது_in_b_i);
             }
         }
-      else if (i + 1 == n_bufs)
+      இல்லையெனில் எனில் (i + 1 == n_bufs)
         {
           /* This happens when
              n_elide < file_size < (n_bufs - 1) * READ_BUFSIZE.
@@ -446,14 +446,14 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
         }
 
     free_mem:
-      for (i = 0; i < n_alloc; i++)
-        free (b[i]);
-      free (b);
+      க்கு (i = 0; i < n_alloc; i++)
+        விடுவி (b[i]);
+      விடுவி (b);
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  எனில் (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  திரும்பு ok;
 }
 
 /* For the file FILENAME with descriptor FD, output all but the last N_ELIDE
@@ -464,29 +464,29 @@ elide_tail_bytes_pipe (char const *filename, int fd, uintmax_t n_elide,
 /* NOTE: if the input file shrinks by more than N_ELIDE bytes between
    the length determination and the actual reading, then head fails.  */
 
-static bool
-elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+நிலையான bool
+elide_tail_bytes_file (எழுத்து மாறிலி *filename, முழு fd, uintmax_t n_elide,
+                       கட்டமைப்பு stat மாறிலி *st, off_t current_pos)
 {
   off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_bytes_pipe (filename, fd, n_elide, current_pos);
-  else
+  எனில் (current_pos < 0 || size <= STP_BLKSIZE (st))
+    திரும்பு elide_tail_bytes_pipe (filename, fd, n_elide, current_pos);
+  இல்லையெனில்
     {
       /* Be careful here.  The current position may actually be
          beyond the end of the file.  */
       off_t diff = size - current_pos;
       off_t bytes_remaining = diff < 0 ? 0 : diff;
 
-      if (bytes_remaining <= n_elide)
-        return true;
+      எனில் (bytes_remaining <= n_elide)
+        திரும்பு true;
 
-      enum Copy_fd_status err = copy_fd (fd, bytes_remaining - n_elide);
-      if (err == COPY_FD_OK)
-        return true;
+      எண்ணிக்கை Copy_fd_status err = copy_fd (fd, bytes_remaining - n_elide);
+      எனில் (err == COPY_FD_OK)
+        திரும்பு true;
 
       diagnose_copy_fd_failure (err, filename);
-      return false;
+      திரும்பு false;
     }
 }
 
@@ -497,72 +497,72 @@ elide_tail_bytes_file (char const *filename, int fd, uintmax_t n_elide,
    Buffer the specified number of lines as a linked list of LBUFFERs,
    adding them as needed.  Return true if successful.  */
 
-static bool
-elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
+நிலையான bool
+elide_tail_வரிகள்_pipe (எழுத்து மாறிலி *filename, முழு fd, uintmax_t n_elide,
                        off_t current_pos)
 {
-  struct linebuffer
+  கட்டமைப்பு linebuffer
   {
-    char buffer[BUFSIZ + 1];
+    எழுத்து buffer[BUFSIZ + 1];
     size_t nbytes;
     size_t nlines;
-    struct linebuffer *next;
+    கட்டமைப்பு linebuffer *next;
   };
   off_t desired_pos = current_pos;
-  typedef struct linebuffer LBUFFER;
+  வகைவரை கட்டமைப்பு linebuffer LBUFFER;
   LBUFFER *first, *last, *tmp;
-  size_t total_lines = 0;	/* Total number of newlines in all buffers.  */
+  size_t total_வரிகள் = 0;	/* Total number of newlines in all buffers.  */
   bool ok = true;
   ssize_t n_read;		/* Size in bytes of most recent read */
 
-  first = last = xmalloc (sizeof (LBUFFER));
+  first = last = xmalloc (அளவு (LBUFFER));
   first->nbytes = first->nlines = 0;
-  first->next = NULL;
-  tmp = xmalloc (sizeof (LBUFFER));
+  first->next = வெற்று;
+  tmp = xmalloc (அளவு (LBUFFER));
 
   /* Always read into a fresh buffer.
      Read, (producing no output) until we've accumulated at least
      n_elide newlines, or until EOF, whichever comes first.  */
-  while (true)
+  போது (true)
     {
-      n_read = read (fd, tmp->buffer, BUFSIZ);
-      if (n_read <= 0)
-        break;
+      n_read = பட (fd, tmp->buffer, BUFSIZ);
+      எனில் (n_read <= 0)
+        நிறுத்து;
 
-      if (! n_elide)
+      எனில் (! n_elide)
         {
           desired_pos += n_read;
           xwrite_stdout (tmp->buffer, n_read);
-          continue;
+          தொடர்;
         }
 
       tmp->nbytes = n_read;
       tmp->nlines = 0;
-      tmp->next = NULL;
+      tmp->next = வெற்று;
 
       /* Count the number of newlines just read.  */
       {
-        char *buffer_end = tmp->buffer + n_read;
-        *buffer_end = line_end;
-        char const *p = tmp->buffer;
-        while ((p = rawmemchr (p, line_end)) < buffer_end)
+        எழுத்து *buffer_end = tmp->buffer + n_read;
+        *buffer_end = வரி_end;
+        எழுத்து மாறிலி *p = tmp->buffer;
+        போது ((p = rawmemchr (p, வரி_end)) < buffer_end)
           {
             ++p;
             ++tmp->nlines;
           }
       }
-      total_lines += tmp->nlines;
+      total_வரிகள் += tmp->nlines;
 
       /* If there is enough room in the last buffer read, just append the new
          one to it.  This is because when reading from a pipe, 'n_read' can
          often be very small.  */
-      if (tmp->nbytes + last->nbytes < BUFSIZ)
+      எனில் (tmp->nbytes + last->nbytes < BUFSIZ)
         {
           memcpy (&last->buffer[last->nbytes], tmp->buffer, tmp->nbytes);
           last->nbytes += tmp->nbytes;
           last->nlines += tmp->nlines;
         }
-      else
+      இல்லையெனில்
         {
           /* If there's not enough room, link the new buffer onto the end of
              the list, then either free up the oldest buffer for the next
@@ -570,50 +570,50 @@ elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
              Some compaction mechanism is possible but probably not
              worthwhile.  */
           last = last->next = tmp;
-          if (n_elide < total_lines - first->nlines)
+          எனில் (n_elide < total_வரிகள் - first->nlines)
             {
               desired_pos += first->nbytes;
               xwrite_stdout (first->buffer, first->nbytes);
               tmp = first;
-              total_lines -= first->nlines;
+              total_வரிகள் -= first->nlines;
               first = first->next;
             }
-          else
-            tmp = xmalloc (sizeof (LBUFFER));
+          இல்லையெனில்
+            tmp = xmalloc (அளவு (LBUFFER));
         }
     }
 
-  free (tmp);
+  விடுவி (tmp);
 
-  if (n_read < 0)
+  எனில் (n_read < 0)
     {
       diagnose_read_failure (filename);
       ok = false;
-      goto free_lbuffers;
+      செல் free_lbuffers;
     }
 
   /* If we read any bytes at all, count the incomplete line
      on files that don't end with a newline.  */
-  if (last->nbytes && last->buffer[last->nbytes - 1] != line_end)
+  எனில் (last->nbytes && last->buffer[last->nbytes - 1] != வரி_end)
     {
       ++last->nlines;
-      ++total_lines;
+      ++total_வரிகள்;
     }
 
-  for (tmp = first; n_elide < total_lines - tmp->nlines; tmp = tmp->next)
+  க்கு (tmp = first; n_elide < total_வரிகள் - tmp->nlines; tmp = tmp->next)
     {
       desired_pos += tmp->nbytes;
       xwrite_stdout (tmp->buffer, tmp->nbytes);
-      total_lines -= tmp->nlines;
+      total_வரிகள் -= tmp->nlines;
     }
 
   /* Print the first 'total_lines - n_elide' lines of tmp->buffer.  */
-  if (n_elide < total_lines)
+  எனில் (n_elide < total_வரிகள்)
     {
-      size_t n = total_lines - n_elide;
-      char const *buffer_end = tmp->buffer + tmp->nbytes;
-      char const *p = tmp->buffer;
-      while (n && (p = memchr (p, line_end, buffer_end - p)))
+      size_t n = total_வரிகள் - n_elide;
+      எழுத்து மாறிலி *buffer_end = tmp->buffer + tmp->nbytes;
+      எழுத்து மாறிலி *p = tmp->buffer;
+      போது (n && (p = memchr (p, வரி_end, buffer_end - p)))
         {
           ++p;
           ++tmp->nlines;
@@ -624,16 +624,16 @@ elide_tail_lines_pipe (char const *filename, int fd, uintmax_t n_elide,
     }
 
 free_lbuffers:
-  while (first)
+  போது (first)
     {
       tmp = first->next;
-      free (first);
+      விடுவி (first);
       first = tmp;
     }
 
-  if (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
+  எனில் (0 <= current_pos && elseek (fd, desired_pos, SEEK_SET, filename) < 0)
     ok = false;
-  return ok;
+  திரும்பு ok;
 }
 
 /* Output all but the last N_LINES lines of the input stream defined by
@@ -647,72 +647,72 @@ free_lbuffers:
    NOTE: this code is very similar to that of tail.c's file_lines function.
    Unfortunately, factoring out some common core looks like it'd result
    in a less efficient implementation or a messy interface.  */
-static bool
-elide_tail_lines_seekable (char const *pretty_filename, int fd,
-                           uintmax_t n_lines,
+நிலையான bool
+elide_tail_வரிகள்_seekable (எழுத்து மாறிலி *pretty_filename, முழு fd,
+                           uintmax_t n_வரிகள்,
                            off_t start_pos, off_t size)
 {
-  char buffer[BUFSIZ];
+  எழுத்து buffer[BUFSIZ];
   ssize_t bytes_read;
   off_t pos = size;
 
   /* Set 'bytes_read' to the size of the last, probably partial, buffer;
      0 < 'bytes_read' <= 'BUFSIZ'.  */
   bytes_read = (pos - start_pos) % BUFSIZ;
-  if (bytes_read == 0)
+  எனில் (bytes_read == 0)
     bytes_read = BUFSIZ;
   /* Make 'pos' a multiple of 'BUFSIZ' (0 if the file is short), so that all
      reads will be on block boundaries, which might increase efficiency.  */
   pos -= bytes_read;
-  if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-    return false;
-  bytes_read = read (fd, buffer, bytes_read);
-  if (bytes_read < 0)
+  எனில் (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+    திரும்பு false;
+  bytes_read = பட (fd, buffer, bytes_read);
+  எனில் (bytes_read < 0)
     {
       diagnose_read_failure (pretty_filename);
-      return false;
+      திரும்பு false;
     }
 
   /* n_lines == 0 case needs special treatment. */
-  const bool all_lines = !n_lines;
+  மாறிலி bool all_வரிகள் = !n_வரிகள்;
 
   /* Count the incomplete line on files that don't end with a newline.  */
-  if (n_lines && bytes_read && buffer[bytes_read - 1] != line_end)
-    --n_lines;
+  எனில் (n_வரிகள் && bytes_read && buffer[bytes_read - 1] != வரி_end)
+    --n_வரிகள்;
 
-  while (true)
+  போது (true)
     {
       /* Scan backward, counting the newlines in this bufferfull.  */
 
       idx_t n = bytes_read;
-      while (n)
+      போது (n)
         {
-          if (all_lines)
+          எனில் (all_வரிகள்)
             n -= 1;
-          else
+          இல்லையெனில்
             {
-              char const *nl;
-              nl = memrchr (buffer, line_end, n);
-              if (nl == NULL)
-                break;
+              எழுத்து மாறிலி *nl;
+              nl = memrchr (buffer, வரி_end, n);
+              எனில் (nl == வெற்று)
+                நிறுத்து;
               n = nl - buffer;
             }
-          if (n_lines-- == 0)
+          எனில் (n_வரிகள்-- == 0)
             {
               /* Found it.  */
               /* If necessary, restore the file pointer and copy
                  input to output up to position, POS.  */
-              if (start_pos < pos)
+              எனில் (start_pos < pos)
                 {
-                  enum Copy_fd_status err;
-                  if (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
-                    return false;
+                  எண்ணிக்கை Copy_fd_status err;
+                  எனில் (elseek (fd, start_pos, SEEK_SET, pretty_filename) < 0)
+                    திரும்பு false;
 
                   err = copy_fd (fd, pos - start_pos);
-                  if (err != COPY_FD_OK)
+                  எனில் (err != COPY_FD_OK)
                     {
                       diagnose_copy_fd_failure (err, pretty_filename);
-                      return false;
+                      திரும்பு false;
                     }
                 }
 
@@ -721,31 +721,31 @@ elide_tail_lines_seekable (char const *pretty_filename, int fd,
               xwrite_stdout (buffer, n + 1);
 
               /* Set file pointer to the byte after what we've output.  */
-              return 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
+              திரும்பு 0 <= elseek (fd, pos + n + 1, SEEK_SET, pretty_filename);
             }
         }
 
       /* Not enough newlines in that bufferfull.  */
-      if (pos == start_pos)
+      எனில் (pos == start_pos)
         {
           /* Not enough lines in the file.  */
-          return true;
+          திரும்பு true;
         }
       pos -= BUFSIZ;
-      if (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
-        return false;
+      எனில் (elseek (fd, pos, SEEK_SET, pretty_filename) < 0)
+        திரும்பு false;
 
-      bytes_read = read (fd, buffer, BUFSIZ);
-      if (bytes_read < 0)
+      bytes_read = பட (fd, buffer, BUFSIZ);
+      எனில் (bytes_read < 0)
         {
           diagnose_read_failure (pretty_filename);
-          return false;
+          திரும்பு false;
         }
 
       /* FIXME: is this dead code?
          Consider the test, pos == start_pos, above. */
-      if (bytes_read == 0)
-        return true;
+      எனில் (bytes_read == 0)
+        திரும்பு true;
     }
 }
 
@@ -754,144 +754,144 @@ elide_tail_lines_seekable (char const *pretty_filename, int fd,
    at CURRENT_POS.  The file's status is ST.  Return true on success.
    Give a diagnostic and return false upon error.  */
 
-static bool
-elide_tail_lines_file (char const *filename, int fd, uintmax_t n_elide,
-                       struct stat const *st, off_t current_pos)
+நிலையான bool
+elide_tail_வரிகள்_file (எழுத்து மாறிலி *filename, முழு fd, uintmax_t n_elide,
+                       கட்டமைப்பு stat மாறிலி *st, off_t current_pos)
 {
   off_t size = st->st_size;
-  if (current_pos < 0 || size <= STP_BLKSIZE (st))
-    return elide_tail_lines_pipe (filename, fd, n_elide, current_pos);
-  else
+  எனில் (current_pos < 0 || size <= STP_BLKSIZE (st))
+    திரும்பு elide_tail_வரிகள்_pipe (filename, fd, n_elide, current_pos);
+  இல்லையெனில்
     {
       /* Find the offset, OFF, of the Nth newline from the end,
          but not counting the last byte of the file.
          If found, write from current position to OFF, inclusive.
          Otherwise, just return true.  */
 
-      return (size <= current_pos
-              || elide_tail_lines_seekable (filename, fd, n_elide,
+      திரும்பு (size <= current_pos
+              || elide_tail_வரிகள்_seekable (filename, fd, n_elide,
                                             current_pos, size));
     }
 }
 
-static bool
-head_bytes (char const *filename, int fd, uintmax_t bytes_to_write)
+நிலையான bool
+head_bytes (எழுத்து மாறிலி *filename, முழு fd, uintmax_t bytes_to_write)
 {
-  if (copy_fd (fd, bytes_to_write) == COPY_FD_READ_ERROR)
+  எனில் (copy_fd (fd, bytes_to_write) == COPY_FD_READ_ERROR)
     {
       diagnose_read_failure (filename);
-      return false;
+      திரும்பு false;
     }
-  return true;
+  திரும்பு true;
 }
 
-static bool
-head_lines (char const *filename, int fd, uintmax_t lines_to_write)
+நிலையான bool
+head_வரிகள் (எழுத்து மாறிலி *filename, முழு fd, uintmax_t வரிகள்_to_write)
 {
-  char buffer[BUFSIZ];
+  எழுத்து buffer[BUFSIZ];
 
-  while (lines_to_write)
+  போது (வரிகள்_to_write)
     {
-      ssize_t bytes_read = read (fd, buffer, BUFSIZ);
+      ssize_t bytes_read = பட (fd, buffer, BUFSIZ);
       idx_t bytes_to_write = 0;
 
-      if (bytes_read < 0)
+      எனில் (bytes_read < 0)
         {
           diagnose_read_failure (filename);
-          return false;
+          திரும்பு false;
         }
-      if (bytes_read == 0)
-        break;
-      while (bytes_to_write < bytes_read)
-        if (buffer[bytes_to_write++] == line_end && --lines_to_write == 0)
+      எனில் (bytes_read == 0)
+        நிறுத்து;
+      போது (bytes_to_write < bytes_read)
+        எனில் (buffer[bytes_to_write++] == வரி_end && --வரிகள்_to_write == 0)
           {
             off_t n_bytes_past_EOL = bytes_read - bytes_to_write;
             /* If we have read more data than that on the specified number
                of lines, try to seek back to the position we would have
                gotten to had we been reading one byte at a time.  */
-            if (lseek (fd, -n_bytes_past_EOL, SEEK_CUR) < 0)
+            எனில் (lseek (fd, -n_bytes_past_EOL, SEEK_CUR) < 0)
               {
-                struct stat st;
-                if (fstat (fd, &st) != 0 || S_ISREG (st.st_mode))
+                கட்டமைப்பு stat st;
+                எனில் (fstat (fd, &st) != 0 || S_ISREG (st.st_mode))
                   elseek_diagnostic (-n_bytes_past_EOL, SEEK_CUR, filename);
               }
-            break;
+            நிறுத்து;
           }
       xwrite_stdout (buffer, bytes_to_write);
     }
-  return true;
+  திரும்பு true;
 }
 
-static bool
-head (char const *filename, int fd, uintmax_t n_units, bool count_lines,
+நிலையான bool
+head (எழுத்து மாறிலி *filename, முழு fd, uintmax_t n_units, bool மொத்தம்_வரிகள்,
       bool elide_from_end)
 {
-  if (print_headers)
+  எனில் (print_headers)
     write_header (filename);
 
-  if (elide_from_end)
+  எனில் (elide_from_end)
     {
       /* Optimize for "infinite" elisions.  */
-      if (n_units == UINTMAX_MAX)
-        return true;
+      எனில் (n_units == UINTMAX_MAX)
+        திரும்பு true;
 
       off_t current_pos = -1;
-      struct stat st;
-      if (fstat (fd, &st) != 0)
+      கட்டமைப்பு stat st;
+      எனில் (fstat (fd, &st) != 0)
         {
           error (0, errno, _("cannot fstat %s"),
                  quoteaf (filename));
-          return false;
+          திரும்பு false;
         }
-      if (! presume_input_pipe && S_ISREG (st.st_mode))
+      எனில் (! presume_உள்ளீடு_pipe && S_ISREG (st.st_mode))
         {
           current_pos = elseek (fd, 0, SEEK_CUR, filename);
-          if (current_pos < 0)
-            return false;
+          எனில் (current_pos < 0)
+            திரும்பு false;
         }
-      if (count_lines)
-        return elide_tail_lines_file (filename, fd, n_units, &st, current_pos);
-      else
-        return elide_tail_bytes_file (filename, fd, n_units, &st, current_pos);
+      எனில் (மொத்தம்_வரிகள்)
+        திரும்பு elide_tail_வரிகள்_file (filename, fd, n_units, &st, current_pos);
+      இல்லையெனில்
+        திரும்பு elide_tail_bytes_file (filename, fd, n_units, &st, current_pos);
     }
-  if (count_lines)
-    return head_lines (filename, fd, n_units);
-  else
-    return head_bytes (filename, fd, n_units);
+  எனில் (மொத்தம்_வரிகள்)
+    திரும்பு head_வரிகள் (filename, fd, n_units);
+  இல்லையெனில்
+    திரும்பு head_bytes (filename, fd, n_units);
 }
 
-static bool
-head_file (char const *filename, uintmax_t n_units, bool count_lines,
+நிலையான bool
+head_file (எழுத்து மாறிலி *filename, uintmax_t n_units, bool மொத்தம்_வரிகள்,
            bool elide_from_end)
 {
-  int fd;
+  முழு fd;
   bool ok;
   bool is_stdin = streq (filename, "-");
 
-  if (is_stdin)
+  எனில் (is_stdin)
     {
       have_read_stdin = true;
       fd = STDIN_FILENO;
       filename = _("standard input");
-      xset_binary_mode (STDIN_FILENO, O_BINARY);
+      xset_இருமம்_mode (STDIN_FILENO, O_இருமம்);
     }
-  else
+  இல்லையெனில்
     {
-      fd = open (filename, O_RDONLY | O_BINARY);
-      if (fd < 0)
+      fd = open (filename, O_RDONLY | O_இருமம்);
+      எனில் (fd < 0)
         {
           error (0, errno, _("cannot open %s for reading"), quoteaf (filename));
-          return false;
+          திரும்பு false;
         }
     }
 
-  ok = head (filename, fd, n_units, count_lines, elide_from_end);
-  if (!is_stdin && close (fd) != 0)
+  ok = head (filename, fd, n_units, மொத்தம்_வரிகள், elide_from_end);
+  எனில் (!is_stdin && close (fd) != 0)
     {
       error (0, errno, _("failed to close %s"), quoteaf (filename));
-      return false;
+      திரும்பு false;
     }
-  return ok;
+  திரும்பு ok;
 }
 
 /* Convert a string of decimal digits, N_STRING, with an optional suffix
@@ -901,30 +901,30 @@ head_file (char const *filename, uintmax_t n_units, bool count_lines,
    COUNT_LINES indicates whether N_STRING is a number of bytes or a number
    of lines.  It is used solely to give a more specific diagnostic.  */
 
-static uintmax_t
-string_to_integer (bool count_lines, char const *n_string)
+நிலையான uintmax_t
+string_to_integer (bool மொத்தம்_வரிகள், எழுத்து மாறிலி *n_string)
 {
-  return xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
-                     (count_lines
+  திரும்பு xnumtoumax (n_string, 10, 0, UINTMAX_MAX, "bkKmMGTPEZYRQ0",
+                     (மொத்தம்_வரிகள்
                       ? _("invalid number of lines")
                       : _("invalid number of bytes")),
                      0, XTOINT_MAX_QUIET);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  enum header_mode header_mode = multiple_files;
+  எண்ணிக்கை header_mode header_mode = multiple_files;
   bool ok = true;
-  int c;
+  முழு c;
 
   /* Number of items to output, or to elide from the end.
      UINTMAX_MAX stands for an essentially unlimited number.  */
-  uintmax_t n_units = DEFAULT_NUMBER;
+  uintmax_t n_units = DEFAULT_எண்;
 
   /* If true, interpret the numeric argument as the number of lines.
      Otherwise, interpret it as the number of bytes.  */
-  bool count_lines = true;
+  bool மொத்தம்_வரிகள் = true;
 
   /* Elide the specified number of lines or bytes, counting from
      the end of the file.  */
@@ -932,8 +932,8 @@ main (int argc, char **argv)
 
   /* Initializer for file_list if no file-arguments
      were specified on the command line.  */
-  static char const *const default_file_list[] = {"-", NULL};
-  char const *const *file_list;
+  நிலையான எழுத்து மாறிலி *மாறிலி default_file_list[] = {"-", வெற்று};
+  எழுத்து மாறிலி *மாறிலி *file_list;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -943,55 +943,55 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  if (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
+  எனில் (1 < argc && argv[1][0] == '-' && c_isdigit (argv[1][1]))
     {
-      char *a = argv[1];
-      char *n_string = ++a;
-      char *end_n_string;
-      char multiplier_char = 0;
+      எழுத்து *a = argv[1];
+      எழுத்து *n_string = ++a;
+      எழுத்து *end_n_string;
+      எழுத்து multiplier_char = 0;
 
       /* Old option syntax; a dash, one or more digits, and one or
          more option letters.  Move past the number. */
-      do ++a;
-      while (c_isdigit (*a));
+      செய் ++a;
+      போது (c_isdigit (*a));
 
       /* Pointer to the byte after the last digit.  */
       end_n_string = a;
 
       /* Parse any appended option letters. */
-      for (; *a; a++)
+      க்கு (; *a; a++)
         {
-          switch (*a)
+          தேர்வு (*a)
             {
-            case 'c':
-              count_lines = false;
+            நிலை 'c':
+              மொத்தம்_வரிகள் = false;
               multiplier_char = 0;
-              break;
+              நிறுத்து;
 
-            case 'b':
-            case 'k':
-            case 'm':
-              count_lines = false;
+            நிலை 'b':
+            நிலை 'k':
+            நிலை 'm':
+              மொத்தம்_வரிகள் = false;
               multiplier_char = *a;
-              break;
+              நிறுத்து;
 
-            case 'l':
-              count_lines = true;
-              break;
+            நிலை 'l':
+              மொத்தம்_வரிகள் = true;
+              நிறுத்து;
 
-            case 'q':
+            நிலை 'q':
               header_mode = never;
-              break;
+              நிறுத்து;
 
-            case 'v':
+            நிலை 'v':
               header_mode = always;
-              break;
+              நிறுத்து;
 
-            case 'z':
-              line_end = '\0';
-              break;
+            நிலை 'z':
+              வரி_end = '\0';
+              நிறுத்து;
 
-            default:
+            இயல்பு:
               error (0, 0, _("invalid trailing option -- %c"), *a);
               usage (EXIT_FAILURE);
             }
@@ -1000,10 +1000,10 @@ main (int argc, char **argv)
       /* Append the multiplier character (if any) onto the end of
          the digit string.  Then add NUL byte if necessary.  */
       *end_n_string = multiplier_char;
-      if (multiplier_char)
+      எனில் (multiplier_char)
         *(++end_n_string) = 0;
 
-      n_units = string_to_integer (count_lines, n_string);
+      n_units = string_to_integer (மொத்தம்_வரிகள், n_string);
 
       /* Make the options we just parsed invisible to getopt. */
       argv[1] = argv[0];
@@ -1011,70 +1011,70 @@ main (int argc, char **argv)
       argc--;
     }
 
-  while ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
-                           long_options, NULL))
+  போது ((c = getopt_long (argc, argv, "c:n:qvz0123456789",
+                           long_options, வெற்று))
          != -1)
     {
-      switch (c)
+      தேர்வு (c)
         {
-        case PRESUME_INPUT_PIPE_OPTION:
-          presume_input_pipe = true;
-          break;
+        நிலை PRESUME_உள்ளீடு_PIPE_OPTION:
+          presume_உள்ளீடு_pipe = true;
+          நிறுத்து;
 
-        case 'c':
-          count_lines = false;
+        நிலை 'c':
+          மொத்தம்_வரிகள் = false;
           elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+          எனில் (elide_from_end)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_to_integer (மொத்தம்_வரிகள், optarg);
+          நிறுத்து;
 
-        case 'n':
-          count_lines = true;
+        நிலை 'n':
+          மொத்தம்_வரிகள் = true;
           elide_from_end = (*optarg == '-');
-          if (elide_from_end)
+          எனில் (elide_from_end)
             ++optarg;
-          n_units = string_to_integer (count_lines, optarg);
-          break;
+          n_units = string_to_integer (மொத்தம்_வரிகள், optarg);
+          நிறுத்து;
 
-        case 'q':
+        நிலை 'q':
           header_mode = never;
-          break;
+          நிறுத்து;
 
-        case 'v':
+        நிலை 'v':
           header_mode = always;
-          break;
+          நிறுத்து;
 
-        case 'z':
-          line_end = '\0';
-          break;
+        நிலை 'z':
+          வரி_end = '\0';
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
-          if (c_isdigit (c))
+        இயல்பு:
+          எனில் (c_isdigit (c))
             error (0, 0, _("invalid trailing option -- %c"), c);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (header_mode == always
+  எனில் (header_mode == always
       || (header_mode == multiple_files && optind < argc - 1))
     print_headers = true;
 
   file_list = (optind < argc
-               ? (char const *const *) &argv[optind]
+               ? (எழுத்து மாறிலி *மாறிலி *) &argv[optind]
                : default_file_list);
 
-  xset_binary_mode (STDOUT_FILENO, O_BINARY);
+  xset_இருமம்_mode (STDOUT_FILENO, O_இருமம்);
 
-  for (size_t i = 0; file_list[i]; ++i)
-    ok &= head_file (file_list[i], n_units, count_lines, elide_from_end);
+  க்கு (size_t i = 0; file_list[i]; ++i)
+    ok &= head_file (file_list[i], n_units, மொத்தம்_வரிகள், elide_from_end);
 
-  if (have_read_stdin && close (STDIN_FILENO) < 0)
+  எனில் (have_read_stdin && close (STDIN_FILENO) < 0)
     error (EXIT_FAILURE, errno, "-");
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  திரும்பு ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

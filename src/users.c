@@ -16,15 +16,15 @@
 
 /* Written by jla; revised by djm */
 
-#include <config.h>
-#include <stdio.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
 
-#include <sys/types.h>
-#include "system.h"
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ "system.h"
 
-#include "long-options.h"
-#include "quote.h"
-#include "readutmp.h"
+#அந்தர்பாவ "long-options.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "readutmp.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "users"
@@ -33,25 +33,25 @@
   proper_name ("Joseph Arceneaux"), \
   proper_name ("David MacKenzie")
 
-static int
-userid_compare (const void *v_a, const void *v_b)
+நிலையான முழு
+userid_compare (மாறிலி வெறுமை *v_a, மாறிலி வெறுமை *v_b)
 {
-  char **a = (char **) v_a;
-  char **b = (char **) v_b;
-  return strcmp (*a, *b);
+  எழுத்து **a = (எழுத்து **) v_a;
+  எழுத்து **b = (எழுத்து **) v_b;
+  திரும்பு strcmp (*a, *b);
 }
 
-static void
-list_entries_users (idx_t n, STRUCT_UTMP const *this)
+நிலையான வெறுமை
+list_entries_users (idx_t n, STRUCT_UTMP மாறிலி *this)
 {
-  char **u = xinmalloc (n, sizeof *u);
+  எழுத்து **u = xinmalloc (n, அளவு *u);
   idx_t n_entries = 0;
 
-  while (n--)
+  போது (n--)
     {
-      if (IS_USER_PROCESS (this))
+      எனில் (IS_USER_PROCESS (this))
         {
-          char *trimmed_name;
+          எழுத்து *trimmed_name;
 
           trimmed_name = extract_trimmed_name (this);
 
@@ -61,43 +61,43 @@ list_entries_users (idx_t n, STRUCT_UTMP const *this)
       this++;
     }
 
-  qsort (u, n_entries, sizeof (u[0]), userid_compare);
+  qsort (u, n_entries, அளவு (u[0]), userid_compare);
 
-  for (idx_t i = 0; i < n_entries; i++)
+  க்கு (idx_t i = 0; i < n_entries; i++)
     {
-      char c = (i < n_entries - 1 ? ' ' : '\n');
+      எழுத்து c = (i < n_entries - 1 ? ' ' : '\n');
       fputs (u[i], stdout);
       putchar (c);
     }
 
-  for (idx_t i = 0; i < n_entries; i++)
-    free (u[i]);
-  free (u);
+  க்கு (idx_t i = 0; i < n_entries; i++)
+    விடுவி (u[i]);
+  விடுவி (u);
 }
 
 /* Display a list of users on the system, according to utmp file FILENAME.
    Use read_utmp OPTIONS to read FILENAME.  */
 
-static void
-users (char const *filename, int options)
+நிலையான வெறுமை
+users (எழுத்து மாறிலி *filename, முழு options)
 {
   idx_t n_users;
   STRUCT_UTMP *utmp_buf;
   options |= READ_UTMP_USER_PROCESS;
-  if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
+  எனில் (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
   list_entries_users (n_users, utmp_buf);
 
-  free (utmp_buf);
+  விடுவி (utmp_buf);
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]... [FILE]\n"), program_name);
       printf (_("\
@@ -113,8 +113,8 @@ If FILE is not specified, use %s.  %s as FILE is common.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -126,22 +126,22 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (எழுத்து மாறிலி *) வெற்று);
 
-  switch (argc - optind)
+  தேர்வு (argc - optind)
     {
-    case 0:			/* users */
+    நிலை 0:			/* users */
       users (UTMP_FILE, READ_UTMP_CHECK_PIDS);
-      break;
+      நிறுத்து;
 
-    case 1:			/* users <utmp file> */
+    நிலை 1:			/* users <utmp file> */
       users (argv[optind], 0);
-      break;
+      நிறுத்து;
 
-    default:			/* lose */
+    இயல்பு:			/* lose */
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

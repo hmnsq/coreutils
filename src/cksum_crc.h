@@ -20,31 +20,31 @@
 # include <stdint.h>
 # include <stdio.h>
 
-extern bool cksum_debug;
+வெளி bool cksum_debug;
 
-extern int
-crc_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+வெளி முழு
+crc_sum_stream (FILE *stream, வெறுமை *resstream, intmax_t *length);
 
-extern int
-crc32b_sum_stream (FILE *stream, void *resstream, intmax_t *length);
+வெளி முழு
+crc32b_sum_stream (FILE *stream, வெறுமை *resstream, intmax_t *length);
 
-extern void
-output_crc (char const *file, int binary_file, void const *digest, bool raw,
-            bool tagged, unsigned char delim, bool args, intmax_t length)
+வெளி வெறுமை
+output_crc (எழுத்து மாறிலி *file, முழு இருமம்_file, வெறுமை மாறிலி *digest, bool raw,
+            bool tagged, unsigned எழுத்து delim, bool args, intmax_t length)
   _GL_ATTRIBUTE_NONNULL ((3));
 
-extern bool
+வெளி bool
 cksum_vmull (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+வெளி bool
 cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+வெளி bool
 cksum_avx2 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern bool
+வெளி bool
 cksum_avx512 (FILE *fp, uint_fast32_t *crc_out, intmax_t *length_out);
 
-extern uint_fast32_t const crctab[8][256];
+வெளி uint_fast32_t மாறிலி crctab[8][256];
 
 #endif

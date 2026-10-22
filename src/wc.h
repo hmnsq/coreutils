@@ -1,5 +1,5 @@
-#include <stdint.h>
-struct wc_lines { int err; intmax_t lines; intmax_t bytes; };
-struct wc_lines wc_lines_avx2 (int);
-struct wc_lines wc_lines_avx512 (int);
-struct wc_lines wc_lines_neon (int fd);
+#அந்தர்பாவ <stdint.h>
+கட்டமைப்பு wc_வரிகள் { முழு err; intmax_t வரிகள்; intmax_t bytes; };
+கட்டமைப்பு wc_வரிகள் wc_வரிகள்_avx2 (முழு);
+கட்டமைப்பு wc_வரிகள் wc_வரிகள்_avx512 (முழு);
+கட்டமைப்பு wc_வரிகள் wc_வரிகள்_neon (முழு fd);

@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+வெளி முழு force_linkat (முழு, எழுத்து மாறிலி *, முழு, எழுத்து மாறிலி *, முழு, bool, முழு)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+வெளி முழு force_symlinkat (எழுத்து மாறிலி *, முழு, எழுத்து மாறிலி *, bool, முழு)
   _GL_ATTRIBUTE_NONNULL ();

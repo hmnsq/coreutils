@@ -14,46 +14,46 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include "wc.h"
-#include "system.h"
-#include "ioblksize.h"
+#அந்தர்பாவ "wc.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "ioblksize.h"
 
-#include <x86intrin.h>
+#அந்தர்பாவ <x86intrin.h>
 
 /* Read FD and return a summary.  */
-extern struct wc_lines
-wc_lines_avx2 (int fd)
+வெளி கட்டமைப்பு wc_வரிகள்
+wc_வரிகள்_avx2 (முழு fd)
 {
-  intmax_t lines = 0;
+  intmax_t வரிகள் = 0;
   intmax_t bytes = 0;
 
   __m256i endlines = _mm256_set1_epi8 ('\n');
 
-  while (true)
+  போது (true)
     {
-       __m256i avx_buf[IO_BUFSIZE / sizeof (__m256i)];
-      ssize_t bytes_read = read (fd, avx_buf, sizeof avx_buf);
-      if (bytes_read <= 0)
-        return (struct wc_lines) { bytes_read == 0 ? 0 : errno, lines, bytes };
+       __m256i avx_buf[IO_BUFSIZE / அளவு (__m256i)];
+      ssize_t bytes_read = பட (fd, avx_buf, அளவு avx_buf);
+      எனில் (bytes_read <= 0)
+        திரும்பு (கட்டமைப்பு wc_வரிகள்) { bytes_read == 0 ? 0 : errno, வரிகள், bytes };
 
       bytes += bytes_read;
       __m256i *datap = avx_buf;
 
-      while (bytes_read >= 32)
+      போது (bytes_read >= 32)
         {
            __m256i to_match = _mm256_load_si256 (datap);
            __m256i matches = _mm256_cmpeq_epi8 (to_match, endlines);
-           int mask = _mm256_movemask_epi8 (matches);
-           lines += __builtin_popcount (mask);
+           முழு mask = _mm256_movemask_epi8 (matches);
+           வரிகள் += __builtin_popcount (mask);
            datap += 1;
            bytes_read -= 32;
         }
 
       /* Finish up any left over bytes */
-      char *end = (char *) datap + bytes_read;
-      for (char *p = (char *) datap; p < end; p++)
-        lines += *p == '\n';
+      எழுத்து *end = (எழுத்து *) datap + bytes_read;
+      க்கு (எழுத்து *p = (எழுத்து *) datap; p < end; p++)
+        வரிகள் += *p == '\n';
     }
 }

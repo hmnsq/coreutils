@@ -16,24 +16,24 @@
 
 /* Written by Mike Parker, David MacKenzie, and Jim Meyering */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include <selinux/label.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <selinux/label.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "backupfile.h"
-#include "copy.h"
-#include "cp-hash.h"
-#include "filenamecat.h"
-#include "remove.h"
-#include "renameatu.h"
-#include "root-dev-ino.h"
-#include "targetdir.h"
-#include "priv-set.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "argmatch.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "backupfile.h"
+#அந்தர்பாவ "copy.h"
+#அந்தர்பாவ "cp-hash.h"
+#அந்தர்பாவ "filenamecat.h"
+#அந்தர்பாவ "remove.h"
+#அந்தர்பாவ "renameatu.h"
+#அந்தர்பாவ "root-dev-ino.h"
+#அந்தர்பாவ "targetdir.h"
+#அந்தர்பாவ "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "mv"
@@ -45,7 +45,7 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   DEBUG_OPTION = CHAR_MAX + 1,
   EXCHANGE_OPTION,
@@ -53,40 +53,40 @@ enum
   STRIP_TRAILING_SLASHES_OPTION
 };
 
-static char const *const update_type_string[] =
+நிலையான எழுத்து மாறிலி *மாறிலி update_type_string[] =
 {
-  "all", "none", "none-fail", "older", NULL
+  "all", "none", "none-fail", "older", வெற்று
 };
-static enum Update_type const update_type[] =
+நிலையான எண்ணிக்கை Update_type மாறிலி update_type[] =
 {
   UPDATE_ALL, UPDATE_NONE, UPDATE_NONE_FAIL, UPDATE_OLDER,
 };
 ARGMATCH_VERIFY (update_type_string, update_type);
 
-static struct option const long_options[] =
+நிலையான கட்டமைப்பு option மாறிலி long_options[] =
 {
-  {"backup", optional_argument, NULL, 'b'},
-  {"context", no_argument, NULL, 'Z'},
-  {"debug", no_argument, NULL, DEBUG_OPTION},
-  {"exchange", no_argument, NULL, EXCHANGE_OPTION},
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", no_argument, NULL, 'i'},
-  {"no-clobber", no_argument, NULL, 'n'},   /* Deprecated.  */
-  {"no-copy", no_argument, NULL, NO_COPY_OPTION},
-  {"no-target-directory", no_argument, NULL, 'T'},
-  {"strip-trailing-slashes", no_argument, NULL,
+  {"backup", optional_argument, வெற்று, 'b'},
+  {"context", no_argument, வெற்று, 'Z'},
+  {"debug", no_argument, வெற்று, DEBUG_OPTION},
+  {"exchange", no_argument, வெற்று, EXCHANGE_OPTION},
+  {"force", no_argument, வெற்று, 'f'},
+  {"interactive", no_argument, வெற்று, 'i'},
+  {"no-clobber", no_argument, வெற்று, 'n'},   /* Deprecated.  */
+  {"no-copy", no_argument, வெற்று, NO_COPY_OPTION},
+  {"no-target-directory", no_argument, வெற்று, 'T'},
+  {"strip-trailing-slashes", no_argument, வெற்று,
    STRIP_TRAILING_SLASHES_OPTION},
-  {"suffix", required_argument, NULL, 'S'},
-  {"target-directory", required_argument, NULL, 't'},
-  {"update", optional_argument, NULL, 'u'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"suffix", required_argument, வெற்று, 'S'},
+  {"target-directory", required_argument, வெற்று, 't'},
+  {"update", optional_argument, வெற்று, 'u'},
+  {"verbose", no_argument, வெற்று, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-static void
-rm_option_init (struct rm_options *x)
+நிலையான வெறுமை
+rm_option_init (கட்டமைப்பு rm_options *x)
 {
   x->ignore_missing_files = false;
   x->remove_empty_directories = true;
@@ -107,18 +107,18 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = true;
 
   {
-    static struct dev_ino dev_ino_buf;
-    x->root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-    if (x->root_dev_ino == NULL)
+    நிலையான கட்டமைப்பு dev_ino dev_ino_buf;
+    x->வேர்_dev_ino = get_வேர்_dev_ino (&dev_ino_buf);
+    எனில் (x->வேர்_dev_ino == வெற்று)
       error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
              quoteaf ("/"));
   }
 
-  x->preserve_all_root = false;
+  x->preserve_all_வேர் = false;
 }
 
-static void
-cp_option_init (struct cp_options *x)
+நிலையான வெறுமை
+cp_option_init (கட்டமைப்பு cp_options *x)
 {
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
@@ -139,7 +139,7 @@ cp_option_init (struct cp_options *x)
   x->preserve_timestamps = true;
   x->explicit_no_preserve_mode= false;
   x->preserve_security_context = selinux_enabled;
-  x->set_security_context = NULL;
+  x->set_security_context = வெற்று;
   x->reduce_diagnostics = false;
   x->data_copy_required = true;
   x->require_preserve = false;  /* FIXME: maybe make this an option */
@@ -156,8 +156,8 @@ cp_option_init (struct cp_options *x)
   x->open_dangling_dest_symlink = false;
   x->update = UPDATE_ALL;
   x->verbose = false;
-  x->dest_info = NULL;
-  x->src_info = NULL;
+  x->dest_info = வெற்று;
+  x->src_info = வெற்று;
 }
 
 /* Move SOURCE onto DEST aka DEST_DIRFD+DEST_RELNAME.
@@ -165,19 +165,19 @@ cp_option_init (struct cp_options *x)
    If SOURCE is a directory, DEST must not exist.
    Return true if successful.  */
 
-static bool
-do_move (char const *source, char const *dest,
-         int dest_dirfd, char const *dest_relname, const struct cp_options *x)
+நிலையான bool
+do_move (எழுத்து மாறிலி *source, எழுத்து மாறிலி *dest,
+         முழு dest_dirfd, எழுத்து மாறிலி *dest_relname, மாறிலி கட்டமைப்பு cp_options *x)
 {
   bool copy_into_self;
   bool rename_succeeded;
   bool ok = copy (source, dest, dest_dirfd, dest_relname, 0, x,
                   &copy_into_self, &rename_succeeded);
 
-  if (ok)
+  எனில் (ok)
     {
-      char const *dir_to_remove;
-      if (copy_into_self)
+      எழுத்து மாறிலி *dir_to_remove;
+      எனில் (copy_into_self)
         {
           /* In general, when copy returns with copy_into_self set, SOURCE is
              the same as, or a parent of DEST.  In this case we know it's a
@@ -190,16 +190,16 @@ do_move (char const *source, char const *dest,
              copied-into-self directory, DEST ('b/b' in the example),
              and failing.  */
 
-          dir_to_remove = NULL;
+          dir_to_remove = வெற்று;
           ok = false;
         }
-      else if (rename_succeeded)
+      இல்லையெனில் எனில் (rename_succeeded)
         {
           /* No need to remove anything.  SOURCE was successfully
              renamed to DEST.  Or the user declined to rename a file.  */
-          dir_to_remove = NULL;
+          dir_to_remove = வெற்று;
         }
-      else
+      இல்லையெனில்
         {
           /* This may mean SOURCE and DEST referred to different devices.
              It may also conceivably mean that even though they referred
@@ -226,29 +226,29 @@ do_move (char const *source, char const *dest,
           dir_to_remove = source;
         }
 
-      if (dir_to_remove != NULL)
+      எனில் (dir_to_remove != வெற்று)
         {
-          struct rm_options rm_options;
+          கட்டமைப்பு rm_options rm_options;
           rm_option_init (&rm_options);
           rm_options.verbose = x->verbose;
-          char const *dir[2] = { dir_to_remove, NULL };
+          எழுத்து மாறிலி *dir[2] = { dir_to_remove, வெற்று };
 
-          enum RM_status status = rm ((void *) dir, &rm_options);
+          எண்ணிக்கை RM_status status = rm ((வெறுமை *) dir, &rm_options);
           affirm (VALID_STATUS (status));
-          if (status == RM_ERROR)
+          எனில் (status == RM_ERROR)
             ok = false;
         }
     }
 
-  return ok;
+  திரும்பு ok;
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... [-T] SOURCE DEST\n\
@@ -280,7 +280,7 @@ Rename SOURCE to DEST, or move SOURCE(s) to DIRECTORY.\n\
 "));
       oputs (_("\
   -f, --force\n\
-         do not prompt before overwriting\n\
+         செய் not prompt before overwriting\n\
 "));
       oputs (_("\
   -i, --interactive\n\
@@ -295,7 +295,7 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
 "), stdout);
       oputs (_("\
       --no-copy\n\
-         do not copy if renaming fails\n\
+         செய் not copy எனில் renaming fails\n\
 "));
       oputs (_("\
       --strip-trailing-slashes\n\
@@ -316,7 +316,7 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
       oputs (_("\
       --update[=UPDATE]\n\
          control which existing files are updated;\n\
-         UPDATE={all,none,none-fail,older(default)}\n\
+         UPDATE={all,none,none-fail,older(இயல்பு)}\n\
 "));
       oputs (_("\
   -u\n\
@@ -328,7 +328,7 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
 "));
       oputs (_("\
   -Z, --context\n\
-         set SELinux security context of destination file to default type\n\
+         set SELinux security context of destination file to இயல்பு type\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -339,15 +339,15 @@ If you specify more than one of -i, -f, -n, only the final one takes effect.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   bool make_backups = false;
-  char const *backup_suffix = NULL;
-  char *version_control_string = NULL;
-  struct cp_options x;
+  எழுத்து மாறிலி *backup_suffix = வெற்று;
+  எழுத்து *version_control_string = வெற்று;
+  கட்டமைப்பு cp_options x;
   bool remove_trailing_slashes = false;
-  char const *target_directory = NULL;
+  எழுத்து மாறிலி *target_directory = வெற்று;
   bool no_target_directory = false;
   bool selinux_enabled = (0 < is_selinux_enabled ());
 
@@ -364,131 +364,131 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  int c;
-  while ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, NULL))
+  முழு c;
+  போது ((c = getopt_long (argc, argv, "bfint:uvS:TZ", long_options, வெற்று))
          != -1)
     {
-      switch (c)
+      தேர்வு (c)
         {
-        case 'b':
+        நிலை 'b':
           make_backups = true;
-          if (optarg)
+          எனில் (optarg)
             version_control_string = optarg;
-          break;
-        case 'f':
+          நிறுத்து;
+        நிலை 'f':
           x.interactive = I_ALWAYS_YES;
-          break;
-        case 'i':
+          நிறுத்து;
+        நிலை 'i':
           x.interactive = I_ASK_USER;
-          break;
-        case 'n':
+          நிறுத்து;
+        நிலை 'n':
           x.interactive = I_ALWAYS_SKIP;
-          break;
-        case DEBUG_OPTION:
+          நிறுத்து;
+        நிலை DEBUG_OPTION:
           x.debug = x.verbose = true;
-          break;
-        case EXCHANGE_OPTION:
+          நிறுத்து;
+        நிலை EXCHANGE_OPTION:
           x.exchange = true;
-          break;
-        case NO_COPY_OPTION:
+          நிறுத்து;
+        நிலை NO_COPY_OPTION:
           x.no_copy = true;
-          break;
-        case STRIP_TRAILING_SLASHES_OPTION:
+          நிறுத்து;
+        நிலை STRIP_TRAILING_SLASHES_OPTION:
           remove_trailing_slashes = true;
-          break;
-        case 't':
-          if (target_directory)
+          நிறுத்து;
+        நிலை 't':
+          எனில் (target_directory)
             error (EXIT_FAILURE, 0, _("multiple target directories specified"));
           target_directory = optarg;
-          break;
-        case 'T':
+          நிறுத்து;
+        நிலை 'T':
           no_target_directory = true;
-          break;
-        case 'u':
+          நிறுத்து;
+        நிலை 'u':
           x.update = UPDATE_OLDER;
-          if (optarg)
+          எனில் (optarg)
             x.update = XARGMATCH ("--update", optarg,
                                   update_type_string, update_type);
-          break;
-        case 'v':
+          நிறுத்து;
+        நிலை 'v':
           x.verbose = true;
-          break;
-        case 'S':
+          நிறுத்து;
+        நிலை 'S':
           make_backups = true;
           backup_suffix = optarg;
-          break;
-        case 'Z':
+          நிறுத்து;
+        நிலை 'Z':
           /* As a performance enhancement, don't even bother trying
              to "restorecon" when not on an selinux-enabled kernel.  */
-          if (selinux_enabled)
+          எனில் (selinux_enabled)
             {
               x.preserve_security_context = false;
               x.set_security_context = selabel_open (SELABEL_CTX_FILE,
-                                                     NULL, 0);
-              if (! x.set_security_context)
+                                                     வெற்று, 0);
+              எனில் (! x.set_security_context)
                 error (0, errno, _("warning: ignoring --context"));
             }
-          break;
+          நிறுத்து;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_files = argc - optind;
-  char **file = argv + optind;
+  முழு n_files = argc - optind;
+  எழுத்து **file = argv + optind;
 
-  if (n_files <= !target_directory)
+  எனில் (n_files <= !target_directory)
     {
-      if (n_files <= 0)
+      எனில் (n_files <= 0)
         error (0, 0, _("missing file operand"));
-      else
+      இல்லையெனில்
         error (0, 0, _("missing destination file operand after %s"),
                quoteaf (file[0]));
       usage (EXIT_FAILURE);
     }
 
-  struct stat sb;
+  கட்டமைப்பு stat sb;
   sb.st_mode = 0;
-  int target_dirfd = AT_FDCWD;
-  if (no_target_directory)
+  முழு target_dirfd = AT_FDCWD;
+  எனில் (no_target_directory)
     {
-      if (target_directory)
+      எனில் (target_directory)
         error (EXIT_FAILURE, 0,
                _("cannot combine --target-directory (-t) "
                  "and --no-target-directory (-T)"));
-      if (2 < n_files)
+      எனில் (2 < n_files)
         {
           error (0, 0, _("extra operand %s"), quoteaf (file[2]));
           usage (EXIT_FAILURE);
         }
     }
-  else if (target_directory)
+  இல்லையெனில் எனில் (target_directory)
     {
       target_dirfd = target_directory_operand (target_directory, &sb);
-      if (! target_dirfd_valid (target_dirfd))
+      எனில் (! target_dirfd_valid (target_dirfd))
         error (EXIT_FAILURE, errno, _("target directory %s"),
                quoteaf (target_directory));
     }
-  else
+  இல்லையெனில்
     {
-      char const *lastfile = file[n_files - 1];
-      if (n_files == 2 && !x.exchange)
+      எழுத்து மாறிலி *lastfile = file[n_files - 1];
+      எனில் (n_files == 2 && !x.exchange)
         x.rename_errno = (renameatu (AT_FDCWD, file[0], AT_FDCWD, lastfile,
                                      RENAME_NOREPLACE)
                           ? errno : 0);
-      if (x.rename_errno != 0)
+      எனில் (x.rename_errno != 0)
         {
-          int fd = target_directory_operand (lastfile, &sb);
-          if (target_dirfd_valid (fd))
+          முழு fd = target_directory_operand (lastfile, &sb);
+          எனில் (target_dirfd_valid (fd))
             {
               x.rename_errno = -1;
               target_dirfd = fd;
               target_directory = lastfile;
               n_files--;
             }
-          else
+          இல்லையெனில்
             {
               /* The last operand LASTFILE cannot be opened as a directory.
                  If there are more than two operands, report an error.
@@ -499,9 +499,9 @@ main (int argc, char **argv)
                  In this case use stat to test whether LASTFILE is a
                  directory, in case opening a non-directory with (O_SEARCH
                  | O_DIRECTORY) failed with EACCES not ENOTDIR.  */
-              int err = errno;
-              if (2 < n_files
-                  || (O_PATHSEARCH == O_SEARCH && err == EACCES
+              முழு err = errno;
+              எனில் (2 < n_files
+                  || (O_PATHSEARCH == O_தேடல் && err == EACCES
                       && (sb.st_mode != 0 || stat (lastfile, &sb) == 0)
                       && S_ISDIR (sb.st_mode)))
                 error (EXIT_FAILURE, err, _("target %s"), quoteaf (lastfile));
@@ -514,14 +514,14 @@ main (int argc, char **argv)
      systems (e.g., GNU/Linux) have a rename function that honors a
      trailing slash in the source, while others (Solaris 9, FreeBSD
      7.2) have a rename function that ignores it.  */
-  if (remove_trailing_slashes)
-    for (int i = 0; i < n_files; i++)
+  எனில் (remove_trailing_slashes)
+    க்கு (முழு i = 0; i < n_files; i++)
       strip_trailing_slashes (file[i]);
 
-  if (x.interactive == I_ALWAYS_SKIP)
+  எனில் (x.interactive == I_ALWAYS_SKIP)
     x.update = UPDATE_NONE;
 
-  if (make_backups
+  எனில் (make_backups
       && (x.exchange
           || x.update == UPDATE_NONE
           || x.update == UPDATE_NONE_FAIL))
@@ -541,29 +541,29 @@ main (int argc, char **argv)
   hash_init ();
 
   bool ok;
-  if (target_directory)
+  எனில் (target_directory)
     {
       /* Initialize the hash table only if we'll need it.
          The problem it is used to detect can arise only if there are
          two or more files to move.  */
-      if (2 <= n_files)
+      எனில் (2 <= n_files)
         dest_info_init (&x);
 
       ok = true;
-      for (int i = 0; i < n_files; ++i)
+      க்கு (முழு i = 0; i < n_files; ++i)
         {
           x.last_file = i + 1 == n_files;
-          char const *source = file[i];
-          char const *source_basename = last_component (source);
-          char *dest_relname;
-          char *dest = file_name_concat (target_directory, source_basename,
+          எழுத்து மாறிலி *source = file[i];
+          எழுத்து மாறிலி *source_basename = last_component (source);
+          எழுத்து *dest_relname;
+          எழுத்து *dest = file_name_concat (target_directory, source_basename,
                                          &dest_relname);
           strip_trailing_slashes (dest_relname);
           ok &= do_move (source, dest, target_dirfd, dest_relname, &x);
-          free (dest);
+          விடுவி (dest);
         }
     }
-  else
+  இல்லையெனில்
     {
       x.last_file = true;
       ok = do_move (file[0], file[1], AT_FDCWD, file[1], &x);

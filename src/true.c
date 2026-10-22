@@ -14,22 +14,22 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include "system.h"
-#include "true.h"
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "true.h"
 
 #define EXIT_STATUS (true_mode != TRUE_TRUE)
 #define PROGRAM_NAME (true_mode == TRUE_TRUE ? "true" : "false")
 
 #define AUTHORS proper_name ("Jim Meyering")
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
   printf (_("\
-Usage: %s [ignored command line arguments]\n\
+Usage: %s [ignored command வரி arguments]\n\
   or:  %s OPTION\n\
 "),
           program_name, program_name);
@@ -44,12 +44,12 @@ Usage: %s [ignored command line arguments]\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  எனில் (argc == 2)
     {
       initialize_main (&argc, &argv);
       set_program_name (argv[0]);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
+      எனில் (streq (argv[1], "--help"))
         usage (EXIT_STATUS);
 
-      if (streq (argv[1], "--version"))
+      எனில் (streq (argv[1], "--version"))
         version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+                     (எழுத்து *) வெற்று);
     }
 
-  return EXIT_STATUS;
+  திரும்பு EXIT_STATUS;
 }

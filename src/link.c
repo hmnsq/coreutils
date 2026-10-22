@@ -20,25 +20,25 @@
 
    Simply call the system 'link' function */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "long-options.h"
-#include "quote.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "long-options.h"
+#அந்தர்பாவ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "link"
 
 #define AUTHORS proper_name ("Michael Stone")
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s FILE1 FILE2\n\
@@ -53,8 +53,8 @@ Usage: %s FILE1 FILE2\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -66,26 +66,26 @@ main (int argc, char **argv)
 
   parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,
                                    Version, true, usage, AUTHORS,
-                                   (char const *) NULL);
+                                   (எழுத்து மாறிலி *) வெற்று);
 
-  if (argc < optind + 2)
+  எனில் (argc < optind + 2)
     {
-      if (argc < optind + 1)
+      எனில் (argc < optind + 1)
         error (0, 0, _("missing operand"));
-      else
+      இல்லையெனில்
         error (0, 0, _("missing operand after %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
+  எனில் (optind + 2 < argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
       usage (EXIT_FAILURE);
     }
 
-  if (link (argv[optind], argv[optind + 1]) != 0)
+  எனில் (link (argv[optind], argv[optind + 1]) != 0)
     error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
            quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

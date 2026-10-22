@@ -16,16 +16,16 @@
 
 /* Written by Jim Meyering and Eric Blake.  */
 
-#include <config.h>
-#include <sys/types.h>
-#include <getopt.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <getopt.h>
 
-#include "system.h"
+#அந்தர்பாவ "system.h"
 
-#include "close-stream.h"
-#include "filenamecat.h"
-#include "quote.h"
-#include "tempname.h"
+#அந்தர்பாவ "close-stream.h"
+#அந்தர்பாவ "filenamecat.h"
+#அந்தர்பாவ "quote.h"
+#அந்தர்பாவ "tempname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "mktemp"
@@ -34,33 +34,33 @@
   proper_name ("Jim Meyering"), \
   proper_name ("Eric Blake")
 
-static char const *default_template = "tmp.XXXXXXXXXX";
+நிலையான எழுத்து மாறிலி *default_template = "tmp.XXXXXXXXXX";
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   SUFFIX_OPTION = CHAR_MAX + 1,
 };
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"directory", no_argument, NULL, 'd'},
-  {"quiet", no_argument, NULL, 'q'},
-  {"dry-run", no_argument, NULL, 'u'},
-  {"suffix", required_argument, NULL, SUFFIX_OPTION},
-  {"tmpdir", optional_argument, NULL, 'p'},
+  {"directory", no_argument, வெற்று, 'd'},
+  {"quiet", no_argument, வெற்று, 'q'},
+  {"dry-run", no_argument, வெற்று, 'u'},
+  {"suffix", required_argument, வெற்று, SUFFIX_OPTION},
+  {"tmpdir", optional_argument, வெற்று, 'p'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]... [TEMPLATE]\n"), program_name);
       fputs (_("\
@@ -78,7 +78,7 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
 "));
       oputs (_("\
   -u, --dry-run\n\
-         do not create anything; merely print a name (unsafe)\n\
+         செய் not create anything; merely print a name (unsafe)\n\
 "));
       oputs (_("\
   -q, --quiet\n\
@@ -87,12 +87,12 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
       --suffix=SUFF\n\
          append SUFF to TEMPLATE; SUFF must not contain a slash.\n\
-         This option is implied if TEMPLATE does not end in X\n\
+         This option is implied எனில் TEMPLATE does not end in X\n\
 "));
       oputs (_("\
   -p DIR, --tmpdir[=DIR]\n\
          interpret TEMPLATE relative to DIR;\n\
-         if DIR is not specified, use $TMPDIR if set, else /tmp.\n\
+         எனில் DIR is not specified, use $TMPDIR எனில் set, இல்லையெனில் /tmp.\n\
          With this option, TEMPLATE must not be an absolute name;\n\
          unlike with -t, TEMPLATE may contain slashes,\n\
          but mktemp creates only the final component\n\
@@ -100,8 +100,8 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
       oputs (_("\
   -t\n\
          interpret TEMPLATE as a single file name component,\n\
-         relative to a directory: $TMPDIR, if set;\n\
-         else the directory specified via -p; else /tmp [deprecated]\n\
+         relative to a directory: $TMPDIR, எனில் set;\n\
+         இல்லையெனில் the directory specified via -p; இல்லையெனில் /tmp [deprecated]\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -111,62 +111,62 @@ Files are created u+rw, and directories u+rwx, minus umask restrictions.\n\
   exit (status);
 }
 
-static size_t
-count_consecutive_X_s (char const *s, size_t len)
+நிலையான size_t
+மொத்தம்_consecutive_X_s (எழுத்து மாறிலி *s, size_t len)
 {
   size_t n = 0;
-  for ( ; len && s[len - 1] == 'X'; len--)
+  க்கு ( ; len && s[len - 1] == 'X'; len--)
     ++n;
-  return n;
+  திரும்பு n;
 }
 
-static int
-mkstemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
+நிலையான முழு
+mkstemp_len (எழுத்து *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
+  திரும்பு gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_FILE,
                            x_len);
 }
 
-static int
-mkdtemp_len (char *tmpl, size_t suff_len, size_t x_len, bool dry_run)
+நிலையான முழு
+mkdtemp_len (எழுத்து *tmpl, size_t suff_len, size_t x_len, bool dry_run)
 {
-  return gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
+  திரும்பு gen_tempname_len (tmpl, suff_len, 0, dry_run ? GT_NOCREATE : GT_DIR,
                            x_len);
 }
 
 /* True if we have already closed standard output.  */
-static bool stdout_closed;
+நிலையான bool stdout_closed;
 
 /* Avoid closing stdout twice.  Since we conditionally call
    close_stream (stdout) in order to decide whether to clean up a
    temporary file, the exit hook needs to know whether to do all of
    close_stdout or just the stderr half.  */
-static void
-maybe_close_stdout (void)
+நிலையான வெறுமை
+maybe_close_stdout (வெறுமை)
 {
-  if (!stdout_closed)
+  எனில் (!stdout_closed)
     close_stdout ();
-  else if (close_stream (stderr) != 0)
+  இல்லையெனில் எனில் (close_stream (stderr) != 0)
     _exit (EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  char const *dest_dir;
-  char const *dest_dir_arg = NULL;
+  எழுத்து மாறிலி *dest_dir;
+  எழுத்து மாறிலி *dest_dir_arg = வெற்று;
   bool suppress_file_err = false;
-  int c;
-  char *template;
-  char *suffix = NULL;
+  முழு c;
+  எழுத்து *template;
+  எழுத்து *suffix = வெற்று;
   bool use_dest_dir = false;
   bool deprecated_t_option = false;
   bool create_directory = false;
   bool dry_run = false;
-  int status = EXIT_SUCCESS;
-  size_t x_count;
+  முழு status = EXIT_SUCCESS;
+  size_t x_மொத்தம்;
   size_t suffix_len;
-  char *dest_name = NULL;
+  எழுத்து *dest_name = வெற்று;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -176,63 +176,63 @@ main (int argc, char **argv)
 
   atexit (maybe_close_stdout);
 
-  while ((c = getopt_long (argc, argv, "dp:qtuV", longopts, NULL)) != -1)
+  போது ((c = getopt_long (argc, argv, "dp:qtuV", longopts, வெற்று)) != -1)
     {
-      switch (c)
+      தேர்வு (c)
         {
-        case 'd':
+        நிலை 'd':
           create_directory = true;
-          break;
-        case 'p':
+          நிறுத்து;
+        நிலை 'p':
           dest_dir_arg = optarg;
           use_dest_dir = true;
-          break;
-        case 'q':
+          நிறுத்து;
+        நிலை 'q':
           suppress_file_err = true;
-          break;
-        case 't':
+          நிறுத்து;
+        நிலை 't':
           use_dest_dir = true;
           deprecated_t_option = true;
-          break;
-        case 'u':
+          நிறுத்து;
+        நிலை 'u':
           dry_run = true;
-          break;
+          நிறுத்து;
 
-        case SUFFIX_OPTION:
+        நிலை SUFFIX_OPTION:
           suffix = optarg;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
-        case 'V': /* Undocumented alias, for compatibility with the original
+        நிலை 'V': /* Undocumented alias, for compatibility with the original
                      mktemp program.  */
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  int n_args = argc - optind;
-  if (2 <= n_args)
+  முழு n_args = argc - optind;
+  எனில் (2 <= n_args)
     {
       error (0, 0, _("too many templates"));
       usage (EXIT_FAILURE);
     }
 
-  if (n_args == 0)
+  எனில் (n_args == 0)
     {
       use_dest_dir = true;
-      template = (char *) default_template;
+      template = (எழுத்து *) default_template;
     }
-  else
+  இல்லையெனில்
     {
       template = argv[optind];
     }
 
-  if (suffix)
+  எனில் (suffix)
     {
       size_t len = strlen (template);
-      if (!len || template[len - 1] != 'X')
+      எனில் (!len || template[len - 1] != 'X')
         {
           error (EXIT_FAILURE, 0,
                  _("with --suffix, template %s must end in X"),
@@ -245,69 +245,69 @@ main (int argc, char **argv)
       template = dest_name;
       suffix = dest_name + len;
     }
-  else
+  இல்லையெனில்
     {
       template = xstrdup (template);
       suffix = strrchr (template, 'X');
-      if (!suffix)
+      எனில் (!suffix)
         suffix = strchr (template, '\0');
-      else
+      இல்லையெனில்
         suffix++;
       suffix_len = strlen (suffix);
     }
 
   /* At this point, template is malloc'd, and suffix points into template.  */
-  if (suffix_len && last_component (suffix) != suffix)
+  எனில் (suffix_len && last_component (suffix) != suffix)
     {
       error (EXIT_FAILURE, 0,
              _("invalid suffix %s, contains directory separator"),
              quote (suffix));
     }
-  x_count = count_consecutive_X_s (template, suffix - template);
-  if (x_count < 3)
+  x_மொத்தம் = மொத்தம்_consecutive_X_s (template, suffix - template);
+  எனில் (x_மொத்தம் < 3)
     {
       /* when suffix was appended to template only diagnose the template.  */
-      if (template == dest_name)
+      எனில் (template == dest_name)
         template[suffix - template] = '\0';
       error (EXIT_FAILURE, 0, _("too few X's in template %s"),
              quote (template));
     }
 
-  if (use_dest_dir)
+  எனில் (use_dest_dir)
     {
-      if (deprecated_t_option)
+      எனில் (deprecated_t_option)
         {
-          char *env = getenv ("TMPDIR");
-          if (env && *env)
+          எழுத்து *env = getenv ("TMPDIR");
+          எனில் (env && *env)
             dest_dir = env;
-          else if (dest_dir_arg && *dest_dir_arg)
+          இல்லையெனில் எனில் (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          இல்லையெனில்
             dest_dir = "/tmp";
 
-          if (last_component (template) != template)
+          எனில் (last_component (template) != template)
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s, contains directory separator"),
                    quote (template));
         }
-      else
+      இல்லையெனில்
         {
-          if (dest_dir_arg && *dest_dir_arg)
+          எனில் (dest_dir_arg && *dest_dir_arg)
             dest_dir = dest_dir_arg;
-          else
+          இல்லையெனில்
             {
-              char *env = getenv ("TMPDIR");
+              எழுத்து *env = getenv ("TMPDIR");
               dest_dir = (env && *env ? env : "/tmp");
             }
-          if (IS_ABSOLUTE_FILE_NAME (template))
+          எனில் (IS_ABSOLUTE_FILE_NAME (template))
             error (EXIT_FAILURE, 0,
                    _("invalid template, %s; with --tmpdir,"
                      " it may not be absolute"),
                    quote (template));
         }
 
-      dest_name = file_name_concat (dest_dir, template, NULL);
-      free (template);
+      dest_name = file_name_concat (dest_dir, template, வெற்று);
+      விடுவி (template);
       template = dest_name;
       /* Note that suffix is now invalid.  */
     }
@@ -316,39 +316,39 @@ main (int argc, char **argv)
      mkstemp may leave the buffer in an undefined state.  */
   dest_name = xstrdup (template);
 
-  if (create_directory)
+  எனில் (create_directory)
     {
-      int err = mkdtemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (err != 0)
+      முழு err = mkdtemp_len (dest_name, suffix_len, x_மொத்தம், dry_run);
+      எனில் (err != 0)
         {
-          if (!suppress_file_err)
+          எனில் (!suppress_file_err)
             error (0, errno, _("failed to create directory via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
-  else
+  இல்லையெனில்
     {
-      int fd = mkstemp_len (dest_name, suffix_len, x_count, dry_run);
-      if (fd < 0 || (!dry_run && close (fd) != 0))
+      முழு fd = mkstemp_len (dest_name, suffix_len, x_மொத்தம், dry_run);
+      எனில் (fd < 0 || (!dry_run && close (fd) != 0))
         {
-          if (!suppress_file_err)
+          எனில் (!suppress_file_err)
             error (0, errno, _("failed to create file via template %s"),
                    quote (template));
           status = EXIT_FAILURE;
         }
     }
 
-  if (status == EXIT_SUCCESS)
+  எனில் (status == EXIT_SUCCESS)
     {
       puts (dest_name);
       /* If we created a file, but then failed to output the file
          name, we should clean up the mess before failing.  */
-      if (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
+      எனில் (!dry_run && ((stdout_closed = true), close_stream (stdout) != 0))
         {
-          int saved_errno = errno;
+          முழு saved_errno = errno;
           (create_directory ? rmdir : unlink) (dest_name);
-          if (!suppress_file_err)
+          எனில் (!suppress_file_err)
             error (0, saved_errno, _("write error"));
           status = EXIT_FAILURE;
         }

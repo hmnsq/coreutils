@@ -23,64 +23,64 @@
    randomly-named temporary, which is safer for many applications than
    a window where B does not exist.  */
 
-#include <config.h>
-#include "system.h"
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ "system.h"
 
-#include "force-link.h"
+#அந்தர்பாவ "force-link.h"
 
-#include <tempname.h>
+#அந்தர்பாவ <tempname.h>
 
 /* A basename pattern suitable for a temporary file.  It should work
    even on file systems like FAT that support only short names.
    "Cu" is short for "Coreutils" or for "Changeable unstable",
    take your pick....  */
 
-static char const simple_pattern[] = "CuXXXXXX";
-enum { x_suffix_len = sizeof "XXXXXX" - 1 };
+நிலையான எழுத்து மாறிலி simple_pattern[] = "CuXXXXXX";
+எண்ணிக்கை { x_suffix_len = அளவு "XXXXXX" - 1 };
 
 /* A size for smallish buffers containing file names.  Longer file
    names can use malloc.  */
 
-enum { smallsize = 256 };
+எண்ணிக்கை { smallsize = 256 };
 
 /* Return a template for a file in the same directory as DSTNAME.
    Use BUF if the template fits, otherwise use malloc and return NULL
    (setting errno) if unsuccessful.  */
 
-static char *
-samedir_template (char const *dstname, char buf[smallsize])
+நிலையான எழுத்து *
+samedir_template (எழுத்து மாறிலி *dstname, எழுத்து buf[smallsize])
 {
   ptrdiff_t dstdirlen = last_component (dstname) - dstname;
-  size_t dsttmpsize = dstdirlen + sizeof simple_pattern;
-  char *dsttmp;
-  if (dsttmpsize <= smallsize)
+  size_t dsttmpsize = dstdirlen + அளவு simple_pattern;
+  எழுத்து *dsttmp;
+  எனில் (dsttmpsize <= smallsize)
     dsttmp = buf;
-  else
+  இல்லையெனில்
     {
       dsttmp = malloc (dsttmpsize);
-      if (!dsttmp)
-        return dsttmp;
+      எனில் (!dsttmp)
+        திரும்பு dsttmp;
     }
   strcpy (mempcpy (dsttmp, dstname, dstdirlen), simple_pattern);
-  return dsttmp;
+  திரும்பு dsttmp;
 }
 
 
 /* Auxiliaries for force_linkat.  */
 
-struct link_arg
+கட்டமைப்பு link_arg
 {
-  int srcdir;
-  char const *srcname;
-  int dstdir;
-  int flags;
+  முழு srcdir;
+  எழுத்து மாறிலி *srcname;
+  முழு dstdir;
+  முழு flags;
 };
 
-static int
-try_link (char *dest, void *arg)
+நிலையான முழு
+try_link (எழுத்து *dest, வெறுமை *arg)
 {
-  struct link_arg *a = arg;
-  return linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
+  கட்டமைப்பு link_arg *a = arg;
+  திரும்பு linkat (a->srcdir, a->srcname, a->dstdir, dest, a->flags);
 }
 
 /* Hard-link directory SRCDIR's file SRCNAME to directory DSTDIR's
@@ -91,27 +91,27 @@ try_link (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_linkat (int srcdir, char const *srcname,
-              int dstdir, char const *dstname, int flags, bool force,
-              int linkat_errno)
+வெளி முழு
+force_linkat (முழு srcdir, எழுத்து மாறிலி *srcname,
+              முழு dstdir, எழுத்து மாறிலி *dstname, முழு flags, bool force,
+              முழு linkat_errno)
 {
-  if (linkat_errno < 0)
+  எனில் (linkat_errno < 0)
     linkat_errno = (linkat (srcdir, srcname, dstdir, dstname, flags) == 0
                     ? 0 : errno);
-  if (!force || linkat_errno != EEXIST)
-    return linkat_errno;
+  எனில் (!force || linkat_errno != EEXIST)
+    திரும்பு linkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (! dsttmp)
-    return errno;
-  struct link_arg arg = { srcdir, srcname, dstdir, flags };
-  int err;
+  எழுத்து buf[smallsize];
+  எழுத்து *dsttmp = samedir_template (dstname, buf);
+  எனில் (! dsttmp)
+    திரும்பு errno;
+  கட்டமைப்பு link_arg arg = { srcdir, srcname, dstdir, flags };
+  முழு err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
+  எனில் (try_tempname_len (dsttmp, 0, &arg, try_link, x_suffix_len) != 0)
     err = errno;
-  else
+  இல்லையெனில்
     {
       err = renameat (dstdir, dsttmp, dstdir, dstname) == 0 ? -1 : errno;
       /* Unlink DSTTMP even if renameat succeeded, in case DSTTMP
@@ -120,25 +120,25 @@ force_linkat (int srcdir, char const *srcname,
       unlinkat (dstdir, dsttmp, 0);
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  எனில் (dsttmp != buf)
+    விடுவி (dsttmp);
+  திரும்பு err;
 }
 
 
 /* Auxiliaries for force_symlinkat.  */
 
-struct symlink_arg
+கட்டமைப்பு symlink_arg
 {
-  char const *srcname;
-  int dstdir;
+  எழுத்து மாறிலி *srcname;
+  முழு dstdir;
 };
 
-static int
-try_symlink (char *dest, void *arg)
+நிலையான முழு
+try_symlink (எழுத்து *dest, வெறுமை *arg)
 {
-  struct symlink_arg *a = arg;
-  return symlinkat (a->srcname, a->dstdir, dest);
+  கட்டமைப்பு symlink_arg *a = arg;
+  திரும்பு symlinkat (a->srcname, a->dstdir, dest);
 }
 
 /* Create a symlink containing SRCNAME in directory DSTDIR's file DSTNAME.
@@ -148,37 +148,37 @@ try_symlink (char *dest, void *arg)
    -1 if successful and DSTNAME already existed,
    0 if successful and DSTNAME did not already exist, and
    a positive errno value on failure.  */
-extern int
-force_symlinkat (char const *srcname, int dstdir, char const *dstname,
-                 bool force, int symlinkat_errno)
+வெளி முழு
+force_symlinkat (எழுத்து மாறிலி *srcname, முழு dstdir, எழுத்து மாறிலி *dstname,
+                 bool force, முழு symlinkat_errno)
 {
-  if (symlinkat_errno < 0)
+  எனில் (symlinkat_errno < 0)
     symlinkat_errno = symlinkat (srcname, dstdir, dstname) == 0 ? 0 : errno;
-  if (!force || symlinkat_errno != EEXIST)
-    return symlinkat_errno;
+  எனில் (!force || symlinkat_errno != EEXIST)
+    திரும்பு symlinkat_errno;
 
-  char buf[smallsize];
-  char *dsttmp = samedir_template (dstname, buf);
-  if (!dsttmp)
-    return errno;
-  struct symlink_arg arg = { srcname, dstdir };
-  int err;
+  எழுத்து buf[smallsize];
+  எழுத்து *dsttmp = samedir_template (dstname, buf);
+  எனில் (!dsttmp)
+    திரும்பு errno;
+  கட்டமைப்பு symlink_arg arg = { srcname, dstdir };
+  முழு err;
 
-  if (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
+  எனில் (try_tempname_len (dsttmp, 0, &arg, try_symlink, x_suffix_len) != 0)
     err = errno;
-  else if (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
+  இல்லையெனில் எனில் (renameat (dstdir, dsttmp, dstdir, dstname) != 0)
     {
       err = errno;
       unlinkat (dstdir, dsttmp, 0);
     }
-  else
+  இல்லையெனில்
     {
       /* Don't worry about renameat being a no-op, since DSTTMP is
          newly created.  */
       err = -1;
     }
 
-  if (dsttmp != buf)
-    free (dsttmp);
-  return err;
+  எனில் (dsttmp != buf)
+    விடுவி (dsttmp);
+  திரும்பு err;
 }

@@ -35,14 +35,14 @@
    A FILE of '-' means standard input.
    If no FILEs are given, standard input is used. */
 
-#include <config.h>
+#அந்தர்பாவ <config.h>
 
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
-#include "system.h"
-#include "fadvise.h"
-#include "mcel.h"
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "fadvise.h"
+#அந்தர்பாவ "mcel.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "paste"
@@ -52,33 +52,33 @@
   proper_name ("David MacKenzie")
 
 /* If nonzero, we have read standard input at some point. */
-static bool have_read_stdin;
+நிலையான bool have_read_stdin;
 
 /* If nonzero, merge subsequent lines of each file rather than
    corresponding lines from each file in parallel. */
-static bool serial_merge;
+நிலையான bool serial_merge;
 
 /* The delimiters between lines of input files (used cyclically).
    This stores the raw bytes of all delimiters concatenated.  */
-static char *delims;
+நிலையான எழுத்து *delims;
 
 /* Length of each delimiter in bytes (supports multi-byte characters).
    A length of 0 indicates no delimiter at this position (from \0 escape).  */
-static size_t *delim_lens;
+நிலையான size_t *delim_lens;
 
 /* Number of delimiters.  */
-static idx_t num_delims;
+நிலையான idx_t இலக்கம்_delims;
 
-static unsigned char line_delim = '\n';
+நிலையான unsigned எழுத்து வரி_delim = '\n';
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"serial", no_argument, NULL, 's'},
-  {"delimiters", required_argument, NULL, 'd'},
-  {"zero-terminated", no_argument, NULL, 'z'},
+  {"serial", no_argument, வெற்று, 's'},
+  {"delimiters", required_argument, வெற்று, 'd'},
+  {"zero-terminated", no_argument, வெற்று, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
 /* Set globals delims, delim_lens, and num_delims.
@@ -89,53 +89,53 @@ static struct option const longopts[] =
    If the string ends in an odd number of backslashes, ignore the
    final backslash and return nonzero.  */
 
-static int
-collapse_escapes (char const *strptr)
+நிலையான முழு
+collapse_escapes (எழுத்து மாறிலி *strptr)
 {
-  char *strout = xstrdup (strptr);
+  எழுத்து *strout = xstrdup (strptr);
   bool backslash_at_end = false;
 
   delims = strout;
-  delim_lens = xnmalloc (MAX (1, strlen (strptr)), sizeof *delim_lens);
+  delim_lens = xnmalloc (MAX (1, strlen (strptr)), அளவு *delim_lens);
 
-  char const *s = strptr;
+  எழுத்து மாறிலி *s = strptr;
   idx_t idx = 0;
 
-  while (*s)
+  போது (*s)
     {
-      if (*s == '\\')
+      எனில் (*s == '\\')
         {
           s++;
-          if (*s == '\0')
+          எனில் (*s == '\0')
             {
               backslash_at_end = true;
-              break;
+              நிறுத்து;
             }
-          else if (*s == '0')
+          இல்லையெனில் எனில் (*s == '0')
             {
               /* Empty delimiter at this position.  */
               s++;
               delim_lens[idx++] = 0;
             }
-          else
+          இல்லையெனில்
             {
-              switch (*s)
+              தேர்வு (*s)
                 {
-                case 'b': *strout++ = '\b'; break;
-                case 'f': *strout++ = '\f'; break;
-                case 'n': *strout++ = '\n'; break;
-                case 'r': *strout++ = '\r'; break;
-                case 't': *strout++ = '\t'; break;
-                case 'v': *strout++ = '\v'; break;
-                case '\\': *strout++ = '\\'; break;
-                default: goto copy_character;
+                நிலை 'b': *strout++ = '\b'; நிறுத்து;
+                நிலை 'f': *strout++ = '\f'; நிறுத்து;
+                நிலை 'n': *strout++ = '\n'; நிறுத்து;
+                நிலை 'r': *strout++ = '\r'; நிறுத்து;
+                நிலை 't': *strout++ = '\t'; நிறுத்து;
+                நிலை 'v': *strout++ = '\v'; நிறுத்து;
+                நிலை '\\': *strout++ = '\\'; நிறுத்து;
+                இயல்பு: செல் copy_character;
                 }
 
               s++;
               delim_lens[idx++] = 1;
             }
 
-          continue;
+          தொடர்;
         }
 
       copy_character:;
@@ -147,33 +147,33 @@ collapse_escapes (char const *strptr)
 
   *strout = '\0';
 
-  if (idx == 0)
+  எனில் (idx == 0)
     {
       delim_lens[0] = 0;
       idx = 1;
     }
 
-  num_delims = idx;
+  இலக்கம்_delims = idx;
 
-  return backslash_at_end ? 1 : 0;
+  திரும்பு backslash_at_end ? 1 : 0;
 }
 
 /* Output a single byte, reporting any write errors.  */
 
-static inline void
-xputchar (char c)
+நிலையான உள்வரி வெறுமை
+xputchar (எழுத்து c)
 {
-  if (putchar (c) < 0)
+  எனில் (putchar (c) < 0)
     write_error ();
 }
 
 /* Output the delimiter at DELIMPTR with length LEN.
    If LEN is 0, nothing is output (empty delimiter from \0 escape).  */
 
-static inline void
-output_delim (char const *delimptr, size_t len)
+நிலையான உள்வரி வெறுமை
+output_delim (எழுத்து மாறிலி *delimptr, size_t len)
 {
-  if (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
+  எனில் (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
     write_error ();
 }
 
@@ -181,19 +181,19 @@ output_delim (char const *delimptr, size_t len)
    Return true if successful, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_parallel (size_t nfiles, char **fnamptr)
+நிலையான bool
+paste_parallel (size_t nfiles, எழுத்து **fnamptr)
 {
   bool ok = true;
   /* If all files are just ready to be closed, or will be on this
      round, the string of delimiters must be preserved.
      delbuf stores the delimiter bytes for closed files.
      Size it to hold up to (nfiles - 1) delimiters.  */
-  char *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
+  எழுத்து *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
 
   /* Streams open to the files to process; null if the corresponding
      stream is closed.  */
-  FILE **fileptr = xnmalloc (nfiles + 1, sizeof *fileptr);
+  FILE **fileptr = xnmalloc (nfiles + 1, அளவு *fileptr);
 
   /* Number of files still open to process.  */
   size_t files_open;
@@ -205,32 +205,32 @@ paste_parallel (size_t nfiles, char **fnamptr)
      number of files, but at the (considerable) expense of remembering
      each file and its current offset, then opening/reading/closing.  */
 
-  for (files_open = 0; files_open < nfiles; ++files_open)
+  க்கு (files_open = 0; files_open < nfiles; ++files_open)
     {
-      if (streq (fnamptr[files_open], "-"))
+      எனில் (streq (fnamptr[files_open], "-"))
         {
           have_read_stdin = true;
           fileptr[files_open] = stdin;
         }
-      else
+      இல்லையெனில்
         {
           fileptr[files_open] = fopen (fnamptr[files_open], "r");
-          if (fileptr[files_open] == NULL)
+          எனில் (fileptr[files_open] == வெற்று)
             error (EXIT_FAILURE, errno, "%s", quotef (fnamptr[files_open]));
-          else if (fileno (fileptr[files_open]) == STDIN_FILENO)
+          இல்லையெனில் எனில் (fileno (fileptr[files_open]) == STDIN_FILENO)
             opened_stdin = true;
           fadvise (fileptr[files_open], FADVISE_SEQUENTIAL);
         }
     }
 
-  if (opened_stdin && have_read_stdin)
+  எனில் (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
   /* Read a line from each file and output it to stdout separated by a
      delimiter, until we go through the loop without successfully
      reading from any of the files. */
 
-  while (files_open)
+  போது (files_open)
     {
       /* Set up for the next line. */
       bool somedone = false;
@@ -238,152 +238,152 @@ paste_parallel (size_t nfiles, char **fnamptr)
       idx_t delimoff = 0;              /* Current offset into delims.  */
       idx_t delims_saved = 0;          /* Bytes saved in 'delbuf'. */
 
-      for (size_t i = 0; i < nfiles && files_open; i++)
+      க்கு (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
+          முழு chr;			/* Input character. */
+          முழு err;			/* Input errno value.  */
           bool sometodo = false;	/* Input chars to process.  */
 
-          if (fileptr[i])
+          எனில் (fileptr[i])
             {
               chr = getc (fileptr[i]);
               err = errno;
-              if (chr != EOF && delims_saved)
+              எனில் (chr != EOF && delims_saved)
                 {
-                  if (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
+                  எனில் (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
                     write_error ();
                   delims_saved = 0;
                 }
 
-              while (chr != EOF)
+              போது (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
-                    break;
+                  எனில் (chr == வரி_delim)
+                    நிறுத்து;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
                   err = errno;
                 }
             }
 
-          if (! sometodo)
+          எனில் (! sometodo)
             {
               /* EOF, read error, or closed file.
                  If an EOF or error, close the file.  */
-              if (fileptr[i])
+              எனில் (fileptr[i])
                 {
-                  if (!ferror (fileptr[i]))
+                  எனில் (!ferror (fileptr[i]))
                     err = 0;
-                  if (fileptr[i] == stdin)
+                  எனில் (fileptr[i] == stdin)
                     clearerr (fileptr[i]); /* Also clear EOF. */
-                  else if (fclose (fileptr[i]) == EOF && !err)
+                  இல்லையெனில் எனில் (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
-                  if (err)
+                  எனில் (err)
                     {
                       error (0, err, "%s", quotef (fnamptr[i]));
                       ok = false;
                     }
 
-                  fileptr[i] = NULL;
+                  fileptr[i] = வெற்று;
                   files_open--;
                 }
 
-              if (i + 1 == nfiles)
+              எனில் (i + 1 == nfiles)
                 {
                   /* End of this output line.
                      Is this the end of the whole thing? */
-                  if (somedone)
+                  எனில் (somedone)
                     {
                       /* No.  Some files were not closed for this line. */
-                      if (delims_saved)
+                      எனில் (delims_saved)
                         {
-                          if (fwrite (delbuf, 1, delims_saved, stdout)
+                          எனில் (fwrite (delbuf, 1, delims_saved, stdout)
                               != delims_saved)
                             write_error ();
                           delims_saved = 0;
                         }
-                      xputchar (line_delim);
+                      xputchar (வரி_delim);
                     }
-                  continue;	/* Next read of files, or exit. */
+                  தொடர்;	/* Next read of files, or exit. */
                 }
-              else
+              இல்லையெனில்
                 {
                   /* Closed file; add delimiter to 'delbuf'. */
                   size_t len = delim_lens[delimidx];
-                  if (len > 0)
+                  எனில் (len > 0)
                     {
                       memcpy (delbuf + delims_saved, delims + delimoff, len);
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  எனில் (++delimidx == இலக்கம்_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
             }
-          else
+          இல்லையெனில்
             {
               /* Some data read. */
               somedone = true;
 
               /* Except for last file, replace last newline with delim. */
-              if (i + 1 != nfiles)
+              எனில் (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  எனில் (chr != வரி_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  எனில் (++delimidx == இலக்கம்_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              இல்லையெனில்
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
-                  char c = (chr == EOF ? line_delim : chr);
+                  எழுத்து c = (chr == EOF ? வரி_delim : chr);
                   xputchar (c);
                 }
             }
         }
     }
-  free (fileptr);
-  free (delbuf);
-  return ok;
+  விடுவி (fileptr);
+  விடுவி (delbuf);
+  திரும்பு ok;
 }
 
 /* Perform serial paste on the NFILES files named in FNAMPTR.
    Return true if no errors, false if one or more files could not be
    opened or read. */
 
-static bool
-paste_serial (size_t nfiles, char **fnamptr)
+நிலையான bool
+paste_serial (size_t nfiles, எழுத்து **fnamptr)
 {
   bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
+  முழு charnew, charold; /* Current and previous char read. */
   FILE *fileptr;	/* Open for reading current file. */
 
-  for (; nfiles; nfiles--, fnamptr++)
+  க்கு (; nfiles; nfiles--, fnamptr++)
     {
-      int saved_errno;
+      முழு saved_errno;
       bool is_stdin = streq (*fnamptr, "-");
-      if (is_stdin)
+      எனில் (is_stdin)
         {
           have_read_stdin = true;
           fileptr = stdin;
         }
-      else
+      இல்லையெனில்
         {
           fileptr = fopen (*fnamptr, "r");
-          if (fileptr == NULL)
+          எனில் (fileptr == வெற்று)
             {
               error (0, errno, "%s", quotef (*fnamptr));
               ok = false;
-              continue;
+              தொடர்;
             }
           fadvise (fileptr, FADVISE_SEQUENTIAL);
         }
@@ -393,7 +393,7 @@ paste_serial (size_t nfiles, char **fnamptr)
 
       charold = getc (fileptr);
       saved_errno = errno;
-      if (charold != EOF)
+      எனில் (charold != EOF)
         {
           /* 'charold' is set up.  Hit it!
              Keep reading characters, stashing them in 'charnew';
@@ -401,20 +401,20 @@ paste_serial (size_t nfiles, char **fnamptr)
              character if needed.  After the EOF, output 'charold'
              if it's a newline; otherwise, output it and then a newline. */
 
-          while ((charnew = getc (fileptr)) != EOF)
+          போது ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              எனில் (charold == வரி_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  எனில் (++delimidx == இலக்கம்_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              இல்லையெனில்
                 xputchar (charold);
 
               charold = charnew;
@@ -425,37 +425,37 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
-        xputchar (line_delim);
+      எனில் (charold != வரி_delim)
+        xputchar (வரி_delim);
 
-      if (!ferror (fileptr))
+      எனில் (!ferror (fileptr))
         saved_errno = 0;
-      if (is_stdin)
+      எனில் (is_stdin)
         clearerr (fileptr);	/* Also clear EOF. */
-      else if (fclose (fileptr) != 0 && !saved_errno)
+      இல்லையெனில் எனில் (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
-      if (saved_errno)
+      எனில் (saved_errno)
         {
           error (0, saved_errno, "%s", quotef (*fnamptr));
           ok = false;
         }
     }
-  return ok;
+  திரும்பு ok;
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
 "),
               program_name);
       fputs (_("\
-Write lines consisting of corresponding lines from each file joined by TABs\n\
+Write வரிகள் consisting of corresponding வரிகள் from each file joined by TABs\n\
 to standard output.\n\
 "), stdout);
 
@@ -470,12 +470,12 @@ to standard output.\n\
       oputs (_("\
   -s, --serial\n\
          paste one file at a time instead of in parallel; the newline of\n\
-         every line except the last line in each file is replaced with a TAB\
+         every வரி except the last வரி in each file is replaced with a TAB\
 \n\
 "));
       oputs (_("\
   -z, --zero-terminated\n\
-         line delimiter is NUL, not newline\n\
+         வரி delimiter is NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -485,11 +485,11 @@ to standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  int optc;
-  char const *delim_arg = "\t";
+  முழு optc;
+  எழுத்து மாறிலி *delim_arg = "\t";
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -499,40 +499,40 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
+  போது ((optc = getopt_long (argc, argv, "d:sz", longopts, வெற்று)) != -1)
     {
-      switch (optc)
+      தேர்வு (optc)
         {
-        case 'd':
+        நிலை 'd':
           /* Delimiter character(s). */
           delim_arg = (optarg[0] == '\0' ? "\\0" : optarg);
-          break;
+          நிறுத்து;
 
-        case 's':
+        நிலை 's':
           serial_merge = true;
-          break;
+          நிறுத்து;
 
-        case 'z':
-          line_delim = '\0';
-          break;
+        நிலை 'z':
+          வரி_delim = '\0';
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
 
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  int nfiles = argc - optind;
-  if (nfiles == 0)
+  முழு nfiles = argc - optind;
+  எனில் (nfiles == 0)
     {
       argv[optind] = bad_cast ("-");
       nfiles++;
     }
 
-  if (collapse_escapes (delim_arg))
+  எனில் (collapse_escapes (delim_arg))
     {
       /* Don't use the quote() quoting style, because that would double the
          number of displayed backslashes, making the diagnostic look bogus.  */
@@ -544,10 +544,10 @@ main (int argc, char **argv)
   bool ok = ((serial_merge ? paste_serial : paste_parallel)
              (nfiles, &argv[optind]));
 
-  free (delims);
-  free (delim_lens);
+  விடுவி (delims);
+  விடுவி (delim_lens);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  எனில் (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  திரும்பு ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

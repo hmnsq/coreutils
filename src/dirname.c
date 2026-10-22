@@ -17,13 +17,13 @@
 
 /* Written by David MacKenzie and Jim Meyering. */
 
-#include <config.h>
-#include <getopt.h>
-#include <stdio.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
-#include "system.h"
+#அந்தர்பாவ "argmatch.h"  /* argmatch($QUOTING_STYLE).  */
+#அந்தர்பாவ "system.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "dirname"
@@ -32,22 +32,22 @@
   proper_name ("David MacKenzie"), \
   proper_name ("Jim Meyering")
 
-static bool quote_output;
+நிலையான bool quote_output;
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
-  {"zero", no_argument, NULL, 'z'},
+  {"zero", no_argument, வெற்று, 'z'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("\
 Usage: %s [OPTION] NAME...\n\
@@ -55,12 +55,12 @@ Usage: %s [OPTION] NAME...\n\
               program_name);
       fputs (_("\
 Output each NAME with its last non-slash component and trailing slashes\n\
-removed; if NAME contains no /'s, output '.' (meaning the current directory).\n\
+removed; எனில் NAME contains no /'s, output '.' (meaning the current directory).\n\
 \n\
 "), stdout);
       oputs (_("\
   -z, --zero\n\
-         end each output line with NUL, not newline\n\
+         end each output வரி with NUL, not newline\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -77,8 +77,8 @@ Examples:\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   bool use_nuls = false;
 
@@ -90,58 +90,58 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  போது (true)
     {
-      int c = getopt_long (argc, argv, "z", longopts, NULL);
+      முழு c = getopt_long (argc, argv, "z", longopts, வெற்று);
 
-      if (c == -1)
-        break;
+      எனில் (c == -1)
+        நிறுத்து;
 
-      switch (c)
+      தேர்வு (c)
         {
-        case 'z':
+        நிலை 'z':
           use_nuls = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
 
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc < optind + 1)
+  எனில் (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
 
-  if (!use_nuls && isatty (STDOUT_FILENO))
+  எனில் (!use_nuls && isatty (STDOUT_FILENO))
     {
-      int qs = getenv_quoting_style ();
-      if (qs < 0)
+      முழு qs = getenv_quoting_style ();
+      எனில் (qs < 0)
         qs = shell_escape_quoting_style;
-      if (qs != literal_quoting_style)
+      எனில் (qs != literal_quoting_style)
         {
-          set_quoting_style (NULL, qs);
+          set_quoting_style (வெற்று, qs);
           quote_output = true;
         }
     }
 
-  for (; optind < argc; optind++)
+  க்கு (; optind < argc; optind++)
     {
-      char const *result = argv[optind];
+      எழுத்து மாறிலி *result = argv[optind];
       idx_t len = dir_len (result);
 
-      if (! len)
+      எனில் (! len)
         {
-          static char const dot = '.';
+          நிலையான எழுத்து மாறிலி dot = '.';
           result = &dot;
           len = 1;
         }
-      if (quote_output)
+      எனில் (quote_output)
         {
           result = quoteN_mem (result, len);
           len = strlen (result);
@@ -150,5 +150,5 @@ main (int argc, char **argv)
       putchar (use_nuls ? '\0' :'\n');
     }
 
-  return EXIT_SUCCESS;
+  திரும்பு EXIT_SUCCESS;
 }

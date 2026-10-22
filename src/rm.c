@@ -18,18 +18,18 @@
    Reworked to use chdir and avoid recursion, and later, rewritten
    once again, to use fts, by Jim Meyering.  */
 
-#include <config.h>
-#include <stdio.h>
-#include <getopt.h>
-#include <sys/types.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <getopt.h>
+#அந்தர்பாவ <sys/types.h>
 
-#include "system.h"
-#include "argmatch.h"
-#include "assure.h"
-#include "remove.h"
-#include "root-dev-ino.h"
-#include "yesno.h"
-#include "priv-set.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "argmatch.h"
+#அந்தர்பாவ "assure.h"
+#அந்தர்பாவ "remove.h"
+#அந்தர்பாவ "root-dev-ino.h"
+#அந்தர்பாவ "yesno.h"
+#அந்தர்பாவ "priv-set.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "rm"
@@ -42,52 +42,52 @@
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+எண்ணிக்கை
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
   ONE_FILE_SYSTEM,
-  NO_PRESERVE_ROOT,
-  PRESERVE_ROOT,
-  PRESUME_INPUT_TTY_OPTION
+  NO_PRESERVE_வேர்,
+  PRESERVE_வேர்,
+  PRESUME_உள்ளீடு_TTY_OPTION
 };
 
-enum interactive_type
+எண்ணிக்கை interactive_type
   {
     interactive_never,		/* 0: no option or --interactive=never */
     interactive_once,		/* 1: -I or --interactive=once */
     interactive_always		/* 2: default, -i or --interactive=always */
   };
 
-static struct option const long_opts[] =
+நிலையான கட்டமைப்பு option மாறிலி long_opts[] =
 {
-  {"force", no_argument, NULL, 'f'},
-  {"interactive", optional_argument, NULL, INTERACTIVE_OPTION},
+  {"force", no_argument, வெற்று, 'f'},
+  {"interactive", optional_argument, வெற்று, INTERACTIVE_OPTION},
 
-  {"one-file-system", no_argument, NULL, ONE_FILE_SYSTEM},
-  {"no-preserve-root", no_argument, NULL, NO_PRESERVE_ROOT},
-  {"preserve-root", optional_argument, NULL, PRESERVE_ROOT},
+  {"one-file-system", no_argument, வெற்று, ONE_FILE_SYSTEM},
+  {"no-preserve-root", no_argument, வெற்று, NO_PRESERVE_வேர்},
+  {"preserve-root", optional_argument, வெற்று, PRESERVE_வேர்},
 
   /* This is solely for testing.  Do not document.  */
   /* It is relatively difficult to ensure that there is a tty on stdin.
      Since rm acts differently depending on that, without this option,
      it'd be harder to test the parts of rm that depend on that setting.  */
-  {"-presume-input-tty", no_argument, NULL, PRESUME_INPUT_TTY_OPTION},
+  {"-presume-input-tty", no_argument, வெற்று, PRESUME_உள்ளீடு_TTY_OPTION},
 
-  {"recursive", no_argument, NULL, 'r'},
-  {"dir", no_argument, NULL, 'd'},
-  {"verbose", no_argument, NULL, 'v'},
+  {"recursive", no_argument, வெற்று, 'r'},
+  {"dir", no_argument, வெற்று, 'd'},
+  {"verbose", no_argument, வெற்று, 'v'},
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-static char const *const interactive_args[] =
+நிலையான எழுத்து மாறிலி *மாறிலி interactive_args[] =
 {
   "never", "no", "none",
   "once",
-  "always", "yes", NULL
+  "always", "yes", வெற்று
 };
-static enum interactive_type const interactive_types[] =
+நிலையான எண்ணிக்கை interactive_type மாறிலி interactive_types[] =
 {
   interactive_never, interactive_never, interactive_never,
   interactive_once,
@@ -98,35 +98,35 @@ ARGMATCH_VERIFY (interactive_args, interactive_types);
 /* Advise the user about invalid usages like "rm -foo" if the file
    "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
 
-static void
-diagnose_leading_hyphen (int argc, char **argv)
+நிலையான வெறுமை
+diagnose_leading_hyphen (முழு argc, எழுத்து **argv)
 {
   /* OPTIND is unreliable, so iterate through the arguments looking
      for a file name that looks like an option.  */
 
-  for (int i = 1; i < argc; i++)
+  க்கு (முழு i = 1; i < argc; i++)
     {
-      char const *arg = argv[i];
-      struct stat st;
+      எழுத்து மாறிலி *arg = argv[i];
+      கட்டமைப்பு stat st;
 
-      if (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
+      எனில் (arg[0] == '-' && arg[1] && lstat (arg, &st) == 0)
         {
           fprintf (stderr,
                    _("Try '%s ./%s' to remove the file %s.\n"),
                    argv[0],
                    quotearg_n_style (1, shell_escape_quoting_style, arg),
                    quoteaf (arg));
-          break;
+          நிறுத்து;
         }
     }
 }
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]... [FILE]...\n"), program_name);
       fputs (_("\
@@ -145,7 +145,7 @@ Remove (unlink) the FILE(s).\n\
   -I\n\
          prompt once before removing more than three files,\n\
          or when removing recursively; less intrusive than -i,\n\
-         while still giving protection against most mistakes\n\
+         போது still giving protection against most mistakes\n\
 "));
       oputs (_("\
       --interactive[=WHEN]\n\
@@ -156,16 +156,16 @@ Remove (unlink) the FILE(s).\n\
       --one-file-system\n\
          when removing a hierarchy recursively,\n\
          skip any directory that is on a file system different\n\
-         from that of the corresponding command line argument\n\
+         from that of the corresponding command வரி argument\n\
 "));
       oputs (_("\
-      --no-preserve-root\n\
-         do not treat '/' specially\n\
+      --no-preserve-வேர்\n\
+         செய் not treat '/' specially\n\
 "));
       oputs (_("\
-      --preserve-root[=all]\n\
-         do not remove '/' (default);\n\
-         with 'all', reject any command line argument\n\
+      --preserve-வேர்[=all]\n\
+         செய் not remove '/' (இயல்பு);\n\
+         with 'all', reject any command வரி argument\n\
          on a separate device from its parent\n\
 "));
       oputs (_("\
@@ -184,7 +184,7 @@ Remove (unlink) the FILE(s).\n\
       oputs (VERSION_OPTION_DESCRIPTION);
       fputs (_("\
 \n\
-By default, rm does not remove directories.  Use the --recursive (-r or -R)\n\
+By இயல்பு, rm does not remove directories.  Use the --recursive (-r or -R)\n\
 option to remove each listed directory, too, along with all of its contents.\n\
 "), stdout);
       fputs (_("\
@@ -194,7 +194,7 @@ is rejected with a diagnostic.\n\
 "), stdout);
       printf (_("\
 \n\
-To remove a file whose name starts with a '-', for example '-foo',\n\
+To remove a file whose name starts with a '-', க்கு example '-foo',\n\
 use one of these commands:\n\
   %s -- -foo\n\
 \n\
@@ -212,16 +212,16 @@ assurance that the contents are unrecoverable, consider using shred(1).\n\
   exit (status);
 }
 
-static void
-rm_option_init (struct rm_options *x)
+நிலையான வெறுமை
+rm_option_init (கட்டமைப்பு rm_options *x)
 {
   x->ignore_missing_files = false;
   x->interactive = RMI_SOMETIMES;
   x->one_file_system = false;
   x->remove_empty_directories = false;
   x->recursive = false;
-  x->root_dev_ino = NULL;
-  x->preserve_all_root = false;
+  x->வேர்_dev_ino = வெற்று;
+  x->preserve_all_வேர் = false;
   x->stdin_tty = isatty (STDIN_FILENO);
   x->verbose = false;
 
@@ -230,13 +230,13 @@ rm_option_init (struct rm_options *x)
   x->require_restore_cwd = false;
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
-  bool preserve_root = true;
-  struct rm_options x;
+  bool preserve_வேர் = true;
+  கட்டமைப்பு rm_options x;
   bool prompt_once = false;
-  int c;
+  முழு c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -251,131 +251,131 @@ main (int argc, char **argv)
   /* Try to disable the ability to unlink a directory.  */
   priv_set_remove_linkdir ();
 
-  while ((c = getopt_long (argc, argv, "dfirvIR", long_opts, NULL)) != -1)
+  போது ((c = getopt_long (argc, argv, "dfirvIR", long_opts, வெற்று)) != -1)
     {
-      switch (c)
+      தேர்வு (c)
         {
-        case 'd':
+        நிலை 'd':
           x.remove_empty_directories = true;
-          break;
+          நிறுத்து;
 
-        case 'f':
+        நிலை 'f':
           x.interactive = RMI_NEVER;
           x.ignore_missing_files = true;
           prompt_once = false;
-          break;
+          நிறுத்து;
 
-        case 'i':
+        நிலை 'i':
           x.interactive = RMI_ALWAYS;
           x.ignore_missing_files = false;
           prompt_once = false;
-          break;
+          நிறுத்து;
 
-        case 'I':
+        நிலை 'I':
           x.interactive = RMI_SOMETIMES;
           x.ignore_missing_files = false;
           prompt_once = true;
-          break;
+          நிறுத்து;
 
-        case 'r':
-        case 'R':
+        நிலை 'r':
+        நிலை 'R':
           x.recursive = true;
-          break;
+          நிறுத்து;
 
-        case INTERACTIVE_OPTION:
+        நிலை INTERACTIVE_OPTION:
           {
-            int i;
-            if (optarg)
+            முழு i;
+            எனில் (optarg)
               i = XARGMATCH ("--interactive", optarg, interactive_args,
                              interactive_types);
-            else
+            இல்லையெனில்
               i = interactive_always;
-            switch (i)
+            தேர்வு (i)
               {
-              case interactive_never:
+              நிலை interactive_never:
                 x.interactive = RMI_NEVER;
                 prompt_once = false;
-                break;
+                நிறுத்து;
 
-              case interactive_once:
+              நிலை interactive_once:
                 x.interactive = RMI_SOMETIMES;
                 x.ignore_missing_files = false;
                 prompt_once = true;
-                break;
+                நிறுத்து;
 
-              case interactive_always:
+              நிலை interactive_always:
                 x.interactive = RMI_ALWAYS;
                 x.ignore_missing_files = false;
                 prompt_once = false;
-                break;
+                நிறுத்து;
               }
-            break;
+            நிறுத்து;
           }
 
-        case ONE_FILE_SYSTEM:
+        நிலை ONE_FILE_SYSTEM:
           x.one_file_system = true;
-          break;
+          நிறுத்து;
 
-        case NO_PRESERVE_ROOT:
-          if (! streq (argv[optind - 1], "--no-preserve-root"))
+        நிலை NO_PRESERVE_வேர்:
+          எனில் (! streq (argv[optind - 1], "--no-preserve-root"))
             error (EXIT_FAILURE, 0,
                    _("you may not abbreviate the --no-preserve-root option"));
-          preserve_root = false;
-          break;
+          preserve_வேர் = false;
+          நிறுத்து;
 
-        case PRESERVE_ROOT:
-          if (optarg)
+        நிலை PRESERVE_வேர்:
+          எனில் (optarg)
             {
-              if (streq (optarg, "all"))
-                x.preserve_all_root = true;
-              else
+              எனில் (streq (optarg, "all"))
+                x.preserve_all_வேர் = true;
+              இல்லையெனில்
                 error (EXIT_FAILURE, 0,
                        _("unrecognized --preserve-root argument: %s"),
                        quoteaf (optarg));
             }
-          preserve_root = true;
-          break;
+          preserve_வேர் = true;
+          நிறுத்து;
 
-        case PRESUME_INPUT_TTY_OPTION:
+        நிலை PRESUME_உள்ளீடு_TTY_OPTION:
           x.stdin_tty = true;
-          break;
+          நிறுத்து;
 
-        case 'v':
+        நிலை 'v':
           x.verbose = true;
-          break;
+          நிறுத்து;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        இயல்பு:
           diagnose_leading_hyphen (argc, argv);
           usage (EXIT_FAILURE);
         }
     }
 
-  if (argc <= optind)
+  எனில் (argc <= optind)
     {
-      if (x.ignore_missing_files)
-        return EXIT_SUCCESS;
-      else
+      எனில் (x.ignore_missing_files)
+        திரும்பு EXIT_SUCCESS;
+      இல்லையெனில்
         {
           error (0, 0, _("missing operand"));
           usage (EXIT_FAILURE);
         }
     }
 
-  if (x.recursive && preserve_root)
+  எனில் (x.recursive && preserve_வேர்)
     {
-      static struct dev_ino dev_ino_buf;
-      x.root_dev_ino = get_root_dev_ino (&dev_ino_buf);
-      if (x.root_dev_ino == NULL)
+      நிலையான கட்டமைப்பு dev_ino dev_ino_buf;
+      x.வேர்_dev_ino = get_வேர்_dev_ino (&dev_ino_buf);
+      எனில் (x.வேர்_dev_ino == வெற்று)
         error (EXIT_FAILURE, errno, _("failed to get attributes of %s"),
                quoteaf ("/"));
     }
 
   uintmax_t n_files = argc - optind;
-  char **file =  argv + optind;
+  எழுத்து **file =  argv + optind;
 
-  if (prompt_once && (x.recursive || 3 < n_files))
+  எனில் (prompt_once && (x.recursive || 3 < n_files))
     {
       fprintf (stderr,
                (x.recursive
@@ -386,11 +386,11 @@ main (int argc, char **argv)
                             "%s: remove %ju arguments? ",
                             select_plural (n_files))),
                program_name, n_files);
-      if (!yesno ())
-        return EXIT_SUCCESS;
+      எனில் (!yesno ())
+        திரும்பு EXIT_SUCCESS;
     }
 
-  enum RM_status status = rm (file, &x);
+  எண்ணிக்கை RM_status status = rm (file, &x);
   affirm (VALID_STATUS (status));
-  return status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
+  திரும்பு status == RM_ERROR ? EXIT_FAILURE : EXIT_SUCCESS;
 }

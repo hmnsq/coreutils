@@ -17,16 +17,16 @@
 /* Written by James Youngman based on id.c and groups.sh,
    which were written by Arnold Robbins and David MacKenzie. */
 
-#include <config.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <getopt.h>
+#அந்தர்பாவ <config.h>
+#அந்தர்பாவ <stdio.h>
+#அந்தர்பாவ <sys/types.h>
+#அந்தர்பாவ <pwd.h>
+#அந்தர்பாவ <grp.h>
+#அந்தர்பாவ <getopt.h>
 
-#include "system.h"
-#include "group-list.h"
-#include "quote.h"
+#அந்தர்பாவ "system.h"
+#அந்தர்பாவ "group-list.h"
+#அந்தர்பாவ "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
 #define PROGRAM_NAME "groups"
@@ -36,25 +36,25 @@
   proper_name ("James Youngman")
 
 
-static struct option const longopts[] =
+நிலையான கட்டமைப்பு option மாறிலி longopts[] =
 {
   {GETOPT_HELP_OPTION_DECL},
   {GETOPT_VERSION_OPTION_DECL},
-  {NULL, 0, NULL, 0}
+  {வெற்று, 0, வெற்று, 0}
 };
 
-void
-usage (int status)
+வெறுமை
+usage (முழு status)
 {
-  if (status != EXIT_SUCCESS)
+  எனில் (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  இல்லையெனில்
     {
       printf (_("Usage: %s [OPTION]... [USERNAME]...\n"), program_name);
       fputs (_("\
-Print group memberships for each USERNAME or, if no USERNAME is specified, for\
+Print group memberships க்கு each USERNAME or, எனில் no USERNAME is specified, க்கு\
 \n\
-the current process (which may differ if the groups database has changed).\n"),
+the current process (which may differ எனில் the groups database has changed).\n"),
              stdout);
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -63,8 +63,8 @@ the current process (which may differ if the groups database has changed).\n"),
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+முழு
+முதன்மை (முழு argc, எழுத்து **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -76,20 +76,20 @@ main (int argc, char **argv)
 
   /* Processing the arguments this way makes groups.c behave differently to
      groups.sh if one of the arguments is "--".  */
-  int optc;
-  while ((optc = getopt_long (argc, argv, "", longopts, NULL)) != -1)
+  முழு optc;
+  போது ((optc = getopt_long (argc, argv, "", longopts, வெற்று)) != -1)
     {
-      switch (optc)
+      தேர்வு (optc)
         {
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
-        default:
+        இயல்பு:
           usage (EXIT_FAILURE);
         }
     }
 
   bool ok = true;
-  if (optind == argc)
+  எனில் (optind == argc)
     {
       /* No arguments.  Divulge the details of the current process. */
       uid_t NO_UID = -1;
@@ -97,48 +97,48 @@ main (int argc, char **argv)
 
       errno = 0;
       uid_t ruid = getuid ();
-      if (ruid == NO_UID && errno)
+      எனில் (ruid == NO_UID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real UID"));
 
       errno = 0;
       gid_t egid = getegid ();
-      if (egid == NO_GID && errno)
+      எனில் (egid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get effective GID"));
 
       errno = 0;
       gid_t rgid = getgid ();
-      if (rgid == NO_GID && errno)
+      எனில் (rgid == NO_GID && errno)
         error (EXIT_FAILURE, errno, _("cannot get real GID"));
 
-      if (!print_group_list (NULL, ruid, rgid, egid, true, ' '))
+      எனில் (!print_group_list (வெற்று, ruid, rgid, egid, true, ' '))
         ok = false;
       putchar ('\n');
     }
-  else
+  இல்லையெனில்
     {
       /* At least one argument.  Divulge the details of the specified users.  */
-      for ( ; optind < argc; optind++)
+      க்கு ( ; optind < argc; optind++)
         {
-          struct passwd *pwd = getpwnam (argv[optind]);
-          if (pwd == NULL)
+          கட்டமைப்பு passwd *pwd = getpwnam (argv[optind]);
+          எனில் (pwd == வெற்று)
             {
               error (0, 0, _("%s: no such user"), quote (argv[optind]));
               ok = false;
-              continue;
+              தொடர்;
             }
           uid_t ruid = pwd->pw_uid;
           gid_t rgid = pwd->pw_gid;
           gid_t egid = rgid;
 
           printf ("%s : ", argv[optind]);
-          if (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
+          எனில் (!print_group_list (argv[optind], ruid, rgid, egid, true, ' '))
             ok = false;
           putchar ('\n');
 
-          if (ferror (stdout))
+          எனில் (ferror (stdout))
             write_error ();
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  திரும்பு ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

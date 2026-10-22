@@ -21,10 +21,10 @@
 
 # include "hash.h"
 
-struct selabel_handle;
+கட்டமைப்பு selabel_handle;
 
 /* Control creation of sparse files (files with holes).  */
-enum Sparse_type
+எண்ணிக்கை Sparse_type
 {
   SPARSE_UNUSED,
 
@@ -45,7 +45,7 @@ enum Sparse_type
 };
 
 /* Control creation of COW files.  */
-enum Reflink_type
+எண்ணிக்கை Reflink_type
 {
   /* Do a standard copy.  */
   REFLINK_NEVER,
@@ -58,7 +58,7 @@ enum Reflink_type
 };
 
 /* Control how existing destination files are updated.  */
-enum Update_type
+எண்ணிக்கை Update_type
 {
   /* Always update..  */
   UPDATE_ALL,
@@ -74,7 +74,7 @@ enum Update_type
 };
 
 /* This type is used to help mv (via copy.c) distinguish these cases.  */
-enum Interactive
+எண்ணிக்கை Interactive
 {
   I_UNSPECIFIED,
   I_ALWAYS_YES,      /* -f.  */
@@ -83,7 +83,7 @@ enum Interactive
 };
 
 /* How to handle symbolic links.  */
-enum Dereference_symlink
+எண்ணிக்கை Dereference_symlink
 {
   DEREF_UNDEFINED = 1,
 
@@ -92,7 +92,7 @@ enum Dereference_symlink
 
   /* If the symbolic is a command line argument, then copy
      its referent.  Otherwise, copy the symbolic link itself.  -H  */
-  DEREF_COMMAND_LINE_ARGUMENTS,
+  DEREF_COMMAND_வரி_ARGUMENTS,
 
   /* Copy the referent of the symbolic link.  -L  */
   DEREF_ALWAYS
@@ -112,20 +112,20 @@ enum Dereference_symlink
    following programs: mv (when rename doesn't work), cp, install.
    So, if you add a new member, be sure to initialize it in
    mv.c, cp.c, and install.c.  */
-struct cp_options
+கட்டமைப்பு cp_options
 {
-  enum backup_type backup_type;
+  எண்ணிக்கை backup_type backup_type;
 
   /* How to handle symlinks in the source.  */
-  enum Dereference_symlink dereference;
+  எண்ணிக்கை Dereference_symlink dereference;
 
   /* This value is used to determine whether to prompt before removing
      each existing destination file.  It works differently depending on
      whether move_mode is set.  See code/comments in copy.c.  */
-  enum Interactive interactive;
+  எண்ணிக்கை Interactive interactive;
 
   /* Control creation of sparse files.  */
-  enum Sparse_type sparse_mode;
+  எண்ணிக்கை Sparse_type sparse_mode;
 
   /* Set the mode of the destination file to exactly this value
      if SET_MODE is nonzero.  */
@@ -184,7 +184,7 @@ struct cp_options
   bool explicit_no_preserve_mode;
 
   /* If non-null, attempt to set specified security context */
-  struct selabel_handle *set_security_context;
+  கட்டமைப்பு selabel_handle *set_security_context;
 
   /* Enabled for mv, and for cp by the --preserve=links option.
      If true, attempt to preserve in the destination files any
@@ -255,7 +255,7 @@ struct cp_options
   bool symbolic_link;
 
   /* Control if destination files are replaced.  */
-  enum Update_type update;
+  எண்ணிக்கை Update_type update;
 
   /* If true, display the names of the files before copying them. */
   bool verbose;
@@ -281,10 +281,10 @@ struct cp_options
   /* Zero if the source has already been renamed to the destination; a
      positive errno number if this failed with the given errno; -1 if
      no attempt has been made to rename.  Always -1, except for mv.  */
-  int rename_errno;
+  முழு rename_errno;
 
   /* Control creation of COW files.  */
-  enum Reflink_type reflink_mode;
+  எண்ணிக்கை Reflink_type reflink_mode;
 
   /* This is a set of destination name/inode/dev triples.  Each such triple
      represents a file we have created corresponding to a source file name
@@ -306,7 +306,7 @@ struct cp_options
   Hash_table *src_info;
 };
 
-enum copy_debug_val
+எண்ணிக்கை copy_debug_val
   {
    /* COPY_DEBUG_MAX is a dummy that ensures that any errno
       value can be assigned to an enum copy_debug_val.
@@ -323,50 +323,50 @@ enum copy_debug_val
   };
 
 /* debug info about the last file copy.  */
-struct copy_debug
+கட்டமைப்பு copy_debug
 {
-  enum copy_debug_val offload;
-  enum copy_debug_val reflink;
-  enum copy_debug_val sparse_detection;
+  எண்ணிக்கை copy_debug_val offload;
+  எண்ணிக்கை copy_debug_val reflink;
+  எண்ணிக்கை copy_debug_val sparse_detection;
 };
 
 /* The type of a large counter.  Although it is always nonnegative,
    it is signed to help signed overflow checking catch any bugs.  */
-typedef intmax_t count_t;
-# define COUNT_MAX INTMAX_MAX
+வகைவரை intmax_t மொத்தம்_t;
+# define மொத்தம்_MAX INTMAX_MAX
 
-bool copy (char const *src_name, char const *dst_name,
-           int dst_dirfd, char const *dst_relname,
-           int nonexistent_dst, const struct cp_options *options,
+bool copy (எழுத்து மாறிலி *src_name, எழுத்து மாறிலி *dst_name,
+           முழு dst_dirfd, எழுத்து மாறிலி *dst_relname,
+           முழு nonexistent_dst, மாறிலி கட்டமைப்பு cp_options *options,
            bool *copy_into_self, bool *rename_succeeded)
   _GL_ATTRIBUTE_NONNULL ((1, 2, 4, 6, 7));
 
-intmax_t copy_file_data (int ifd, struct stat const *ist, off_t ipos,
-                         char const *iname,
-                         int ofd, struct stat const *ost, off_t opos,
-                         char const *oname,
-                         count_t ibytes, struct cp_options const *x,
-                         struct copy_debug *copy_debug)
+intmax_t copy_file_data (முழு ifd, கட்டமைப்பு stat மாறிலி *ist, off_t ipos,
+                         எழுத்து மாறிலி *iname,
+                         முழு ofd, கட்டமைப்பு stat மாறிலி *ost, off_t opos,
+                         எழுத்து மாறிலி *oname,
+                         மொத்தம்_t ibytes, கட்டமைப்பு cp_options மாறிலி *x,
+                         கட்டமைப்பு copy_debug *copy_debug)
   _GL_ATTRIBUTE_NONNULL ((2, 4, 6, 8, 10, 11));
 
-extern bool set_process_security_ctx (char const *src_name,
-                                      char const *dst_name,
+வெளி bool set_process_security_ctx (எழுத்து மாறிலி *src_name,
+                                      எழுத்து மாறிலி *dst_name,
                                       mode_t mode, bool new_dst,
-                                      const struct cp_options *x)
+                                      மாறிலி கட்டமைப்பு cp_options *x)
   _GL_ATTRIBUTE_NONNULL ();
 
-extern bool set_file_security_ctx (char const *dst_name,
-                                   bool recurse, const struct cp_options *x)
+வெளி bool set_file_security_ctx (எழுத்து மாறிலி *dst_name,
+                                   bool recurse, மாறிலி கட்டமைப்பு cp_options *x)
   _GL_ATTRIBUTE_NONNULL ();
 
-void dest_info_init (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-void dest_info_free (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-void src_info_init (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-void src_info_free (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
+வெறுமை dest_info_init (கட்டமைப்பு cp_options *) _GL_ATTRIBUTE_NONNULL ();
+வெறுமை dest_info_free (கட்டமைப்பு cp_options *) _GL_ATTRIBUTE_NONNULL ();
+வெறுமை src_info_init (கட்டமைப்பு cp_options *) _GL_ATTRIBUTE_NONNULL ();
+வெறுமை src_info_free (கட்டமைப்பு cp_options *) _GL_ATTRIBUTE_NONNULL ();
 
-void cp_options_default (struct cp_options *) _GL_ATTRIBUTE_NONNULL ();
-bool chown_failure_ok (struct cp_options const *)
+வெறுமை cp_options_default (கட்டமைப்பு cp_options *) _GL_ATTRIBUTE_NONNULL ();
+bool chown_failure_ok (கட்டமைப்பு cp_options மாறிலி *)
   _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_PURE;
-mode_t cached_umask (void);
+mode_t cached_umask (வெறுமை);
 
 #endif
