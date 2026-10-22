@@ -17,24 +17,24 @@
    to STDOUT.  */
 
 extern bool
-show_date (char const *format, struct timespec when, timezone_t tz)
+show_date (var_na const *format, sa_nracanaa timespec when, timezone_t tz)
 {
-  struct tm tm;
+  sa_nracanaa tm tm;
 
-  if (!localtime_rz (tz, &when.tv_sec, &tm))
+  ប្រសិនបើ (!localtime_rz (tz, &when.tv_sec, &tm))
     {
-      char buf[INT_BUFSIZE_BOUND (intmax_t)];
+      var_na buf[INT_BUFSIZE_BOUND (intmax_t)];
       error (0, 0, _("time %s is out of range"),
              quote (timetostr (when.tv_sec, buf)));
-      return false;
+      ត្រឡប់ false;
     }
 
-  if (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
+  ប្រសិនបើ (fprintftime (stdout, format, &tm, tz, when.tv_nsec) < 0)
     {
-      if (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
+      ប្រសិនបើ (! ferror (stdout))  /* otherwise it will be diagnosed later.  */
         error (0, errno, _("fprintftime error"));
-      return false;
+      ត្រឡប់ false;
     }
 
-  return true;
+  ត្រឡប់ true;
 }

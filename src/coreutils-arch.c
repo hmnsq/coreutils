@@ -22,12 +22,12 @@
 #include "uname.h"
 /* Ensure that the main for uname is declared even if the tool is not being
    built in this single-binary. */
-int single_binary_main_uname (int argc, char **argv);
-int single_binary_main_arch (int argc, char **argv);
+ចំនួនគត់ single_binary_main_uname (ចំនួនគត់ argc, var_na **argv);
+ចំនួនគត់ single_binary_main_arch (ចំនួនគត់ argc, var_na **argv);
 
-int
-single_binary_main_arch (int argc, char **argv)
+ចំនួនគត់
+single_binary_main_arch (ចំនួនគត់ argc, var_na **argv)
 {
   uname_mode = UNAME_ARCH;
-  return single_binary_main_uname (argc, argv);
+  ត្រឡប់ single_binary_main_uname (argc, argv);
 }

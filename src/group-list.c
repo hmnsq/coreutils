@@ -32,78 +32,78 @@
 
 /* Print all of the distinct groups the user is in. */
 extern bool
-print_group_list (char const *username,
+print_group_list (var_na const *username,
                   uid_t ruid, gid_t rgid, gid_t egid,
-                  bool use_names, char delim)
+                  bool use_names, var_na delim)
 {
   bool ok = true;
-  struct passwd *pwd = NULL;
+  sa_nracanaa passwd *pwd = NULL;
 
-  if (username)
+  ប្រសិនបើ (username)
     {
       pwd = getpwuid (ruid);
-      if (pwd == NULL)
+      ប្រសិនបើ (pwd == NULL)
         ok = false;
     }
 
-  if (!print_group (rgid, use_names))
+  ប្រសិនបើ (!print_group (rgid, use_names))
     ok = false;
 
-  if (egid != rgid)
+  ប្រសិនបើ (egid != rgid)
     {
       putchar (delim);
-      if (!print_group (egid, use_names))
+      ប្រសិនបើ (!print_group (egid, use_names))
         ok = false;
     }
 
   {
     gid_t *groups;
 
-    int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
-    if (n_groups < 0)
+    ចំនួនគត់ n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
+    ប្រសិនបើ (n_groups < 0)
       {
-        if (username)
+        ប្រសិនបើ (username)
           {
             error (0, errno, _("failed to get groups for user %s"),
                    quote (username));
           }
-        else
+        បើមិនដូច្នេះ
           {
             error (0, errno, _("failed to get groups for the current process"));
           }
-        return false;
+        ត្រឡប់ false;
       }
 
-    for (int i = 0; i < n_groups; i++)
-      if (groups[i] != rgid && groups[i] != egid)
+    សម្រាប់ (ចំនួនគត់ i = 0; i < n_groups; i++)
+      ប្រសិនបើ (groups[i] != rgid && groups[i] != egid)
         {
           putchar (delim);
-          if (!print_group (groups[i], use_names))
+          ប្រសិនបើ (!print_group (groups[i], use_names))
             ok = false;
         }
     free (groups);
   }
-  return ok;
+  ត្រឡប់ ok;
 }
 
 /* Print the name or value of group ID GID. */
 extern bool
 print_group (gid_t gid, bool use_name)
 {
-  struct group *grp = NULL;
+  sa_nracanaa group *grp = NULL;
   bool ok = true;
 
-  if (use_name)
+  ប្រសិនបើ (use_name)
     {
       grp = getgrgid (gid);
-      if (grp == NULL)
+      ប្រសិនបើ (grp == NULL)
         {
-          if (TYPE_SIGNED (gid_t))
+          ប្រសិនបើ (TYPE_SIGNED (gid_t))
             {
               intmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %jd"), g);
             }
-          else
+          បើមិនដូច្នេះ
             {
               uintmax_t g = gid;
               error (0, 0, _("cannot find name for group ID %ju"), g);
@@ -112,9 +112,9 @@ print_group (gid_t gid, bool use_name)
         }
     }
 
-  if (grp)
+  ប្រសិនបើ (grp)
     printf ("%s", grp->gr_name);
-  else
+  បើមិនដូច្នេះ
     printf ("%ju", (uintmax_t) gid);
-  return ok;
+  ត្រឡប់ ok;
 }

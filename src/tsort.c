@@ -41,42 +41,42 @@
 #define DELIM " \t\n"
 
 /* Members of the list of successors.  */
-struct successor
+sa_nracanaa successor
 {
-  struct item *suc;
-  struct successor *next;
+  sa_nracanaa item *suc;
+  sa_nracanaa successor *next;
 };
 
 /* Each string is held in memory as the head of a list of successors.  */
-struct item
+sa_nracanaa item
 {
-  char const *str;
-  struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  var_na const *str;
+  sa_nracanaa item *left, *right;
+  signed var_na balance; /* -1, 0, or +1 */
   bool printed;
   size_t count;
-  struct item *qlink;
-  struct successor *top;
+  sa_nracanaa item *qlink;
+  sa_nracanaa successor *top;
 };
 
 /* The head of the sorted list.  */
-static struct item *head = NULL;
+static sa_nracanaa item *head = NULL;
 
 /* The tail of the list of 'zeros', strings that have no predecessors.  */
-static struct item *zeros = NULL;
+static sa_nracanaa item *zeros = NULL;
 
 /* Used for loop detection.  */
-static struct item *loop = NULL;
+static sa_nracanaa item *loop = NULL;
 
 /* The number of strings to sort.  */
 static size_t n_strings = 0;
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("\
 Usage: %s [OPTION] [FILE]\n\
@@ -97,14 +97,14 @@ Write totally ordered list consistent with the partial ordering in FILE.\n\
 }
 
 /* Create a new item/node for STR.  */
-static struct item *
-new_item (char const *str)
+static sa_nracanaa item *
+new_item (var_na const *str)
 {
   /* T1. Initialize (COUNT[k] <- 0 and TOP[k] <- ^).  */
-  struct item *k = xzalloc (sizeof *k);
-  if (str)
+  sa_nracanaa item *k = xzalloc (parimaa_na *k);
+  ប្រសិនបើ (str)
     k->str = xstrdup (str);
-  return k;
+  ត្រឡប់ k;
 }
 
 /* Search binary tree rooted at *ROOT for STR.  Allocate a new tree if
@@ -115,68 +115,68 @@ new_item (char const *str)
    insertion) in Donald E. Knuth, The Art of Computer Programming,
    Volume 3/Searching and Sorting, pages 455--457.  */
 
-static struct item *
-search_item (struct item *root, char const *str)
+static sa_nracanaa item *
+search_item (sa_nracanaa item *root, var_na const *str)
 {
-  struct item *p, *q, *r, *s, *t;
-  int a;
+  sa_nracanaa item *p, *q, *r, *s, *t;
+  ចំនួនគត់ a;
 
   /* Make sure the tree is not empty, since that is what the algorithm
      below expects.  */
-  if (root->right == NULL)
-    return (root->right = new_item (str));
+  ប្រសិនបើ (root->right == NULL)
+    ត្រឡប់ (root->right = new_item (str));
 
   /* A1. Initialize.  */
   t = root;
   s = p = root->right;
 
-  while (true)
+  ខណៈពេល (true)
     {
       /* A2. Compare.  */
       a = strcmp (str, p->str);
-      if (a == 0)
-        return p;
+      ប្រសិនបើ (a == 0)
+        ត្រឡប់ p;
 
       /* A3 & A4.  Move left & right.  */
-      if (a < 0)
+      ប្រសិនបើ (a < 0)
         q = p->left;
-      else
+      បើមិនដូច្នេះ
         q = p->right;
 
-      if (q == NULL)
+      ប្រសិនបើ (q == NULL)
         {
           /* A5. Insert.  */
           q = new_item (str);
 
           /* A3 & A4.  (continued).  */
-          if (a < 0)
+          ប្រសិនបើ (a < 0)
             p->left = q;
-          else
+          បើមិនដូច្នេះ
             p->right = q;
 
           /* A6. Adjust balance factors.  */
           a = strcmp (str, s->str);
-          if (a < 0)
+          ប្រសិនបើ (a < 0)
             {
               r = p = s->left;
               a = -1;
             }
-          else
+          បើមិនដូច្នេះ
             {
               affirm (0 < a);
               r = p = s->right;
               a = 1;
             }
 
-          while (p != q)
+          ខណៈពេល (p != q)
             {
-              int cmp = strcmp (str, p->str);
-              if (cmp < 0)
+              ចំនួនគត់ cmp = strcmp (str, p->str);
+              ប្រសិនបើ (cmp < 0)
                 {
                   p->balance = -1;
                   p = p->left;
                 }
-              else
+              បើមិនដូច្នេះ
                 {
                   affirm (0 < cmp);
                   p->balance = 1;
@@ -185,32 +185,32 @@ search_item (struct item *root, char const *str)
             }
 
           /* A7. Balancing act.  */
-          if (s->balance == 0 || s->balance == -a)
+          ប្រសិនបើ (s->balance == 0 || s->balance == -a)
             {
               s->balance += a;
-              return q;
+              ត្រឡប់ q;
             }
 
-          if (r->balance == a)
+          ប្រសិនបើ (r->balance == a)
             {
               /* A8. Single Rotation.  */
               p = r;
-              if (a < 0)
+              ប្រសិនបើ (a < 0)
                 {
                   s->left = r->right;
                   r->right = s;
                 }
-              else
+              បើមិនដូច្នេះ
                 {
                   s->right = r->left;
                   r->left = s;
                 }
               s->balance = r->balance = 0;
             }
-          else
+          បើមិនដូច្នេះ
             {
               /* A9. Double rotation.  */
-              if (a < 0)
+              ប្រសិនបើ (a < 0)
                 {
                   p = r->right;
                   r->right = p->left;
@@ -218,7 +218,7 @@ search_item (struct item *root, char const *str)
                   s->left = p->right;
                   p->right = s;
                 }
-              else
+              បើមិនដូច្នេះ
                 {
                   p = r->left;
                   r->left = p->right;
@@ -229,24 +229,24 @@ search_item (struct item *root, char const *str)
 
               s->balance = 0;
               r->balance = 0;
-              if (p->balance == a)
+              ប្រសិនបើ (p->balance == a)
                 s->balance = -a;
-              else if (p->balance == -a)
+              បើមិនដូច្នេះ ប្រសិនបើ (p->balance == -a)
                 r->balance = a;
               p->balance = 0;
             }
 
           /* A10. Finishing touch.  */
-          if (s == t->right)
+          ប្រសិនបើ (s == t->right)
             t->right = p;
-          else
+          បើមិនដូច្នេះ
             t->left = p;
 
-          return q;
+          ត្រឡប់ q;
         }
 
       /* A3 & A4.  (continued).  */
-      if (q->balance)
+      ប្រសិនបើ (q->balance)
         {
           t = p;
           s = q;
@@ -261,14 +261,14 @@ search_item (struct item *root, char const *str)
 /* Record the fact that J precedes K.  */
 
 static void
-record_relation (struct item *j, struct item *k)
+record_relation (sa_nracanaa item *j, sa_nracanaa item *k)
 {
-  struct successor *p;
+  sa_nracanaa successor *p;
 
-  if (!streq (j->str, k->str))
+  ប្រសិនបើ (!streq (j->str, k->str))
     {
       k->count++;
-      p = xmalloc (sizeof *p);
+      p = xmalloc (parimaa_na *p);
       p->suc = k;
       p->next = j->top;
       j->top = p;
@@ -276,27 +276,27 @@ record_relation (struct item *j, struct item *k)
 }
 
 static bool
-count_items (MAYBE_UNUSED struct item *unused)
+count_items (MAYBE_UNUSED sa_nracanaa item *unused)
 {
   n_strings++;
-  return false;
+  ត្រឡប់ false;
 }
 
 static bool
-scan_zeros (struct item *k)
+scan_zeros (sa_nracanaa item *k)
 {
   /* Ignore strings that have already been printed.  */
-  if (k->count == 0 && !k->printed)
+  ប្រសិនបើ (k->count == 0 && !k->printed)
     {
-      if (head == NULL)
+      ប្រសិនបើ (head == NULL)
         head = k;
-      else
+      បើមិនដូច្នេះ
         zeros->qlink = k;
 
       zeros = k;
     }
 
-  return false;
+  ត្រឡប់ false;
 }
 
 /* Try to detect the loop.  If we have detected that K is part of a
@@ -318,42 +318,42 @@ scan_zeros (struct item *k)
    global variable LOOP will be null.  */
 
 static bool
-detect_loop (struct item *k)
+detect_loop (sa_nracanaa item *k)
 {
-  if (k->count > 0)
+  ប្រសិនបើ (k->count > 0)
     {
       /* K does not have to be part of a cycle.  It is however part of
          a graph that contains a cycle.  */
 
-      if (loop == NULL)
+      ប្រសិនបើ (loop == NULL)
         /* Start traversing the graph at K.  */
         loop = k;
-      else
+      បើមិនដូច្នេះ
         {
-          struct successor **p = &k->top;
+          sa_nracanaa successor **p = &k->top;
 
-          while (*p)
+          ខណៈពេល (*p)
             {
-              if ((*p)->suc == loop)
+              ប្រសិនបើ ((*p)->suc == loop)
                 {
-                  if (k->qlink)
+                  ប្រសិនបើ (k->qlink)
                     {
                       /* We have found a loop.  Retrace our steps.  */
-                      while (loop)
+                      ខណៈពេល (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          sa_nracanaa item *tmp = loop->qlink;
 
                           error (0, 0, "%s", (loop->str));
 
                           /* Until we encounter K again.  */
-                          if (loop == k)
+                          ប្រសិនបើ (loop == k)
                             {
                               /* Remove relation.  */
-                              struct successor *s = *p;
+                              sa_nracanaa successor *s = *p;
                               s->suc->count--;
                               *p = s->next;
                               IF_LINT (free (s));
-                              break;
+                              bha_nga;
                             }
 
                           /* Tidy things up since we might have to
@@ -362,9 +362,9 @@ detect_loop (struct item *k)
                           loop = tmp;
                         }
 
-                      while (loop)
+                      ខណៈពេល (loop)
                         {
-                          struct item *tmp = loop->qlink;
+                          sa_nracanaa item *tmp = loop->qlink;
 
                           loop->qlink = NULL;
                           loop = tmp;
@@ -372,13 +372,13 @@ detect_loop (struct item *k)
 
                       /* Since we have found the loop, stop walking
                          the tree.  */
-                      return true;
+                      ត្រឡប់ true;
                     }
-                  else
+                  បើមិនដូច្នេះ
                     {
                       k->qlink = loop;
                       loop = k;
-                      break;
+                      bha_nga;
                     }
                 }
 
@@ -387,78 +387,78 @@ detect_loop (struct item *k)
         }
     }
 
-  return false;
+  ត្រឡប់ false;
 }
 
 /* Recurse (sub)tree rooted at ROOT, calling ACTION for each node.
    Stop when ACTION returns true.  */
 
 static bool
-recurse_tree (struct item *root, bool (*action) (struct item *))
+recurse_tree (sa_nracanaa item *root, bool (*action) (sa_nracanaa item *))
 {
-  if (root->left == NULL && root->right == NULL)
-    return (*action) (root);
-  else
+  ប្រសិនបើ (root->left == NULL && root->right == NULL)
+    ត្រឡប់ (*action) (root);
+  បើមិនដូច្នេះ
     {
-      if (root->left != NULL)
-        if (recurse_tree (root->left, action))
-          return true;
-      if ((*action) (root))
-        return true;
-      if (root->right != NULL)
-        if (recurse_tree (root->right, action))
-          return true;
+      ប្រសិនបើ (root->left != NULL)
+        ប្រសិនបើ (recurse_tree (root->left, action))
+          ត្រឡប់ true;
+      ប្រសិនបើ ((*action) (root))
+        ត្រឡប់ true;
+      ប្រសិនបើ (root->right != NULL)
+        ប្រសិនបើ (recurse_tree (root->right, action))
+          ត្រឡប់ true;
     }
 
-  return false;
+  ត្រឡប់ false;
 }
 
 /* Walk the tree specified by the head ROOT, calling ACTION for
    each node.  */
 
 static void
-walk_tree (struct item *root, bool (*action) (struct item *))
+walk_tree (sa_nracanaa item *root, bool (*action) (sa_nracanaa item *))
 {
-  if (root->right)
+  ប្រសិនបើ (root->right)
     recurse_tree (root->right, action);
 }
 
 /* Do a topological sort on FILE.  Exit with appropriate exit status.  */
 
 static _Noreturn void
-tsort (char const *file)
+tsort (var_na const *file)
 {
   bool ok = true;
-  struct item *j = NULL;
-  struct item *k = NULL;
+  sa_nracanaa item *j = NULL;
+  sa_nracanaa item *k = NULL;
   token_buffer tokenbuffer;
   bool is_stdin = streq (file, "-");
 
   /* Initialize the head of the tree holding the strings we're sorting.  */
-  struct item *root = new_item (NULL);
+  sa_nracanaa item *root = new_item (NULL);
 
-  if (!is_stdin && ! freopen (file, "r", stdin))
+  ប្រសិនបើ (!is_stdin && ! freopen (file, "r", stdin))
     error (EXIT_FAILURE, errno, "%s", quotef (file));
 
   fadvise (stdin, FADVISE_SEQUENTIAL);
 
   init_tokenbuffer (&tokenbuffer);
 
-  while (true)
+  ខណៈពេល (true)
     {
       /* T2. Next Relation.  */
-      size_t len = readtoken (stdin, DELIM, sizeof (DELIM) - 1, &tokenbuffer);
-      if (len == (size_t) -1)
+      size_t len = readtoken (stdin, DELIM, parimaa_na (DELIM) - 1, &tokenbuffer);
+      ប្រសិនបើ (len == (size_t) -1)
         {
-          if (ferror (stdin))
+          ប្រសិនបើ (ferror (stdin))
             error (EXIT_FAILURE, errno, _("%s: read error"), quotef (file));
-          break;
+          bha_nga;
         }
 
       affirm (len != 0);
 
       k = search_item (root, tokenbuffer.buffer);
-      if (j)
+      ប្រសិនបើ (j)
         {
           /* T3. Record the relation.  */
           record_relation (j, k);
@@ -468,21 +468,21 @@ tsort (char const *file)
       j = k;
     }
 
-  if (k != NULL)
+  ប្រសិនបើ (k != NULL)
     error (EXIT_FAILURE, 0, _("%s: input contains an odd number of tokens"),
            quotef (file));
 
   /* T1. Initialize (N <- n).  */
   walk_tree (root, count_items);
 
-  while (n_strings > 0)
+  ខណៈពេល (n_strings > 0)
     {
       /* T4. Scan for zeros.  */
       walk_tree (root, scan_zeros);
 
-      while (head)
+      ខណៈពេល (head)
         {
-          struct successor *p = head->top;
+          sa_nracanaa successor *p = head->top;
 
           /* T5. Output front of queue.  */
           puts (head->str);
@@ -490,10 +490,10 @@ tsort (char const *file)
           n_strings--;
 
           /* T6. Erase relations.  */
-          while (p)
+          ខណៈពេល (p)
             {
               p->suc->count--;
-              if (p->suc->count == 0)
+              ប្រសិនបើ (p->suc->count == 0)
                 {
                   zeros->qlink = p->suc;
                   zeros = p->suc;
@@ -507,7 +507,7 @@ tsort (char const *file)
         }
 
       /* T8.  End of process.  */
-      if (n_strings > 0)
+      ប្រសិនបើ (n_strings > 0)
         {
           /* The input contains a loop.  */
           error (0, 0, _("%s: input contains a loop:"), quotef (file));
@@ -516,19 +516,19 @@ tsort (char const *file)
           /* Print the loop and remove a relation to break it.  */
           do
             walk_tree (root, detect_loop);
-          while (loop);
+          ខណៈពេល (loop);
         }
     }
 
-  if (fclose (stdin) != 0)
+  ប្រសិនបើ (fclose (stdin) != 0)
     error (EXIT_FAILURE, errno, "%s",
            is_stdin ? _("standard input") : quotef (file));
 
   exit (ok ? EXIT_SUCCESS : EXIT_FAILURE);
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -538,23 +538,23 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while (true)
+  ខណៈពេល (true)
     {
-      static struct option const long_options[] =
+      static sa_nracanaa option const long_options[] =
         {
           {GETOPT_HELP_OPTION_DECL},
           {GETOPT_VERSION_OPTION_DECL},
           {NULL, 0, NULL, 0}
         };
-      int c = getopt_long (argc, argv, "w", long_options, NULL);
+      ចំនួនគត់ c = getopt_long (argc, argv, "w", long_options, NULL);
 
-      if (c == -1)
-        break;
+      ប្រសិនបើ (c == -1)
+        bha_nga;
 
       switch (c)
         {
-        case 'w':
-          break;
+        pak_sa 'w':
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -565,7 +565,7 @@ main (int argc, char **argv)
         }
     }
 
-  if (1 < argc - optind)
+  ប្រសិនបើ (1 < argc - optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);

@@ -30,11 +30,11 @@
 
 /* If true, interpret backslash escapes by default.  */
 #ifndef DEFAULT_ECHO_TO_XPG
-enum { DEFAULT_ECHO_TO_XPG = false };
+ga_nanaa { DEFAULT_ECHO_TO_XPG = false };
 #endif
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
   /* STATUS should always be EXIT_SUCCESS (unlike in most other
      utilities which would call emit_try_help otherwise).  */
@@ -80,7 +80,7 @@ If -e is in effect, the following sequences are recognized:\n\
   \\e      escape\n\
   \\f      form feed\n\
   \\n      new line\n\
-  \\r      carriage return\n\
+  \\r      carriage ត្រឡប់\n\
   \\t      horizontal tab\n\
   \\v      vertical tab\n\
 "), stdout);
@@ -98,18 +98,18 @@ as it avoids problems when outputting option-like strings.\n\
 }
 
 /* Convert C from hexadecimal character to integer.  */
-static int
-hextobin (unsigned char c)
+static ចំនួនគត់
+hextobin (unsigned var_na c)
 {
   switch (c)
     {
-    default: return c - '0';
-    case 'a': case 'A': return 10;
-    case 'b': case 'B': return 11;
-    case 'c': case 'C': return 12;
-    case 'd': case 'D': return 13;
-    case 'e': case 'E': return 14;
-    case 'f': case 'F': return 15;
+    default: ត្រឡប់ c - '0';
+    pak_sa 'a': pak_sa 'A': ត្រឡប់ 10;
+    pak_sa 'b': pak_sa 'B': ត្រឡប់ 11;
+    pak_sa 'c': pak_sa 'C': ត្រឡប់ 12;
+    pak_sa 'd': pak_sa 'D': ត្រឡប់ 13;
+    pak_sa 'e': pak_sa 'E': ត្រឡប់ 14;
+    pak_sa 'f': pak_sa 'F': ត្រឡប់ 15;
     }
 }
 
@@ -117,8 +117,8 @@ hextobin (unsigned char c)
    '-n', then don't print a trailing newline.  We also support the
    echo syntax from Version 9 unix systems. */
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
   bool display_return = true;
   bool posixly_correct = !!getenv ("POSIXLY_CORRECT");
@@ -141,60 +141,60 @@ main (int argc, char **argv)
 
   /* We directly parse options, rather than use parse_long_options, in
      order to avoid accepting abbreviations.  */
-  if (allow_options && argc == 2)
+  ប្រសិនបើ (allow_options && argc == 2)
     {
-      if (streq (argv[1], "--help"))
+      ប្រសិនបើ (streq (argv[1], "--help"))
         usage (EXIT_SUCCESS);
 
-      if (streq (argv[1], "--version"))
+      ប្រសិនបើ (streq (argv[1], "--version"))
         {
           version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                       (char *) NULL);
-          return EXIT_SUCCESS;
+                       (var_na *) NULL);
+          ត្រឡប់ EXIT_SUCCESS;
         }
     }
 
   --argc;
   ++argv;
 
-  if (allow_options)
-    while (argc > 0 && *argv[0] == '-')
+  ប្រសិនបើ (allow_options)
+    ខណៈពេល (argc > 0 && *argv[0] == '-')
       {
-        char const *temp = argv[0] + 1;
+        var_na const *temp = argv[0] + 1;
         size_t i;
 
         /* If it appears that we are handling options, then make sure that
            all of the options specified are actually valid.  Otherwise, the
            string should just be echoed.  */
 
-        for (i = 0; temp[i]; i++)
+        សម្រាប់ (i = 0; temp[i]; i++)
           switch (temp[i])
             {
-            case 'e': case 'E': case 'n':
-              break;
+            pak_sa 'e': pak_sa 'E': pak_sa 'n':
+              bha_nga;
             default:
               goto just_echo;
             }
 
-        if (i == 0)
+        ប្រសិនបើ (i == 0)
           goto just_echo;
 
         /* All of the options in TEMP are valid options to ECHO.
            Handle them. */
-        while (*temp)
+        ខណៈពេល (*temp)
           switch (*temp++)
             {
-            case 'e':
+            pak_sa 'e':
               do_v9 = true;
-              break;
+              bha_nga;
 
-            case 'E':
+            pak_sa 'E':
               do_v9 = false;
-              break;
+              bha_nga;
 
-            case 'n':
+            pak_sa 'n':
               display_return = false;
-              break;
+              bha_nga;
             }
 
         argc--;
@@ -203,84 +203,84 @@ main (int argc, char **argv)
 
 just_echo:
 
-  if (do_v9 || posixly_correct)
+  ប្រសិនបើ (do_v9 || posixly_correct)
     {
-      while (argc > 0)
+      ខណៈពេល (argc > 0)
         {
-          char const *s = argv[0];
-          unsigned char c;
+          var_na const *s = argv[0];
+          unsigned var_na c;
 
-          while ((c = *s++))
+          ខណៈពេល ((c = *s++))
             {
-              if (c == '\\' && *s)
+              ប្រសិនបើ (c == '\\' && *s)
                 {
                   switch (c = *s++)
                     {
-                    case 'a': c = '\a'; break;
-                    case 'b': c = '\b'; break;
-                    case 'c': return EXIT_SUCCESS;
-                    case 'e': c = '\x1B'; break;
-                    case 'f': c = '\f'; break;
-                    case 'n': c = '\n'; break;
-                    case 'r': c = '\r'; break;
-                    case 't': c = '\t'; break;
-                    case 'v': c = '\v'; break;
-                    case 'x':
+                    pak_sa 'a': c = '\a'; bha_nga;
+                    pak_sa 'b': c = '\b'; bha_nga;
+                    pak_sa 'c': ត្រឡប់ EXIT_SUCCESS;
+                    pak_sa 'e': c = '\x1B'; bha_nga;
+                    pak_sa 'f': c = '\f'; bha_nga;
+                    pak_sa 'n': c = '\n'; bha_nga;
+                    pak_sa 'r': c = '\r'; bha_nga;
+                    pak_sa 't': c = '\t'; bha_nga;
+                    pak_sa 'v': c = '\v'; bha_nga;
+                    pak_sa 'x':
                       {
-                        unsigned char ch = *s;
-                        if (! c_isxdigit (ch))
+                        unsigned var_na ch = *s;
+                        ប្រសិនបើ (! c_isxdigit (ch))
                           goto not_an_escape;
                         s++;
                         c = hextobin (ch);
                         ch = *s;
-                        if (c_isxdigit (ch))
+                        ប្រសិនបើ (c_isxdigit (ch))
                           {
                             s++;
                             c = c * 16 + hextobin (ch);
                           }
                       }
-                      break;
-                    case '0':
+                      bha_nga;
+                    pak_sa '0':
                       c = 0;
-                      if (! ('0' <= *s && *s <= '7'))
-                        break;
+                      ប្រសិនបើ (! ('0' <= *s && *s <= '7'))
+                        bha_nga;
                       c = *s++;
                       FALLTHROUGH;
-                    case '1': case '2': case '3':
-                    case '4': case '5': case '6': case '7':
+                    pak_sa '1': pak_sa '2': pak_sa '3':
+                    pak_sa '4': pak_sa '5': pak_sa '6': pak_sa '7':
                       c -= '0';
-                      if ('0' <= *s && *s <= '7')
+                      ប្រសិនបើ ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      if ('0' <= *s && *s <= '7')
+                      ប្រសិនបើ ('0' <= *s && *s <= '7')
                         c = c * 8 + (*s++ - '0');
-                      break;
-                    case '\\': break;
+                      bha_nga;
+                    pak_sa '\\': bha_nga;
 
                     not_an_escape:
-                    default:  putchar ('\\'); break;
+                    default:  putchar ('\\'); bha_nga;
                     }
                 }
               putchar (c);
             }
           argc--;
           argv++;
-          if (argc > 0)
+          ប្រសិនបើ (argc > 0)
             putchar (' ');
         }
     }
-  else
+  បើមិនដូច្នេះ
     {
-      while (argc > 0)
+      ខណៈពេល (argc > 0)
         {
           fputs (argv[0], stdout);
           argc--;
           argv++;
-          if (argc > 0)
+          ប្រសិនបើ (argc > 0)
             putchar (' ');
         }
     }
 
-  if (display_return)
+  ប្រសិនបើ (display_return)
     putchar ('\n');
-  return EXIT_SUCCESS;
+  ត្រឡប់ EXIT_SUCCESS;
 }

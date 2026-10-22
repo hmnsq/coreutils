@@ -54,7 +54,7 @@
 
 #define AUTHORS proper_name ("Russell Coker")
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   {"role", required_argument, NULL, 'r'},
   {"type", required_argument, NULL, 't'},
@@ -67,11 +67,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("\
 Usage: %s [CONTEXT COMMAND [ARG]...]\n\
@@ -91,7 +91,7 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   -c, --compute      compute process transition context before modifying\n\
 "));
       oputs (_("\
-  -t, --type=TYPE    type (for same role as parent)\n\
+  -t, --type=TYPE    type (សម្រាប់ same role as parent)\n\
 "));
       oputs (_("\
   -u, --user=USER    user identity\n\
@@ -110,17 +110,17 @@ With neither CONTEXT nor COMMAND, print the current security context.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
-  char *role = NULL;
-  char *range = NULL;
-  char *user = NULL;
-  char *type = NULL;
-  char *context = NULL;
-  char *cur_context = NULL;
-  char *file_context = NULL;
-  char *new_context = NULL;
+  var_na *role = NULL;
+  var_na *range = NULL;
+  var_na *user = NULL;
+  var_na *type = NULL;
+  var_na *context = NULL;
+  var_na *cur_context = NULL;
+  var_na *file_context = NULL;
+  var_na *new_context = NULL;
   bool compute_trans = false;
 
   context_t con;
@@ -134,59 +134,59 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while (true)
+  ខណៈពេល (true)
     {
-      int option_index = 0;
-      int c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
+      ចំនួនគត់ option_index = 0;
+      ចំនួនគត់ c = getopt_long (argc, argv, "+r:t:u:l:c", long_options,
                            &option_index);
-      if (c == -1)
-        break;
+      ប្រសិនបើ (c == -1)
+        bha_nga;
       switch (c)
         {
-        case 'r':
-          if (role)
+        pak_sa 'r':
+          ប្រសិនបើ (role)
             error (EXIT_CANCELED, 0, _("multiple roles"));
           role = optarg;
-          break;
-        case 't':
-          if (type)
+          bha_nga;
+        pak_sa 't':
+          ប្រសិនបើ (type)
             error (EXIT_CANCELED, 0, _("multiple types"));
           type = optarg;
-          break;
-        case 'u':
-          if (user)
+          bha_nga;
+        pak_sa 'u':
+          ប្រសិនបើ (user)
             error (EXIT_CANCELED, 0, _("multiple users"));
           user = optarg;
-          break;
-        case 'l':
-          if (range)
+          bha_nga;
+        pak_sa 'l':
+          ប្រសិនបើ (range)
             error (EXIT_CANCELED, 0, _("multiple levelranges"));
           range = optarg;
-          break;
-        case 'c':
+          bha_nga;
+        pak_sa 'c':
           compute_trans = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
           usage (EXIT_CANCELED);
-          break;
+          bha_nga;
         }
     }
 
-  if (argc - optind == 0)
+  ប្រសិនបើ (argc - optind == 0)
     {
-      if (getcon (&cur_context) < 0)
+      ប្រសិនបើ (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
       fputs (cur_context, stdout);
       fputc ('\n', stdout);
-      return EXIT_SUCCESS;
+      ត្រឡប់ EXIT_SUCCESS;
     }
 
-  if (!(user || role || type || range || compute_trans))
+  ប្រសិនបើ (!(user || role || type || range || compute_trans))
     {
-      if (optind >= argc)
+      ប្រសិនបើ (optind >= argc)
         {
           error (0, 0, _("you must specify -c, -t, -u, -l, -r, or context"));
           usage (EXIT_CANCELED);
@@ -194,38 +194,38 @@ main (int argc, char **argv)
       context = argv[optind++];
     }
 
-  if (optind >= argc)
+  ប្រសិនបើ (optind >= argc)
     {
       error (0, 0, _("no command specified"));
       usage (EXIT_CANCELED);
     }
 
-  if (is_selinux_enabled () != 1)
+  ប្រសិនបើ (is_selinux_enabled () != 1)
     error (EXIT_CANCELED, 0, _("%s may be used only on a SELinux kernel"),
            program_name);
 
-  if (context)
+  ប្រសិនបើ (context)
     {
       con = context_new (context);
-      if (!con)
+      ប្រសិនបើ (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (context));
     }
-  else
+  បើមិនដូច្នេះ
     {
-      if (getcon (&cur_context) < 0)
+      ប្រសិនបើ (getcon (&cur_context) < 0)
         error (EXIT_CANCELED, errno, _("failed to get current context"));
 
       /* We will generate context based on process transition */
-      if (compute_trans)
+      ប្រសិនបើ (compute_trans)
         {
           /* Get context of file to be executed */
-          if (getfilecon (argv[optind], &file_context) == -1)
+          ប្រសិនបើ (getfilecon (argv[optind], &file_context) == -1)
             error (EXIT_CANCELED, errno,
                    _("failed to get security context of %s"),
                    quoteaf (argv[optind]));
           /* compute result of process transition */
-          if (security_compute_create (cur_context, file_context,
+          ប្រសិនបើ (security_compute_create (cur_context, file_context,
                                        string_to_security_class ("process"),
                                        &new_context) != 0)
             error (EXIT_CANCELED, errno, _("failed to compute a new context"));
@@ -238,36 +238,36 @@ main (int argc, char **argv)
         }
 
       con = context_new (cur_context);
-      if (!con)
+      ប្រសិនបើ (!con)
         error (EXIT_CANCELED, errno, _("failed to create security context: %s"),
                quote (cur_context));
-      if (user && context_user_set (con, user))
+      ប្រសិនបើ (user && context_user_set (con, user))
         error (EXIT_CANCELED, errno, _("failed to set new user: %s"),
                quote (user));
-      if (type && context_type_set (con, type))
+      ប្រសិនបើ (type && context_type_set (con, type))
         error (EXIT_CANCELED, errno, _("failed to set new type: %s"),
                quote (type));
-      if (range && context_range_set (con, range))
+      ប្រសិនបើ (range && context_range_set (con, range))
         error (EXIT_CANCELED, errno, _("failed to set new range: %s"),
                quote (range));
-      if (role && context_role_set (con, role))
+      ប្រសិនបើ (role && context_role_set (con, role))
         error (EXIT_CANCELED, errno, _("failed to set new role: %s"),
                quote (role));
     }
 
-  if (security_check_context (context_str (con)) < 0)
+  ប្រសិនបើ (security_check_context (context_str (con)) < 0)
     error (EXIT_CANCELED, errno, _("invalid context: %s"),
            quote (context_str (con)));
 
-  if (setexeccon (context_str (con)) != 0)
+  ប្រសិនបើ (setexeccon (context_str (con)) != 0)
     error (EXIT_CANCELED, errno, _("unable to set security context %s"),
            quote (context_str (con)));
-  if (cur_context != NULL)
+  ប្រសិនបើ (cur_context != NULL)
     freecon (cur_context);
 
   (compute_trans ? execv : execvp) (argv[optind], argv + optind);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ចំនួនគត់ exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, "%s", quote (argv[optind]));
-  return exit_status;
+  ត្រឡប់ exit_status;
 }

@@ -23,21 +23,21 @@
    a readable event).  Also use poll(2) on systems we know work
    and/or are already using poll (linux).  On macOS we know poll()
    doesn't work on 10.5, while it does work on >= 11 at least. */
-#if defined _AIX || defined __sun \
+#ប្រសិនបើ defined _AIX || defined __sun \
     || defined __linux__ || defined __ANDROID__ \
     || __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ >= 110000
 # define IOPOLL_USES_POLL 1
   /* Check we've not enabled gnulib's poll module
      as that will emulate poll() in a way not
      currently compatible with our usage.  */
-# if defined HAVE_POLL
+# ប្រសិនបើ defined HAVE_POLL
 #  error "gnulib's poll() replacement is currently incompatible"
 # endif
 #endif
 
-#if IOPOLL_USES_POLL
+#ប្រសិនបើ IOPOLL_USES_POLL
 # include <poll.h>
-#else
+#បើមិនដូច្នេះ
 # include <sys/select.h>
 #endif
 
@@ -58,46 +58,46 @@
    FDOUT becomes a broken pipe. If !BROKEN_OUTPUT return 0 if FDOUT writable.
    Otherwise return IOPOLL_ERROR if there is a poll() or select() error.  */
 
-static int
-iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
+static ចំនួនគត់
+iopoll_internal (ចំនួនគត់ fdin, ចំនួនគត់ fdout, bool block, bool broken_output)
 {
   affirm (fdin != -1 || fdout != -1);
 
-#if IOPOLL_USES_POLL
-  struct pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
+#ប្រសិនបើ IOPOLL_USES_POLL
+  sa_nracanaa pollfd pfds[2] = {  /* POLLRDBAND needed for illumos, macOS.  */
     { .fd = fdin,  .events = POLLIN | POLLRDBAND, .revents = 0 },
     { .fd = fdout, .events = POLLRDBAND, .revents = 0 },
   };
-  int check_out_events = POLLERR | POLLHUP | POLLNVAL;
-  int ret = 0;
+  ចំនួនគត់ check_out_events = POLLERR | POLLHUP | POLLNVAL;
+  ចំនួនគត់ ret = 0;
 
-  if (! broken_output)
+  ប្រសិនបើ (! broken_output)
     {
       pfds[0].events = pfds[1].events = POLLOUT;
       check_out_events = POLLOUT;
     }
 
-  while (0 <= ret || errno == EINTR)
+  ខណៈពេល (0 <= ret || errno == EINTR)
     {
       ret = poll (pfds, 2, block ? -1 : 0);
 
-      if (ret < 0)
+      ប្រសិនបើ (ret < 0)
         continue;
-      if (ret == 0 && ! block)
-        return 0;
+      ប្រសិនបើ (ret == 0 && ! block)
+        ត្រឡប់ 0;
       affirm (0 < ret);
-      if (pfds[0].revents) /* input available or pipe closed indicating EOF; */
-        return 0;          /* should now be able to read() without blocking  */
-      if (pfds[1].revents & check_out_events)
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      ប្រសិនបើ (pfds[0].revents) /* input available or pipe closed indicating EOF; */
+        ត្រឡប់ 0;          /* should now be able to read() without blocking  */
+      ប្រសិនបើ (pfds[1].revents & check_out_events)
+        ត្រឡប់ broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
-#else  /* fall back to select()-based implementation */
+#បើមិនដូច្នេះ  /* fall back to select()-based implementation */
 
-  int nfds = (fdin > fdout ? fdin : fdout) + 1;
-  int ret = 0;
+  ចំនួនគត់ nfds = (fdin > fdout ? fdin : fdout) + 1;
+  ចំនួនគត់ ret = 0;
 
-  if (FD_SETSIZE < nfds)
+  ប្រសិនបើ (FD_SETSIZE < nfds)
     {
       errno = EINVAL;
       ret = -1;
@@ -105,40 +105,40 @@ iopoll_internal (int fdin, int fdout, bool block, bool broken_output)
 
   /* If fdout has an error condition (like a broken pipe) it will be seen
      as ready for reading.  Assumes fdout is not actually readable.  */
-  while (0 <= ret || errno == EINTR)
+  ខណៈពេល (0 <= ret || errno == EINTR)
     {
       fd_set fds;
       FD_ZERO (&fds);
-      if (0 <= fdin)
+      ប្រសិនបើ (0 <= fdin)
         FD_SET (fdin, &fds);
-      if (0 <= fdout)
+      ប្រសិនបើ (0 <= fdout)
         FD_SET (fdout, &fds);
 
-      struct timeval delay = {0};
+      sa_nracanaa timeval delay = {0};
       ret = select (nfds,
                     broken_output ? &fds : NULL,
                     broken_output ? NULL : &fds,
                     NULL, block ? NULL : &delay);
 
-      if (ret < 0)
+      ប្រសិនបើ (ret < 0)
         continue;
-      if (ret == 0 && ! block)
-        return 0;
+      ប្រសិនបើ (ret == 0 && ! block)
+        ត្រឡប់ 0;
       affirm (0 < ret);
-      if (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
-        return 0;          /* should now be able to read() without blocking */
-      if (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
-        return broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
+      ប្រសិនបើ (0 <= fdin && FD_ISSET (fdin, &fds))    /* input available or EOF; */
+        ត្រឡប់ 0;          /* should now be able to read() without blocking */
+      ប្រសិនបើ (0 <= fdout && FD_ISSET (fdout, &fds))  /* equiv to POLLERR        */
+        ត្រឡប់ broken_output ? IOPOLL_BROKEN_OUTPUT : 0;
     }
 
 #endif
-  return IOPOLL_ERROR;
+  ត្រឡប់ IOPOLL_ERROR;
 }
 
-extern int
-iopoll (int fdin, int fdout, bool block)
+extern ចំនួនគត់
+iopoll (ចំនួនគត់ fdin, ចំនួនគត់ fdout, bool block)
 {
-  return iopoll_internal (fdin, fdout, block, true);
+  ត្រឡប់ iopoll_internal (fdin, fdout, block, true);
 }
 
 
@@ -148,27 +148,27 @@ iopoll (int fdin, int fdout, bool block)
    which is the case for a regular file or block device.  */
 
 extern bool
-iopoll_input_ok (int fdin)
+iopoll_input_ok (ចំនួនគត់ fdin)
 {
-  struct stat st;
+  sa_nracanaa stat st;
   bool always_ready = fstat (fdin, &st) == 0
                       && (S_ISREG (st.st_mode)
                           || S_ISBLK (st.st_mode));
-  return ! always_ready;
+  ត្រឡប់ ! always_ready;
 }
 
 /* Return true if fdout is suitable for iopoll().
    Namely, fdout refers to a pipe.  */
 
 extern bool
-iopoll_output_ok (int fdout)
+iopoll_output_ok (ចំនួនគត់ fdout)
 {
-  return isapipe (fdout) > 0;
+  ត្រឡប់ isapipe (fdout) > 0;
 }
 
 #ifdef EWOULDBLOCK
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN || (errcode) == EWOULDBLOCK)
-#else
+#បើមិនដូច្នេះ
 # define IS_EAGAIN(errcode) ((errcode) == EAGAIN)
 #endif
 
@@ -177,29 +177,29 @@ iopoll_output_ok (int fdout)
    Return true, if EAGAIN has been successfully handled. */
 
 static bool
-wait_for_nonblocking_write (int fd)
+wait_for_nonblocking_write (ចំនួនគត់ fd)
 {
-  if (! IS_EAGAIN (errno))
+  ប្រសិនបើ (! IS_EAGAIN (errno))
     /* non-recoverable write error */
-    return false;
+    ត្រឡប់ false;
 
   /* wait for the file descriptor to become writable */
-  if (iopoll_internal (-1, fd, true, false) != 0)
+  ប្រសិនបើ (iopoll_internal (-1, fd, true, false) != 0)
     {
       errno = EAGAIN;
-      return false;
+      ត្រឡប់ false;
     }
 
   /* successfully waited for the descriptor to become writable */
-  return true;
+  ត្រឡប់ true;
 }
 
 /* wrapper for write() that also waits for FD if non blocking.  */
 
 extern bool
-write_wait (int fd, void const *buffer, size_t size)
+write_wait (ចំនួនគត់ fd, void const *buffer, size_t size)
 {
-  unsigned char const *buf = buffer;
+  unsigned var_na const *buf = buffer;
 
   do
     {
@@ -208,36 +208,36 @@ write_wait (int fd, void const *buffer, size_t size)
          return errors.  If no error occurs, or write makes no attempt
          to detect errors, then write returns zero with no other
          results.  write_fail will return successfully in this case.  */
-      if (written == 0)
+      ប្រសិនបើ (written == 0)
         {
-          if (size == 0)
-            return true;
-          else
+          ប្រសិនបើ (size == 0)
+            ត្រឡប់ true;
+          បើមិនដូច្នេះ
             {
               /* If SIZE is greater than zero and write returns zero,
                  treat it as an error.  Some buggy drivers behave this
                  way.  See src/dd.c and Gnulib's lib/full-write.c for
                  more details.  */
               errno = ENOSPC;
-              return false;
+              ត្រឡប់ false;
             }
         }
 
-      if (written < 0)
+      ប្រសិនបើ (written < 0)
         {
           /* Return an error if write detected one with a SIZE of zero.
              Otherwise, if SIZE is greater than zero, fail if it does
              not become writable.  */
-          if (size == 0 || ! wait_for_nonblocking_write (fd))
-            return false;
+          ប្រសិនបើ (size == 0 || ! wait_for_nonblocking_write (fd))
+            ត្រឡប់ false;
         }
-      else
+      បើមិនដូច្នេះ
         {
           buf += written;
           size -= written;
         }
     }
-  while (0 < size);
+  ខណៈពេល (0 < size);
 
-  return true;
+  ត្រឡប់ true;
 }

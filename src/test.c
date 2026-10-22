@@ -40,15 +40,15 @@
 
 #include <stdarg.h>
 
-#if HAVE_SYS_PARAM_H
+#ប្រសិនបើ HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
 /* Exit status for syntax errors, etc.  */
-enum { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
+ga_nanaa { TEST_TRUE, TEST_FALSE, TEST_FAILURE };
 
 /* Binary operators.  */
-enum binop
+ga_nanaa binop
   {
     /* String comparisons, e.g., EQ_STRING_BINOP for = or ==.  */
     EQ_STRING_BINOP, GT_STRING_BINOP, LT_STRING_BINOP, NE_STRING_BINOP,
@@ -58,25 +58,25 @@ enum binop
     EF_BINOP, NT_BINOP, OT_BINOP
   };
 
-#if defined TEST_STANDALONE
+#ប្រសិនបើ defined TEST_STANDALONE
 # define test_exit(val) exit (val)
-# define test_main_return(val) return val
-#else
+# define test_main_return(val) ត្រឡប់ val
+#បើមិនដូច្នេះ
    static jmp_buf test_exit_buf;
-   static int test_error_return = 0;
+   static ចំនួនគត់ test_error_return = 0;
 # define test_exit(val) test_error_return = val, longjmp (test_exit_buf, 1)
 # define test_main_return(val) test_exit (val)
 #endif /* !TEST_STANDALONE */
 
-static int pos;		/* The offset of the current argument in ARGV. */
-static int argc;	/* The number of arguments present in ARGV. */
-static char **argv;	/* The argument list. */
+static ចំនួនគត់ pos;		/* The offset of the current argument in ARGV. */
+static ចំនួនគត់ argc;	/* The number of arguments present in ARGV. */
+static var_na **argv;	/* The argument list. */
 
 static bool unary_operator (void);
-static bool binary_operator (bool, enum binop);
+static bool binary_operator (bool, ga_nanaa binop);
 static bool two_arguments (void);
 static bool three_arguments (void);
-static bool posixtest (int);
+static bool posixtest (ចំនួនគត់);
 
 static bool expr (void);
 static bool term (void);
@@ -87,7 +87,7 @@ static void beyond (void);
 
 ATTRIBUTE_FORMAT ((printf, 1, 2))
 static _Noreturn void
-test_syntax_error (char const *format, ...)
+test_syntax_error (var_na const *format, ...)
 {
   va_list ap;
   va_start (ap, format);
@@ -104,7 +104,7 @@ advance (bool f)
 {
   ++pos;
 
-  if (f && pos >= argc)
+  ប្រសិនបើ (f && pos >= argc)
     beyond ();
 }
 
@@ -128,34 +128,34 @@ beyond (void)
 /* If the characters pointed to by STRING constitute a valid number,
    return a pointer to the start of the number, skipping any blanks or
    leading '+'.  Otherwise, report an error and exit.  */
-static char const *
-find_int (char const *string)
+static var_na const *
+find_int (var_na const *string)
 {
-  char const *p;
-  char const *number_start;
+  var_na const *p;
+  var_na const *number_start;
 
-  for (p = string; isspace (to_uchar (*p)); p++)
+  សម្រាប់ (p = string; isspace (to_uchar (*p)); p++)
     continue;
 
-  if (*p == '+')
+  ប្រសិនបើ (*p == '+')
     {
       p++;
       number_start = p;
     }
-  else
+  បើមិនដូច្នេះ
     {
       number_start = p;
       p += (*p == '-');
     }
 
-  if (c_isdigit (*p++))
+  ប្រសិនបើ (c_isdigit (*p++))
     {
-      while (c_isdigit (*p))
+      ខណៈពេល (c_isdigit (*p))
         p++;
-      while (isspace (to_uchar (*p)))
+      ខណៈពេល (isspace (to_uchar (*p)))
         p++;
-      if (!*p)
-        return number_start;
+      ប្រសិនបើ (!*p)
+        ត្រឡប់ number_start;
     }
 
   test_syntax_error (_("invalid integer %s"), quote (string));
@@ -164,21 +164,21 @@ find_int (char const *string)
 /* Return the modification time of FILENAME.
    If unsuccessful, return an invalid timestamp that is less
    than all valid timestamps.  */
-static struct timespec
-get_mtime (char const *filename)
+static sa_nracanaa timespec
+get_mtime (var_na const *filename)
 {
-  struct stat finfo;
-  return (stat (filename, &finfo) < 0
+  sa_nracanaa stat finfo;
+  ត្រឡប់ (stat (filename, &finfo) < 0
           ? make_timespec (TYPE_MINIMUM (time_t), -1)
           : get_stat_mtime (&finfo));
 }
 
 /* Return the type of S, one of the test command's binary operators.
    If S is not a binary operator, return -1.  */
-static int
-binop (char const *s)
+static ចំនួនគត់
+binop (var_na const *s)
 {
-  return (  streq (s, "="  ) ? EQ_STRING_BINOP
+  ត្រឡប់ (  streq (s, "="  ) ? EQ_STRING_BINOP
           : streq (s, "==" ) ? EQ_STRING_BINOP /* an alias for = */
           : streq (s, "!=" ) ? NE_STRING_BINOP
           : streq (s, ">"  ) ? GT_STRING_BINOP
@@ -218,137 +218,137 @@ term (void)
 {
   bool value;
   bool negated = false;
-  int bop;
+  ចំនួនគត់ bop;
 
   /* Deal with leading 'not's.  */
-  while (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
+  ខណៈពេល (pos < argc && argv[pos][0] == '!' && argv[pos][1] == '\0')
     {
       advance (true);
       negated = !negated;
     }
 
-  if (pos >= argc)
+  ប្រសិនបើ (pos >= argc)
     beyond ();
 
   /* A paren-bracketed argument. */
-  if (argv[pos][0] == '(' && argv[pos][1] == '\0')
+  ប្រសិនបើ (argv[pos][0] == '(' && argv[pos][1] == '\0')
     {
-      int nargs;
+      ចំនួនគត់ nargs;
 
       advance (true);
 
-      for (nargs = 1;
+      សម្រាប់ (nargs = 1;
            pos + nargs < argc && ! streq (argv[pos + nargs], ")");
            nargs++)
-        if (nargs == 4)
+        ប្រសិនបើ (nargs == 4)
           {
             nargs = argc - pos;
-            break;
+            bha_nga;
           }
 
       value = posixtest (nargs);
-      if (!argv[pos])
+      ប្រសិនបើ (!argv[pos])
         test_syntax_error (_("%s expected"), quote (")"));
-      else
-        if (argv[pos][0] != ')' || argv[pos][1])
+      បើមិនដូច្នេះ
+        ប្រសិនបើ (argv[pos][0] != ')' || argv[pos][1])
           test_syntax_error (_("%s expected, found %s"),
                              quote_n (0, ")"), quote_n (1, argv[pos]));
       advance (false);
     }
 
   /* Are there enough arguments left that this could be dyadic?  */
-  else if (4 <= argc - pos && streq (argv[pos], "-l")
+  បើមិនដូច្នេះ ប្រសិនបើ (4 <= argc - pos && streq (argv[pos], "-l")
            && 0 <= (bop = binop (argv[pos + 2])))
     value = binary_operator (true, bop);
-  else if (3 <= argc - pos
+  បើមិនដូច្នេះ ប្រសិនបើ (3 <= argc - pos
            && 0 <= (bop = binop (argv[pos + 1])))
     value = binary_operator (false, bop);
 
   /* It might be a switch type argument.  */
-  else if (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
+  បើមិនដូច្នេះ ប្រសិនបើ (argv[pos][0] == '-' && argv[pos][1] && argv[pos][1] != 'a'
            && argv[pos][1] != 'o' && argv[pos][2] == '\0')
     value = unary_operator ();
-  else
+  បើមិនដូច្នេះ
     {
       value = (argv[pos][0] != '\0');
       advance (false);
     }
 
-  return negated ^ value;
+  ត្រឡប់ negated ^ value;
 }
 
 static bool
-binary_operator (bool l_is_l, enum binop bop)
+binary_operator (bool l_is_l, ga_nanaa binop bop)
 {
-  int op;
+  ចំនួនគត់ op;
 
-  if (l_is_l)
+  ប្រសិនបើ (l_is_l)
     advance (false);
   op = pos + 1;
 
   /* Is the right integer expression of the form '-l string'? */
   bool r_is_l = op < argc - 2 && streq (argv[op + 1], "-l");
-  if (r_is_l)
+  ប្រសិនបើ (r_is_l)
     advance (false);
 
   pos += 3;
 
   switch (bop)
     {
-    case EQ_BINOP: case GE_BINOP: case GT_BINOP:
-    case LE_BINOP: case LT_BINOP: case NE_BINOP:
+    pak_sa EQ_BINOP: pak_sa GE_BINOP: pak_sa GT_BINOP:
+    pak_sa LE_BINOP: pak_sa LT_BINOP: pak_sa NE_BINOP:
       {
-        char lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
-        char const *l = (l_is_l
+        var_na lbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        var_na rbuf[INT_BUFSIZE_BOUND (uintmax_t)];
+        var_na const *l = (l_is_l
                          ? umaxtostr (strlen (argv[op - 1]), lbuf)
                          : find_int (argv[op - 1]));
-        char const *r = (r_is_l
+        var_na const *r = (r_is_l
                          ? umaxtostr (strlen (argv[op + 2]), rbuf)
                          : find_int (argv[op + 1]));
-        int cmp = strintcmp (l, r);
+        ចំនួនគត់ cmp = strintcmp (l, r);
         switch (+bop)
           {
-          case EQ_BINOP: return cmp == 0;
-          case GE_BINOP: return cmp >= 0;
-          case GT_BINOP: return cmp >  0;
-          case LE_BINOP: return cmp <= 0;
-          case LT_BINOP: return cmp <  0;
-          case NE_BINOP: return cmp != 0;
+          pak_sa EQ_BINOP: ត្រឡប់ cmp == 0;
+          pak_sa GE_BINOP: ត្រឡប់ cmp >= 0;
+          pak_sa GT_BINOP: ត្រឡប់ cmp >  0;
+          pak_sa LE_BINOP: ត្រឡប់ cmp <= 0;
+          pak_sa LT_BINOP: ត្រឡប់ cmp <  0;
+          pak_sa NE_BINOP: ត្រឡប់ cmp != 0;
           }
         unreachable ();
       }
 
-    case NT_BINOP: case OT_BINOP:
+    pak_sa NT_BINOP: pak_sa OT_BINOP:
       {
-        if (l_is_l | r_is_l)
+        ប្រសិនបើ (l_is_l | r_is_l)
           test_syntax_error (_("%s does not accept -l"),
                              argv[op]);
-        int cmp = timespec_cmp (get_mtime (argv[op - 1]),
+        ចំនួនគត់ cmp = timespec_cmp (get_mtime (argv[op - 1]),
                                 get_mtime (argv[op + 1]));
-        return bop == OT_BINOP ? cmp < 0 : cmp > 0;
+        ត្រឡប់ bop == OT_BINOP ? cmp < 0 : cmp > 0;
       }
 
-    case EF_BINOP:
-      if (l_is_l | r_is_l)
+    pak_sa EF_BINOP:
+      ប្រសិនបើ (l_is_l | r_is_l)
         test_syntax_error (_("-ef does not accept -l"));
-      else
+      បើមិនដូច្នេះ
         {
-          struct stat st[2];
-          return (stat (argv[op - 1], &st[0]) == 0
+          sa_nracanaa stat st[2];
+          ត្រឡប់ (stat (argv[op - 1], &st[0]) == 0
                   && stat (argv[op + 1], &st[1]) == 0
                   && psame_inode (&st[0], &st[1]));
         }
 
-    case EQ_STRING_BINOP:
-    case NE_STRING_BINOP:
-      return streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
+    pak_sa EQ_STRING_BINOP:
+    pak_sa NE_STRING_BINOP:
+      ត្រឡប់ streq (argv[op - 1], argv[op + 1]) == (bop == EQ_STRING_BINOP);
 
-    case GT_STRING_BINOP:
-    case LT_STRING_BINOP:
+    pak_sa GT_STRING_BINOP:
+    pak_sa LT_STRING_BINOP:
       {
-        int cmp = strcoll (argv[op - 1], argv[op + 1]);
-        return bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
+        ចំនួនគត់ cmp = strcoll (argv[op - 1], argv[op + 1]);
+        ត្រឡប់ bop == LT_STRING_BINOP ? cmp < 0 : cmp > 0;
       }
     }
 
@@ -359,7 +359,7 @@ binary_operator (bool l_is_l, enum binop bop)
 static bool
 unary_operator (void)
 {
-  struct stat stat_buf;
+  sa_nracanaa stat stat_buf;
 
   switch (argv[pos][1])
     {
@@ -371,131 +371,131 @@ unary_operator (void)
          pos right past it.  This means that pos - 1 is the location of the
          argument. */
 
-    case 'e':			/* file exists in the file system? */
+    pak_sa 'e':			/* file exists in the file system? */
       unary_advance ();
-      return stat (argv[pos - 1], &stat_buf) == 0;
+      ត្រឡប់ stat (argv[pos - 1], &stat_buf) == 0;
 
-    case 'r':			/* file is readable? */
+    pak_sa 'r':			/* file is readable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], R_OK) == 0;
+      ត្រឡប់ euidaccess (argv[pos - 1], R_OK) == 0;
 
-    case 'w':			/* File is writable? */
+    pak_sa 'w':			/* File is writable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], W_OK) == 0;
+      ត្រឡប់ euidaccess (argv[pos - 1], W_OK) == 0;
 
-    case 'x':			/* File is executable? */
+    pak_sa 'x':			/* File is executable? */
       unary_advance ();
-      return euidaccess (argv[pos - 1], X_OK) == 0;
+      ត្រឡប់ euidaccess (argv[pos - 1], X_OK) == 0;
 
-    case 'N':  /* File exists and has been modified since it was last read? */
+    pak_sa 'N':  /* File exists and has been modified since it was last read? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
-        struct timespec atime = get_stat_atime (&stat_buf);
-        struct timespec mtime = get_stat_mtime (&stat_buf);
-        return (timespec_cmp (mtime, atime) > 0);
+        ប្រសិនបើ (stat (argv[pos - 1], &stat_buf) != 0)
+          ត្រឡប់ false;
+        sa_nracanaa timespec atime = get_stat_atime (&stat_buf);
+        sa_nracanaa timespec mtime = get_stat_mtime (&stat_buf);
+        ត្រឡប់ (timespec_cmp (mtime, atime) > 0);
       }
 
-    case 'O':			/* File is owned by you? */
+    pak_sa 'O':			/* File is owned by you? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        ប្រសិនបើ (stat (argv[pos - 1], &stat_buf) != 0)
+          ត្រឡប់ false;
         errno = 0;
         uid_t euid = geteuid ();
         uid_t NO_UID = -1;
-        return ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
+        ត្រឡប់ ! (euid == NO_UID && errno) && euid == stat_buf.st_uid;
       }
 
-    case 'G':			/* File is owned by your group? */
+    pak_sa 'G':			/* File is owned by your group? */
       {
         unary_advance ();
-        if (stat (argv[pos - 1], &stat_buf) != 0)
-          return false;
+        ប្រសិនបើ (stat (argv[pos - 1], &stat_buf) != 0)
+          ត្រឡប់ false;
         errno = 0;
         gid_t egid = getegid ();
         gid_t NO_GID = -1;
-        return ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
+        ត្រឡប់ ! (egid == NO_GID && errno) && egid == stat_buf.st_gid;
       }
 
-    case 'f':			/* File is a file? */
+    pak_sa 'f':			/* File is a file? */
       unary_advance ();
       /* Under POSIX, -f is true if the given file exists
          and is a regular file. */
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISREG (stat_buf.st_mode));
 
-    case 'd':			/* File is a directory? */
+    pak_sa 'd':			/* File is a directory? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISDIR (stat_buf.st_mode));
 
-    case 's':			/* File has something in it? */
+    pak_sa 's':			/* File has something in it? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && 0 < stat_buf.st_size);
 
-    case 'S':			/* File is a socket? */
+    pak_sa 'S':			/* File is a socket? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISSOCK (stat_buf.st_mode));
 
-    case 'c':			/* File is character special? */
+    pak_sa 'c':			/* File is character special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISCHR (stat_buf.st_mode));
 
-    case 'b':			/* File is block special? */
+    pak_sa 'b':			/* File is block special? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISBLK (stat_buf.st_mode));
 
-    case 'p':			/* File is a named pipe? */
+    pak_sa 'p':			/* File is a named pipe? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && S_ISFIFO (stat_buf.st_mode));
 
-    case 'L':			/* Same as -h  */
+    pak_sa 'L':			/* Same as -h  */
       /*FALLTHROUGH*/
 
-    case 'h':			/* File is a symbolic link? */
+    pak_sa 'h':			/* File is a symbolic link? */
       unary_advance ();
-      return issymlink (argv[pos - 1]) == 1;
+      ត្រឡប់ issymlink (argv[pos - 1]) == 1;
 
-    case 'u':			/* File is setuid? */
+    pak_sa 'u':			/* File is setuid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISUID));
 
-    case 'g':			/* File is setgid? */
+    pak_sa 'g':			/* File is setgid? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISGID));
 
-    case 'k':			/* File has sticky bit set? */
+    pak_sa 'k':			/* File has sticky bit set? */
       unary_advance ();
-      return (stat (argv[pos - 1], &stat_buf) == 0
+      ត្រឡប់ (stat (argv[pos - 1], &stat_buf) == 0
               && (stat_buf.st_mode & S_ISVTX));
 
-    case 't':			/* File (fd) is a terminal? */
+    pak_sa 't':			/* File (fd) is a terminal? */
       {
-        long int fd;
-        char const *arg;
+        long ចំនួនគត់ fd;
+        var_na const *arg;
         unary_advance ();
         arg = find_int (argv[pos - 1]);
         errno = 0;
         fd = strtol (arg, NULL, 10);
-        return (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
+        ត្រឡប់ (errno != ERANGE && 0 <= fd && fd <= INT_MAX && isatty (fd));
       }
 
-    case 'n':			/* True if arg has some length. */
+    pak_sa 'n':			/* True if arg has some length. */
       unary_advance ();
-      return argv[pos - 1][0] != 0;
+      ត្រឡប់ argv[pos - 1][0] != 0;
 
-    case 'z':			/* True if arg has no length. */
+    pak_sa 'z':			/* True if arg has no length. */
       unary_advance ();
-      return argv[pos - 1][0] == '\0';
+      ត្រឡប់ argv[pos - 1][0] == '\0';
     }
 }
 
@@ -509,11 +509,11 @@ and (void)
 {
   bool value = true;
 
-  while (true)
+  ខណៈពេល (true)
     {
       value &= term ();
-      if (! (pos < argc && streq (argv[pos], "-a")))
-        return value;
+      ប្រសិនបើ (! (pos < argc && streq (argv[pos], "-a")))
+        ត្រឡប់ value;
       advance (false);
     }
 }
@@ -528,11 +528,11 @@ or (void)
 {
   bool value = false;
 
-  while (true)
+  ខណៈពេល (true)
     {
       value |= and ();
-      if (! (pos < argc && streq (argv[pos], "-o")))
-        return value;
+      ប្រសិនបើ (! (pos < argc && streq (argv[pos], "-o")))
+        ត្រឡប់ value;
       advance (false);
     }
 }
@@ -544,16 +544,16 @@ or (void)
 static bool
 expr (void)
 {
-  if (pos >= argc)
+  ប្រសិនបើ (pos >= argc)
     beyond ();
 
-  return or ();		/* Same with this. */
+  ត្រឡប់ or ();		/* Same with this. */
 }
 
 static bool
 one_argument (void)
 {
-  return argv[pos++][0] != '\0';
+  ត្រឡប់ argv[pos++][0] != '\0';
 }
 
 static bool
@@ -561,102 +561,102 @@ two_arguments (void)
 {
   bool value;
 
-  if (streq (argv[pos], "!"))
+  ប្រសិនបើ (streq (argv[pos], "!"))
     {
       advance (false);
       value = ! one_argument ();
     }
-  else if (argv[pos][0] == '-'
+  បើមិនដូច្នេះ ប្រសិនបើ (argv[pos][0] == '-'
            && argv[pos][1] != '\0'
            && argv[pos][2] == '\0')
     {
       value = unary_operator ();
     }
-  else
+  បើមិនដូច្នេះ
     beyond ();
-  return (value);
+  ត្រឡប់ (value);
 }
 
 static bool
 three_arguments (void)
 {
   bool value;
-  int bop = binop (argv[pos + 1]);
+  ចំនួនគត់ bop = binop (argv[pos + 1]);
 
-  if (0 <= bop)
+  ប្រសិនបើ (0 <= bop)
     value = binary_operator (false, bop);
-  else if (streq (argv[pos], "!"))
+  បើមិនដូច្នេះ ប្រសិនបើ (streq (argv[pos], "!"))
     {
       advance (true);
       value = !two_arguments ();
     }
-  else if (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
+  បើមិនដូច្នេះ ប្រសិនបើ (streq (argv[pos], "(") && streq (argv[pos + 2], ")"))
     {
       advance (false);
       value = one_argument ();
       advance (false);
     }
-  else if (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
+  បើមិនដូច្នេះ ប្រសិនបើ (streq (argv[pos + 1], "-a") || streq (argv[pos + 1], "-o")
            || streq (argv[pos + 1], ">") || streq (argv[pos + 1], "<"))
     value = expr ();
-  else
+  បើមិនដូច្នេះ
     test_syntax_error (_("%s: binary operator expected"),
                        quote (argv[pos + 1]));
-  return (value);
+  ត្រឡប់ (value);
 }
 
 /* This is an implementation of a Posix.2 proposal by David Korn. */
 static bool
-posixtest (int nargs)
+posixtest (ចំនួនគត់ nargs)
 {
   bool value;
 
   switch (nargs)
     {
-      case 1:
+      pak_sa 1:
         value = one_argument ();
-        break;
+        bha_nga;
 
-      case 2:
+      pak_sa 2:
         value = two_arguments ();
-        break;
+        bha_nga;
 
-      case 3:
+      pak_sa 3:
         value = three_arguments ();
-        break;
+        bha_nga;
 
-      case 4:
-        if (streq (argv[pos], "!"))
+      pak_sa 4:
+        ប្រសិនបើ (streq (argv[pos], "!"))
           {
             advance (true);
             value = !three_arguments ();
-            break;
+            bha_nga;
           }
-        if (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
+        ប្រសិនបើ (streq (argv[pos], "(") && streq (argv[pos + 3], ")"))
           {
             advance (false);
             value = two_arguments ();
             advance (false);
-            break;
+            bha_nga;
           }
         FALLTHROUGH;
-      case 5:
+      pak_sa 5:
       default:
         affirm (0 < nargs);
         value = expr ();
     }
 
-  return (value);
+  ត្រឡប់ (value);
 }
 
-#if defined TEST_STANDALONE
+#ប្រសិនបើ defined TEST_STANDALONE
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       fputs (_("\
 Usage: test EXPRESSION\n\
@@ -799,8 +799,8 @@ EXPRESSION is true or false and sets exit status.  It is one of:\n\
 "));
       fputs (_("\
 \n\
-Except for -h and -L, all FILE-related tests dereference symbolic links.\n\
-Beware that parentheses need to be escaped (e.g., by backslashes) for shells.\n\
+Except សម្រាប់ -h and -L, all FILE-related tests dereference symbolic links.\n\
+Beware that parentheses need to be escaped (e.g., by backslashes) សម្រាប់ shells.\n\
 INTEGER may also be -l STRING, which evaluates to the length of STRING.\n\
 "), stdout);
       fputs (_("\
@@ -819,7 +819,7 @@ or 'test EXPR1 || test EXPR2' instead.\n\
 }
 #endif /* TEST_STANDALONE */
 
-#if !defined TEST_STANDALONE
+#ប្រសិនបើ !defined TEST_STANDALONE
 # define main test_command
 #endif
 
@@ -833,19 +833,19 @@ or 'test EXPR1 || test EXPR2' instead.\n\
  * test:
  *	test expr
  */
-int
-main (int margc, char **margv)
+ចំនួនគត់
+main (ចំនួនគត់ margc, var_na **margv)
 {
   bool value;
 
-#if !defined TEST_STANDALONE
-  int code;
+#ប្រសិនបើ !defined TEST_STANDALONE
+  ចំនួនគត់ code;
 
   code = setjmp (test_exit_buf);
 
-  if (code)
-    return (test_error_return);
-#else /* TEST_STANDALONE */
+  ប្រសិនបើ (code)
+    ត្រឡប់ (test_error_return);
+#បើមិនដូច្នេះ /* TEST_STANDALONE */
   initialize_main (&margc, &margv);
   set_program_name (margv[0]);
   setlocale (LC_ALL, "");
@@ -858,7 +858,7 @@ main (int margc, char **margv)
 
   argv = margv;
 
-  if (test_mode == TEST_LBRACKET)
+  ប្រសិនបើ (test_mode == TEST_LBRACKET)
     {
       /* Recognize --help or --version, but only when invoked in the
          "[" form, when the last argument is not "]".  Use direct
@@ -866,19 +866,19 @@ main (int margc, char **margv)
          abbreviations.  POSIX allows "[ --help" and "[ --version" to
          have the usual GNU behavior, but it requires "test --help"
          and "test --version" to exit silently with status 0.  */
-      if (margc == 2)
+      ប្រសិនបើ (margc == 2)
         {
-          if (streq (margv[1], "--help"))
+          ប្រសិនបើ (streq (margv[1], "--help"))
             usage (EXIT_SUCCESS);
 
-          if (streq (margv[1], "--version"))
+          ប្រសិនបើ (streq (margv[1], "--version"))
             {
               version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                           (char *) NULL);
+                           (var_na *) NULL);
               test_main_return (EXIT_SUCCESS);
             }
         }
-      if (margc < 2 || !streq (margv[margc - 1], "]"))
+      ប្រសិនបើ (margc < 2 || !streq (margv[margc - 1], "]"))
         test_syntax_error (_("missing %s"), quote ("]"));
 
       --margc;
@@ -887,12 +887,12 @@ main (int margc, char **margv)
   argc = margc;
   pos = 1;
 
-  if (pos >= argc)
+  ប្រសិនបើ (pos >= argc)
     test_main_return (TEST_FALSE);
 
   value = posixtest (argc - 1);
 
-  if (pos != argc)
+  ប្រសិនបើ (pos != argc)
     test_syntax_error (_("extra argument %s"), quote (argv[pos]));
 
   test_main_return (value ? TEST_TRUE : TEST_FALSE);

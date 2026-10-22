@@ -1,4 +1,4 @@
-extern int force_linkat (int, char const *, int, char const *, int, bool, int)
+extern ចំនួនគត់ force_linkat (ចំនួនគត់, var_na const *, ចំនួនគត់, var_na const *, ចំនួនគត់, bool, ចំនួនគត់)
   _GL_ATTRIBUTE_NONNULL ();
-extern int force_symlinkat (char const *, int, char const *, bool, int)
+extern ចំនួនគត់ force_symlinkat (var_na const *, ចំនួនគត់, var_na const *, bool, ចំនួនគត់)
   _GL_ATTRIBUTE_NONNULL ();

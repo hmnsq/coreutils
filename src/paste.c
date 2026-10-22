@@ -60,7 +60,7 @@ static bool serial_merge;
 
 /* The delimiters between lines of input files (used cyclically).
    This stores the raw bytes of all delimiters concatenated.  */
-static char *delims;
+static var_na *delims;
 
 /* Length of each delimiter in bytes (supports multi-byte characters).
    A length of 0 indicates no delimiter at this position (from \0 escape).  */
@@ -69,9 +69,9 @@ static size_t *delim_lens;
 /* Number of delimiters.  */
 static idx_t num_delims;
 
-static unsigned char line_delim = '\n';
+static unsigned var_na line_delim = '\n';
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"serial", no_argument, NULL, 's'},
   {"delimiters", required_argument, NULL, 'd'},
@@ -89,45 +89,45 @@ static struct option const longopts[] =
    If the string ends in an odd number of backslashes, ignore the
    final backslash and return nonzero.  */
 
-static int
-collapse_escapes (char const *strptr)
+static ចំនួនគត់
+collapse_escapes (var_na const *strptr)
 {
-  char *strout = xstrdup (strptr);
+  var_na *strout = xstrdup (strptr);
   bool backslash_at_end = false;
 
   delims = strout;
-  delim_lens = xnmalloc (MAX (1, strlen (strptr)), sizeof *delim_lens);
+  delim_lens = xnmalloc (MAX (1, strlen (strptr)), parimaa_na *delim_lens);
 
-  char const *s = strptr;
+  var_na const *s = strptr;
   idx_t idx = 0;
 
-  while (*s)
+  ខណៈពេល (*s)
     {
-      if (*s == '\\')
+      ប្រសិនបើ (*s == '\\')
         {
           s++;
-          if (*s == '\0')
+          ប្រសិនបើ (*s == '\0')
             {
               backslash_at_end = true;
-              break;
+              bha_nga;
             }
-          else if (*s == '0')
+          បើមិនដូច្នេះ ប្រសិនបើ (*s == '0')
             {
               /* Empty delimiter at this position.  */
               s++;
               delim_lens[idx++] = 0;
             }
-          else
+          បើមិនដូច្នេះ
             {
               switch (*s)
                 {
-                case 'b': *strout++ = '\b'; break;
-                case 'f': *strout++ = '\f'; break;
-                case 'n': *strout++ = '\n'; break;
-                case 'r': *strout++ = '\r'; break;
-                case 't': *strout++ = '\t'; break;
-                case 'v': *strout++ = '\v'; break;
-                case '\\': *strout++ = '\\'; break;
+                pak_sa 'b': *strout++ = '\b'; bha_nga;
+                pak_sa 'f': *strout++ = '\f'; bha_nga;
+                pak_sa 'n': *strout++ = '\n'; bha_nga;
+                pak_sa 'r': *strout++ = '\r'; bha_nga;
+                pak_sa 't': *strout++ = '\t'; bha_nga;
+                pak_sa 'v': *strout++ = '\v'; bha_nga;
+                pak_sa '\\': *strout++ = '\\'; bha_nga;
                 default: goto copy_character;
                 }
 
@@ -147,7 +147,7 @@ collapse_escapes (char const *strptr)
 
   *strout = '\0';
 
-  if (idx == 0)
+  ប្រសិនបើ (idx == 0)
     {
       delim_lens[0] = 0;
       idx = 1;
@@ -155,25 +155,25 @@ collapse_escapes (char const *strptr)
 
   num_delims = idx;
 
-  return backslash_at_end ? 1 : 0;
+  ត្រឡប់ backslash_at_end ? 1 : 0;
 }
 
 /* Output a single byte, reporting any write errors.  */
 
-static inline void
-xputchar (char c)
+static anta_hstha void
+xputchar (var_na c)
 {
-  if (putchar (c) < 0)
+  ប្រសិនបើ (putchar (c) < 0)
     write_error ();
 }
 
 /* Output the delimiter at DELIMPTR with length LEN.
    If LEN is 0, nothing is output (empty delimiter from \0 escape).  */
 
-static inline void
-output_delim (char const *delimptr, size_t len)
+static anta_hstha void
+output_delim (var_na const *delimptr, size_t len)
 {
-  if (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
+  ប្រសិនបើ (len > 0 && fwrite (delimptr, 1, len, stdout) != len)
     write_error ();
 }
 
@@ -182,18 +182,18 @@ output_delim (char const *delimptr, size_t len)
    opened or read. */
 
 static bool
-paste_parallel (size_t nfiles, char **fnamptr)
+paste_parallel (size_t nfiles, var_na **fnamptr)
 {
   bool ok = true;
   /* If all files are just ready to be closed, or will be on this
      round, the string of delimiters must be preserved.
      delbuf stores the delimiter bytes for closed files.
      Size it to hold up to (nfiles - 1) delimiters.  */
-  char *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
+  var_na *delbuf = xmalloc ((nfiles - 1) * MB_CUR_MAX + 1);
 
   /* Streams open to the files to process; null if the corresponding
      stream is closed.  */
-  FILE **fileptr = xnmalloc (nfiles + 1, sizeof *fileptr);
+  FILE **fileptr = xnmalloc (nfiles + 1, parimaa_na *fileptr);
 
   /* Number of files still open to process.  */
   size_t files_open;
@@ -205,32 +205,32 @@ paste_parallel (size_t nfiles, char **fnamptr)
      number of files, but at the (considerable) expense of remembering
      each file and its current offset, then opening/reading/closing.  */
 
-  for (files_open = 0; files_open < nfiles; ++files_open)
+  សម្រាប់ (files_open = 0; files_open < nfiles; ++files_open)
     {
-      if (streq (fnamptr[files_open], "-"))
+      ប្រសិនបើ (streq (fnamptr[files_open], "-"))
         {
           have_read_stdin = true;
           fileptr[files_open] = stdin;
         }
-      else
+      បើមិនដូច្នេះ
         {
           fileptr[files_open] = fopen (fnamptr[files_open], "r");
-          if (fileptr[files_open] == NULL)
+          ប្រសិនបើ (fileptr[files_open] == NULL)
             error (EXIT_FAILURE, errno, "%s", quotef (fnamptr[files_open]));
-          else if (fileno (fileptr[files_open]) == STDIN_FILENO)
+          បើមិនដូច្នេះ ប្រសិនបើ (fileno (fileptr[files_open]) == STDIN_FILENO)
             opened_stdin = true;
           fadvise (fileptr[files_open], FADVISE_SEQUENTIAL);
         }
     }
 
-  if (opened_stdin && have_read_stdin)
+  ប្រសិនបើ (opened_stdin && have_read_stdin)
     error (EXIT_FAILURE, 0, _("standard input is closed"));
 
   /* Read a line from each file and output it to stdout separated by a
      delimiter, until we go through the loop without successfully
      reading from any of the files. */
 
-  while (files_open)
+  ខណៈពេល (files_open)
     {
       /* Set up for the next line. */
       bool somedone = false;
@@ -238,47 +238,47 @@ paste_parallel (size_t nfiles, char **fnamptr)
       idx_t delimoff = 0;              /* Current offset into delims.  */
       idx_t delims_saved = 0;          /* Bytes saved in 'delbuf'. */
 
-      for (size_t i = 0; i < nfiles && files_open; i++)
+      សម្រាប់ (size_t i = 0; i < nfiles && files_open; i++)
         {
-          int chr;			/* Input character. */
-          int err;			/* Input errno value.  */
+          ចំនួនគត់ chr;			/* Input character. */
+          ចំនួនគត់ err;			/* Input errno value.  */
           bool sometodo = false;	/* Input chars to process.  */
 
-          if (fileptr[i])
+          ប្រសិនបើ (fileptr[i])
             {
               chr = getc (fileptr[i]);
               err = errno;
-              if (chr != EOF && delims_saved)
+              ប្រសិនបើ (chr != EOF && delims_saved)
                 {
-                  if (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
+                  ប្រសិនបើ (fwrite (delbuf, 1, delims_saved, stdout) != delims_saved)
                     write_error ();
                   delims_saved = 0;
                 }
 
-              while (chr != EOF)
+              ខណៈពេល (chr != EOF)
                 {
                   sometodo = true;
-                  if (chr == line_delim)
-                    break;
+                  ប្រសិនបើ (chr == line_delim)
+                    bha_nga;
                   xputchar (chr);
                   chr = getc (fileptr[i]);
                   err = errno;
                 }
             }
 
-          if (! sometodo)
+          ប្រសិនបើ (! sometodo)
             {
               /* EOF, read error, or closed file.
                  If an EOF or error, close the file.  */
-              if (fileptr[i])
+              ប្រសិនបើ (fileptr[i])
                 {
-                  if (!ferror (fileptr[i]))
+                  ប្រសិនបើ (!ferror (fileptr[i]))
                     err = 0;
-                  if (fileptr[i] == stdin)
+                  ប្រសិនបើ (fileptr[i] == stdin)
                     clearerr (fileptr[i]); /* Also clear EOF. */
-                  else if (fclose (fileptr[i]) == EOF && !err)
+                  បើមិនដូច្នេះ ប្រសិនបើ (fclose (fileptr[i]) == EOF && !err)
                     err = errno;
-                  if (err)
+                  ប្រសិនបើ (err)
                     {
                       error (0, err, "%s", quotef (fnamptr[i]));
                       ok = false;
@@ -288,16 +288,16 @@ paste_parallel (size_t nfiles, char **fnamptr)
                   files_open--;
                 }
 
-              if (i + 1 == nfiles)
+              ប្រសិនបើ (i + 1 == nfiles)
                 {
                   /* End of this output line.
                      Is this the end of the whole thing? */
-                  if (somedone)
+                  ប្រសិនបើ (somedone)
                     {
                       /* No.  Some files were not closed for this line. */
-                      if (delims_saved)
+                      ប្រសិនបើ (delims_saved)
                         {
-                          if (fwrite (delbuf, 1, delims_saved, stdout)
+                          ប្រសិនបើ (fwrite (delbuf, 1, delims_saved, stdout)
                               != delims_saved)
                             write_error ();
                           delims_saved = 0;
@@ -306,46 +306,46 @@ paste_parallel (size_t nfiles, char **fnamptr)
                     }
                   continue;	/* Next read of files, or exit. */
                 }
-              else
+              បើមិនដូច្នេះ
                 {
                   /* Closed file; add delimiter to 'delbuf'. */
                   size_t len = delim_lens[delimidx];
-                  if (len > 0)
+                  ប្រសិនបើ (len > 0)
                     {
                       memcpy (delbuf + delims_saved, delims + delimoff, len);
                       delims_saved += len;
                     }
                   delimoff += len;
-                  if (++delimidx == num_delims)
+                  ប្រសិនបើ (++delimidx == num_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
             }
-          else
+          បើមិនដូច្នេះ
             {
               /* Some data read. */
               somedone = true;
 
               /* Except for last file, replace last newline with delim. */
-              if (i + 1 != nfiles)
+              ប្រសិនបើ (i + 1 != nfiles)
                 {
-                  if (chr != line_delim && chr != EOF)
+                  ប្រសិនបើ (chr != line_delim && chr != EOF)
                     xputchar (chr);
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  ប្រសិនបើ (++delimidx == num_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              បើមិនដូច្នេះ
                 {
                   /* If the last line of the last file lacks a newline,
                      print one anyhow.  POSIX requires this.  */
-                  char c = (chr == EOF ? line_delim : chr);
+                  var_na c = (chr == EOF ? line_delim : chr);
                   xputchar (c);
                 }
             }
@@ -353,7 +353,7 @@ paste_parallel (size_t nfiles, char **fnamptr)
     }
   free (fileptr);
   free (delbuf);
-  return ok;
+  ត្រឡប់ ok;
 }
 
 /* Perform serial paste on the NFILES files named in FNAMPTR.
@@ -361,25 +361,25 @@ paste_parallel (size_t nfiles, char **fnamptr)
    opened or read. */
 
 static bool
-paste_serial (size_t nfiles, char **fnamptr)
+paste_serial (size_t nfiles, var_na **fnamptr)
 {
   bool ok = true;	/* false if open or read errors occur. */
-  int charnew, charold; /* Current and previous char read. */
+  ចំនួនគត់ charnew, charold; /* Current and previous char read. */
   FILE *fileptr;	/* Open for reading current file. */
 
-  for (; nfiles; nfiles--, fnamptr++)
+  សម្រាប់ (; nfiles; nfiles--, fnamptr++)
     {
-      int saved_errno;
+      ចំនួនគត់ saved_errno;
       bool is_stdin = streq (*fnamptr, "-");
-      if (is_stdin)
+      ប្រសិនបើ (is_stdin)
         {
           have_read_stdin = true;
           fileptr = stdin;
         }
-      else
+      បើមិនដូច្នេះ
         {
           fileptr = fopen (*fnamptr, "r");
-          if (fileptr == NULL)
+          ប្រសិនបើ (fileptr == NULL)
             {
               error (0, errno, "%s", quotef (*fnamptr));
               ok = false;
@@ -393,7 +393,7 @@ paste_serial (size_t nfiles, char **fnamptr)
 
       charold = getc (fileptr);
       saved_errno = errno;
-      if (charold != EOF)
+      ប្រសិនបើ (charold != EOF)
         {
           /* 'charold' is set up.  Hit it!
              Keep reading characters, stashing them in 'charnew';
@@ -401,20 +401,20 @@ paste_serial (size_t nfiles, char **fnamptr)
              character if needed.  After the EOF, output 'charold'
              if it's a newline; otherwise, output it and then a newline. */
 
-          while ((charnew = getc (fileptr)) != EOF)
+          ខណៈពេល ((charnew = getc (fileptr)) != EOF)
             {
               /* Process the old character. */
-              if (charold == line_delim)
+              ប្រសិនបើ (charold == line_delim)
                 {
                   output_delim (delims + delimoff, delim_lens[delimidx]);
                   delimoff += delim_lens[delimidx];
-                  if (++delimidx == num_delims)
+                  ប្រសិនបើ (++delimidx == num_delims)
                     {
                       delimidx = 0;
                       delimoff = 0;
                     }
                 }
-              else
+              បើមិនដូច្នេះ
                 xputchar (charold);
 
               charold = charnew;
@@ -425,30 +425,30 @@ paste_serial (size_t nfiles, char **fnamptr)
           xputchar (charold);
         }
 
-      if (charold != line_delim)
+      ប្រសិនបើ (charold != line_delim)
         xputchar (line_delim);
 
-      if (!ferror (fileptr))
+      ប្រសិនបើ (!ferror (fileptr))
         saved_errno = 0;
-      if (is_stdin)
+      ប្រសិនបើ (is_stdin)
         clearerr (fileptr);	/* Also clear EOF. */
-      else if (fclose (fileptr) != 0 && !saved_errno)
+      បើមិនដូច្នេះ ប្រសិនបើ (fclose (fileptr) != 0 && !saved_errno)
         saved_errno = errno;
-      if (saved_errno)
+      ប្រសិនបើ (saved_errno)
         {
           error (0, saved_errno, "%s", quotef (*fnamptr));
           ok = false;
         }
     }
-  return ok;
+  ត្រឡប់ ok;
 }
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("\
 Usage: %s [OPTION]... [FILE]...\n\
@@ -485,11 +485,11 @@ to standard output.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
-  int optc;
-  char const *delim_arg = "\t";
+  ចំនួនគត់ optc;
+  var_na const *delim_arg = "\t";
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -499,22 +499,22 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
+  ខណៈពេល ((optc = getopt_long (argc, argv, "d:sz", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case 'd':
+        pak_sa 'd':
           /* Delimiter character(s). */
           delim_arg = (optarg[0] == '\0' ? "\\0" : optarg);
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           serial_merge = true;
-          break;
+          bha_nga;
 
-        case 'z':
+        pak_sa 'z':
           line_delim = '\0';
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -525,14 +525,14 @@ main (int argc, char **argv)
         }
     }
 
-  int nfiles = argc - optind;
-  if (nfiles == 0)
+  ចំនួនគត់ nfiles = argc - optind;
+  ប្រសិនបើ (nfiles == 0)
     {
       argv[optind] = bad_cast ("-");
       nfiles++;
     }
 
-  if (collapse_escapes (delim_arg))
+  ប្រសិនបើ (collapse_escapes (delim_arg))
     {
       /* Don't use the quote() quoting style, because that would double the
          number of displayed backslashes, making the diagnostic look bogus.  */
@@ -547,7 +547,7 @@ main (int argc, char **argv)
   free (delims);
   free (delim_lens);
 
-  if (have_read_stdin && fclose (stdin) == EOF)
+  ប្រសិនបើ (have_read_stdin && fclose (stdin) == EOF)
     error (EXIT_FAILURE, errno, "-");
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ត្រឡប់ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

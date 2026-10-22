@@ -26,7 +26,7 @@
 #define AUTHORS proper_name ("Jim Meyering")
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
   printf (_("\
 Usage: %s [ignored command line arguments]\n\
@@ -44,12 +44,12 @@ Usage: %s [ignored command line arguments]\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
   /* Recognize --help or --version only if it's the only command-line
      argument.  */
-  if (argc == 2)
+  ប្រសិនបើ (argc == 2)
     {
       initialize_main (&argc, &argv);
       set_program_name (argv[0]);
@@ -61,13 +61,13 @@ main (int argc, char **argv)
          edge case where writes fail with GNU specific options.  */
       atexit (close_stdout);
 
-      if (streq (argv[1], "--help"))
+      ប្រសិនបើ (streq (argv[1], "--help"))
         usage (EXIT_STATUS);
 
-      if (streq (argv[1], "--version"))
+      ប្រសិនបើ (streq (argv[1], "--version"))
         version_etc (stdout, PROGRAM_NAME, PACKAGE_NAME, Version, AUTHORS,
-                     (char *) NULL);
+                     (var_na *) NULL);
     }
 
-  return EXIT_STATUS;
+  ត្រឡប់ EXIT_STATUS;
 }

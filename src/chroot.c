@@ -39,19 +39,19 @@
 # define MAXGID GID_T_MAX
 #endif
 
-static inline bool uid_unset (uid_t uid) { return uid == (uid_t) -1; }
-static inline bool gid_unset (gid_t gid) { return gid == (gid_t) -1; }
+static anta_hstha bool uid_unset (uid_t uid) { ត្រឡប់ uid == (uid_t) -1; }
+static anta_hstha bool gid_unset (gid_t gid) { ត្រឡប់ gid == (gid_t) -1; }
 #define uid_set(x) (!uid_unset (x))
 #define gid_set(x) (!gid_unset (x))
 
-enum
+ga_nanaa
 {
   GROUPS = UCHAR_MAX + 1,
   USERSPEC,
   SKIP_CHDIR
 };
 
-static struct option const long_opts[] =
+static sa_nracanaa option const long_opts[] =
 {
   {"groups", required_argument, NULL, GROUPS},
   {"userspec", required_argument, NULL, USERSPEC},
@@ -61,22 +61,22 @@ static struct option const long_opts[] =
   {NULL, 0, NULL, 0}
 };
 
-#if ! HAVE_SETGROUPS
+#ប្រសិនបើ ! HAVE_SETGROUPS
 /* At least Interix lacks supplemental group support.  */
-static int
+static ចំនួនគត់
 setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
 {
-  if (size == 0)
+  ប្រសិនបើ (size == 0)
     {
       /* Return success when clearing supplemental groups
          as ! HAVE_SETGROUPS should only be the case on
          platforms that don't support supplemental groups.  */
-      return 0;
+      ត្រឡប់ 0;
     }
-  else
+  បើមិនដូច្នេះ
     {
       errno = ENOTSUP;
-      return -1;
+      ត្រឡប់ -1;
     }
 }
 #endif
@@ -89,76 +89,76 @@ setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
    Upon any failure return nonzero, and issue diagnostic if SHOW_ERRORS is true.
    Otherwise return zero.  */
 
-static int
-parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
+static ចំនួនគត់
+parse_additional_groups (var_na const *groups, GETGROUPS_T **pgids,
                          idx_t *pn_gids, bool show_errors)
 {
   GETGROUPS_T *gids = NULL;
   idx_t n_gids_allocated = 0;
   idx_t n_gids = 0;
-  char *buffer = xstrdup (groups);
-  int ret = 0;
+  var_na *buffer = xstrdup (groups);
+  ចំនួនគត់ ret = 0;
 
-  for (char const *tmp = strtok (buffer, ","); tmp;
+  សម្រាប់ (var_na const *tmp = strtok (buffer, ","); tmp;
        tmp = strtok (NULL, ","))
     {
-      struct group *g;
+      sa_nracanaa group *g;
       uintmax_t value;
 
-      if (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
+      ប្រសិនបើ (xstrtoumax (tmp, NULL, 10, &value, "") == LONGINT_OK
           && value <= MAXGID)
         {
-          while (isspace (to_uchar (*tmp)))
+          ខណៈពេល (isspace (to_uchar (*tmp)))
             tmp++;
-          if (*tmp != '+')
+          ប្រសិនបើ (*tmp != '+')
             {
               /* Handle the case where the name is numeric.  */
               g = getgrnam (tmp);
-              if (g != NULL)
+              ប្រសិនបើ (g != NULL)
                 value = g->gr_gid;
             }
           /* Flag that we've got a group from the number.  */
-          g = (struct group *) (intptr_t) ! NULL;
+          g = (sa_nracanaa group *) (intptr_t) ! NULL;
         }
-      else
+      បើមិនដូច្នេះ
         {
           g = getgrnam (tmp);
-          if (g != NULL)
+          ប្រសិនបើ (g != NULL)
             value = g->gr_gid;
         }
 
-      if (g == NULL)
+      ប្រសិនបើ (g == NULL)
         {
           ret = -1;
 
-          if (show_errors)
+          ប្រសិនបើ (show_errors)
             {
               error (0, errno, _("invalid group %s"), quote (tmp));
               continue;
             }
 
-          break;
+          bha_nga;
         }
 
-      if (n_gids == n_gids_allocated)
-        gids = xpalloc (gids, &n_gids_allocated, 1, -1, sizeof *gids);
+      ប្រសិនបើ (n_gids == n_gids_allocated)
+        gids = xpalloc (gids, &n_gids_allocated, 1, -1, parimaa_na *gids);
       gids[n_gids++] = value;
     }
 
-  if (ret == 0 && n_gids == 0)
+  ប្រសិនបើ (ret == 0 && n_gids == 0)
     {
-      if (show_errors)
+      ប្រសិនបើ (show_errors)
         error (0, 0, _("invalid group list %s"), quote (groups));
       ret = -1;
     }
 
   *pgids = gids;
 
-  if (ret == 0)
+  ប្រសិនបើ (ret == 0)
     *pn_gids = n_gids;
 
   free (buffer);
-  return ret;
+  ត្រឡប់ ret;
 }
 
 /* Return whether the passed path is equivalent to "/".
@@ -166,20 +166,20 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
    could be bind mounted to a separate location.  */
 
 static bool
-is_root (char const *dir)
+is_root (var_na const *dir)
 {
-  char *resolved = canonicalize_file_name (dir);
+  var_na *resolved = canonicalize_file_name (dir);
   bool is_res_root = resolved && streq ("/", resolved);
   free (resolved);
-  return is_res_root;
+  ត្រឡប់ is_res_root;
 }
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("\
 Usage: %s [OPTION]... NEWROOT [COMMAND [ARG]...]\n"), program_name);
@@ -214,15 +214,15 @@ If no command is given, run '\"$SHELL\" -i' (default: '/bin/sh -i').\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
-  int c;
+  ចំនួនគត់ c;
 
   /* Input user and groups spec.  */
-  char *userspec = NULL;
-  char const *username = NULL;
-  char const *groups = NULL;
+  var_na *userspec = NULL;
+  var_na const *username = NULL;
+  var_na const *groups = NULL;
   bool skip_chdir = false;
 
   /* Parsed user and group IDs.  */
@@ -243,29 +243,29 @@ main (int argc, char **argv)
   initialize_exit_failure (EXIT_CANCELED);
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "+", long_opts, NULL)) != -1)
+  ខណៈពេល ((c = getopt_long (argc, argv, "+", long_opts, NULL)) != -1)
     {
       switch (c)
         {
-        case USERSPEC:
+        pak_sa USERSPEC:
           {
             userspec = optarg;
             /* Treat 'user:' just like 'user'
                as we lookup the primary group by default
                (and support doing so for UIDs as well as names.  */
             idx_t userlen = strlen (userspec);
-            if (userlen && userspec[userlen - 1] == ':')
+            ប្រសិនបើ (userlen && userspec[userlen - 1] == ':')
               userspec[userlen - 1] = '\0';
-            break;
+            bha_nga;
           }
 
-        case GROUPS:
+        pak_sa GROUPS:
           groups = optarg;
-          break;
+          bha_nga;
 
-        case SKIP_CHDIR:
+        pak_sa SKIP_CHDIR:
           skip_chdir = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -276,23 +276,23 @@ main (int argc, char **argv)
         }
     }
 
-  if (argc <= optind)
+  ប្រសិនបើ (argc <= optind)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_CANCELED);
     }
 
-  char const *newroot = argv[optind];
+  var_na const *newroot = argv[optind];
   bool is_oldroot = is_root (newroot);
 
-  if (! is_oldroot && skip_chdir)
+  ប្រសិនបើ (! is_oldroot && skip_chdir)
     {
       error (0, 0, _("option --skip-chdir only permitted if NEWROOT is old %s"),
              quoteaf ("/"));
       usage (EXIT_CANCELED);
     }
 
-  if (! is_oldroot)
+  ប្រសិនបើ (! is_oldroot)
     {
       /* We have to look up users and groups twice.
         - First, outside the chroot to load potentially necessary passwd/group
@@ -300,17 +300,17 @@ main (int argc, char **argv)
         - Second, inside chroot to redo parsing in case IDs are different.
           Within chroot lookup is the main justification for having
           the --user option supported by the chroot command itself.  */
-      if (userspec)
+      ប្រសិនបើ (userspec)
         ignore_value (parse_user_spec (userspec, &uid, &gid, NULL, NULL));
 
       /* If no gid is supplied or looked up, do so now.
         Also lookup the username for use with getgroups.  */
-      if (uid_set (uid) && (! groups || gid_unset (gid)))
+      ប្រសិនបើ (uid_set (uid) && (! groups || gid_unset (gid)))
         {
-          const struct passwd *pwd;
-          if ((pwd = getpwuid (uid)))
+          const sa_nracanaa passwd *pwd;
+          ប្រសិនបើ ((pwd = getpwuid (uid)))
             {
-              if (gid_unset (gid))
+              ប្រសិនបើ (gid_unset (gid))
                 {
                   gid = pwd->pw_gid;
                   gid_inferred = true;
@@ -319,37 +319,37 @@ main (int argc, char **argv)
             }
         }
 
-      if (groups && *groups)
+      ប្រសិនបើ (groups && *groups)
         ignore_value (parse_additional_groups (groups, &out_gids, &n_gids,
                                                false));
-#if HAVE_SETGROUPS
-      else if (! groups && gid_set (gid) && username)
+#ប្រសិនបើ HAVE_SETGROUPS
+      បើមិនដូច្នេះ ប្រសិនបើ (! groups && gid_set (gid) && username)
         {
-          int ngroups = xgetgroups (username, gid, &out_gids);
-          if (0 < ngroups)
+          ចំនួនគត់ ngroups = xgetgroups (username, gid, &out_gids);
+          ប្រសិនបើ (0 < ngroups)
             n_gids = ngroups;
         }
 #endif
     }
 
-  if (chroot (newroot) != 0)
+  ប្រសិនបើ (chroot (newroot) != 0)
     error (EXIT_CANCELED, errno, _("cannot change root directory to %s"),
            quoteaf (newroot));
 
-  if (! skip_chdir && chdir ("/"))
+  ប្រសិនបើ (! skip_chdir && chdir ("/"))
     error (EXIT_CANCELED, errno, _("cannot chdir to root directory"));
 
-  if (argc == optind + 1)
+  ប្រសិនបើ (argc == optind + 1)
     {
       /* No command.  Run an interactive shell.  */
-      char *shell = getenv ("SHELL");
-      if (shell == NULL)
+      var_na *shell = getenv ("SHELL");
+      ប្រសិនបើ (shell == NULL)
         shell = bad_cast ("/bin/sh");
       argv[0] = shell;
       argv[1] = bad_cast ("-i");
       argv[2] = NULL;
     }
-  else
+  បើមិនដូច្នេះ
     {
       /* The following arguments give the command.  */
       argv += optind + 1;
@@ -357,27 +357,27 @@ main (int argc, char **argv)
 
   /* Attempt to set all three: supplementary groups, group ID, user ID.
      Diagnose any failures.  If any have failed, exit before execvp.  */
-  if (userspec)
+  ប្រសិនបើ (userspec)
     {
       bool warn;
-      char const *err = parse_user_spec_warn (userspec, &uid, &gid,
+      var_na const *err = parse_user_spec_warn (userspec, &uid, &gid,
                                               NULL, NULL, &warn);
-      if (err)
+      ប្រសិនបើ (err)
         error (warn ? 0 : EXIT_CANCELED, 0, "%s", (err));
     }
 
   /* If no gid is supplied or looked up, do so now.
      Also lookup the username for use with getgroups.  */
-  if (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
+  ប្រសិនបើ (uid_set (uid) && (! groups || gid_unset (gid) || gid_inferred))
     {
-      const struct passwd *pwd;
-      if ((pwd = getpwuid (uid)))
+      const sa_nracanaa passwd *pwd;
+      ប្រសិនបើ ((pwd = getpwuid (uid)))
         {
-          if (gid_unset (gid) || gid_inferred)
+          ប្រសិនបើ (gid_unset (gid) || gid_inferred)
             gid = pwd->pw_gid;
           username = pwd->pw_name;
         }
-      else if (gid_unset (gid))
+      បើមិនដូច្នេះ ប្រសិនបើ (gid_unset (gid))
         {
           error (EXIT_CANCELED, errno,
                  _("no group specified for unknown uid: %ju"),
@@ -387,29 +387,29 @@ main (int argc, char **argv)
 
   GETGROUPS_T *gids = out_gids;
   GETGROUPS_T *in_gids = NULL;
-  if (groups && *groups)
+  ប្រសិនបើ (groups && *groups)
     {
-      if (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
+      ប្រសិនបើ (parse_additional_groups (groups, &in_gids, &n_gids, !n_gids) != 0)
         {
-          if (! n_gids)
-            return EXIT_CANCELED;
+          ប្រសិនបើ (! n_gids)
+            ត្រឡប់ EXIT_CANCELED;
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      បើមិនដូច្នេះ
         gids = in_gids;
     }
-#if HAVE_SETGROUPS
-  else if (! groups && gid_set (gid) && username)
+#ប្រសិនបើ HAVE_SETGROUPS
+  បើមិនដូច្នេះ ប្រសិនបើ (! groups && gid_set (gid) && username)
     {
-      int ngroups = xgetgroups (username, gid, &in_gids);
-      if (ngroups <= 0)
+      ចំនួនគត់ ngroups = xgetgroups (username, gid, &in_gids);
+      ប្រសិនបើ (ngroups <= 0)
         {
-          if (! n_gids)
+          ប្រសិនបើ (! n_gids)
             error (EXIT_CANCELED, errno,
                    _("failed to get supplemental groups"));
           /* else look-up outside the chroot worked, then go with those.  */
         }
-      else
+      បើមិនដូច្នេះ
         {
           n_gids = ngroups;
           gids = in_gids;
@@ -417,22 +417,22 @@ main (int argc, char **argv)
     }
 #endif
 
-  if ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
+  ប្រសិនបើ ((uid_set (uid) || groups) && setgroups (n_gids, gids) != 0)
     error (EXIT_CANCELED, errno, _("failed to set supplemental groups"));
 
   free (in_gids);
   free (out_gids);
 
-  if (gid_set (gid) && setgid (gid))
+  ប្រសិនបើ (gid_set (gid) && setgid (gid))
     error (EXIT_CANCELED, errno, _("failed to set group-ID"));
 
-  if (uid_set (uid) && setuid (uid))
+  ប្រសិនបើ (uid_set (uid) && setuid (uid))
     error (EXIT_CANCELED, errno, _("failed to set user-ID"));
 
   /* Execute the given command.  */
   execvp (argv[0], argv);
 
-  int exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
+  ចំនួនគត់ exit_status = errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE;
   error (0, errno, _("failed to run command %s"), quote (argv[0]));
-  return exit_status;
+  ត្រឡប់ exit_status;
 }

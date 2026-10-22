@@ -42,9 +42,9 @@ static bool no_create;
 static bool block_mode;
 
 /* (-r) Reference file to use size from */
-static char const *ref_file;
+static var_na const *ref_file;
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   {"no-create", no_argument, NULL, 'c'},
   {"io-blocks", no_argument, NULL, 'o'},
@@ -55,15 +55,15 @@ static struct option const longopts[] =
   {NULL, 0, NULL, 0}
 };
 
-typedef enum
+typedef ga_nanaa
 { rm_abs = 0, rm_rel, rm_min, rm_max, rm_rdn, rm_rup } rel_mode_t;
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("Usage: %s OPTION... FILE...\n"), program_name);
       fputs (_("\
@@ -104,107 +104,107 @@ SIZE may also be prefixed by one of the following modifying characters:\n\
 
 /* return true on success, false on error.  */
 static bool
-do_ftruncate (int fd, char const *fname, off_t ssize, off_t rsize,
+do_ftruncate (ចំនួនគត់ fd, var_na const *fname, off_t ssize, off_t rsize,
               rel_mode_t rel_mode)
 {
-  struct stat sb;
+  sa_nracanaa stat sb;
   off_t nsize;
 
-  if ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
+  ប្រសិនបើ ((block_mode || (rel_mode && rsize < 0)) && fstat (fd, &sb) != 0)
     {
       error (0, errno, _("cannot fstat %s"), quoteaf (fname));
-      return false;
+      ត្រឡប់ false;
     }
-  if (block_mode)
+  ប្រសិនបើ (block_mode)
     {
       ptrdiff_t blksize = STP_BLKSIZE (&sb);
       intmax_t ssize0 = ssize;
-      if (ckd_mul (&ssize, ssize, blksize))
+      ប្រសិនបើ (ckd_mul (&ssize, ssize, blksize))
         {
           error (0, 0,
                  _("overflow in %jd * %td byte blocks for file %s"),
                  ssize0, blksize, quoteaf (fname));
-          return false;
+          ត្រឡប់ false;
         }
     }
-  if (rel_mode)
+  ប្រសិនបើ (rel_mode)
     {
       off_t fsize;
 
-      if (0 <= rsize)
+      ប្រសិនបើ (0 <= rsize)
         fsize = rsize;
-      else
+      បើមិនដូច្នេះ
         {
-          if (usable_st_size (&sb))
+          ប្រសិនបើ (usable_st_size (&sb))
             {
               fsize = sb.st_size;
-              if (fsize < 0)
+              ប្រសិនបើ (fsize < 0)
                 {
                   /* Sanity check.  Overflow is the only reason I can think
                      this would ever go negative. */
                   error (0, 0, _("%s has unusable, apparently negative size"),
                          quoteaf (fname));
-                  return false;
+                  ត្រឡប់ false;
                 }
             }
-          else
+          បើមិនដូច្នេះ
             {
               fsize = lseek (fd, 0, SEEK_END);
-              if (fsize < 0)
+              ប្រសិនបើ (fsize < 0)
                 {
                   error (0, errno, _("cannot get the size of %s"),
                          quoteaf (fname));
-                  return false;
+                  ត្រឡប់ false;
                 }
             }
         }
 
-      if (rel_mode == rm_min)
+      ប្រសិនបើ (rel_mode == rm_min)
         nsize = MAX (fsize, ssize);
-      else if (rel_mode == rm_max)
+      បើមិនដូច្នេះ ប្រសិនបើ (rel_mode == rm_max)
         nsize = MIN (fsize, ssize);
-      else if (rel_mode == rm_rdn)
+      បើមិនដូច្នេះ ប្រសិនបើ (rel_mode == rm_rdn)
         /* 0..ssize-1 -> 0 */
         nsize = fsize - fsize % ssize;
-      else
+      បើមិនដូច្នេះ
         {
-          if (rel_mode == rm_rup)
+          ប្រសិនបើ (rel_mode == rm_rup)
             {
               /* 1..ssize -> ssize */
               off_t r = fsize % ssize;
               ssize = r == 0 ? 0 : ssize - r;
             }
-          if (ckd_add (&nsize, fsize, ssize))
+          ប្រសិនបើ (ckd_add (&nsize, fsize, ssize))
             {
               error (0, 0, _("overflow extending size of file %s"),
                      quoteaf (fname));
-              return false;
+              ត្រឡប់ false;
             }
         }
     }
-  else
+  បើមិនដូច្នេះ
     nsize = ssize;
-  if (nsize < 0)
+  ប្រសិនបើ (nsize < 0)
     nsize = 0;
 
-  if (ftruncate (fd, nsize) != 0)
+  ប្រសិនបើ (ftruncate (fd, nsize) != 0)
     {
       error (0, errno, _("failed to truncate %s at %jd bytes"),
              quoteaf (fname), (intmax_t) {nsize});
-      return false;
+      ត្រឡប់ false;
     }
 
-  return true;
+  ត្រឡប់ true;
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
   bool got_size = false;
   off_t size IF_LINT ( = 0);
   off_t rsize = -1;
   rel_mode_t rel_mode = rm_abs;
-  int c;
+  ចំនួនគត់ c;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -214,51 +214,51 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  while ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
+  ខណៈពេល ((c = getopt_long (argc, argv, "cor:s:", longopts, NULL)) != -1)
     {
       switch (c)
         {
-        case 'c':
+        pak_sa 'c':
           no_create = true;
-          break;
+          bha_nga;
 
-        case 'o':
+        pak_sa 'o':
           block_mode = true;
-          break;
+          bha_nga;
 
-        case 'r':
+        pak_sa 'r':
           ref_file = optarg;
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ខណៈពេល (isspace (to_uchar (*optarg)))
             optarg++;
           switch (*optarg)
             {
-            case '<':
+            pak_sa '<':
               rel_mode = rm_max;
               optarg++;
-              break;
-            case '>':
+              bha_nga;
+            pak_sa '>':
               rel_mode = rm_min;
               optarg++;
-              break;
-            case '/':
+              bha_nga;
+            pak_sa '/':
               rel_mode = rm_rdn;
               optarg++;
-              break;
-            case '%':
+              bha_nga;
+            pak_sa '%':
               rel_mode = rm_rup;
               optarg++;
-              break;
+              bha_nga;
             }
           /* skip any whitespace */
-          while (isspace (to_uchar (*optarg)))
+          ខណៈពេល (isspace (to_uchar (*optarg)))
             optarg++;
-          if (*optarg == '+' || *optarg == '-')
+          ប្រសិនបើ (*optarg == '+' || *optarg == '-')
             {
-              if (rel_mode)
+              ប្រសិនបើ (rel_mode)
                 {
                   error (0, 0, _("multiple relative modifiers specified"));
                   /* Note other combinations are flagged as invalid numbers */
@@ -271,10 +271,10 @@ main (int argc, char **argv)
           size = xdectoimax (optarg, OFF_T_MIN, OFF_T_MAX, "EgGkKmMPQRtTYZ0",
                              _("Invalid number"), 0);
           /* Rounding to multiple of 0 is nonsensical */
-          if ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
+          ប្រសិនបើ ((rel_mode == rm_rup || rel_mode == rm_rdn) && size == 0)
             error (EXIT_FAILURE, 0, _("division by zero"));
           got_size = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -289,91 +289,91 @@ main (int argc, char **argv)
   argc -= optind;
 
   /* must specify either size or reference file */
-  if (!ref_file && !got_size)
+  ប្រសិនបើ (!ref_file && !got_size)
     {
       error (0, 0, _("you must specify either %s or %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* must specify a relative size with a reference file */
-  if (ref_file && got_size && !rel_mode)
+  ប្រសិនបើ (ref_file && got_size && !rel_mode)
     {
       error (0, 0, _("you must specify a relative %s with %s"),
              quote_n (0, "--size"), quote_n (1, "--reference"));
       usage (EXIT_FAILURE);
     }
   /* block_mode without size is not valid */
-  if (block_mode && !got_size)
+  ប្រសិនបើ (block_mode && !got_size)
     {
       error (0, 0, _("%s was specified but %s was not"),
              quote_n (0, "--io-blocks"), quote_n (1, "--size"));
       usage (EXIT_FAILURE);
     }
   /* must specify at least 1 file */
-  if (argc < 1)
+  ប្រសិនបើ (argc < 1)
     {
       error (0, 0, _("missing file operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (ref_file)
+  ប្រសិនបើ (ref_file)
     {
-      struct stat sb;
+      sa_nracanaa stat sb;
       off_t file_size = -1;
-      if (stat (ref_file, &sb) != 0)
+      ប្រសិនបើ (stat (ref_file, &sb) != 0)
         error (EXIT_FAILURE, errno, _("cannot stat %s"), quoteaf (ref_file));
-      if (usable_st_size (&sb))
+      ប្រសិនបើ (usable_st_size (&sb))
         file_size = sb.st_size;
-      else
+      បើមិនដូច្នេះ
         {
           /* O_NONBLOCK so we do not hang forever on a FIFO with no writer.  */
-          int ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
-          if (0 <= ref_fd)
+          ចំនួនគត់ ref_fd = open (ref_file, O_RDONLY | O_NONBLOCK);
+          ប្រសិនបើ (0 <= ref_fd)
             {
               off_t file_end = lseek (ref_fd, 0, SEEK_END);
-              int saved_errno = errno;
+              ចំនួនគត់ saved_errno = errno;
               close (ref_fd); /* ignore failure */
-              if (0 <= file_end)
+              ប្រសិនបើ (0 <= file_end)
                 file_size = file_end;
-              else
+              បើមិនដូច្នេះ
                 {
                   /* restore, in case close clobbered it. */
                   errno = saved_errno;
                 }
             }
         }
-      if (file_size < 0)
+      ប្រសិនបើ (file_size < 0)
         error (EXIT_FAILURE, errno, _("cannot get the size of %s"),
                quoteaf (ref_file));
-      if (!got_size)
+      ប្រសិនបើ (!got_size)
         size = file_size;
-      else
+      បើមិនដូច្នេះ
         rsize = file_size;
     }
 
-  int oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
+  ចំនួនគត់ oflags = O_WRONLY | (no_create ? 0 : O_CREAT) | O_NONBLOCK;
   bool errors = false;
 
-  for (char const *fname; (fname = *argv); argv++)
+  សម្រាប់ (var_na const *fname; (fname = *argv); argv++)
     {
-      int fd = open (fname, oflags, MODE_RW_UGO);
-      if (fd < 0)
+      ចំនួនគត់ fd = open (fname, oflags, MODE_RW_UGO);
+      ប្រសិនបើ (fd < 0)
         {
           /* 'truncate -s0 -c no-such-file'  shouldn't gen error
              'truncate -s0 no-such-dir/file' should gen ENOENT error
              'truncate -s0 no-such-dir/' should gen EISDIR error
              'truncate -s0 .' should gen EISDIR error */
-          if (!(no_create && errno == ENOENT))
+          ប្រសិនបើ (!(no_create && errno == ENOENT))
             {
               error (0, errno, _("cannot open %s for writing"),
                      quoteaf (fname));
               errors = true;
             }
         }
-      else
+      បើមិនដូច្នេះ
         {
           errors |= !do_ftruncate (fd, fname, size, rsize, rel_mode);
-          if (close (fd) != 0)
+          ប្រសិនបើ (close (fd) != 0)
             {
               error (0, errno, _("failed to close %s"), quoteaf (fname));
               errors = true;
@@ -381,5 +381,5 @@ main (int argc, char **argv)
         }
     }
 
-  return errors ? EXIT_FAILURE : EXIT_SUCCESS;
+  ត្រឡប់ errors ? EXIT_FAILURE : EXIT_SUCCESS;
 }

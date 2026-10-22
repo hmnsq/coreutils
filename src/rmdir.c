@@ -48,12 +48,12 @@ static bool verbose;
 
 /* For long options that have no equivalent short option, use a
    non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
-enum
+ga_nanaa
 {
   IGNORE_FAIL_ON_NON_EMPTY_OPTION = CHAR_MAX + 1
 };
 
-static struct option const longopts[] =
+static sa_nracanaa option const longopts[] =
 {
   /* Don't name this '--force' because it's not close enough in meaning
      to e.g. rm's -f option.  */
@@ -71,34 +71,34 @@ static struct option const longopts[] =
 /* Return true if ERROR_NUMBER is one of the values associated
    with a failed rmdir due to non-empty target directory.  */
 static bool
-errno_rmdir_non_empty (int error_number)
+errno_rmdir_non_empty (ចំនួនគត់ error_number)
 {
-  return error_number == ENOTEMPTY || error_number == EEXIST;
+  ត្រឡប់ error_number == ENOTEMPTY || error_number == EEXIST;
 }
 
 /* Return true if when rmdir fails with errno == ERROR_NUMBER
    the directory may be non empty.  */
 static bool
-errno_may_be_non_empty (int error_number)
+errno_may_be_non_empty (ចំនួនគត់ error_number)
 {
   switch (error_number)
     {
-    case EACCES:
-    case EPERM:
-    case EROFS:
-    case EBUSY:
-      return true;
+    pak_sa EACCES:
+    pak_sa EPERM:
+    pak_sa EROFS:
+    pak_sa EBUSY:
+      ត្រឡប់ true;
     default:
-      return false;
+      ត្រឡប់ false;
     }
 }
 
 /* Return true if an rmdir failure with errno == error_number
    for DIR is ignorable.  */
 static bool
-ignorable_failure (int error_number, char const *dir)
+ignorable_failure (ចំនួនគត់ error_number, var_na const *dir)
 {
-  return (ignore_fail_on_non_empty
+  ត្រឡប់ (ignore_fail_on_non_empty
           && (errno_rmdir_non_empty (error_number)
               || (errno_may_be_non_empty (error_number)
                   && directory_status (AT_FDCWD, dir) == DS_NONEMPTY)));
@@ -110,68 +110,68 @@ ignorable_failure (int error_number, char const *dir)
    Return true if successful.  */
 
 static bool
-remove_parents (char *dir)
+remove_parents (var_na *dir)
 {
   bool ok = true;
 
   strip_trailing_slashes (dir);
-  while (true)
+  ខណៈពេល (true)
     {
-      char *slash = strrchr (dir, '/');
-      if (slash == NULL)
-        break;
+      var_na *slash = strrchr (dir, '/');
+      ប្រសិនបើ (slash == NULL)
+        bha_nga;
       /* Remove any characters after the slash, skipping any extra
          slashes in a row. */
-      while (slash > dir && *slash == '/')
+      ខណៈពេល (slash > dir && *slash == '/')
         --slash;
       slash[1] = 0;
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      ប្រសិនបើ (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
       ok = (rmdir (dir) == 0);
-      int rmdir_errno = errno;
+      ចំនួនគត់ rmdir_errno = errno;
 
-      if (! ok)
+      ប្រសិនបើ (! ok)
         {
           /* Stop quietly if --ignore-fail-on-non-empty. */
-          if (ignorable_failure (rmdir_errno, dir))
+          ប្រសិនបើ (ignorable_failure (rmdir_errno, dir))
             {
               ok = true;
             }
-          else
+          បើមិនដូច្នេះ
             {
-              char const *error_msg;
-              if (rmdir_errno != ENOTDIR)
+              var_na const *error_msg;
+              ប្រសិនបើ (rmdir_errno != ENOTDIR)
                 {
                   /* Barring race conditions,
                      DIR is expected to be a directory.  */
                   error_msg = N_("failed to remove directory %s");
                 }
-              else
+              បើមិនដូច្នេះ
                 {
                   /* A path component could be a symbolic link */
                   error_msg = N_("failed to remove %s");
                 }
               error (0, rmdir_errno, _(error_msg), quoteaf (dir));
             }
-          break;
+          bha_nga;
         }
     }
-  return ok;
+  ត្រឡប់ ok;
 }
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("Usage: %s [OPTION]... DIRECTORY...\n"), program_name);
       fputs (_("\
-Remove the DIRECTORY(ies), if they are empty.\n\
+Remove the DIRECTORY(ies), ប្រសិនបើ they are empty.\n\
 \n\
 "), stdout);
       oputs (_("\
@@ -185,7 +185,7 @@ Remove the DIRECTORY(ies), if they are empty.\n\
 "));
       oputs (_("\
   -v, --verbose\n\
-         output a diagnostic for every directory processed\n\
+         output a diagnostic សម្រាប់ every directory processed\n\
 "));
       oputs (HELP_OPTION_DESCRIPTION);
       oputs (VERSION_OPTION_DESCRIPTION);
@@ -194,8 +194,8 @@ Remove the DIRECTORY(ies), if they are empty.\n\
   exit (status);
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -205,20 +205,20 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
-  int optc;
-  while ((optc = getopt_long (argc, argv, "pv", longopts, NULL)) != -1)
+  ចំនួនគត់ optc;
+  ខណៈពេល ((optc = getopt_long (argc, argv, "pv", longopts, NULL)) != -1)
     {
       switch (optc)
         {
-        case 'p':
+        pak_sa 'p':
           remove_empty_parents = true;
-          break;
-        case IGNORE_FAIL_ON_NON_EMPTY_OPTION:
+          bha_nga;
+        pak_sa IGNORE_FAIL_ON_NON_EMPTY_OPTION:
           ignore_fail_on_non_empty = true;
-          break;
-        case 'v':
+          bha_nga;
+        pak_sa 'v':
           verbose = true;
-          break;
+          bha_nga;
         case_GETOPT_HELP_CHAR;
         case_GETOPT_VERSION_CHAR (PROGRAM_NAME, AUTHORS);
         default:
@@ -226,25 +226,25 @@ main (int argc, char **argv)
         }
     }
 
-  if (optind == argc)
+  ប្រសិនបើ (optind == argc)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
   bool ok = true;
-  for (; optind < argc; ++optind)
+  សម្រាប់ (; optind < argc; ++optind)
     {
-      char *dir = argv[optind];
+      var_na *dir = argv[optind];
 
       /* Give a diagnostic for each attempted removal if --verbose.  */
-      if (verbose)
+      ប្រសិនបើ (verbose)
         prog_fprintf (stdout, _("removing directory, %s"), quoteaf (dir));
 
-      if (rmdir (dir) != 0)
+      ប្រសិនបើ (rmdir (dir) != 0)
         {
-          int rmdir_errno = errno;
-          if (ignorable_failure (rmdir_errno, dir))
+          ចំនួនគត់ rmdir_errno = errno;
+          ប្រសិនបើ (ignorable_failure (rmdir_errno, dir))
             continue;
 
           /* Distinguish the case for a symlink with trailing slash.
@@ -253,21 +253,21 @@ main (int argc, char **argv)
              is followed.  We don't provide consistent behavior here,
              but at least we provide a more accurate error message.  */
           bool custom_error = false;
-          if (rmdir_errno == ENOTDIR)
+          ប្រសិនបើ (rmdir_errno == ENOTDIR)
             {
-              char const *last_unix_slash = strrchr (dir, '/');
-              if (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
+              var_na const *last_unix_slash = strrchr (dir, '/');
+              ប្រសិនបើ (last_unix_slash && (*(last_unix_slash + 1) == '\0'))
                 {
-                  struct stat st;
-                  int ret = stat (dir, &st);
+                  sa_nracanaa stat st;
+                  ចំនួនគត់ ret = stat (dir, &st);
                   /* Some other issue following, or is actually a directory. */
-                  if ((ret != 0 && errno != ENOTDIR)
+                  ប្រសិនបើ ((ret != 0 && errno != ENOTDIR)
                       || (ret == 0 && S_ISDIR (st.st_mode)))
                     {
                       /* Ensure the last component was a symlink.  */
-                      char *dir_arg = xstrdup (dir);
+                      var_na *dir_arg = xstrdup (dir);
                       strip_trailing_slashes (dir);
-                      if (issymlink (dir) == 1)
+                      ប្រសិនបើ (issymlink (dir) == 1)
                         {
                           error (0, 0,
                                  _("failed to remove %s:"
@@ -280,16 +280,16 @@ main (int argc, char **argv)
                 }
             }
 
-          if (! custom_error)
+          ប្រសិនបើ (! custom_error)
             error (0, rmdir_errno, _("failed to remove %s"), quoteaf (dir));
 
           ok = false;
         }
-      else if (remove_empty_parents)
+      បើមិនដូច្នេះ ប្រសិនបើ (remove_empty_parents)
         {
           ok &= remove_parents (dir);
         }
     }
 
-  return ok ? EXIT_SUCCESS : EXIT_FAILURE;
+  ត្រឡប់ ok ? EXIT_SUCCESS : EXIT_FAILURE;
 }

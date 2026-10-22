@@ -1,4 +1,4 @@
-enum Algorithm
+ga_nanaa Algorithm
 {
   bsd,
   sysv,
@@ -16,4 +16,4 @@ enum Algorithm
   sm3,
 };
 
-extern enum Algorithm cksum_algorithm;
+extern ga_nanaa Algorithm cksum_algorithm;

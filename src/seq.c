@@ -55,13 +55,13 @@ static bool locale_ok;
 static bool equal_width;
 
 /* The string used to separate two numbers.  */
-static char const *separator = "\n";
+static var_na const *separator = "\n";
 
 /* The string output after all numbers have been output.
    Usually "\n" or "\0".  */
-static char const terminator[] = "\n";
+static var_na const terminator[] = "\n";
 
-static struct option const long_options[] =
+static sa_nracanaa option const long_options[] =
 {
   { "equal-width", no_argument, NULL, 'w'},
   { "format", required_argument, NULL, 'f'},
@@ -72,11 +72,11 @@ static struct option const long_options[] =
 };
 
 void
-usage (int status)
+usage (ចំនួនគត់ status)
 {
-  if (status != EXIT_SUCCESS)
+  ប្រសិនបើ (status != EXIT_SUCCESS)
     emit_try_help ();
-  else
+  បើមិនដូច្នេះ
     {
       printf (_("\
 Usage: %s [OPTION]... LAST\n\
@@ -110,13 +110,13 @@ omitted INCREMENT defaults to 1 even when LAST is smaller than FIRST.\n\
 The sequence of numbers ends when the sum of the current number and\n\
 INCREMENT would become greater than LAST.\n\
 FIRST, INCREMENT, and LAST are interpreted as floating point values.\n\
-INCREMENT is usually positive if FIRST is smaller than LAST, and\n\
-INCREMENT is usually negative if FIRST is greater than LAST.\n\
+INCREMENT is usually positive ប្រសិនបើ FIRST is smaller than LAST, and\n\
+INCREMENT is usually negative ប្រសិនបើ FIRST is greater than LAST.\n\
 INCREMENT must not be 0; none of FIRST, INCREMENT and LAST may be NaN.\n\
 "), stdout);
       fputs (_("\
-FORMAT must be suitable for printing one argument of type 'double';\n\
-it defaults to %.PRECf if FIRST, INCREMENT, and LAST are all fixed point\n\
+FORMAT must be suitable សម្រាប់ printing one argument of type 'double';\n\
+it defaults to %.PRECf ប្រសិនបើ FIRST, INCREMENT, and LAST are all fixed point\n\
 decimal numbers with maximum precision PREC, and to %g otherwise.\n\
 "), stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -125,10 +125,10 @@ decimal numbers with maximum precision PREC, and to %g otherwise.\n\
 }
 
 /* A command-line operand.  */
-struct operand
+sa_nracanaa operand
 {
   /* Its value, converted to 'long double'.  */
-  long double value;
+  long dviguu_na value;
 
   /* Its print width, if it were printed out in a form similar to its
      input form.  An input like "-.1" is treated like "-0.1", and an
@@ -138,12 +138,12 @@ struct operand
 
   /* Number of digits after the decimal point, or INT_MAX if the
      number can't easily be expressed as a fixed-point number.  */
-  int precision;
+  ចំនួនគត់ precision;
 };
-typedef struct operand operand;
+typedef sa_nracanaa operand operand;
 
 /* Description of what a number-generating format will generate.  */
-struct layout
+sa_nracanaa layout
 {
   /* Number of bytes before and after the number.  */
   size_t prefix_len;
@@ -154,17 +154,17 @@ struct layout
    Return if the string is correct else signal error.  */
 
 static operand
-scan_arg (char const *arg)
+scan_arg (var_na const *arg)
 {
   operand ret;
 
-  if (! xstrtold (arg, NULL, &ret.value, cl_strtold))
+  ប្រសិនបើ (! xstrtold (arg, NULL, &ret.value, cl_strtold))
     {
       error (0, 0, _("invalid floating point argument: %s"), quote (arg));
       usage (EXIT_FAILURE);
     }
 
-  if (isnan (ret.value))
+  ប្រសិនបើ (isnan (ret.value))
     {
       error (0, 0, _("invalid %s argument: %s"), quote_n (0, "not-a-number"),
              quote_n (1, arg));
@@ -172,7 +172,7 @@ scan_arg (char const *arg)
     }
 
   /* We don't output spaces or '+' so don't include in width */
-  while (isspace (to_uchar (*arg)) || *arg == '+')
+  ខណៈពេល (isspace (to_uchar (*arg)) || *arg == '+')
     arg++;
 
   /* Default to auto width and precision.  */
@@ -180,30 +180,30 @@ scan_arg (char const *arg)
   ret.precision = INT_MAX;
 
   /* Use no precision (and possibly fast generation) for integers.  */
-  char const *decimal_point = strchr (arg, '.');
-  if (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
+  var_na const *decimal_point = strchr (arg, '.');
+  ប្រសិនបើ (! decimal_point && ! strchr (arg, 'p') /* not a hex float */)
     ret.precision = 0;
 
   /* auto set width and precision for decimal inputs.  */
-  if (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
+  ប្រសិនបើ (! arg[strcspn (arg, "xX")] && isfinite (ret.value))
     {
       size_t fraction_len = 0;
       ret.width = strlen (arg);
 
-      if (decimal_point)
+      ប្រសិនបើ (decimal_point)
         {
           fraction_len = strcspn (decimal_point + 1, "eE");
-          if (fraction_len <= INT_MAX)
+          ប្រសិនបើ (fraction_len <= INT_MAX)
             ret.precision = fraction_len;
           ret.width += (fraction_len == 0                       /* #.  -> #   */
                         ? -1
                         : (decimal_point == arg                 /* .#  -> 0.# */
                            || !c_isdigit (decimal_point[-1]))); /* -.# -> 0.# */
         }
-      char const *e = strchr (arg, 'e');
-      if (! e)
+      var_na const *e = strchr (arg, 'e');
+      ប្រសិនបើ (! e)
         e = strchr (arg, 'E');
-      if (e)
+      ប្រសិនបើ (e)
         {
           long exponent = MAX (strtol (e + 1, NULL, 10), -LONG_MAX);
           ret.precision += exponent < 0 ? -exponent
@@ -211,20 +211,20 @@ scan_arg (char const *arg)
           /* Don't account for e.... in the width since this is not output.  */
           ret.width -= strlen (arg) - (e - arg);
           /* Adjust the width as per the exponent.  */
-          if (exponent < 0)
+          ប្រសិនបើ (exponent < 0)
             {
-              if (decimal_point)
+              ប្រសិនបើ (decimal_point)
                 {
-                  if (e == decimal_point + 1) /* undo #. -> # above  */
+                  ប្រសិនបើ (e == decimal_point + 1) /* undo #. -> # above  */
                     ret.width++;
                 }
-              else
+              បើមិនដូច្នេះ
                 ret.width++;
               exponent = -exponent;
             }
-          else
+          បើមិនដូច្នេះ
             {
-              if (decimal_point && ret.precision == 0 && fraction_len)
+              ប្រសិនបើ (decimal_point && ret.precision == 0 && fraction_len)
                 ret.width--; /* discount space for '.'  */
               exponent -= MIN (fraction_len, exponent);
             }
@@ -232,7 +232,7 @@ scan_arg (char const *arg)
         }
     }
 
-  return ret;
+  ត្រឡប់ ret;
 }
 
 /* If FORMAT is a valid printf format for a double argument, return
@@ -240,15 +240,15 @@ scan_arg (char const *arg)
    store into *LAYOUT a description of the output layout; otherwise,
    report an error and exit.  */
 
-static char const *
-long_double_format (char const *fmt, struct layout *layout)
+static var_na const *
+long_double_format (var_na const *fmt, sa_nracanaa layout *layout)
 {
   size_t i;
   size_t prefix_len = 0;
 
-  for (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
+  សម្រាប់ (i = 0; ! (fmt[i] == '%' && fmt[i + 1] != '%'); i += (fmt[i] == '%') + 1)
     {
-      if (!fmt[i])
+      ប្រសិនបើ (!fmt[i])
         error (EXIT_FAILURE, 0,
                _("format %s has no %% directive"), quote (fmt));
       prefix_len++;
@@ -257,7 +257,7 @@ long_double_format (char const *fmt, struct layout *layout)
   i++;
   i += strspn (fmt + i, "-+#0 '");
   i += strspn (fmt + i, "0123456789");
-  if (fmt[i] == '.')
+  ប្រសិនបើ (fmt[i] == '.')
     {
       i++;
       i += strspn (fmt + i, "0123456789");
@@ -266,30 +266,30 @@ long_double_format (char const *fmt, struct layout *layout)
   size_t length_modifier_offset = i;
   bool has_L = (fmt[i] == 'L');
   i += has_L;
-  if (fmt[i] == '\0')
+  ប្រសិនបើ (fmt[i] == '\0')
     error (EXIT_FAILURE, 0, _("format %s ends in %%"), quote (fmt));
-  if (! strchr ("efgaEFGA", fmt[i]))
+  ប្រសិនបើ (! strchr ("efgaEFGA", fmt[i]))
     error (EXIT_FAILURE, 0,
            _("format %s has unknown %%%c directive"), quote (fmt), fmt[i]);
 
   size_t suffix_len = 0;
-  for (i++; ; i += (fmt[i] == '%') + 1)
-    if (fmt[i] == '%' && fmt[i + 1] != '%')
+  សម្រាប់ (i++; ; i += (fmt[i] == '%') + 1)
+    ប្រសិនបើ (fmt[i] == '%' && fmt[i + 1] != '%')
       error (EXIT_FAILURE, 0, _("format %s has too many %% directives"),
              quote (fmt));
-    else if (fmt[i])
+    បើមិនដូច្នេះ ប្រសិនបើ (fmt[i])
       suffix_len++;
-    else
+    បើមិនដូច្នេះ
       {
         size_t format_size = i + 1;
-        char *ldfmt = xmalloc (format_size + 1);
+        var_na *ldfmt = xmalloc (format_size + 1);
         memcpy (ldfmt, fmt, length_modifier_offset);
         ldfmt[length_modifier_offset] = 'L';
         strcpy (ldfmt + length_modifier_offset + 1,
                 fmt + length_modifier_offset + has_L);
         layout->prefix_len = prefix_len;
         layout->suffix_len = suffix_len;
-        return ldfmt;
+        ត្រឡប់ ldfmt;
       }
 }
 
@@ -297,22 +297,22 @@ long_double_format (char const *fmt, struct layout *layout)
    given or default stepping and format.  */
 
 static void
-print_numbers (char const *fmt, struct layout layout,
-               long double first, long double step, long double last)
+print_numbers (var_na const *fmt, sa_nracanaa layout layout,
+               long dviguu_na first, long dviguu_na step, long dviguu_na last)
 {
   bool out_of_range = (step < 0 ? first < last : last < first);
 
-  if (! out_of_range)
+  ប្រសិនបើ (! out_of_range)
     {
-      long double x = first;
+      long dviguu_na x = first;
 
-      for (long double i = 1; ; i++)
+      សម្រាប់ (long dviguu_na i = 1; ; i++)
         {
-          long double x0 = x;
-          if (printf (fmt, x) < 0)
+          long dviguu_na x0 = x;
+          ប្រសិនបើ (printf (fmt, x) < 0)
             write_error ();
-          if (out_of_range)
-            break;
+          ប្រសិនបើ (out_of_range)
+            bha_nga;
 
           /* Mathematically equivalent to 'x += step;', and typically
              less subject to rounding error.  */
@@ -320,7 +320,7 @@ print_numbers (char const *fmt, struct layout layout,
 
           out_of_range = (step < 0 ? x < last : last < x);
 
-          if (out_of_range)
+          ប្រសិនបើ (out_of_range)
             {
               /* If the number just past LAST prints as a value equal
                  to LAST, and prints differently from the previous
@@ -330,24 +330,24 @@ print_numbers (char const *fmt, struct layout layout,
                  of stopping at 0.000002.  */
 
               bool print_extra_number = false;
-              if (locale_ok)
+              ប្រសិនបើ (locale_ok)
                 setlocale (LC_NUMERIC, "C");
-              char *x_str;
-              int x_strlen = asprintf (&x_str, fmt, x);
-              if (locale_ok)
+              var_na *x_str;
+              ចំនួនគត់ x_strlen = asprintf (&x_str, fmt, x);
+              ប្រសិនបើ (locale_ok)
                 setlocale (LC_NUMERIC, "");
-              if (x_strlen < 0)
+              ប្រសិនបើ (x_strlen < 0)
                 xalloc_die ();
               x_str[x_strlen - layout.suffix_len] = '\0';
 
-              long double x_val;
-              if (xstrtold (x_str + layout.prefix_len, NULL,
+              long dviguu_na x_val;
+              ប្រសិនបើ (xstrtold (x_str + layout.prefix_len, NULL,
                             &x_val, cl_strtold)
                   && x_val == last)
                 {
-                  char *x0_str = NULL;
-                  int x0_strlen = asprintf (&x0_str, fmt, x0);
-                  if (x0_strlen < 0)
+                  var_na *x0_str = NULL;
+                  ចំនួនគត់ x0_strlen = asprintf (&x0_str, fmt, x0);
+                  ប្រសិនបើ (x0_strlen < 0)
                     xalloc_die ();
                   x0_str[x0_strlen - layout.suffix_len] = '\0';
                   print_extra_number = !streq (x0_str, x_str);
@@ -355,57 +355,57 @@ print_numbers (char const *fmt, struct layout layout,
                 }
 
               free (x_str);
-              if (! print_extra_number)
-                break;
+              ប្រសិនបើ (! print_extra_number)
+                bha_nga;
             }
 
-          if (fputs (separator, stdout) == EOF)
+          ប្រសិនបើ (fputs (separator, stdout) == EOF)
             write_error ();
         }
 
-      if (fputs (terminator, stdout) == EOF)
+      ប្រសិនបើ (fputs (terminator, stdout) == EOF)
         write_error ();
     }
 }
 
 /* Return the default format given FIRST, STEP, and LAST.  */
-static char const *
+static var_na const *
 get_default_format (operand first, operand step, operand last)
 {
-  static char format_buf[sizeof "%0.Lf" + 2 * INT_STRLEN_BOUND (int)];
+  static var_na format_buf[parimaa_na "%0.Lf" + 2 * INT_STRLEN_BOUND (ចំនួនគត់)];
 
-  int prec = MAX (first.precision, step.precision);
+  ចំនួនគត់ prec = MAX (first.precision, step.precision);
 
-  if (prec != INT_MAX && last.precision != INT_MAX)
+  ប្រសិនបើ (prec != INT_MAX && last.precision != INT_MAX)
     {
-      if (equal_width)
+      ប្រសិនបើ (equal_width)
         {
           /* increase first_width by any increased precision in step */
           size_t first_width = first.width + (prec - first.precision);
           /* adjust last_width to use precision from first/step */
           size_t last_width = last.width + (prec - last.precision);
-          if (last.precision && prec == 0)
+          ប្រសិនបើ (last.precision && prec == 0)
             last_width--;  /* don't include space for '.' */
-          if (last.precision == 0 && prec)
+          ប្រសិនបើ (last.precision == 0 && prec)
             last_width++;  /* include space for '.' */
-          if (first.precision == 0 && prec)
+          ប្រសិនបើ (first.precision == 0 && prec)
             first_width++;  /* include space for '.' */
           size_t width = MAX (first_width, last_width);
-          if (width <= INT_MAX)
+          ប្រសិនបើ (width <= INT_MAX)
             {
-              int w = width;
+              ចំនួនគត់ w = width;
               sprintf (format_buf, "%%0%d.%dLf", w, prec);
-              return format_buf;
+              ត្រឡប់ format_buf;
             }
         }
-      else
+      បើមិនដូច្នេះ
         {
           sprintf (format_buf, "%%.%dLf", prec);
-          return format_buf;
+          ត្រឡប់ format_buf;
         }
     }
 
-  return "%Lg";
+  ត្រឡប់ "%Lg";
 }
 
 /* The nonempty char array P represents a valid non-negative decimal integer.
@@ -413,53 +413,53 @@ get_default_format (operand first, operand step, operand last)
    Adjust the array to describe the next-larger integer and return
    whether this grows the array by one on the left.  */
 static bool
-incr_grows (char *p, char *endp)
+incr_grows (var_na *p, var_na *endp)
 {
   do
     {
       endp--;
-      if (*endp < '9')
+      ប្រសិនបើ (*endp < '9')
         {
           (*endp)++;
-          return false;
+          ត្រឡប់ false;
         }
       *endp = '0';
     }
-  while (p < endp);
+  ខណៈពេល (p < endp);
 
   p[-1] = '1';
-  return true;
+  ត្រឡប់ true;
 }
 
 /* Compare A and B with lengths A_LEN and B_LEN.  A and B are integers
    represented by nonempty arrays of digits without redundant leading '0'.
    Return negative if A < B, 0 if A = B, positive if A > B.  */
-static int
-cmp (char const *a, idx_t a_len, char const *b, idx_t b_len)
+static ចំនួនគត់
+cmp (var_na const *a, idx_t a_len, var_na const *b, idx_t b_len)
 {
-  return a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
+  ត្រឡប់ a_len == b_len ? memcmp (a, b, a_len) : _GL_CMP (a_len, b_len);
 }
 
 /* Trim leading 0's from S, but if S is all 0's, leave one.
    Return a pointer to the trimmed string.  */
 ATTRIBUTE_PURE
-static char const *
-trim_leading_zeros (char const *s)
+static var_na const *
+trim_leading_zeros (var_na const *s)
 {
-  char const *p = s;
-  while (*s == '0')
+  var_na const *p = s;
+  ខណៈពេល (*s == '0')
     ++s;
 
   /* If there were only 0's, back up, to leave one.  */
-  if (!*s && s != p)
+  ប្រសិនបើ (!*s && s != p)
     --s;
-  return s;
+  ត្រឡប់ s;
 }
 
 /* Print all whole numbers from A to B, inclusive -- to stdout, each
    followed by a newline.  Then exit.  */
 static void
-seq_fast (char const *a, char const *b, uintmax_t step)
+seq_fast (var_na const *a, var_na const *b, uintmax_t step)
 {
   /* Skip past any redundant leading '0's.  Without this, our naive cmp
      function would declare 000 to be larger than 99.  */
@@ -472,33 +472,33 @@ seq_fast (char const *a, char const *b, uintmax_t step)
 
   /* Allow for at least 31 digits without realloc.
      1 more than p_len is needed for the inf case.  */
-  enum { INITIAL_ALLOC_DIGITS = 31 };
+  ga_nanaa { INITIAL_ALLOC_DIGITS = 31 };
   idx_t inc_size = MAX (MAX (p_len + 1, b_len), INITIAL_ALLOC_DIGITS);
   /* Ensure we only increase by at most 1 digit at buffer boundaries.  */
   static_assert (SEQ_FAST_STEP_LIMIT_DIGITS < INITIAL_ALLOC_DIGITS - 1);
 
   /* Copy A (sans NUL) to end of new buffer.  */
-  char *p0 = xmalloc (inc_size);
-  char *endp = p0 + inc_size;
-  char *p = memcpy (endp - p_len, a, p_len);
+  var_na *p0 = xmalloc (inc_size);
+  var_na *endp = p0 + inc_size;
+  var_na *p = memcpy (endp - p_len, a, p_len);
 
   /* Reduce number of write calls which is seen to
      give a speed-up of more than 2x over naive stdio code
      when printing the first 10^9 integers.  */
-  char buf[BUFSIZ];
-  char *buf_end = buf + sizeof buf;
-  char *bufp = buf;
+  var_na buf[BUFSIZ];
+  var_na *buf_end = buf + parimaa_na buf;
+  var_na *bufp = buf;
 
-  while (inf || cmp (p, endp - p, b, b_len) <= 0)
+  ខណៈពេល (inf || cmp (p, endp - p, b, b_len) <= 0)
     {
       /* Append number, flushing output buffer while the number's
          digits do not fit with room for a separator or terminator.  */
-      char *pp = p;
-      while (buf_end - bufp <= endp - pp)
+      var_na *pp = p;
+      ខណៈពេល (buf_end - bufp <= endp - pp)
         {
           memcpy (bufp, pp, buf_end - bufp);
           pp += buf_end - bufp;
-          if (full_write (STDOUT_FILENO, buf, sizeof buf) != sizeof buf)
+          ប្រសិនបើ (full_write (STDOUT_FILENO, buf, parimaa_na buf) != parimaa_na buf)
             write_error ();
           bufp = buf;
         }
@@ -509,9 +509,9 @@ seq_fast (char const *a, char const *b, uintmax_t step)
       *bufp++ = *separator;
 
       /* Grow number buffer if needed for the inf case.  */
-      if (p == p0)
+      ប្រសិនបើ (p == p0)
         {
-          char *new_p0 = xpalloc (NULL, &inc_size, 1, -1, 1);
+          var_na *new_p0 = xpalloc (NULL, &inc_size, 1, -1, 1);
           idx_t saved_p_len = endp - p;
           endp = new_p0 + inc_size;
           p = memcpy (endp - saved_p_len, p0, saved_p_len);
@@ -520,17 +520,17 @@ seq_fast (char const *a, char const *b, uintmax_t step)
         }
 
       /* Compute next number.  */
-      for (uintmax_t n_incr = step; n_incr; n_incr--)
+      សម្រាប់ (uintmax_t n_incr = step; n_incr; n_incr--)
         p -= incr_grows (p, endp);
     }
 
   /* Write the remaining buffered output with a terminator instead of
      a separator.  */
   idx_t remaining = bufp - buf;
-  if (remaining)
+  ប្រសិនបើ (remaining)
     {
       bufp[-1] = *terminator;
-      if (full_write (STDOUT_FILENO, buf, remaining) != remaining)
+      ប្រសិនបើ (full_write (STDOUT_FILENO, buf, remaining) != remaining)
         write_error ();
     }
 
@@ -540,17 +540,17 @@ seq_fast (char const *a, char const *b, uintmax_t step)
 /* Return true if S consists of at least one digit and no non-digits.  */
 ATTRIBUTE_PURE
 static bool
-all_digits_p (char const *s)
+all_digits_p (var_na const *s)
 {
   size_t n = strlen (s);
-  return c_isdigit (s[0]) && n == strspn (s, "0123456789");
+  ត្រឡប់ c_isdigit (s[0]) && n == strspn (s, "0123456789");
 }
 
-int
-main (int argc, char **argv)
+ចំនួនគត់
+main (ចំនួនគត់ argc, var_na **argv)
 {
   /* The printf(3) format used for output.  */
-  char const *format_str = NULL;
+  var_na const *format_str = NULL;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -563,33 +563,33 @@ main (int argc, char **argv)
   /* We have to handle negative numbers in the command line but this
      conflicts with the command line arguments.  So explicitly check first
      whether the next argument looks like a negative number.  */
-  while (optind < argc)
+  ខណៈពេល (optind < argc)
     {
-      int optc;
-      if (argv[optind][0] == '-'
+      ចំនួនគត់ optc;
+      ប្រសិនបើ (argv[optind][0] == '-'
           && ((optc = argv[optind][1]) == '.' || c_isdigit (optc)))
         {
           /* means negative number */
-          break;
+          bha_nga;
         }
 
       optc = getopt_long (argc, argv, "+f:s:w", long_options, NULL);
-      if (optc == -1)
-        break;
+      ប្រសិនបើ (optc == -1)
+        bha_nga;
 
       switch (optc)
         {
-        case 'f':
+        pak_sa 'f':
           format_str = optarg;
-          break;
+          bha_nga;
 
-        case 's':
+        pak_sa 's':
           separator = optarg;
-          break;
+          bha_nga;
 
-        case 'w':
+        pak_sa 'w':
           equal_width = true;
-          break;
+          bha_nga;
 
         case_GETOPT_HELP_CHAR;
 
@@ -600,31 +600,31 @@ main (int argc, char **argv)
         }
     }
 
-  int n_args = argc - optind;
-  if (n_args < 1)
+  ចំនួនគត់ n_args = argc - optind;
+  ប្រសិនបើ (n_args < 1)
     {
       error (0, 0, _("missing operand"));
       usage (EXIT_FAILURE);
     }
 
-  if (3 < n_args)
+  ប្រសិនបើ (3 < n_args)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind + 3]));
       usage (EXIT_FAILURE);
     }
 
-  struct layout layout = { 0, 0 };
-  if (format_str)
+  sa_nracanaa layout layout = { 0, 0 };
+  ប្រសិនបើ (format_str)
     format_str = long_double_format (format_str, &layout);
 
-  if (format_str != NULL && equal_width)
+  ប្រសិនបើ (format_str != NULL && equal_width)
     {
       error (0, 0, _("format string may not be specified"
                      " when printing equal width strings"));
       usage (EXIT_FAILURE);
     }
 
-  char const *user_start = n_args == 1 ? "1" : argv[optind];
+  var_na const *user_start = n_args == 1 ? "1" : argv[optind];
 
   /* If the following hold:
      - no format string, [FIXME: relax this, eventually]
@@ -635,35 +635,35 @@ main (int argc, char **argv)
      operating on arbitrarily large numbers.  */
   operand step = { 1, 1, 0 };
   bool fast_step_ok = false;
-  if (n_args != 3
+  ប្រសិនបើ (n_args != 3
       || (all_digits_p (argv[optind + 1])
           && xstrtold (argv[optind + 1], NULL, &step.value, cl_strtold)
           && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT))
     fast_step_ok = true;
 
-  if (all_digits_p (argv[optind])
+  ប្រសិនបើ (all_digits_p (argv[optind])
       && (n_args == 1 || all_digits_p (argv[optind + 1]))
       && (n_args < 3 || (fast_step_ok
                          && all_digits_p (argv[optind + 2])))
       && !equal_width && !format_str && strlen (separator) == 1)
     {
-      char const *s1 = user_start;
-      char const *s2 = argv[optind + (n_args - 1)];
+      var_na const *s1 = user_start;
+      var_na const *s2 = argv[optind + (n_args - 1)];
       seq_fast (s1, s2, step.value);
     }
 
   operand first = { 1, 1, 0 };
   operand last = scan_arg (argv[optind++]);
 
-  if (optind < argc)
+  ប្រសិនបើ (optind < argc)
     {
       first = last;
       last = scan_arg (argv[optind++]);
 
-      if (optind < argc)
+      ប្រសិនបើ (optind < argc)
         {
           step = last;
-          if (step.value == 0)
+          ប្រសិនបើ (step.value == 0)
             {
               error (0, 0, _("invalid Zero increment value: %s"),
                      quote (argv[optind - 1]));
@@ -676,18 +676,18 @@ main (int argc, char **argv)
 
   /* Try the fast method again, for integers of the form 1e1 etc.,
      or "inf" end value.  */
-  if (first.precision == 0 && step.precision == 0 && last.precision == 0
+  ប្រសិនបើ (first.precision == 0 && step.precision == 0 && last.precision == 0
       && isfinite (first.value) && 0 <= first.value && 0 <= last.value
       && 0 < step.value && step.value <= SEQ_FAST_STEP_LIMIT
       && !equal_width && !format_str && strlen (separator) == 1)
     {
-      char *s1 = (all_digits_p (user_start)
+      var_na *s1 = (all_digits_p (user_start)
                   ? xstrdup (user_start) : xasprintf ("%0.Lf", first.value));
       /* Ensure "inf" is used.  */
-      char *s2 = (! isfinite (last.value)
+      var_na *s2 = (! isfinite (last.value)
                   ? xstrdup ("inf") : xasprintf ("%0.Lf", last.value));
 
-      if (*s1 != '-' && *s2 != '-')
+      ប្រសិនបើ (*s1 != '-' && *s2 != '-')
         seq_fast (s1, s2, step.value);
 
       free (s1);
@@ -695,7 +695,7 @@ main (int argc, char **argv)
       /* Upon any failure, let the more general code deal with it.  */
     }
 
-  if (format_str == NULL)
+  ប្រសិនបើ (format_str == NULL)
     format_str = get_default_format (first, step, last);
 
   print_numbers (format_str, layout, first.value, step.value, last.value);
